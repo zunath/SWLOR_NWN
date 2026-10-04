@@ -232,6 +232,42 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
         await VerifyPrivacyAsync(ticket, configuration.Tickets.ClosedRequesterCanRead, false, true, ct);
     }
 
+    internal static Overwrite[] BuildRetainedOverwrites(Ticket ticket, ulong guildId, ulong botId,
+        IReadOnlyCollection<ulong> supportRoles, IEnumerable<Overwrite> existing, bool closedRequesterCanRead)
+    {
+        if (ticket.State is not (TicketState.Open or TicketState.Closed))
+            throw new InvalidOperationException("Only stable open or closed ticket permissions can be reconciled.");
+        var open = ticket.State == TicketState.Open;
+        return BuildOverwrites(guildId, botId, ticket.RequesterId, supportRoles, existing,
+            open || closedRequesterCanRead, open, supportWrite: true);
+    }
+
+    private static bool SameOverwrites(IEnumerable<Overwrite> left, IEnumerable<Overwrite> right) =>
+        left.OrderBy(item => item.TargetType).ThenBy(item => item.TargetId)
+            .Select(item => (item.TargetType, item.TargetId, item.Permissions.AllowValue, item.Permissions.DenyValue))
+            .SequenceEqual(right.OrderBy(item => item.TargetType).ThenBy(item => item.TargetId)
+                .Select(item => (item.TargetType, item.TargetId, item.Permissions.AllowValue, item.Permissions.DenyValue)));
+
+    internal static async Task SynchronizeTicketOverwritesAsync(ulong channelId, Overwrite[] expected,
+        IReadOnlyCollection<Overwrite> existing, Func<Overwrite[], Task> update,
+        Func<Task<IReadOnlyCollection<Overwrite>>> readBack)
+    {
+        if (!SameOverwrites(expected, existing)) await update(expected);
+        if (!SameOverwrites(expected, await readBack()))
+            throw new DiscordValidationException($"Ticket permission reconciliation failed verification for channel {channelId}; maintenance is blocked.");
+    }
+
+    public async Task ReconcilePermissionsAsync(Ticket ticket, CancellationToken ct)
+    {
+        var channel = await RequireManagedAsync(ticket, ct);
+        var expected = BuildRetainedOverwrites(ticket, configuration.GuildId, client.CurrentUser.Id,
+            configuration.Tickets.SupportRoleIds, channel.PermissionOverwrites, configuration.Tickets.ClosedRequesterCanRead);
+        await SynchronizeTicketOverwritesAsync(channel.Id, expected, channel.PermissionOverwrites,
+            overwrites => channel.ModifyAsync(properties => properties.PermissionOverwrites = overwrites, Options(ct)),
+            async () => (await RequireManagedAsync(ticket, ct)).PermissionOverwrites);
+        var open = ticket.State == TicketState.Open;
+        await VerifyPrivacyAsync(ticket, open || configuration.Tickets.ClosedRequesterCanRead, open, true, ct);
+    }
     public async Task FreezeAsync(Ticket ticket, CancellationToken ct)
     {
         var channel = await RequireManagedAsync(ticket, ct);

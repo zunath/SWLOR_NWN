@@ -31,27 +31,37 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
         var files = new Dictionary<ulong, string>();
         if (configuration.Tickets.CopyAttachments)
         {
-            foreach (var attachment in snapshot.Messages.SelectMany(m => m.Attachments).DistinctBy(a => a.Id))
+            var attachments = PlanAttachments(snapshot, ct, progress);
+            var retainedBytes = CountRetainedAttachments(attachmentDirectory, ct, progress);
+            var plannedBytes = retainedBytes;
+            // Include cached and older retained attachments so changed snapshots cannot grow the
+            // same archive beyond its cap across retries. Validate the whole plan before any HTTP.
+            foreach (var plan in attachments)
             {
-                var extension = Path.GetExtension(attachment.FileName);
-                if (!Regex.IsMatch(extension, "^\\.[a-zA-Z0-9]{1,8}$")) extension = ".bin";
-                var relative = $"attachments/{attachment.Id}{extension}";
-                var target = Path.Combine(directory, relative.Replace('/', Path.DirectorySeparatorChar));
-                if (attachment.Size < 0 || attachment.Size > configuration.Tickets.MaxAttachmentBytes)
-                    throw new InvalidDataException("Ticket attachment exceeds the configured archive limit; cleanup is suspended.");
+                var target = Path.Combine(directory, plan.Relative.Replace('/', Path.DirectorySeparatorChar));
                 if (File.Exists(target))
                 {
                     RejectLink(target);
-                    if (new FileInfo(target).Length != attachment.Size)
+                    if (new FileInfo(target).Length != plan.Attachment.Size)
                         throw new InvalidDataException("Cached attachment size does not match its Discord metadata; cleanup is suspended.");
+                }
+                else plannedBytes = AddWithinTicketBudget(plannedBytes, plan.Attachment.Size);
+                ct.ThrowIfCancellationRequested();
+                progress();
+            }
+            foreach (var plan in attachments)
+            {
+                var attachment = plan.Attachment;
+                var relative = plan.Relative;
+                var target = Path.Combine(directory, relative.Replace('/', Path.DirectorySeparatorChar));
+                if (File.Exists(target))
+                {
                     files[attachment.Id] = relative;
                     ct.ThrowIfCancellationRequested();
                     progress();
                     continue;
                 }
-                if (!Uri.TryCreate(attachment.Url, UriKind.Absolute, out var url) || url.Scheme != Uri.UriSchemeHttps ||
-                    !AttachmentHosts.Contains(url.Host) || !url.IsDefaultPort || !string.IsNullOrEmpty(url.UserInfo))
-                    throw new InvalidDataException("Attachment URL is not an allowed Discord CDN URL.");
+                var url = plan.Url;
                 using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
                 timeout.CancelAfter(TimeSpan.FromMinutes(2));
                 using var response = await http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, timeout.Token);
@@ -59,28 +69,34 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
                 progress();
                 if (response.RequestMessage?.RequestUri != url)
                     throw new InvalidDataException("Attachment redirects are not supported.");
-                if (response.Content.Headers.ContentLength > configuration.Tickets.MaxAttachmentBytes)
-                    throw new InvalidDataException("Ticket attachment exceeds the configured archive limit.");
+                if (response.Content.Headers.ContentLength is { } contentLength &&
+                    (contentLength > configuration.Tickets.MaxAttachmentBytes ||
+                     contentLength > configuration.Tickets.MaxTicketAttachmentBytes - retainedBytes ||
+                     contentLength != attachment.Size))
+                    throw new InvalidDataException("Attachment content length exceeds the archive budget or differs from its metadata.");
                 var temporary = target + ".part";
                 RejectLink(temporary);
+                long bytes = 0;
                 try
                 {
                     await using (var output = OpenPrivateWriteStream(temporary))
                     await using (var input = await response.Content.ReadAsStreamAsync(timeout.Token))
                     {
                         var buffer = new byte[81920];
-                        long bytes = 0;
                         int read;
                         while ((read = await input.ReadAsync(buffer, timeout.Token)) > 0)
                         {
+                            if (read > configuration.Tickets.MaxAttachmentBytes - bytes ||
+                                read > configuration.Tickets.MaxTicketAttachmentBytes - retainedBytes - bytes)
+                                throw new InvalidDataException("Attachment streaming exceeds the per-file or per-ticket archive budget.");
                             bytes += read;
-                            if (bytes > configuration.Tickets.MaxAttachmentBytes) throw new InvalidDataException("Attachment is larger than allowed.");
                             await output.WriteAsync(buffer.AsMemory(0, read), timeout.Token);
                             progress();
                         }
                         if (bytes != attachment.Size) throw new InvalidDataException("Attachment size does not match its Discord metadata.");
                     }
                     File.Move(temporary, target, true);
+                    retainedBytes = AddWithinTicketBudget(retainedBytes, bytes);
                     progress();
                 }
                 finally { if (File.Exists(temporary)) File.Delete(temporary); }
@@ -112,6 +128,61 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
         await AtomicWriteAsync(Path.Combine(directory, "transcript.html"), html.ToString(), ct);
         progress();
         return directory;
+    }
+
+    private sealed record AttachmentPlan(TranscriptAttachment Attachment, string Relative, Uri Url);
+
+    private IReadOnlyList<AttachmentPlan> PlanAttachments(TranscriptSnapshot snapshot, CancellationToken ct, Action progress)
+    {
+        var unique = new Dictionary<ulong, AttachmentPlan>();
+        long declaredBytes = 0;
+        foreach (var attachment in snapshot.Messages.SelectMany(message => message.Attachments))
+        {
+            ct.ThrowIfCancellationRequested();
+            if (attachment.Size < 0 || attachment.Size > configuration.Tickets.MaxAttachmentBytes)
+                throw new InvalidDataException("Ticket attachment exceeds the configured archive limit; cleanup is suspended.");
+            if (!Uri.TryCreate(attachment.Url, UriKind.Absolute, out var url) || url.Scheme != Uri.UriSchemeHttps ||
+                !AttachmentHosts.Contains(url.Host) || !url.IsDefaultPort || !string.IsNullOrEmpty(url.UserInfo))
+                throw new InvalidDataException("Attachment URL is not an allowed Discord CDN URL.");
+            if (unique.TryGetValue(attachment.Id, out var original))
+            {
+                // Discord may refresh a signed URL's query, but an ID must still identify one immutable file.
+                if (original.Attachment.Size != attachment.Size || original.Attachment.FileName != attachment.FileName ||
+                    original.Url.GetLeftPart(UriPartial.Path) != url.GetLeftPart(UriPartial.Path))
+                    throw new InvalidDataException("Conflicting metadata for a repeated attachment ID.");
+            }
+            else
+            {
+                declaredBytes = AddWithinTicketBudget(declaredBytes, attachment.Size);
+                var extension = Path.GetExtension(attachment.FileName);
+                if (!Regex.IsMatch(extension, "^\\.[a-zA-Z0-9]{1,8}$")) extension = ".bin";
+                unique.Add(attachment.Id, new(attachment, $"attachments/{attachment.Id}{extension}", url));
+            }
+            progress();
+        }
+        return unique.Values.ToArray();
+    }
+
+    private long CountRetainedAttachments(string directory, CancellationToken ct, Action progress)
+    {
+        long bytes = 0;
+        foreach (var path in Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories))
+        {
+            ct.ThrowIfCancellationRequested();
+            RejectLink(path);
+            // Partial files are never referenced by a published transcript; discard interrupted copies.
+            if (Regex.IsMatch(Path.GetFileName(path), @"^\d+\.[a-zA-Z0-9]{1,8}\.part$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase)) File.Delete(path);
+            else bytes = AddWithinTicketBudget(bytes, new FileInfo(path).Length);
+            progress();
+        }
+        return bytes;
+    }
+
+    private long AddWithinTicketBudget(long current, long bytes)
+    {
+        if (bytes < 0 || bytes > configuration.Tickets.MaxTicketAttachmentBytes - current)
+            throw new InvalidDataException("Ticket attachments exceed the cumulative archive budget; cleanup is suspended.");
+        return current + bytes;
     }
 
     public Task DeleteAsync(string path, CancellationToken ct)

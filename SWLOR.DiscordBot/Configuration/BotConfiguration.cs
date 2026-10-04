@@ -35,6 +35,7 @@ public sealed class TicketOptions
     public string ArchiveDirectory { get; set; } = "/data/archives";
     public bool CopyAttachments { get; set; } = true;
     public long MaxAttachmentBytes { get; set; } = 104857600;
+    public long MaxTicketAttachmentBytes { get; set; } = 1073741824;
 }
 
 public sealed class TicketPanelOptions

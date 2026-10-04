@@ -67,6 +67,52 @@ public sealed class PostgresStoreTests
     }
 
     [Test]
+    public async Task PendingCommunityDeliveryCanBeEnumeratedAfterStoreRestart()
+    {
+        const string key = "answer:100:300";
+        const string intent = "{\"Version\":1,\"Kind\":\"answer\",\"ChannelId\":100}";
+        await using (var first = new PostgresTicketStore(ConnectionString))
+        {
+            await first.InitializeAsync(default);
+            await using var session = await first.LockCommunityAsync(default);
+            await session.GetOrCreateDeliveryAsync(key, intent, default);
+        }
+
+        await using var restarted = new PostgresTicketStore(ConnectionString);
+        await restarted.InitializeAsync(default);
+        await using (var session = await restarted.LockCommunityAsync(default))
+        {
+            Assert.That(await session.GetPendingDeliveriesAsync(default), Is.EqualTo(new[] { new PendingDelivery(key, intent) }));
+            await session.CompleteDeliveryAsync(key, default);
+            Assert.That(await session.GetPendingDeliveriesAsync(default), Is.Empty);
+        }
+    }
+
+    [Test]
+    public async Task PendingCommunityDeliveryBatchesRotateThroughBacklog()
+    {
+        await using var store = new PostgresTicketStore(ConnectionString);
+        await store.InitializeAsync(default);
+        await using var session = await store.LockCommunityAsync(default);
+        for (var index = 0; index < 25; index++)
+            await session.GetOrCreateDeliveryAsync($"answer:100:{index + 1}", $"intent-{index}", default);
+
+        var firstBatch = await session.GetPendingDeliveriesAsync(default);
+        var secondBatch = await session.GetPendingDeliveriesAsync(default);
+
+        Assert.That(firstBatch, Has.Count.EqualTo(20));
+        Assert.That(secondBatch, Has.Count.EqualTo(20));
+        Assert.That(secondBatch.Select(x => x.Key).Except(firstBatch.Select(x => x.Key)).Count(), Is.EqualTo(5),
+            "Untouched operations must receive a turn even when the previous batch all failed.");
+        Assert.That(firstBatch.Concat(secondBatch).Select(x => x.Key).Distinct().Count(), Is.EqualTo(25));
+        foreach (var delivery in secondBatch)
+            await session.CompleteDeliveryAsync(delivery.Key, default);
+        var remaining = await session.GetPendingDeliveriesAsync(default);
+        Assert.That(remaining.Select(x => x.Key), Is.EquivalentTo(
+            firstBatch.Select(x => x.Key).Except(secondBatch.Select(x => x.Key))));
+    }
+
+    [Test]
     public async Task CompetingStoreCannotMutateWhileAnotherSessionOwnsLock()
     {
         await using var first = new PostgresTicketStore(ConnectionString);

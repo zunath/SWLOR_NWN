@@ -61,3 +61,5 @@
 # This script is executed by bash from a Windows bind mount.
 SWLOR.Game.Server/Docker/prepare-server-home.sh text eol=lf
 SWLOR.DiscordBot/postgres-entrypoint.sh text eol=lf
+
+SWLOR.DiscordBot/rotate-database-password.sh text eol=lf

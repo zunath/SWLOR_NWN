@@ -1267,6 +1267,132 @@ public sealed class TicketServiceTests
             try { await export; } catch (InvalidOperationException) when (departed) { }
         }
     }
+    [TestCase(TicketState.Open, true)]
+    [TestCase(TicketState.Open, false)]
+    [TestCase(TicketState.Closed, true)]
+    [TestCase(TicketState.Closed, false)]
+    public async Task RestartReconcilesRetainedPermissionsWithoutChangingTicketStateOrMetadata(TicketState state, bool enabled)
+    {
+        var ticket = (await Open("first", new Actor(1, []), "restart-policy")).Ticket!;
+        if (state == TicketState.Closed) await _service.CloseAsync(ChannelOne, Support);
+        ticket = _store.Tickets.Single() with { Hold = true, ArchivePath = "/archives/retained", ArchiveComplete = true };
+        _store.Replace(ticket);
+        _configuration.Tickets.SupportRoleIds = [901];
+        _configuration.Tickets.ClosedRequesterCanRead = false;
+        _configuration.Tickets.Enabled = enabled;
+        _service = new TicketService(_configuration, _store, _discord, _archive, _clock);
+        var openCalls = _discord.OpenCalls;
+        var closeCalls = _discord.CloseCalls;
+
+        await _service.ReconcileRetainedPermissionsAsync();
+        await _service.MaintainAsync();
+
+        Assert.That(_discord.ReconciledTickets.Select(value => value.State), Is.EqualTo(new[] { state, state }),
+            "Both startup and maintenance must cover held, not-yet-due stable tickets even when new ticketing is disabled.");
+        Assert.That(_store.Tickets.Single(), Is.EqualTo(ticket));
+        Assert.That(_discord.OpenCalls, Is.EqualTo(openCalls));
+        Assert.That(_discord.CloseCalls, Is.EqualTo(closeCalls));
+        Assert.That(_discord.FreezeCalls, Is.Zero);
+        Assert.That(_discord.DeleteCalls, Is.Zero);
+        Assert.That(_archive.ExportCalls, Is.Zero);
+    }
+
+    [Test]
+    public async Task PermissionReconciliationFailureStopsStartupAndRetainsMaintenanceForRetry()
+    {
+        await Open("first", new Actor(1, []), "bad-policy");
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        _discord.BeforeReconcileAsync = (_, _) => Task.FromException(new InvalidOperationException("Permission update failed."));
+
+        Assert.ThrowsAsync<InvalidOperationException>(() => _service.ReconcileRetainedPermissionsAsync());
+        await _service.MaintainAsync();
+
+        Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Closed));
+        Assert.That(_store.Tickets.Single().LastError, Does.Contain("Maintenance failed"));
+        Assert.That(_discord.DeleteCalls, Is.Zero);
+        Assert.That(_archive.ExportCalls, Is.Zero);
+        _discord.BeforeReconcileAsync = null;
+        await _service.ReconcileRetainedPermissionsAsync();
+        await _service.MaintainAsync();
+        Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Deleted));
+    }
+
+    [Test]
+    public async Task MissingRetainedChannelDoesNotBlockPermissionStartupAndIsReconciledByMaintenance()
+    {
+        await Open("first", new Actor(1, []), "missing-policy");
+        _discord.MissingChannels.Add(ChannelOne);
+
+        await _service.ReconcileRetainedPermissionsAsync();
+        Assert.That(_discord.ReconciledTickets, Is.Empty);
+        await _service.MaintainAsync();
+
+        Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Deleted));
+        Assert.That(_discord.ReconciledTickets, Is.Empty);
+    }
+
+    [Test]
+    public async Task StartupAndConcurrentMaintenanceNeverRestorePermissionsDuringDeletingExport()
+    {
+        await Open("first", new Actor(1, []), "frozen-policy");
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _discord.BeforeTranscriptAsync = async (_, ct) =>
+        {
+            started.TrySetResult();
+            await release.Task.WaitAsync(ct);
+        };
+        var cleanup = _service.MaintainAsync();
+        try
+        {
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            var reconciles = _discord.ReconciledTickets.Count;
+            var freezes = _discord.FreezeCalls;
+            Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Deleting));
+            await _service.ReconcileRetainedPermissionsAsync().WaitAsync(TimeSpan.FromSeconds(2));
+            await _service.MaintainAsync().WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(_discord.ReconciledTickets.Count, Is.EqualTo(reconciles));
+            Assert.That(_discord.FreezeCalls, Is.EqualTo(freezes));
+            Assert.That(cleanup.IsCompleted, Is.False);
+            release.SetResult();
+            await cleanup.WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Deleted));
+        }
+        finally { release.TrySetResult(); await cleanup; }
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task StableTicketPolicyCanReconcileDuringManualExportWithoutReleasingItsGuard(bool closed)
+    {
+        await Open("first", new Actor(1, []), "manual-policy");
+        if (closed) await _service.CloseAsync(ChannelOne, Support);
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _discord.BeforeTranscriptAsync = async (_, ct) =>
+        {
+            started.TrySetResult();
+            await release.Task.WaitAsync(ct);
+        };
+        var export = _service.ExportAsync(ChannelOne, Support);
+        try
+        {
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            await _service.ReconcileRetainedPermissionsAsync().WaitAsync(TimeSpan.FromSeconds(2));
+            await _service.MaintainAsync().WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(_discord.ReconciledTickets, Has.Count.EqualTo(2));
+            Assert.That(_discord.ReconciledTickets.All(ticket => ticket.State == (closed ? TicketState.Closed : TicketState.Open)), Is.True);
+            Assert.That((await _service.ExportAsync(ChannelOne, Support)).Success, Is.False);
+            Assert.That(_discord.FreezeCalls, Is.Zero);
+            Assert.That(_discord.DeleteCalls, Is.Zero);
+            release.SetResult();
+            Assert.That((await export).Success, Is.True);
+        }
+        finally { release.TrySetResult(); await export; }
+    }
     private async Task<TicketResult> Open(string panel, Actor actor, string interactionId) =>
         await _service.OpenAsync(panel, actor, interactionId);
 
@@ -1428,6 +1554,8 @@ public sealed class TicketServiceTests
         public bool FailNextExists { get; set; }
         public Func<Ticket, Task>? BeforeExistsAsync { get; set; }
         public int FreezeCalls { get; private set; }
+        public List<Ticket> ReconciledTickets { get; } = [];
+        public Func<Ticket, CancellationToken, Task>? BeforeReconcileAsync { get; set; }
         public int DeleteCalls { get; private set; }
         public List<ulong> DeletedChannels { get; } = [];
         public bool FailNextOpen { get; set; }
@@ -1501,6 +1629,12 @@ public sealed class TicketServiceTests
             return ticket.ChannelId.HasValue && !MissingChannels.Contains(ticket.ChannelId.Value);
         }
 
+        public async Task ReconcilePermissionsAsync(Ticket ticket, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            if (BeforeReconcileAsync is not null) await BeforeReconcileAsync(ticket, ct);
+            ReconciledTickets.Add(ticket);
+        }
         public Task FreezeAsync(Ticket ticket, CancellationToken ct)
         {
             FreezeCalls++;

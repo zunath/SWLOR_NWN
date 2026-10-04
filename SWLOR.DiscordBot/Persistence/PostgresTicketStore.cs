@@ -58,6 +58,8 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
                 ON swlor_bot_response_deletions(completed_at) WHERE completed;
             CREATE INDEX IF NOT EXISTS swlor_bot_delivery_operations_completed
                 ON swlor_bot_delivery_operations(updated_at) WHERE completed;
+            CREATE INDEX IF NOT EXISTS swlor_bot_delivery_operations_pending
+                ON swlor_bot_delivery_operations(updated_at, key) WHERE NOT completed;
             CREATE INDEX IF NOT EXISTS swlor_bot_deliveries_at ON swlor_bot_deliveries(at);
             CREATE INDEX IF NOT EXISTS swlor_bot_cooldowns_at ON swlor_bot_cooldowns(at);
             INSERT INTO swlor_bot_schema(version) VALUES (3) ON CONFLICT DO NOTHING;
@@ -246,6 +248,26 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
             await using var reader = await select.ExecuteReaderAsync(ct);
             if (!await reader.ReadAsync(ct)) throw new InvalidOperationException("Delivery record disappeared.");
             return new(reader.GetString(0), reader.GetBoolean(1));
+        }
+
+        public async Task<IReadOnlyList<PendingDelivery>> GetPendingDeliveriesAsync(CancellationToken ct)
+        {
+            const string select = """
+                WITH pending AS (
+                    SELECT key FROM swlor_bot_delivery_operations
+                    WHERE NOT completed ORDER BY updated_at, key LIMIT 20 FOR UPDATE SKIP LOCKED
+                )
+                UPDATE swlor_bot_delivery_operations AS delivery
+                SET updated_at=now()
+                FROM pending
+                WHERE delivery.key=pending.key
+                RETURNING delivery.key, delivery.intent
+                """;
+            await using var command = new NpgsqlCommand(select, connection);
+            await using var reader = await command.ExecuteReaderAsync(ct);
+            var result = new List<PendingDelivery>();
+            while (await reader.ReadAsync(ct)) result.Add(new(reader.GetString(0), reader.GetString(1)));
+            return result;
         }
 
         public async Task CompleteDeliveryAsync(string key, CancellationToken ct)

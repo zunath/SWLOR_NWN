@@ -372,6 +372,29 @@ public sealed class ConfigurationTests
         Assert.That(errors.Count > 0, Is.EqualTo(existing));
     }
 
+    [TestCase(0L, false)]
+    [TestCase(-1L, false)]
+    [TestCase(10737418241L, false)]
+    [TestCase(1L, true)]
+    [TestCase(10737418240L, true)]
+    public void TicketAttachmentBudgetMustBePositiveAndFinite(long bytes, bool valid)
+    {
+        var config = RetainedTicketConfiguration();
+        config.Tickets.Enabled = true;
+        config.Tickets.MaxTicketAttachmentBytes = bytes;
+        var errors = ConfigurationValidator.Validate(config);
+        Assert.That(errors.Any(error => error.Contains("maxTicketAttachmentBytes", StringComparison.Ordinal)), Is.EqualTo(!valid));
+    }
+
+    [Test]
+    public void OmittedTicketAttachmentBudgetHasCompatibleFiniteDefaultAndExplicitValueParses()
+    {
+        var config = ConfigurationLoader.Parse("""{"GuildId":1,"Tickets":{"Enabled":false}}""");
+        Assert.That(config.Tickets.MaxTicketAttachmentBytes, Is.EqualTo(1073741824L));
+        config = ConfigurationLoader.Parse("""{"GuildId":1,"Tickets":{"Enabled":false,"MaxTicketAttachmentBytes":1234}}""");
+        Assert.That(config.Tickets.MaxTicketAttachmentBytes, Is.EqualTo(1234L));
+    }
+
     private static Ticket StoredTicket(TicketState state) => new(Guid.NewGuid(), "support", 7, 20, state, 1, DateTimeOffset.UtcNow);
 
     private static BotConfiguration RetainedTicketConfiguration() => new()

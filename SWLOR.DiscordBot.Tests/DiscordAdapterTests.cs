@@ -57,6 +57,67 @@ public sealed class DiscordAdapterTests
         Assert.Throws<InvalidOperationException>(() => DiscordOperations.BuildOverwrites(1, 2, 3, new ulong[] { 4 }, inherited, true, true, true));
     }
 
+    [TestCase(TicketState.Open, false)]
+    [TestCase(TicketState.Open, true)]
+    [TestCase(TicketState.Closed, false)]
+    [TestCase(TicketState.Closed, true)]
+    public async Task RetainedPermissions_ReplaceOldStaffAndApplyCurrentRequesterVisibility(TicketState state, bool requesterCanRead)
+    {
+        var ticket = new Ticket(Guid.NewGuid(), "support", 3, 10, state, 1, DateTimeOffset.UnixEpoch);
+        IReadOnlyCollection<Overwrite> actual = DiscordOperations.BuildOverwrites(1, 2, 3, [4], [],
+            requesterRead: !requesterCanRead, requesterWrite: state == TicketState.Open, supportWrite: true);
+        var expected = DiscordOperations.BuildRetainedOverwrites(ticket, 1, 2, [7], actual, requesterCanRead);
+        var updates = 0;
+
+        await DiscordOperations.SynchronizeTicketOverwritesAsync(10, expected, actual,
+            value => { updates++; actual = value; return Task.CompletedTask; },
+            () => Task.FromResult(actual));
+
+        var updated = actual.ToArray();
+        Assert.That(updates, Is.EqualTo(1));
+        Assert.That(Find(updated, 4, PermissionTarget.Role).ViewChannel, Is.EqualTo(PermValue.Deny));
+        Assert.That(Find(updated, 7, PermissionTarget.Role).ViewChannel, Is.EqualTo(PermValue.Allow));
+        Assert.That(Find(updated, 7, PermissionTarget.Role).SendMessages, Is.EqualTo(PermValue.Allow));
+        Assert.That(Find(updated, 3, PermissionTarget.User).ViewChannel,
+            Is.EqualTo(state == TicketState.Open || requesterCanRead ? PermValue.Allow : PermValue.Deny));
+        Assert.That(Find(updated, 3, PermissionTarget.User).SendMessages,
+            Is.EqualTo(state == TicketState.Open ? PermValue.Allow : PermValue.Deny));
+        Assert.That(Find(updated, 1, PermissionTarget.Role).ViewChannel, Is.EqualTo(PermValue.Deny));
+    }
+
+    [Test]
+    public async Task RetainedPermissions_AlreadyMatchingPolicyIsVerifiedWithoutAnotherMutation()
+    {
+        var expected = DiscordOperations.BuildOverwrites(1, 2, 3, [4], [], false, false, true);
+        var readBack = 0;
+        await DiscordOperations.SynchronizeTicketOverwritesAsync(10, expected, expected.Reverse().ToArray(),
+            _ => throw new AssertionException("Already matching overwrites must not be rewritten."),
+            () => { readBack++; return Task.FromResult<IReadOnlyCollection<Overwrite>>(expected); });
+        Assert.That(readBack, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void RetainedPermissions_RejectedOrUnappliedUpdatesFailVerification()
+    {
+        var stale = DiscordOperations.BuildOverwrites(1, 2, 3, [4], [], true, true, true);
+        var expected = DiscordOperations.BuildOverwrites(1, 2, 3, [7], stale, false, false, true);
+        var failure = Assert.ThrowsAsync<DiscordValidationException>(() => DiscordOperations.SynchronizeTicketOverwritesAsync(10, expected, stale,
+            _ => Task.CompletedTask, () => Task.FromResult<IReadOnlyCollection<Overwrite>>(stale)));
+        Assert.That(failure!.Message, Does.Contain("10"));
+        Assert.ThrowsAsync<InvalidOperationException>(() => DiscordOperations.SynchronizeTicketOverwritesAsync(10, expected, stale,
+            _ => Task.FromException(new InvalidOperationException("Discord denied the permission mutation.")),
+            () => throw new AssertionException("Failed updates must propagate immediately.")));
+    }
+
+    [TestCase(TicketState.Deleting)]
+    [TestCase(TicketState.Closing)]
+    [TestCase(TicketState.Reopening)]
+    [TestCase(TicketState.Deleted)]
+    public void RetainedPermissions_NeverRestoreWritesForUnstableOrDeletedTickets(TicketState state)
+    {
+        var ticket = new Ticket(Guid.NewGuid(), "support", 3, 10, state, 1, DateTimeOffset.UnixEpoch);
+        Assert.Throws<InvalidOperationException>(() => DiscordOperations.BuildRetainedOverwrites(ticket, 1, 2, [4], [], true));
+    }
     [TestCase(5UL)]
     [TestCase(null)]
     public async Task Close_FullArchiveCategoryCompletesWithPrivateUncategorizedChannel(ulong? currentCategory)

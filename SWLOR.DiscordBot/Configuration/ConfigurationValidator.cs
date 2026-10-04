@@ -186,6 +186,8 @@ public static partial class ConfigurationValidator
         ValidateArchiveDirectory(tickets.ArchiveDirectory, errors);
         if (tickets.MaxAttachmentBytes <= 0) errors.Add("tickets.maxAttachmentBytes must be positive.");
         if (tickets.MaxAttachmentBytes > 10737418240L) errors.Add("tickets.maxAttachmentBytes must not exceed 10 GiB.");
+        if (tickets.MaxTicketAttachmentBytes <= 0) errors.Add("tickets.maxTicketAttachmentBytes must be positive.");
+        if (tickets.MaxTicketAttachmentBytes > 10737418240L) errors.Add("tickets.maxTicketAttachmentBytes must not exceed 10 GiB.");
     }
 
     private static void ValidateWelcome(WelcomeOptions welcome, List<string> errors)

@@ -43,6 +43,141 @@ public sealed class CommunityTests
     }
 
     [Test]
+    public async Task RecoverPendingDeliveriesAsync_ResumesWelcomeAtItsPersistedDestination()
+    {
+        var config = new BotConfiguration { GuildId = 1, Welcome = new WelcomeOptions { Enabled = true, ChannelId = 100, Template = "Welcome {user}" } };
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "A Player", []), SendFailuresRemaining = 1 };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        var joinedAt = DateTimeOffset.Parse("2026-10-03T12:00:00Z");
+
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await service.WelcomeAsync(7, joinedAt, CancellationToken.None));
+        config.Welcome.ChannelId = 200;
+        var restarted = new CommunityService(config, store, discord, new FakeDeletionStore());
+
+        Assert.That(await restarted.RecoverPendingDeliveriesAsync(CancellationToken.None), Is.EqualTo(1));
+        Assert.That(discord.Sent.Single().ChannelId, Is.EqualTo(100));
+        Assert.That(store.IsCompleted($"welcome:7:{joinedAt.UtcTicks}"), Is.True);
+    }
+
+    [Test]
+    public async Task RecoverPendingDeliveriesAsync_ResumesAnswerAndItsSourceDeletion()
+    {
+        var config = new BotConfiguration
+        {
+            GuildId = 1, Prefix = "?",
+            Answers = [new QuickAnswerOptions { Name = "guide", Responses = ["Guide"], AllowedRoleIds = [9], Cooldown = TimeSpan.FromMinutes(1), DeleteCommand = true }]
+        };
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore();
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "A Player", [9]), SendFailuresRemaining = 1 };
+        var service = new CommunityService(config, store, discord, deletions);
+
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await service.ExecuteAsync(7, 100, 300, "?guide", CancellationToken.None));
+        var restarted = new CommunityService(config, store, discord, deletions);
+
+        Assert.That(await restarted.RecoverPendingDeliveriesAsync(CancellationToken.None), Is.EqualTo(1));
+        Assert.That(discord.Sent.Single().ChannelId, Is.EqualTo(100));
+        Assert.That(discord.Deleted, Is.EqualTo(new[] { (100UL, 300UL) }));
+        Assert.That(store.IsCompleted("answer:100:300"), Is.True);
+        Assert.That(store.HasCooldown("answer-cooldown:guide:7"), Is.True);
+    }
+
+    [Test]
+    public async Task RecoverPendingDeliveriesAsync_SkipsAnswerWhenCurrentRoleAuthorizationWasRevoked()
+    {
+        var config = new BotConfiguration
+        {
+            GuildId = 1, Prefix = "?",
+            Answers = [new QuickAnswerOptions { Name = "guide", Responses = ["Guide"], AllowedRoleIds = [9] }]
+        };
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "A Player", [9]), SendFailuresRemaining = 1 };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await service.ExecuteAsync(7, 100, 301, "?guide", CancellationToken.None));
+        discord.Member = discord.Member! with { RoleIds = [] };
+
+        Assert.That(await service.RecoverPendingDeliveriesAsync(CancellationToken.None), Is.EqualTo(1));
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(store.IsCompleted("answer:100:301"), Is.True);
+    }
+
+    [Test]
+    public async Task RecoverPendingDeliveriesAsync_ResumesFactionPlanWithoutRecomputingToggle()
+    {
+        var config = new BotConfiguration
+        {
+            GuildId = 1, Prefix = "?",
+            Factions = new FactionOptions
+            {
+                Enabled = true, Behavior = "toggle", DeleteCommand = true,
+                Roles = [new FactionRole { Name = "Republic Navy", RoleId = 21 }]
+            }
+        };
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore();
+        var discord = new FakeCommunityDiscord
+        {
+            Member = new CommunityMember(7, "A Player", []), Roles = [new CommunityRole(21, 1)], SendFailuresRemaining = 1
+        };
+        var service = new CommunityService(config, store, discord, deletions);
+
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await service.ExecuteAsync(7, 100, 302, "?rank Republic Navy", CancellationToken.None));
+        var restarted = new CommunityService(config, store, discord, deletions);
+
+        Assert.That(await restarted.RecoverPendingDeliveriesAsync(CancellationToken.None), Is.EqualTo(1));
+        Assert.That(discord.Member!.RoleIds, Does.Contain(21));
+        Assert.That(discord.RoleMutations, Does.Not.Contain("remove:7:21"));
+        Assert.That(discord.Sent.Single().ChannelId, Is.EqualTo(100));
+        Assert.That(discord.Deleted, Is.EqualTo(new[] { (100UL, 302UL) }));
+    }
+
+    [Test]
+    public async Task RecoverPendingDeliveriesAsync_CompletesLegacyPayloadWithoutInventingItsRouteOrActor()
+    {
+        var store = new FakeTicketStore();
+        store.SeedDelivery("answer:100:303", "{\"Content\":\"old answer\",\"Embeds\":[]}");
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "A Player", []) };
+        var service = new CommunityService(new BotConfiguration { GuildId = 1 }, store, discord, new FakeDeletionStore());
+
+        Assert.That(await service.RecoverPendingDeliveriesAsync(CancellationToken.None), Is.EqualTo(1));
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(store.IsCompleted("answer:100:303"), Is.True);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ExecuteAsync_DuplicateCompletedLegacyIntentDoesNotInventSourceDeletion(bool faction)
+    {
+        var config = new BotConfiguration
+        {
+            GuildId = 1, Prefix = "?",
+            Answers = [new QuickAnswerOptions { Name = "guide", Responses = ["Guide"], DeleteCommand = true }],
+            Factions = new FactionOptions
+            {
+                Enabled = true, DeleteCommand = true,
+                Roles = [new FactionRole { Name = "Republic Navy", RoleId = 21 }]
+            }
+        };
+        var key = faction ? "faction:100:304" : "answer:100:304";
+        var legacyIntent = faction ? "{\"RoleOperations\":[],\"Response\":\"old response\"}" : "{\"Content\":\"old response\",\"Embeds\":[]}";
+        var store = new FakeTicketStore();
+        store.SeedDelivery(key, legacyIntent, completed: true);
+        var discord = new FakeCommunityDiscord
+        {
+            Member = new CommunityMember(7, "A Player", []), Roles = [new CommunityRole(21, 1)]
+        };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+
+        await service.ExecuteAsync(7, 100, 304, faction ? "?rank Republic Navy" : "?guide", CancellationToken.None);
+
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(discord.Deleted, Is.Empty);
+        Assert.That(discord.RoleMutations, Is.Empty);
+    }
+
+    [Test]
     public async Task ExecuteAsync_ParsesRankFactionPhraseAndDoesNotToggleBackOnDuplicateDelivery()
     {
         var config = new BotConfiguration
@@ -457,6 +592,8 @@ public sealed class CommunityTests
         public Action<string>? BeforeComplete { get; set; }
         public Action<string>? AfterComplete { get; set; }
         public bool IsCompleted(string key) => _states.TryGetValue(key, out var state) && state.Completed;
+        public bool HasCooldown(string key) => _cooldowns.ContainsKey(key);
+        public void SeedDelivery(string key, string intent, bool completed = false) => _states[key] = new DeliveryState(intent, completed);
         public Task InitializeAsync(CancellationToken ct) => Task.CompletedTask;
         public async Task<ITicketSession> LockAsync(CancellationToken ct)
         {
@@ -482,6 +619,9 @@ public sealed class CommunityTests
                 if (!states.TryGetValue(key, out var state)) states[key] = state = new DeliveryState(intent, false);
                 return Task.FromResult(state);
             }
+            public Task<IReadOnlyList<PendingDelivery>> GetPendingDeliveriesAsync(CancellationToken ct) =>
+                Task.FromResult<IReadOnlyList<PendingDelivery>>(states.Where(x => !x.Value.Completed)
+                    .Select(x => new PendingDelivery(x.Key, x.Value.Intent)).ToArray());
             public Task CompleteDeliveryAsync(string key, CancellationToken ct)
             {
                 owner.BeforeComplete?.Invoke(key);

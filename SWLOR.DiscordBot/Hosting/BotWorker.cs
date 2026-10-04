@@ -11,7 +11,7 @@ namespace SWLOR.DiscordBot.Hosting;
 
 public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets, DiscordSocketClient client,
     DiscordGateway gateway, ITicketStore store, TicketService tickets, ICommunityDiscord community,
-    ResponseDeletionQueue deletions, ReadinessMarker marker, TimeProvider clock, IHostApplicationLifetime lifetime,
+    CommunityService communityDeliveries, ResponseDeletionQueue deletions, ReadinessMarker marker, TimeProvider clock, IHostApplicationLifetime lifetime,
     ILogger<BotWorker> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -25,6 +25,7 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
         Task? archiveExpiration = null;
         Task? responseCleanup = null;
         Task? deliveryRetention = null;
+        Task? communityRecovery = null;
         var disposingLease = false;
         try
         {
@@ -63,6 +64,7 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
             maintenance = MaintainAsync(ct);
             archiveExpiration = ExpireArchivesAsync(ct);
             responseCleanup = DeleteResponsesAsync(ct);
+            communityRecovery = RecoverCommunityDeliveriesAsync(ct);
             using var timer = new PeriodicTimer(TimeSpan.FromSeconds(15), clock);
             do
             {
@@ -87,7 +89,7 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
             gateway.Detach();
             try { await client.StopAsync(); await client.LogoutAsync(); }
             catch (Exception ex) { logger.LogWarning("Discord shutdown failed: {ErrorKind}.", DiscordGateway.SafeError(ex)); }
-            try { await Task.WhenAll(consumers.Concat(new[] { maintenance, archiveExpiration, responseCleanup, deliveryRetention }.OfType<Task>())); }
+            try { await Task.WhenAll(consumers.Concat(new[] { maintenance, archiveExpiration, responseCleanup, deliveryRetention, communityRecovery }.OfType<Task>())); }
             catch (OperationCanceledException) { }
             disposingLease = true;
             if (lease is not null) await lease.DisposeAsync();
@@ -128,6 +130,22 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
             }
         } while (await timer.WaitForNextTickAsync(ct));
     }
+
+    private async Task RecoverCommunityDeliveriesAsync(CancellationToken ct)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(15), clock);
+        do
+        {
+            if (!gateway.Ready) continue;
+            try { await communityDeliveries.RecoverPendingDeliveriesAsync(ct); }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested) { return; }
+            catch (Exception ex)
+            {
+                logger.LogWarning("Community delivery recovery failed; pending intents will retry: {ErrorKind}.", DiscordGateway.SafeError(ex));
+            }
+        } while (await timer.WaitForNextTickAsync(ct));
+    }
+
     private async Task MaintainAsync(CancellationToken ct)
     {
         using var timer = new PeriodicTimer(MaintenanceInterval, clock);

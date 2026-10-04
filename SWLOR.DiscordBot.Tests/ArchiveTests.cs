@@ -351,6 +351,166 @@ public sealed class ArchiveTests
         Assert.That(Directory.GetFiles(directory, "*.part", SearchOption.AllDirectories), Is.Empty);
         Assert.That(File.Exists(Path.Combine(directory, "transcript.html")), Is.False);
     }
+    [TestCase(5L)]
+    [TestCase(6L)]
+    public async Task AggregateAttachmentBudgetAllowsExactAndUnderLimitSnapshots(long budget)
+    {
+        var handler = new FakeHttpMessageHandler(request => new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new ByteArrayContent(new byte[request.RequestUri!.AbsolutePath.Contains("/88/") ? 3 : 2])
+        });
+        using var client = new HttpClient(handler);
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, 4, budget), client);
+        var directory = await archive.ExportAsync(CreateTicket(), Snapshot(Attachment(88, 3), Attachment(89, 2)), default);
+        Assert.That(handler.RequestCount, Is.EqualTo(2));
+        Assert.That(Directory.GetFiles(Path.Combine(directory, "attachments")).Sum(file => new FileInfo(file).Length), Is.EqualTo(5));
+        Assert.That(File.Exists(Path.Combine(directory, "transcript.html")), Is.True);
+    }
+
+    [Test]
+    public void SnapshotOverAggregateBudgetFailsBeforeAnyDownload()
+    {
+        var handler = new FakeHttpMessageHandler(_ => throw new AssertionException("Preflight must reject the complete snapshot before HTTP."));
+        using var client = new HttpClient(handler);
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, 4, 5), client);
+        var ticket = CreateTicket();
+        Assert.ThrowsAsync<InvalidDataException>(() => archive.ExportAsync(ticket, Snapshot(Attachment(88, 3), Attachment(89, 3)), default));
+        Assert.That(handler.RequestCount, Is.Zero);
+        Assert.That(Directory.GetFiles(archive.GetArchivePath(ticket), "*", SearchOption.AllDirectories), Is.Empty);
+    }
+
+    [Test]
+    public async Task DuplicateAttachmentIdsCountOnceWhenOnlySignedUrlQueriesDiffer()
+    {
+        var handler = new FakeHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(new byte[3]) });
+        using var client = new HttpClient(handler);
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, 3, 3), client);
+        var attachment = Attachment(88, 3);
+        var snapshot = Snapshot(attachment, attachment with { Url = attachment.Url + "?expires=refreshed" });
+        var directory = await archive.ExportAsync(CreateTicket(), snapshot, default);
+        Assert.That(handler.RequestCount, Is.EqualTo(1));
+        Assert.That(Directory.GetFiles(Path.Combine(directory, "attachments")), Has.Length.EqualTo(1));
+    }
+
+    [TestCase("size")]
+    [TestCase("filename")]
+    [TestCase("resource")]
+    public void ConflictingDuplicateAttachmentMetadataFailsBeforeDownloads(string conflict)
+    {
+        var handler = new FakeHttpMessageHandler(_ => throw new AssertionException("Conflicting IDs must fail before HTTP."));
+        using var client = new HttpClient(handler);
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, 10, 10), client);
+        var original = Attachment(88, 2);
+        var duplicate = conflict switch
+        {
+            "size" => original with { Size = 3 },
+            "filename" => original with { FileName = "other.bin" },
+            _ => original with { Url = "https://cdn.discordapp.com/attachments/1/88/other.bin" }
+        };
+        Assert.ThrowsAsync<InvalidDataException>(() => archive.ExportAsync(CreateTicket(), Snapshot(original, duplicate), default));
+        Assert.That(handler.RequestCount, Is.Zero);
+    }
+
+    [Test]
+    public void NegativeAndOverflowingSnapshotSizesCannotBypassPreflight()
+    {
+        var handler = new FakeHttpMessageHandler(_ => throw new AssertionException("Invalid totals must fail before HTTP."));
+        using var client = new HttpClient(handler);
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, long.MaxValue, long.MaxValue), client);
+        Assert.ThrowsAsync<InvalidDataException>(() => archive.ExportAsync(CreateTicket(), Snapshot(Attachment(88, -1)), default));
+        Assert.ThrowsAsync<InvalidDataException>(() => archive.ExportAsync(CreateTicket(), Snapshot(Attachment(88, long.MaxValue), Attachment(89, 1)), default));
+        Assert.That(handler.RequestCount, Is.Zero);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task IncorrectMetadataCannotExceedRemainingStreamingBudgetAndPartialFilesAreRemoved(bool knownContentLength)
+    {
+        var handler = new FakeHttpMessageHandler(request =>
+        {
+            var bytes = new byte[request.RequestUri!.AbsolutePath.Contains("/88/") ? 2 : 4];
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = knownContentLength ? new ByteArrayContent(bytes) : new UnknownLengthContent(bytes)
+            };
+        });
+        using var client = new HttpClient(handler);
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, 10, 5), client);
+        var ticket = CreateTicket();
+        Assert.ThrowsAsync<InvalidDataException>(() => archive.ExportAsync(ticket, Snapshot(Attachment(88, 2), Attachment(89, 1)), default));
+        var directory = archive.GetArchivePath(ticket);
+        Assert.That(handler.RequestCount, Is.EqualTo(2));
+        Assert.That(new FileInfo(Path.Combine(directory, "attachments", "88.bin")).Length, Is.EqualTo(2));
+        Assert.That(File.Exists(Path.Combine(directory, "attachments", "89.bin")), Is.False);
+        Assert.That(Directory.GetFiles(directory, "*.part", SearchOption.AllDirectories), Is.Empty);
+        Assert.That(File.Exists(Path.Combine(directory, "transcript.html")), Is.False);
+        await archive.ExportAsync(ticket, Snapshot(Attachment(88, 2)), default);
+        Assert.That(handler.RequestCount, Is.EqualTo(2), "a retry reuses the successfully cached attachment");
+    }
+
+    [Test]
+    public async Task ChangedSnapshotsCannotGrowRetainedAttachmentsBeyondTicketBudget()
+    {
+        var handler = new FakeHttpMessageHandler(request => new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new ByteArrayContent(new byte[request.RequestUri!.AbsolutePath.Contains("/88/") ? 3 : 2])
+        });
+        using var client = new HttpClient(handler);
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, 4, 5), client);
+        var ticket = CreateTicket();
+        var directory = await archive.ExportAsync(ticket, Snapshot(Attachment(88, 3)), default);
+        await archive.ExportAsync(ticket, Snapshot(Attachment(89, 2)), default);
+        var published = await File.ReadAllTextAsync(Path.Combine(directory, "transcript.json"));
+        Assert.ThrowsAsync<InvalidDataException>(() => archive.ExportAsync(ticket, Snapshot(Attachment(90, 1)), default));
+        Assert.That(handler.RequestCount, Is.EqualTo(2));
+        Assert.That(await File.ReadAllTextAsync(Path.Combine(directory, "transcript.json")), Is.EqualTo(published));
+        Assert.That(Directory.GetFiles(Path.Combine(directory, "attachments")).Sum(file => new FileInfo(file).Length), Is.EqualTo(5));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ExactBudgetCachedAttachmentIsNotDoubleCountedAndStalePartialIsDiscarded(bool partExtension)
+    {
+        var handler = new FakeHttpMessageHandler(_ => throw new AssertionException("Exact-budget cache must be reused."));
+        using var client = new HttpClient(handler);
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, 3, 3), client);
+        var ticket = CreateTicket();
+        var directory = Path.Combine(archive.GetArchivePath(ticket), "attachments");
+        Directory.CreateDirectory(directory);
+        var cached = partExtension ? "88.part" : "88.bin";
+        var attachment = Attachment(88, 3) with { FileName = partExtension ? "payload.part" : "payload.bin" };
+        await File.WriteAllBytesAsync(Path.Combine(directory, cached), new byte[3]);
+        await File.WriteAllBytesAsync(Path.Combine(directory, "99.bin.part"), new byte[10]);
+        await archive.ExportAsync(ticket, Snapshot(attachment), default);
+        await archive.ExportAsync(ticket, Snapshot(attachment), default);
+        Assert.That(handler.RequestCount, Is.Zero);
+        Assert.That(File.Exists(Path.Combine(directory, "99.bin.part")), Is.False);
+        Assert.That(File.Exists(Path.Combine(directory, cached)), Is.True);
+        Assert.That(Directory.GetFiles(directory).Sum(file => new FileInfo(file).Length), Is.EqualTo(3));
+    }
+
+    [Test]
+    public async Task StaleRetainedFilesAreCountedEvenWhenSnapshotMetadataFits()
+    {
+        var handler = new FakeHttpMessageHandler(_ => throw new AssertionException("Retained files must be included before HTTP."));
+        using var client = new HttpClient(handler);
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, 4, 4), client);
+        var ticket = CreateTicket();
+        var directory = Path.Combine(archive.GetArchivePath(ticket), "attachments");
+        Directory.CreateDirectory(directory);
+        await File.WriteAllBytesAsync(Path.Combine(directory, "88.bin"), new byte[3]);
+        await File.WriteAllBytesAsync(Path.Combine(directory, "orphaned.bin"), new byte[2]);
+        Assert.ThrowsAsync<InvalidDataException>(() => archive.ExportAsync(ticket, Snapshot(Attachment(88, 3)), default));
+        Assert.That(handler.RequestCount, Is.Zero);
+        Assert.That(new FileInfo(Path.Combine(directory, "orphaned.bin")).Length, Is.EqualTo(2));
+    }
+
+    private static TranscriptAttachment Attachment(ulong id, long size) =>
+        new(id, "payload.bin", $"https://cdn.discordapp.com/attachments/1/{id}/payload.bin", size);
+
+    private static TranscriptSnapshot Snapshot(params TranscriptAttachment[] attachments) => new(
+        [new TranscriptMessage(10, 55, "member", "attachments", DateTimeOffset.UnixEpoch, attachments)], 10);
+
     private static UnixFileMode ReadUnixMode(string path)
     {
         if (OperatingSystem.IsWindows()) throw new PlatformNotSupportedException("Unix mode verification requires Unix.");
@@ -359,13 +519,14 @@ public sealed class ArchiveTests
     private FileTranscriptArchive CreateArchive(HttpClient client) =>
         new(CreateConfiguration(copyAttachments: false), client);
 
-    private BotConfiguration CreateConfiguration(bool copyAttachments, long maxAttachmentBytes = 1024) => new()
+    private BotConfiguration CreateConfiguration(bool copyAttachments, long maxAttachmentBytes = 1024, long maxTicketAttachmentBytes = 1073741824) => new()
     {
         Tickets = new TicketOptions
         {
             ArchiveDirectory = _root,
             CopyAttachments = copyAttachments,
-            MaxAttachmentBytes = maxAttachmentBytes
+            MaxAttachmentBytes = maxAttachmentBytes,
+            MaxTicketAttachmentBytes = maxTicketAttachmentBytes
         }
     };
 

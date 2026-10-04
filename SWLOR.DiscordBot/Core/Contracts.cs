@@ -13,6 +13,7 @@ public sealed record TranscriptMessage(ulong Id, ulong AuthorId, string AuthorNa
 public sealed record TranscriptSnapshot(IReadOnlyList<TranscriptMessage> Messages, ulong? LastMessageId);
 
 public sealed record DeliveryState(string Intent, bool Completed);
+public sealed record PendingDelivery(string Key, string Intent);
 
 public interface ITicketSession : IAsyncDisposable
 {
@@ -22,6 +23,8 @@ public interface ITicketSession : IAsyncDisposable
     Task SaveAsync(Ticket ticket, string action, ulong? actorId, CancellationToken ct);
     Task<bool> TryRecordDeliveryAsync(string key, CancellationToken ct);
     Task<DeliveryState> GetOrCreateDeliveryAsync(string key, string intent, CancellationToken ct);
+    Task<IReadOnlyList<PendingDelivery>> GetPendingDeliveriesAsync(CancellationToken ct) =>
+        Task.FromResult<IReadOnlyList<PendingDelivery>>([]);
     Task CompleteDeliveryAsync(string key, CancellationToken ct);
     Task<DateTimeOffset?> GetCooldownAsync(string key, CancellationToken ct);
     Task SetCooldownAsync(string key, DateTimeOffset at, CancellationToken ct);
@@ -56,6 +59,7 @@ public interface IDiscordTickets
     Task RenameAsync(Ticket ticket, string name, CancellationToken ct);
     Task<bool> ExistsAsync(Ticket ticket, CancellationToken ct);
     Task FreezeAsync(Ticket ticket, CancellationToken ct);
+    Task ReconcilePermissionsAsync(Ticket ticket, CancellationToken ct);
     Task<TranscriptSnapshot> ReadTranscriptAsync(Ticket ticket, CancellationToken ct);
     Task<TranscriptSnapshot> ReadTranscriptAsync(Ticket ticket, CancellationToken ct, Action progress) => ReadTranscriptAsync(ticket, ct);
     Task<ulong?> LastMessageIdAsync(Ticket ticket, CancellationToken ct);

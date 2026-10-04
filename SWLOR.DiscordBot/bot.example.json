@@ -45,7 +45,8 @@
     "ArchiveRetentionDays": 90,
     "ArchiveDirectory": "/data/archives",
     "CopyAttachments": true,
-    "MaxAttachmentBytes": 104857600
+    "MaxAttachmentBytes": 104857600,
+    "MaxTicketAttachmentBytes": 1073741824
   },
   "Welcome": {
     "Enabled": false,

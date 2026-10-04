@@ -97,6 +97,7 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
             try
             {
                 await discord.ValidateDiscordAsync(ct);
+                await tickets.ReconcileRetainedPermissionsAsync(ct);
                 if (!sessionState.IsCurrent(generation)) return;
                 await RegisterAsync(ct);
                 if (sessionState.CompleteValidation(generation, client.ConnectionState == ConnectionState.Connected))

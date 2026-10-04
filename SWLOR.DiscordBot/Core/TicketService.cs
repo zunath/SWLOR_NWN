@@ -178,6 +178,23 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         return await mutation(session, ticket);
     }
 
+    public async Task ReconcileRetainedPermissionsAsync(CancellationToken ct = default)
+    {
+        Guid[] ticketIds;
+        await using (var batch = await store.LockAsync(ct))
+            ticketIds = (await batch.GetTicketsAsync(ct))
+                .Where(ticket => ticket.State is TicketState.Open or TicketState.Closed)
+                .Select(ticket => ticket.Id).ToArray();
+        foreach (var id in ticketIds)
+        {
+            ct.ThrowIfCancellationRequested();
+            await using var session = await store.LockAsync(ct);
+            var ticket = (await session.GetTicketsAsync(ct)).SingleOrDefault(candidate => candidate.Id == id);
+            if (ticket is null || ticket.State is not (TicketState.Open or TicketState.Closed)) continue;
+            // A missing channel is handled by maintenance; an inaccessible/unmanaged channel must fail readiness.
+            if (await discord.ExistsAsync(ticket, ct)) await discord.ReconcilePermissionsAsync(ticket, ct);
+        }
+    }
     public async Task MaintainAsync(CancellationToken ct = default)
     {
         Guid[] ticketIds;
@@ -245,8 +262,6 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             Ticket ticket;
             await using (var session = await store.LockAsync(ct))
             {
-                // Export guards cover one ticket, allowing unrelated commands and cleanup to proceed.
-                if (_exports.ContainsKey(id)) return;
                 var found = (await session.GetTicketsAsync(ct)).SingleOrDefault(candidate => candidate.Id == id);
                 if (found is null) return;
                 ticket = found;
@@ -259,6 +274,11 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                     await session.SaveAsync(ticket, "missing-channel-reconciled", null, ct);
                     await NotifyAsync($"Ticket {ticket.Number} channel was removed externally; open-ticket capacity released.", ct);
                 }
+                // Reconcile held and not-yet-due tickets too, without moving channels or restoring a deleting freeze.
+                if (ticket.State is TicketState.Open or TicketState.Closed)
+                    await WithProgressAsync(discord.ReconcilePermissionsAsync(ticket, ct), progress);
+                // Manual exports in Open/Closed retain that state policy; deleting exports keep their freeze.
+                if (_exports.ContainsKey(id)) return;
                 if (ticket.State == TicketState.Creating) { await ResumeCreationAsync(session, ticket, ct); return; }
                 if (ticket.State == TicketState.Closing)
                 {

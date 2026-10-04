@@ -188,6 +188,8 @@ public static partial class ConfigurationValidator
         if (tickets.MaxAttachmentBytes > 10737418240L) errors.Add("tickets.maxAttachmentBytes must not exceed 10 GiB.");
         if (tickets.MaxTicketAttachmentBytes <= 0) errors.Add("tickets.maxTicketAttachmentBytes must be positive.");
         if (tickets.MaxTicketAttachmentBytes > 10737418240L) errors.Add("tickets.maxTicketAttachmentBytes must not exceed 10 GiB.");
+        if (tickets.MaxTranscriptContentBytes <= 0) errors.Add("tickets.maxTranscriptContentBytes must be positive.");
+        if (tickets.MaxTranscriptContentBytes > 67108864L) errors.Add("tickets.maxTranscriptContentBytes must not exceed 64 MiB.");
     }
 
     private static void ValidateWelcome(WelcomeOptions welcome, List<string> errors)

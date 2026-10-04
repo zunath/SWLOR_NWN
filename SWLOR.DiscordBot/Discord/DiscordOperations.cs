@@ -297,6 +297,7 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
     {
         var channel = await RequireManagedAsync(ticket, ct);
         var messages = new List<TranscriptMessage>();
+        var contentBudget = new TranscriptContentBudget(configuration.Tickets.MaxTranscriptContentBytes);
         ulong? before = null;
         while (true)
         {
@@ -305,9 +306,13 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
             ct.ThrowIfCancellationRequested();
             if (!page.Any()) { progress(); break; }
             foreach (var message in page)
-                messages.Add(new(message.Id, message.Author.Id, message.Author.Username, message.Content, message.Timestamp,
+            {
+                var retained = new TranscriptMessage(message.Id, message.Author.Id, message.Author.Username, message.Content, message.Timestamp,
                     message.Attachments.Select(x => new TranscriptAttachment(x.Id, x.Filename, x.Url, x.Size)).ToArray(),
-                    JsonSerializer.Serialize(message.Embeds)));
+                    JsonSerializer.Serialize(message.Embeds));
+                contentBudget.Add(retained);
+                messages.Add(retained);
+            }
             var oldest = page.Min(x => x.Id);
             if (before.HasValue && oldest >= before.Value) throw new InvalidOperationException("Discord transcript pagination did not advance.");
             before = oldest;
@@ -425,6 +430,14 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
     }
     public async Task AddRoleAsync(ulong userId, ulong roleId, CancellationToken ct) => await (await RoleMemberAsync(userId, roleId, ct)).AddRoleAsync(roleId, Options(ct));
     public async Task RemoveRoleAsync(ulong userId, ulong roleId, CancellationToken ct) => await (await RoleMemberAsync(userId, roleId, ct)).RemoveRoleAsync(roleId, Options(ct));
+    public async Task ValidateCommunityChannelAsync(ulong channelId, bool deleteSource, bool requireEmbeds, CancellationToken ct)
+    {
+        var channel = await TextChannelAsync(channelId, ct);
+        var guild = await GuildAsync(ct);
+        var bot = await guild.GetUserAsync(client.CurrentUser.Id, Options(ct))
+            ?? throw new DiscordValidationException("The bot is not a member of the configured guild.");
+        ValidateTextChannelPermissions(channelId, bot.GetPermissions(channel), deleteSource, requireEmbeds);
+    }
     public async Task<ulong?> SendAsync(ulong channelId, CommunityMessage message, CancellationToken ct)
     {
         var channel = await TextChannelAsync(channelId, ct);

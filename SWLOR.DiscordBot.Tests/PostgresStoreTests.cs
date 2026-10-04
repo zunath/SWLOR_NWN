@@ -71,6 +71,49 @@ public sealed class PostgresStoreTests
     }
 
     [Test]
+    public async Task WelcomeIntentPersistsIndependentlyWhileCommunityDeliveryLockIsHeldAndSurvivesRestart()
+    {
+        const string key = "welcome:7:100";
+        const string intent = """{"Version":1,"Kind":"welcome","UserId":7,"ChannelId":100}""";
+        await using (var store = new PostgresTicketStore(ConnectionString))
+        {
+            await store.InitializeAsync(default);
+            await using var held = await store.LockCommunityAsync(default);
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            await store.PersistCommunityDeliveryAsync(key, intent, timeout.Token).WaitAsync(timeout.Token);
+            Assert.That(await held.GetOrCreateDeliveryAsync(key, "replacement", default),
+                Is.EqualTo(new DeliveryState(intent, false)), "The short insert must neither wait for the advisory lock nor overwrite the original intent.");
+        }
+        await using var restarted = new PostgresTicketStore(ConnectionString);
+        await restarted.InitializeAsync(default);
+        await using var resumed = await restarted.LockCommunityAsync(default);
+        Assert.That(await resumed.GetPendingDeliveriesAsync(default), Is.EqualTo(new[] { new PendingDelivery(key, intent) }));
+    }
+
+    [Test]
+    public async Task DuplicateJoinPersistencePreservesCompletedIntentAndItsOriginalRetentionTimestamp()
+    {
+        const string key = "welcome:7:100";
+        await using var store = new PostgresTicketStore(ConnectionString);
+        await store.InitializeAsync(default);
+        await store.PersistCommunityDeliveryAsync(key, "original welcome destination and content", default);
+        await using (var session = await store.LockCommunityAsync(default))
+            await session.CompleteDeliveryAsync(key, default);
+        await using var connection = new NpgsqlConnection(ConnectionString);
+        await connection.OpenAsync();
+        await using var timestamp = new NpgsqlCommand("SELECT updated_at FROM swlor_bot_delivery_operations WHERE key=@key", connection);
+        timestamp.Parameters.AddWithValue("key", key);
+        var completedAt = await timestamp.ExecuteScalarAsync();
+
+        await store.PersistCommunityDeliveryAsync(key, "changed welcome destination and content", default);
+
+        Assert.That(await timestamp.ExecuteScalarAsync(), Is.EqualTo(completedAt));
+        await using var verify = await store.LockCommunityAsync(default);
+        Assert.That(await verify.GetOrCreateDeliveryAsync(key, "another replacement", default),
+            Is.EqualTo(new DeliveryState("original welcome destination and content", true)));
+        Assert.That(await verify.GetPendingDeliveriesAsync(default), Is.Empty);
+    }
+    [Test]
     public async Task PendingCommunityDeliveryCanBeEnumeratedAfterStoreRestart()
     {
         const string key = "answer:100:300";

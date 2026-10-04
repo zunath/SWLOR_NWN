@@ -22,6 +22,13 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
 
     public async Task<string> ExportAsync(Ticket ticket, TranscriptSnapshot snapshot, CancellationToken ct, Action progress)
     {
+        var contentBudget = new TranscriptContentBudget(configuration.Tickets.MaxTranscriptContentBytes);
+        foreach (var message in snapshot.Messages)
+        {
+            ct.ThrowIfCancellationRequested();
+            contentBudget.Add(message);
+            progress();
+        }
         EnsurePrivateDirectory(Root);
         var directory = TicketDirectory(ticket.Id);
         EnsurePrivateDirectory(directory);
@@ -103,29 +110,11 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
                 files[attachment.Id] = relative;
             }
         }
-        var json = JsonSerializer.Serialize(new { ticket.Id, ticket.Number, ticket.RequesterId, ticket.ChannelId,
-            ExportedAt = DateTimeOffset.UtcNow, snapshot.LastMessageId, snapshot.Messages, AttachmentFiles = files }, new JsonSerializerOptions { WriteIndented = true });
-        var html = new StringBuilder("<!doctype html><html lang=\"en\"><meta charset=\"utf-8\"><meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'\"><title>Ticket transcript</title><style>body{font:16px system-ui;max-width:900px;margin:2rem auto;padding:1rem}article{border-bottom:1px solid #ccc;padding:1rem 0}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style><h1>Ticket ")
-            .Append(ticket.Number).Append("</h1>");
-        foreach (var message in snapshot.Messages.OrderBy(m => m.Id))
-        {
-            html.Append("<article><b>").Append(WebUtility.HtmlEncode(message.AuthorName)).Append("</b> (").Append(message.AuthorId)
-                .Append(") <time>").Append(WebUtility.HtmlEncode(message.Timestamp.ToString("O"))).Append("</time><pre>")
-                .Append(WebUtility.HtmlEncode(message.Content)).Append("</pre>");
-            if (!string.IsNullOrWhiteSpace(message.EmbedsJson)) html.Append("<pre>").Append(WebUtility.HtmlEncode(message.EmbedsJson)).Append("</pre>");
-            foreach (var attachment in message.Attachments)
-            {
-                if (files.TryGetValue(attachment.Id, out var relative)) html.Append("<a href=\"").Append(relative).Append("\">").Append(WebUtility.HtmlEncode(attachment.FileName)).Append("</a><br>");
-                else html.Append("<p>Attachment metadata: ").Append(WebUtility.HtmlEncode(attachment.FileName)).Append(" (not copied)</p>");
-            }
-            html.Append("</article>");
-            ct.ThrowIfCancellationRequested();
-            progress();
-        }
-        html.Append("</html>");
-        await AtomicWriteAsync(Path.Combine(directory, "transcript.json"), json, ct);
+        await AtomicWriteAsync(Path.Combine(directory, "transcript.json"),
+            output => WriteJsonAsync(output, ticket, snapshot, files, ct, progress), ct);
         progress();
-        await AtomicWriteAsync(Path.Combine(directory, "transcript.html"), html.ToString(), ct);
+        await AtomicWriteAsync(Path.Combine(directory, "transcript.html"),
+            output => WriteHtmlAsync(output, ticket, snapshot, files, ct, progress), ct);
         progress();
         return directory;
     }
@@ -264,7 +253,102 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
             throw;
         }
     }
-    private static async Task AtomicWriteAsync(string path, string text, CancellationToken ct)
+    private static async Task WriteJsonAsync(Stream output, Ticket ticket, TranscriptSnapshot snapshot,
+        IReadOnlyDictionary<ulong, string> files, CancellationToken ct, Action progress)
+    {
+        using var writer = new Utf8JsonWriter(output, new JsonWriterOptions { Indented = true });
+        writer.WriteStartObject();
+        writer.WriteString("Id", ticket.Id);
+        writer.WriteNumber("Number", ticket.Number);
+        writer.WriteNumber("RequesterId", ticket.RequesterId);
+        if (ticket.ChannelId is { } channel) writer.WriteNumber("ChannelId", channel);
+        else writer.WriteNull("ChannelId");
+        writer.WriteString("ExportedAt", DateTimeOffset.UtcNow);
+        if (snapshot.LastMessageId is { } last) writer.WriteNumber("LastMessageId", last);
+        else writer.WriteNull("LastMessageId");
+        writer.WriteStartArray("Messages");
+        foreach (var message in snapshot.Messages)
+        {
+            ct.ThrowIfCancellationRequested();
+            JsonSerializer.Serialize(writer, message);
+            await writer.FlushAsync(ct);
+            progress();
+        }
+        writer.WriteEndArray();
+        writer.WriteStartObject("AttachmentFiles");
+        foreach (var file in files)
+        {
+            writer.WriteString(file.Key.ToString(System.Globalization.CultureInfo.InvariantCulture), file.Value);
+            await writer.FlushAsync(ct);
+            progress();
+        }
+        writer.WriteEndObject();
+        writer.WriteEndObject();
+        await writer.FlushAsync(ct);
+        progress();
+    }
+
+    private static async Task WriteHtmlAsync(Stream output, Ticket ticket, TranscriptSnapshot snapshot,
+        IReadOnlyDictionary<ulong, string> files, CancellationToken ct, Action progress)
+    {
+        await using var writer = new StreamWriter(output, new UTF8Encoding(false), 81920, leaveOpen: true);
+        await writer.WriteAsync(("<!doctype html><html lang=\"en\"><meta charset=\"utf-8\"><meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'\"><title>Ticket transcript</title><style>body{font:16px system-ui;max-width:900px;margin:2rem auto;padding:1rem}article{border-bottom:1px solid #ccc;padding:1rem 0}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style><h1>Ticket " + ticket.Number + "</h1>").AsMemory(), ct);
+        foreach (var message in snapshot.Messages.OrderBy(m => m.Id))
+        {
+            ct.ThrowIfCancellationRequested();
+            await writer.WriteAsync("<article><b>".AsMemory(), ct);
+            await WriteEncodedAsync(writer, message.AuthorName, ct, progress);
+            await writer.WriteAsync(("</b> (" + message.AuthorId + ") <time>").AsMemory(), ct);
+            await WriteEncodedAsync(writer, message.Timestamp.ToString("O"), ct, progress);
+            await writer.WriteAsync("</time><pre>".AsMemory(), ct);
+            await WriteEncodedAsync(writer, message.Content, ct, progress);
+            await writer.WriteAsync("</pre>".AsMemory(), ct);
+            if (!string.IsNullOrWhiteSpace(message.EmbedsJson))
+            {
+                await writer.WriteAsync("<pre>".AsMemory(), ct);
+                await WriteEncodedAsync(writer, message.EmbedsJson, ct, progress);
+                await writer.WriteAsync("</pre>".AsMemory(), ct);
+            }
+            foreach (var attachment in message.Attachments)
+            {
+                if (files.TryGetValue(attachment.Id, out var relative))
+                {
+                    await writer.WriteAsync(("<a href=\"" + relative + "\">").AsMemory(), ct);
+                    await WriteEncodedAsync(writer, attachment.FileName, ct, progress);
+                    await writer.WriteAsync("</a><br>".AsMemory(), ct);
+                }
+                else
+                {
+                    await writer.WriteAsync("<p>Attachment metadata: ".AsMemory(), ct);
+                    await WriteEncodedAsync(writer, attachment.FileName, ct, progress);
+                    await writer.WriteAsync(" (not copied)</p>".AsMemory(), ct);
+                }
+            }
+            await writer.WriteAsync("</article>".AsMemory(), ct);
+            await writer.FlushAsync(ct);
+            progress();
+        }
+        await writer.WriteAsync("</html>".AsMemory(), ct);
+        await writer.FlushAsync(ct);
+        progress();
+    }
+
+    private static async Task WriteEncodedAsync(StreamWriter writer, string? text, CancellationToken ct, Action progress)
+    {
+        if (text is null) return;
+        for (var offset = 0; offset < text.Length;)
+        {
+            var count = Math.Min(8192, text.Length - offset);
+            // Keep surrogate pairs together across chunks so astral Unicode escapes are preserved.
+            if (offset + count < text.Length && char.IsHighSurrogate(text[offset + count - 1])) count--;
+            var encoded = WebUtility.HtmlEncode(text.Substring(offset, count));
+            await writer.WriteAsync(encoded.AsMemory(), ct);
+            offset += count;
+            progress();
+        }
+    }
+
+    private static async Task AtomicWriteAsync(string path, Func<Stream, Task> write, CancellationToken ct)
     {
         RejectLink(path);
         var temporary = path + ".part";
@@ -272,8 +356,11 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
         try
         {
             await using (var output = OpenPrivateWriteStream(temporary))
-            await using (var writer = new StreamWriter(output, new UTF8Encoding(false)))
-                await writer.WriteAsync(text.AsMemory(), ct);
+            {
+                ct.ThrowIfCancellationRequested();
+                await write(output);
+            }
+            ct.ThrowIfCancellationRequested();
             File.Move(temporary, path, true);
         }
         finally { if (File.Exists(temporary)) File.Delete(temporary); }

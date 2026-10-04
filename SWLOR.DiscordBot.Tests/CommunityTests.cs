@@ -1,3 +1,5 @@
+using Discord;
+using SWLOR.DiscordBot.Discord;
 using Microsoft.Extensions.Logging.Abstractions;
 using SWLOR.DiscordBot.Hosting;
 using SWLOR.DiscordBot.Configuration;
@@ -315,7 +317,7 @@ public sealed class CommunityTests
                 {
                     Title = "[{args}]",
                     Description = "{1} / {2}",
-                    Fields = [new EmbedField { Name = "[{args}]", Value = "[{args}] / {1}" }]
+                    Fields = [new SWLOR.DiscordBot.Configuration.EmbedField { Name = "[{args}]", Value = "[{args}] / {1}" }]
                 }]
             }]
         };
@@ -653,6 +655,165 @@ public sealed class CommunityTests
         Assert.That(store.IsCompleted("faction:100:300"), Is.True);
     }
 
+    [TestCase(false, true)]
+    [TestCase(true, false)]
+    public async Task WelcomeJoinPersistsBeforeReadinessOrFullQueueAndRecoversOriginalDestination(bool ready, bool queueAccepts)
+    {
+        var config = new BotConfiguration { GuildId = 1, Welcome = new WelcomeOptions { Enabled = true, ChannelId = 100, Template = "Welcome {user}" } };
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", []) };
+        var store = new FakeTicketStore();
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        var joined = DateTimeOffset.UnixEpoch;
+        var key = $"welcome:7:{joined.UtcTicks}";
+        var queued = 0;
+        // Even a delivery already holding the long community lock cannot delay the join commit.
+        await using (var held = await store.LockCommunityAsync(default))
+        {
+            Assert.That(await DiscordGateway.PersistAndQueueWelcomeAsync(service, 7, joined, () => ready, _ =>
+            {
+                queued++;
+                Assert.That(store.HasDelivery(key), Is.True);
+                return queueAccepts;
+            }, default).WaitAsync(TimeSpan.FromSeconds(2)), Is.False);
+            Assert.That(store.HasDelivery(key), Is.True);
+            Assert.That(store.IsCompleted(key), Is.False);
+            Assert.That(discord.MemberLookups, Is.Zero, "No REST membership lookup may happen before the durable event exists.");
+            Assert.That(discord.Sent, Is.Empty);
+        }
+        Assert.That(queued, Is.EqualTo(ready ? 1 : 0));
+        config.Welcome.ChannelId = 200;
+        var restarted = new CommunityService(config, store, discord, new FakeDeletionStore());
+        Assert.That(await restarted.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.Sent.Single().ChannelId, Is.EqualTo(100));
+        await restarted.WelcomeAsync(7, joined, default);
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+    }
+
+    [Test]
+    public async Task WelcomeQueuedBeforeDisconnectRemainsPendingUntilValidatedRecovery()
+    {
+        var config = new BotConfiguration { GuildId = 1, Welcome = new WelcomeOptions { Enabled = true, ChannelId = 100, Template = "Welcome {user}" } };
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", []) };
+        var store = new FakeTicketStore();
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        var ready = true;
+        Func<CancellationToken, Task>? queued = null;
+        Assert.That(await DiscordGateway.PersistAndQueueWelcomeAsync(service, 7, DateTimeOffset.UnixEpoch, () => ready,
+            job => { queued = job; return true; }, default), Is.True);
+        ready = false;
+        await queued!(default);
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(discord.MemberLookups, Is.Zero);
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+    }
+
+    [Test]
+    public async Task WelcomePersistenceFailurePropagatesBeforeQueueOrRestAndCanBeRetried()
+    {
+        var config = new BotConfiguration { GuildId = 1, Welcome = new WelcomeOptions { Enabled = true, ChannelId = 100, Template = "Welcome {user}" } };
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", []) };
+        var store = new FakeTicketStore { PersistenceFailuresRemaining = 1 };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        var queued = 0;
+        Assert.ThrowsAsync<InvalidOperationException>(() => DiscordGateway.PersistAndQueueWelcomeAsync(service, 7,
+            DateTimeOffset.UnixEpoch, () => true, _ => { queued++; return true; }, default));
+        Assert.That(queued, Is.Zero);
+        Assert.That(discord.MemberLookups, Is.Zero);
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(store.HasDelivery($"welcome:7:{DateTimeOffset.UnixEpoch.UtcTicks}"), Is.False);
+        await service.PersistWelcomeAsync(7, DateTimeOffset.UnixEpoch, default);
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+    }
+
+    [TestCase("view")]
+    [TestCase("send")]
+    [TestCase("delete")]
+    public async Task FactionRecoveryChecksFreshChannelPermissionsBeforeAnyRoleMutationAndRetainsRetry(string lostCapability)
+    {
+        var (config, discord, command, key) = DeletionCase(true);
+        var store = new FakeTicketStore();
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        discord.BeforeRoleMutation = _ => throw new InvalidOperationException("Crash after intent commit, before role mutation.");
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 300, command, default));
+        discord.BeforeRoleMutation = null;
+        discord.PermissionChecks.Clear();
+        discord.ChannelPermissions[100] = new ChannelPermissions(viewChannel: lostCapability != "view",
+            sendMessages: lostCapability != "send", manageMessages: lostCapability != "delete");
+        config.Factions.DeleteCommand = false; // The persisted source deletion requirement still needs Manage Messages.
+
+        Assert.That(await new CommunityService(config, store, discord, new FakeDeletionStore()).RecoverPendingDeliveriesAsync(default), Is.Zero);
+        Assert.That(discord.RoleMutations, Is.Empty);
+        Assert.That(discord.Member!.RoleIds, Is.Empty);
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(store.IsCompleted(key), Is.False);
+        Assert.That(discord.PermissionChecks.Single(), Is.EqualTo((100UL, true, false)));
+        discord.ChannelPermissions[100] = new ChannelPermissions(viewChannel: true, sendMessages: true, manageMessages: true);
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.Member.RoleIds, Is.EqualTo(new[] { 21UL }));
+        Assert.That(store.IsCompleted(key), Is.True);
+    }
+
+    [Test]
+    public async Task PendingEmbeddedAnswerRequiresItsPersistedEmbedCapability()
+    {
+        var config = new BotConfiguration { GuildId = 1, Prefix = "?",
+            Answers = [new QuickAnswerOptions { Name = "guide", Embeds = [new AnswerEmbed { Title = "Guide" }] }] };
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", []), SendFailuresRemaining = 1 };
+        var store = new FakeTicketStore();
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 300, "?guide", default));
+        config.Answers[0].Embeds = [];
+        config.Answers[0].Responses = ["Plain configuration now"];
+        discord.ChannelPermissions[100] = new ChannelPermissions(viewChannel: true, sendMessages: true);
+
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.Zero);
+        Assert.That(store.IsCompleted("answer:100:300"), Is.False);
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(discord.PermissionChecks.Last(), Is.EqualTo((100UL, false, true)));
+        discord.ChannelPermissions[100] = new ChannelPermissions(viewChannel: true, sendMessages: true, embedLinks: true);
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.Sent.Single().Message.Embeds, Has.Count.EqualTo(1));
+    }
+
+    [Test]
+    public async Task MissingFactionChannelPermissionsDoNotBlockUnrelatedAllowedRecovery()
+    {
+        var (config, discord, command, key) = DeletionCase(true);
+        var store = new FakeTicketStore();
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        discord.BeforeRoleMutation = _ => throw new InvalidOperationException("Crash before role mutation.");
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 300, command, default));
+        discord.BeforeRoleMutation = null;
+        discord.SendFailuresRemaining = 1;
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 200, 301, "?guide", default));
+        discord.ChannelPermissions[100] = new ChannelPermissions(viewChannel: true);
+        discord.ChannelPermissions[200] = new ChannelPermissions(viewChannel: true, sendMessages: true, manageMessages: true);
+
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.RoleMutations, Is.Empty);
+        Assert.That(store.IsCompleted(key), Is.False);
+        Assert.That(store.IsCompleted("answer:200:301"), Is.True);
+        Assert.That(discord.Sent.Single().ChannelId, Is.EqualTo(200));
+    }
+
+    [Test]
+    public async Task FactionResponseOnlyDeletionPreservesOrdinaryChannelRecovery()
+    {
+        var (config, discord, command, key) = DeletionCase(true);
+        config.Factions.DeleteCommand = false;
+        config.Factions.DeleteResponse = true;
+        discord.ChannelPermissions[100] = new ChannelPermissions(viewChannel: true, sendMessages: true);
+        discord.BeforeRoleMutation = _ => throw new InvalidOperationException("Crash before role mutation.");
+        var store = new FakeTicketStore();
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 300, command, default));
+        discord.BeforeRoleMutation = null;
+
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(store.IsCompleted(key), Is.True);
+        Assert.That(discord.Member!.RoleIds, Is.EqualTo(new[] { 21UL }));
+    }
     private static (BotConfiguration Config, FakeCommunityDiscord Discord, FakeTicketStore Store,
         CommunityService Service, ManualTimeProvider Clock) LongFactionRecovery()
     {
@@ -736,11 +897,24 @@ public sealed class CommunityTests
         public void SeedCooldown(string key, DateTimeOffset at) => _cooldowns[key] = at;
         private readonly SemaphoreSlim _ticketLock = new(1, 1);
         private readonly SemaphoreSlim _communityLock = new(1, 1);
+        public int PersistenceFailuresRemaining { get; set; }
         public Action<string>? BeforeComplete { get; set; }
         public Action<string>? AfterComplete { get; set; }
+        public bool HasDelivery(string key) => _states.ContainsKey(key);
         public bool IsCompleted(string key) => _states.TryGetValue(key, out var state) && state.Completed;
         public bool HasCooldown(string key) => _cooldowns.ContainsKey(key);
         public void SeedDelivery(string key, string intent, bool completed = false) => _states[key] = new DeliveryState(intent, completed);
+        public Task PersistCommunityDeliveryAsync(string key, string intent, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            if (PersistenceFailuresRemaining > 0)
+            {
+                PersistenceFailuresRemaining--;
+                throw new InvalidOperationException("Simulated durable join persistence failure.");
+            }
+            _states.TryAdd(key, new DeliveryState(intent, false));
+            return Task.CompletedTask;
+        }
         public Task InitializeAsync(CancellationToken ct) => Task.CompletedTask;
         public async Task<ITicketSession> LockAsync(CancellationToken ct)
         {
@@ -804,6 +978,9 @@ public sealed class CommunityTests
         public List<(ulong ChannelId, CommunityMessage Message)> Sent { get; } = [];
         public List<string> RoleMutations { get; } = [];
         public List<(ulong ChannelId, ulong MessageId)> Deleted { get; } = [];
+        public int MemberLookups { get; private set; }
+        public Dictionary<ulong, ChannelPermissions> ChannelPermissions { get; } = [];
+        public List<(ulong Channel, bool DeleteSource, bool RequireEmbeds)> PermissionChecks { get; } = [];
         public int SendFailuresRemaining { get; set; }
         public int DeleteFailuresRemaining { get; set; }
         public bool FailAfterNextRemove { get; set; }
@@ -811,7 +988,20 @@ public sealed class CommunityTests
         public TaskCompletionSource<bool>? SendStarted { get; init; }
         public TaskCompletionSource<bool>? ReleaseSend { get; init; }
         private readonly Dictionary<string, ulong> _sentKeys = new(StringComparer.Ordinal);
-        public Task<CommunityMember?> GetMemberAsync(ulong userId, CancellationToken ct) => Task.FromResult(Member?.UserId == userId ? Member : null);
+        public Task<CommunityMember?> GetMemberAsync(ulong userId, CancellationToken ct)
+        {
+            MemberLookups++;
+            return Task.FromResult(Member?.UserId == userId ? Member : null);
+        }
+        public Task ValidateCommunityChannelAsync(ulong channelId, bool deleteSource, bool requireEmbeds, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            PermissionChecks.Add((channelId, deleteSource, requireEmbeds));
+            var permissions = ChannelPermissions.GetValueOrDefault(channelId,
+                new ChannelPermissions(viewChannel: true, sendMessages: true, manageMessages: true, embedLinks: true));
+            DiscordOperations.ValidateTextChannelPermissions(channelId, permissions, deleteSource, requireEmbeds);
+            return Task.CompletedTask;
+        }
         public Task<CommunityRole?> GetRoleAsync(ulong roleId, CancellationToken ct) => Task.FromResult(Roles.FirstOrDefault(x => x.RoleId == roleId));
         public Task AddRoleAsync(ulong userId, ulong roleId, CancellationToken ct)
         {

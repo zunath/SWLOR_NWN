@@ -36,6 +36,7 @@ public sealed class TicketOptions
     public bool CopyAttachments { get; set; } = true;
     public long MaxAttachmentBytes { get; set; } = 104857600;
     public long MaxTicketAttachmentBytes { get; set; } = 1073741824;
+    public long MaxTranscriptContentBytes { get; set; } = 33554432;
 }
 
 public sealed class TicketPanelOptions

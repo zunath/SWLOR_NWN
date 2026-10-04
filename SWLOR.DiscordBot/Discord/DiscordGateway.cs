@@ -169,11 +169,41 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
             logger.LogWarning("Community event queue is full.");
         return Task.CompletedTask;
     }
-    private Task OnJoinedAsync(SocketGuildUser member)
+    internal static bool ShouldPersistWelcome(BotConfiguration configuration, ulong guildId,
+        bool isBot, bool isWebhook, DateTimeOffset? joinedAt) =>
+        configuration.Welcome.Enabled && guildId == configuration.GuildId && !isBot && !isWebhook && joinedAt.HasValue;
+
+    internal static async Task<bool> PersistAndQueueWelcomeAsync(CommunityService community, ulong userId,
+        DateTimeOffset joinedAt, Func<bool> isReady, Func<Func<CancellationToken, Task>, bool> tryQueue, CancellationToken ct)
     {
-        if (!Ready || !configuration.Welcome.Enabled || member.Guild.Id != configuration.GuildId || member.IsBot || member.IsWebhook || !member.JoinedAt.HasValue) return Task.CompletedTask;
-        if (!jobs.Writer.TryWrite(ct => RetryCommunityAsync(token => community.WelcomeAsync(member.Id, member.JoinedAt.Value, token), ct))) logger.LogWarning("Welcome event queue is full.");
-        return Task.CompletedTask;
+        await community.PersistWelcomeAsync(userId, joinedAt, ct);
+        return isReady() && tryQueue(token => isReady()
+            ? community.WelcomeAsync(userId, joinedAt, token) : Task.CompletedTask);
+    }
+
+    private async Task OnJoinedAsync(SocketGuildUser member)
+    {
+        if (!ShouldPersistWelcome(configuration, member.Guild.Id, member.IsBot, member.IsWebhook, member.JoinedAt)) return;
+        try
+        {
+            using var persistence = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+            persistence.CancelAfter(TimeSpan.FromSeconds(10));
+            if (!await PersistAndQueueWelcomeAsync(community, member.Id, member.JoinedAt!.Value, () => Ready,
+                job => jobs.Writer.TryWrite(ct => RetryCommunityAsync(job, ct)), persistence.Token))
+                logger.LogInformation("Welcome intent for member {MemberId} is persisted for ready recovery.", member.Id);
+        }
+        catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+        {
+            logger.LogWarning("Welcome intent persistence was interrupted by shutdown for member {MemberId}.", member.Id);
+        }
+        catch (Exception ex)
+        {
+            // Discord will not replay this one-shot event. Make inability to commit it an explicit worker failure.
+            logger.LogCritical("Welcome intent persistence failed for member {MemberId}: {ErrorKind}.", member.Id, SafeError(ex));
+            Suspend();
+            Environment.ExitCode = 1;
+            lifetime.StopApplication();
+        }
     }
     private async Task RetryCommunityAsync(Func<CancellationToken, Task> job, CancellationToken ct)
     {

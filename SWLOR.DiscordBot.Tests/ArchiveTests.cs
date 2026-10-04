@@ -511,6 +511,102 @@ public sealed class ArchiveTests
     private static TranscriptSnapshot Snapshot(params TranscriptAttachment[] attachments) => new(
         [new TranscriptMessage(10, 55, "member", "attachments", DateTimeOffset.UnixEpoch, attachments)], 10);
 
+    [Test]
+    public async Task TranscriptBudgetRejectsCombinedHistoryAndPreservesExistingArchive()
+    {
+        using var client = CreateClient(_ => throw new AssertionException("No attachment should be downloaded."));
+        var config = CreateConfiguration(copyAttachments: false);
+        config.Tickets.MaxTranscriptContentBytes = 1024;
+        var archive = new FileTranscriptArchive(config, client);
+        var ticket = CreateTicket();
+        var message = new TranscriptMessage(10, 55, "member", new string('x', 200), DateTimeOffset.UnixEpoch, []);
+        var directory = await archive.ExportAsync(ticket, new([message], 10), default);
+        var previousJson = await File.ReadAllBytesAsync(Path.Combine(directory, "transcript.json"));
+        var previousHtml = await File.ReadAllBytesAsync(Path.Combine(directory, "transcript.html"));
+
+        Assert.ThrowsAsync<InvalidDataException>(() =>
+            archive.ExportAsync(ticket, new([message, message with { Id = 11 }], 11), default));
+
+        Assert.That(await File.ReadAllBytesAsync(Path.Combine(directory, "transcript.json")), Is.EqualTo(previousJson));
+        Assert.That(await File.ReadAllBytesAsync(Path.Combine(directory, "transcript.html")), Is.EqualTo(previousHtml));
+        Assert.That(Directory.GetFiles(directory, "*.part", SearchOption.AllDirectories), Is.Empty);
+    }
+
+    [TestCase("author")]
+    [TestCase("embeds")]
+    [TestCase("attachment-metadata")]
+    public void TranscriptBudgetIncludesAllRetainedTextBeforeAnyFilesOrDownloads(string field)
+    {
+        using var client = CreateClient(_ => throw new AssertionException("Preflight must reject text before HTTP."));
+        var config = CreateConfiguration(copyAttachments: true);
+        config.Tickets.MaxTranscriptContentBytes = 1024;
+        var archive = new FileTranscriptArchive(config, client);
+        var ticket = CreateTicket();
+        var message = new TranscriptMessage(10, 55, "member", "text", DateTimeOffset.UnixEpoch, []);
+        message = field switch
+        {
+            "author" => message with { AuthorName = new string('a', 800) },
+            "embeds" => message with { EmbedsJson = new string('e', 800) },
+            _ => message with { Attachments = [new(88, new string('f', 800), "https://cdn.discordapp.com/a", 1)] }
+        };
+
+        Assert.ThrowsAsync<InvalidDataException>(() => archive.ExportAsync(ticket, new([message], 10), default));
+        Assert.That(Directory.Exists(archive.GetArchivePath(ticket)), Is.False);
+    }
+
+    [Test]
+    public async Task TranscriptBudgetCountsUtf8BytesAndBoundsEmptyMessageObjects()
+    {
+        using var client = CreateClient(_ => throw new AssertionException("No attachment should be downloaded."));
+        var config = CreateConfiguration(copyAttachments: false);
+        config.Tickets.MaxTranscriptContentBytes = 1024;
+        var archive = new FileTranscriptArchive(config, client);
+        var ticket = CreateTicket();
+        var message = new TranscriptMessage(10, 55, "member", new string('a', 300), DateTimeOffset.UnixEpoch, []);
+        await archive.ExportAsync(ticket, new([message], 10), default);
+        Assert.ThrowsAsync<InvalidDataException>(() =>
+            archive.ExportAsync(ticket, new([message with { Content = new string('é', 300) }], 10), default));
+
+        config.Tickets.MaxTranscriptContentBytes = 4096;
+        var emptyMessages = Enumerable.Range(1, 100).Select(id =>
+            new TranscriptMessage((ulong)id, 55, "", "", DateTimeOffset.UnixEpoch, [])).ToArray();
+        Assert.ThrowsAsync<InvalidDataException>(() => archive.ExportAsync(ticket, new(emptyMessages, 100), default));
+    }
+
+    [Test]
+    public async Task StreamedHtmlPreservesUnicodeAtChunkBoundaryAndEscapesEntireContent()
+    {
+        using var client = CreateClient(_ => throw new AssertionException("No attachment should be downloaded."));
+        var archive = CreateArchive(client);
+        var content = new string('a', 8191) + "🚀<script>alert('x')</script>" + new string('&', 17000);
+        var message = new TranscriptMessage(10, 55, "member", content, DateTimeOffset.UnixEpoch, []);
+        var directory = await archive.ExportAsync(CreateTicket(), new([message], 10), default);
+        var html = await File.ReadAllTextAsync(Path.Combine(directory, "transcript.html"));
+        Assert.That(html, Does.Contain(WebUtility.HtmlEncode(content)));
+        using var json = JsonDocument.Parse(await File.ReadAllTextAsync(Path.Combine(directory, "transcript.json")));
+        Assert.That(json.RootElement.GetProperty("Messages")[0].GetProperty("Content").GetString(), Is.EqualTo(content));
+    }
+
+    [Test]
+    public async Task CancellationDuringHtmlStreamingKeepsPublishedHtmlAndRemovesPartialFiles()
+    {
+        using var client = CreateClient(_ => throw new AssertionException("No attachment should be downloaded."));
+        var archive = CreateArchive(client);
+        var ticket = CreateTicket();
+        var directory = await archive.ExportAsync(ticket, EmptySnapshot(), default);
+        var htmlPath = Path.Combine(directory, "transcript.html");
+        var original = await File.ReadAllBytesAsync(htmlPath);
+        var message = new TranscriptMessage(10, 55, "member", new string('&', 200000), DateTimeOffset.UnixEpoch, []);
+        using var cancellation = new CancellationTokenSource();
+        Assert.CatchAsync<OperationCanceledException>(() => archive.ExportAsync(ticket, new([message], 10),
+            cancellation.Token, () =>
+            {
+                if (File.Exists(htmlPath + ".part") && new FileInfo(htmlPath + ".part").Length > 0) cancellation.Cancel();
+            }));
+        Assert.That(await File.ReadAllBytesAsync(htmlPath), Is.EqualTo(original));
+        Assert.That(Directory.GetFiles(directory, "*.part", SearchOption.AllDirectories), Is.Empty);
+    }
+
     private static UnixFileMode ReadUnixMode(string path)
     {
         if (OperatingSystem.IsWindows()) throw new PlatformNotSupportedException("Unix mode verification requires Unix.");

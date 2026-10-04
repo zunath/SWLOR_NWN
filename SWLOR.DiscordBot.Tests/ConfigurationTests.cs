@@ -423,6 +423,26 @@ public sealed class ConfigurationTests
         Assert.That(config.Tickets.MaxTicketAttachmentBytes, Is.EqualTo(1234L));
     }
 
+    [TestCase(0L)]
+    [TestCase(-1L)]
+    [TestCase(67108865L)]
+    public void RetainedTicketsRejectUnsafeTranscriptContentBudget(long bytes)
+    {
+        var config = RetainedTicketConfiguration();
+        config.Tickets.MaxTranscriptContentBytes = bytes;
+        var errors = ConfigurationValidator.ValidatePersistedTickets(config, [StoredTicket(TicketState.Closed)]);
+        Assert.That(errors, Has.Some.Contains("maxTranscriptContentBytes"));
+    }
+
+    [Test]
+    public void TranscriptContentBudgetHasFiniteDefaultAndExplicitValueParses()
+    {
+        var config = ConfigurationLoader.Parse("""{"GuildId":1,"Tickets":{"Enabled":false}}""");
+        Assert.That(config.Tickets.MaxTranscriptContentBytes, Is.EqualTo(33554432L));
+        config = ConfigurationLoader.Parse("""{"GuildId":1,"Tickets":{"Enabled":false,"MaxTranscriptContentBytes":1234}}""");
+        Assert.That(config.Tickets.MaxTranscriptContentBytes, Is.EqualTo(1234L));
+    }
+
     private static Ticket StoredTicket(TicketState state) => new(Guid.NewGuid(), "support", 7, 20, state, 1, DateTimeOffset.UtcNow);
 
     private static BotConfiguration RetainedTicketConfiguration() => new()

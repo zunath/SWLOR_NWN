@@ -16,6 +16,8 @@ public interface ICommunityDiscord
     string ServerName { get; }
     Task<CommunityMember?> GetMemberAsync(ulong userId, CancellationToken ct);
     Task<CommunityRole?> GetRoleAsync(ulong roleId, CancellationToken ct);
+    Task ValidateCommunityChannelAsync(ulong channelId, bool deleteSource, bool requireEmbeds, CancellationToken ct) =>
+        throw new NotSupportedException("Fresh community channel permission validation is unavailable.");
     Task AddRoleAsync(ulong userId, ulong roleId, CancellationToken ct);
     Task RemoveRoleAsync(ulong userId, ulong roleId, CancellationToken ct);
     Task<ulong?> SendAsync(ulong channelId, CommunityMessage message, CancellationToken ct);
@@ -29,6 +31,22 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
     private TimeProvider Clock => timeProvider ?? TimeProvider.System;
     internal static readonly TimeSpan RecoveryInactivityTimeout = TimeSpan.FromMinutes(4);
 
+    private CommunityDeliveryIntent CreateWelcomeIntent(ulong userId, string key)
+    {
+        var welcome = configuration.Welcome;
+        var message = TemplateRenderer.EnforceMessageLimits(new CommunityMessage(
+            TemplateRenderer.RenderWelcome(welcome.Template, userId, discord.ServerName, welcome.ChannelMentions),
+            [], DeliveryKey: key));
+        return new CommunityDeliveryIntent(1, "welcome", message, UserId: userId,
+            ChannelId: welcome.DirectMessage ? null : welcome.ChannelId, DirectMessage: welcome.DirectMessage);
+    }
+
+    public async Task PersistWelcomeAsync(ulong userId, DateTimeOffset joinedAt, CancellationToken ct)
+    {
+        if (!configuration.Welcome.Enabled || userId == 0) return;
+        var key = $"welcome:{userId}:{joinedAt.UtcTicks}";
+        await store.PersistCommunityDeliveryAsync(key, JsonSerializer.Serialize(CreateWelcomeIntent(userId, key)), ct);
+    }
     public async Task WelcomeAsync(ulong userId, DateTimeOffset joinedAt, CancellationToken ct)
     {
         var welcome = configuration.Welcome;
@@ -37,11 +55,8 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
         if (member is null || member.IsBot || member.IsWebhook) return;
         var key = $"welcome:{userId}:{joinedAt.UtcTicks}";
         await using var session = await store.LockCommunityAsync(ct);
-        var message = TemplateRenderer.EnforceMessageLimits(new CommunityMessage(
-            TemplateRenderer.RenderWelcome(welcome.Template, userId, discord.ServerName, welcome.ChannelMentions),
-            [], DeliveryKey: key));
-        var intent = new CommunityDeliveryIntent(1, "welcome", message, UserId: userId,
-            ChannelId: welcome.DirectMessage ? null : welcome.ChannelId, DirectMessage: welcome.DirectMessage);
+        var intent = CreateWelcomeIntent(userId, key);
+
         var delivery = await session.GetOrCreateDeliveryAsync(key, JsonSerializer.Serialize(intent), ct);
         if (delivery.Completed) return;
         if (!TryReadCurrentIntent(delivery.Intent, out var persistedIntent))
@@ -58,6 +73,8 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
             await session.CompleteDeliveryAsync(key, ct);
             return;
         }
+        if (!persistedIntent.DirectMessage && persistedIntent.ChannelId is { } welcomeChannel)
+            await discord.ValidateCommunityChannelAsync(welcomeChannel, false, persistedMessage.Embeds.Count > 0, ct);
         var sentMessageId = persistedIntent.DirectMessage
             ? await discord.SendDirectMessageAsync(welcomeUserId, persistedMessage, ct)
             : persistedIntent.ChannelId is { } destination && destination != 0
@@ -152,9 +169,13 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
                                 if (await WithRecoveryProgressAsync(discord.SendDirectMessageAsync(userId, intent.Message, intentCt), Progress) is null)
                                     throw new InvalidOperationException("The pending welcome direct message was not delivered.");
                             }
-                            else if (intent.ChannelId is { } welcomeChannel &&
-                                     await WithRecoveryProgressAsync(discord.SendAsync(welcomeChannel, intent.Message, intentCt), Progress) is null)
-                                throw new InvalidOperationException("The pending welcome message was not delivered.");
+                            else if (intent.ChannelId is { } welcomeChannel)
+                            {
+                                await WithRecoveryProgressAsync(discord.ValidateCommunityChannelAsync(welcomeChannel, false,
+                                    intent.Message.Embeds.Count > 0, intentCt), Progress);
+                                if (await WithRecoveryProgressAsync(discord.SendAsync(welcomeChannel, intent.Message, intentCt), Progress) is null)
+                                    throw new InvalidOperationException("The pending welcome message was not delivered.");
+                            }
                             break;
 
                         case "answer":
@@ -179,6 +200,8 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
                                 recovered++;
                                 continue;
                             }
+                            await WithRecoveryProgressAsync(discord.ValidateCommunityChannelAsync(intent.ChannelId!.Value,
+                                intent.DeleteSource, intent.Message.Embeds.Count > 0, intentCt), Progress);
                             if (await WithRecoveryProgressAsync(discord.SendAsync(intent.ChannelId!.Value, intent.Message, intentCt), Progress) is null)
                                 throw new InvalidOperationException("The pending quick answer response was not delivered.");
                             if (intent.Cooldown is { } cooldown && cooldown > TimeSpan.Zero && intent.CooldownKey is { } cooldownKey)
@@ -195,11 +218,15 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
                                 recovered++;
                                 continue;
                             }
+                            await WithRecoveryProgressAsync(discord.ValidateCommunityChannelAsync(intent.ChannelId!.Value,
+                                intent.DeleteSource, intent.Message.Embeds.Count > 0, intentCt), Progress);
                             foreach (var operation in intent.RoleOperations)
                             {
                                 var configuredRole = (factions.Roles ?? []).FirstOrDefault(x => x.RoleId == operation.RoleId);
                                 var roleInfo = await WithRecoveryProgressAsync(discord.GetRoleAsync(operation.RoleId, intentCt), Progress);
                                 if (configuredRole is null || roleInfo is null || roleInfo.IsManaged) continue;
+                                await WithRecoveryProgressAsync(discord.ValidateCommunityChannelAsync(intent.ChannelId!.Value,
+                                    intent.DeleteSource, intent.Message.Embeds.Count > 0, intentCt), Progress);
                                 if (operation.Add) await WithRecoveryProgressAsync(discord.AddRoleAsync(userId, operation.RoleId, intentCt), Progress);
                                 else await WithRecoveryProgressAsync(discord.RemoveRoleAsync(userId, operation.RoleId, intentCt), Progress);
                             }
@@ -316,6 +343,8 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
                     await SuppressDeliveryAsync(session, deliveryKey, persistedIntent, ct);
                     return;
                 }
+                if (persistedIntent.ChannelId is { } answerChannel)
+                    await discord.ValidateCommunityChannelAsync(answerChannel, persistedIntent.DeleteSource, persistedMessage.Embeds.Count > 0, ct);
                 if (persistedIntent.ChannelId is not { } destination || destination == 0 ||
                     await discord.SendAsync(destination, persistedMessage, ct) is null)
                     throw new InvalidOperationException("The quick answer response was not delivered.");
@@ -385,11 +414,15 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
                     await SuppressDeliveryAsync(session, deliveryKey, intent, ct);
                     return;
                 }
+                await discord.ValidateCommunityChannelAsync(intent.ChannelId!.Value,
+                    intent.DeleteSource, intent.Message.Embeds.Count > 0, ct);
                 foreach (var operation in intent.RoleOperations)
                 {
                     var configuredRole = (factions.Roles ?? []).FirstOrDefault(x => x.RoleId == operation.RoleId);
                     var info = await discord.GetRoleAsync(operation.RoleId, ct);
                     if (configuredRole is null || info is null || info.IsManaged) continue;
+                    await discord.ValidateCommunityChannelAsync(intent.ChannelId!.Value,
+                        intent.DeleteSource, intent.Message.Embeds.Count > 0, ct);
                     if (operation.Add) await discord.AddRoleAsync(intent.UserId!.Value, operation.RoleId, ct);
                     else await discord.RemoveRoleAsync(intent.UserId!.Value, operation.RoleId, ct);
                 }

@@ -114,6 +114,17 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
     public Task<ITicketSession> LockAsync(CancellationToken ct) => AcquireLockAsync(MutationLock, ct);
     public Task<ITicketSession> LockCommunityAsync(CancellationToken ct) => AcquireLockAsync(CommunityLock, ct);
 
+    public async Task PersistCommunityDeliveryAsync(string key, string intent, CancellationToken ct)
+    {
+        // A join event must commit before dispatch, independently of long-running community delivery locks.
+        await using var connection = await _source.OpenConnectionAsync(ct);
+        await using var insert = new NpgsqlCommand(
+            "INSERT INTO swlor_bot_delivery_operations(key,intent) VALUES (@key,@intent) ON CONFLICT DO NOTHING", connection)
+            { CommandTimeout = 10 };
+        insert.Parameters.AddWithValue("key", key);
+        insert.Parameters.AddWithValue("intent", intent);
+        await insert.ExecuteNonQueryAsync(ct);
+    }
     private async Task<ITicketSession> AcquireLockAsync(long key, CancellationToken ct)
     {
         var connection = await _source.OpenConnectionAsync(ct);

@@ -8,6 +8,20 @@ namespace SWLOR.DiscordBot.Tests;
 [TestFixture]
 public sealed class GatewayConfigurationTests
 {
+    [TestCase(1UL, false, false, true, true)]
+    [TestCase(2UL, false, false, true, false)]
+    [TestCase(1UL, true, false, true, false)]
+    [TestCase(1UL, false, true, true, false)]
+    [TestCase(1UL, false, false, false, false)]
+    public void WelcomePersistenceFiltersConfiguredGuildHumanJoinPayloads(ulong guildId, bool bot, bool webhook,
+        bool hasJoinedAt, bool expected)
+    {
+        var config = new BotConfiguration { GuildId = 1, Welcome = new WelcomeOptions { Enabled = true } };
+        Assert.That(DiscordGateway.ShouldPersistWelcome(config, guildId, bot, webhook,
+            hasJoinedAt ? DateTimeOffset.UnixEpoch : null), Is.EqualTo(expected));
+        config.Welcome.Enabled = false;
+        Assert.That(DiscordGateway.ShouldPersistWelcome(config, guildId, bot, webhook, DateTimeOffset.UnixEpoch), Is.False);
+    }
     [TestCase(false, true)]
     [TestCase(true, false)]
     public void PrefixCommandsCannotEnterReadOnlyOrHiddenChannels(bool view, bool send)

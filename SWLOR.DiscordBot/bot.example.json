@@ -46,7 +46,8 @@
     "ArchiveDirectory": "/data/archives",
     "CopyAttachments": true,
     "MaxAttachmentBytes": 104857600,
-    "MaxTicketAttachmentBytes": 1073741824
+    "MaxTicketAttachmentBytes": 1073741824,
+    "MaxTranscriptContentBytes": 33554432
   },
   "Welcome": {
     "Enabled": false,

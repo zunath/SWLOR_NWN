@@ -16,3 +16,5 @@ public sealed record DecorationPlacementReport(
 {
     public int OmittedCount => ProposedCount - PlacedCount;
 }
+
+

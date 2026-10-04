@@ -19,3 +19,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         Dictionary<string, DungeonDetail> BuildDungeons();
     }
 }
+
+

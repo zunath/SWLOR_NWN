@@ -1,4 +1,5 @@
-using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using Nwn.Authoring.Areas.Generation;
+using Nwn.Authoring.Areas.Generation.Tilesets;
 
 namespace SWLOR.Toolset.Domain.AreaGeneration;
 
@@ -24,3 +25,5 @@ internal static class ResolvedGround
         return (resolved.Height + offset) * layout.HeightTransition;
     }
 }
+
+

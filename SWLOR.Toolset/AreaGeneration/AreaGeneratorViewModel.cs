@@ -10,9 +10,10 @@ using CommunityToolkit.Mvvm.Input;
 using Serilog;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.AreaGeneration;
+using Nwn.Authoring.Areas.Generation;
 using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
 using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
-using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using Nwn.Authoring.Areas.Generation.Tilesets;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Workspace;
 
@@ -893,3 +894,4 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         SetPreviewedDraft(null);
     }
 }
+

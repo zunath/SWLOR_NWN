@@ -1,7 +1,7 @@
 #nullable disable
 using SWLOR.Toolset.Domain.AreaGeneration;
 using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
-using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using Nwn.Authoring.Areas.Generation.Tilesets;
 
 namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
 {
@@ -58,3 +58,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         }
     }
 }
+
+

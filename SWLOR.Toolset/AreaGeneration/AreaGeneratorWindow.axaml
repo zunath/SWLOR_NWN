@@ -3,7 +3,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:generator="using:SWLOR.Toolset.AreaGeneration"
-        xmlns:areaGeneration="using:SWLOR.Toolset.Domain.AreaGeneration"
+        xmlns:areaGeneration="using:Nwn.Authoring.Areas.Generation"
         xmlns:authoring="using:SWLOR.Toolset.Domain.AreaGeneration.Authoring"
         xmlns:decoration="using:SWLOR.Toolset.Domain.AreaGeneration.Decoration"
         mc:Ignorable="d"
@@ -304,3 +304,4 @@
     </Border>
   </Grid>
 </Window>
+

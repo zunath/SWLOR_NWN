@@ -1,3 +1,4 @@
+using TileResolver = SWLOR.Toolset.Domain.AreaGeneration.TileResolver;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.AreaGeneration;
@@ -5,7 +6,7 @@ using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
 using SWLOR.Toolset.Domain.AreaGeneration.Atmosphere;
 using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
 using SWLOR.Toolset.Domain.AreaGeneration.Definitions;
-using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using Nwn.Authoring.Areas.Generation.Tilesets;
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;
 using Nwn.Authoring.Editing;
@@ -17,6 +18,8 @@ using Nwn.Authoring.Areas.Tiles;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.Workspace;
 using System.Numerics;
+
+using Nwn.Authoring.Areas.Generation;
 
 namespace SWLOR.Toolset.Tests.AreaGeneration;
 
@@ -655,3 +658,6 @@ public class AreaGenerationToolsetIntegrationTests
         return moduleRoot;
     }
 }
+
+
+

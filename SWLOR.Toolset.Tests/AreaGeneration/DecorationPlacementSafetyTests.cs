@@ -1,10 +1,11 @@
+using Nwn.Authoring.Areas.Generation;
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.AreaGeneration;
 using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
 using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
-using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using Nwn.Authoring.Areas.Generation.Tilesets;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Tests.AreaGeneration;
@@ -260,3 +261,5 @@ public class DecorationPlacementSafetyTests
         preview.Pixels.Skip((5 * preview.Width + 5) * 4).Take(3).Should().Equal(70, 105, 140);
     }
 }
+
+

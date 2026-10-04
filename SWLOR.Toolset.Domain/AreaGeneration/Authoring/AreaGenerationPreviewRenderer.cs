@@ -1,7 +1,8 @@
 #nullable enable
+using Nwn.Authoring.Areas.Generation;
 using System.Numerics;
 using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
-using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using Nwn.Authoring.Areas.Generation.Tilesets;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
 
@@ -399,3 +400,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         }
     }
 }
+
+

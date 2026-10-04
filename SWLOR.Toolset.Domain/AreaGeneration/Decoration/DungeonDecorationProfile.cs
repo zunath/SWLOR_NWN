@@ -30,3 +30,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         public bool OrganicClutterRotation { get; set; }
     }
 }
+
+

@@ -1,3 +1,5 @@
+using TileResolver = SWLOR.Toolset.Domain.AreaGeneration.TileResolver;
+using Nwn.Authoring.Areas.Generation.Layouts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,8 +7,9 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.AreaGeneration;
 using SWLOR.Toolset.Domain.AreaGeneration.Frontage;
-using SWLOR.Toolset.Domain.AreaGeneration.Layouts;
-using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using Nwn.Authoring.Areas.Generation.Tilesets;
+
+using Nwn.Authoring.Areas.Generation;
 
 namespace SWLOR.Toolset.Tests.AreaGeneration;
 
@@ -735,3 +738,6 @@ public class MacroLayoutGeneratorTests
         };
     }
 }
+
+
+

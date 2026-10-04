@@ -57,3 +57,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         public float FacingOffset { get; set; }
     }
 }
+
+

@@ -1,11 +1,14 @@
 #nullable disable
+using Nwn.Authoring.Areas.Generation.Transitions;
+using Nwn.Authoring.Areas.Generation.Layouts;
+using Nwn.Authoring.Areas.Generation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using SWLOR.Toolset.Domain.AreaGeneration.Frontage;
-using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using Nwn.Authoring.Areas.Generation.Tilesets;
 
 // Exposes internal arrangement-mechanism helpers (vignette placement, direction quantization) to the
 // coherence-metrics test suite so it can verify PlaceVignette's rotation math and PlaceWallRuns'
@@ -4434,3 +4437,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         }
     }
 }
+
+

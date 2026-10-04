@@ -1,6 +1,7 @@
 using System.Globalization;
 using Avalonia.Data.Converters;
 using SWLOR.Toolset.Domain.AreaGeneration;
+using Nwn.Authoring.Areas.Generation;
 using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
 using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
 
@@ -30,3 +31,4 @@ public sealed class AreaGeneratorOptionLabelConverter : IValueConverter
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
         throw new NotSupportedException();
 }
+

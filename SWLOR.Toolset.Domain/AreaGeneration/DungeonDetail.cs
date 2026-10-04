@@ -88,3 +88,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         public Dictionary<int, DungeonTierDetail> Tiers { get; set; } = new();
     }
 }
+
+

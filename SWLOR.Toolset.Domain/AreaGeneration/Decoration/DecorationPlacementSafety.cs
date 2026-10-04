@@ -1,5 +1,6 @@
+using Nwn.Authoring.Areas.Generation;
 using System.Numerics;
-using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using Nwn.Authoring.Areas.Generation.Tilesets;
 
 namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration;
 
@@ -283,3 +284,5 @@ public static class DecorationPlacementSafety
         return Vector2.DistanceSquared(point, start + delta * fraction);
     }
 }
+
+

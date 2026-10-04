@@ -1,4 +1,7 @@
 #nullable disable
+using Nwn.Authoring.Areas.Generation.Transitions;
+using Nwn.Authoring.Areas.Generation.Layouts;
+using Nwn.Authoring.Areas.Generation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -498,3 +501,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         }
     }
 }
+
+

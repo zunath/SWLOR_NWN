@@ -1,10 +1,11 @@
+using Nwn.Authoring.Areas.Generation;
 using Nwn.Authoring.Areas.Placement;
 #nullable enable
 using Serilog;
 using SWLOR.NWN.Formats;
 using SWLOR.Toolset.Domain.AreaGeneration.Atmosphere;
 using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
-using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using Nwn.Authoring.Areas.Generation.Tilesets;
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -989,3 +990,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             $"PG_{areaResref}_{suffix}";
     }
 }
+
+

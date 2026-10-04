@@ -1,7 +1,8 @@
 #nullable disable
+using Nwn.Authoring.Areas.Generation;
 
 using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
-using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using Nwn.Authoring.Areas.Generation.Tilesets;
 
 namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
 {
@@ -73,3 +74,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         public const int MaxSeed = int.MaxValue - 1000;
     }
 }
+
+

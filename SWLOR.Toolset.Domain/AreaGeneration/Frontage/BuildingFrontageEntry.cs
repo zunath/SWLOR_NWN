@@ -64,3 +64,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
         public int FamilyMaxPerArea { get; set; }
     }
 }
+
+

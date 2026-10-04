@@ -23,3 +23,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
         public float MaxHeight { get; set; } = 6f;
     }
 }
+
+

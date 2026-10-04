@@ -1,4 +1,6 @@
 #nullable disable
+using Nwn.Authoring.Areas.Generation.Layouts;
+using Nwn.Authoring.Areas.Generation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -163,7 +165,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
             // Tileset.MinimumOpeningWidth immediately above. A no-op whenever PoolRegions ended up 0.
             if (parameters.PoolRegions > 0)
             {
-                var floor = Layouts.LayoutElevationPoolPainter.MinOuterSpan + 4;
+                var floor = LayoutElevationPoolPainter.MinOuterSpan + 4;
                 parameters.MaxRoomCornerSize = Math.Max(parameters.MaxRoomCornerSize, floor);
                 parameters.MinRoomCornerSize = Math.Min(parameters.MinRoomCornerSize, parameters.MaxRoomCornerSize);
             }
@@ -171,3 +173,6 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         }
     }
 }
+
+
+

@@ -1,9 +1,12 @@
 #nullable disable
+using Nwn.Authoring.Areas.Generation.Transitions;
+using Nwn.Authoring.Areas.Generation.Layouts;
+using Nwn.Authoring.Areas.Generation;
 using System.Collections.Generic;
 using SWLOR.Toolset.Domain.AreaGeneration;
 using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
 using SWLOR.Toolset.Domain.AreaGeneration.Frontage;
-using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using Nwn.Authoring.Areas.Generation.Tilesets;
 
 namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
 {
@@ -8394,3 +8397,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         }
     }
 }
+
+

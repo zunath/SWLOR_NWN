@@ -1,7 +1,12 @@
+using Nwn.Authoring.Areas.Generation.Transitions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.AreaGeneration;
-using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using Nwn.Authoring.Areas.Generation.Tilesets;
+
+using Nwn.Authoring.Areas.Generation;
+
+using Nwn.Authoring.Areas.Generation.Geometry;
 
 namespace SWLOR.Toolset.Tests.AreaGeneration;
 
@@ -267,3 +272,6 @@ public sealed class TransitionPlannerTests
     private static ResolvedTile[] ResolvedTiles(int count) =>
         Enumerable.Range(0, count).Select(_ => new ResolvedTile { TileId = 0 }).ToArray();
 }
+
+
+

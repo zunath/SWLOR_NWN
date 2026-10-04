@@ -4,7 +4,7 @@ using SWLOR.Toolset.Domain.AreaGeneration;
 using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
 using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
 using SWLOR.Toolset.Domain.AreaGeneration.Definitions;
-using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using Nwn.Authoring.Areas.Generation.Tilesets;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
 using Nwn.Formats.Tilesets;
 using Nwn.Authoring.Areas.Tiles;
@@ -88,3 +88,5 @@ public class DecorationCompositionTests
         }
     }
 }
+
+

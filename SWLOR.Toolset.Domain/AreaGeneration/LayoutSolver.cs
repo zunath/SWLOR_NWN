@@ -1,32 +1,18 @@
 #nullable disable
 using System;
-using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using System.Collections.Generic;
+using System.Linq;
+using Nwn.Authoring.Areas.Generation;
+using Nwn.Authoring.Areas.Generation.Tilesets;
+using Serilog;
 
 namespace SWLOR.Toolset.Domain.AreaGeneration
 {
-    /// <summary>
-    /// Solves a macro layout and resolves it to concrete tiles without writing module resources.
-    /// <see cref="Authoring.GenerationEngine"/> adds dressing to the solved result, while preview and
-    /// <see cref="Authoring.GeneratedAreaDocumentPopulator"/> consume that same draft. This is the
-    /// single shared implementation of the seed-derived retry
-    /// loop (MacroLayoutGenerator.Generate can throw for an unlucky roll; TileResolver.TryResolve can
-    /// fail to cover a corner combination -- either is worth a retry with the next seed before giving
-    /// up), keeping preview and module creation in parity.
-    /// </summary>
     public static class LayoutSolver
     {
-        public const int DefaultRetryCount = 6;
+        public const int DefaultRetryCount = AreaLayoutSolver.DefaultRetryCount;
+        private static readonly ILogger Logger = Log.ForContext(typeof(LayoutSolver));
 
-        /// <summary>
-        /// <paramref name="baseParameters"/> should already be the full EFFECTIVE parameters for this
-        /// generation (typically <see cref="DungeonComposition.BuildLayoutParameters"/> plus whatever
-        /// caller-specific overrides apply) -- everything except Width/Height/SolidTerrain/OpenTerrain,
-        /// which this method stamps itself every attempt from <paramref name="width"/>/
-        /// <paramref name="height"/>/<paramref name="tileset"/>/<paramref name="openTerrainOverride"/>.
-        /// SolidTerrain is only stamped when the base parameters carry none: a tileset profile may
-        /// declare an explicit solid (the exterior inversion, stamped by BuildLayoutParameters -- see
-        /// DungeonTilesetProfile.SolidTerrainOverride), which wins over the tileset's GENERAL Default.
-        /// </summary>
         public static LayoutSolverResult Solve(
             MacroLayoutParameters baseParameters,
             TilesetModel tileset,
@@ -36,60 +22,46 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
             string openTerrainOverride = "",
             int retryCount = DefaultRetryCount)
         {
-            if (baseParameters == null) throw new ArgumentNullException(nameof(baseParameters));
-            if (tileset == null) throw new ArgumentNullException(nameof(tileset));
-
-            var lastFailure = "no attempts made";
-
-            for (var attempt = 0; attempt < retryCount; attempt++)
+            var request = new LayoutSolveRequest(width, height, seed, openTerrainOverride, retryCount);
+            var options = new LayoutSolveOptions
             {
-                var trySeed = seed + attempt;
-                // Fully-qualified: SWLOR.Game.Server.Service.Random (an unrelated static RNG-helper
-                // service) shadows System.Random by simple name inside this project.
-                var random = new System.Random(trySeed);
-
-                var parameters = baseParameters.Clone();
-                parameters.Width = width;
-                parameters.Height = height;
-                if (string.IsNullOrEmpty(parameters.SolidTerrain))
-                    parameters.SolidTerrain = tileset.DefaultTerrain;
-                parameters.OpenTerrain = string.IsNullOrEmpty(openTerrainOverride)
-                    ? tileset.FloorTerrain
-                    : openTerrainOverride;
-
-                MacroLayout macro;
-                try
-                {
-                    macro = MacroLayoutGenerator.Generate(parameters, random, tileset);
-                    macro.Seed = trySeed;
-                }
-                catch (InvalidOperationException ex)
-                {
-                    lastFailure = ex.Message;
-                    continue;
-                }
-
-                if (TileResolver.TryResolve(tileset, macro, random, out var resolved, out var failureReason))
-                {
-                    return new LayoutSolverResult
-                    {
-                        Success = true,
-                        Layout = macro,
-                        Parameters = parameters,
-                        Resolved = resolved,
-                        AttemptSeed = trySeed
-                    };
-                }
-
-                lastFailure = failureReason;
-            }
-
-            return new LayoutSolverResult
-            {
-                Success = false,
-                FailureReason = lastFailure,
-                AttemptSeed = seed
+                ProtectedFeatureCellsProvider = macro => BuildProtectedFeatureCells(tileset, macro),
+                DiagnosticSink = diagnostic => Logger.Information(
+                    "Area layout diagnostic {DiagnosticCode} for tileset {TilesetResref}: {Detail}",
+                    diagnostic.Code,
+                    diagnostic.TilesetResref,
+                    diagnostic.Detail)
             };
+            return AreaLayoutSolver.Solve(baseParameters, tileset, request, options);
+        }
+
+        private static IReadOnlyCollection<(int X, int Y)> BuildProtectedFeatureCells(TilesetModel tileset, MacroLayout macro)
+        {
+            if (macro.FeatureTiles.Count == 0 || macro.Rooms.Count == 0)
+                return Array.Empty<(int X, int Y)>();
+
+            var surfaceLayout = new ResolvedLayout
+            {
+                Width = macro.Corners.Width,
+                Height = macro.Corners.Height,
+                Rooms = macro.Rooms,
+                Transitions = macro.Transitions,
+                CornerTerrains = macro.Corners,
+                OpenTerrain = macro.OpenTerrain,
+                SecondaryOpenTerrain = macro.SecondaryOpenTerrain,
+                Crossers = macro.Crossers,
+                StampedStructureTiles = macro.StampedOpenSetPieceFootprints.SelectMany(footprint => footprint).ToHashSet()
+            };
+            var surface = Decoration.DecorationPlacementSafety.BuildOpenSurface(surfaceLayout);
+            var protectedCells = new HashSet<(int X, int Y)>();
+            foreach (var route in Decoration.DecorationPlacementSafety.BuildRoutes(surfaceLayout, surface, string.Empty))
+            {
+                protectedCells.Add(((int)MathF.Floor(route.Start.X / 10), (int)MathF.Floor(route.Start.Y / 10)));
+                protectedCells.Add(((int)MathF.Floor(route.End.X / 10), (int)MathF.Floor(route.End.Y / 10)));
+            }
+            return protectedCells;
         }
     }
 }
+
+

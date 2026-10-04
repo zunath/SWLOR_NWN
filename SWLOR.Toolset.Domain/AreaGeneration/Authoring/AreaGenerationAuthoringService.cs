@@ -1,5 +1,6 @@
 #nullable enable
-using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using Nwn.Authoring.Areas.Generation;
+using Nwn.Authoring.Areas.Generation.Tilesets;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Workspace;
 
@@ -217,3 +218,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         }
     }
 }
+
+

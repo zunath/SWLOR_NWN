@@ -1,3 +1,4 @@
+using TileResolver = SWLOR.Toolset.Domain.AreaGeneration.TileResolver;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -7,7 +8,9 @@ using SWLOR.Toolset.Domain.AreaGeneration;
 using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
 using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
 using SWLOR.Toolset.Domain.AreaGeneration.Definitions;
-using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using Nwn.Authoring.Areas.Generation.Tilesets;
+
+using Nwn.Authoring.Areas.Generation;
 
 namespace SWLOR.Toolset.Tests.AreaGeneration;
 
@@ -381,3 +384,6 @@ public class GeneratedTreasureReviewRegressionTests
             .And.Contain("vrepnpctroop1");
     }
 }
+
+
+

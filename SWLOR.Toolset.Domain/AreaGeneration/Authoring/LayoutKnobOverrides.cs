@@ -1,4 +1,6 @@
 #nullable disable
+using Nwn.Authoring.Areas.Generation.Layouts;
+using Nwn.Authoring.Areas.Generation;
 using SWLOR.Toolset.Domain.AreaGeneration;
 
 namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
@@ -101,3 +103,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         }
     }
 }
+
+

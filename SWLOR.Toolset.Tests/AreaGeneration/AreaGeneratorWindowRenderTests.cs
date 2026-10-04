@@ -1,3 +1,4 @@
+using Nwn.Authoring.Areas.Generation;
 using System.Collections.Concurrent;
 using Avalonia;
 using Avalonia.Controls;
@@ -763,3 +764,5 @@ public sealed class AreaGeneratorWindowRenderTests
         }
     }
 }
+
+

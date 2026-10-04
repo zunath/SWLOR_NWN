@@ -1,4 +1,5 @@
 #nullable disable
+using Nwn.Authoring.Areas.Generation.Layouts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -136,3 +137,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         StreetAccent = 16
     }
 }
+
+

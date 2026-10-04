@@ -33,3 +33,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         public int MaxPerArea { get; set; }
     }
 }
+
+

@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PropagationTrait)
                 .Description("Every third auto-attack on a target affected by your Venom deals an additional +15 Poison DMG.")
                 .IncreasesStat(StatType.SourceStatusAutoAttackCycleRequiredCategory, (int)StatusEffectCategory.Venom)
-                .IncreasesStat(StatType.SourceStatusAutoAttackCycleSkillType, (int)SkillType.Vibroknife)
+                .IncreasesStat(StatType.SourceStatusAutoAttackCycleSkillType, (int)SkillType.Invalid)
                 .IncreasesStat(StatType.SourceStatusAutoAttackCycleRequiredCount, 3)
                 .IncreasesStat(StatType.SourceStatusAutoAttackCycleDamage, 15)
                 .IncreasesStat(StatType.SourceStatusAutoAttackCycleDamageType, (int)CombatDamageType.Poison)
@@ -387,7 +387,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShadowflowStance1)
                 .DroidAISlots(1)
-                .Description("While active, your Vibroknife auto-attacks inflict Hamstring for 18 seconds, but your Defense is reduced by 20%.")
+                .Description("While active, your auto-attacks inflict Hamstring for 18 seconds, but your Defense is reduced by 20%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 20);
         }

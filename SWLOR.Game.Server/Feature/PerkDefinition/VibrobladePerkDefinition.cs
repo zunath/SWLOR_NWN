@@ -259,7 +259,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RundownTrait)
-                .Description("Each consecutive melee attack against the same target grants Rundown, giving +1 DMG to auto-attack against that target, up to five stacks.")
+                .Description("Each consecutive auto-attack against the same target grants Rundown, giving +1 DMG to auto-attack against that target, up to five stacks.")
                 .IncreasesStat(StatType.MeleeRepeatedTargetDamageBonusPerHit, 1)
                 .IncreasesStat(StatType.MeleeRepeatedTargetDamageBonusMax, 5)
                 .IncreasesStat(StatType.MeleeRepeatedTargetDamageStatusEffectIcon, (int)EffectIconType.RundownStatusEffect)
@@ -267,7 +267,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Vibroblade, 8)
 
                 .AddPerkLevel()
-                .Description("Each consecutive melee attack against the same target grants Rundown, giving +2 DMG to auto-attack against that target, up to five stacks.")
+                .Description("Each consecutive auto-attack against the same target grants Rundown, giving +2 DMG to auto-attack against that target, up to five stacks.")
                 .IncreasesStat(StatType.MeleeRepeatedTargetDamageBonusPerHit, 2)
                 .IncreasesStat(StatType.MeleeRepeatedTargetDamageBonusMax, 10)
                 .IncreasesStat(StatType.MeleeRepeatedTargetDamageStatusEffectIcon, (int)EffectIconType.RundownStatusEffect)
@@ -275,7 +275,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Vibroblade, 22)
 
                 .AddPerkLevel()
-                .Description("Each consecutive melee attack against the same target grants Rundown, giving +3 DMG to auto-attack against that target, up to five stacks.")
+                .Description("Each consecutive auto-attack against the same target grants Rundown, giving +3 DMG to auto-attack against that target, up to five stacks.")
                 .IncreasesStat(StatType.MeleeRepeatedTargetDamageBonusPerHit, 3)
                 .IncreasesStat(StatType.MeleeRepeatedTargetDamageBonusMax, 15)
                 .IncreasesStat(StatType.MeleeRepeatedTargetDamageStatusEffectIcon, (int)EffectIconType.RundownStatusEffect)
@@ -290,7 +290,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FollowThroughTrait)
-                .Description("Every third melee auto-attack deals an additional +10 Damage.")
+                .Description("Every third auto-attack deals an additional +10 Damage.")
                 .IncreasesStat(StatType.MeleeAutoAttackCycleRequiredCount, 3)
                 .IncreasesStat(StatType.MeleeAutoAttackCycleDamage, 10)
                 .Price(4)

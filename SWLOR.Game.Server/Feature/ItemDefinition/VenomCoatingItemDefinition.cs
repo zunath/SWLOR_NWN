@@ -65,17 +65,9 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     var baseItemType = GetBaseItemType(target);
 
-                    if (Item.LightsaberBaseItemTypes.Contains(baseItemType) ||
-                        Item.SaberstaffBaseItemTypes.Contains(baseItemType))
+                    if (!CanCoatWeapon(baseItemType))
                     {
-                        return "The coating will not adhere to an energy blade.";
-                    }
-
-                    if (!Item.WeaponBaseItemTypes.Contains(baseItemType) ||
-                        Item.PistolBaseItemTypes.Contains(baseItemType) ||
-                        Item.RifleBaseItemTypes.Contains(baseItemType))
-                    {
-                        return "Only melee or thrown weapons can be coated in venom.";
+                        return "Select a weapon to coat in venom.";
                     }
 
                     var existingTier = GetLocalInt(target, PoisonCoatingTierVariable);
@@ -102,6 +94,11 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         $"Player '{GetName(user)}' ({GetObjectUUID(user)}) applied Tier {_tierLabels[tier]}{(concentrated ? " concentrated" : string.Empty)} venom coating to '{GetName(target)}' (potency {potency}, {charges} charges).");
                     SendMessageToPC(user, $"You coat {GetName(target)} in Tier {_tierLabels[tier]}{(concentrated ? " concentrated" : string.Empty)} venom. ({charges} charges)");
                 });
+        }
+
+        public static bool CanCoatWeapon(BaseItem baseItemType)
+        {
+            return Item.WeaponBaseItemTypes.Contains(baseItemType);
         }
 
         public static int CalculateCharges(int coatingDurationBonusPercent)

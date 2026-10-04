@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             StatGroup.Stats[StatType.AttackDelayReductionPercent] = 10;
             StatGroup.Stats[StatType.RangedHitSuppressionStackDurationSeconds] = 30;
-            StatGroup.Stats[StatType.RangedCriticalDamagePercentAdjustment] = -10;
+            StatGroup.Stats[StatType.WeaponCriticalDamagePercentAdjustment] = -10;
         }
     }
 }

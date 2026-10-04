@@ -76,6 +76,43 @@ public sealed class TicketServiceTests
     }
 
     [Test]
+    public async Task PerTicketOperationsUseTargetedLookupsAndMaintenanceEnumeratesOnlyOnce()
+    {
+        var opened = await Open("first", new Actor(1, []), "targeted-lookups");
+        Assert.That(opened.Success, Is.True);
+
+        _store.TicketEnumerationCount = 0;
+        var closed = await _service.CloseAsync(ChannelOne, Support);
+        Assert.That(closed.Success, Is.True);
+        Assert.That(_store.TicketEnumerationCount, Is.Zero,
+            "A channel mutation should use the channel index rather than enumerate every retained ticket.");
+
+        Assert.That((await Open("first", new Actor(2, []), "another-retained-ticket")).Success, Is.True);
+        _store.TicketEnumerationCount = 0;
+        await _service.ReconcileRetainedPermissionsAsync();
+        Assert.That(_store.TicketEnumerationCount, Is.EqualTo(1),
+            "Startup permission reconciliation should enumerate only its batch.");
+
+        _store.TicketEnumerationCount = 0;
+        await _service.MaintainAsync();
+        Assert.That(_store.TicketEnumerationCount, Is.EqualTo(1),
+            "Maintenance should enumerate once for the batch, then fetch each ticket by id.");
+
+        _clock.Advance(TimeSpan.FromDays(8));
+        _store.TicketEnumerationCount = 0;
+        await _service.MaintainAsync();
+        Assert.That(_store.TicketEnumerationCount, Is.EqualTo(1),
+            "Cleanup export, final verification, and completion must not scan all retained payloads.");
+        Assert.That(_store.Tickets.Single(ticket => ticket.Id == opened.Ticket!.Id).State, Is.EqualTo(TicketState.Deleted));
+
+        _clock.Advance(TimeSpan.FromDays(90));
+        _store.TicketEnumerationCount = 0;
+        await _service.ExpireArchivesAsync();
+        Assert.That(_store.TicketEnumerationCount, Is.EqualTo(1),
+            "Local archive expiration should use individual ticket lookups after enumeration.");
+    }
+
+    [Test]
     public async Task MemberLimitIsSharedAcrossPanels()
     {
         _configuration.Tickets.MemberLimit = 1;
@@ -1458,6 +1495,7 @@ public sealed class TicketServiceTests
         public string? FailNextSaveAction { get; set; }
         public bool FailNextSaveWithCancellation { get; set; }
         public Action? BeforeSaveCancellation { get; set; }
+        public int TicketEnumerationCount { get; set; }
 
         public Task InitializeAsync(CancellationToken ct) => Task.CompletedTask;
 
@@ -1479,7 +1517,19 @@ public sealed class TicketServiceTests
             private bool _disposed;
 
             public Task<IReadOnlyList<Ticket>> GetTicketsAsync(CancellationToken ct) =>
-                Task.FromResult<IReadOnlyList<Ticket>>(store._tickets.ToArray());
+                EnumerateTickets();
+
+            private Task<IReadOnlyList<Ticket>> EnumerateTickets()
+            {
+                store.TicketEnumerationCount++;
+                return Task.FromResult<IReadOnlyList<Ticket>>(store._tickets.ToArray());
+            }
+
+            public Task<Ticket?> GetTicketAsync(Guid id, CancellationToken ct) =>
+                Task.FromResult(store._tickets.SingleOrDefault(ticket => ticket.Id == id));
+
+            public Task<Ticket?> FindByChannelAsync(ulong channelId, CancellationToken ct) =>
+                Task.FromResult(store._tickets.SingleOrDefault(ticket => ticket.ChannelId == channelId));
 
             public Task<Ticket?> FindInteractionAsync(string interactionId, CancellationToken ct)
             {
@@ -1528,6 +1578,8 @@ public sealed class TicketServiceTests
 
             public Task SetCooldownAsync(string key, DateTimeOffset at, CancellationToken ct) =>
                 throw new NotSupportedException("TicketServiceTests do not exercise command cooldown persistence.");
+            public Task<bool> TryAdvanceCommunityActionAsync(string scope, ulong messageId, CancellationToken ct) =>
+                throw new NotSupportedException("TicketServiceTests do not exercise community action ordering.");
             public ValueTask DisposeAsync()
             {
                 if (!_disposed)

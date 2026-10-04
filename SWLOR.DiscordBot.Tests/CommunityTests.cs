@@ -530,6 +530,150 @@ public sealed class CommunityTests
         Assert.That(deletions.Pending, Is.Empty);
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task OlderFactionIntentCannotUndoNewerChoiceAcrossChannels(bool retryLiveEvent)
+    {
+        var config = new BotConfiguration
+        {
+            GuildId = 1, Prefix = "?",
+            Factions = new FactionOptions
+            {
+                Enabled = true, Exclusive = true, Behavior = "toggle", DeleteCommand = true,
+                Roles = [new FactionRole { Name = "A", RoleId = 21 }, new FactionRole { Name = "B", RoleId = 22 }]
+            }
+        };
+        var discord = new FakeCommunityDiscord
+        {
+            Member = new CommunityMember(7, "Player", []),
+            Roles = [new CommunityRole(21, 1), new CommunityRole(22, 1)], SendFailuresRemaining = 1
+        };
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore();
+        var service = new CommunityService(config, store, discord, deletions);
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 101, 1000, "?rank A", default));
+        await service.ExecuteAsync(7, 100, 1001, "?rank B", default);
+        var mutations = discord.RoleMutations.ToArray();
+
+        var restarted = new CommunityService(config, store, discord, deletions);
+        if (retryLiveEvent) await restarted.ExecuteAsync(7, 101, 1000, "?rank A", default);
+        else Assert.That(await restarted.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+
+        Assert.That(discord.Member!.RoleIds, Is.EqualTo(new[] { 22UL }));
+        Assert.That(discord.RoleMutations, Is.EqualTo(mutations));
+        Assert.That(discord.Sent.Count, Is.EqualTo(1));
+        Assert.That(store.IsCompleted("faction:101:1000"), Is.True);
+        Assert.That(deletions.Pending.Keys, Does.Contain((101UL, 1000UL)));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task OlderPendingAnswerDoesNotSendOrExtendNewerCooldown(bool cooldownExpired)
+    {
+        var config = new BotConfiguration
+        {
+            GuildId = 1, Prefix = "?",
+            Answers = [new QuickAnswerOptions { Name = "guide", Responses = ["Guide"], Cooldown = TimeSpan.FromMinutes(1), DeleteCommand = true }]
+        };
+        var clock = new ManualTimeProvider(DateTimeOffset.UnixEpoch);
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore();
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", []), SendFailuresRemaining = 1 };
+        var service = new CommunityService(config, store, discord, deletions, clock);
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 300, "?guide", default));
+        await service.ExecuteAsync(7, 100, 301, "?guide", default);
+        var originalCooldown = store.CooldownAt("answer-cooldown:guide:7");
+        clock.Advance(cooldownExpired ? TimeSpan.FromMinutes(2) : TimeSpan.FromSeconds(10));
+
+        Assert.That(await new CommunityService(config, store, discord, deletions, clock).RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.Sent.Count, Is.EqualTo(1));
+        Assert.That(store.CooldownAt("answer-cooldown:guide:7"), Is.EqualTo(originalCooldown));
+        Assert.That(store.IsCompleted("answer:100:300"), Is.True);
+        Assert.That(deletions.Pending.Keys, Does.Contain((100UL, 300UL)));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task PendingAnswerHonorsCurrentCooldownWithoutAnOrderingCursor(bool retryLiveEvent)
+    {
+        var config = new BotConfiguration
+        {
+            GuildId = 1, Prefix = "?",
+            Answers = [new QuickAnswerOptions { Name = "guide", Responses = ["Guide"], Cooldown = TimeSpan.FromMinutes(1) }]
+        };
+        var clock = new ManualTimeProvider(DateTimeOffset.UnixEpoch);
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", []), SendFailuresRemaining = 1 };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore(), clock);
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 300, "?guide", default));
+        store.SeedCooldown("answer-cooldown:guide:7", clock.GetUtcNow());
+        clock.Advance(TimeSpan.FromSeconds(10));
+
+        if (retryLiveEvent) await service.ExecuteAsync(7, 100, 300, "?guide", default);
+        else Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(store.IsCompleted("answer:100:300"), Is.True);
+        Assert.That(store.CooldownAt("answer-cooldown:guide:7"), Is.EqualTo(DateTimeOffset.UnixEpoch));
+    }
+
+    [Test]
+    public async Task FactionRecoveryCompletesLongPlanWhileIndividualStepsKeepProgressing()
+    {
+        var (config, discord, store, service, clock) = LongFactionRecovery();
+        discord.BeforeRoleMutation = ct =>
+        {
+            clock.Advance(TimeSpan.FromMinutes(3));
+            ct.ThrowIfCancellationRequested();
+        };
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(clock.GetUtcNow() - DateTimeOffset.UnixEpoch, Is.GreaterThan(CommunityService.RecoveryInactivityTimeout));
+        Assert.That(store.IsCompleted("faction:100:300"), Is.True);
+        Assert.That(discord.Member!.RoleIds, Is.EqualTo(new[] { 21UL }));
+        Assert.That(discord.Sent.Count, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task StalledFactionRecoveryYieldsToLaterAnswerAndRemainsRetryable()
+    {
+        var (config, discord, store, service, clock) = LongFactionRecovery();
+        config.Answers = [new QuickAnswerOptions { Name = "guide", Responses = ["Guide"] }];
+        discord.SendFailuresRemaining = 1;
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 301, "?guide", default));
+        discord.BeforeRoleMutation = ct =>
+        {
+            clock.Advance(CommunityService.RecoveryInactivityTimeout + TimeSpan.FromSeconds(1));
+            ct.ThrowIfCancellationRequested();
+        };
+
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(store.IsCompleted("faction:100:300"), Is.False);
+        Assert.That(store.IsCompleted("answer:100:301"), Is.True);
+        discord.BeforeRoleMutation = null;
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(store.IsCompleted("faction:100:300"), Is.True);
+    }
+
+    private static (BotConfiguration Config, FakeCommunityDiscord Discord, FakeTicketStore Store,
+        CommunityService Service, ManualTimeProvider Clock) LongFactionRecovery()
+    {
+        var roles = Enumerable.Range(21, 8).Select(id => new FactionRole { Name = "Faction" + id, RoleId = (ulong)id }).ToArray();
+        var config = new BotConfiguration
+        {
+            GuildId = 1, Prefix = "?",
+            Factions = new FactionOptions { Enabled = true, Exclusive = true, Behavior = "join", Roles = roles }
+        };
+        var discord = new FakeCommunityDiscord
+        {
+            Member = new CommunityMember(7, "Player", roles.Skip(1).Select(role => role.RoleId).ToArray()),
+            Roles = roles.Select(role => new CommunityRole(role.RoleId, 1)).ToList(), SendFailuresRemaining = 1
+        };
+        var store = new FakeTicketStore();
+        var clock = new ManualTimeProvider(DateTimeOffset.UnixEpoch);
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore(), clock);
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 300, "?rank Faction21", default));
+        return (config, discord, store, service, clock);
+    }
+
     private static (BotConfiguration Config, FakeCommunityDiscord Discord, string Command, string Key) DeletionCase(bool faction)
     {
         var config = new BotConfiguration
@@ -587,6 +731,9 @@ public sealed class CommunityTests
         private readonly HashSet<string> _deliveries = new(StringComparer.Ordinal);
         private readonly Dictionary<string, DeliveryState> _states = new(StringComparer.Ordinal);
         private readonly Dictionary<string, DateTimeOffset> _cooldowns = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, ulong> _actions = new(StringComparer.Ordinal);
+        public DateTimeOffset? CooldownAt(string key) => _cooldowns.TryGetValue(key, out var at) ? at : null;
+        public void SeedCooldown(string key, DateTimeOffset at) => _cooldowns[key] = at;
         private readonly SemaphoreSlim _ticketLock = new(1, 1);
         private readonly SemaphoreSlim _communityLock = new(1, 1);
         public Action<string>? BeforeComplete { get; set; }
@@ -610,6 +757,15 @@ public sealed class CommunityTests
         {
             private int _disposed;
             public Task<IReadOnlyList<Ticket>> GetTicketsAsync(CancellationToken ct) => Task.FromResult<IReadOnlyList<Ticket>>([]);
+            public Task<Ticket?> GetTicketAsync(Guid id, CancellationToken ct) => Task.FromResult<Ticket?>(null);
+            public Task<Ticket?> FindByChannelAsync(ulong channelId, CancellationToken ct) => Task.FromResult<Ticket?>(null);
+            public Task<bool> TryAdvanceCommunityActionAsync(string scope, ulong messageId, CancellationToken ct)
+            {
+                ct.ThrowIfCancellationRequested();
+                if (owner._actions.TryGetValue(scope, out var latest) && messageId < latest) return Task.FromResult(false);
+                owner._actions[scope] = messageId;
+                return Task.FromResult(true);
+            }
             public Task<Ticket> ReserveAsync(string panelId, ulong requesterId, string interactionId, DateTimeOffset now, CancellationToken ct) => throw new NotSupportedException();
             public Task<Ticket?> FindInteractionAsync(string interactionId, CancellationToken ct) => Task.FromResult<Ticket?>(null);
             public Task SaveAsync(Ticket ticket, string action, ulong? actorId, CancellationToken ct) => Task.CompletedTask;
@@ -651,6 +807,7 @@ public sealed class CommunityTests
         public int SendFailuresRemaining { get; set; }
         public int DeleteFailuresRemaining { get; set; }
         public bool FailAfterNextRemove { get; set; }
+        public Action<CancellationToken>? BeforeRoleMutation { get; set; }
         public TaskCompletionSource<bool>? SendStarted { get; init; }
         public TaskCompletionSource<bool>? ReleaseSend { get; init; }
         private readonly Dictionary<string, ulong> _sentKeys = new(StringComparer.Ordinal);
@@ -658,12 +815,16 @@ public sealed class CommunityTests
         public Task<CommunityRole?> GetRoleAsync(ulong roleId, CancellationToken ct) => Task.FromResult(Roles.FirstOrDefault(x => x.RoleId == roleId));
         public Task AddRoleAsync(ulong userId, ulong roleId, CancellationToken ct)
         {
+            BeforeRoleMutation?.Invoke(ct);
+            ct.ThrowIfCancellationRequested();
             RoleMutations.Add($"add:{userId}:{roleId}");
             if (Member is not null) Member = Member with { RoleIds = Member.RoleIds.Append(roleId).Distinct().ToArray() };
             return Task.CompletedTask;
         }
         public Task RemoveRoleAsync(ulong userId, ulong roleId, CancellationToken ct)
         {
+            BeforeRoleMutation?.Invoke(ct);
+            ct.ThrowIfCancellationRequested();
             RoleMutations.Add($"remove:{userId}:{roleId}");
             if (Member is not null) Member = Member with { RoleIds = Member.RoleIds.Where(x => x != roleId).ToArray() };
             if (FailAfterNextRemove) { FailAfterNextRemove = false; throw new InvalidOperationException("simulated role removal failure after mutation"); }
@@ -694,6 +855,39 @@ public sealed class CommunityTests
     {
         private DateTimeOffset _currentTime = currentTime;
         public override DateTimeOffset GetUtcNow() => _currentTime;
-        public void Advance(TimeSpan amount) => _currentTime += amount;
+        private readonly List<ManualTimer> timers = [];
+        public override ITimer CreateTimer(TimerCallback callback, object? state, TimeSpan dueTime, TimeSpan period)
+        {
+            var timer = new ManualTimer(this, callback, state);
+            timers.Add(timer);
+            timer.Change(dueTime, period);
+            return timer;
+        }
+        public void Advance(TimeSpan amount)
+        {
+            _currentTime += amount;
+            foreach (var timer in timers.ToArray()) timer.FireIfDue();
+        }
+        private sealed class ManualTimer(ManualTimeProvider clock, TimerCallback callback, object? state) : ITimer
+        {
+            private DateTimeOffset? due;
+            private bool disposed;
+            public bool Change(TimeSpan dueTime, TimeSpan period)
+            {
+                if (disposed) return false;
+                due = dueTime == Timeout.InfiniteTimeSpan ? null : clock.GetUtcNow() + dueTime;
+                return true;
+            }
+            public void FireIfDue()
+            {
+                if (!disposed && due is { } at && clock.GetUtcNow() >= at)
+                {
+                    due = null;
+                    callback(state);
+                }
+            }
+            public void Dispose() { disposed = true; clock.timers.Remove(this); }
+            public ValueTask DisposeAsync() { Dispose(); return ValueTask.CompletedTask; }
+        }
     }
 }

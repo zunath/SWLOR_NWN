@@ -274,7 +274,10 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
     private async Task<Ticket?> AuthorizedCloseTicketAsync(ulong channelId, Actor actor, Guid? ticketId, CancellationToken ct)
     {
         await using var session = await store.LockAsync(ct);
-        var ticket = (await session.GetTicketsAsync(ct)).SingleOrDefault(x => x.ChannelId == channelId && (!ticketId.HasValue || x.Id == ticketId));
+        var ticket = ticketId is { } id
+            ? await session.GetTicketAsync(id, ct)
+            : await session.FindByChannelAsync(channelId, ct);
+        if (ticket?.ChannelId != channelId) ticket = null;
         return ticket is not null && (ticket.RequesterId == actor.UserId || tickets.CanSupport(actor)) ? ticket : null;
     }
     private async Task ConfirmCloseAsync(SocketInteraction interaction, Actor actor, ulong channelId, Guid? ticketId, CancellationToken ct)

@@ -19,6 +19,34 @@ public sealed class ConfigurationTests
         Assert.That(ConfigurationValidator.Validate(configuration), Is.Empty);
     }
 
+    [TestCase("-0")]
+    [TestCase("+1")]
+    [TestCase(" 1")]
+    [TestCase("1 ")]
+    [TestCase("1,000")]
+    [TestCase("١")]
+    [TestCase("1.0")]
+    public void Parse_RejectsNonDigitQuotedIds(string id)
+    {
+        var json = System.Text.Json.JsonSerializer.Serialize(new { GuildId = id });
+        Assert.Throws<System.Text.Json.JsonException>(() => ConfigurationLoader.Parse(json));
+    }
+
+    [Test]
+    public void Parse_QuotedIdsUseInvariantCulture()
+    {
+        var original = System.Globalization.CultureInfo.CurrentCulture;
+        var custom = (System.Globalization.CultureInfo)original.Clone();
+        custom.NumberFormat.PositiveSign = "x";
+        try
+        {
+            System.Globalization.CultureInfo.CurrentCulture = custom;
+            Assert.That(ConfigurationLoader.Parse("""{"GuildId":"18446744073709551615"}""").GuildId, Is.EqualTo(ulong.MaxValue));
+            Assert.Throws<System.Text.Json.JsonException>(() => ConfigurationLoader.Parse("""{"GuildId":"x123"}"""));
+        }
+        finally { System.Globalization.CultureInfo.CurrentCulture = original; }
+    }
+
     [Test]
     public void Parse_NormalizesWelcomeMentionKeysBeforeValidationAndRendering()
     {
@@ -415,6 +443,8 @@ public sealed class ConfigurationTests
         public Task InitializeAsync(CancellationToken ct) => Task.CompletedTask;
         public Task<ITicketSession> LockAsync(CancellationToken ct) => Task.FromResult<ITicketSession>(this);
         public Task<IReadOnlyList<Ticket>> GetTicketsAsync(CancellationToken ct) { Read = true; return Task.FromResult(tickets); }
+        public Task<Ticket?> GetTicketAsync(Guid id, CancellationToken ct) => Task.FromResult(tickets.SingleOrDefault(ticket => ticket.Id == id));
+        public Task<Ticket?> FindByChannelAsync(ulong channelId, CancellationToken ct) => Task.FromResult(tickets.SingleOrDefault(ticket => ticket.ChannelId == channelId));
         public ValueTask DisposeAsync() { Disposed = true; return ValueTask.CompletedTask; }
         public Task<Ticket> ReserveAsync(string panelId, ulong requesterId, string interactionId, DateTimeOffset now, CancellationToken ct) => throw new NotSupportedException();
         public Task<Ticket?> FindInteractionAsync(string interactionId, CancellationToken ct) => throw new NotSupportedException();
@@ -424,5 +454,6 @@ public sealed class ConfigurationTests
         public Task CompleteDeliveryAsync(string key, CancellationToken ct) => throw new NotSupportedException();
         public Task<DateTimeOffset?> GetCooldownAsync(string key, CancellationToken ct) => throw new NotSupportedException();
         public Task SetCooldownAsync(string key, DateTimeOffset at, CancellationToken ct) => throw new NotSupportedException();
+        public Task<bool> TryAdvanceCommunityActionAsync(string scope, ulong messageId, CancellationToken ct) => throw new NotSupportedException();
     }
 }

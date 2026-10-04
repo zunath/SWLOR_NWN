@@ -27,6 +27,7 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
     IResponseDeletionStore deletions, TimeProvider? timeProvider = null, ILogger<CommunityService>? logger = null)
 {
     private TimeProvider Clock => timeProvider ?? TimeProvider.System;
+    internal static readonly TimeSpan RecoveryInactivityTimeout = TimeSpan.FromMinutes(4);
 
     public async Task WelcomeAsync(ulong userId, DateTimeOffset joinedAt, CancellationToken ct)
     {
@@ -78,18 +79,26 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
             {
                 ct.ThrowIfCancellationRequested();
                 using var intentTimeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
-                intentTimeout.CancelAfter(TimeSpan.FromSeconds(30));
                 var intentCt = intentTimeout.Token;
+                using var watchdog = Clock.CreateTimer(_ =>
+                {
+                    try { intentTimeout.Cancel(); } catch (ObjectDisposedException) { }
+                }, null, RecoveryInactivityTimeout, Timeout.InfiniteTimeSpan);
+                void Progress()
+                {
+                    intentCt.ThrowIfCancellationRequested();
+                    watchdog.Change(RecoveryInactivityTimeout, Timeout.InfiniteTimeSpan);
+                }
                 bool deleteSource;
                 ulong? deletionChannel = null;
                 ulong? deletionMessage = null;
-                await using (var session = await store.LockCommunityAsync(intentCt))
+                await using (var session = await WithRecoveryProgressAsync(store.LockCommunityAsync(intentCt), Progress))
                 {
-                    var current = await session.GetOrCreateDeliveryAsync(item.Key, item.Intent, intentCt);
+                    var current = await WithRecoveryProgressAsync(session.GetOrCreateDeliveryAsync(item.Key, item.Intent, intentCt), Progress);
                     if (current.Completed) continue;
                     if (current.Intent == "suppressed")
                     {
-                        await session.CompleteDeliveryAsync(item.Key, intentCt);
+                        await WithRecoveryProgressAsync(session.CompleteDeliveryAsync(item.Key, intentCt), Progress);
                         recovered++;
                         continue;
                     }
@@ -99,22 +108,31 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
                         (intent.ChannelId is not > 0 || intent.SourceMessageId is not > 0))
                     {
                         logger?.LogWarning("Skipped legacy or invalid community delivery {DeliveryKey}: routing or actor context is unavailable.", item.Key);
-                        await session.CompleteDeliveryAsync(item.Key, intentCt);
+                        await WithRecoveryProgressAsync(session.CompleteDeliveryAsync(item.Key, intentCt), Progress);
                         recovered++;
                         continue;
                     }
                     if (intent.Kind == "answer" && !HasUsableContent(intent.Message))
                     {
-                        await session.CompleteDeliveryAsync(item.Key, intentCt);
+                        await WithRecoveryProgressAsync(session.CompleteDeliveryAsync(item.Key, intentCt), Progress);
                         recovered++;
                         continue;
                     }
 
                     deleteSource = false;
-                    if (!await IsCurrentMemberAsync(userId, intentCt))
+                    if (!await WithRecoveryProgressAsync(IsCurrentMemberAsync(userId, intentCt), Progress))
                     {
                         logger?.LogInformation("Completed pending community delivery {DeliveryKey} without sending because its actor is no longer a guild member.", item.Key);
-                        await session.CompleteDeliveryAsync(item.Key, intentCt);
+                        await WithRecoveryProgressAsync(session.CompleteDeliveryAsync(item.Key, intentCt), Progress);
+                        recovered++;
+                        continue;
+                    }
+
+                    var scope = intent.Kind == "faction" ? $"faction:{userId}" :
+                        intent.Kind == "answer" && intent.Cooldown > TimeSpan.Zero ? intent.CooldownKey : null;
+                    if (scope is not null && !await WithRecoveryProgressAsync(session.TryAdvanceCommunityActionAsync(scope, intent.SourceMessageId!.Value, intentCt), Progress))
+                    {
+                        await WithRecoveryProgressAsync(SuppressDeliveryAsync(session, item.Key, intent, intentCt), Progress);
                         recovered++;
                         continue;
                     }
@@ -125,36 +143,46 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
                             if (!configuration.Welcome.Enabled ||
                                 (intent.DirectMessage ? !intent.UserId.HasValue : intent.ChannelId is not > 0))
                             {
-                                await session.CompleteDeliveryAsync(item.Key, intentCt);
+                                await WithRecoveryProgressAsync(session.CompleteDeliveryAsync(item.Key, intentCt), Progress);
                                 recovered++;
                                 continue;
                             }
                             if (intent.DirectMessage)
                             {
-                                if (await discord.SendDirectMessageAsync(userId, intent.Message, intentCt) is null)
+                                if (await WithRecoveryProgressAsync(discord.SendDirectMessageAsync(userId, intent.Message, intentCt), Progress) is null)
                                     throw new InvalidOperationException("The pending welcome direct message was not delivered.");
                             }
                             else if (intent.ChannelId is { } welcomeChannel &&
-                                     await discord.SendAsync(welcomeChannel, intent.Message, intentCt) is null)
+                                     await WithRecoveryProgressAsync(discord.SendAsync(welcomeChannel, intent.Message, intentCt), Progress) is null)
                                 throw new InvalidOperationException("The pending welcome message was not delivered.");
                             break;
 
                         case "answer":
                             var answer = (configuration.Answers ?? []).FirstOrDefault(x => x.Enabled &&
                                 x.Name.Equals(intent.AnswerName, StringComparison.OrdinalIgnoreCase));
-                            var member = await discord.GetMemberAsync(userId, intentCt);
+                            var member = await WithRecoveryProgressAsync(discord.GetMemberAsync(userId, intentCt), Progress);
                             if (answer is null || member is null || member.IsBot || member.IsWebhook ||
                                 answer.AllowedChannelIds.Length > 0 && !answer.AllowedChannelIds.Contains(intent.ChannelId!.Value) ||
                                 answer.AllowedRoleIds.Length > 0 && !answer.AllowedRoleIds.Any(member.RoleIds.Contains))
                             {
-                                await session.CompleteDeliveryAsync(item.Key, intentCt);
+                                await WithRecoveryProgressAsync(session.CompleteDeliveryAsync(item.Key, intentCt), Progress);
                                 recovered++;
                                 continue;
                             }
-                            if (await discord.SendAsync(intent.ChannelId!.Value, intent.Message, intentCt) is null)
+                            var cooldownDuration = answer.Cooldown > (intent.Cooldown ?? TimeSpan.Zero)
+                                ? answer.Cooldown : intent.Cooldown ?? TimeSpan.Zero;
+                            var lastDelivered = cooldownDuration > TimeSpan.Zero && intent.CooldownKey is { } recoveryCooldownKey
+                                ? await WithRecoveryProgressAsync(session.GetCooldownAsync(recoveryCooldownKey, intentCt), Progress) : null;
+                            if (lastDelivered is { } last && Clock.GetUtcNow() < last + cooldownDuration)
+                            {
+                                await WithRecoveryProgressAsync(SuppressDeliveryAsync(session, item.Key, intent, intentCt), Progress);
+                                recovered++;
+                                continue;
+                            }
+                            if (await WithRecoveryProgressAsync(discord.SendAsync(intent.ChannelId!.Value, intent.Message, intentCt), Progress) is null)
                                 throw new InvalidOperationException("The pending quick answer response was not delivered.");
                             if (intent.Cooldown is { } cooldown && cooldown > TimeSpan.Zero && intent.CooldownKey is { } cooldownKey)
-                                await session.SetCooldownAsync(cooldownKey, Clock.GetUtcNow(), intentCt);
+                                await WithRecoveryProgressAsync(session.SetCooldownAsync(cooldownKey, Clock.GetUtcNow(), intentCt), Progress);
                             break;
 
                         case "faction":
@@ -163,42 +191,42 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
                                 x.Name.Equals(intent.FactionName, StringComparison.OrdinalIgnoreCase));
                             if (!factions.Enabled || faction is null || intent.RoleOperations is null)
                             {
-                                await session.CompleteDeliveryAsync(item.Key, intentCt);
+                                await WithRecoveryProgressAsync(session.CompleteDeliveryAsync(item.Key, intentCt), Progress);
                                 recovered++;
                                 continue;
                             }
                             foreach (var operation in intent.RoleOperations)
                             {
                                 var configuredRole = (factions.Roles ?? []).FirstOrDefault(x => x.RoleId == operation.RoleId);
-                                var roleInfo = await discord.GetRoleAsync(operation.RoleId, intentCt);
+                                var roleInfo = await WithRecoveryProgressAsync(discord.GetRoleAsync(operation.RoleId, intentCt), Progress);
                                 if (configuredRole is null || roleInfo is null || roleInfo.IsManaged) continue;
-                                if (operation.Add) await discord.AddRoleAsync(userId, operation.RoleId, intentCt);
-                                else await discord.RemoveRoleAsync(userId, operation.RoleId, intentCt);
+                                if (operation.Add) await WithRecoveryProgressAsync(discord.AddRoleAsync(userId, operation.RoleId, intentCt), Progress);
+                                else await WithRecoveryProgressAsync(discord.RemoveRoleAsync(userId, operation.RoleId, intentCt), Progress);
                             }
-                            if (await discord.SendAsync(intent.ChannelId!.Value, intent.Message, intentCt) is null)
+                            if (await WithRecoveryProgressAsync(discord.SendAsync(intent.ChannelId!.Value, intent.Message, intentCt), Progress) is null)
                                 throw new InvalidOperationException("The pending faction response was not delivered.");
                             break;
 
                         default:
                             logger?.LogWarning("Skipped pending community delivery {DeliveryKey}: unknown delivery kind.", item.Key);
-                            await session.CompleteDeliveryAsync(item.Key, intentCt);
+                            await WithRecoveryProgressAsync(session.CompleteDeliveryAsync(item.Key, intentCt), Progress);
                             recovered++;
                             continue;
                     }
 
                     if (intent.DeleteSource && intent.ChannelId is { } sourceChannel && intent.SourceMessageId is { } sourceMessage)
                     {
-                        await deletions.ScheduleDeletionAsync(sourceChannel, sourceMessage, Clock.GetUtcNow(), intentCt);
+                        await WithRecoveryProgressAsync(deletions.ScheduleDeletionAsync(sourceChannel, sourceMessage, Clock.GetUtcNow(), intentCt), Progress);
                         deleteSource = true;
                         deletionChannel = sourceChannel;
                         deletionMessage = sourceMessage;
                     }
-                    await session.CompleteDeliveryAsync(item.Key, intentCt);
+                    await WithRecoveryProgressAsync(session.CompleteDeliveryAsync(item.Key, intentCt), Progress);
                     recovered++;
                 }
 
                 if (deleteSource && deletionChannel is { } channelToDelete && deletionMessage is { } messageToDelete)
-                    await CompleteCommandDeletionAsync(channelToDelete, messageToDelete, intentCt);
+                    await WithRecoveryProgressAsync(CompleteCommandDeletionAsync(channelToDelete, messageToDelete, intentCt), Progress);
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested) { throw; }
             catch (Exception ex)
@@ -254,11 +282,12 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
             if (answer.Cooldown > TimeSpan.Zero && lastDelivered is { } last && now < last + answer.Cooldown)
             {
                 var suppressed = await session.GetOrCreateDeliveryAsync(deliveryKey, "suppressed", ct);
-                if (suppressed.Intent == "suppressed")
+                if (!suppressed.Completed)
                 {
-                    if (!suppressed.Completed) await session.CompleteDeliveryAsync(deliveryKey, ct);
-                    return;
+                    TryReadCurrentIntent(suppressed.Intent, out var pendingIntent);
+                    await SuppressDeliveryAsync(session, deliveryKey, pendingIntent, ct);
                 }
+                return;
             }
             var delivery = await session.GetOrCreateDeliveryAsync(deliveryKey, JsonSerializer.Serialize(candidate), ct);
             if (delivery.Intent == "suppressed") return;
@@ -281,6 +310,12 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
             }
             if (!delivery.Completed)
             {
+                if (persistedIntent.Cooldown > TimeSpan.Zero && persistedIntent.CooldownKey is { } scope &&
+                    !await session.TryAdvanceCommunityActionAsync(scope, persistedIntent.SourceMessageId!.Value, ct))
+                {
+                    await SuppressDeliveryAsync(session, deliveryKey, persistedIntent, ct);
+                    return;
+                }
                 if (persistedIntent.ChannelId is not { } destination || destination == 0 ||
                     await discord.SendAsync(destination, persistedMessage, ct) is null)
                     throw new InvalidOperationException("The quick answer response was not delivered.");
@@ -345,6 +380,11 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
             // the desired state for this message instead of re-evaluating the toggle against changed roles.
             if (!delivery.Completed)
             {
+                if (!await session.TryAdvanceCommunityActionAsync($"faction:{intent.UserId!.Value}", intent.SourceMessageId!.Value, ct))
+                {
+                    await SuppressDeliveryAsync(session, deliveryKey, intent, ct);
+                    return;
+                }
                 foreach (var operation in intent.RoleOperations)
                 {
                     var configuredRole = (factions.Roles ?? []).FirstOrDefault(x => x.RoleId == operation.RoleId);
@@ -362,6 +402,26 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
             }
         }
         if (deleteSourceCommand) await CompleteCommandDeletionAsync(channelId, messageId, ct);
+    }
+
+    private async Task SuppressDeliveryAsync(ITicketSession session, string key, CommunityDeliveryIntent? intent, CancellationToken ct)
+    {
+        if (intent is { DeleteSource: true, ChannelId: > 0, SourceMessageId: > 0 })
+            await deletions.ScheduleDeletionAsync(intent.ChannelId.Value, intent.SourceMessageId.Value, Clock.GetUtcNow(), ct);
+        await session.CompleteDeliveryAsync(key, ct);
+    }
+
+    private static async Task<T> WithRecoveryProgressAsync<T>(Task<T> operation, Action progress)
+    {
+        var result = await operation;
+        progress();
+        return result;
+    }
+
+    private static async Task WithRecoveryProgressAsync(Task operation, Action progress)
+    {
+        await operation;
+        progress();
     }
 
     private async Task CompleteCommandDeletionAsync(ulong channelId, ulong messageId, CancellationToken ct)

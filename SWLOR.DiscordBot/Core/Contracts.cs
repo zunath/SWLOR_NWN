@@ -18,6 +18,8 @@ public sealed record PendingDelivery(string Key, string Intent);
 public interface ITicketSession : IAsyncDisposable
 {
     Task<IReadOnlyList<Ticket>> GetTicketsAsync(CancellationToken ct);
+    Task<Ticket?> GetTicketAsync(Guid id, CancellationToken ct);
+    Task<Ticket?> FindByChannelAsync(ulong channelId, CancellationToken ct);
     Task<Ticket> ReserveAsync(string panelId, ulong requesterId, string interactionId, DateTimeOffset now, CancellationToken ct);
     Task<Ticket?> FindInteractionAsync(string interactionId, CancellationToken ct);
     Task SaveAsync(Ticket ticket, string action, ulong? actorId, CancellationToken ct);
@@ -28,6 +30,7 @@ public interface ITicketSession : IAsyncDisposable
     Task CompleteDeliveryAsync(string key, CancellationToken ct);
     Task<DateTimeOffset?> GetCooldownAsync(string key, CancellationToken ct);
     Task SetCooldownAsync(string key, DateTimeOffset at, CancellationToken ct);
+    Task<bool> TryAdvanceCommunityActionAsync(string scope, ulong messageId, CancellationToken ct);
 }
 public interface ITicketStore
 {

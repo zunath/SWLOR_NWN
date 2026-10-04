@@ -40,7 +40,7 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
         await using var command = new NpgsqlCommand(schema, session.Connection);
         await command.ExecuteNonQueryAsync(ct);
         await using var versionCommand = new NpgsqlCommand("SELECT max(version) FROM swlor_bot_schema", session.Connection);
-        if (Convert.ToInt32(await versionCommand.ExecuteScalarAsync(ct)) > 3)
+        if (Convert.ToInt32(await versionCommand.ExecuteScalarAsync(ct)) > 4)
             throw new InvalidOperationException("The bot database schema is newer than this application.");
         await using var transaction = await session.Connection.BeginTransactionAsync(ct);
         const string upgrade = """
@@ -63,6 +63,48 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
             CREATE INDEX IF NOT EXISTS swlor_bot_deliveries_at ON swlor_bot_deliveries(at);
             CREATE INDEX IF NOT EXISTS swlor_bot_cooldowns_at ON swlor_bot_cooldowns(at);
             INSERT INTO swlor_bot_schema(version) VALUES (3) ON CONFLICT DO NOTHING;
+            CREATE TABLE IF NOT EXISTS swlor_bot_community_actions (
+                scope text PRIMARY KEY, message_id numeric(20,0) NOT NULL);
+            DO $$ BEGIN
+            IF NOT EXISTS (SELECT 1 FROM swlor_bot_schema WHERE version = 4) THEN
+            -- Recover the newest durable action per user/faction or answer cooldown scope.
+            -- Materialize guarded JSON parsing before touching any nested fields: old deployments may
+            -- contain legacy free-form intent text in the same operations table.
+            WITH parsed AS MATERIALIZED (
+                SELECT CASE WHEN pg_input_is_valid(intent, 'jsonb') THEN intent::jsonb ELSE NULL END AS doc
+                FROM swlor_bot_delivery_operations
+            ), raw AS MATERIALIZED (
+                SELECT doc, doc->>'Kind' AS kind, doc->>'UserId' AS user_id,
+                    doc->>'SourceMessageId' AS source_message_id,
+                    doc->>'CooldownKey' AS cooldown_key, doc->>'Cooldown' AS cooldown
+                FROM parsed WHERE jsonb_typeof(doc) = 'object' AND doc->>'Version' = '1'
+            ), validated AS MATERIALIZED (
+                SELECT *,
+                    CASE WHEN user_id ~ '^[0-9]{1,20}$' THEN user_id::numeric END AS user_num,
+                    CASE WHEN source_message_id ~ '^[0-9]{1,20}$' THEN source_message_id::numeric END AS message_num,
+                    CASE WHEN cooldown ~ '^([0-9]+\.)?[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?$'
+                        THEN regexp_replace(cooldown, '[0.:]', '', 'g') <> '' ELSE false END AS positive_cooldown
+                FROM raw
+            ), candidates AS (
+                SELECT 'faction:' || user_id AS scope, source_message_id AS message_id
+                FROM validated
+                WHERE kind = 'faction'
+                  AND user_num BETWEEN 1 AND 18446744073709551615
+                  AND message_num BETWEEN 1 AND 18446744073709551615
+                UNION ALL
+                SELECT cooldown_key AS scope, source_message_id AS message_id
+                FROM validated
+                WHERE kind = 'answer' AND cooldown_key IS NOT NULL AND cooldown_key <> ''
+                  AND positive_cooldown
+                  AND user_num BETWEEN 1 AND 18446744073709551615
+                  AND message_num BETWEEN 1 AND 18446744073709551615
+            )
+            INSERT INTO swlor_bot_community_actions(scope, message_id)
+            SELECT scope, max(message_id::numeric) FROM candidates GROUP BY scope
+            ON CONFLICT(scope) DO UPDATE SET message_id = GREATEST(swlor_bot_community_actions.message_id, EXCLUDED.message_id);
+            INSERT INTO swlor_bot_schema(version) VALUES (4) ON CONFLICT DO NOTHING;
+            END IF;
+            END $$;
             """;
         await using var upgradeCommand = new NpgsqlCommand(upgrade, session.Connection, transaction);
         await upgradeCommand.ExecuteNonQueryAsync(ct);
@@ -270,6 +312,22 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
             return result;
         }
 
+        public async Task<Ticket?> GetTicketAsync(Guid id, CancellationToken ct)
+        {
+            await using var command = new NpgsqlCommand("SELECT payload FROM swlor_bot_tickets WHERE id=@id", connection);
+            command.Parameters.AddWithValue("id", id);
+            var data = await command.ExecuteScalarAsync(ct);
+            return data is string json ? JsonSerializer.Deserialize<Ticket>(json) : null;
+        }
+
+        public async Task<Ticket?> FindByChannelAsync(ulong channelId, CancellationToken ct)
+        {
+            await using var command = new NpgsqlCommand("SELECT payload FROM swlor_bot_tickets WHERE channel_id=@channel", connection);
+            command.Parameters.AddWithValue("channel", channelId.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            var data = await command.ExecuteScalarAsync(ct);
+            return data is string json ? JsonSerializer.Deserialize<Ticket>(json) : null;
+        }
+
         public async Task CompleteDeliveryAsync(string key, CancellationToken ct)
         {
             await using var command = new NpgsqlCommand("UPDATE swlor_bot_delivery_operations SET completed=true,updated_at=CASE WHEN completed THEN updated_at ELSE now() END WHERE key=@key", connection);
@@ -291,6 +349,20 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
             command.Parameters.AddWithValue("key", key);
             command.Parameters.AddWithValue("at", at.ToUniversalTime());
             await command.ExecuteNonQueryAsync(ct);
+        }
+
+        public async Task<bool> TryAdvanceCommunityActionAsync(string scope, ulong messageId, CancellationToken ct)
+        {
+            const string upsert = """
+                INSERT INTO swlor_bot_community_actions(scope, message_id) VALUES (@scope, @message)
+                ON CONFLICT(scope) DO UPDATE
+                SET message_id = GREATEST(swlor_bot_community_actions.message_id, EXCLUDED.message_id)
+                RETURNING message_id = @message
+                """;
+            await using var command = new NpgsqlCommand(upsert, connection);
+            command.Parameters.AddWithValue("scope", scope);
+            command.Parameters.AddWithValue("message", NpgsqlDbType.Numeric, (decimal)messageId);
+            return await command.ExecuteScalarAsync(ct) is true;
         }
 
         public async ValueTask DisposeAsync()

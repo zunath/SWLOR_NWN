@@ -59,6 +59,10 @@ public sealed class PostgresStoreTests
         await second.InitializeAsync(default);
         await using var resumed = await second.LockAsync(default);
         Assert.That(await resumed.FindInteractionAsync(key, default), Is.EqualTo(ticket));
+        Assert.That(await resumed.GetTicketAsync(ticket.Id, default), Is.EqualTo(ticket), "Ticket id lookup should return the persisted row directly.");
+        Assert.That(await resumed.FindByChannelAsync(ticket.ChannelId!.Value, default), Is.EqualTo(ticket), "Channel lookup should use the unique channel_id value.");
+        Assert.That(await resumed.GetTicketAsync(Guid.NewGuid(), default), Is.Null);
+        Assert.That(await resumed.FindByChannelAsync(0, default), Is.Null);
         var intent = await resumed.GetOrCreateDeliveryAsync(key, "remove-faction:123", default);
         Assert.That(intent, Is.EqualTo(new DeliveryState("add-faction:123", false)));
         await resumed.CompleteDeliveryAsync(key, default);
@@ -193,7 +197,16 @@ public sealed class PostgresStoreTests
                 CREATE TABLE swlor_bot_delivery_operations (
                     key text PRIMARY KEY, intent text NOT NULL, completed boolean NOT NULL DEFAULT false,
                     updated_at timestamptz NOT NULL DEFAULT now());
-                INSERT INTO swlor_bot_delivery_operations(key,intent,completed) VALUES ('existing','original',true);
+                INSERT INTO swlor_bot_delivery_operations(key,intent,completed) VALUES
+                    ('existing','original',true),
+                    ('faction-old','{"Version":1,"Kind":"faction","UserId":42,"SourceMessageId":999}',true),
+                    ('answer-old','{"Version":1,"Kind":"answer","UserId":42,"SourceMessageId":700,"CooldownKey":"answer-cooldown:faq:42","Cooldown":"00:00:15"}',false),
+                    ('bad-json','not-json',false),
+                    ('answer-no-cooldown','{"Version":1,"Kind":"answer","UserId":42,"SourceMessageId":900,"CooldownKey":"answer-cooldown:faq:42"}',false),
+                    ('answer-days','{"Version":1,"Kind":"answer","UserId":42,"SourceMessageId":701,"CooldownKey":"answer-cooldown:days:42","Cooldown":"1.00:00:00"}',true),
+                    ('answer-zero','{"Version":1,"Kind":"answer","UserId":42,"SourceMessageId":950,"CooldownKey":"answer-cooldown:zero:42","Cooldown":"00:00:00"}',true),
+                    ('overflow-id','{"Version":1,"Kind":"faction","UserId":42,"SourceMessageId":18446744073709551616}',true),
+                    ('max-id','{"Version":1,"Kind":"faction","UserId":18446744073709551615,"SourceMessageId":18446744073709551615}',false);
                 """;
             await using var command = new NpgsqlCommand(versionOne, connection);
             await command.ExecuteNonQueryAsync();
@@ -203,12 +216,26 @@ public sealed class PostgresStoreTests
         await store.InitializeAsync(default);
         await using var session = await store.LockAsync(default);
         Assert.That(await session.GetOrCreateDeliveryAsync("existing", "replacement", default), Is.EqualTo(new DeliveryState("original", true)));
+        Assert.That(await session.TryAdvanceCommunityActionAsync("faction:42", 998, default), Is.False,
+            "Migration should seed the newest faction action from existing completed intents.");
+        Assert.That(await session.TryAdvanceCommunityActionAsync("faction:42", 999, default), Is.True);
+        Assert.That(await session.TryAdvanceCommunityActionAsync("answer-cooldown:faq:42", 699, default), Is.False,
+            "Migration should seed cooldown-bearing answer intents, including pending operations.");
+        Assert.That(await session.TryAdvanceCommunityActionAsync("answer-cooldown:faq:42", 700, default), Is.True);
+        Assert.That(await session.TryAdvanceCommunityActionAsync("answer-cooldown:faq:42", 800, default), Is.True);
+        Assert.That(await session.TryAdvanceCommunityActionAsync("answer-cooldown:faq:42", 799, default), Is.False,
+            "Advancing a scope must be monotonic.");
+        Assert.That(await session.TryAdvanceCommunityActionAsync("answer-cooldown:days:42", 700, default), Is.False);
+        Assert.That(await session.TryAdvanceCommunityActionAsync("answer-cooldown:zero:42", 1, default), Is.True,
+            "A zero cooldown must not create an answer action cursor during backfill.");
+        Assert.That(await session.TryAdvanceCommunityActionAsync("faction:" + ulong.MaxValue, ulong.MaxValue - 1, default), Is.False);
+        Assert.That(await session.TryAdvanceCommunityActionAsync("faction:" + ulong.MaxValue, ulong.MaxValue, default), Is.True);
         await store.ScheduleDeletionAsync(10, 11, DateTimeOffset.UtcNow, default);
         Assert.That(await store.GetDueDeletionsAsync(DateTimeOffset.UtcNow.AddSeconds(1), default), Has.Count.EqualTo(1));
         await using var verify = new NpgsqlConnection(ConnectionString);
         await verify.OpenAsync();
         await using var version = new NpgsqlCommand("SELECT max(version) FROM swlor_bot_schema", verify);
-        Assert.That(await version.ExecuteScalarAsync(), Is.EqualTo(3));
+        Assert.That(await version.ExecuteScalarAsync(), Is.EqualTo(4));
     }
 
     [Test]

@@ -135,7 +135,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             Ticket ticket;
             await using (var session = await store.LockAsync(ct))
             {
-                var found = (await session.GetTicketsAsync(ct)).SingleOrDefault(t => t.ChannelId == channelId);
+                var found = await session.FindByChannelAsync(channelId, ct);
                 if (found is null) return new(false, "This channel is not a ticket managed by this bot.");
                 ticket = found;
                 if (ticket.State is not (TicketState.Open or TicketState.Closed)) return new(false, "This ticket is busy; try again shortly.");
@@ -150,7 +150,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             Ticket current;
             await using (var saveSession = await store.LockAsync(ct))
             {
-                current = (await saveSession.GetTicketsAsync(ct)).Single(t => t.Id == ticket.Id);
+                current = await saveSession.GetTicketAsync(ticket.Id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
                 // Preserve closes, reopens, holds, and deadlines changed while the snapshot was written.
                 current = current with { ArchivePath = path, ArchiveComplete = true };
                 await saveSession.SaveAsync(current, "exported", actor.UserId, ct);
@@ -173,7 +173,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
     {
         if (!Options.Enabled) return new(false, "Ticketing is disabled.");
         await using var session = await store.LockAsync(ct);
-        var ticket = (await session.GetTicketsAsync(ct)).SingleOrDefault(t => t.ChannelId == channelId);
+        var ticket = await session.FindByChannelAsync(channelId, ct);
         if (ticket is null) return new(false, "This channel is not a ticket managed by this bot.");
         return await mutation(session, ticket);
     }
@@ -189,7 +189,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         {
             ct.ThrowIfCancellationRequested();
             await using var session = await store.LockAsync(ct);
-            var ticket = (await session.GetTicketsAsync(ct)).SingleOrDefault(candidate => candidate.Id == id);
+            var ticket = await session.GetTicketAsync(id, ct);
             if (ticket is null || ticket.State is not (TicketState.Open or TicketState.Closed)) continue;
             // A missing channel is handled by maintenance; an inaccessible/unmanaged channel must fail readiness.
             if (await discord.ExistsAsync(ticket, ct)) await discord.ReconcilePermissionsAsync(ticket, ct);
@@ -227,7 +227,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             try
             {
                 await using var session = await store.LockAsync(ct);
-                var ticket = (await session.GetTicketsAsync(ct)).SingleOrDefault(candidate => candidate.Id == id);
+                var ticket = await session.GetTicketAsync(id, ct);
                 if (ticket is null || _exports.ContainsKey(id) || !ArchiveHasExpired(ticket)) continue;
                 // FileTranscriptArchive validates ownership and links; no Discord access is required.
                 await archive.DeleteAsync(ticket.ArchivePath!, ct);
@@ -249,7 +249,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         logger?.LogWarning(ex, "Ticket {TicketId} maintenance failed; retained for retry", id);
         await using var session = await store.LockAsync(ct);
         // Keep the last durable archive and state even when a later remote operation timed out.
-        var durable = (await session.GetTicketsAsync(ct)).SingleOrDefault(ticket => ticket.Id == id);
+        var durable = await session.GetTicketAsync(id, ct);
         if (durable is not null)
             await session.SaveAsync(durable with { LastError = "Maintenance failed; retry scheduled. Check worker logs." }, "maintenance-failed", null, ct);
     }
@@ -262,7 +262,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             Ticket ticket;
             await using (var session = await store.LockAsync(ct))
             {
-                var found = (await session.GetTicketsAsync(ct)).SingleOrDefault(candidate => candidate.Id == id);
+                var found = await session.GetTicketAsync(id, ct);
                 if (found is null) return;
                 ticket = found;
                 if (ticket.State != TicketState.Deleted && ticket.ChannelId.HasValue && !await WithProgressAsync(discord.ExistsAsync(ticket, ct), progress))
@@ -320,7 +320,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             var archivePath = await WithProgressAsync(archive.ExportAsync(ticket, snapshot, ct, progress), progress);
             await using (var saveSession = await store.LockAsync(ct))
             {
-                var current = (await saveSession.GetTicketsAsync(ct)).Single(t => t.Id == id);
+                var current = await saveSession.GetTicketAsync(id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
                 await saveSession.SaveAsync(current with { ArchivePath = archivePath, ArchiveComplete = true, LastError = null }, "cleanup-exported", null, ct);
             }
             // A stable head alone misses edits/deletions of older messages during pagination or downloads.
@@ -328,7 +328,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             if (!SameTranscript(snapshot, verified))
                 throw new InvalidOperationException("Ticket transcript changed during archival; retrying before deletion.");
             await using var deleteSession = await store.LockAsync(ct);
-            var latest = (await deleteSession.GetTicketsAsync(ct)).Single(t => t.Id == id);
+            var latest = await deleteSession.GetTicketAsync(id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
             if (latest.State != TicketState.Deleting || latest.Hold) return;
             if (await WithProgressAsync(discord.LastMessageIdAsync(latest, ct), progress) != verified.LastMessageId)
                 throw new InvalidOperationException("Ticket received new messages during archival; retrying before deletion.");

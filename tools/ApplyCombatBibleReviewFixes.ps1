@@ -31,7 +31,7 @@ $perkChanges = @(
         Sheet = "Leadership"
         PerkName = "Bolster Resolve II"
         Values = @{
-            Notes = "Support command. Affects the leader and nearby party members; valid use grants +2 Leadership CP to tagged NPCs. Its physical and Force reduction is an additional Field Steward recovery rider that stacks with the strongest ordinary Leadership damage-reduction source. Converted from separate active ability to Trait row for the 4-6 active-button budget. Former active values: STM 8; casting 1 second; cooldown 45 seconds."
+            Notes = "Support command. Affects the leader and nearby party members; valid use grants +2 Leadership CP to tagged NPCs. Its physical and Force reduction is an additional Field Steward recovery rider that stacks with the strongest ordinary Leadership damage-reduction source."
         }
     },
     @{
@@ -709,28 +709,13 @@ $mimicryRequirements = @{
     "Will Fracture" = 46
 }
 
-$mimicryTraitNames = @(
-    "Bonecrusher Bite", "Chitin Guard", "Crippling Talons", "Essence Scar", "Force Rend",
-    "Force Sunder", "Glacial Slime", "Hoarfrost Glob", "Iron Carapace", "Mauling Bite",
-    "Mind Spike", "Opening Cut", "Overload Shot", "Precision Shot", "Rangefinder Shot",
-    "Rending Bite", "Rending Carve", "Rime Pounce", "Serrated Slash", "Tactical Mark",
-    "Target Lock"
-)
-
 foreach ($entry in $mimicryRequirements.GetEnumerator()) {
-    $notes = if ($mimicryTraitNames -contains $entry.Key) {
-        "Requires Mimicry rank $($entry.Value). Passive trait applied while equipped; learned from creatures via the combat analyzer."
-    }
-    else {
-        "Requires Mimicry rank $($entry.Value). Learned from creatures via the combat analyzer."
-    }
-
     $perkChanges += @{
         Sheet = "Mimicry"
         PerkName = $entry.Key
         Values = @{
             "Skill Reqs." = if ($entry.Value -eq 0) { "-" } else { "Mimicry $($entry.Value)" }
-            Notes = $notes
+            Notes = ""
         }
     }
 }
@@ -738,19 +723,19 @@ foreach ($entry in $mimicryRequirements.GetEnumerator()) {
 $mimicryAnalyzerChanges = @{
     "Combat Analyzer I" = @{
         Description = "Grants a combat analyzer capable of recording enemy creature techniques. Unlocks technique learning and the Techniques window. Provides 2 technique slots."
-        Notes = "Unlocks the Techniques window (/techniques) and technique learning. Individual techniques require the Mimicry ranks listed on their rows."
+        Notes = "Open the Techniques window with /techniques. Learn techniques from creatures using the combat analyzer."
     }
     "Combat Analyzer II" = @{
         Description = "Upgrades the combat analyzer, increasing equipped technique potency by 5%."
-        Notes = "Cumulative equipped technique potency bonus: +5%. Requires Combat Analyzer I."
+        Notes = "Cumulative equipped technique potency bonus: +5%."
     }
     "Combat Analyzer III" = @{
         Description = "Further upgrades the combat analyzer, increasing equipped technique potency by 10% in total."
-        Notes = "Cumulative equipped technique potency bonus: +10%. Requires Combat Analyzer II."
+        Notes = "Cumulative equipped technique potency bonus: +10%."
     }
     "Combat Analyzer IV" = @{
         Description = "Maximizes the combat analyzer, increasing equipped technique potency by 15% in total."
-        Notes = "Cumulative equipped technique potency bonus: +15%. Requires Combat Analyzer III."
+        Notes = "Cumulative equipped technique potency bonus: +15%."
     }
 }
 foreach ($entry in $mimicryAnalyzerChanges.GetEnumerator()) {

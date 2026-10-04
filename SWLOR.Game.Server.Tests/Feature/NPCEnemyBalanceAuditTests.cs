@@ -1482,7 +1482,8 @@ public class NPCEnemyBalanceAuditTests
                 var abilityPackage = GetWorkbookCellText(worksheet, sharedStrings, $"AP{row}");
                 abilityPackage.Should().NotBeNullOrWhiteSpace();
                 GetWorkbookCellText(worksheet, sharedStrings, $"AQ{row}").Should().Be(abilityPackage);
-                GetWorkbookCellText(worksheet, sharedStrings, $"AR{row}").Should().Contain(line.DisplayName);
+                GetWorkbookCellText(worksheet, sharedStrings, $"B{row}")
+                    .Should().Contain(line.DisplayName, "the enemy-name column identifies its capstone line");
 
                 if (step == 4)
                 {

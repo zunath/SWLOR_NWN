@@ -517,6 +517,94 @@ public sealed class DiscordAdapterTests
         }
     }
 
+    [TestCase(50007)]
+    [TestCase(50013)]
+    [TestCase(50001)]
+    [TestCase(50278)]
+    public void CommunityPosterPreservesNumericErrorCodeWithoutResponseOrToken(int code)
+    {
+        using var handler = new ErrorResponseHandler(() => new HttpResponseMessage(HttpStatusCode.Forbidden)
+        {
+            Content = new StringContent(JsonSerializer.Serialize(new { code, message = "private-response-marker" }))
+        });
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("private-token-marker", "Host=unused"), TimeProvider.System);
+        var exception = Assert.ThrowsAsync<HttpException>(() => poster.SendAsync(10, new("welcome", []), default))!;
+        Assert.Multiple(() =>
+        {
+            Assert.That(exception.HttpCode, Is.EqualTo(HttpStatusCode.Forbidden));
+            Assert.That(exception.DiscordCode, Is.EqualTo((DiscordErrorCode)code));
+            Assert.That(exception.ToString(), Does.Not.Contain("private-response-marker").And.Not.Contain("private-token-marker"));
+            Assert.That(exception.InnerException, Is.Null);
+            Assert.That(DiscordGateway.SafeError(exception), Is.EqualTo("Discord HTTP 403"));
+            Assert.That(handler.Requests, Is.EqualTo(1));
+        });
+    }
+
+    [TestCase("")]
+    [TestCase("<html>private-response-marker</html>")]
+    [TestCase("{}")]
+    [TestCase("null")]
+    [TestCase("[]")]
+    [TestCase("{\"code\":\"50007\"}")]
+    [TestCase("{\"code\":50007.5}")]
+    [TestCase("{\"code\":2147483648}")]
+    [TestCase("{\"code\":-1}")]
+    [TestCase("{\"code\":0}")]
+    [TestCase("{\"code\":true}")]
+    [TestCase("{\"code\":50007")]
+    public void CommunityPosterInvalidErrorCodeKeepsRetryableStatusWithoutResponseText(string body)
+    {
+        using var handler = new ErrorResponseHandler(() => new HttpResponseMessage(HttpStatusCode.Forbidden)
+            { Content = new StringContent(body) });
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("private-token-marker", "Host=unused"), TimeProvider.System);
+        var exception = Assert.ThrowsAsync<HttpRequestException>(() => poster.SendAsync(10, new("welcome", []), default))!;
+        Assert.That(exception.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
+        Assert.That(exception.Message, Is.EqualTo("Discord message creation failed."));
+        Assert.That(exception.ToString(), Does.Not.Contain("private-token-marker").And.Not.Contain("private-response-marker"));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void CommunityPosterBoundsErrorBodyWithOrWithoutContentLength(bool declaredLength)
+    {
+        var bytes = System.Text.Encoding.UTF8.GetBytes("{\"code\":50007,\"message\":\"" + new string('x', 100000) + "\"}");
+        using var stream = new CountedErrorStream(bytes);
+        using var handler = new ErrorResponseHandler(() =>
+        {
+            var content = new StreamContent(stream);
+            if (declaredLength) content.Headers.ContentLength = bytes.Length;
+            return new HttpResponseMessage(HttpStatusCode.Forbidden) { Content = content };
+        });
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        var exception = Assert.ThrowsAsync<HttpRequestException>(() => poster.SendAsync(10, new("welcome", []), default))!;
+        Assert.That(exception.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
+        Assert.That(stream.BytesRead, declaredLength ? Is.Zero : Is.LessThanOrEqualTo(8193));
+        Assert.That(stream.BytesRead, Is.LessThan(bytes.Length));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task CommunityPosterErrorBodyCancellationPropagatesAndReleasesGate()
+    {
+        using var cancellation = new CancellationTokenSource();
+        using var stream = new CountedErrorStream(System.Text.Encoding.UTF8.GetBytes("{\"code\":50007}"))
+            { BeforeRead = () => cancellation.Cancel() };
+        var refused = true;
+        using var handler = new ErrorResponseHandler(() => refused
+            ? new HttpResponseMessage(HttpStatusCode.Forbidden) { Content = new StreamContent(stream) }
+            : new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{\"id\":\"123\"}") });
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        Assert.CatchAsync<OperationCanceledException>(() => poster.SendAsync(10, new("welcome", []), cancellation.Token));
+        refused = false;
+        Assert.That(await poster.SendAsync(10, new("welcome", []), default), Is.EqualTo(123UL));
+        Assert.That(handler.Requests, Is.EqualTo(2));
+    }
+
     [Test]
     public void Readiness_RequiresFreshNonfutureTimestamp()
     {
@@ -630,6 +718,31 @@ public sealed class DiscordAdapterTests
 
     private static OverwritePermissions Find(Overwrite[] overwrites, ulong id, PermissionTarget target) =>
         overwrites.Single(x => x.TargetId == id && x.TargetType == target).Permissions;
+
+    private sealed class ErrorResponseHandler(Func<HttpResponseMessage> response) : HttpMessageHandler
+    {
+        public int Requests { get; private set; }
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            Requests++;
+            return Task.FromResult(response());
+        }
+    }
+
+    private sealed class CountedErrorStream(byte[] bytes) : MemoryStream(bytes)
+    {
+        public override bool CanSeek => false;
+        public int BytesRead { get; private set; }
+        public Action? BeforeRead { get; init; }
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken ct = default)
+        {
+            BeforeRead?.Invoke();
+            var read = await base.ReadAsync(buffer, ct);
+            BytesRead += read;
+            return read;
+        }
+    }
 
     private sealed class RecordingHandler : HttpMessageHandler
     {

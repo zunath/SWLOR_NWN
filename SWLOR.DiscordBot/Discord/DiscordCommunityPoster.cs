@@ -1,3 +1,5 @@
+using Discord;
+using Discord.Net;
 using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
@@ -69,7 +71,13 @@ public sealed class DiscordCommunityPoster(HttpClient http, BotSecrets secrets, 
                     }
                     if ((int)response.StatusCode >= 500 && attempt < 3)
                     { nextAllowed = clock.GetUtcNow() + TimeSpan.FromSeconds(attempt + 1); continue; }
-                    if (!response.IsSuccessStatusCode) throw new HttpRequestException("Discord message creation failed.", null, response.StatusCode);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var errorCode = await ReadErrorCodeAsync(response, ct);
+                        if (errorCode is { } code)
+                            throw new HttpException(response.StatusCode, null!, code, "Discord message creation failed.", []);
+                        throw new HttpRequestException("Discord message creation failed.", null, response.StatusCode);
+                    }
                     using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync(ct), cancellationToken: ct);
                     return ulong.Parse(document.RootElement.GetProperty("id").GetString()!, CultureInfo.InvariantCulture);
                 }
@@ -82,5 +90,34 @@ public sealed class DiscordCommunityPoster(HttpClient http, BotSecrets secrets, 
         }
         finally { gate.Release(); }
     }
+    private static async Task<DiscordErrorCode?> ReadErrorCodeAsync(HttpResponseMessage response, CancellationToken ct)
+    {
+        // Preserve only a bounded numeric code. Discord payload text and request credentials must not enter exceptions/logs.
+        const int maxErrorBytes = 8192;
+        ct.ThrowIfCancellationRequested();
+        if (response.Content.Headers.ContentLength > maxErrorBytes) return null;
+        await using var input = await response.Content.ReadAsStreamAsync(ct);
+        using var body = new MemoryStream();
+        var buffer = new byte[1024];
+        while (true)
+        {
+            var read = await input.ReadAsync(buffer.AsMemory(0, Math.Min(buffer.Length, maxErrorBytes - (int)body.Length + 1)), ct);
+            ct.ThrowIfCancellationRequested();
+            if (read == 0) break;
+            if (body.Length + read > maxErrorBytes) return null;
+            body.Write(buffer, 0, read);
+        }
+        ct.ThrowIfCancellationRequested();
+        try
+        {
+            using var document = JsonDocument.Parse(body.GetBuffer().AsMemory(0, (int)body.Length));
+            return document.RootElement.ValueKind == JsonValueKind.Object &&
+                   document.RootElement.TryGetProperty("code", out var code) &&
+                   code.ValueKind == JsonValueKind.Number && code.TryGetInt32(out var value) && value > 0
+                ? (DiscordErrorCode)value : null;
+        }
+        catch (JsonException) { return null; }
+    }
+
     public void Dispose() => gate.Dispose();
 }

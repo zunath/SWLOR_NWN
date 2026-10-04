@@ -48,6 +48,63 @@ public sealed class CommunityTests
 
     [TestCase(false)]
     [TestCase(true)]
+    public async Task HttpPosterRecipientRefusalCompletesLiveAndRecoveredWelcome(bool recovery)
+    {
+        using var handler = new WelcomePostHandler(HttpStatusCode.Forbidden, "{\"code\":50007,\"message\":\"Cannot send messages to this user\"}");
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        var config = DirectWelcomeConfiguration();
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", []), DirectMessagePost = (message, ct) => poster.SendAsync(10, message, ct) };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        var joined = DateTimeOffset.UnixEpoch;
+        if (recovery)
+        {
+            await service.PersistWelcomeAsync(7, joined, default);
+            Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        }
+        else await service.WelcomeAsync(7, joined, default);
+
+        Assert.That(store.IsCompleted($"welcome:7:{joined.UtcTicks}"), Is.True);
+        await new CommunityService(config, store, discord, new FakeDeletionStore()).WelcomeAsync(7, joined, default);
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.Zero);
+        Assert.That(handler.Requests, Is.EqualTo(1), "Use the actual REST sender's 403/50007 response, then stop retrying this intent.");
+        Assert.That(discord.Sent, Is.Empty, "A refused private welcome must not leak into a public channel.");
+    }
+
+    [TestCase(HttpStatusCode.Forbidden, "{\"code\":50013}")]
+    [TestCase(HttpStatusCode.Forbidden, "{\"code\":50001}")]
+    [TestCase(HttpStatusCode.Forbidden, "{\"code\":\"50007\"}")]
+    [TestCase(HttpStatusCode.Forbidden, "{}")]
+    [TestCase(HttpStatusCode.Forbidden, "<html>proxy-error</html>")]
+    [TestCase(HttpStatusCode.BadRequest, "{\"code\":50007}")]
+    [TestCase(HttpStatusCode.TooManyRequests, "{\"retry_after\":0,\"global\":false}")]
+    public async Task HttpPosterOtherWelcomeFailuresRemainPendingAndRecover(HttpStatusCode status, string body)
+    {
+        using var handler = new WelcomePostHandler(status, body);
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        var config = DirectWelcomeConfiguration();
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", []), DirectMessagePost = (message, ct) => poster.SendAsync(10, message, ct) };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        var joined = DateTimeOffset.UnixEpoch;
+        Assert.CatchAsync<Exception>(() => service.WelcomeAsync(7, joined, default));
+        Assert.That(store.IsCompleted($"welcome:7:{joined.UtcTicks}"), Is.False);
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.Zero);
+        Assert.That(store.IsCompleted($"welcome:7:{joined.UtcTicks}"), Is.False);
+
+        handler.Status = HttpStatusCode.OK;
+        handler.Body = "{\"id\":\"123\"}";
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(store.IsCompleted($"welcome:7:{joined.UtcTicks}"), Is.True);
+        var requests = handler.Requests;
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.Zero);
+        Assert.That(handler.Requests, Is.EqualTo(requests));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
     public async Task RefusedWelcomeDmCompletesOnceForLiveOrRecoveryAndAllowsFutureJoin(bool recovery)
     {
         var config = DirectWelcomeConfiguration();
@@ -1148,6 +1205,7 @@ public sealed class CommunityTests
         public int MemberLookups { get; private set; }
         public Dictionary<ulong, ChannelPermissions> ChannelPermissions { get; } = [];
         public List<(ulong Channel, bool DeleteSource, bool RequireEmbeds)> PermissionChecks { get; } = [];
+        public Func<CommunityMessage, CancellationToken, Task<ulong>>? DirectMessagePost { get; init; }
         public Exception? DirectMessageError { get; set; }
         public Exception? ChannelSendError { get; set; }
         public bool ReturnNullDirectMessage { get; set; }
@@ -1205,15 +1263,16 @@ public sealed class CommunityTests
             if (message.DeliveryKey is { } deliveryKey) _sentKeys[deliveryKey] = id;
             return id;
         }
-        public Task<ulong?> SendDirectMessageAsync(ulong userId, CommunityMessage message, CancellationToken ct)
+        public async Task<ulong?> SendDirectMessageAsync(ulong userId, CommunityMessage message, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
             DirectMessageAttempts++;
             BeforeDirectMessageSend?.Invoke(ct);
             if (DirectMessageError is { } error) throw error;
-            if (ReturnNullDirectMessage) return Task.FromResult<ulong?>(null);
+            if (DirectMessagePost is { } post) return await post(message, ct);
+            if (ReturnNullDirectMessage) return null;
             DirectMessages.Add(message);
-            return Task.FromResult<ulong?>(900 + (ulong)DirectMessages.Count);
+            return 900 + (ulong)DirectMessages.Count;
         }
         public Task DeleteMessageAsync(ulong channelId, ulong messageId, CancellationToken ct)
         {
@@ -1221,6 +1280,20 @@ public sealed class CommunityTests
             if (DeleteFailuresRemaining > 0) { DeleteFailuresRemaining--; throw new InvalidOperationException("simulated deletion failure"); }
             Deleted.Add((channelId, messageId));
             return Task.CompletedTask;
+        }
+    }
+
+    private sealed class WelcomePostHandler(HttpStatusCode status, string body) : HttpMessageHandler
+    {
+        public HttpStatusCode Status { get; set; } = status;
+        public string Body { get; set; } = body;
+        public int Requests { get; private set; }
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            Assert.That(request.RequestUri?.AbsoluteUri, Is.EqualTo("https://discord.com/api/v10/channels/10/messages"));
+            Requests++;
+            return Task.FromResult(new HttpResponseMessage(Status) { Content = new StringContent(Body) });
         }
     }
 

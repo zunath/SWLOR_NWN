@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.SlicingService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -377,6 +378,17 @@ public class EspionageSystemTests
         infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmityOutsidePair(target, observer)");
         infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmityForCreature(player) ||");
         infiltrationSource.Should().Contain("var master = GetMaster(npc);");
+    }
+
+    [Test]
+    public void VenomCoatings_AcceptEveryWeaponFamilyAndRejectEquipmentThatCannotAttack()
+    {
+        foreach (var weapon in Item.WeaponBaseItemTypes)
+            VenomCoatingItemDefinition.CanCoatWeapon(weapon).Should().BeTrue();
+        foreach (var weapon in new[] { BaseItem.Pistol, BaseItem.Rifle, BaseItem.Lightsaber, BaseItem.Saberstaff, BaseItem.Dart })
+            VenomCoatingItemDefinition.CanCoatWeapon(weapon).Should().BeTrue();
+        VenomCoatingItemDefinition.CanCoatWeapon(BaseItem.Armor).Should().BeFalse();
+        VenomCoatingItemDefinition.CanCoatWeapon(BaseItem.SmallShield).Should().BeFalse();
     }
 
     [Test]

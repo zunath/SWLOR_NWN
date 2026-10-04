@@ -95,6 +95,10 @@ public class CombatDamageTests
             "the creature-weapon fallback must not be gated on BeastMastery: gating it there made "
             + "every other skill resolve ability accuracy against an invalid weapon, which zeroes "
             + "the attacker's accuracy stat");
+        weaponLookup.Should().NotContain("GetSkillTypeByBaseItem",
+            "a mismatched main-hand weapon must not be skipped for an empty off hand or shield");
+        weaponLookup.Should().Contain("IsAbilityWeapon(rightHand)");
+        weaponLookup.Should().Contain("IsAbilityWeapon(leftHand)");
     }
 
     [Test]
@@ -391,7 +395,7 @@ public class CombatDamageTests
 
         combatSource.Should().Contain("SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalDamagePercentAdjustment)");
         combatSource.Should().Contain("IsRangedWeaponSkill(skillType)");
-        combatSource.Should().Contain("StatType.RangedCriticalDamagePercentAdjustment");
+        combatSource.Should().Contain("StatType.WeaponCriticalDamagePercentAdjustment");
         combatSource.Should().Contain("StatType.RangedAttackDamageFlatAdjustment");
         combatSource.Should().Contain("StatType.RangedAttackDefenseIgnorePercentAdjustment");
         combatSource.Should().Contain("SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalRatePercentAdjustment)");

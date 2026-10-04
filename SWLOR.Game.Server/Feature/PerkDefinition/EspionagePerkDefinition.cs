@@ -81,14 +81,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BackAttackTrait)
-                .Description("Melee weapon attacks from behind a target deal +3% damage.")
+                .Description("Weapon attacks from behind a target deal +3% damage.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.BackAttackDamagePercentAdjustment, 3)
 
                 .AddPerkLevel()
-                .Description("Melee weapon attacks from behind a target deal +5% damage and gain +3% Critical Rate.")
+                .Description("Weapon attacks from behind a target deal +5% damage and gain +3% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 18)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.BackAttackCriticalRatePercentAdjustment, 3)
 
                 .AddPerkLevel()
-                .Description("Melee weapon attacks from behind a target deal +8% damage and gain +5% Critical Rate.")
+                .Description("Weapon attacks from behind a target deal +8% damage and gain +5% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 38)
                 .RequirementCharacterType(CharacterType.Standard)

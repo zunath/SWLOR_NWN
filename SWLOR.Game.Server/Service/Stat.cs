@@ -735,9 +735,9 @@ namespace SWLOR.Game.Server.Service
 
             if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
-                // Read the worn properties so a stale persisted equip/unequip total cannot
-                // hide bonuses from other slots or retain bonuses from removed items.
-                combatReadiness += GetEquippedCombatReadiness(creature);
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+                combatReadiness += dbPlayer?.CombatReadiness ?? 0;
             }
             else
             {
@@ -745,6 +745,31 @@ namespace SWLOR.Game.Server.Service
             }
 
             return Math.Clamp(combatReadiness, 0, MaximumCombatReadinessPercent);
+        }
+
+        /// <summary>
+        /// Reconciles the equipment cache after login or a completed equipment change.
+        /// Keep this outside ability calculations: one scan can serve every target.
+        /// </summary>
+        public static void RefreshCombatReadinessEquipment(uint creature)
+        {
+            if (!GetIsObjectValid(creature) || !GetIsPC(creature) ||
+                GetIsDM(creature) || GetIsDMPossessed(creature))
+                return;
+
+            var playerId = GetObjectUUID(creature);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
+            var amount = GetEquippedCombatReadiness(creature);
+            if (dbPlayer.CombatReadiness == amount)
+                return;
+
+            // Store the uncapped equipment contribution. Perks and food are stat
+            // adjustments, and the combined cap belongs to the read calculation.
+            dbPlayer.CombatReadiness = amount;
+            DB.Set(dbPlayer);
         }
 
         public static int GetEquippedCombatReadiness(uint creature)

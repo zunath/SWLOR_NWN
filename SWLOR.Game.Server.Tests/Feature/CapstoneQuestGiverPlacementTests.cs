@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using System.Text.Json;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -110,6 +111,26 @@ public class CapstoneQuestGiverPlacementTests
         using var utc = LoadUtc("cq_worldbrk");
         GetWord(utc.RootElement, "Appearance_Type").Should().BeGreaterThanOrEqualTo(1000,
             "Unit KX-17 is a droid and must not use a humanoid appearance");
+    }
+
+    [Test]
+    public void WorldbreakerTurnInJournals_NameThePlacedGiversArea()
+    {
+        var area = Placements.Single(p => p.Giver == "cq_worldbrk").Area;
+        using var are = LoadModuleJson("are", $"{area}.are.json");
+        var location = GetLocString(are.RootElement, "Name").Split(" - ", 2);
+        location.Should().HaveCount(2, "the giver's area name identifies its planet and location");
+
+        var quests = new StaffCapstoneQuestDefinition().BuildQuests()
+            .Where(q => q.Key.StartsWith("worldbreaker_", StringComparison.Ordinal))
+            .Select(q => q.Value)
+            .ToArray();
+        quests.Should().HaveCount(5);
+        foreach (var quest in quests)
+        {
+            quest.States[2].JournalText.Should().Contain($"{location[1]} on {location[0]}",
+                $"{quest.QuestId} must direct players to KX-17's placed hub");
+        }
     }
 
     private static JsonDocument LoadGit(string area) => LoadModuleJson("git", $"{area}.git.json");

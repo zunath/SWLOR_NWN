@@ -284,34 +284,8 @@ function New-Notes {
         $parts.Add("Base damage $(Format-Number $Row.BaseDamage).")
     }
 
-    if ($Row.Shape -eq "Cone" -and $Row.Width -gt 0) {
-        $parts.Add("Cone width $(Format-Number $Row.Width)m.")
-    }
-    elseif ($Row.Shape -eq "Line" -and $Row.Width -gt 0) {
-        $parts.Add("Line width $(Format-Number $Row.Width)m.")
-    }
-
-    if ($Row.CenterOnActivator) {
-        $parts.Add("Originates on the caster.")
-    }
-
-    if ($Row.StatusEffect -ne "None" -and $Row.Resistance -ne "None") {
-        $parts.Add("$($Row.Resistance) resistance reduces status duration and matching damage.")
-    }
-    elseif ($Row.Resistance -ne "None") {
-        $parts.Add("$($Row.Resistance) resistance reduces matching damage.")
-    }
-
     if ($Row.EnmityBonus -gt 0) {
         $parts.Add("Generates extra enmity (+$($Row.EnmityBonus)).")
-    }
-
-    if ($Row.UsesNpcScaling) {
-        $parts.Add("Uses NPC stat scaling.")
-    }
-
-    if ($parts.Count -eq 0) {
-        $parts.Add("NPC innate ability.")
     }
 
     return $parts -join " "

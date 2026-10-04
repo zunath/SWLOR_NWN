@@ -705,17 +705,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (currentUpgrade != null)
             {
-                selectedDetails += $"Current (rank {rank}):\n" + currentUpgrade.Description + "\n\n";
+                selectedDetails += $"Current (rank {rank}):\n" + BuildAbilityCostText(currentUpgrade) +
+                                   currentUpgrade.Description + "\n\n";
             }
 
             if (nextUpgrade != null)
             {
                 selectedDetails += $"Next Upgrade (rank {rank + 1}) - {nextUpgrade.Price} SP:\n" +
-                                   nextUpgrade.Description + "\n\n";
+                                   BuildAbilityCostText(nextUpgrade) + nextUpgrade.Description + "\n\n";
             }
 
             selectedDetails += BuildStatusEffectPerkDetailText(detail, currentUpgrade, nextUpgrade);
             return selectedDetails;
+        }
+
+        private static string BuildAbilityCostText(PerkLevel level)
+        {
+            var abilities = level.GrantedFeats
+                .Where(Ability.IsFeatRegistered)
+                .Select(Ability.GetAbilityDetail)
+                .ToList();
+            var text = string.Empty;
+            foreach (var ability in abilities)
+            {
+                var fp = ability.Requirements.OfType<AbilityRequirementFP>().Sum(x => x.RequiredFP);
+                var stamina = ability.Requirements.OfType<AbilityRequirementStamina>().Sum(x => x.RequiredSTM);
+                // Match the base costs and recast shown in the native ability tooltip.
+                var recast = ability.RecastDelay?.Invoke(OBJECT_INVALID) ?? 0f;
+                if (abilities.Count > 1)
+                    text += ability.Name + "\n";
+                text += $"FP: {fp}\nSTM: {stamina}\nRecast: {recast:0.#}s\n";
+            }
+            return text;
         }
 
         private static string BuildStatusEffectPerkDetailText(PerkDetail detail, PerkLevel currentUpgrade, PerkLevel nextUpgrade)

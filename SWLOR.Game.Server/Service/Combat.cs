@@ -538,14 +538,14 @@ namespace SWLOR.Game.Server.Service
 
         private static int GetSkillCriticalDamagePercentAdjustment(uint attacker, SkillType skillType)
         {
-            if (IsRangedWeaponSkill(skillType))
-                return Stat.GetStatAdjustment(attacker, StatType.RangedCriticalDamagePercentAdjustment);
-
-            return skillType switch
+            var adjustment = IsWeaponSkillType(skillType)
+                ? Stat.GetStatAdjustment(attacker, StatType.WeaponCriticalDamagePercentAdjustment)
+                : 0;
+            return adjustment + (skillType switch
             {
                 SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalDamagePercentAdjustment),
                 _ => 0
-            };
+            });
         }
 
         public static int GetSkillCriticalRatePercentAdjustment(uint attacker, SkillType skillType)
@@ -556,8 +556,8 @@ namespace SWLOR.Game.Server.Service
                 _ => 0
             };
 
-            if (IsRangedWeaponSkill(skillType))
-                adjustment += Stat.GetStatAdjustment(attacker, StatType.RangedCriticalRatePercentAdjustment);
+            if (IsWeaponSkillType(skillType))
+                adjustment += Stat.GetStatAdjustment(attacker, StatType.WeaponCriticalRatePercentAdjustment);
 
             adjustment += GetLowHPCriticalRateAdjustment(attacker);
             return adjustment;
@@ -1325,7 +1325,7 @@ namespace SWLOR.Game.Server.Service
 
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.AutoAttackHamstringSkillType));
             var duration = Stat.GetStatAdjustment(attacker, StatType.AutoAttackHamstringDurationSeconds);
-            if (!SkillTypeMatches(skillType, requiredSkillType) || duration <= 0)
+            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType) || duration <= 0)
                 return;
 
             StatusEffect.ApplyStatusEffect(
@@ -1397,7 +1397,7 @@ namespace SWLOR.Game.Server.Service
 
         private static int ConsumeMeleeAutoAttackCycleDamageBonus(uint attacker, SkillType skillType)
         {
-            if (!IsMeleeWeaponSkill(skillType))
+            if (!IsWeaponSkillType(skillType))
                 return 0;
 
             var requiredCount = Stat.GetStatAdjustment(attacker, StatType.MeleeAutoAttackCycleRequiredCount);
@@ -1484,7 +1484,7 @@ namespace SWLOR.Game.Server.Service
                 attacker,
                 StatType.SourceStatusAutoAttackCycleDamageType));
             var key = (attacker, defender, requiredCategory);
-            if (!SkillTypeMatches(skillType, requiredSkillType) ||
+            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType) ||
                 requiredCategory == 0 ||
                 requiredCount <= 0 ||
                 damage <= 0 ||
@@ -1561,9 +1561,9 @@ namespace SWLOR.Game.Server.Service
 
         public static bool CanTriggerAutoAttackSplash(StatAdjustmentSource source, SkillType skillType)
         {
-            return source[StatType.AutoAttackSplashDamage] > 0 && source[StatType.AutoAttackSplashChance] > 0 &&
+            return IsWeaponSkillType(skillType) && source[StatType.AutoAttackSplashDamage] > 0 && source[StatType.AutoAttackSplashChance] > 0 &&
                    source[StatType.AutoAttackSplashRadiusMeters] > 0 && source[StatType.AutoAttackSplashMaximumTargets] > 1 &&
-                   SkillTypeMatches(skillType, GetSkillTypeFromStat(source[StatType.AutoAttackSplashSkillType]));
+                   SkillTypeMatchesOrGlobal(skillType, GetSkillTypeFromStat(source[StatType.AutoAttackSplashSkillType]));
         }
 
         public static uint[] SelectAutoAttackSplashSecondaryTargets(IEnumerable<uint> candidates, uint primaryTarget, int maximumTotalTargets)
@@ -1767,7 +1767,7 @@ namespace SWLOR.Game.Server.Service
             ApplyBleedingTargetStaminaRestoreChannel(
                 attacker,
                 skillType,
-                requiredSkillType,
+                isAbilityDamage ? requiredSkillType : SkillType.Invalid,
                 StatType.SkillDamageBleedingTargetStaminaRestoreChance,
                 StatType.SkillDamageBleedingTargetStaminaRestore,
                 StatType.SkillDamageBleedingTargetStaminaRestoreCooldownSeconds);
@@ -2002,8 +2002,7 @@ namespace SWLOR.Game.Server.Service
 
         private static bool IsMatchingBackAttack(uint attacker, uint defender, SkillType skillType)
         {
-            return skillType != SkillType.Invalid &&
-                   !IsRangedWeaponSkill(skillType) &&
+            return IsWeaponSkillType(skillType) &&
                    IsAttackerBehindTarget(attacker, defender);
         }
 
@@ -2406,7 +2405,7 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyCriticalHitLimitedHaste(uint attacker, SkillType skillType)
         {
             var triggerSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.CriticalHitLimitedHasteTriggerSkillType));
-            if (!SkillTypeMatches(skillType, triggerSkillType))
+            if (!SkillTypeMatchesOrGlobal(skillType, triggerSkillType))
                 return;
 
             var hastePercent = Stat.GetStatAdjustment(attacker, StatType.CriticalHitLimitedHastePercentAdjustment);
@@ -2438,18 +2437,21 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyCriticalNextAutoAttackNoDelay(uint attacker, SkillType skillType)
         {
             var triggerSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.CriticalNextAutoAttackNoDelayTriggerSkillType));
-            if (!SkillTypeMatches(skillType, triggerSkillType))
+            if (!SkillTypeMatchesOrGlobal(skillType, triggerSkillType))
                 return;
 
             var noDelaySkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.CriticalNextAutoAttackNoDelaySkillType));
             var duration = Stat.GetStatAdjustment(attacker, StatType.CriticalNextAutoAttackNoDelayDurationSeconds);
             var cooldown = Stat.GetStatAdjustment(attacker, StatType.CriticalNextAutoAttackNoDelayCooldownSeconds);
-            if (noDelaySkillType == SkillType.Invalid || duration <= 0)
+            if (duration <= 0)
                 return;
 
             if (TryUseStatTrigger(attacker, StatType.CriticalNextAutoAttackNoDelaySkillType, cooldown))
             {
-                GrantNextAutoAttackNoDelay(attacker, noDelaySkillType, duration);
+                if (noDelaySkillType == SkillType.Invalid)
+                    GrantNextAutoAttackNoDelay(attacker, duration);
+                else
+                    GrantNextAutoAttackNoDelay(attacker, noDelaySkillType, duration);
             }
         }
 
@@ -3315,11 +3317,11 @@ namespace SWLOR.Game.Server.Service
 
         public static int PrepareOpeningAutoAttack(uint attacker, SkillType skillType)
         {
-            if (!GetIsObjectValid(attacker) || skillType == SkillType.Invalid)
+            if (!GetIsObjectValid(attacker) || !IsWeaponSkillType(skillType))
                 return 0;
 
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.OpeningAutoAttackSkillType));
-            if (!SkillTypeMatches(skillType, requiredSkillType))
+            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType))
                 return 0;
 
             var idleSeconds = Stat.GetStatAdjustment(attacker, StatType.OpeningAutoAttackIdleSeconds);
@@ -3414,7 +3416,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int PrepareAutoAttackCycleCriticalRate(uint attacker, SkillType skillType)
         {
-            if (!GetIsObjectValid(attacker) || skillType == SkillType.Invalid)
+            if (!GetIsObjectValid(attacker) || !IsWeaponSkillType(skillType))
                 return 0;
 
             var requiredCount = Stat.GetStatAdjustment(attacker, StatType.RangedAutoAttackCycleCriticalRateRequiredCount);
@@ -3424,9 +3426,6 @@ namespace SWLOR.Game.Server.Service
                 ClearAutoAttackCycleCriticalRateTracker(attacker);
                 return 0;
             }
-
-            if (!IsRangedWeaponSkill(skillType))
-                return 0;
 
             _autoAttackCycleCriticalCounts.TryGetValue(attacker, out var count);
             count++;
@@ -3440,7 +3439,7 @@ namespace SWLOR.Game.Server.Service
                     attacker,
                     attacker,
                     new AttackCycleTrackerStatusEffect(
-                        $"Ranged attack cycle: {Math.Min(count, requiredCount)}/{requiredCount}",
+                        $"Attack cycle: {Math.Min(count, requiredCount)}/{requiredCount}",
                         trackerIcon),
                     count >= requiredCount ? 3f : 0f);
             }
@@ -3452,7 +3451,7 @@ namespace SWLOR.Game.Server.Service
 
             _autoAttackCycleCriticalCounts[attacker] = 0;
             PlayerFeedback.ShowDiagnosticFloatingText(
-                ColorToken.Combat($"Ranged attack +{criticalRate}% Critical Rate"),
+                ColorToken.Combat($"Attack +{criticalRate}% Critical Rate"),
                 attacker,
                 false);
             return criticalRate;
@@ -3647,7 +3646,10 @@ namespace SWLOR.Game.Server.Service
                 creature,
                 StatType.AvoidedAttackNextAutoAttackNoDelayDurationSeconds);
 
-            GrantNextAutoAttackNoDelay(creature, skillType, duration);
+            if (skillType == SkillType.Invalid)
+                GrantNextAutoAttackNoDelay(creature, duration);
+            else
+                GrantNextAutoAttackNoDelay(creature, skillType, duration);
         }
 
         public static void ApplyMeleeDamageTakenEffects(uint defender, uint attacker)
@@ -4699,7 +4701,7 @@ namespace SWLOR.Game.Server.Service
                 attacker,
                 StatType.MeleeRepeatedTargetDamageStatusEffectIcon));
             if (isAbilityDamage ||
-                !IsMeleeWeaponSkill(skillType) ||
+                !IsWeaponSkillType(skillType) ||
                 bonusPerHit <= 0 ||
                 maxBonus <= 0)
             {
@@ -4724,11 +4726,8 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Cross-skill ranged sibling of the melee modifier above: "each consecutive ranged hit"
-        /// builds and benefits regardless of which ranged weapon dealt it, so switching from rifle
-        /// to pistol keeps the stacks instead of clearing them. Unlike the melee variant, ability
-        /// hits count too - the wording is "hit", not "attack" - and stacks expire on their own
-        /// timer.
+        /// Consecutive weapon hits build this independent damage stack with any weapon family.
+        /// Ability hits count too, and stacks expire on their own timer.
         /// </summary>
         private static int ApplyRangedRepeatedTargetDamageModifier(
             uint attacker,
@@ -4742,7 +4741,7 @@ namespace SWLOR.Game.Server.Service
             var bonusPerHit = Stat.GetStatAdjustment(attacker, StatType.RangedRepeatedTargetDamageBonusPerHit);
             var maxBonus = Stat.GetStatAdjustment(attacker, StatType.RangedRepeatedTargetDamageBonusMax);
             var durationSeconds = Stat.GetStatAdjustment(attacker, StatType.RangedRepeatedTargetDamageDurationSeconds);
-            if (!IsRangedWeaponSkill(skillType) ||
+            if (!IsWeaponSkillType(skillType) ||
                 bonusPerHit <= 0 ||
                 maxBonus <= 0 ||
                 durationSeconds <= 0)
@@ -4801,8 +4800,7 @@ namespace SWLOR.Game.Server.Service
             var graceSeconds = Stat.GetStatAdjustment(attacker, StatType.SameTargetPressureGraceSeconds);
             var readyDurationSeconds = Stat.GetStatAdjustment(attacker, StatType.SameTargetPressureReadyDurationSeconds);
             var damageBonus = Stat.GetStatAdjustment(attacker, StatType.SameTargetPressureWeaponAbilityDamageBonus);
-            if (buildSkillType == SkillType.Invalid ||
-                buildSeconds <= 0 ||
+            if (buildSeconds <= 0 ||
                 graceSeconds <= 0 ||
                 readyDurationSeconds <= 0 ||
                 damageBonus <= 0)
@@ -4824,7 +4822,7 @@ namespace SWLOR.Game.Server.Service
             if (!IsWeaponSkillType(skillType))
                 return;
 
-            if (!SkillTypeMatches(skillType, buildSkillType))
+            if (!SkillTypeMatchesOrGlobal(skillType, buildSkillType))
             {
                 if (state != null && state.Target != defender)
                     ClearSameTargetPressureState(attacker);
@@ -6432,7 +6430,7 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType,
             CombatDamageType damageType)
         {
-            if (!IsRangedWeaponSkill(skillType))
+            if (!IsWeaponSkillType(skillType))
                 return;
 
             var chance = Stat.GetStatAdjustment(attacker, StatType.AutoAttackSuppressionStackChance);
@@ -6460,7 +6458,7 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType,
             CombatDamageType damageType)
         {
-            if (!IsRangedWeaponSkill(skillType))
+            if (!IsWeaponSkillType(skillType))
                 return;
 
             var duration = Stat.GetStatAdjustment(attacker, StatType.RangedHitSuppressionStackDurationSeconds);
@@ -6471,7 +6469,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // A Kill Box belongs to its caster, but its suppression trigger belongs to every
-            // ranged attacker hitting a marked target. Use the caster as the status source so
+            // weapon attacker hitting a marked target. Use the caster as the status source so
             // Containment Net and the evasion rider remain source-owned.
             foreach (var killBox in StatusEffect.GetCreatureStatusEffects(defender)
                          .GetAllEffects()
@@ -8515,14 +8513,13 @@ namespace SWLOR.Game.Server.Service
         private static uint GetRelevantSkillWeapon(uint creature, SkillType skillType)
         {
             var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
-            if (GetIsObjectValid(rightHand) &&
-                (skillType == SkillType.Invalid ||
-                 Skill.GetSkillTypeByBaseItem((BaseItem)GetBaseItemType(rightHand)) == skillType ||
-                 skillType == SkillType.Force))
+            // The ability skill determines progression and scaling, never weapon eligibility.
+            // A different weapon family must still supply its accuracy properties and base stats.
+            if (IsAbilityWeapon(rightHand))
                 return rightHand;
 
             var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
-            if (GetIsObjectValid(leftHand))
+            if (IsAbilityWeapon(leftHand))
                 return leftHand;
 
             // Creature-weapon NPCs carry nothing in either hand, so without this fallback their
@@ -8676,7 +8673,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int ConsumeSuppressionRangedAttackAccuracyAdjustment(uint attacker, uint defender, SkillType skillType)
         {
-            if (!IsRangedWeaponSkill(skillType))
+            if (!IsWeaponSkillType(skillType))
                 return 0;
 
             var now = DateTime.UtcNow;
@@ -8921,8 +8918,8 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var skillType = GetAbilitySkillType(creature, ability);
-            var hasRangedStatusNoDelay = IsRangedWeaponSkill(skillType) &&
-                                         Stat.GetStatAdjustment(creature, StatType.RangedAttackNoDelay) > 0;
+            var hasRangedStatusNoDelay = IsWeaponSkillType(skillType) &&
+                                         Stat.GetStatAdjustment(creature, StatType.WeaponAttackNoDelay) > 0;
             if (hasRangedStatusNoDelay)
                 return 100;
 
@@ -8972,8 +8969,8 @@ namespace SWLOR.Game.Server.Service
             if (IsAttackDelayReductionSuppressed(creature))
                 return false;
 
-            if (IsRangedWeaponSkill(skillType) &&
-                Stat.GetStatAdjustment(creature, StatType.RangedAttackNoDelay) > 0)
+            if (IsWeaponSkillType(skillType) &&
+                Stat.GetStatAdjustment(creature, StatType.WeaponAttackNoDelay) > 0)
             {
                 return true;
             }
@@ -9008,8 +9005,8 @@ namespace SWLOR.Game.Server.Service
             if (IsAttackDelayReductionSuppressed(creature))
                 return false;
 
-            var appliesToRangedStatus = IsRangedWeaponSkill(skillType) &&
-                                        Stat.GetStatAdjustment(creature, StatType.RangedAttackNoDelay) > 0;
+            var appliesToRangedStatus = IsWeaponSkillType(skillType) &&
+                                        Stat.GetStatAdjustment(creature, StatType.WeaponAttackNoDelay) > 0;
             var appliesToAllSkills = TemporaryStatModifier.GetStatAdjustment(
                 creature,
                 StatType.NextAutoAttackNoDelayAllSkills,

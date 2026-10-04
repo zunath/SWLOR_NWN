@@ -204,6 +204,26 @@ hands through an incomplete robe skeleton or replacing body bind transforms
 with the robe's transforms. It applies across the catalog, with no robe-number
 exceptions or opt-in conversion list.
 
+For clips supplied by the wearer, its body controllers also drive the garment's
+standard skeleton joints. Stock clothing custom slots can describe a different
+gesture from the game's current emote, so they must not override those joints.
+Independent cloth helpers retain their authored curves. Each private garment
+root explicitly restores omitted position, orientation, and scale channels from
+its own bind pose, compensating for the wearer's animation scale. This prevents
+an interrupted cast from leaving the garment at the previous clip's root offset.
+The compiled audit compares garment controllers with body controllers and checks
+these reset defaults across the resolved animation catalog.
+
+`tools/AlignRobeAnimations.py --game-data "<NWN data>" --apply` repairs the
+ordinary robe parents before RGB generation. It aligns common clips to the
+current body chain, preserves cloth helper motion and geometry, and rebuilds
+descendants against their updated parent part IDs. Unchanged binary descendants
+receive only ID remapping, including private ID collisions and local tracks;
+their geometry, controllers, pointers, and inverse bindings remain unchanged.
+Missing legacy robe parents
+fall back to the canonical body. Every output must pass mesh, hierarchy, and
+skin-binding checks before the batch replaces HAK sources.
+
 The compiler matches part IDs against its immediate parent. The generator
 checks the compiled IDs, not only ASCII joint names. Native inherited tracks
 are mapped by their original IDs: some stock cloak helpers have different IDs
@@ -247,6 +267,14 @@ requires exact generated source, compiler, immediate compiled parent, validation
 code, original inverse-bind source, canonical body, and owned output hashes. An
 edited source, output, compiler, or validator invalidates the corresponding proof.
 Whole-chain body-pose checks still run during generation even when models are reused.
+Staging `compilations.json` records compilation-only checkpoints for interrupted
+builds. They require matching source, compiler, parent, original binding data,
+canonical body, postprocessors, and output bytes. Resumed compilations still run
+every current validation and receive no validated cache record until those pass.
+Large dummy banks are exported in bounded, independent validation chunks. Their
+joined compiled bytes must match the complete bank, and their native exports
+must preserve the full ordered animation inventory and common geometry. This
+avoids the legacy exporter's poor performance on very large unsplit banks.
 Each shared bridge source is generated once, then its model-name token is replaced
 for the allocated resource; controller curves are not regenerated a second time.
 The September 2026 corpus measured 4.3 seconds for an unchanged `--apply`, compared

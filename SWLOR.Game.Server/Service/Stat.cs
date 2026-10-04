@@ -735,9 +735,9 @@ namespace SWLOR.Game.Server.Service
 
             if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
-                combatReadiness += dbPlayer?.CombatReadiness ?? 0;
+                // Read the worn properties so a stale persisted equip/unequip total cannot
+                // hide bonuses from other slots or retain bonuses from removed items.
+                combatReadiness += GetEquippedCombatReadiness(creature);
             }
             else
             {
@@ -745,6 +745,25 @@ namespace SWLOR.Game.Server.Service
             }
 
             return Math.Clamp(combatReadiness, 0, MaximumCombatReadinessPercent);
+        }
+
+        public static int GetEquippedCombatReadiness(uint creature)
+        {
+            var amount = 0;
+            for (var index = 0; index < NumberOfInventorySlots; index++)
+            {
+                var item = GetItemInSlot((InventorySlot)index, creature);
+                if (!GetIsObjectValid(item))
+                    continue;
+
+                for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                {
+                    if (GetItemPropertyType(ip) == ItemPropertyType.CombatReadiness)
+                        amount += GetItemPropertyCostTableValue(ip);
+                }
+            }
+
+            return amount;
         }
 
         /// <summary>

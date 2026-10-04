@@ -85,24 +85,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
         private static int CalculateEquippedCombatReadiness(uint creature)
         {
-            var amount = 0;
-
-            for (var index = 0; index < NumberOfInventorySlots; index++)
-            {
-                var item = GetItemInSlot((InventorySlot)index, creature);
-                if (!GetIsObjectValid(item))
-                    continue;
-
-                for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-                {
-                    if (GetItemPropertyType(ip) != ItemPropertyType.CombatReadiness)
-                        continue;
-
-                    amount += GetItemPropertyCostTableValue(ip);
-                }
-            }
-
-            return amount;
+            return Stat.GetEquippedCombatReadiness(creature);
         }
 
         public static bool MigrateObject(uint obj)

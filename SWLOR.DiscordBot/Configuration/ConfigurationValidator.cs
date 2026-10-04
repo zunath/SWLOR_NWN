@@ -117,9 +117,9 @@ public static partial class ConfigurationValidator
                         errors.Add($"Faction role '{role.Name}' overlaps a ticket support or bypass role retained for persisted maintenance.");
             }
         }
-        foreach (var ticket in retained.Where(ticket => ticket.State is TicketState.Creating or TicketState.Reopening))
+        foreach (var ticket in retained.Where(ticket => ticket.State is TicketState.Creating or TicketState.Open or TicketState.Closing or TicketState.Closed or TicketState.Reopening))
             if (!(options.Panels ?? []).Any(panel => panel is not null && panel.Id == ticket.PanelId))
-                errors.Add($"tickets.panels must retain panel '{ticket.PanelId}' required by persisted ticket {ticket.Id}.");
+                errors.Add($"tickets.panels must retain panel '{ticket.PanelId}' required to keep persisted ticket {ticket.Id} reopenable.");
 
         // Deleted tickets only need archive ownership; expired archives must not depend on panel/role configuration.
         if (!channelMaintenance && !options.Enabled) ValidateArchiveDirectory(options.ArchiveDirectory, errors);

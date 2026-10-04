@@ -337,14 +337,35 @@ public sealed class ConfigurationTests
         Assert.That(ConfigurationValidator.ValidatePersistedTickets(config, [StoredTicket(TicketState.Deleted)]), Is.Empty);
     }
 
-    [TestCase(TicketState.Creating)]
-    [TestCase(TicketState.Reopening)]
-    public void PendingChannelOperationsRequireTheirOriginalPanel(TicketState state)
+    [TestCase(TicketState.Creating, false)]
+    [TestCase(TicketState.Creating, true)]
+    [TestCase(TicketState.Open, false)]
+    [TestCase(TicketState.Open, true)]
+    [TestCase(TicketState.Closing, false)]
+    [TestCase(TicketState.Closing, true)]
+    [TestCase(TicketState.Closed, false)]
+    [TestCase(TicketState.Closed, true)]
+    [TestCase(TicketState.Reopening, false)]
+    [TestCase(TicketState.Reopening, true)]
+    public void ReopenableRetainedTicketsRequireTheirOriginalPanel(TicketState state, bool enabled)
     {
         var config = RetainedTicketConfiguration();
+        config.Tickets.Enabled = enabled;
         Assert.That(ConfigurationValidator.ValidatePersistedTickets(config, [StoredTicket(state)]), Is.Empty);
-        config.Tickets.Panels[0].Id = "replacement";
+        config.Tickets.Panels = [new TicketPanelOptions { Id = "replacement", ChannelId = 8, OpenCategoryIds = [9], PanelMessage = "Open a ticket" }];
         Assert.That(ConfigurationValidator.ValidatePersistedTickets(config, [StoredTicket(state)]), Has.Some.Contains("retain panel 'support'"));
+    }
+
+    [TestCase(TicketState.Deleting)]
+    [TestCase(TicketState.Deleted)]
+    public void TerminalRetainedTicketsDoNotRequireTheirOriginalPanel(TicketState state)
+    {
+        var config = RetainedTicketConfiguration();
+        var ticket = StoredTicket(state);
+        if (state == TicketState.Deleted)
+            ticket = ticket with { ArchivePath = Path.Combine(config.Tickets.ArchiveDirectory, ticket.Id.ToString("N")) };
+        config.Tickets.Panels = [new TicketPanelOptions { Id = "replacement", ChannelId = 8, OpenCategoryIds = [9], PanelMessage = "Open a ticket" }];
+        Assert.That(ConfigurationValidator.ValidatePersistedTickets(config, [ticket]), Is.Empty);
     }
 
     [Test]

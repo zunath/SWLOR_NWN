@@ -1,3 +1,6 @@
+using System.Net;
+using Discord;
+using Discord.Net;
 using SWLOR.DiscordBot.Configuration;
 using SWLOR.DiscordBot.Discord;
 using Microsoft.Extensions.Logging;
@@ -75,12 +78,31 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
         }
         if (!persistedIntent.DirectMessage && persistedIntent.ChannelId is { } welcomeChannel)
             await discord.ValidateCommunityChannelAsync(welcomeChannel, false, persistedMessage.Embeds.Count > 0, ct);
-        var sentMessageId = persistedIntent.DirectMessage
-            ? await discord.SendDirectMessageAsync(welcomeUserId, persistedMessage, ct)
-            : persistedIntent.ChannelId is { } destination && destination != 0
+        if (persistedIntent.DirectMessage)
+            await SendWelcomeDirectMessageAsync(welcomeUserId, persistedMessage, ct);
+        else
+        {
+            var sentMessageId = persistedIntent.ChannelId is { } destination && destination != 0
                 ? await discord.SendAsync(destination, persistedMessage, ct) : null;
-        if (sentMessageId is null) throw new InvalidOperationException("The welcome message was not delivered.");
+            if (sentMessageId is null) throw new InvalidOperationException("The welcome message was not delivered.");
+        }
         await session.CompleteDeliveryAsync(key, ct);
+    }
+
+    private async Task SendWelcomeDirectMessageAsync(ulong userId, CommunityMessage message, CancellationToken ct)
+    {
+        try
+        {
+            if (await discord.SendDirectMessageAsync(userId, message, ct) is null)
+                throw new InvalidOperationException("The welcome direct message was not delivered.");
+        }
+        catch (HttpException ex) when (ex.HttpCode == HttpStatusCode.Forbidden &&
+                                       ex.DiscordCode == DiscordErrorCode.CannotSendMessageToUser)
+        {
+            ct.ThrowIfCancellationRequested();
+            // Only the recipient refusal (50007) is terminal; other permission/network failures remain retryable.
+            logger?.LogInformation("Skipped welcome direct message for member {MemberId}: the recipient does not accept messages.", userId);
+        }
     }
 
     public async Task<int> RecoverPendingDeliveriesAsync(CancellationToken ct)
@@ -166,8 +188,7 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
                             }
                             if (intent.DirectMessage)
                             {
-                                if (await WithRecoveryProgressAsync(discord.SendDirectMessageAsync(userId, intent.Message, intentCt), Progress) is null)
-                                    throw new InvalidOperationException("The pending welcome direct message was not delivered.");
+                                await WithRecoveryProgressAsync(SendWelcomeDirectMessageAsync(userId, intent.Message, intentCt), Progress);
                             }
                             else if (intent.ChannelId is { } welcomeChannel)
                             {

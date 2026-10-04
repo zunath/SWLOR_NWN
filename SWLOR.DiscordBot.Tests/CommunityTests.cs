@@ -1,3 +1,5 @@
+using System.Net;
+using Discord.Net;
 using Discord;
 using SWLOR.DiscordBot.Discord;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -43,6 +45,171 @@ public sealed class CommunityTests
 
         Assert.That(discord.Sent, Has.Count.EqualTo(1));
     }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task RefusedWelcomeDmCompletesOnceForLiveOrRecoveryAndAllowsFutureJoin(bool recovery)
+    {
+        var config = DirectWelcomeConfiguration();
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord
+        {
+            Member = new(7, "Player", []),
+            DirectMessageError = WelcomeHttpError(HttpStatusCode.Forbidden, 50007)
+        };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        var joined = DateTimeOffset.UnixEpoch;
+        var key = $"welcome:7:{joined.UtcTicks}";
+        if (recovery)
+        {
+            await service.PersistWelcomeAsync(7, joined, default);
+            Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        }
+        else await service.WelcomeAsync(7, joined, default);
+
+        Assert.That(store.IsCompleted(key), Is.True);
+        await new CommunityService(config, store, discord, new FakeDeletionStore()).WelcomeAsync(7, joined, default);
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.Zero);
+        Assert.That(discord.DirectMessageAttempts, Is.EqualTo(1));
+        Assert.That(discord.DirectMessages, Is.Empty);
+        Assert.That(discord.Sent, Is.Empty, "Do not publish a refused private welcome in a public channel.");
+
+        var rejoined = joined.AddMinutes(1);
+        await service.WelcomeAsync(7, rejoined, default);
+        Assert.That(discord.DirectMessageAttempts, Is.EqualTo(2), "A later join has its own intent; this is not a permanent user blocklist.");
+        Assert.That(store.IsCompleted($"welcome:7:{rejoined.UtcTicks}"), Is.True);
+    }
+
+    [TestCase(HttpStatusCode.TooManyRequests, 0)]
+    [TestCase(HttpStatusCode.ServiceUnavailable, 0)]
+    [TestCase(HttpStatusCode.Forbidden, 50013)]
+    [TestCase(HttpStatusCode.Forbidden, 50001)]
+    [TestCase(HttpStatusCode.Forbidden, 0)]
+    [TestCase(HttpStatusCode.BadRequest, 50007)]
+    public async Task OtherWelcomeDmHttpFailuresStayPendingAndRecoverAfterRestoration(HttpStatusCode status, int code)
+    {
+        var config = DirectWelcomeConfiguration();
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", []), DirectMessageError = WelcomeHttpError(status, code) };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        var joined = DateTimeOffset.UnixEpoch;
+        var key = $"welcome:7:{joined.UtcTicks}";
+        Assert.ThrowsAsync<HttpException>(() => service.WelcomeAsync(7, joined, default));
+        Assert.That(store.IsCompleted(key), Is.False);
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.Zero);
+        Assert.That(store.IsCompleted(key), Is.False);
+        Assert.That(discord.DirectMessageAttempts, Is.EqualTo(2));
+
+        discord.DirectMessageError = null;
+        Assert.That(await new CommunityService(config, store, discord, new FakeDeletionStore()).RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(store.IsCompleted(key), Is.True);
+        Assert.That(discord.DirectMessages, Has.Count.EqualTo(1));
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.Zero);
+        Assert.That(discord.DirectMessageAttempts, Is.EqualTo(3));
+    }
+
+    [Test]
+    public async Task RefusedWelcomeUsesPersistedDmRouteAndDoesNotDelayUnrelatedDelivery()
+    {
+        var config = DirectWelcomeConfiguration();
+        config.Answers = [new QuickAnswerOptions { Name = "guide", Responses = ["answer"] }];
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", []), DirectMessageError = WelcomeHttpError(HttpStatusCode.Forbidden, 50007), SendFailuresRemaining = 1 };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        await service.PersistWelcomeAsync(7, DateTimeOffset.UnixEpoch, default);
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 301, "?guide", default));
+        config.Welcome.DirectMessage = false;
+        config.Welcome.ChannelId = 200;
+
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(2));
+        Assert.That(store.IsCompleted($"welcome:7:{DateTimeOffset.UnixEpoch.UtcTicks}"), Is.True);
+        Assert.That(discord.DirectMessageAttempts, Is.EqualTo(1));
+        Assert.That(discord.Sent.Single().Message.Content, Is.EqualTo("answer"));
+        Assert.That(discord.Sent.Single().ChannelId, Is.EqualTo(100));
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.Zero);
+    }
+
+    [Test]
+    public async Task ChannelWelcomeForbiddenRemainsPendingEvenWithRecipientRefusalCode()
+    {
+        var config = DirectWelcomeConfiguration();
+        config.Welcome.DirectMessage = false;
+        config.Welcome.ChannelId = 100;
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", []), ChannelSendError = WelcomeHttpError(HttpStatusCode.Forbidden, 50007) };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        var joined = DateTimeOffset.UnixEpoch;
+        Assert.ThrowsAsync<HttpException>(() => service.WelcomeAsync(7, joined, default));
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.Zero);
+        Assert.That(store.IsCompleted($"welcome:7:{joined.UtcTicks}"), Is.False);
+        discord.ChannelSendError = null;
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+        Assert.That(discord.DirectMessageAttempts, Is.Zero);
+    }
+
+    [Test]
+    public async Task NullWelcomeDmResultRemainsPendingUntilDelivered()
+    {
+        var config = DirectWelcomeConfiguration();
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", []), ReturnNullDirectMessage = true };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        var joined = DateTimeOffset.UnixEpoch;
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.WelcomeAsync(7, joined, default));
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.Zero);
+        Assert.That(store.IsCompleted($"welcome:7:{joined.UtcTicks}"), Is.False);
+        discord.ReturnNullDirectMessage = false;
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.DirectMessages, Has.Count.EqualTo(1));
+    }
+
+    [Test]
+    public async Task RefusedWelcomeCompletionFailureRemainsPendingForRecovery()
+    {
+        var config = DirectWelcomeConfiguration();
+        var store = new FakeTicketStore { BeforeComplete = _ => throw new InvalidOperationException("Completion failed.") };
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", []), DirectMessageError = WelcomeHttpError(HttpStatusCode.Forbidden, 50007) };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        var joined = DateTimeOffset.UnixEpoch;
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.WelcomeAsync(7, joined, default));
+        Assert.That(store.IsCompleted($"welcome:7:{joined.UtcTicks}"), Is.False);
+        store.BeforeComplete = null;
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(store.IsCompleted($"welcome:7:{joined.UtcTicks}"), Is.True);
+        Assert.That(discord.DirectMessageAttempts, Is.EqualTo(2));
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.Zero);
+    }
+
+    [Test]
+    public async Task CancelledWelcomeDmRefusalDoesNotCompleteDelivery()
+    {
+        var config = DirectWelcomeConfiguration();
+        var store = new FakeTicketStore();
+        using var cancellation = new CancellationTokenSource();
+        var discord = new FakeCommunityDiscord
+        {
+            Member = new(7, "Player", []),
+            DirectMessageError = WelcomeHttpError(HttpStatusCode.Forbidden, 50007),
+            BeforeDirectMessageSend = _ => cancellation.Cancel()
+        };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        var joined = DateTimeOffset.UnixEpoch;
+        Assert.CatchAsync<OperationCanceledException>(() => service.WelcomeAsync(7, joined, cancellation.Token));
+        Assert.That(store.IsCompleted($"welcome:7:{joined.UtcTicks}"), Is.False);
+        discord.BeforeDirectMessageSend = null;
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(store.IsCompleted($"welcome:7:{joined.UtcTicks}"), Is.True);
+    }
+
+    private static BotConfiguration DirectWelcomeConfiguration() => new()
+    {
+        GuildId = 1,
+        Welcome = new WelcomeOptions { Enabled = true, DirectMessage = true, Template = "Welcome {user}" }
+    };
+
+    private static HttpException WelcomeHttpError(HttpStatusCode status, int code) =>
+        new(status, null!, code == 0 ? null : (DiscordErrorCode)code, "Simulated HTTP failure.", []);
 
     [Test]
     public async Task RecoverPendingDeliveriesAsync_ResumesWelcomeAtItsPersistedDestination()
@@ -981,6 +1148,12 @@ public sealed class CommunityTests
         public int MemberLookups { get; private set; }
         public Dictionary<ulong, ChannelPermissions> ChannelPermissions { get; } = [];
         public List<(ulong Channel, bool DeleteSource, bool RequireEmbeds)> PermissionChecks { get; } = [];
+        public Exception? DirectMessageError { get; set; }
+        public Exception? ChannelSendError { get; set; }
+        public bool ReturnNullDirectMessage { get; set; }
+        public int DirectMessageAttempts { get; private set; }
+        public Action<CancellationToken>? BeforeDirectMessageSend { get; set; }
+        public List<CommunityMessage> DirectMessages { get; } = [];
         public int SendFailuresRemaining { get; set; }
         public int DeleteFailuresRemaining { get; set; }
         public bool FailAfterNextRemove { get; set; }
@@ -1022,6 +1195,7 @@ public sealed class CommunityTests
         }
         public async Task<ulong?> SendAsync(ulong channelId, CommunityMessage message, CancellationToken ct)
         {
+            if (ChannelSendError is { } error) throw error;
             SendStarted?.TrySetResult(true);
             if (ReleaseSend is { } release) await release.Task.WaitAsync(ct);
             if (SendFailuresRemaining > 0) { SendFailuresRemaining--; throw new InvalidOperationException("simulated send failure"); }
@@ -1031,7 +1205,16 @@ public sealed class CommunityTests
             if (message.DeliveryKey is { } deliveryKey) _sentKeys[deliveryKey] = id;
             return id;
         }
-        public Task<ulong?> SendDirectMessageAsync(ulong userId, CommunityMessage message, CancellationToken ct) => Task.FromResult<ulong?>(null);
+        public Task<ulong?> SendDirectMessageAsync(ulong userId, CommunityMessage message, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            DirectMessageAttempts++;
+            BeforeDirectMessageSend?.Invoke(ct);
+            if (DirectMessageError is { } error) throw error;
+            if (ReturnNullDirectMessage) return Task.FromResult<ulong?>(null);
+            DirectMessages.Add(message);
+            return Task.FromResult<ulong?>(900 + (ulong)DirectMessages.Count);
+        }
         public Task DeleteMessageAsync(ulong channelId, ulong messageId, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();

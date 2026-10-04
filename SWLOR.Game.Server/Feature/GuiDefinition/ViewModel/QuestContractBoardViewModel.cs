@@ -577,7 +577,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var storageContainer = GetObjectByTag("TEMP_ITEM_STORAGE");
             var item = CreateItemOnObject(contract.Objectives[index].ItemResref, storageContainer);
-            var payload = new ExamineItemPayload(GetName(item), GetDescription(item), Item.BuildItemPropertyString(item));
+            var payload = new ExamineItemPayload(item);
             Gui.TogglePlayerWindow(Player, GuiWindowType.ExamineItem, payload);
             DestroyObject(item);
         };
@@ -592,7 +592,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (index < 0 || index >= contract.RewardItems.Count) return;
 
             var item = ObjectPlugin.Deserialize(contract.RewardItems[index].Data);
-            var payload = new ExamineItemPayload(GetName(item), GetDescription(item), Item.BuildItemPropertyString(item));
+            var payload = new ExamineItemPayload(item);
             Gui.TogglePlayerWindow(Player, GuiWindowType.ExamineItem, payload);
             DestroyObject(item);
         };

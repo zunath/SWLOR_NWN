@@ -242,11 +242,11 @@ public class CombatAttackDelayTests
     }
 
     [Test]
-    public void CalculateEffectiveAttackDelay_ClampsReducedDualWieldDelayToAbsoluteMinimum()
+    public void CalculateEffectiveAttackDelay_DualWieldPreservesItsRateAdvantageAtTheSingleWeaponFloor()
     {
         var delay = Combat.CalculateAttackDelayMilliseconds(210, 210, 45, 30);
 
-        Combat.CalculateEffectiveAttackDelay(delay).Should().Be(Combat.MinimumAttackDelayMilliseconds);
+        Combat.CalculateEffectiveAttackDelay(delay).Should().Be(818);
     }
 
     [Test]

@@ -1462,3 +1462,4 @@
 "StatusEffect","DuelistsDistanceStatusEffect","Duelist's Distance","Harmful","","ief_dueldstnc","SWLOR.Game.Server\Feature\StatusEffectDefinition\DuelistsDistanceStatusEffect.cs",""
 "StatusEffect","PointBlankBurstStatusEffect","Point Blank Burst","Beneficial","","ief_ptblnkbrst","SWLOR.Game.Server\Feature\StatusEffectDefinition\PointBlankBurstStatusEffect.cs",""
 "StatusEffect","ReloadTempoStatusEffect","Reload Tempo","Beneficial","","ief_rldtempo","SWLOR.Game.Server\Feature\StatusEffectDefinition\ReloadTempoStatusEffect.cs",""
+"Feat","DoublehandTrait","Doublehand","Passive","","ife_dblhand","SWLOR_Haks\sw_2da\feat.2da",""

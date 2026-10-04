@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(weapon, _hits[0].Weapon, "The first end uses the equipped double weapon");
                 ctx.AssertEqual(weapon, _hits[1].Weapon, "The second end uses that item's full weapon profile");
                 ctx.Assert((_hits[1].Time - firstHit).TotalMilliseconds >= 1000,
-                    "The second real damage roll waits for the first swing and its ready transition");
+                    $"The second real damage roll waits for the first swing and its ready transition (observed {(_hits[1].Time - firstHit).TotalMilliseconds:0}ms, cycle {effectiveDelay}ms)");
                 await ctx.DelaySecondsAsync(Math.Max(0f, effectiveDelay / 1000f - 1.5f));
                 ctx.AssertEqual(2, _hits.Count, "Only the two budgeted rolls occur inside the first ordinary delay cycle");
                 await ctx.WaitUntilAsync(() => _hits.Count >= 3, 5f, "the next double-weapon cycle");

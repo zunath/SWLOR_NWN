@@ -11345,7 +11345,7 @@ namespace SWLOR.Game.Server.Service
 
             var weapon = GetCombatImpactWeapon(activator, skillType, usesQueuedNaturalWeapon, requireMatchingSkill);
             return GetIsObjectValid(weapon)
-                ? Item.GetDMG(weapon)
+                ? WeaponDamage.GetEffectiveDMG(activator, weapon)
                 : 0;
         }
 
@@ -12025,10 +12025,8 @@ namespace SWLOR.Game.Server.Service
             var leftHand = EquipmentPredicates.GetOffhandAttackWeapon(attacker);
 
             var rightHandDelay = GetWeaponDelay(rightHand);
-            var leftHandDelay = ApplyOffhandAttackDelayReduction(attacker, GetWeaponDelay(leftHand));
-
-            var delay = CalculateEquippedWeaponDelayUnits(rightHandDelay, leftHandDelay);
-            if (delay == 0)
+            var leftHandDelay = GetWeaponDelay(leftHand);
+            if (rightHandDelay == 0 && leftHandDelay == 0)
             {
                 var creatureRight = GetItemInSlot(InventorySlot.CreatureRight, attacker);
                 var creatureLeft = GetItemInSlot(InventorySlot.CreatureLeft, attacker);
@@ -12041,20 +12039,20 @@ namespace SWLOR.Game.Server.Service
                     GetWeaponDelay(creatureBite)
                 };
 
-                delay = creatureDelays
+                rightHandDelay = creatureDelays
                     .Where(creatureDelay => creatureDelay > 0)
                     .DefaultIfEmpty(0)
                     .Min();
             }
 
-            var finalDelay = ConvertAttackDelayUnitsToMilliseconds(delay);
             var reductionPercentage = Math.Clamp(
                 Stat.GetStatAdjustment(attacker, StatType.AttackDelayReductionPercent) +
                 attackDelayReductionAdjustment,
                 -MaximumAttackDelayAdjustmentPercent,
                 MaximumAttackDelayAdjustmentPercent);
 
-            return ApplyAttackDelayReduction(finalDelay, reductionPercentage);
+            return CalculateAttackDelayMilliseconds(rightHandDelay, leftHandDelay, reductionPercentage,
+                CalculateOffhandAttackDelayReduction(attacker));
         }
 
         /// <summary>
@@ -12071,16 +12069,32 @@ namespace SWLOR.Game.Server.Service
             int attackDelayReductionPercent,
             int offhandAttackDelayReductionPercent)
         {
-            attackDelayReductionPercent = Math.Min(attackDelayReductionPercent, MaximumAttackDelayAdjustmentPercent);
+            attackDelayReductionPercent = Math.Clamp(attackDelayReductionPercent,
+                -MaximumAttackDelayAdjustmentPercent, MaximumAttackDelayAdjustmentPercent);
             offhandAttackDelayReductionPercent = Math.Min(
                 Math.Max(offhandAttackDelayReductionPercent, 0),
                 MaximumAttackDelayAdjustmentPercent);
-            leftHandDelayUnits = ApplyPercentReduction(leftHandDelayUnits, offhandAttackDelayReductionPercent);
-
-            var delayUnits = CalculateEquippedWeaponDelayUnits(rightHandDelayUnits, leftHandDelayUnits);
+            var reducedOffhand = ApplyPercentReduction(leftHandDelayUnits, offhandAttackDelayReductionPercent);
+            var delayUnits = CalculateEquippedWeaponDelayUnits(rightHandDelayUnits, reducedOffhand);
             var delayMilliseconds = ConvertAttackDelayUnitsToMilliseconds(delayUnits);
+            if (delayMilliseconds <= 0)
+                return 0;
+            if (rightHandDelayUnits <= 0 || leftHandDelayUnits <= 0)
+                return Math.Max(BaseAttackDelayMilliseconds + MinimumAttackDelayMilliseconds,
+                    ApplyAttackDelayReduction(delayMilliseconds, attackDelayReductionPercent));
 
-            return ApplyAttackDelayReduction(delayMilliseconds, attackDelayReductionPercent);
+            // Use both unreduced hands as the haste reference so hand order and off-hand
+            // specialization cannot change the acceleration factor. Pay the baseline once.
+            var referenceRawDelay = (ConvertAttackDelayUnitsToMilliseconds(rightHandDelayUnits) +
+                                     ConvertAttackDelayUnitsToMilliseconds(leftHandDelayUnits)) / 2;
+            var referenceDelay = Math.Max(MinimumAttackDelayMilliseconds,
+                referenceRawDelay - BaseAttackDelayMilliseconds);
+            var hastedReferenceDelay = Math.Max(MinimumAttackDelayMilliseconds,
+                ApplyAttackDelayReduction(referenceRawDelay, attackDelayReductionPercent) - BaseAttackDelayMilliseconds);
+            var pairedDelay = Math.Max(MinimumAttackDelayMilliseconds, delayMilliseconds - BaseAttackDelayMilliseconds);
+            var adjustedPairedDelay = Math.Max(MinimumAttackDelayMilliseconds,
+                (int)Math.Round(pairedDelay * (hastedReferenceDelay / (double)referenceDelay), MidpointRounding.AwayFromZero));
+            return BaseAttackDelayMilliseconds + adjustedPairedDelay;
         }
 
         /// <summary>
@@ -12348,15 +12362,6 @@ namespace SWLOR.Game.Server.Service
         {
             _attackSwingDebts.Remove(attacker);
             _attackSwingDebtsWithoutLimitedReduction.Remove(attacker);
-        }
-
-        private static int ApplyOffhandAttackDelayReduction(uint attacker, int offhandDelay)
-        {
-            if (offhandDelay <= 0)
-                return offhandDelay;
-
-            var reductionPercentage = CalculateOffhandAttackDelayReduction(attacker);
-            return ApplyPercentReduction(offhandDelay, reductionPercentage);
         }
 
         private static int CalculateEquippedWeaponDelayUnits(int rightHandDelay, int leftHandDelay)

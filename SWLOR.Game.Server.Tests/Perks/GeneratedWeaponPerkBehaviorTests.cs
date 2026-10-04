@@ -990,7 +990,7 @@ public class GeneratedWeaponPerkBehaviorTests
         end.Should().BeGreaterThan(start);
 
         var spottersRhythm = source[start..end];
-        spottersRhythm.Should().Contain("After maintaining weapon hits with any weapon on the same target for 12 seconds");
+        spottersRhythm.Should().Contain("After maintaining weapon hits on the same target for 12 seconds");
         spottersRhythm.Should().Contain("gain Spotter's Rhythm for 9 seconds");
         spottersRhythm.Should().Contain("hostile weapon ability against that target");
         spottersRhythm.Should().Contain("StatType.SameTargetPressureBuildSkillType");

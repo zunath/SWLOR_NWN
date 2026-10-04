@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FastStrikesTrait)
-                .Description("After landing a critical hit, your next auto-attack with any weapon within 16 seconds is quickened to your fastest possible swing speed.")
+                .Description("After landing a critical hit, your next auto-attack within 16 seconds is quickened to your fastest possible swing speed.")
                 .IncreasesStat(StatType.CriticalNextAutoAttackNoDelayTriggerSkillType, (int)SkillType.Invalid)
                 .IncreasesStat(StatType.CriticalNextAutoAttackNoDelaySkillType, (int)SkillType.Invalid)
                 .IncreasesStat(StatType.CriticalNextAutoAttackNoDelayDurationSeconds, 16)

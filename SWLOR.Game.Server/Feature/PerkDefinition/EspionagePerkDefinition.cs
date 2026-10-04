@@ -81,14 +81,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BackAttackTrait)
-                .Description("Attacks with any weapon from behind a target deal +3% damage.")
+                .Description("Weapon attacks from behind a target deal +3% damage.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.BackAttackDamagePercentAdjustment, 3)
 
                 .AddPerkLevel()
-                .Description("Attacks with any weapon from behind a target deal +5% damage and gain +3% Critical Rate.")
+                .Description("Weapon attacks from behind a target deal +5% damage and gain +3% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 18)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.BackAttackCriticalRatePercentAdjustment, 3)
 
                 .AddPerkLevel()
-                .Description("Attacks with any weapon from behind a target deal +8% damage and gain +5% Critical Rate.")
+                .Description("Weapon attacks from behind a target deal +8% damage and gain +5% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 38)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GhostProtocol)
-                .Description("Reduces your enmity by 80%, enters stealth for up to 30 seconds, and causes your next back attack with any weapon within 30 seconds to critically hit and inflict Exposed, reducing Defense by 20% for 30 seconds.")
+                .Description("Reduces your enmity by 80%, enters stealth for up to 30 seconds, and causes your next back attack within 30 seconds to critically hit and inflict Exposed, reducing Defense by 20% for 30 seconds.")
                 .Price(6)
                 .RequirementCharacterType(CharacterType.Standard)
                 .RequirementSkill(SkillType.Espionage, 50);

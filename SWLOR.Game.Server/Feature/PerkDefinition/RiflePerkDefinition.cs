@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PinningFireTrait)
-                .Description("Auto-attacks with any weapon against your current target have a 15% chance to add a Suppression stack lasting 30 seconds using your Suppressing Shot stack strength.")
+                .Description("Auto-attacks against your current target have a 15% chance to add a Suppression stack lasting 30 seconds using your Suppressing Shot stack strength.")
                 .IncreasesStat(StatType.AutoAttackSuppressionStackChance, 15)
                 .IncreasesStat(StatType.AutoAttackSuppressionStackDurationSeconds, 30)
                 .Price(2)
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SustainedFireTrait)
-                .Description("Each consecutive weapon hit, regardless of weapon family, against the same target grants +1 DMG, up to five stacks. Stacks expire after 30 seconds.")
+                .Description("Each consecutive weapon hit against the same target grants +1 DMG, up to five stacks. Stacks expire after 30 seconds.")
                 .IncreasesStat(StatType.RangedRepeatedTargetDamageBonusPerHit, 1)
                 .IncreasesStat(StatType.RangedRepeatedTargetDamageBonusMax, 5)
                 .IncreasesStat(StatType.RangedRepeatedTargetDamageDurationSeconds, 30)
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Rifle, 8)
 
                 .AddPerkLevel()
-                .Description("Each consecutive weapon hit, regardless of weapon family, against the same target grants +2 DMG, up to five stacks. Stacks expire after 30 seconds.")
+                .Description("Each consecutive weapon hit against the same target grants +2 DMG, up to five stacks. Stacks expire after 30 seconds.")
                 .IncreasesStat(StatType.RangedRepeatedTargetDamageBonusPerHit, 2)
                 .IncreasesStat(StatType.RangedRepeatedTargetDamageBonusMax, 10)
                 .IncreasesStat(StatType.RangedRepeatedTargetDamageDurationSeconds, 30)
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Rifle, 22)
 
                 .AddPerkLevel()
-                .Description("Each consecutive weapon hit, regardless of weapon family, against the same target grants +3 DMG, up to five stacks. Stacks expire after 30 seconds.")
+                .Description("Each consecutive weapon hit against the same target grants +3 DMG, up to five stacks. Stacks expire after 30 seconds.")
                 .IncreasesStat(StatType.RangedRepeatedTargetDamageBonusPerHit, 3)
                 .IncreasesStat(StatType.RangedRepeatedTargetDamageBonusMax, 15)
                 .IncreasesStat(StatType.RangedRepeatedTargetDamageDurationSeconds, 30)
@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SpottersRhythmTrait)
-                .Description("After maintaining weapon hits with any weapon on the same target for 12 seconds, gain Spotter's Rhythm for 9 seconds. Your next hostile weapon ability against that target deals +15 DMG.")
+                .Description("After maintaining weapon hits on the same target for 12 seconds, gain Spotter's Rhythm for 9 seconds. Your next hostile weapon ability against that target deals +15 DMG.")
                 .IncreasesStat(StatType.SameTargetPressureBuildSkillType, (int)SkillType.Invalid)
                 .IncreasesStat(StatType.SameTargetPressureBuildSeconds, 12)
                 .IncreasesStat(StatType.SameTargetPressureGraceSeconds, 6)
@@ -200,7 +200,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SuppressionStance1)
                 .DroidAISlots(1)
-                .Description("While active, weapon attacks of any family gain +10% Haste and add Suppression stacks lasting 30 seconds using your Suppressing Shot stack strength, but critical damage is reduced by 10%.")
+                .Description("While active, weapon attacks gain +10% Haste and add Suppression stacks lasting 30 seconds using your Suppressing Shot stack strength, but critical damage is reduced by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 20);
         }
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.OverwatchTrait)
-                .Description("When an enemy with Suppression stacks uses an ability, your next weapon attack, regardless of weapon family, against it gains +10% Accuracy.")
+                .Description("When an enemy with Suppression stacks uses an ability, your next weapon attack against it gains +10% Accuracy.")
                 .IncreasesStat(StatType.RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment, 10)
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 25);
@@ -240,7 +240,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.KillBox1)
                 .DroidAISlots(1)
-                .Description("Target an enemy or location to deal weapon DMG + 20 to enemies within 8m and apply Kill Box for 45 seconds. While Kill Box remains, any player's weapon attacks, regardless of weapon family, against affected enemies add Suppression stacks lasting 30 seconds using the Kill Box caster's Suppressing Shot stack strength; each stack reduces Evasion by an additional 3%.")
+                .Description("Target an enemy or location to deal weapon DMG + 20 to enemies within 8m and apply Kill Box for 45 seconds. While Kill Box remains, any player's weapon attacks against affected enemies add Suppression stacks lasting 30 seconds using the Kill Box caster's Suppressing Shot stack strength; each stack reduces Evasion by an additional 3%.")
                 .Price(6)
                 .RequirementSkill(SkillType.Rifle, 50)
                 .RequirementQuest(RifleCapstoneQuestDefinition.KillBoxMasteryQuestId);
@@ -287,7 +287,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SteadyAimTrait)
-                .Description("After 3 seconds without attacking, your next auto-attack with any weapon deals +12 DMG.")
+                .Description("After 3 seconds without attacking, your next auto-attack deals +12 DMG.")
                 .IncreasesStat(StatType.OpeningAutoAttackSkillType, (int)SkillType.Invalid)
                 .IncreasesStat(StatType.OpeningAutoAttackDamageBonus, 12)
                 .IncreasesStat(StatType.OpeningAutoAttackIdleSeconds, 3)
@@ -411,7 +411,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DeadCenterTrait)
-                .Description("After 3 seconds without attacking, if your next auto-attack with any weapon or hostile Rifle ability is a critical hit, it deals +15% damage.")
+                .Description("After 3 seconds without attacking, if your next auto-attack or hostile Rifle ability is a critical hit, it deals +15% damage.")
                 .IncreasesStat(StatType.IdleSkillAbilitySkillType, (int)SkillType.Rifle)
                 .IncreasesStat(StatType.IdleSkillAbilityRequiredIdleSeconds, 3)
                 .IncreasesStat(StatType.IdleSkillAbilityCriticalDamagePercentAdjustment, 15)

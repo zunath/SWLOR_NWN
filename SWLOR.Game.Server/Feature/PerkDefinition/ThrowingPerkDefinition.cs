@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PayloadPouchTrait)
-                .Description("Auto-attacks with any weapon have a 15% chance to deal 8 Physical DMG to the target and up to four other enemies within 3m of the primary target. This splash cannot trigger other on-hit effects.")
+                .Description("Auto-attacks have a 15% chance to deal 8 Physical DMG to the target and up to four other enemies within 3m of the primary target. This splash cannot trigger other on-hit effects.")
                 .IncreasesStat(StatType.AutoAttackSplashChance, 15)
                 .IncreasesStat(StatType.AutoAttackSplashDamage, 8)
                 .IncreasesStat(StatType.AutoAttackSplashSkillType, (int)SkillType.Invalid)

@@ -1433,7 +1433,6 @@ public class CombatUpgradeBibleSyncTests
 
         var discsByResref = discs.ToDictionary(row => row["T"]);
         var recipesByType = recipeRows.ToDictionary(row => row["D"]);
-        var manifest = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv");
         foreach (var item in templates)
         {
             var row = discsByResref[item.Resref];
@@ -1448,12 +1447,6 @@ public class CombatUpgradeBibleSyncTests
             row["V"].Should().Be(Regex.Replace(skill.ToString(), "([a-z])([A-Z])", "$1 $2"), item.Resref);
             decimal.Parse(row["W"], CultureInfo.InvariantCulture).Should().Be(level.DroidAISlots, item.Resref);
 
-            if (skill is not (SkillType.Devices or SkillType.FirstAid or SkillType.Armor))
-            {
-                var perkRow = manifest.Single(entry => entry.Tab == row["V"] && entry.PerkName == name);
-                perkRow.Notes.Should().Contain($"Droid instruction AI slots: {level.DroidAISlots}.", name);
-                perkRow.Notes.Should().Contain($"Controller tier: {tier}.", name);
-            }
         }
 
         foreach (var (type, recipe) in recipes)

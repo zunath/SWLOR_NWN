@@ -52,11 +52,11 @@ $devicePrices = [ordered]@{
 }
 
 $deviceNotes = [ordered]@{
-    "Ion Lance I" = "Droid instruction AI slots: 1."
-    "Wrist Rocket II" = "Droid instruction AI slots: 2."
-    "Sonic Burst II" = "Droid instruction AI slots: 2."
-    "Rail Dart II" = "Droid instruction AI slots: 2."
-    "Rail Dart III" = "Droid instruction AI slots: 3."
+    "Ion Lance I" = ""
+    "Wrist Rocket II" = ""
+    "Sonic Burst II" = ""
+    "Rail Dart II" = ""
+    "Rail Dart III" = ""
 }
 
 $forceBurstRow = [ordered]@{

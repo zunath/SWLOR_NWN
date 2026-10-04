@@ -2243,7 +2243,7 @@ foreach ($line in $lines) {
             Step = $step
             StepLabel = $stepLabels[$step]
             PackageText = Get-AbilityPackageText $package $signature.DisplayName $capstoneDisplayName
-            SetupNotes = "Capstone $($line.DisplayName) $($stepLabels[$step]); generated from level 50 $difficulty $($line.Role) $($line.CreatureType) preset with a reusable $($signature.DisplayName) signature ability, custom support package, and resistance adjustments."
+            SetupNotes = ""
             Stats = $derived.Stats
             Resistances = $resistanceProfile.Desired
             Adjustments = $resistanceProfile.Adjustments

@@ -16,13 +16,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public sealed class WristRocketAbilityDefinition : IAbilityListDefinition
     {
-        public static int CalculateBaseDamageBudget(int baseDamage, int devicesRank)
-        {
-            // Scale the rocket and its skill-based gadget budget before PER and mitigation.
-            var gadgetDamage = baseDamage + DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(devicesRank);
-            return (int)Math.Ceiling(gadgetDamage * 1.25f);
-        }
-
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -119,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 SkillType.Devices,
-                CalculateBaseDamageBudget(12, Skill.GetCreatureSkillRank(activator, SkillType.Devices)),
+                12,
                 12,
                 null,
                 false,
@@ -127,6 +120,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
                 afterSuccessfulHit: impactedTarget => ApplyRocketImpactEffects(activator, impactedTarget),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
@@ -139,7 +133,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 SkillType.Devices,
-                CalculateBaseDamageBudget(16, Skill.GetCreatureSkillRank(activator, SkillType.Devices)),
+                16,
                 2,
                 typeof(KnockdownStatusEffect),
                 false,
@@ -147,6 +141,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
                 afterSuccessfulHit: impactedTarget => ApplyRocketImpactEffects(activator, impactedTarget),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
@@ -159,7 +154,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 SkillType.Devices,
-                CalculateBaseDamageBudget(20, Skill.GetCreatureSkillRank(activator, SkillType.Devices)),
+                20,
                 3,
                 typeof(KnockdownStatusEffect),
                 false,
@@ -167,6 +162,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
                 afterSuccessfulHit: impactedTarget => ApplyRocketImpactEffects(activator, impactedTarget),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));

@@ -712,7 +712,7 @@
     "InternalName": "sw_wris_rock",
     "Category": "Devices",
     "Type": "Combat",
-    "Description": "Deals 55-60 fire DMG based on Devices rank plus PER scaling to one target and knocks down for 3 seconds.",
+    "Description": "Deals 48 fire DMG plus PER scaling to one target and knocks down for 3 seconds.",
     "Reference": "",
     "BibleAnimationRow": 136,
     "PerkId": "WristRocket",

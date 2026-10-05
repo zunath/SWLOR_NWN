@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Wrist Rocket")
 
                 .AddPerkLevel()
-                .Description("Deals 23-50 fire DMG based on Devices rank plus PER scaling to one target.")
+                .Description("Deals 20 fire DMG plus PER scaling to one target.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 5)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WristRocket1)
 
                 .AddPerkLevel()
-                .Description("Deals 39-55 fire DMG based on Devices rank plus PER scaling to one target and knocks down for 2 seconds.")
+                .Description("Deals 34 fire DMG plus PER scaling to one target and knocks down for 2 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 25)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WristRocket2)
 
                 .AddPerkLevel()
-                .Description("Deals 55-60 fire DMG based on Devices rank plus PER scaling to one target and knocks down for 3 seconds.")
+                .Description("Deals 48 fire DMG plus PER scaling to one target and knocks down for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 40)
                 .RequirementCharacterType(CharacterType.Standard)

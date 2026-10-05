@@ -109,26 +109,6 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(50).Should().Be(28);
     }
 
-    [TestCase(12, 5, 23)]
-    [TestCase(12, 9, 23)]
-    [TestCase(12, 10, 28)]
-    [TestCase(12, 20, 34)]
-    [TestCase(12, 30, 39)]
-    [TestCase(12, 40, 45)]
-    [TestCase(12, 50, 50)]
-    [TestCase(16, 25, 39)]
-    [TestCase(16, 29, 39)]
-    [TestCase(16, 30, 44)]
-    [TestCase(16, 40, 50)]
-    [TestCase(16, 50, 55)]
-    [TestCase(20, 40, 55)]
-    [TestCase(20, 49, 55)]
-    [TestCase(20, 50, 60)]
-    public void WristRocket_ScalesBothDamageBudgetsBeforeCombatModifiers(int baseDamage, int devicesRank, int expectedDamage)
-    {
-        WristRocketAbilityDefinition.CalculateBaseDamageBudget(baseDamage, devicesRank).Should().Be(expectedDamage);
-    }
-
     [Test]
     public void Flamethrower_UsesImpactDamageBeforeCosmeticAnimationCanClearIt()
     {

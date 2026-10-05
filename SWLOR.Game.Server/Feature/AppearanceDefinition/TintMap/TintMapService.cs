@@ -145,9 +145,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // A complete reset also removes legacy wildcard values left by older implementations
             // before the current material-scoped values are installed.
             var selections = TintMapModelResolver.GetCurrentSelections(creature);
-            var hasRobeRgb = selections.Any(selection => selection.ArmorPart == AppearanceArmor.Robe &&
-                selection.Material.Layers.Any(layer => GetEffectiveColor(creature, selection, layer).CustomColor.HasValue));
-            var rendersRobeRgb = RobeModelRenderer.Apply(creature, selections, hasRobeRgb);
+            var rendersRobeRgb = RobeModelRenderer.Apply(creature, selections);
             ProjectNativeRobeColors(creature, selections, rendersRobeRgb);
             ApplyEquippedHelmetColors(creature, selections, resetShaderOverrides);
             if (resetShaderOverrides)

@@ -23312,11 +23312,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 33
+                      "value": 48
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 1
+                      "value": 0
                     },
                     "Param1": {
                       "type": "byte",
@@ -23328,11 +23328,11 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 100
+                      "value": 131
                     },
                     "Subtype": {
                       "type": "word",
-                      "value": 73
+                      "value": 45
                     }
                   },
                   {
@@ -26397,7 +26397,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Apartment Terminal"
+            "0": "Starchaser Homes - Apartment Terminal"
           }
         },
         "OnClick": {
@@ -30005,7 +30005,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Restaurant"
           }
         },
         "OnClick": {
@@ -30359,7 +30359,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Cantina"
           }
         },
         "OnClick": {
@@ -30713,7 +30713,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Starport"
           }
         },
         "OnClick": {
@@ -33416,11 +33416,11 @@
         },
         "X": {
           "type": "float",
-          "value": 76.21305084228516
+          "value": 75.0
         },
         "Y": {
           "type": "float",
-          "value": 87.96588134765625
+          "value": 90.0
         },
         "Z": {
           "type": "float",
@@ -35084,11 +35084,11 @@
         },
         "X": {
           "type": "float",
-          "value": 190.1031494140625
+          "value": 187.5
         },
         "Y": {
           "type": "float",
-          "value": 42.40058898925781
+          "value": 40.8
         },
         "Z": {
           "type": "float",
@@ -35538,7 +35538,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Cantina Roof"
           }
         },
         "OnClick": {
@@ -35892,7 +35892,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Starport Roof"
           }
         },
         "OnClick": {
@@ -45061,7 +45061,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Czerka Tower"
           }
         },
         "OnClick": {
@@ -52972,7 +52972,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Apartment Terminal"
+            "0": "Starchaser Homes - Apartment Terminal"
           }
         },
         "OnClick": {
@@ -61675,11 +61675,11 @@
         },
         "X": {
           "type": "float",
-          "value": 76.21305084228516
+          "value": 75.0
         },
         "Y": {
           "type": "float",
-          "value": 87.96588134765625
+          "value": 90.0
         },
         "Z": {
           "type": "float",
@@ -62125,11 +62125,11 @@
         },
         "X": {
           "type": "float",
-          "value": 190.0734252929688
+          "value": 187.4702758789063
         },
         "Y": {
           "type": "float",
-          "value": 42.33015441894531
+          "value": 40.7295654296875
         },
         "Z": {
           "type": "float",
@@ -67066,7 +67066,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Apartment Terminal"
+            "0": "Starchaser Homes - Apartment Terminal"
           }
         },
         "OnClick": {
@@ -67293,7 +67293,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Apartment Terminal"
+            "0": "Starchaser Homes - Apartment Terminal"
           }
         },
         "OnClick": {
@@ -98912,7 +98912,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] General Store"
           }
         },
         "OnClick": {
@@ -100170,7 +100170,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Orion's Armament - Engineering"
           }
         },
         "OnClick": {
@@ -100726,7 +100726,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Jal Shey Branchhouse - Smithy"
           }
         },
         "OnClick": {
@@ -101080,7 +101080,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] HNN News"
           }
         },
         "OnClick": {
@@ -197504,7 +197504,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Builder's Union - Fabrication"
           }
         },
         "OnClick": {
@@ -225839,7 +225839,7 @@
         },
         "X": {
           "type": "float",
-          "value": 122.1500778198242
+          "value": 119.0350036621094
         },
         "Y": {
           "type": "float",
@@ -226193,7 +226193,7 @@
         },
         "X": {
           "type": "float",
-          "value": 122.1150741577148
+          "value": 119.0
         },
         "Y": {
           "type": "float",
@@ -226418,7 +226418,7 @@
         },
         "X": {
           "type": "float",
-          "value": 122.1510620117188
+          "value": 119.0350036621094
         },
         "Y": {
           "type": "float",
@@ -226772,7 +226772,7 @@
         },
         "X": {
           "type": "float",
-          "value": 122.1160583496094
+          "value": 119.0
         },
         "Y": {
           "type": "float",
@@ -304137,7 +304137,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "[SWLOR] Banner, Viscara"
+            "0": "City Hall"
           }
         },
         "OnClick": {
@@ -304206,7 +304206,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -304218,7 +304218,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -304258,7 +304258,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -304364,7 +304364,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "[SWLOR] Banner, Viscara"
+            "0": "City Hall"
           }
         },
         "OnClick": {
@@ -304433,7 +304433,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -304445,7 +304445,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -304485,7 +304485,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",
@@ -342234,7 +342234,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Cantina Roof"
           }
         },
         "OnClick": {
@@ -342588,7 +342588,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Exit] Cantina Roof"
           }
         },
         "OnClick": {
@@ -342942,7 +342942,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Sheriff's Office"
           }
         },
         "OnClick": {
@@ -343281,7 +343281,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Enter]"
+            "0": "[Enter] Clinic"
           }
         },
         "OnClick": {
@@ -371007,7 +371007,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Exit to the roof]"
+            "0": "[Enter] Czerka Tower Roof"
           }
         },
         "OnClick": {
@@ -392053,7 +392053,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "[Exit]"
+            "0": "[Enter] Bank"
           }
         },
         "OnClick": {
@@ -396592,7 +396592,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This tome can be used to refund a single perk. Only one perk can be refunded per 1 hour (real world time) period.\n\nYou will lose the perk and all perk levels. All SP spent on the perk purchases will be refunded. You may immediately spend this SP on another perk purchase."
                       }
                     },
                     "Identified": {
@@ -396906,7 +396906,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Medical Supplies are required to use many of the First Aid perks."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -397046,7 +397048,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Medical Supplies are required to use many of the First Aid perks."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -397187,7 +397191,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Stim Packs are required for many of the First Aid perks."
                       }
                     },
                     "Identified": {
@@ -397329,7 +397333,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Stim Packs are required for many of the First Aid perks."
                       }
                     },
                     "Identified": {
@@ -397640,7 +397644,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Explosives are required to use many of the Devices perks."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -397780,7 +397786,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Explosives are required to use many of the Devices perks."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -397921,7 +397929,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Using this tome will add a Reconditioning Token to your currencies list.\n\nYou may spend this token by using any Retraining Terminal. This will let you change your starting stats and it refunds your spent AP. In addition, it will refund your starting racial bonus stat. Please access the Retraining Terminal to learn more."
                       }
                     },
                     "Identified": {
@@ -398547,119 +398555,7 @@
               "__struct_id": 0
             },
             {
-              "__struct_id": 4,
-              "ItemList": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 0
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 211
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 1
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Experience the vibrant fusion of tradition and innovation with Czerka Soda. Our artisanal drink combines timeless flavors with a secret spice blend, creating a bold and refreshing taste that's perfect for any occasion.\n\nEco-Chic Packaging Czerka Soda comes in stylish, sustainable bottles, making it the smart choice for the eco-conscious consumer.\n\nVersatile & Vibrant Ideal for mixology or as a standalone refreshment, Czerka Soda  is your go-to for celebrations or everyday enjoyment.\n\nBe Part of the Czerka Culture Embrace the movement that blends heritage with contemporary flair. Make a statement with every sip of Czerka Soda."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Czerka Soda"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 4
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "CzerkaSoda"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "czerkasoda"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 8.908087968876006e-039
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  }
-                ]
-              }
+              "__struct_id": 4
             },
             {
               "__struct_id": 2
@@ -398668,524 +398564,7 @@
               "__struct_id": 3
             },
             {
-              "__struct_id": 1,
-              "ItemList": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 11
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 311
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 11
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Packaged pickle"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 142
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 3
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 13
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 15
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 335
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 45
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 2
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 106
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 5
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "FOOD"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "pea_soup"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 142
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 2.320611083394923e-015
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 1,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 11
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 311
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 11
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Hot Chips"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 170
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 3
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 13
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 15
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 335
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 45
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 2
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 106
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 4
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "FOOD"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "apple_juice"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 170
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.065307169715806e-038
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 2,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 11
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 311
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 11
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\n  Are your snack options looking a little murky?\n\n    Options in the break room just too quirky?\n\n    Need something fast that'll keep you perky?\n\n    Check your nearest CZERKA vending machine!\n\n               IT'S CZERKY JERKY!\n\n   It's got tang, it's got punch, it's got power!\n\n The perfect nutritious snack for every lunch hour!\n\n          Now in three delicious flavors\n            all made from REAL(*) meat!\n\n                For a limited time,\n              Try CZERKY TURKEY JERKY!\n\n                   CZERKY JERKY!\n          Now at a distributor near you(**)!\n\n* Less than 10% meat substitute & chemical fillers\n** Available only at participating locations\nand while supplies last.\n\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\""
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Czerky Jerky(tm)"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 155
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 3
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 13
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 15
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 335
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 45
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 2
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 106
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 4
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 2
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "FOOD"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "apple_juice"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 155
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.065307169715806e-038
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  }
-                ]
-              }
+              "__struct_id": 1
             }
           ]
         },
@@ -400563,7 +399942,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "veles_street_food"
+          "value": "street_food"
         },
         "WillNotBuy": {
           "type": "list",
@@ -403860,6 +403239,21 @@
   "VarTable": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "WEATHER_HAZARD_SAFE"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      },
       {
         "__struct_id": 0,
         "Name": {

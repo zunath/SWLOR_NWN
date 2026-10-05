@@ -357,7 +357,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         PowerCell2StatusEffect = 353,
         PowerCell3StatusEffect = 354,
         PowerSurgeStatusEffect = 355,
-        PrecognitionStatusEffect = 356,
+        DangerSenseStatusEffect = 356,
         PredatorsMark1StatusEffect = 357,
         PredatoryBondStanceBeastStatusEffect = 358,
         PredatoryBondStanceStatusEffect = 359,

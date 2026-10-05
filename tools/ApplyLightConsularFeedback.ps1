@@ -52,11 +52,11 @@ $devicePrices = [ordered]@{
 }
 
 $deviceNotes = [ordered]@{
-    "Ion Lance I" = "Line AoE Devices twin priced 3/4/4 with Radiant Lance. The four narrower core Assault Gadget lines use 2/2/3 pricing so every Devices archetype remains at 60 SP. Droid instruction AI slots: 1."
-    "Wrist Rocket II" = "The 2/2/3 core Assault Gadget curve prices this single-target control line below the twin line AoE package. Droid instruction AI slots: 2."
-    "Sonic Burst II" = "The 2/2/3 core Assault Gadget curve prices Sonic Burst for low damage with interrupt and accuracy control. Droid instruction AI slots: 2."
-    "Rail Dart II" = "The 2/2/3 core Assault Gadget curve prices this single-target damage-over-time line below the twin line AoE package. Droid instruction AI slots: 2."
-    "Rail Dart III" = "Top rank of the 2/2/3 core Assault Gadget curve; its single-target Bleed package remains below the twin line AoE package. Droid instruction AI slots: 3."
+    "Ion Lance I" = ""
+    "Wrist Rocket II" = ""
+    "Sonic Burst II" = ""
+    "Rail Dart II" = ""
+    "Rail Dart III" = ""
 }
 
 $forceBurstRow = [ordered]@{
@@ -67,7 +67,7 @@ $forceBurstRow = [ordered]@{
     "Primary Stat" = "WIL"; "Secondary Stat" = "None"; "Scaling Source" = "Combat Formula"
     FP = "6.0"; STM = "-"; "Casting Time" = "1.5 seconds"; "Cooldown Time" = "15 seconds"
     "Dev Status" = "Implemented"; "Additional Requirements" = ""
-    Notes = "Single-rank Light Alter area damage priced as a Force-32 power; its rider-free damage stays below Force Judgment III while preserving Force and Devices SP and ability-count parity."
+    Notes = ""
 }
 
 Add-Type -AssemblyName System.IO.Compression

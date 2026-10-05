@@ -2345,7 +2345,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorColor, colorIndex, colorId);
-            EquippedItemAppearance.Refresh(_target, item);
+            EquippedItemAppearance.Refresh(_target, item, resetShaderOverrides: false);
         }
 
         private void LoadBodyPart()

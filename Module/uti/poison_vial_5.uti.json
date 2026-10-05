@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A masterwork venom formulation. Apply to a melee or thrown weapon to coat it in poison. Right-click this item in your inventory and choose Activate Item and select a melee or thrown weapon in your own inventory. One vial is consumed after the coating is applied. Anyone can use a coating; Poisoncraft is required to craft it."
+      "0": "A masterwork venom formulation. Apply to a weapon to coat it in poison. Right-click this item in your inventory and choose Activate Item and select a weapon in your own inventory. One vial is consumed after the coating is applied. Anyone can use a coating; Poisoncraft is required to craft it."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A masterwork venom formulation. Apply to a melee or thrown weapon to coat it in poison. Right-click this item in your inventory and choose Activate Item and select a melee or thrown weapon in your own inventory. One vial is consumed after the coating is applied. Anyone can use a coating; Poisoncraft is required to craft it."
+      "0": "A masterwork venom formulation. Apply to a weapon to coat it in poison. Right-click this item in your inventory and choose Activate Item and select a weapon in your own inventory. One vial is consumed after the coating is applied. Anyone can use a coating; Poisoncraft is required to craft it."
     }
   },
   "Identified": {

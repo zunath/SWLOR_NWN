@@ -32,14 +32,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             builder
                 .Create(FeatType.FragGrenade1, PerkType.FragGrenade)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FragGrenade)
-                .UsesAuthoredAnimationAtImpact()
                 .Name("Frag Grenade I")
                 .Level(1)
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.FragGrenade, 8f)
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .UsesImpactAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(Animation.ThrowGrenade)
+                .PreservesNativeAnimationChoreography()
+                .UsesNativeAnimationPreview(Animation.ThrowGrenade, 1f)
                 .IsAreaAbility()
                 .HasTargetingSphere(
                     Spell.FragGrenade1,
@@ -59,14 +60,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             builder
                 .Create(FeatType.FragGrenade2, PerkType.FragGrenade)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FragGrenade)
-                .UsesAuthoredAnimationAtImpact()
                 .Name("Frag Grenade II")
                 .Level(2)
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.FragGrenade, 8f)
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .UsesImpactAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(Animation.ThrowGrenade)
+                .PreservesNativeAnimationChoreography()
+                .UsesNativeAnimationPreview(Animation.ThrowGrenade, 1f)
                 .IsAreaAbility()
                 .HasTargetingSphere(
                     Spell.FragGrenade2,
@@ -86,14 +88,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             builder
                 .Create(FeatType.FragGrenade3, PerkType.FragGrenade)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FragGrenade)
-                .UsesAuthoredAnimationAtImpact()
                 .Name("Frag Grenade III")
                 .Level(3)
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.FragGrenade, 8f)
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .UsesImpactAnimation(Animation.ThrowGrenade)
+                .UsesAnimation(Animation.ThrowGrenade)
+                .PreservesNativeAnimationChoreography()
+                .UsesNativeAnimationPreview(Animation.ThrowGrenade, 1f)
                 .IsAreaAbility()
                 .HasTargetingSphere(
                     Spell.FragGrenade3,

@@ -291,11 +291,20 @@ namespace SWLOR.Game.Server.EngineTests
                 Message = string.Empty
             };
 
-            var context = new EngineTestContext(attribute.Name, arena, spawnLocation);
+            EngineTestContext context = null;
+            var testArena = OBJECT_INVALID;
             var stopwatch = Stopwatch.StartNew();
 
             try
             {
+                // Fields and other objects created by gameplay code are not tracked by the
+                // fixture. A separate area prevents them from contaminating later tests.
+                testArena = CreateArea(GetResRef(arena));
+                if (!GetIsObjectValid(testArena))
+                    throw new EngineTestAssertionException("Could not create an isolated test arena.");
+                context = new EngineTestContext(attribute.Name, testArena,
+                    Location(testArena, GetPositionFromLocation(spawnLocation), 0f));
+                await NwTask.NextFrame();
                 if (!IsValidTestMethod(method))
                 {
                     result.Outcome = EngineTestOutcome.Failed;
@@ -373,7 +382,12 @@ namespace SWLOR.Game.Server.EngineTests
 
                 try
                 {
-                    context.Cleanup();
+                    context?.Cleanup();
+                    // Creature destruction is deferred until its assigned context runs.
+                    await NwTask.NextFrame();
+                    if (GetIsObjectValid(testArena))
+                        DestroyArea(testArena);
+                    await NwTask.NextFrame();
                 }
                 catch (Exception cleanupEx)
                 {

@@ -58,13 +58,13 @@ namespace SWLOR.Toolset.Tests
             var issues = new UnreferencedConversationRule().Validate(Context()).ToList();
 
             // Authored graphs remain discoverable even without a referring object. Retired
-            // quests, Nahulu's merged oath, and the three restored Veles vendors no longer
-            // contribute findings.
-            issues.Should().HaveCount(26);
+            // quests, Nahulu's merged oath, the restored Veles vendors, and the Trade Concourse
+            // tech vendor no longer contribute findings.
+            issues.Should().HaveCount(25);
             issues.Should().OnlyContain(issue => issue.Severity == ValidationSeverity.Warning);
             issues.Select(issue => issue.ResRef).Should().NotContain(new[]
-                { "night_viscflower", "veles_volnatu", "vendor_merchant" },
-                "the restored Veles vendors have placed NPCs using their authored conversations");
+                { "night_viscflower", "veles_volnatu", "vendor_merchant", "veles_techvendor", "vendor" },
+                "the restored Veles vendors have placed objects using their authored conversations");
             issues.Select(issue => issue.ResRef).Should().Contain("trooperquest");
             issues.Select(issue => issue.ResRef).Should().NotContain("dmfi_universal",
                 "that conversation is started directly by an NSS script");

@@ -7678,7 +7678,7 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 45
                     },
                     "CostValue": {
                       "type": "word",
@@ -7694,7 +7694,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
+                      "value": 142
                     },
                     "Subtype": {
                       "type": "word",
@@ -27238,7 +27238,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An ale brewed by the Gamorrean's using a secret recipe. Hard hitting and taste's like shit but guaranteed to get you drunk fast."
                       }
                     },
                     "Identified": {
@@ -27346,7 +27346,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Created by a coruscant local, this ale tastes sweet and is easy to drink. "
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -27453,7 +27455,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A bitter white wine that is popular along side a bantha steak."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -27561,7 +27565,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A shot of liquor that is infused with a small portion of bacta. Guaranteed to get one drunk and feeling healthier at the same time."
                       }
                     },
                     "Identified": {
@@ -27670,7 +27674,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A simple cigar. Light it up and have a puff."
                       }
                     },
                     "Identified": {
@@ -27779,7 +27783,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A cigarette. Bad for the body bud good for the nerves."
                       }
                     },
                     "Identified": {
@@ -27887,7 +27891,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A beautiful red wine brewed on Corellia. It's sweet taste comes from the raspberry's that are infused inside."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -27995,7 +28001,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Not even the bartenders know what goes into these drinks. All they know is it comes in a giant metal barrel and tastes delicious."
                       }
                     },
                     "Identified": {
@@ -28103,7 +28109,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A drink that resembles a reactor core if you look down into the drink. It's quite better but goes down easy."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -28211,7 +28219,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Bantha milk, vodka and dark chocolate make up sith spit. Tastes good and easy to make, a staple in most bars."
                       }
                     },
                     "Identified": {
@@ -28320,7 +28328,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A cider made primaly from citrus fruit gathered somewhere on viscara. "
                       }
                     },
                     "Identified": {
@@ -28429,7 +28437,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Orange with a bit of lime for those that don't want to drink alcohol but still wanna look cool. *Thumbs up*"
                       }
                     },
                     "Identified": {
@@ -28538,7 +28546,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A drink that's contents are still unknown, but when drunken, makes the consumer want to get naked and dance."
                       }
                     },
                     "Identified": {
@@ -28646,7 +28654,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A teal-colored, bubbly wine that is produced on the planet of Alderaan and served across the galaxy."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -28753,7 +28763,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "An ale created by trandoshan prisoners in a toilet on Coruscant. Now brewed professionally and sold across the galaxy but no one but trandoshans can stomach it."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -28861,7 +28873,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A glass of high quality H20. This used to be named \"Simply Pilgrim\" but the bars went back to the original name of water."
                       }
                     },
                     "Identified": {
@@ -28969,7 +28981,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "White Wampa is simply vodka, milk and snow. Often served on Hoth at large gatherings, but can be served in bars using shaved ice instead of snow."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -29076,7 +29090,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A double shot of malt whisky with several ice cubes. This drink is a delicacy all throughout the galaxy and only the sophisticated drink such a perfect drink."
+                      }
                     },
                     "Identified": {
                       "type": "byte",

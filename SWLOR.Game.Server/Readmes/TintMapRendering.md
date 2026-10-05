@@ -204,6 +204,26 @@ hands through an incomplete robe skeleton or replacing body bind transforms
 with the robe's transforms. It applies across the catalog, with no robe-number
 exceptions or opt-in conversion list.
 
+For clips supplied by the wearer, its body controllers also drive the garment's
+standard skeleton joints. Stock clothing custom slots can describe a different
+gesture from the game's current emote, so they must not override those joints.
+Independent cloth helpers retain their authored curves. Each private garment
+root explicitly restores omitted position, orientation, and scale channels from
+its own bind pose, compensating for the wearer's animation scale. This prevents
+an interrupted cast from leaving the garment at the previous clip's root offset.
+The compiled audit compares garment controllers with body controllers and checks
+these reset defaults across the resolved animation catalog.
+
+`tools/AlignRobeAnimations.py --game-data "<NWN data>" --apply` repairs the
+ordinary robe parents before RGB generation. It aligns common clips to the
+current body chain, preserves cloth helper motion and geometry, and rebuilds
+descendants against their updated parent part IDs. Unchanged binary descendants
+receive only ID remapping, including private ID collisions and local tracks;
+their geometry, controllers, pointers, and inverse bindings remain unchanged.
+Missing legacy robe parents
+fall back to the canonical body. Every output must pass mesh, hierarchy, and
+skin-binding checks before the batch replaces HAK sources.
+
 The compiler matches part IDs against its immediate parent. The generator
 checks the compiled IDs, not only ASCII joint names. Native inherited tracks
 are mapped by their original IDs: some stock cloak helpers have different IDs
@@ -247,6 +267,14 @@ requires exact generated source, compiler, immediate compiled parent, validation
 code, original inverse-bind source, canonical body, and owned output hashes. An
 edited source, output, compiler, or validator invalidates the corresponding proof.
 Whole-chain body-pose checks still run during generation even when models are reused.
+Staging `compilations.json` records compilation-only checkpoints for interrupted
+builds. They require matching source, compiler, parent, original binding data,
+canonical body, postprocessors, and output bytes. Resumed compilations still run
+every current validation and receive no validated cache record until those pass.
+Large dummy banks are exported in bounded, independent validation chunks. Their
+joined compiled bytes must match the complete bank, and their native exports
+must preserve the full ordered animation inventory and common geometry. This
+avoids the legacy exporter's poor performance on very large unsplit banks.
 Each shared bridge source is generated once, then its model-name token is replaced
 for the allocated resource; controller curves are not regenerated a second time.
 The September 2026 corpus measured 4.3 seconds for an unchanged `--apply`, compared
@@ -265,8 +293,8 @@ includes an actual compiled rotated mesh, its skinned vertex positions, and a
 scan of the complete robe catalog; preserving old inverse-bind bytes alone is
 not sufficient to prove correct placement.
 
-Robe 236's torso coverings (`coat_top` / `coat_top2`) are ordinary rigid meshes.
-The legacy versions used dangly meshes despite having zero constraints on every
+Robe 236's torso coverings (`coat_top` / `coat_top2`) originally used dangly
+meshes despite having zero constraints on every
 vertex, sending an immobile panel through the cloth-physics renderer. A September
 16 report showed that panel displaced above the hood; skeleton and inverse-bind
 checks alone did not cover that renderer path. The correction keeps the authored
@@ -282,6 +310,43 @@ refreshes owned resource hashes and drops affected cached build proofs. Run
 to check all native and RGB variants. In-game confirmation is still required for
 the reported displacement after deploying the updated `sw_pt_robe` and
 `sw_pt_root` HAKs.
+
+A subsequent player report after that update still showed the upper robe
+displaced after movement or a skill. The torso covering, hood (`hood002`) and
+belt (`beltjr`) now use skin meshes with a single full torso weight, matching the
+bone-following renderer used by the sleeves and skirt. Their rigid shapes,
+materials, local transforms, animation IDs and existing sleeve/skirt inverse
+bindings are preserved. New panel inverse binds are calculated from the compiled
+world transforms rather than relying on the legacy compiler's calculation.
+This covers all 24 native and RGB models across eight body families.
+Run `SWLOR_Haks/tools/BindRobePanels.py --robe 236 --panel coat_top --panel coat_top2
+--panel hood002 --panel beltjr --game-data "<NWN data>" --apply` to reproduce the
+repair. `python -B -m unittest discover -s SWLOR_Haks/tools -p "TestBoundRobePanels.py"`
+checks all 72 panel bindings and compiled vertex placement through movement,
+skills and idle. Rebuild `sw_pt_robe` and `sw_pt_root`; confirmation of the native
+client's animation transitions remains an in-game check.
+
+The catalog audit extends this treatment to every visible static attachment
+under a body bone, including nested belts, chest ornaments and leg coverings.
+It scans all 7,171 native attachments and RGB roots by mesh flags and hierarchy,
+without a robe-number or mesh-name repair list. A September 30 pass bound 696
+additional models across 33 robe styles. Moving cloth and independently animated
+attachments retain their authored motion; invisible skeleton meshes are excluded.
+Constant animation reset tracks count as static only when every controller value
+matches the attachment's own bind pose. A different reset remains animated.
+Duplicate visible leaves are renamed only after checking animation and skin-bone
+references. Scaled static geometry is baked into the skin vertices, with inverse
+translations divided by the bone's bind scale, preserving its world shape.
+ASCII attachments without existing skins can be compiled and round-trip validated
+as a binding reference; ASCII models with existing skins fail closed because their
+authored inverse binds have no compiled preservation reference.
+Run `BindRobePanels.py --all --game-data "<NWN data>" --apply` from
+`SWLOR_Haks/tools` to validate and repair new matching attachments, or use
+`--all --audit --game-data "<NWN data>"` for a read-only corpus check. The audit
+returns a failing exit code when matching unbound geometry remains. The catalog
+regression checks every attachment and every vertex of body-bound child skins
+through sampled bone translation, rotation and scale changes. Both
+`sw_pt_robe` and `sw_pt_root` must be rebuilt after a repair.
 
 `animation_bridges` in `RobeRgbModels.json` preserves stable shared parent names.
 The manifest records generator/source/output hashes, pose coverage, and any

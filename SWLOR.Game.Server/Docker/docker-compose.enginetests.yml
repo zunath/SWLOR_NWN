@@ -23,6 +23,7 @@
 services:
     redis:
         hostname: redis
+        # Exercise the same Redis/module versions used by persistent deployments.
         image: redislabs/redismod:latest
         tmpfs:
             - /data

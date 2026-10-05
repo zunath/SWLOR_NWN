@@ -2,10 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.WeatherService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
@@ -25,6 +27,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         private static readonly Dictionary<uint, AreaWeather> _areas = new();
+        private static readonly WeatherRegionCache _regions = new();
         private static readonly Dictionary<uint, WeatherExposure> _exposures = new();
         private static Dictionary<PlanetType, WeatherClimate> _planetClimates = WeatherPlanetDefinitions.GetPlanetClimates();
         private static Dictionary<string, WeatherClimate> _namedClimates = WeatherPlanetDefinitions.GetNamedClimates(_planetClimates);
@@ -48,6 +51,7 @@ namespace SWLOR.Game.Server.Service
             _namedClimates = WeatherPlanetDefinitions.GetNamedClimates(_planetClimates);
             _pattern = new WeatherPattern();
             _areas.Clear();
+            _regions.Clear();
             _exposures.Clear();
         }
 
@@ -63,6 +67,17 @@ namespace SWLOR.Game.Server.Service
                    !GetIsAreaInterior(area) && GetIsAreaAboveGround(area) &&
                    !GetLocalBool(area, "SPACE") && !GetName(area).StartsWith("Space -", StringComparison.OrdinalIgnoreCase) &&
                    GetAreaClimate(area) is { IsSheltered: false };
+        }
+
+        private static bool IsHazardousWeatherArea(uint area)
+        {
+            if (!IsWeatherArea(area) || GetLocalBool(area, "WEATHER_HAZARD_SAFE")) return false;
+
+            // Authored settlements opt out independently of their natural/urban
+            // setting. Player-founded cities are protected while the city exists.
+            var propertyId = Property.GetPropertyId(area);
+            return string.IsNullOrWhiteSpace(propertyId) ||
+                   DB.Get<WorldProperty>(propertyId)?.PropertyType != PropertyType.City;
         }
 
         [NWNEventHandler(ScriptName.OnModuleLoad)]
@@ -101,8 +116,8 @@ namespace SWLOR.Game.Server.Service
                 _areas.Add(area, state);
             }
 
-            // Entry and multiple occupants request the same snapshot. Only a new
-            // weather front (or an explicit builder edit) rolls storms.
+            // Entry and multiple occupants request the same snapshot. Maps with the
+            // same climate and authored modifiers share one storm roll per front.
             if (state.Revision == _pattern.Revision) return;
 
             if (GetLocalInt(area, VAR_INITIALIZED) == 0)
@@ -116,10 +131,14 @@ namespace SWLOR.Game.Server.Service
             }
 
             var previous = state.Conditions;
-            if (!state.TryUpdate(_pattern, GetAreaClimate(area),
-                GetLocalInt(area, VAR_WEATHER_HEAT), GetLocalInt(area, VAR_WEATHER_HUMIDITY),
-                GetLocalInt(area, VAR_WEATHER_WIND), GetIsAreaNatural(area) != 0,
-                NWScript.Random)) return;
+            var climate = GetAreaClimate(area);
+            var heatModifier = GetLocalInt(area, VAR_WEATHER_HEAT);
+            var humidityModifier = GetLocalInt(area, VAR_WEATHER_HUMIDITY);
+            var windModifier = GetLocalInt(area, VAR_WEATHER_WIND);
+            var region = _regions.GetConditions(_pattern, climate, heatModifier, humidityModifier, windModifier, NWScript.Random);
+            if (!state.TryUpdate(_pattern, climate,
+                heatModifier, humidityModifier, windModifier, GetIsAreaNatural(area) != 0,
+                region.Storm)) return;
             var conditions = state.Conditions;
             Log.WriteStructured(LogGroup.Server,
                 "Weather updated for {AreaResref}: revision {Revision}, heat {Heat}, humidity {Humidity}, wind {Wind}, precipitation {Precipitation}, storm {Storm}",
@@ -239,7 +258,8 @@ namespace SWLOR.Game.Server.Service
             if (conditions == null) return;
 
             var message = conditions.GetFeedback(GetAreaClimate(area), GetIsNight(),
-                GetLocalInt(area, VAR_WEATHER_ACID_RAIN) == 1, NWScript.GetWeather(area));
+                GetLocalInt(area, VAR_WEATHER_ACID_RAIN) == 1, NWScript.GetWeather(area),
+                IsHazardousWeatherArea(area));
             SendMessageToPC(creature, message);
             ApplyWeatherDamage(creature, DateTime.UtcNow);
         }
@@ -255,7 +275,7 @@ namespace SWLOR.Game.Server.Service
             var area = GetArea(creature);
             var conditions = GetConditions(area);
             var hazard = GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature) &&
-                         !GetIsDead(creature) && conditions != null
+                         !GetIsDead(creature) && conditions != null && IsHazardousWeatherArea(area)
                 ? conditions.GetHazard(GetLocalInt(area, VAR_WEATHER_ACID_RAIN) == 1, NWScript.GetWeather(area))
                 : WeatherHazard.None;
             var dice = exposure.GetDamageDice(now, hazard);
@@ -308,6 +328,7 @@ namespace SWLOR.Game.Server.Service
         {
             var range = Math.Clamp(power * 0.1f, 3f, 6f);
             ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Lightning_M), location);
+            if (!IsHazardousWeatherArea(GetAreaFromLocation(location))) return;
 
             const ObjectType targets = ObjectType.Creature | ObjectType.Door | ObjectType.Placeable;
             for (var target = GetFirstObjectInShape(Shape.Sphere, range, location, false, targets);

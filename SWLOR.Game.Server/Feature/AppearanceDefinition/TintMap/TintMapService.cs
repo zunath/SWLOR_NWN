@@ -57,13 +57,16 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (!GetIsPC(player))
                 return;
 
-            DelayCommand(1f, () => ApplyCurrentColors(player));
+            RestorePlayerOverrides(player);
+            // Restore tint locals from the player record before any queued model refresh.
+            // Keep unrelated material overrides during relog restore.
+            DelayCommand(1f, () => ApplyCurrentColors(player, resetShaderOverrides: false));
         }
 
         [NWNEventHandler(ScriptName.OnPlayerSpawn)]
         public static void OnPlayerSpawn()
         {
-            QueueRefresh(OBJECT_SELF);
+            QueueRefresh(OBJECT_SELF, resetShaderOverrides: false);
         }
 
         [NWNEventHandler(ScriptName.OnCreatureSpawnAfter)]
@@ -80,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (GetObjectType(creature) != ObjectType.Creature)
                 return;
 
-            QueueRefresh(creature);
+            QueueRefresh(creature, resetShaderOverrides: !GetIsPC(creature));
             if (GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature))
             {
                 var area = GetArea(creature);
@@ -131,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             ApplyCurrentColors(OBJECT_SELF);
         }
 
-        public static void ApplyCurrentColors(uint creature)
+        public static void ApplyCurrentColors(uint creature, bool resetShaderOverrides = true)
         {
             if (!GetIsObjectValid(creature))
                 return;
@@ -146,8 +149,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 selection.Material.Layers.Any(layer => GetEffectiveColor(creature, selection, layer).CustomColor.HasValue));
             var rendersRobeRgb = RobeModelRenderer.Apply(creature, selections, hasRobeRgb);
             ProjectNativeRobeColors(creature, selections, rendersRobeRgb);
-            ApplyEquippedHelmetColors(creature, selections);
-            ResetMaterialShaderUniforms(creature);
+            ApplyEquippedHelmetColors(creature, selections, resetShaderOverrides);
+            if (resetShaderOverrides)
+                ResetMaterialShaderUniforms(creature);
             var creatureLayers = new HashSet<TintMapLayerType>();
             foreach (var selection in selections)
             {
@@ -275,14 +279,18 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 Droid.UpdateEquippedItemSnapshot(creature, item);
         }
 
-        private static void ApplyEquippedHelmetColors(uint creature, IReadOnlyList<TintMapMaterialSelection> selections)
+        private static void ApplyEquippedHelmetColors(
+            uint creature,
+            IReadOnlyList<TintMapMaterialSelection> selections,
+            bool resetShaderOverrides = true)
         {
             var helmet = GetItemInSlot(InventorySlot.Head, creature);
             if (!GetIsObjectValid(helmet))
                 return;
             // The client does not replay creature rows onto its worn helmet attachment.
             // Publish the exact same effective colors on the equipped item itself.
-            ResetMaterialShaderUniforms(helmet);
+            if (resetShaderOverrides)
+                ResetMaterialShaderUniforms(helmet);
             foreach (var selection in selections.Where(selection => selection.IsWornHelmet))
             {
                 foreach (var layer in selection.Material.Layers)
@@ -869,6 +877,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             RemoveDroidOverrides(creature, variableNames);
+            SavePlayerOverrides(creature);
             ApplyCurrentColorsAndPublish(creature);
         }
 
@@ -920,6 +929,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 creature,
                 variableNames.Concat(new[] { stateVariable }).ToList(),
                 savedColor);
+            SavePlayerOverrides(creature);
 
             // Creature colors are semantic across the whole modular model: every registered
             // material whose tint mask uses this layer must receive the same value. The enabled
@@ -1372,7 +1382,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 invalidatePendingCarry: false);
         }
 
-        public static void QueueRefresh(uint creature)
+        public static void QueueRefresh(uint creature, bool resetShaderOverrides = true)
         {
             if (!GetIsObjectValid(creature))
                 return;
@@ -1391,9 +1401,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 CarryStoredEquipmentCustomColors(creature);
                 CarryStoredCreatureCustomColors(creature);
                 if (recoveredRobe)
-                    EquippedItemAppearance.Refresh(creature, armor);
+                    EquippedItemAppearance.Refresh(creature, armor, resetShaderOverrides);
                 else
-                    ApplyCurrentColors(creature);
+                    ApplyCurrentColors(creature, resetShaderOverrides);
             });
         }
 
@@ -1442,7 +1452,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                  creature = GetNextObjectInArea(area, ObjectType.Creature))
             {
                 if (creature != enteringCreature)
-                    QueueRefresh(creature);
+                    QueueRefresh(creature, resetShaderOverrides: !GetIsPC(creature));
             }
         }
 
@@ -1710,7 +1720,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
         private static void ApplyCurrentColorsAndPublish(uint creature)
         {
-            ApplyCurrentColors(creature);
+            // Individual picker edits update only the tint rows. A full NWNX reset also
+            // clears unrelated shader overrides on the creature and worn attachments.
+            ApplyCurrentColors(creature, resetShaderOverrides: false);
             NWNXLib.g_pAppManager.m_pServerExoApp.SetForceUpdate();
         }
 
@@ -1920,6 +1932,64 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         private static string GetCreatureCustomColorStateVariable(TintMapLayerType layer)
         {
             return TintMapVariable.GetCreatureColorStateName(layer);
+        }
+
+        private static IEnumerable<string> GetCreatureTintSnapshotVariables(uint creature)
+        {
+            return GetCreatureCustomColorVariables(creature).Concat(
+                Enum.GetValues<TintMapLayerType>()
+                    .Where(TintMapVariable.IsCreatureColorLayer)
+                    .Select(GetCreatureCustomColorStateVariable));
+        }
+
+        private static void SavePlayerOverrides(uint creature)
+        {
+            if (!GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature))
+                return;
+
+            var player = DB.Get<Entity.Player>(GetObjectUUID(creature));
+            if (player == null)
+                return;
+
+            var colors = GetCreatureTintSnapshotVariables(creature)
+                .Select(name => new KeyValuePair<string, int>(name, GetLocalInt(creature, name)))
+                .Where(entry => entry.Value > 0)
+                .ToDictionary(entry => entry.Key, entry => entry.Value, StringComparer.Ordinal);
+            if (UpdatePlayerTintOverrides(player, colors))
+                DB.Set(player);
+        }
+
+        private static bool UpdatePlayerTintOverrides(
+            Entity.Player player, IReadOnlyDictionary<string, int> colors)
+        {
+            if (player.CreatureTintOverrides != null &&
+                player.CreatureTintOverrides.Count == colors.Count &&
+                colors.All(entry => player.CreatureTintOverrides.TryGetValue(entry.Key, out var saved) &&
+                                    saved == entry.Value))
+                return false;
+
+            player.CreatureTintOverrides = new Dictionary<string, int>(colors, StringComparer.Ordinal);
+            return true;
+        }
+
+        private static void RestorePlayerOverrides(uint creature)
+        {
+            if (!GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature))
+                return;
+
+            var player = DB.Get<Entity.Player>(GetObjectUUID(creature));
+            if (player?.CreatureTintOverrides == null)
+                return;
+
+            // A saved clear must win over stale locals from an older character export.
+            foreach (var name in GetCreatureTintSnapshotVariables(creature).ToList())
+                DeleteLocalInt(creature, name);
+            foreach (var (name, value) in player.CreatureTintOverrides)
+            {
+                if (value > 0 && (TintMapVariable.IsCreatureColorStateName(name) ||
+                    TintMapVariable.TryGetLayer(name, out var layer) && TintMapVariable.IsCreatureColorLayer(layer)))
+                    SetLocalInt(creature, name, value);
+            }
         }
 
         private static void RemoveDroidOverrides(uint creature, IReadOnlyList<string> variableNames)

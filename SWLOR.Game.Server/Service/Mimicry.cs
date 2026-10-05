@@ -253,21 +253,27 @@ namespace SWLOR.Game.Server.Service
             if (!_techniques.TryGetValue(techniqueFeat, out var techniqueDetail))
                 return;
 
-            var area = GetArea(activator);
-            var nth = 1;
-            var nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, activator, nth);
-
-            while (GetIsObjectValid(nearby) && GetDistanceBetween(activator, nearby) <= WitnessRadius)
+            foreach (var nearby in GetNearbyPlayers(activator, WitnessRadius))
             {
-                if (!GetIsDM(nearby) && GetArea(nearby) == area)
+                if (!GetIsDM(nearby))
                 {
                     TryRecordWitness(activator, nearby, techniqueFeat, techniqueDetail);
                     TryAwardAnalysisCombatPoint(activator, nearby);
                 }
-
-                nth++;
-                nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, activator, nth);
             }
+        }
+
+        private static List<uint> GetNearbyPlayers(uint npc, float radius)
+        {
+            var players = new List<uint>();
+            var area = GetArea(npc);
+            // Snapshot before callbacks, which may enumerate players for feedback.
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (GetArea(player) == area && GetDistanceBetween(npc, player) <= radius)
+                    players.Add(player);
+            }
+            return players;
         }
 
         /// <summary>
@@ -345,19 +351,8 @@ namespace SWLOR.Game.Server.Service
 
             if (_witnesses.TryGetValue(npc, out var byPlayer) && byPlayer.Count > 0)
             {
-                var nth = 1;
-                var nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, npc, nth);
-
-                while (GetIsObjectValid(nearby))
-                {
-                    if (GetDistanceBetween(npc, nearby) > LearnMaxDistance)
-                        break;
-
+                foreach (var nearby in GetNearbyPlayers(npc, LearnMaxDistance))
                     TryLearnTechniques(npc, nearby, byPlayer);
-
-                    nth++;
-                    nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, npc, nth);
-                }
             }
 
             _witnesses.Remove(npc);

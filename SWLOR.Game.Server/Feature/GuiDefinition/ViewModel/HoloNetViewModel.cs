@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                var auditAuthorName = $"{GetName(Player)} ({GetPCPlayerName(Player)}) [{GetPCPublicCDKey(Player)}]";
+                var auditAuthorName = $"{PlayerName.GetAuditName(Player)} ({GetPCPlayerName(Player)}) [{GetPCPublicCDKey(Player)}]";
                 AssignCommand(Player, () => TakeGoldFromCreature(BroadcastPrice, Player, true));
 
                 if (!await BackgroundJob.EnqueueDiscordWebhook(url, "HoloNet Broadcast", message, 3447003))

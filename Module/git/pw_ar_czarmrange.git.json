@@ -353323,6 +353323,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 1
@@ -353361,7 +353362,6 @@
           "type": "resref",
           "value": "wp_stuck"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 112.3962020874023
@@ -353372,7 +353372,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-06
+          "value": -5.7220458984375e-006
         },
         "XOrientation": {
           "type": "float",

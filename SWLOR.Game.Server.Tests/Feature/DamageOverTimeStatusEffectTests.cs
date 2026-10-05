@@ -52,6 +52,24 @@ public class DamageOverTimeStatusEffectTests
     }
 
     [Test]
+    public void RefreshingTickDuration_PreservesThePendingDamageTick()
+    {
+        var statusEffect = new CountingStatusEffect();
+        statusEffect.ApplyEffect(1, 1, 2);
+        var lastRunField = typeof(StatusEffectBase).GetField(
+            "_lastRun", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var pendingTick = DateTime.UtcNow.AddSeconds(-3.1);
+        lastRunField.SetValue(statusEffect, pendingTick);
+
+        statusEffect.SetDurationTicks(2);
+
+        lastRunField.GetValue(statusEffect).Should().Be(pendingTick);
+        statusEffect.TickEffect(1);
+        statusEffect.TickCount.Should().Be(1);
+        statusEffect.DurationTicks.Should().Be(1);
+    }
+
+    [Test]
     public void BurnStatusEffect_FloorsTickDamageAndAttributesFireDamageToSource()
     {
         var burnSource = ReadStatusEffectSource("BurnStatusEffect.cs");
@@ -114,6 +132,27 @@ public class DamageOverTimeStatusEffectTests
             }
         }
         examined.Should().BeGreaterThanOrEqualTo(4, "status ticks and persistent ability fields both need coverage");
+    }
+
+    [Test]
+    public void EveryDamagingStatusTick_UsesTheSharedMitigationStage()
+    {
+        var root = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition");
+        var examined = 0;
+        foreach (var file in Directory.EnumerateFiles(root, "*.cs"))
+        {
+            var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(file)).GetRoot();
+            foreach (var method in syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
+                         .Where(method => method.Identifier.Text == "Tick"))
+            {
+                var calls = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
+                if (!calls.Any(call => call.Expression.ToString() == "EffectDamage")) continue;
+                examined++;
+                calls.Should().Contain(call => call.Expression.ToString() == "Combat.ApplyDamageTakenModifiers",
+                    Path.GetFileName(file) + " must honor reduction, immunity, redirection and survival effects");
+            }
+        }
+        examined.Should().BeGreaterThanOrEqualTo(10, "the entire damaging status corpus must be examined");
     }
 
     [Test]

@@ -127,13 +127,13 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player who died</param>
         private static void WriteAudit(uint player)
         {
-            var name = GetName(player);
+            var name = PlayerName.GetAuditName(player);
             var area = GetArea(player);
             var areaName = GetName(area);
             var areaTag = GetTag(area);
             var areaResref = GetResRef(area);
             var hostile = GetLastHostileActor(player);
-            var hostileName = GetName(hostile);
+            var hostileName = PlayerName.GetAuditName(hostile);
 
             var log = $"DEATH: {name} - {areaName} - {areaTag} - {areaResref} Killed by: {hostileName}";
             Log.Write(LogGroup.Death, log);
@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="xpLost">The amount of XP lost</param>
         private static void WriteAudit(uint player, int xpLost)
         {
-            var name = GetName(player);
+            var name = PlayerName.GetAuditName(player);
             var log = $"RESPAWN - {name} - {xpLost} XP lost";
 
             Log.Write(LogGroup.Death, log);

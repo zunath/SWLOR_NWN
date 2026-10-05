@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class CombatReleaseBalanceAuditTests
 {
-    private const int SkillPointCap = 400;
+    private const int SkillPointCap = Skill.TotalSkillPointCap;
     private const int DefaultWeaponDeflectionCap = 50;
 
     private static readonly PerkCategoryType[] WeaponPackages =
@@ -173,7 +173,7 @@ public class CombatReleaseBalanceAuditTests
     private static readonly StatType[] CriticalRateStats =
     {
         StatType.CriticalRatePercentAdjustment,
-        StatType.RangedCriticalRatePercentAdjustment,
+        StatType.WeaponCriticalRatePercentAdjustment,
         StatType.StaffCriticalRatePercentAdjustment,
         StatType.DeflectionNextSkillAbilityCriticalRatePercentAdjustment,
         StatType.NextSkillAbilityCriticalRatePercentAdjustment,
@@ -201,7 +201,7 @@ public class CombatReleaseBalanceAuditTests
     {
         StatType.CriticalDamagePercentAdjustment,
         StatType.StaffCriticalDamagePercentAdjustment,
-        StatType.RangedCriticalDamagePercentAdjustment,
+        StatType.WeaponCriticalDamagePercentAdjustment,
         StatType.CriticalDamageHighHPTargetPercentAdjustment,
         StatType.CriticalDamageTargetStatusPercentAdjustment,
         StatType.IdleSkillAbilityCriticalDamagePercentAdjustment,

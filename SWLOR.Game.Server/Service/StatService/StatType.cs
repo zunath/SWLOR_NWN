@@ -1302,7 +1302,7 @@ namespace SWLOR.Game.Server.Service.StatService
         DeflectionNextSkillAbilityNoDelayWindowSeconds = 243,
 
         /// <summary>
-        /// SkillType id required before a critical hit grants limited Haste.
+        /// Optional SkillType selector for a critical hit granting limited Haste; Invalid accepts every skill.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         CriticalHitLimitedHasteTriggerSkillType = 244,
@@ -1572,7 +1572,7 @@ namespace SWLOR.Game.Server.Service.StatService
         PoisonedDefeatedEnemySpreadDurationSeconds = 291,
 
         /// <summary>
-        /// SkillType value required for an opening auto-attack bonus.
+        /// Optional SkillType selector for an opening auto-attack bonus; Invalid accepts every weapon family.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         OpeningAutoAttackSkillType = 292,
@@ -2382,7 +2382,7 @@ namespace SWLOR.Game.Server.Service.StatService
         NextAutoAttackNoDelaySkillType = 428,
 
         /// <summary>
-        /// SkillType id required before a critical hit grants minimum delay to the next auto-attack.
+        /// Optional SkillType selector for a critical hit granting minimum delay; Invalid accepts every skill.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         CriticalNextAutoAttackNoDelayTriggerSkillType = 429,
@@ -2538,7 +2538,7 @@ namespace SWLOR.Game.Server.Service.StatService
         ForceConvergence = 454,
 
         /// <summary>
-        /// Enables FP-spend Defense and Evasion from Precognition.
+        /// Enables FP-spend Defense and Evasion from Danger Sense.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         ForcePrecognition = 455,
@@ -3482,10 +3482,10 @@ namespace SWLOR.Game.Server.Service.StatService
         StaffCriticalTargetDefenseDurationSeconds = 619,
 
         /// <summary>
-        /// Percent critical damage adjustment applied to ranged weapon skill critical hits.
+        /// Percent critical damage adjustment applied to weapon skill critical hits.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        RangedCriticalDamagePercentAdjustment = 620,
+        WeaponCriticalDamagePercentAdjustment = 620,
 
         /// <summary>
         /// Primary PerkType value whose Twin Blade ability can consume Reversal Cut.
@@ -3872,13 +3872,13 @@ namespace SWLOR.Game.Server.Service.StatService
         AutoAttackSuppressionStackEvasionPenaltyPercent = 686,
 
         /// <summary>
-        /// Duration of Suppression stacks added by ranged hits.
+        /// Duration of Suppression stacks added by weapon hits of any family.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         RangedHitSuppressionStackDurationSeconds = 687,
 
         /// <summary>
-        /// Evasion penalty percent carried by Suppression stacks added by ranged hits.
+        /// Evasion penalty percent carried by Suppression stacks added by weapon hits of any family.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         RangedHitSuppressionStackEvasionPenaltyPercent = 688,
@@ -4152,14 +4152,14 @@ namespace SWLOR.Game.Server.Service.StatService
         AbilityRestoredFPHasteDurationSeconds = 732,
 
         /// <summary>
-        /// Required ranged auto-attack count before the cross-skill ranged cycle grants bonus
-        /// Critical Rate. Any ranged weapon skill advances the cycle.
+        /// Required auto-attack count before the cycle grants bonus Critical Rate.
+        /// Every weapon family advances the cycle.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         RangedAutoAttackCycleCriticalRateRequiredCount = 734,
 
         /// <summary>
-        /// Critical rate adjustment granted on the ranged auto-attack that completes the cycle.
+        /// Critical rate adjustment granted on the auto-attack that completes the cycle.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         RangedAutoAttackCycleCriticalRatePercentAdjustment = 735,
@@ -4201,7 +4201,7 @@ namespace SWLOR.Game.Server.Service.StatService
         CriticalDamageHighHPTargetPercentAdjustment = 741,
 
         /// <summary>
-        /// Accuracy adjustment for the next ranged attack against a source-suppressed target after
+        /// Accuracy adjustment for the next weapon attack against a source-suppressed target after
         /// it uses a combat ability.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
@@ -4796,7 +4796,7 @@ namespace SWLOR.Game.Server.Service.StatService
         AbilityUsedPerkCategoryNearbyAllyAttackDeflectionSelfEnmityPercentAdjustment = 847,
 
         /// <summary>
-        /// SkillType value whose direct damage builds same-target pressure.
+        /// Optional SkillType selector for same-target pressure; Invalid accepts every weapon family.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         SameTargetPressureBuildSkillType = 848,
@@ -4852,7 +4852,7 @@ namespace SWLOR.Game.Server.Service.StatService
         PoisonDamageDealtPercentAdjustment = 856,
 
         /// <summary>
-        /// SkillType value whose auto-attacks apply Hamstring.
+        /// Optional SkillType selector for auto-attacks applying Hamstring; Invalid accepts every weapon family.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         AutoAttackHamstringSkillType = 857,
@@ -4966,7 +4966,7 @@ namespace SWLOR.Game.Server.Service.StatService
         SourceStatusAutoAttackCycleRequiredCategory = 874,
 
         /// <summary>
-        /// SkillType value whose auto-attacks count toward source-status cycle damage.
+        /// Optional SkillType selector for source-status cycle damage; Invalid accepts every weapon family.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         SourceStatusAutoAttackCycleSkillType = 875,
@@ -5525,31 +5525,31 @@ namespace SWLOR.Game.Server.Service.StatService
         NextAttackGuardedHitEnmityBonus = 971,
 
         /// <summary>
-        /// Number of melee auto-attacks required before the cross-skill melee cycle deals bonus damage.
+        /// Number of auto-attacks required before the damage cycle grants its bonus, with any weapon family.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         MeleeAutoAttackCycleRequiredCount = 972,
 
         /// <summary>
-        /// Flat DMG added by the cross-skill melee auto-attack cycle.
+        /// Flat DMG added by the auto-attack damage cycle, with any weapon family.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         MeleeAutoAttackCycleDamage = 973,
 
         /// <summary>
-        /// Flat DMG gained per consecutive melee auto-attack against the same target.
+        /// Flat DMG gained per consecutive auto-attack against the same target, with any weapon family.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         MeleeRepeatedTargetDamageBonusPerHit = 974,
 
         /// <summary>
-        /// Maximum flat DMG from consecutive melee auto-attacks against the same target.
+        /// Maximum flat DMG from consecutive auto-attacks against the same target, with any weapon family.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         MeleeRepeatedTargetDamageBonusMax = 975,
 
         /// <summary>
-        /// Effect icon displayed while the consecutive melee auto-attack bonus is active.
+        /// Effect icon displayed while the consecutive auto-attack bonus is active.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         MeleeRepeatedTargetDamageStatusEffectIcon = 976,
@@ -5622,10 +5622,10 @@ namespace SWLOR.Game.Server.Service.StatService
         SkillAbilityBleedingTargetStaminaRestoreCooldownSeconds = 987,
 
         /// <summary>
-        /// Percent critical-rate adjustment applied to ranged weapon attacks and abilities.
+        /// Percent critical-rate adjustment applied to weapon attacks and abilities.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        RangedCriticalRatePercentAdjustment = 988,
+        WeaponCriticalRatePercentAdjustment = 988,
 
         /// <summary>
         /// Internal temporary partner to NextAttackNoDelay: the percent (1-99) the armed next
@@ -5636,20 +5636,20 @@ namespace SWLOR.Game.Server.Service.StatService
         NextAttackDelayReductionPercent = 989,
 
         /// <summary>
-        /// Flat DMG gained per consecutive ranged hit against the same target. Any ranged weapon
-        /// skill builds and benefits from the stacks.
+        /// Flat DMG gained per consecutive weapon hit against the same target. Every weapon
+        /// family builds and benefits from the stacks, including weapon abilities.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         RangedRepeatedTargetDamageBonusPerHit = 990,
 
         /// <summary>
-        /// Maximum flat DMG from consecutive ranged hits against the same target.
+        /// Maximum flat DMG from consecutive weapon hits against the same target.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         RangedRepeatedTargetDamageBonusMax = 991,
 
         /// <summary>
-        /// Seconds without a qualifying ranged hit before the consecutive-hit stacks expire.
+        /// Seconds without a qualifying weapon hit before the consecutive-hit stacks expire.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         RangedRepeatedTargetDamageDurationSeconds = 992,
@@ -5749,11 +5749,11 @@ namespace SWLOR.Game.Server.Service.StatService
         AbilityUsedRangedDeflectionStatusEffectIcon = 1007,
 
         /// <summary>
-        /// When enabled, ranged weapon auto-attacks and hostile ranged weapon abilities use no
+        /// When enabled, weapon auto-attacks and hostile weapon abilities use no
         /// activation delay. Limited status effects that grant this stat account for attempts.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
-        RangedAttackNoDelay = 1008,
+        WeaponAttackNoDelay = 1008,
 
         /// <summary>
         /// Leadership-family percent adjustment to incoming physical damage. Leadership effects
@@ -5853,7 +5853,7 @@ namespace SWLOR.Game.Server.Service.StatService
         NonCriticalAbilityNextSkillAbilityCriticalRateTrackerEffectIconType = 1022,
 
         /// <summary>
-        /// Effect icon used by the generic ranged auto-attack cycle tracker.
+        /// Effect icon used by the generic auto-attack critical-rate cycle tracker.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         RangedAutoAttackCycleCriticalRateTrackerEffectIconType = 1023,
@@ -6088,7 +6088,7 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         AutoAttackSplashChance = 1075,
 
-        /// <summary>Weapon skill required for this source's auto-attack splash.</summary>
+        /// <summary>Optional weapon skill selector for this source's auto-attack splash; Invalid accepts every weapon family.</summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         AutoAttackSplashSkillType = 1076,
 
@@ -6142,6 +6142,10 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum, deflectionSource: DeflectionSource.Shield)]
         DeflectionRecastReductionCooldownSeconds = 1086,
+
+        /// <summary>Percent added to an eligible single weapon's item DMG before formula and proc bonuses.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SingleWeaponDamagePercentAdjustment = 1087,
 
     }
 

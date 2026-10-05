@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 new WeaponAbilityProfile
                 {
                     TemporaryAvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds = 30,
-                    TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType = (int)SkillType.Pistol,
+                    TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType = (int)SkillType.Invalid,
                     TemporaryAvoidedAttackNextAutoAttackNoDelayDurationSeconds = 30,
                     TemporaryDefeatedEnemyEffectDurationSeconds = 45
                 });

@@ -1,7 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
 using System.Text.Json;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -88,16 +90,72 @@ public class EquipmentRestrictionsTests
         error.Should().Be("Pistols may only be paired with a shield in the left hand.");
     }
 
+    [TestCase(InventorySlot.LeftHand)]
+    [TestCase(InventorySlot.RightHand)]
+    public void LegacyOffHandPistols_CannotBeEquipped(InventorySlot slot)
+    {
+        var error = EquipmentRestrictions.GetPistolEquipmentError(
+            BaseItem.OffHandPistol,
+            slot,
+            BaseItem.Pistol,
+            null);
+
+        error.Should().Be("Legacy off-hand pistols cannot be equipped.");
+    }
+
     [Test]
-    public void LegacyOffHandPistols_CannotBeEquipped()
+    public void ToolsetOffHandPistolProps_RequireAnUnattainableSkillRank()
+    {
+        var root = FindRepositoryRoot();
+        var props = new List<string>();
+        var maximumRank = SkillType.Pistol.GetAttribute<SkillType, SkillAttribute>().MaxRank;
+
+        foreach (var path in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "uti"), "*.uti.json"))
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(path));
+            var item = document.RootElement;
+            if (item.GetProperty("BaseItem").GetProperty("value").GetInt32() != (int)BaseItem.OffHandPistol)
+                continue;
+
+            props.Add(Path.GetFileName(path));
+            var requirements = item.GetProperty("PropertiesList").GetProperty("value").EnumerateArray()
+                .Where(property => property.GetProperty("PropertyName").GetProperty("value").GetInt32() == (int)ItemPropertyType.RequiresSkill &&
+                                   property.GetProperty("Subtype").GetProperty("value").GetInt32() == (int)SkillType.Pistol)
+                .ToArray();
+            requirements.Should().ContainSingle($"{Path.GetFileName(path)} must remain a disabled legacy prop");
+            requirements[0].GetProperty("CostValue").GetProperty("value").GetInt32()
+                .Should().BeGreaterThan(maximumRank, "the requirement must be impossible even for a fully trained player");
+            item.GetProperty("DescIdentified").GetProperty("value").GetProperty("0").GetString()
+                .Should().Contain("Legacy item: this off-hand pistol cannot be equipped.");
+        }
+
+        props.Should().Contain("offhandpistol.uti.json");
+    }
+
+    [Test]
+    public void LegacyOffHandPistols_UseClearEquipErrorBeforeRetiredRequirement()
     {
         var error = EquipmentRestrictions.GetPistolEquipmentError(
             BaseItem.OffHandPistol,
             InventorySlot.LeftHand,
-            BaseItem.Pistol,
-            null);
+            null,
+            null,
+            "This item requires Invalid rank 100 to use.");
 
-        error.Should().Be("Off-hand pistols cannot be equipped.");
+        error.Should().Be("Legacy off-hand pistols cannot be equipped.");
+    }
+
+    [Test]
+    public void LegacyOffHandPistols_ShowWarningWithoutReplacingExistingDescription()
+    {
+        const string existing = "A customized pistol with a worn grip.";
+
+        var description = EquipmentRestrictions.GetLegacyOffHandPistolDescription(existing);
+        var repeatedDescription = EquipmentRestrictions.GetLegacyOffHandPistolDescription(description);
+
+        description.Should().Contain(existing);
+        description.Should().Contain("Legacy item: this off-hand pistol cannot be equipped.");
+        repeatedDescription.Should().Be(description);
     }
 
     [Test]
@@ -176,6 +234,34 @@ public class EquipmentRestrictionsTests
             bulletSlotOccupied);
 
         result.Should().Be(expected);
+    }
+
+    [TestCase(BaseItem.Pistol, BaseItem.Sling, true, true, true, false, true)]
+    [TestCase(BaseItem.LegacyPistol, BaseItem.Sling, true, true, true, false, true)]
+    [TestCase(BaseItem.Sling, BaseItem.Sling, true, true, true, false, true)]
+    [TestCase(BaseItem.Sling, BaseItem.Sling, false, true, true, false, false)]
+    [TestCase(BaseItem.Sling, BaseItem.Sling, true, false, true, false, false)]
+    [TestCase(BaseItem.Sling, BaseItem.Sling, true, true, false, false, false)]
+    [TestCase(BaseItem.Sling, BaseItem.Sling, true, true, true, true, false)]
+    [TestCase(BaseItem.LegacyPistol, BaseItem.LegacyPistol, true, true, true, false, false)]
+    [TestCase(BaseItem.Arrow, BaseItem.Bullet, true, true, true, false, false)]
+    public void PistolBaseItems_RepairOnlyMissingGeneratedBulletsOnEquippedCanonicalPistols(
+        BaseItem currentBaseItem,
+        BaseItem canonicalBaseItem,
+        bool isEquipped,
+        bool hasUnlimitedAmmunition,
+        bool generatedArrows,
+        bool generatedBullets,
+        bool expected)
+    {
+        PistolBaseItemCompatibility.ShouldRepairGeneratedPistolAmmunition(
+                currentBaseItem,
+                canonicalBaseItem,
+                isEquipped,
+                hasUnlimitedAmmunition,
+                generatedArrows,
+                generatedBullets)
+            .Should().Be(expected);
     }
 
     [Test]

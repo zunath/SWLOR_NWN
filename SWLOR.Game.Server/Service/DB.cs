@@ -49,6 +49,8 @@ namespace SWLOR.Game.Server.Service
             var options = new ConfigurationOptions
             {
                 AbortOnConnectFail = false,
+                // NRediSearch decodes search results using the RESP2 array layout.
+                Protocol = RedisProtocol.Resp2,
                 EndPoints = { _appSettings.RedisIPAddress }
             };
 

@@ -547,12 +547,21 @@ After changing animations inherited from a body rig, regenerate those bridges fr
 repository before packaging; otherwise a robe can continue using its older movement tracks:
 
 ```powershell
+python -B tools/AlignRobeAnimations.py --game-data "<NWN installation>/data" --apply
 python -B tools/GenerateRobeRgbModels.py --game-data "<NWN installation>/data" --apply
 python -B tools/PruneRobeAnimationBridges.py --apply
 git add -A -- sw_anim_m sw_anim_f sw_pt_root sw_pt_robe sw_2da tools/RobeRgbModels.json
 python -B tools/PruneRobeAnimationBridges.py
 python -B tools/GenerateRobeRgbModels.py --check --game-data "<NWN installation>/data"
 ```
+
+The alignment pass updates ordinary clothing overrides to the body's current
+clip timing and standard skeleton motion, retaining independent cloth helpers.
+It validates the compiled corrections and updates affected descendants' native
+part IDs without re-exporting unchanged binary meshes or bindings. RGB bridges
+use the same body motion, with explicit private
+garment-root resets for channels omitted by the next clip. Those resets use each
+garment's authored bind pose and wearer scale, including after canceled casts.
 
 For a packaging or sharing conversion that must preserve all installed movement,
 add `--verify-existing-motion` to generation. This additionally compares each

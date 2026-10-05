@@ -95,6 +95,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .PlaysSoundOnImpact("ksfx_beam")
                 .IsAreaAbility()
+                .HasMaxRange(LineLengthMeters)
                 .HasTargetingLine(
                     spell,
                     LineLengthMeters,

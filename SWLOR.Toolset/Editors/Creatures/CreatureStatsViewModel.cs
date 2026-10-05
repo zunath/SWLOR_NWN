@@ -36,6 +36,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             Vitals.Add(Skin("Stamina", CreaturePropertyCatalog.Stamina, -1, 36));
 
             Offense.Add(Skin("Attack", CreaturePropertyCatalog.Attack, -1, 45));
+            Offense.Add(Skin("Accuracy", CreaturePropertyCatalog.Accuracy, -1, 45));
             Offense.Add(Skin("Force Attack", CreaturePropertyCatalog.ForceAttack, -1, 45));
             Offense.Add(Skin("Combat Readiness", CreaturePropertyCatalog.CombatReadiness, -1, 42));
 

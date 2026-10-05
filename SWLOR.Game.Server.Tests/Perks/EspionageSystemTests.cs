@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.SlicingService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -380,6 +381,17 @@ public class EspionageSystemTests
     }
 
     [Test]
+    public void VenomCoatings_AcceptEveryWeaponFamilyAndRejectEquipmentThatCannotAttack()
+    {
+        foreach (var weapon in Item.WeaponBaseItemTypes)
+            VenomCoatingItemDefinition.CanCoatWeapon(weapon).Should().BeTrue();
+        foreach (var weapon in new[] { BaseItem.Pistol, BaseItem.Rifle, BaseItem.Lightsaber, BaseItem.Saberstaff, BaseItem.Dart })
+            VenomCoatingItemDefinition.CanCoatWeapon(weapon).Should().BeTrue();
+        VenomCoatingItemDefinition.CanCoatWeapon(BaseItem.Armor).Should().BeFalse();
+        VenomCoatingItemDefinition.CanCoatWeapon(BaseItem.SmallShield).Should().BeFalse();
+    }
+
+    [Test]
     public void LastingCoatingsRaisesChargesFromTwentyToThirty()
     {
         VenomCoatingItemDefinition.CalculateCharges(0).Should().Be(20);
@@ -398,6 +410,39 @@ public class EspionageSystemTests
         Poisons.GetVenomDurationSeconds(1).Should().BeApproximately(12f, 0.001f);
         Poisons.GetVenomDurationSeconds(3).Should().BeApproximately(24f, 0.001f);
         Poisons.GetVenomDurationSeconds(5).Should().BeApproximately(36f, 0.001f);
+    }
+
+    [Test]
+    public void CoatingHits_RefreshSourceOwnedVenomAndCreditEspionageOnlyOnSuccess()
+    {
+        var source = File.ReadAllText(Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Poisons.cs"));
+        var syntax = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree.ParseText(source).GetRoot();
+        var calls = syntax.DescendantNodes()
+            .OfType<Microsoft.CodeAnalysis.CSharp.Syntax.InvocationExpressionSyntax>().ToArray();
+        calls.Should().Contain(call => call.ToString() ==
+            "StatusEffect.GetStatusEffect(defender, typeof(VenomStatusEffect), attacker)");
+        calls.Should().Contain(call => call.ToString() ==
+            "StatusEffect.RefreshStatusEffectDuration(defender, typeof(VenomStatusEffect), attacker, durationSeconds)");
+        var credit = calls.Single(call => call.Expression.ToString() == "CombatPoint.AddCombatPoint");
+        credit.ArgumentList.Arguments.Select(arg => arg.ToString()).Should()
+            .Equal("attacker", "defender", "SkillType.Espionage");
+        credit.Ancestors().OfType<Microsoft.CodeAnalysis.CSharp.Syntax.IfStatementSyntax>()
+            .Should().Contain(statement => statement.Condition.ToString() == "applied");
+        source.Should().Contain("venom != null && !venom.IsFlaggedForRemoval");
+    }
+
+    [Test]
+    public void RefreshedVenom_UsesTheLatestCoatingPotencyWhenCloned()
+    {
+        var venom = new VenomStatusEffect(0);
+        venom.UpdateDamageBonusPercent(30);
+        var clone = (VenomStatusEffect)venom.Clone();
+        var potency = typeof(VenomStatusEffect).GetField("_damageBonusPercent",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
+        VenomStatusEffect.CalculateBaseDamagePerTick((int)potency.GetValue(clone)!).Should().Be(11);
+        venom.UpdateDamageBonusPercent(-10);
+        potency.GetValue(venom).Should().Be(0);
+        potency.GetValue(clone).Should().Be(30);
     }
 
     [Test]

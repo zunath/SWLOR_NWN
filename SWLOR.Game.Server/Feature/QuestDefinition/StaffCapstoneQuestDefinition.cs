@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker Breaker Yard Work Order has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the CZ-220 maintenance level.")
+                    "The Worldbreaker Breaker Yard Work Order has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the Battle Monster Gym on Dantooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker Junkline Control Relay has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the CZ-220 maintenance level.")
+                    "The Worldbreaker Junkline Control Relay has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the Battle Monster Gym on Dantooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker Sheared Bay Sigil has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the CZ-220 maintenance level.")
+                    "The Worldbreaker Sheared Bay Sigil has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the Battle Monster Gym on Dantooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker Foreman's Override Chip has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the CZ-220 maintenance level.")
+                    "The Worldbreaker Foreman's Override Chip has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the Battle Monster Gym on Dantooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker master has been defeated. Return to Unit KX-17 at the CZ-220 maintenance level.")
+                    "The Worldbreaker master has been defeated. Return to Unit KX-17 at the Battle Monster Gym on Dantooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

@@ -215,5 +215,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         /// the coverage ratchet still counts it as declared. Burn these down over time.
         /// </summary>
         public string SkipReason { get; set; }
+        public bool RequiresPlayerBeastFixture { get; set; }
     }
 }

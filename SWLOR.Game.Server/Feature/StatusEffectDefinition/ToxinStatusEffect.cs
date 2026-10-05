@@ -19,12 +19,15 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Tick(uint creature)
         {
+            var source = GetIsObjectValid(Source) ? Source : creature;
             var damageAmount = GameMath.PercentOf(GetMaxHitPoints(creature), 6);
             damageAmount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, damageAmount);
+            damageAmount = Combat.ApplyDamageOverTimeTakenModifiers(creature, damageAmount, CombatDamageType.Poison, out var targetStatusDamageAdjustment);
+            damageAmount = Combat.ApplyDamageTakenModifiers(creature, damageAmount, source, CombatDamageType.Poison,
+                deliveryType: CombatDamageDeliveryType.DamageOverTime, targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment);
             if (damageAmount <= 0)
                 return;
 
-            var source = GetIsObjectValid(Source) ? Source : creature;
             AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damageAmount, DamageType.Acid), creature));
         }
     }

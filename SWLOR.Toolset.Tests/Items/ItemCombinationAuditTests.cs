@@ -206,6 +206,7 @@ namespace SWLOR.Toolset.Tests.Items
                 [56] = ItemFamily.Shield, // largeshield
                 [58] = ItemFamily.MeleeWeapon, // shortspear
                 [59] = ItemFamily.RangedWeapon, // shuriken
+                [61] = ItemFamily.RangedWeapon, // pistol_native_sling (canonical player pistols)
                 [65] = ItemFamily.Miscellaneous, // key
                 [66] = ItemFamily.Miscellaneous, // largebox
                 [69] = ItemFamily.CreatureItem, // cslashweapon

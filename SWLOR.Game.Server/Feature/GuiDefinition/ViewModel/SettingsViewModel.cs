@@ -73,6 +73,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool DisplayCooldownFloatingText
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool IsGeneralSelected
         {
             get => Get<bool>();
@@ -155,7 +161,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadIdentityView();
             LoadChatView();
 
-            ChangePartialView(SettingsView, GeneralPartial);
+            SwapNestedPartialView(SettingsView, GeneralPartial, onAfterApply: RefreshPartialViewBindings);
 
             WatchOnClient(model => model.DisplayAchievementNotification);
             WatchOnClient(model => model.SubdualMode);
@@ -165,6 +171,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.ShowOwnDescriptor);
             WatchOnClient(model => model.ScrambleAccountName);
             WatchOnClient(model => model.DisplayCommsOutOfRangeWarnings);
+            WatchOnClient(model => model.DisplayCooldownFloatingText);
             WatchOnClient(model => model.SelectedColor);
         }
 
@@ -180,6 +187,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DisplayServerResetReminders = dbPlayer.Settings.DisplayServerResetReminders;
             PortraitVitals = dbPlayer.Settings.PortraitVitals ?? true;
             DisplayCommsOutOfRangeWarnings = dbPlayer.Settings.DisplayCommsOutOfRangeWarnings ?? true;
+            DisplayCooldownFloatingText = dbPlayer.Settings.DisplayCooldownFloatingText;
         }
 
         private void LoadIdentityView()
@@ -273,8 +281,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Capture the client's current position before the partial-view redraw workaround
             // temporarily changes the window geometry.
             UpdatePropertyFromClient(nameof(Geometry));
-            ChangePartialView(SettingsView, partialName);
-            RefreshPartialViewBindings();
+
+            // A plain nested ChangePartialView can be dropped by NUI mid-redraw, leaving the tab
+            // blank. Use the same root-redraw + next-tick reapply path as the character sheet.
+            SwapNestedPartialView(SettingsView, partialName, onAfterApply: RefreshPartialViewBindings);
         }
 
         private void RefreshPartialViewBindings()
@@ -287,6 +297,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             OnPropertyChanged(nameof(DisplayServerResetReminders));
             OnPropertyChanged(nameof(PortraitVitals));
             OnPropertyChanged(nameof(DisplayCommsOutOfRangeWarnings));
+            OnPropertyChanged(nameof(DisplayCooldownFloatingText));
             OnPropertyChanged(nameof(ShowOwnDescriptor));
             OnPropertyChanged(nameof(ShowDescriptorsForNamedPlayers));
             OnPropertyChanged(nameof(ScrambleAccountName));
@@ -346,6 +357,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.Settings.DisplayServerResetReminders = DisplayServerResetReminders;
             dbPlayer.Settings.PortraitVitals = PortraitVitals;
             dbPlayer.Settings.DisplayCommsOutOfRangeWarnings = DisplayCommsOutOfRangeWarnings;
+            dbPlayer.Settings.DisplayCooldownFloatingText = DisplayCooldownFloatingText;
             if (!GetIsDM(Player) && !GetIsDMPossessed(Player))
             {
                 dbPlayer.Settings.ShowDescriptorsForNamedPlayers = ShowDescriptorsForNamedPlayers;

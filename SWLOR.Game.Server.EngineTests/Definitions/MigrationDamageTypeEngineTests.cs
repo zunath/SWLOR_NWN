@@ -90,7 +90,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var owner = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
-            var item = await CreateItemAsync(ctx, owner, "b_longsword", owner);
+            // Basic vibroblades regain canonical DMG; vibroknives discard damage types.
+            // A stock longsword exercises normalization without either special rule.
+            var item = await CreateItemAsync(ctx, owner, "nw_wswls001", owner);
             await ctx.ExecuteInCreatureContextAsync(owner, () => ClearProperties(item));
             await ctx.WaitFrameAsync();
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
@@ -101,6 +103,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
+                ctx.AssertEqual(-1, PropertyValue(item, ItemPropertyType.DMG), "The fixture has no damage amount before migration");
+                ctx.Assert(!Item.VibroknifeBaseItemTypes.Contains(GetBaseItemType(item)), "The fixture permits nonphysical weapon damage types");
                 var migrated = MigrateSerialized(ctx, item);
                 AssertDamageType(ctx, migrated, CombatDamageType.Fire);
                 ctx.AssertEqual(-1, PropertyValue(migrated, ItemPropertyType.DMG), "No damage amount is invented");

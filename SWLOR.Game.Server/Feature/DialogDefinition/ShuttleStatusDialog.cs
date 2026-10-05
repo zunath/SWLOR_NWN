@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var remaining = arrivalUtc - DateTime.UtcNow;
             var countdown = remaining <= TimeSpan.Zero
                 ? "momentarily"
-                : Time.GetTimeShortIntervals(remaining, false);
+                : Time.GetTimeLongIntervals(remaining, false);
 
             page.Header = BuildStatusHeader(destinationName, countdown);
 

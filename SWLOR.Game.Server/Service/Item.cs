@@ -702,6 +702,12 @@ namespace SWLOR.Game.Server.Service
             return _attackWeaponBaseItems.Contains(baseItem);
         }
 
+        /// <summary>Weapons whose two striking ends share one equipped item.</summary>
+        public static bool IsDoubleWeaponType(BaseItem baseItem)
+        {
+            return TwinBladeBaseItemTypes.Contains(baseItem) || SaberstaffBaseItemTypes.Contains(baseItem);
+        }
+
         public static bool IsBaseItemType(global::NWN.Native.API.CNWSItem item, IReadOnlyCollection<BaseItem> baseItemTypes)
         {
             return item != null && baseItemTypes.Contains((BaseItem)item.m_nBaseItem);

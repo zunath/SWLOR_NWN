@@ -748,6 +748,50 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Reconciles the equipment cache after login or a completed equipment change.
+        /// Keep this outside ability calculations: one scan can serve every target.
+        /// </summary>
+        public static void RefreshCombatReadinessEquipment(uint creature)
+        {
+            if (!GetIsObjectValid(creature) || !GetIsPC(creature) ||
+                GetIsDM(creature) || GetIsDMPossessed(creature))
+                return;
+
+            var playerId = GetObjectUUID(creature);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
+            var amount = GetEquippedCombatReadiness(creature);
+            if (dbPlayer.CombatReadiness == amount)
+                return;
+
+            // Store the uncapped equipment contribution. Perks and food are stat
+            // adjustments, and the combined cap belongs to the read calculation.
+            dbPlayer.CombatReadiness = amount;
+            DB.Set(dbPlayer);
+        }
+
+        public static int GetEquippedCombatReadiness(uint creature)
+        {
+            var amount = 0;
+            for (var index = 0; index < NumberOfInventorySlots; index++)
+            {
+                var item = GetItemInSlot((InventorySlot)index, creature);
+                if (!GetIsObjectValid(item))
+                    continue;
+
+                for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                {
+                    if (GetItemPropertyType(ip) == ItemPropertyType.CombatReadiness)
+                        amount += GetItemPropertyCostTableValue(ip);
+                }
+            }
+
+            return amount;
+        }
+
+        /// <summary>
         /// Modifies a player's HP Regen by a certain amount.
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>
@@ -890,6 +934,17 @@ namespace SWLOR.Game.Server.Service
         public static void AdjustAttack(Player entity, int adjustBy)
         {
             entity.Attack += adjustBy;
+        }
+
+        /// <summary>
+        /// Modifies a player's accuracy granted by non-weapon equipment.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustAccuracy(Player entity, int adjustBy)
+        {
+            entity.Accuracy += adjustBy;
         }
 
         /// <summary>
@@ -1282,8 +1337,7 @@ namespace SWLOR.Game.Server.Service
             for (var ip = GetFirstItemProperty(weapon); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(weapon))
             {
                 var type = GetItemPropertyType(ip);
-                if (type != ItemPropertyType.AccuracyBonus &&
-                    type != ItemPropertyType.EnhancementBonus &&
+                if (type != ItemPropertyType.Accuracy &&
                     type != ItemPropertyType.AccuracyStat)
                     continue;
 
@@ -1308,24 +1362,26 @@ namespace SWLOR.Game.Server.Service
             var skillLevel = 0;
 
 
-            // Creature skill level / NPC level
-            if (skillLevelOverride >= 0)
-            {
-                skillLevel = skillLevelOverride;
-            }
-            else if (GetIsPC(creature) && !GetIsDM(creature))
+            // Creature skill level / NPC level, plus Accuracy granted by non-weapon equipment.
+            if (GetIsPC(creature) && !GetIsDM(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
 
                 if (skillType != SkillType.Invalid)
                     skillLevel = dbPlayer.Skills[skillType].Rank;
+
+                accuracyBonus += dbPlayer.Accuracy;
             }
             else
             {
                 var npcStats = GetNPCStats(creature);
                 skillLevel = npcStats.Level;
+                accuracyBonus += npcStats.Accuracy;
             }
+
+            if (skillLevelOverride >= 0)
+                skillLevel = skillLevelOverride;
 
             // Accuracy increases granted by effects
             accuracyBonus = CalculateEffectAccuracy(creature, accuracyBonus);
@@ -1347,7 +1403,7 @@ namespace SWLOR.Game.Server.Service
             int value,
             bool ignoreWeaponAccuracyStatOverride)
         {
-            if (type == ItemPropertyType.AccuracyBonus || type == ItemPropertyType.EnhancementBonus)
+            if (type == ItemPropertyType.Accuracy)
                 return (statOverride, accuracyBonus + value);
 
             if (type == ItemPropertyType.AccuracyStat && !ignoreWeaponAccuracyStatOverride)
@@ -1372,9 +1428,8 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var ip in weapon.m_lstPassiveProperties)
                 {
-                    // Attack Bonus / Enhancement Bonus found on the weapon.
-                    if (ip.m_nPropertyName == (ushort)ItemPropertyType.AccuracyBonus ||
-                        ip.m_nPropertyName == (ushort)ItemPropertyType.EnhancementBonus)
+                    // Accuracy found on the weapon.
+                    if (ip.m_nPropertyName == (ushort)ItemPropertyType.Accuracy)
                     {
                         accuracyBonus += ip.m_nCostTableValue;
                     }
@@ -1397,21 +1452,25 @@ namespace SWLOR.Game.Server.Service
             var skillLevel = 0;
 
 
-            // Creature skill level / NPC level
+            // Creature skill level / NPC level, plus Accuracy granted by non-weapon equipment.
             if (creature.m_bPlayerCharacter == 1)
             {
                 var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                if (dbPlayer != null && skillType != SkillType.Invalid)
+                if (dbPlayer != null)
                 {
-                    skillLevel = dbPlayer.Skills[skillType].Rank;
+                    if (skillType != SkillType.Invalid)
+                        skillLevel = dbPlayer.Skills[skillType].Rank;
+
+                    accuracyBonus += dbPlayer.Accuracy;
                 }
             }
             else
             {
                 var npcStats = GetNPCStatsNative(creature);
                 skillLevel = npcStats.Level;
+                accuracyBonus += npcStats.Accuracy;
             }
 
             accuracyBonus = CalculateEffectAccuracyNative(creature, accuracyBonus);
@@ -1434,23 +1493,6 @@ namespace SWLOR.Game.Server.Service
 
         private static int CalculateEffectAccuracy(uint creature, int accuracy)
         {
-            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
-            {
-                var type = GetEffectType(effect);
-                if (type == EffectTypeScript.AttackIncrease &&
-                    IsWeaponAccuracyItemEffect(GetEffectCreator(effect), GetEffectDurationType(effect)))
-                    continue;
-
-                if (type == EffectTypeScript.AttackIncrease)
-                {
-                    accuracy += 5 * GetEffectInteger(effect, 0);
-                }
-                else if (type == EffectTypeScript.AttackDecrease)
-                {
-                    accuracy -= 5 * GetEffectInteger(effect, 0);
-                }
-            }
-
             accuracy += GetStatAdjustment(creature, StatType.Accuracy);
 
             Log.Write(LogGroup.Attack, $"Effect Accuracy: {accuracy}");
@@ -1460,38 +1502,11 @@ namespace SWLOR.Game.Server.Service
 
         private static int CalculateEffectAccuracyNative(CNWSCreature creature, int accuracy)
         {
-            foreach (var effect in creature.m_appliedEffects)
-            {
-                if (effect.m_nType == (ushort)EffectTrueType.AttackIncrease &&
-                    IsWeaponAccuracyItemEffect(effect.m_oidCreator, effect.m_nSubType & 7))
-                    continue;
-
-                if (effect.m_nType == (ushort)EffectTrueType.AttackIncrease)
-                {
-                    accuracy += 5 * effect.GetInteger(0);
-                }
-                else if (effect.m_nType == (ushort)EffectTrueType.AttackDecrease)
-                {
-                    accuracy -= 5 * effect.GetInteger(0);
-                }
-            }
-
             accuracy += GetStatAdjustment(creature.m_idSelf, StatType.Accuracy);
 
             Log.Write(LogGroup.Attack, $"Native Effect Accuracy: {accuracy}");
 
             return accuracy;
-        }
-
-        private static bool IsWeaponAccuracyItemEffect(uint creator, int durationType)
-        {
-            // NWN's equipped duration is 3 (not exposed by NWScript's DurationType enum).
-            // Weapon ACC is already read from the selected weapon's properties. Counting
-            // its native equip effect again multiplies it by five and leaks it to both hands.
-            return durationType == 3 &&
-                   GetIsObjectValid(creator) &&
-                   GetObjectType(creator) == ObjectType.Item &&
-                   Item.IsAttackWeaponType(GetBaseItemType(creator));
         }
 
         private static int CalculateEffectEvasion(uint creature)
@@ -1511,6 +1526,7 @@ namespace SWLOR.Game.Server.Service
             var stat = GetAbilityScore(creature, AbilityType.Agility);
             int skillLevel;
             int evasionBonus;
+            var hasNpcStatBudget = false;
 
             // Base NWN applies an AC bonus based on the DEX stat. The Perception stat is based upon this.
             // Perception should not increase AC in SWLOR, so this is subtracted from the AC.
@@ -1533,13 +1549,14 @@ namespace SWLOR.Game.Server.Service
                 var npcStats = GetNPCStats(creature);
                 skillLevel = npcStats.Level;
                 evasionBonus = npcStats.Evasion;
+                hasNpcStatBudget = npcStats.Level > 0;
             }
 
             evasionBonus += CalculateEffectEvasion(creature);
 
             Log.Write(LogGroup.Attack, $"Effect Evasion: {evasionBonus}");
 
-            var evasion = GetEvasion(skillLevel, stat, ac * 5 + evasionBonus);
+            var evasion = GetEvasion(skillLevel, stat, evasionBonus, ac, hasNpcStatBudget);
             return ApplyPostEvasionStatusModifiers(creature, evasion, incomingSkillType);
         }
 
@@ -1642,6 +1659,7 @@ namespace SWLOR.Game.Server.Service
             var stat = GetStatValueNative(creature, AbilityType.Agility);
             var skillLevel = 0;
             var evasionBonus = 0;
+            var hasNpcStatBudget = false;
 
             // Note: The DEX offset is unnecessary for the native call.
             var ac = creature.m_pStats.m_nACArmorBase +
@@ -1675,11 +1693,12 @@ namespace SWLOR.Game.Server.Service
                 var npcStats = GetNPCStatsNative(creature);
                 skillLevel = npcStats.Level;
                 evasionBonus = npcStats.Evasion;
+                hasNpcStatBudget = npcStats.Level > 0;
             }
 
             evasionBonus += CalculateEffectEvasion(creature.m_idSelf);
 
-            var evasion = GetEvasion(skillLevel, stat, ac * 5 + evasionBonus);
+            var evasion = GetEvasion(skillLevel, stat, evasionBonus, ac, hasNpcStatBudget);
             return ApplyPostEvasionStatusModifiers(creature.m_idSelf, evasion, incomingSkillType);
         }
 
@@ -2311,6 +2330,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// NPC stat skins carry the complete Evasion budget. Native armor must
+        /// not add another budget through inherited equipment, feats or effects.
+        /// Stat-based Evasion adjustments remain part of bonus for all creatures.
+        /// </summary>
+        public static int GetEvasion(int level, int stat, int bonus, int nativeArmorClass, bool hasNpcStatBudget)
+        {
+            return GetEvasion(level, stat, bonus + (hasNpcStatBudget ? 0 : nativeArmorClass * 5));
+        }
+
+        /// <summary>
         /// Retrieves the stats of an NPC. This is determined by several item properties located on the NPC's skin.
         /// If no skin is equipped or the item properties do not exist, an empty NPCStats object will be returned.
         /// </summary>
@@ -2355,6 +2384,10 @@ namespace SWLOR.Game.Server.Service
                 else if (type == ItemPropertyType.Attack)
                 {
                     npcStats.Attack = GetItemPropertyCostTableValue(ip);
+                }
+                else if (type == ItemPropertyType.Accuracy)
+                {
+                    npcStats.Accuracy = GetItemPropertyCostTableValue(ip);
                 }
                 else if (type == ItemPropertyType.ForceAttack)
                 {
@@ -2421,6 +2454,10 @@ namespace SWLOR.Game.Server.Service
                     else if (prop.m_nPropertyName == (ushort)ItemPropertyType.Attack)
                     {
                         npcStats.Attack = prop.m_nCostTableValue;
+                    }
+                    else if (prop.m_nPropertyName == (ushort)ItemPropertyType.Accuracy)
+                    {
+                        npcStats.Accuracy = prop.m_nCostTableValue;
                     }
                     else if (prop.m_nPropertyName == (ushort)ItemPropertyType.ForceAttack)
                     {

@@ -140,5 +140,6 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
         Disarm = 139,
         PoisonBonus = 140,
         Lockpicking = 141,
+        Accuracy = 142,
     }
 }

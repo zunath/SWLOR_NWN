@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 363
+    "value": 333
   },
   "DecayTime": {
     "type": "dword",
@@ -194,7 +194,7 @@
         "__struct_id": 32,
         "EquippedRes": {
           "type": "resref",
-          "value": "sithappghost_wp"
+          "value": "sithappghost_of"
         }
       },
       {
@@ -312,7 +312,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 351
+    "value": 321
   },
   "Int": {
     "type": "byte",
@@ -346,7 +346,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 363
+    "value": 333
   },
   "NaturalAC": {
     "type": "byte",

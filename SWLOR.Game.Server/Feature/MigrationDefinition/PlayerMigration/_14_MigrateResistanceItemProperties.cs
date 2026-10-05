@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             SerializedItemWeaponDamageTypeMigration.MigrateObject(player);
             CombatReadinessMigration.MigratePlayer(player);
             PistolBaseItemMigration.MigratePlayer(player);
+            AccuracyItemPropertyMigration.MigratePlayer(player);
         }
     }
 }

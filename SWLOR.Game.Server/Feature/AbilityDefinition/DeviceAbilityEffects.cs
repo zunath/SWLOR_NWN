@@ -292,8 +292,31 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         /// </summary>
         public static int GetAssaultGadgetWeaponDamageEquivalent(uint creature)
         {
+            var isPlayer = GetIsPC(creature) && !GetIsDM(creature);
+            if (isPlayer)
+            {
+                return CalculateAssaultGadgetWeaponDamageEquivalent(
+                    ResolveAssaultGadgetDevicesRank(true, Skill.GetCreatureSkillRank(creature, SkillType.Devices), null, 0));
+            }
+
+            var npcStats = Stat.GetNPCStats(creature);
+            int? npcDevicesRank = npcStats.Skills.TryGetValue(SkillType.Devices, out var rank) ? rank : null;
             return CalculateAssaultGadgetWeaponDamageEquivalent(
-                Skill.GetCreatureSkillRank(creature, SkillType.Devices));
+                ResolveAssaultGadgetDevicesRank(false, 0, npcDevicesRank, npcStats.Level));
+        }
+
+        /// <summary>
+        /// Droids and NPCs have no Devices skill (droid controllers cannot carry one), so their
+        /// Devices skill on the skin is used when present and their level otherwise, the same
+        /// fallback NPC Attack and ability damage bonuses use. Without it every droid would be
+        /// stuck at the minimum Gadget DMG regardless of tier.
+        /// </summary>
+        public static int ResolveAssaultGadgetDevicesRank(bool isPlayer, int playerDevicesRank, int? npcDevicesRank, int npcLevel)
+        {
+            if (isPlayer)
+                return playerDevicesRank;
+
+            return npcDevicesRank ?? npcLevel;
         }
 
         public static int CalculateAssaultGadgetWeaponDamageEquivalent(int devicesRank)

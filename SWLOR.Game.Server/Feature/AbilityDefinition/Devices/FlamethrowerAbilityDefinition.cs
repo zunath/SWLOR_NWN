@@ -16,6 +16,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public sealed class FlamethrowerAbilityDefinition : IAbilityListDefinition
     {
+        private const int Rank1BaseDamage = 6;
+        private const int Rank2BaseDamage = 12;
+        private const int Rank3BaseDamage = 18;
+
         private const VisualEffect FlamethrowerVisualEffect = VisualEffect.Vfx_Flamethrower;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -119,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 SkillType.Devices,
-                6,
+                Rank1BaseDamage,
                 12,
                 null,
                 CombatImpactAreaShape.Cone,
@@ -147,7 +151,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 SkillType.Devices,
-                12,
+                Rank2BaseDamage,
                 12,
                 typeof(BurnStatusEffect),
                 CombatImpactAreaShape.Cone,
@@ -175,7 +179,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 SkillType.Devices,
-                18,
+                Rank3BaseDamage,
                 12,
                 typeof(BurnStatusEffect),
                 CombatImpactAreaShape.Cone,

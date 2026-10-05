@@ -28,7 +28,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             Char();
             CDKey();
-            Save();
             Skills();
             EndCall();
             Recipes();
@@ -102,18 +101,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     var cdKey = GetPCPublicCDKey(user);
                     SendMessageToPC(user, "Your public CD Key is: " + cdKey);
-                });
-        }
-
-        private void Save()
-        {
-            _builder.Create("save")
-                .Description("Manually saves your character. Your character also saves automatically every few minutes.")
-                .Permissions(AuthorizationLevel.Player)
-                .Action((user, target, location, args) =>
-                {
-                    ExportSingleCharacter(user);
-                    SendMessageToPC(user, "Character saved successfully.");
                 });
         }
 

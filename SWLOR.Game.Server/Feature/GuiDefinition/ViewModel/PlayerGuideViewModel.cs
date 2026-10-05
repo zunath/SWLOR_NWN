@@ -359,7 +359,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("OOC and Speech Restrictions",
                             "Text after // or (( is treated as out-of-character and is not translated through the language system. Dead characters cannot speak, and the Shout channel remains staff-only."),
                         new ArticleBlock("Useful Chat Commands",
-                            "Use /introduce <name> to offer a name or alias to nearby players, and /introductions to review names offered to you. /introduce has a 5-minute cooldown. Use /help to browse commands, /dice to open the dice bag, /bug to report a problem, /resetwindows to restore window positions, /save for a manual character save, and /stuck only as an emergency escape when trapped on a map. /stuck has a 30 minute cooldown.")
+                            "Use /introduce <name> to offer a name or alias to nearby players, and /introductions to review names offered to you. /introduce has a 5-minute cooldown. Use /help to browse commands, /dice to open the dice bag, /bug to report a problem, /resetwindows to restore window positions, and /stuck only as an emergency escape when trapped on a map. /stuck has a 30 minute cooldown.")
                     },
                     new[]
                     {

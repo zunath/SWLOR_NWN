@@ -1,0 +1,585 @@
+[
+  {
+    "SlotsPerEquippedItem": 2,
+    "LoadedEnhancements": 0,
+    "AllocatedCraftsmanship": 70,
+    "AllocatedControl": 130,
+    "Rank": 50,
+    "RecipeLevel": 50,
+    "Craftsmanship": 100,
+    "Control": 159,
+    "CP": 105,
+    "Durability": 80,
+    "Progress": 186,
+    "Quality": 2641,
+    "Synthesis": [
+      [
+        "Basic Synthesis",
+        96,
+        0,
+        0.9
+      ],
+      [
+        "Rapid Synthesis",
+        116,
+        6,
+        0.75
+      ],
+      [
+        "Careful Synthesis",
+        166,
+        10,
+        0.5
+      ]
+    ],
+    "Touch": [
+      [
+        "Basic Touch",
+        244,
+        3,
+        0.9
+      ],
+      [
+        "Standard Touch",
+        264,
+        6,
+        0.75
+      ],
+      [
+        "Precise Touch",
+        314,
+        10,
+        0.5
+      ]
+    ],
+    "Objective": "full",
+    "PropertyGroups": 1,
+    "Value": 0.9992575548900297,
+    "ExpectedClicks": 20.85242871960394,
+    "SuccessfulTouchBranch": [
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Muscle Memory + Basic Touch",
+      "Muscle Memory + Basic Touch",
+      "Muscle Memory + Basic Touch",
+      "Waste Not",
+      "Steady Hand",
+      "Basic Synthesis",
+      "Steady Hand",
+      "Basic Synthesis"
+    ],
+    "States": 171880,
+    "FinishStates": 33364,
+    "ExpectedQuality": 0.9998345240249421,
+    "FullQualityChance": 0.9992575548900297,
+    "AllTransferChance1": 0.9998311172629917,
+    "AllTransferChance2": 0.9997183197436901,
+    "AllTransferChance3": 0.999637580424773,
+    "HasGuaranteedFinish": true
+  },
+  {
+    "SlotsPerEquippedItem": 2,
+    "LoadedEnhancements": 1,
+    "AllocatedCraftsmanship": 0,
+    "AllocatedControl": 200,
+    "Rank": 50,
+    "RecipeLevel": 50,
+    "Craftsmanship": 30,
+    "Control": 229,
+    "CP": 105,
+    "Durability": 80,
+    "Progress": 236,
+    "Quality": 2641,
+    "Synthesis": [
+      [
+        "Basic Synthesis",
+        50,
+        0,
+        0.9
+      ],
+      [
+        "Rapid Synthesis",
+        70,
+        6,
+        0.75
+      ],
+      [
+        "Careful Synthesis",
+        120,
+        10,
+        0.5
+      ]
+    ],
+    "Touch": [
+      [
+        "Basic Touch",
+        296,
+        3,
+        0.9
+      ],
+      [
+        "Standard Touch",
+        316,
+        6,
+        0.75
+      ],
+      [
+        "Precise Touch",
+        366,
+        10,
+        0.5
+      ]
+    ],
+    "Objective": "full",
+    "PropertyGroups": 1,
+    "Value": 0.9985983120549,
+    "ExpectedClicks": 17.447757700277997,
+    "SuccessfulTouchBranch": [
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Muscle Memory + Basic Touch",
+      "Muscle Memory + Basic Touch",
+      "Steady Hand",
+      "Careful Synthesis",
+      "Steady Hand",
+      "Careful Synthesis"
+    ],
+    "States": 68673,
+    "FinishStates": 73390,
+    "ExpectedQuality": 0.999631123903856,
+    "FullQualityChance": 0.9985983120549,
+    "AllTransferChance1": 0.9996245158911299,
+    "AllTransferChance2": 0.9993885998813199,
+    "AllTransferChance3": 0.9992264074024063,
+    "HasGuaranteedFinish": true
+  },
+  {
+    "SlotsPerEquippedItem": 2,
+    "LoadedEnhancements": 2,
+    "AllocatedCraftsmanship": 35,
+    "AllocatedControl": 165,
+    "Rank": 50,
+    "RecipeLevel": 50,
+    "Craftsmanship": 65,
+    "Control": 194,
+    "CP": 105,
+    "Durability": 80,
+    "Progress": 286,
+    "Quality": 2641,
+    "Synthesis": [
+      [
+        "Basic Synthesis",
+        73,
+        0,
+        0.9
+      ],
+      [
+        "Rapid Synthesis",
+        93,
+        6,
+        0.75
+      ],
+      [
+        "Careful Synthesis",
+        143,
+        10,
+        0.5
+      ]
+    ],
+    "Touch": [
+      [
+        "Basic Touch",
+        270,
+        3,
+        0.9
+      ],
+      [
+        "Standard Touch",
+        290,
+        6,
+        0.75
+      ],
+      [
+        "Precise Touch",
+        340,
+        10,
+        0.5
+      ]
+    ],
+    "Objective": "full",
+    "PropertyGroups": 1,
+    "Value": 0.9909828688130998,
+    "ExpectedClicks": 18.356699095184,
+    "SuccessfulTouchBranch": [
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Steady Hand",
+      "Careful Synthesis",
+      "Steady Hand",
+      "Careful Synthesis"
+    ],
+    "States": 61925,
+    "FinishStates": 81923,
+    "ExpectedQuality": 0.9975682425611799,
+    "FullQualityChance": 0.9909828688130998,
+    "AllTransferChance1": 0.997531171732503,
+    "AllTransferChance2": 0.9960513290307592,
+    "AllTransferChance3": 0.9950605861496863,
+    "HasGuaranteedFinish": true
+  },
+  {
+    "SlotsPerEquippedItem": 3,
+    "LoadedEnhancements": 0,
+    "AllocatedCraftsmanship": 50,
+    "AllocatedControl": 250,
+    "Rank": 50,
+    "RecipeLevel": 50,
+    "Craftsmanship": 80,
+    "Control": 279,
+    "CP": 105,
+    "Durability": 80,
+    "Progress": 186,
+    "Quality": 2641,
+    "Synthesis": [
+      [
+        "Basic Synthesis",
+        83,
+        0,
+        0.9
+      ],
+      [
+        "Rapid Synthesis",
+        103,
+        6,
+        0.75
+      ],
+      [
+        "Careful Synthesis",
+        153,
+        10,
+        0.5
+      ]
+    ],
+    "Touch": [
+      [
+        "Basic Touch",
+        334,
+        3,
+        0.9
+      ],
+      [
+        "Standard Touch",
+        354,
+        6,
+        0.75
+      ],
+      [
+        "Precise Touch",
+        404,
+        10,
+        0.5
+      ]
+    ],
+    "Objective": "full",
+    "PropertyGroups": 1,
+    "Value": 0.9999953362727623,
+    "ExpectedClicks": 15.272246963778898,
+    "SuccessfulTouchBranch": [
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Steady Hand",
+      "Basic Synthesis",
+      "Steady Hand",
+      "Rapid Synthesis"
+    ],
+    "States": 123273,
+    "FinishStates": 37613,
+    "ExpectedQuality": 0.9999988796318035,
+    "FullQualityChance": 0.9999953362727623,
+    "AllTransferChance1": 0.9999988515478094,
+    "AllTransferChance2": 0.999998080722288,
+    "AllTransferChance3": 0.999997531160387,
+    "HasGuaranteedFinish": true
+  },
+  {
+    "SlotsPerEquippedItem": 3,
+    "LoadedEnhancements": 1,
+    "AllocatedCraftsmanship": 50,
+    "AllocatedControl": 250,
+    "Rank": 50,
+    "RecipeLevel": 50,
+    "Craftsmanship": 80,
+    "Control": 279,
+    "CP": 105,
+    "Durability": 80,
+    "Progress": 236,
+    "Quality": 2641,
+    "Synthesis": [
+      [
+        "Basic Synthesis",
+        83,
+        0,
+        0.9
+      ],
+      [
+        "Rapid Synthesis",
+        103,
+        6,
+        0.75
+      ],
+      [
+        "Careful Synthesis",
+        153,
+        10,
+        0.5
+      ]
+    ],
+    "Touch": [
+      [
+        "Basic Touch",
+        334,
+        3,
+        0.9
+      ],
+      [
+        "Standard Touch",
+        354,
+        6,
+        0.75
+      ],
+      [
+        "Precise Touch",
+        404,
+        10,
+        0.5
+      ]
+    ],
+    "Objective": "full",
+    "PropertyGroups": 1,
+    "Value": 0.999975708633168,
+    "ExpectedClicks": 15.9511093301147,
+    "SuccessfulTouchBranch": [
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Steady Hand",
+      "Basic Synthesis",
+      "Steady Hand",
+      "Careful Synthesis"
+    ],
+    "States": 105216,
+    "FinishStates": 51695,
+    "ExpectedQuality": 0.9999934465376631,
+    "FullQualityChance": 0.999975708633168,
+    "AllTransferChance1": 0.9999932976734637,
+    "AllTransferChance2": 0.999988993855473,
+    "AllTransferChance3": 0.9999860351709972,
+    "HasGuaranteedFinish": true
+  },
+  {
+    "SlotsPerEquippedItem": 3,
+    "LoadedEnhancements": 2,
+    "AllocatedCraftsmanship": 35,
+    "AllocatedControl": 265,
+    "Rank": 50,
+    "RecipeLevel": 50,
+    "Craftsmanship": 65,
+    "Control": 294,
+    "CP": 105,
+    "Durability": 80,
+    "Progress": 286,
+    "Quality": 2641,
+    "Synthesis": [
+      [
+        "Basic Synthesis",
+        73,
+        0,
+        0.9
+      ],
+      [
+        "Rapid Synthesis",
+        93,
+        6,
+        0.75
+      ],
+      [
+        "Careful Synthesis",
+        143,
+        10,
+        0.5
+      ]
+    ],
+    "Touch": [
+      [
+        "Basic Touch",
+        345,
+        3,
+        0.9
+      ],
+      [
+        "Standard Touch",
+        365,
+        6,
+        0.75
+      ],
+      [
+        "Precise Touch",
+        415,
+        10,
+        0.5
+      ]
+    ],
+    "Objective": "full",
+    "PropertyGroups": 1,
+    "Value": 0.99983546418762,
+    "ExpectedClicks": 15.715524542720798,
+    "SuccessfulTouchBranch": [
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Steady Hand",
+      "Careful Synthesis",
+      "Steady Hand",
+      "Careful Synthesis"
+    ],
+    "States": 73025,
+    "FinishStates": 81923,
+    "ExpectedQuality": 0.9999617605199107,
+    "FullQualityChance": 0.99983546418762,
+    "AllTransferChance1": 0.9999611491718448,
+    "AllTransferChance2": 0.999935802316317,
+    "AllTransferChance3": 0.9999178754335001,
+    "HasGuaranteedFinish": true
+  },
+  {
+    "SlotsPerEquippedItem": 3,
+    "LoadedEnhancements": 3,
+    "AllocatedCraftsmanship": 95,
+    "AllocatedControl": 205,
+    "Rank": 50,
+    "RecipeLevel": 50,
+    "Craftsmanship": 125,
+    "Control": 234,
+    "CP": 105,
+    "Durability": 80,
+    "Progress": 336,
+    "Quality": 2641,
+    "Synthesis": [
+      [
+        "Basic Synthesis",
+        112,
+        0,
+        0.9
+      ],
+      [
+        "Rapid Synthesis",
+        132,
+        6,
+        0.75
+      ],
+      [
+        "Careful Synthesis",
+        182,
+        10,
+        0.5
+      ]
+    ],
+    "Touch": [
+      [
+        "Basic Touch",
+        300,
+        3,
+        0.9
+      ],
+      [
+        "Standard Touch",
+        320,
+        6,
+        0.75
+      ],
+      [
+        "Precise Touch",
+        370,
+        10,
+        0.5
+      ]
+    ],
+    "Objective": "full",
+    "PropertyGroups": 1,
+    "Value": 0.9987717425108399,
+    "ExpectedClicks": 16.981133157825596,
+    "SuccessfulTouchBranch": [
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Steady Hand",
+      "Careful Synthesis",
+      "Steady Hand",
+      "Careful Synthesis"
+    ],
+    "States": 97191,
+    "FinishStates": 63730,
+    "ExpectedQuality": 0.9996628085333745,
+    "FullQualityChance": 0.9987717425108399,
+    "AllTransferChance1": 0.99965599512444,
+    "AllTransferChance2": 0.9994435574079235,
+    "AllTransferChance3": 0.9992999219591984,
+    "HasGuaranteedFinish": true
+  }
+]

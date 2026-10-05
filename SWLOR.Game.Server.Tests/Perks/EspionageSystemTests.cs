@@ -413,6 +413,39 @@ public class EspionageSystemTests
     }
 
     [Test]
+    public void CoatingHits_RefreshSourceOwnedVenomAndCreditEspionageOnlyOnSuccess()
+    {
+        var source = File.ReadAllText(Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Poisons.cs"));
+        var syntax = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree.ParseText(source).GetRoot();
+        var calls = syntax.DescendantNodes()
+            .OfType<Microsoft.CodeAnalysis.CSharp.Syntax.InvocationExpressionSyntax>().ToArray();
+        calls.Should().Contain(call => call.ToString() ==
+            "StatusEffect.GetStatusEffect(defender, typeof(VenomStatusEffect), attacker)");
+        calls.Should().Contain(call => call.ToString() ==
+            "StatusEffect.RefreshStatusEffectDuration(defender, typeof(VenomStatusEffect), attacker, durationSeconds)");
+        var credit = calls.Single(call => call.Expression.ToString() == "CombatPoint.AddCombatPoint");
+        credit.ArgumentList.Arguments.Select(arg => arg.ToString()).Should()
+            .Equal("attacker", "defender", "SkillType.Espionage");
+        credit.Ancestors().OfType<Microsoft.CodeAnalysis.CSharp.Syntax.IfStatementSyntax>()
+            .Should().Contain(statement => statement.Condition.ToString() == "applied");
+        source.Should().Contain("venom != null && !venom.IsFlaggedForRemoval");
+    }
+
+    [Test]
+    public void RefreshedVenom_UsesTheLatestCoatingPotencyWhenCloned()
+    {
+        var venom = new VenomStatusEffect(0);
+        venom.UpdateDamageBonusPercent(30);
+        var clone = (VenomStatusEffect)venom.Clone();
+        var potency = typeof(VenomStatusEffect).GetField("_damageBonusPercent",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
+        VenomStatusEffect.CalculateBaseDamagePerTick((int)potency.GetValue(clone)!).Should().Be(11);
+        venom.UpdateDamageBonusPercent(-10);
+        potency.GetValue(venom).Should().Be(0);
+        potency.GetValue(clone).Should().Be(30);
+    }
+
+    [Test]
     public void SlicingRankGate_IsCentralizedForLockboxesAndTerminals()
     {
         var root = FindRepositoryRoot();

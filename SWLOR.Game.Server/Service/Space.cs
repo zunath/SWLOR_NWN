@@ -892,6 +892,14 @@ namespace SWLOR.Game.Server.Service
             }
 
             SetCreatureAppearanceType(player, appearance);
+
+            // The ship model leaves the previous visual transform behind; restore the character's own height.
+            var scale = dbPlayer.AppearanceScale <= 0f ? 1.0f : dbPlayer.AppearanceScale;
+            SetObjectVisualTransform(player, ObjectVisualTransform.Scale, scale);
+            var headScale = dbPlayer.HeadAppearanceScale <= 0f ? 1.0f : dbPlayer.HeadAppearanceScale;
+            SetObjectVisualTransform(player, ObjectVisualTransform.Scale, headScale,
+                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+
             // Reapply material colors after the client rebuilds the character model.
             TintMapService.QueueRefresh(player);
         }
@@ -1918,6 +1926,10 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(dbProperty);
                 DB.Set(dbPlayerShip);
                 DB.Set(dbPlayer);
+
+                // The pilot is no longer in space mode; stop tracking them and refresh space-dependent UI.
+                _playersInSpace.Remove(creature);
+                ExecuteScript("space_exit", creature);
 
                 // Murder everyone inside the ship's instance.
                 if (Property.TryGetLoadedInstance(dbPlayerShip.PropertyId, out var instance))

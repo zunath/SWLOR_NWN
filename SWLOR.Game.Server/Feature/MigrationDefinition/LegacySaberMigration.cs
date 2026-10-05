@@ -16,7 +16,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
     /// <summary>
     /// Recalibrates custom legacy sabers to current tier and crafting budgets,
     /// retaining bounded damage and accuracy bonuses and evidenced Chiro upgrades.
-    /// Names, appearances, and unrelated properties remain intact.
+    /// The single strongest elemental damage bonus (first found on ties) is carried
+    /// over unchanged. Names, appearances, and unrelated properties remain intact.
     /// </summary>
     internal static class LegacySaberMigration
     {
@@ -44,6 +45,15 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             ItemPropertyType.DamageBonus,
             ItemPropertyType.AccuracyBonus,
             ItemPropertyType.Accuracy,
+        };
+
+        private static readonly HashSet<ItemPropertyDamageType> ElementalDamageTypes = new()
+        {
+            ItemPropertyDamageType.Acid,
+            ItemPropertyDamageType.Cold,
+            ItemPropertyDamageType.Electrical,
+            ItemPropertyDamageType.Fire,
+            ItemPropertyDamageType.Sonic,
         };
 
         /// <summary>
@@ -109,6 +119,37 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         }
 
         /// <summary>
+        /// Finds the strongest elemental damage bonus on the item; the first one found wins ties.
+        /// </summary>
+        private static (ItemPropertyDamageType? Type, int Amount) FindStrongestElementalBonus(uint item)
+        {
+            ItemPropertyDamageType? bestType = null;
+            var bestAmount = 0;
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) != ItemPropertyType.DamageBonus)
+                    continue;
+
+                var damageType = (ItemPropertyDamageType)GetItemPropertySubType(ip);
+                var amount = GetItemPropertyCostTableValue(ip);
+                if (ElementalDamageTypes.Contains(damageType) && amount > bestAmount)
+                {
+                    bestType = damageType;
+                    bestAmount = amount;
+                }
+            }
+
+            return (bestType, bestAmount);
+        }
+
+        private static bool IsSameElementalBonus(SWLOR.NWN.API.Engine.ItemProperty ip, ItemPropertyDamageType? type, int amount)
+        {
+            return type.HasValue &&
+                   (ItemPropertyDamageType)GetItemPropertySubType(ip) == type.Value &&
+                   GetItemPropertyCostTableValue(ip) == amount;
+        }
+
+        /// <summary>
         /// Replaces obsolete damage properties with a bounded current profile.
         /// </summary>
         private static void NormalizeSaber(uint item)
@@ -118,6 +159,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             var accuracy = 0;
 
             var propertiesToRemove = new List<SWLOR.NWN.API.Engine.ItemProperty>();
+            var (elementalType, elementalAmount) = FindStrongestElementalBonus(item);
+            var elementalConsumed = false;
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
                 var type = GetItemPropertyType(ip);
@@ -125,6 +168,14 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                     damage += GetItemPropertyCostTableValue(ip);
                 else if (type == ItemPropertyType.DamageBonus)
                 {
+                    // The carried-over elemental bonus is re-added as-is, not folded into physical damage.
+                    if (!elementalConsumed && IsSameElementalBonus(ip, elementalType, elementalAmount))
+                    {
+                        elementalConsumed = true;
+                        propertiesToRemove.Add(ip);
+                        continue;
+                    }
+
                     var row = GetItemPropertyCostTableValue(ip);
                     if (int.TryParse(Get2DAString("iprp_damagecost", "NumDice", row), out var dice) &&
                         int.TryParse(Get2DAString("iprp_damagecost", "Die", row), out var die))
@@ -146,6 +197,14 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             foreach (var property in propertiesToRemove)
                 MigrationObject.RemoveProperty(item, property);
+
+            if (elementalType.HasValue)
+            {
+                MigrationObject.AddProperty(
+                    item,
+                    ItemPropertyDamageBonus(elementalType.Value, (DamageBonus)elementalAmount),
+                    AddItemPropertyPolicy.ReplaceExisting);
+            }
 
             var delay = isSaberstaff ? SaberstaffDelay : LightsaberDelay;
             var skillSubtype = isSaberstaff ? SaberstaffSkillSubtype : LightsaberSkillSubtype;

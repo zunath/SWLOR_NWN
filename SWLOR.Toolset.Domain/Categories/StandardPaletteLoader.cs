@@ -1,17 +1,13 @@
 using Nwn.Authoring.Categories;
-using SWLOR.NWN.Formats.Gff;
-using SWLOR.Toolset.Domain.Documents;
-using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.Resources;
-using Nwn.Authoring.Documents.NimGff;
-using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Domain.Categories
 {
     /// <summary>
     /// Reads the base game's standard palettes (<c>*palstd.itp</c>) out of the layered resource index and
-    /// imports them into a <see cref="StandardPalette"/>.
+    /// imports them into a <see cref="StandardPalette"/> through the shared <see cref="StandardPaletteReader"/>.
+    /// The <c>*palstd</c> naming is SWLOR's host data; the import itself is shared.
     /// </summary>
     /// <remarks>
     /// Every failure returns <see cref="StandardPalette.Empty"/>. Missing base game, missing palette,
@@ -76,36 +72,19 @@ namespace SWLOR.Toolset.Domain.Categories
                     return StandardPalette.Empty;
                 }
 
-                var document = new ItpDocument(GffJsonBridge.ToJsonDocument(GffReader.Read(handle.GetBytes())));
-                var section = ItpCategoryImporter.Import(document, out var names, resolveStrRef);
-
-                return new StandardPalette(section, ResolvableMembers(index, type, section), names);
+                // The palette file is a manifest of what BioWare shipped across every expansion, so it names
+                // blueprints a given install does not have; only those that resolve become tiles.
+                var blueprintType = ResourceIdentity.TypeFromExtension(type.Extension());
+                return StandardPaletteReader.Read(
+                    handle.GetBytes(),
+                    resRef => index.Contains(new ResourceIdentity(resRef, blueprintType)),
+                    resolveStrRef);
             }
             catch (Exception ex)
             {
                 reportProblem?.Invoke($"Could not read the standard palette '{paletteResRef}.itp': {ex.Message}");
                 return StandardPalette.Empty;
             }
-        }
-
-        /// <summary>
-        /// Narrows the palette's membership to the resrefs that really resolve. The palette file is a
-        /// manifest of what BioWare shipped across every expansion, so it names blueprints a given install
-        /// does not have; a tile for one of those could never open or place.
-        /// </summary>
-        private static IReadOnlySet<string> ResolvableMembers(
-            ResourceIndex index, ResourceType type, CategorySection section)
-        {
-            var blueprintType = ResourceIdentity.TypeFromExtension(type.Extension());
-            var resolvable = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var resRef in section.AssignedResRefs())
-            {
-                if (index.Contains(new ResourceIdentity(resRef, blueprintType)))
-                    resolvable.Add(resRef);
-            }
-
-            return resolvable;
         }
     }
 }

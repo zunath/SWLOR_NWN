@@ -477,7 +477,7 @@ namespace SWLOR.Toolset.Tests
                 Assert.Ignore("triggerpalcus.itp.json is not present in this checkout.");
 
             var categories = PaletteCategoryReader.Read(
-                SWLOR.Toolset.Domain.Documents.ItpDocument.Load(path));
+                Nwn.Authoring.Documents.Native.ItpDocument.Load(path));
 
             categories.Should().NotBeEmpty();
             categories.Select(category => category.Value).Should().OnlyHaveUniqueItems();

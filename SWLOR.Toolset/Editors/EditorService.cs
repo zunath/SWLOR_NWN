@@ -2418,7 +2418,7 @@ namespace SWLOR.Toolset.Editors
                     return Array.Empty<BehaviorChoice>();
 
                 return SortByDisplay(PaletteCategoryReader.Read(
-                    Domain.Documents.ItpDocument.Load(path),
+                    Nwn.Authoring.Documents.Native.ItpDocument.Load(path),
                     _tlkService != null ? _tlkService.GetString : null));
             }
             catch (Exception ex)
@@ -2772,7 +2772,7 @@ namespace SWLOR.Toolset.Editors
                     return Array.Empty<BehaviorChoice>();
 
                 return PaletteCategoryReader.Read(
-                    Domain.Documents.ItpDocument.Load(path),
+                    Nwn.Authoring.Documents.Native.ItpDocument.Load(path),
                     _tlkService != null ? _tlkService.GetString : null);
             }
             catch (Exception ex)
@@ -2897,7 +2897,7 @@ namespace SWLOR.Toolset.Editors
                 var path = Path.Combine(workspace.ModuleRoot, "itp", "creaturepalcus.itp.json");
                 return File.Exists(path)
                     ? PaletteCategoryReader.Read(
-                        Domain.Documents.ItpDocument.Load(path),
+                        Nwn.Authoring.Documents.Native.ItpDocument.Load(path),
                         _tlkService != null ? _tlkService.GetString : null)
                     : Array.Empty<BehaviorChoice>();
             }
@@ -3327,7 +3327,7 @@ namespace SWLOR.Toolset.Editors
                     return Array.Empty<Nwn.Authoring.Behaviors.BehaviorChoice>();
 
                 return Domain.Editors.Behaviors.PaletteCategoryReader.Read(
-                    Domain.Documents.ItpDocument.Load(path),
+                    Nwn.Authoring.Documents.Native.ItpDocument.Load(path),
                     _tlkService != null ? _tlkService.GetString : null);
             }
             catch (Exception ex)
@@ -3427,7 +3427,7 @@ namespace SWLOR.Toolset.Editors
                     return Array.Empty<BehaviorChoice>();
 
                 return Domain.Editors.Sounds.SoundPaletteCategoryReader.Read(
-                    Domain.Documents.ItpDocument.Load(path),
+                    Nwn.Authoring.Documents.Native.ItpDocument.Load(path),
                     _tlkService != null ? _tlkService.GetString : null);
             }
             catch (Exception ex)
@@ -3480,7 +3480,7 @@ namespace SWLOR.Toolset.Editors
                     return Array.Empty<Nwn.Authoring.Behaviors.BehaviorChoice>();
 
                 return Domain.Editors.Behaviors.PaletteCategoryReader.Read(
-                    Domain.Documents.ItpDocument.Load(path),
+                    Nwn.Authoring.Documents.Native.ItpDocument.Load(path),
                     _tlkService != null ? _tlkService.GetString : null);
             }
             catch (Exception ex)
@@ -3519,7 +3519,7 @@ namespace SWLOR.Toolset.Editors
                     return Array.Empty<Nwn.Authoring.Behaviors.BehaviorChoice>();
 
                 return Domain.Editors.Behaviors.PaletteCategoryReader.Read(
-                    Domain.Documents.ItpDocument.Load(path),
+                    Nwn.Authoring.Documents.Native.ItpDocument.Load(path),
                     _tlkService != null ? _tlkService.GetString : null);
             }
             catch (Exception ex)

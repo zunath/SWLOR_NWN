@@ -223,7 +223,7 @@ namespace SWLOR.Toolset.Workspace
         /// The resource kinds <see cref="BlueprintCatalog"/>'s initial build actually indexes - areas
         /// and every blueprint type. Shared by <see cref="RefreshCatalogEntry"/>/
         /// <see cref="RemoveCatalogEntry"/> here and by callers deciding whether to read the catalog or
-        /// enumerate the workspace directly (see <c>ModuleExplorerViewModel.IsCatalogIndexed</c>), so
+        /// enumerate the workspace directly (see <c>SwlorExplorerContentSource</c>), so
         /// the two can never drift apart.
         /// </summary>
         /// <remarks>

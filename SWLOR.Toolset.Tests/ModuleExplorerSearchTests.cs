@@ -1,6 +1,7 @@
 using Avalonia.Headless.NUnit;
 using FluentAssertions;
 using NUnit.Framework;
+using Nwn.Toolset.Avalonia.Explorer;
 using SWLOR.Toolset.Domain.Categories;
 using Nwn.Authoring.Categories;
 using SWLOR.Toolset.Domain.Conversations;
@@ -249,26 +250,36 @@ namespace SWLOR.Toolset.Tests
                 "the declared debounce must be awaited before the scan runs, not skipped");
         }
 
+        /// <summary>
+        /// The shared Module Contents controller calls <c>Prepare</c> on the UI thread and only then starts
+        /// its worker (covered by the shared library's content-search tests). SWLOR's half of that contract
+        /// is that the open-editor snapshots are taken in <c>Prepare</c>, and that the worker-side scan
+        /// never reaches back into the live editor service.
+        /// </summary>
         [Test]
         public void OpenConversationSnapshotsAreCapturedBeforeTheSearchWorkerStarts()
         {
-            var source = File.ReadAllText(Path.Combine(
+            var hostDirectory = Path.Combine(
                 FindRepositoryRoot().FullName,
                 "SWLOR.Toolset",
                 "Shell",
                 "Panels",
-                "ModuleExplorerViewModel.cs"));
-            var openDialogsIndex = source.IndexOf(
+                "ExplorerHost");
+            var prepare = File.ReadAllText(Path.Combine(hostDirectory, "SwlorExplorerDialogueSearch.cs"));
+            var worker = File.ReadAllText(Path.Combine(hostDirectory, "SwlorDialogueSearchScan.cs"));
+            var prepareIndex = prepare.IndexOf("Prepare(", StringComparison.Ordinal);
+            var openDialogsIndex = prepare.IndexOf(
                 "SnapshotOpenConversationDocuments();", StringComparison.Ordinal);
-            var openGraphsIndex = source.IndexOf(
+            var openGraphsIndex = prepare.IndexOf(
                 "SnapshotOpenNuiConversationGraphs();", StringComparison.Ordinal);
-            var workerIndex = source.IndexOf("_ = Task.Run(", StringComparison.Ordinal);
 
-            openDialogsIndex.Should().BeGreaterThanOrEqualTo(0);
-            openGraphsIndex.Should().BeGreaterThanOrEqualTo(0);
-            workerIndex.Should().BeGreaterThan(openDialogsIndex);
-            workerIndex.Should().BeGreaterThan(openGraphsIndex,
+            prepareIndex.Should().BeGreaterThanOrEqualTo(0);
+            openDialogsIndex.Should().BeGreaterThan(prepareIndex);
+            openGraphsIndex.Should().BeGreaterThan(prepareIndex,
                 "the UI-owned graph editors must be snapshotted before background work begins");
+            prepare.Should().NotContain("Task.Run(", "the shared controller owns the worker");
+            worker.Should().NotContain("EditorService",
+                "the worker must only read the snapshots handed to it, never live editor state");
         }
 
         [AvaloniaTest]

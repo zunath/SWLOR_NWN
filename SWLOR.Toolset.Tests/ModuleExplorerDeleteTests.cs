@@ -10,6 +10,8 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using FluentAssertions;
 using NUnit.Framework;
+using Nwn.Toolset.Avalonia.Explorer;
+using SharedModuleExplorerView = Nwn.Toolset.Avalonia.Explorer.Views.ModuleExplorerView;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;
@@ -130,7 +132,7 @@ namespace SWLOR.Toolset.Tests
         {
             var (explorer, _) = CreateExplorer(ResourceType.Nss, new RecordingPrompts(answer: false));
             var unsorted = explorer.Rows.Single(row => row.Name == "Unsorted");
-            var view = new ModuleExplorerView { DataContext = explorer };
+            var view = new SharedModuleExplorerView { DataContext = explorer.Workflow };
             var window = new Window { Content = view, Width = 500, Height = 500 };
             window.Show();
 
@@ -153,10 +155,12 @@ namespace SWLOR.Toolset.Tests
                 pointerEvent.Should().NotBeNull();
                 var gesture = new TappedEventArgs(InputElement.DoubleTappedEvent, pointerEvent!)
                 {
-                    Source = rowSurface.ContextMenu!.Items.OfType<MenuItem>()
-                        .Single(item => Equals(item.Header, "Delete"))
+                    // The menu's last item is Delete. Picked by position rather than by header: the
+                    // headers are bound to the panel's localized text, which resolves only once the
+                    // menu has opened, and this menu is never opened.
+                    Source = rowSurface.ContextMenu!.Items.OfType<MenuItem>().Last()
                 };
-                typeof(ModuleExplorerView)
+                typeof(SharedModuleExplorerView)
                     .GetMethod("OnItemsDoubleTapped", System.Reflection.BindingFlags.Instance |
                                                        System.Reflection.BindingFlags.NonPublic)!
                     .Invoke(view, new object?[] { tree, gesture });

@@ -1208,6 +1208,7 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 var ticks = Math.Max(1, (int)Math.Ceiling(durationSeconds / Math.Max(1f, statusEffect.Frequency)));
+                ticks = ApplyOutgoingStatusDurationAdjustments(statusEffect, source, ticks, false);
                 var resistanceType = ResolveResistanceType(statusEffect, resistanceOverride, sourceDamageType);
                 if (Resistance.IsValidResistanceType(resistanceType) &&
                     GetIsObjectValid(source) &&

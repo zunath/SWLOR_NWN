@@ -1012,6 +1012,44 @@ def formula_snapshot(parts):
     return snapshot
 
 
+def replace_reference_cell(xml, cell, text, fallback_style):
+    # A blank cell can be self-closing. Never consume its following siblings.
+    opening=re.search(rf'<c\b[^>]*\br="{cell}"[^>]*>',xml)
+    if opening is None:raise ValueError("Missing cross-reference cell "+cell)
+    end=opening.end()
+    if not opening.group(0).rstrip().endswith("/>"):
+        closing=xml.find("</c>",end)
+        if closing<0:raise ValueError("Unclosed cross-reference cell "+cell)
+        end=closing+len("</c>")
+    old_style=re.search(r'\bs="(\d+)"',opening.group(0))
+    style=int(old_style.group(1)) if old_style else fallback_style
+    replacement=f'<c r="{cell}" s="{style}" t="inlineStr"><is><t>{escape(text)}</t></is></c>'
+    return xml[:opening.start()]+replacement+xml[end:]
+
+
+def cell_snapshot(parts,paths,exceptions):
+    shared=[]
+    if "xl/sharedStrings.xml" in parts:
+        shared=["".join(s.itertext()) for s in ET.fromstring(parts["xl/sharedStrings.xml"])]
+    snapshot={}
+    for name,path in paths.items():
+        cells={}
+        for row in ET.fromstring(parts[path]).findall("m:sheetData/m:row",NS):
+            for cell in row.findall("m:c",NS):
+                ref=cell.attrib["r"]
+                if (name,ref) in exceptions:continue
+                kind=cell.attrib.get("t","n")
+                cached=cell.find("m:v",NS)
+                value=cached.text if cached is not None else None
+                if kind=="s":kind,value="text",shared[int(value)]
+                elif kind=="inlineStr":kind,value="text","".join(cell.find("m:is",NS).itertext())
+                f=cell.find("m:f",NS)
+                formula=(sorted(f.attrib.items()),f.text) if f is not None else None
+                cells[ref]=(kind,value,formula,row.attrib["r"])
+        snapshot[name]=cells
+    return snapshot
+
+
 def write_workbook(data,report):
     with zipfile.ZipFile(BIBLE) as z:
         infos=z.infolist();original={i.filename:z.read(i.filename) for i in infos}; paths=workbook_parts(z)
@@ -1049,13 +1087,10 @@ def write_workbook(data,report):
     refs={"Piloting":("B3","Ability to pilot starships. Current legacy perks remain implemented; planned replacement: Space Skills, Space Perks, Space Rules."),"Starships":("A1","Current hulls; planned replacement in Space Hulls and Space Conversion"),"Engineering":("B3","Ability to create starships, modules, droids, and other electronic & mechanical items. Attributes do not affect crafting Control, Craftsmanship, or CP. Planned space recipes and tuning: Space Recipes and Space Craft Rules.")}
     for tab,(cell,text) in refs.items():
         path=paths[tab];xml=original[path].decode("utf-8")
-        pattern=rf'<c\b[^>]*\br="{cell}"[^>]*>.*?</c>'
-        match=re.search(pattern,xml,re.S)
-        if not match:raise ValueError("Missing cross-reference cell "+tab+"!"+cell)
-        old_style=re.search(r'\bs="(\d+)"',match.group(0))
-        style=int(old_style.group(1)) if old_style else styles["text"]
-        replacement=f'<c r="{cell}" s="{style}" t="inlineStr"><is><t>{escape(text)}</t></is></c>'
-        changed[path]=(xml[:match.start()]+replacement+xml[match.end():]).encode("utf-8")
+        changed[path]=replace_reference_cell(xml,cell,text,styles["text"]).encode("utf-8")
+    exceptions={(name,cell) for name,(cell,_) in refs.items()}
+    inherited_paths={name:path for name,path in paths.items() if path in original and path not in existing_space_paths}
+    before_cells=cell_snapshot(original,inherited_paths,exceptions)
     temporary=BIBLE.with_suffix(".space-tmp.xlsx")
     with zipfile.ZipFile(temporary,"w") as z:
         for info in infos:z.writestr(info,changed.pop(info.filename,original[info.filename]))
@@ -1063,6 +1098,9 @@ def write_workbook(data,report):
     with zipfile.ZipFile(temporary) as z:
         after_parts={i.filename:z.read(i.filename) for i in z.infolist()}
         after=formula_snapshot(after_parts)
+        after_cells=cell_snapshot(after_parts,inherited_paths,exceptions)
+        for name,cells in before_cells.items():
+            if after_cells.get(name)!=cells:raise ValueError("Existing cell content or row changed: "+name)
         for name,cells in before.items():
             if after.get(name)!=cells:raise ValueError("Existing formula or cache changed: "+name)
         touched={"xl/workbook.xml","xl/_rels/workbook.xml.rels","[Content_Types].xml","xl/styles.xml"}|{paths[n] for n in refs}|{paths[s["name"]] for s in specs}
@@ -1076,7 +1114,7 @@ def write_workbook(data,report):
     if columns is None:raise ValueError("Unknown layout JSON root: "+str(list(layout)))
     for spec in specs:columns[spec["name"]]=[dict(min=i+1,max=i+1,width=w) for i,w in enumerate(spec["widths"])]
     layout_path.write_text(json.dumps(layout,separators=(",",":"),ensure_ascii=False)+"\n",encoding="utf-8")
-    preservation=dict(existing_formula_cells_preserved=preserved,unexpected_entry_changes=unexpected,new_tabs=[s["name"] for s in specs],before_formula_digest=hashlib.sha256(json.dumps(before,sort_keys=True).encode()).hexdigest())
+    preservation=dict(existing_formula_cells_preserved=preserved,existing_cells_preserved=sum(len(v) for v in before_cells.values()),unexpected_entry_changes=unexpected,new_tabs=[s["name"] for s in specs],cross_reference_cells=sorted(exceptions),before_cell_digest=hashlib.sha256(json.dumps(before_cells,sort_keys=True).encode()).hexdigest(),before_formula_digest=hashlib.sha256(json.dumps(before,sort_keys=True).encode()).hexdigest())
     (ROOT/"design/testing/space-bible-preservation.json").write_text(json.dumps(preservation,indent=2)+"\n",encoding="utf-8")
     print(f"Bible updated: {len(specs)} space tabs; {preserved} existing formula caches preserved; unrelated ZIP entries unchanged.")
 
@@ -1106,6 +1144,12 @@ def verify_workbook(data,report):
         saved_snapshot=formula_snapshot({p:z.read(p) for p in old_paths})
         digest=hashlib.sha256(json.dumps(saved_snapshot,sort_keys=True).encode()).hexdigest()
         if digest!=preserved["before_formula_digest"]:raise ValueError("Existing formula snapshot changed after refresh")
+        inherited_paths={name:path for name,path in paths.items() if path in old_paths}
+        exceptions={tuple(cell) for cell in preserved["cross_reference_cells"]}
+        parts={name:z.read(name) for name in z.namelist()}
+        inherited_cells=cell_snapshot(parts,inherited_paths,exceptions)
+        cell_digest=hashlib.sha256(json.dumps(inherited_cells,sort_keys=True).encode()).hexdigest()
+        if cell_digest!=preserved["before_cell_digest"]:raise ValueError("Existing cell snapshot changed after refresh")
     print("Saved Bible cells, formulas, cached results and existing formula caches match the verified design model.")
 
 

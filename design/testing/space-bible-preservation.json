@@ -1,5 +1,6 @@
 {
   "existing_formula_cells_preserved": 28890,
+  "existing_cells_preserved": 956844,
   "unexpected_entry_changes": [],
   "new_tabs": [
     "Space Plan",
@@ -27,5 +28,20 @@
     "Space Fight Benchmarks",
     "Space Conversion"
   ],
+  "cross_reference_cells": [
+    [
+      "Engineering",
+      "B3"
+    ],
+    [
+      "Piloting",
+      "B3"
+    ],
+    [
+      "Starships",
+      "A1"
+    ]
+  ],
+  "before_cell_digest": "fef05587078e0c0008fbba228df2ef225750650a2afa31637084eb00e2df4cb4",
   "before_formula_digest": "031bd28ea7654169a49a17af92b053e1d36583a24305f73a0b1270b77db2650b"
 }

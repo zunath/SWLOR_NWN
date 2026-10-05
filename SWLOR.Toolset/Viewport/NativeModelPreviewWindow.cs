@@ -51,7 +51,8 @@ public sealed class NativeModelPreviewWindow : Window
         _status.Text = "Loading…";
         try
         {
-            var data = await Task.Run(() => _adapter.Load(_resRefBox.Text ?? string.Empty));
+            var resRef = _resRefBox.Text ?? string.Empty;
+            var data = await Task.Run(() => _adapter.Load(resRef));
             _viewport.Textures = data.Textures;
             _viewport.Scene = data.Scene;
             var details = new List<string> { "Unlit", Path.GetFileName(data.ModelSourcePath) };

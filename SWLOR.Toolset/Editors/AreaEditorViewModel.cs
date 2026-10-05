@@ -1,3 +1,4 @@
+using Nwn.Preview.Areas.Clipboard;
 using Nwn.Authoring.Areas.Placement;
 using Nwn.Authoring.Areas.Editing;
 using Nwn.Toolset.Avalonia.Areas;

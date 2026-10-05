@@ -290,7 +290,7 @@ namespace SWLOR.Toolset.Tests
             editors!.IsOpen(ResourceType.Nss, resRef).Should().BeTrue();
             document!.IsDirty.Should().BeTrue();
             document.TextBinding.Should().Contain("// unsaved");
-            explorer.StatusMessage.Should().Contain("changed while the delete confirmation was open");
+            explorer.StatusMessage.Should().Contain("was not deleted").And.Contain("changed while");
         }
 
         [Test]
@@ -488,8 +488,8 @@ namespace SWLOR.Toolset.Tests
 
             await explorer.DeleteSelectedResourceCommand.ExecuteAsync(null);
 
-            File.ReadAllText(source).Should().Contain("// new");
-            explorer.StatusMessage.Should().Contain("changed while the delete confirmation was open");
+            File.ReadAllText(source).Should().Be("void main() { // new\n}");
+            explorer.StatusMessage.Should().Contain("was not deleted").And.Contain("changed while");
         }
 
         [Test]
@@ -505,6 +505,52 @@ namespace SWLOR.Toolset.Tests
             File.ReadAllBytes(interrupted.Compiled).Should().Equal(1, 2, 3);
             File.Exists(interrupted.Backup).Should().BeFalse();
             File.Exists(interrupted.Manifest).Should().BeFalse();
+        }
+
+        [Test]
+        public void WorkspaceOpen_RestoresInterruptedSharedScriptTransactionFromModuleRoot()
+        {
+            const string resRef = "shared_interrupted_script";
+            var source = Path.GetFullPath(Path.Combine(_module, "nss", resRef + ".nss"));
+            var original = "void main() { // shared original\n}"u8.ToArray();
+            var (backup, manifest) = WriteInterruptedSharedDeletion(
+                _module,
+                new[] { _module },
+                source,
+                original);
+
+            new WorkspaceContext(root => new ModuleWorkspace(root), new OutputLogService()).Open(_module);
+
+            File.ReadAllBytes(source).Should().Equal(original);
+            File.Exists(backup).Should().BeFalse();
+            File.Exists(manifest).Should().BeFalse();
+        }
+
+        [Test]
+        public void WorkspaceOpen_RestoresInterruptedSharedDialogTransactionFromConversationRoot()
+        {
+            const string resRef = "shared_interrupted_dialog";
+            var conversationRoot = ModuleWorkspace.ResolveConversationDataRoot(_module);
+            var graph = Path.GetFullPath(Path.Combine(conversationRoot, resRef + ".conversation.json"));
+            var legacy = Path.Combine(_module, "dlg", resRef + ".dlg.json");
+            var original = "{\"nodes\":[]}"u8.ToArray();
+            File.WriteAllText(legacy, "legacy companion");
+            var allowedRoots = new[] { conversationRoot, _module }
+                .Select(Path.GetFullPath)
+                .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+            var (backup, manifest) = WriteInterruptedSharedDeletion(
+                conversationRoot,
+                allowedRoots,
+                graph,
+                original);
+
+            new WorkspaceContext(root => new ModuleWorkspace(root), new OutputLogService()).Open(_module);
+
+            File.ReadAllBytes(graph).Should().Equal(original);
+            File.ReadAllText(legacy).Should().Be("legacy companion");
+            File.Exists(backup).Should().BeFalse();
+            File.Exists(manifest).Should().BeFalse();
         }
 
         [Test]
@@ -774,6 +820,39 @@ namespace SWLOR.Toolset.Tests
                     Path.Combine(CorpusLocator.ModuleDirectory, folder, "area_template." + extension),
                     Path.Combine(_module, folder, targetResRef + "." + extension));
             }
+        }
+
+        private static (string Backup, string Manifest) WriteInterruptedSharedDeletion(
+            string transactionRoot,
+            IReadOnlyList<string> allowedRoots,
+            string sourcePath,
+            byte[] originalBytes)
+        {
+            var transactionId = Guid.NewGuid().ToString("N");
+            var backupPath = sourcePath + "." + transactionId + ".file-delete-backup";
+            File.WriteAllBytes(backupPath, originalBytes);
+            var manifestPath = Path.Combine(transactionRoot, "." + transactionId + ".file-transaction.json");
+            File.WriteAllText(manifestPath, JsonSerializer.Serialize(new
+            {
+                Version = 1,
+                TransactionId = transactionId,
+                TransactionRoot = Path.GetFullPath(transactionRoot),
+                AllowedRoots = allowedRoots,
+                Entries = new[]
+                {
+                    new
+                    {
+                        Kind = 0,
+                        Path = Path.GetFullPath(sourcePath),
+                        BackupPath = Path.GetFullPath(backupPath),
+                        OriginalSha256 = Convert.ToHexString(SHA256.HashData(originalBytes)),
+                        OriginalBytesBase64 = (string?)null,
+                        ReplacementSha256 = (string?)null,
+                        ReplacementBytesBase64 = (string?)null
+                    }
+                }
+            }));
+            return (backupPath, manifestPath);
         }
 
         private InterruptedDelete SimulateInterruptedScriptDelete(string resRef)

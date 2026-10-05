@@ -341,7 +341,8 @@ namespace SWLOR.Toolset
                 sp.GetService<TlkService>()));
             services.AddSingleton(sp => new ThumbnailService(
                 sp.GetRequiredService<WorkspaceContext>(),
-                sp.GetRequiredService<BlueprintPreviewRenderer>()));
+                sp.GetRequiredService<BlueprintPreviewRenderer>(),
+                sp.GetRequiredService<OutputLogService>()));
             services.AddSingleton(sp => new PaletteViewModel(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<CategoryService>(),

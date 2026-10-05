@@ -1,3 +1,4 @@
+using Nwn.Preview.Areas.Clipboard;
 using Nwn.Authoring.Areas.Placement;
 using System.Numerics;
 using Avalonia.Headless.NUnit;

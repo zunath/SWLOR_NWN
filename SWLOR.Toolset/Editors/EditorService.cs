@@ -1,9 +1,11 @@
+using Nwn.Preview.Areas.Clipboard;
 using System.Collections.Concurrent;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
 using SWLOR.Toolset.Domain.Categories;
+using Nwn.Authoring.Categories;
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;
 using Nwn.Authoring.Documents.NimGff;

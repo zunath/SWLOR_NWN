@@ -76,6 +76,7 @@ namespace SWLOR.Toolset.Workspace
 
         private readonly WorkspaceContext _workspaceContext;
         private readonly IPreviewImageSource _renderer;
+        private readonly OutputLogService? _outputLog;
 
         private readonly BitmapMemoryCache _memory = new(MemoryCacheCapacity);
 
@@ -154,10 +155,14 @@ namespace SWLOR.Toolset.Workspace
         private ThumbnailDiskCache _disk = new(null);
         private string? _diskModuleRoot;
 
-        public ThumbnailService(WorkspaceContext workspaceContext, IPreviewImageSource renderer)
+        public ThumbnailService(
+            WorkspaceContext workspaceContext,
+            IPreviewImageSource renderer,
+            OutputLogService? outputLog = null)
         {
             _workspaceContext = workspaceContext ?? throw new ArgumentNullException(nameof(workspaceContext));
             _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
+            _outputLog = outputLog;
 
             // A saved blueprint may look different. The memory cache is consulted before the disk
             // cache's timestamp check, so without this an edited appearance or icon kept showing the old
@@ -378,7 +383,12 @@ namespace SWLOR.Toolset.Workspace
             ArgumentNullException.ThrowIfNull(onReady);
 
             if (!IsAvailable || string.IsNullOrWhiteSpace(modelResRef))
+            {
+                if (onFailed != null)
+                    Dispatcher.UIThread.Post(onFailed);
+
                 return;
+            }
 
             var composite = IsCompositeFootprint(footprintModelResRefs, columns, rows);
             var key = TileKey(
@@ -391,6 +401,8 @@ namespace SWLOR.Toolset.Workspace
             {
                 if (known != null)
                     Dispatcher.UIThread.Post(() => onReady(known));
+                else if (onFailed != null)
+                    Dispatcher.UIThread.Post(onFailed);
 
                 return;
             }
@@ -398,9 +410,12 @@ namespace SWLOR.Toolset.Workspace
             if (!TryStartRender(key, onReady, null, out var operation, onFailed))
                 return;
 
+            var logger = Log.ForContext<ThumbnailService>();
             Task.Run(() =>
             {
+                var renderWatch = System.Diagnostics.Stopwatch.StartNew();
                 Bitmap? bitmap = null;
+                Exception? renderFailure = null;
                 try
                 {
                     var image = composite
@@ -410,9 +425,25 @@ namespace SWLOR.Toolset.Workspace
                     if (image != null)
                         bitmap = ToBitmap(image);
                 }
-                catch (Exception)
+                catch (Exception exception)
                 {
-                    // One unparseable tile model must not stop the rest of the grid filling in.
+                    renderFailure = exception;
+                    logger.Warning(
+                        exception,
+                        "Failed to render tile preview for {ModelResRef} ({Columns}x{Rows}, composite={Composite}, doorFallback={DoorFallback}).",
+                        modelResRef, columns, rows, composite, renderDoorTransitionFallback);
+                    _outputLog?.AppendLine(
+                        $"Tile preview render failed for '{modelResRef}' ({columns}x{rows}, composite={composite}, doorFallback={renderDoorTransitionFallback}): {exception.GetType().Name}.");
+                }
+
+                var elapsedMilliseconds = renderWatch.Elapsed.TotalMilliseconds;
+                if (bitmap is null && renderFailure is null)
+                {
+                    logger.Warning(
+                        "Tile preview renderer returned no image for {ModelResRef} ({Columns}x{Rows}, composite={Composite}, doorFallback={DoorFallback}) after {ElapsedMilliseconds} ms.",
+                        modelResRef, columns, rows, composite, renderDoorTransitionFallback, elapsedMilliseconds);
+                    _outputLog?.AppendLine(
+                        $"Tile preview render returned no image for '{modelResRef}' ({columns}x{rows}, composite={composite}, doorFallback={renderDoorTransitionFallback}) after {elapsedMilliseconds:F1} ms.");
                 }
 
                 var result = new PreviewResolution(

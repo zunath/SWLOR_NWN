@@ -24,6 +24,7 @@ using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Categories;
+using Nwn.Authoring.Categories;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
 using Nwn.Formats.Tilesets;
@@ -431,7 +432,8 @@ namespace SWLOR.Toolset.Shell.Panels
                                 false,
                                 false,
                                 false,
-                                "Tileset content - read-only"));
+                                "Tileset content - read-only"),
+                            SupportsPreview: tile.Crosser is not { Length: 0 });
                         _presentationEntries[entryId] = tileSnapshot;
                         entries.Add(tileSnapshot);
                     }

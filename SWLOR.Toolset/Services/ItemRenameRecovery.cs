@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Security.Cryptography;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Categories;
+using Nwn.Authoring.Categories;
 
 namespace SWLOR.Toolset.Services
 {

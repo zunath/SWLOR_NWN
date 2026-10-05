@@ -1,3 +1,4 @@
+using Nwn.Authoring.Categories;
 using SWLOR.NWN.Formats.Gff;
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;

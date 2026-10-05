@@ -14,9 +14,10 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public async Task RetainedEntryCannotActAfterTypeOrSourceChanges()
         {
-            var moduleRoot = Path.Combine(
+            var ownedRoot = Path.Combine(
                 Path.GetTempPath(),
                 $"swlor_palette_stale_entry_{Guid.NewGuid():N}");
+            var moduleRoot = Path.Combine(ownedRoot, "Module");
             foreach (var folder in new[] { "are", "utc", "utp" })
                 Directory.CreateDirectory(Path.Combine(moduleRoot, folder));
 
@@ -92,17 +93,18 @@ namespace SWLOR.Toolset.Tests
             }
             finally
             {
-                if (Directory.Exists(moduleRoot))
-                    Directory.Delete(moduleRoot, recursive: true);
+                if (Directory.Exists(ownedRoot))
+                    Directory.Delete(ownedRoot, recursive: true);
             }
         }
 
         [Test]
         public void SharedEntryCapabilitiesFollowWriteLockAndKeepSelection()
         {
-            var moduleRoot = Path.Combine(
+            var ownedRoot = Path.Combine(
                 Path.GetTempPath(),
                 $"swlor_palette_lock_snapshot_{Guid.NewGuid():N}");
+            var moduleRoot = Path.Combine(ownedRoot, "Module");
             foreach (var folder in new[] { "are", "utc", "utp" })
                 Directory.CreateDirectory(Path.Combine(moduleRoot, folder));
 
@@ -159,8 +161,8 @@ namespace SWLOR.Toolset.Tests
             }
             finally
             {
-                if (Directory.Exists(moduleRoot))
-                    Directory.Delete(moduleRoot, recursive: true);
+                if (Directory.Exists(ownedRoot))
+                    Directory.Delete(ownedRoot, recursive: true);
             }
         }
 

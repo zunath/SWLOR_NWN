@@ -2,6 +2,7 @@ using Avalonia.Headless.NUnit;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Categories;
+using Nwn.Authoring.Categories;
 using SWLOR.Toolset.Domain.Conversations;
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;
@@ -25,23 +26,27 @@ namespace SWLOR.Toolset.Tests
     [TestFixture]
     public class ModuleExplorerSearchTests
     {
+        private string _ownedRoot = string.Empty;
         private string _root = string.Empty;
 
         [SetUp]
         public void SetUp()
         {
-            _root = Path.Combine(Path.GetTempPath(), $"swlor_explorer_{Guid.NewGuid():N}");
+            _ownedRoot = Path.Combine(Path.GetTempPath(), $"swlor_explorer_{Guid.NewGuid():N}");
+            _root = Path.Combine(_ownedRoot, "Module");
             Directory.CreateDirectory(Path.Combine(_root, "dlg"));
             // The two folders ModuleWorkspace looks for before it accepts a root.
             Directory.CreateDirectory(Path.Combine(_root, "are"));
+            Directory.CreateDirectory(Path.Combine(_root, "gic"));
+            Directory.CreateDirectory(Path.Combine(_root, "git"));
             Directory.CreateDirectory(Path.Combine(_root, "utc"));
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (Directory.Exists(_root))
-                Directory.Delete(_root, recursive: true);
+            if (Directory.Exists(_ownedRoot))
+                Directory.Delete(_ownedRoot, recursive: true);
         }
 
         /// <summary>
@@ -165,8 +170,8 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void AreaSearchHidesCategoriesWithoutMatchesAndRestoresThemWhenCleared()
         {
-            File.WriteAllText(Path.Combine(_root, "are", "nanostation015.are.json"), "{}");
-            File.WriteAllText(Path.Combine(_root, "are", "tatooine001.are.json"), "{}");
+            CopyAreaTemplate("nanostation015");
+            CopyAreaTemplate("tatooine001");
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
@@ -396,6 +401,16 @@ namespace SWLOR.Toolset.Tests
                 """;
 
             File.WriteAllText(Path.Combine(_root, "dlg", $"{resRef}.dlg.json"), json);
+        }
+
+        private void CopyAreaTemplate(string targetResRef)
+        {
+            foreach (var extension in new[] { "are", "git", "gic" })
+            {
+                File.Copy(
+                    Path.Combine(CorpusLocator.ModuleDirectory, extension, $"area_template.{extension}.json"),
+                    Path.Combine(_root, extension, $"{targetResRef}.{extension}.json"));
+            }
         }
     }
 }

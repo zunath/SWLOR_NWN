@@ -1,3 +1,4 @@
+using Nwn.Authoring.Categories;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Domain.Categories

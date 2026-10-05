@@ -1,6 +1,7 @@
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Categories;
+using Nwn.Authoring.Categories;
 
 namespace SWLOR.Toolset.Shell.Panels
 {

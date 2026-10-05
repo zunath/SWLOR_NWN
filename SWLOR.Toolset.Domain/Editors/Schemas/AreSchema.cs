@@ -1,15 +1,13 @@
-using Nwn.Authoring.Documents.NimGff;
+using Nwn.Authoring.Areas.Properties;
+using Nwn.Authoring.Behaviors;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Domain.Editors.Schemas
 {
     /// <summary>
-    /// Editor schema for the static area properties in an .are file (not the instance data in the
-    /// paired .git/.gic files). Field names and GFF types verified against the module corpus
-    /// (Module\are\bank.are.json). Tileset/Width/Height are read-only: they describe the area's
-    /// fixed tileset layout, not adjustable gameplay settings. No corpus .are file carries a
-    /// VarTable field, so this schema does not offer the var-table grid.
+    /// Projects the shared native ARE field schema into SWLOR's localized editor descriptors.
+    /// ResRef, Tileset, Width and Height describe native identity/layout and remain read-only.
     /// </summary>
     public static class AreSchema
     {
@@ -18,74 +16,78 @@ namespace SWLOR.Toolset.Domain.Editors.Schemas
             return new EditorSchema
             {
                 ResourceType = ResourceType.Area,
-                Groups = new[]
+                Groups = AreaPropertyCatalog.Groups.Select(group => new FieldGroup
                 {
-                    new FieldGroup
+                    Title = GroupTitle(group.Id),
+                    Fields = group.Fields.Select(field => new FieldDescriptor
                     {
-                        Title = "Identity",
-                        Fields = new[]
-                        {
-                            new FieldDescriptor { Label = "Name", FieldName = "Name", Kind = EditorKind.LocString, FieldType = GffFieldType.CExoLocString },
-                            new FieldDescriptor { Label = "Tag", FieldName = "Tag", Kind = EditorKind.Text, FieldType = GffFieldType.CExoString },
-                            new FieldDescriptor { Label = "ResRef", FieldName = "ResRef", Kind = EditorKind.ResRef, FieldType = GffFieldType.ResRef, IsReadOnly = true, Description = "The ResRef. Matches the file name." },
-                            new FieldDescriptor { Label = "Tileset", FieldName = "Tileset", Kind = EditorKind.ResRef, FieldType = GffFieldType.ResRef, IsReadOnly = true },
-                            new FieldDescriptor { Label = "Width", FieldName = "Width", Kind = EditorKind.Integer, FieldType = GffFieldType.Int, IsReadOnly = true },
-                            new FieldDescriptor { Label = "Height", FieldName = "Height", Kind = EditorKind.Integer, FieldType = GffFieldType.Int, IsReadOnly = true },
-                            new FieldDescriptor { Label = "Comments", FieldName = "Comments", Kind = EditorKind.Text, FieldType = GffFieldType.CExoString }
-                        }
-                    },
-                    new FieldGroup
-                    {
-                        Title = "Flags",
-                        Fields = new[]
-                        {
-                            new FieldDescriptor { Label = "Flags", FieldName = "Flags", Kind = EditorKind.Integer, FieldType = GffFieldType.Dword, Description = "Area type bitmask (interior/underground/natural)." },
-                            new FieldDescriptor { Label = "No Rest", FieldName = "NoRest", Kind = EditorKind.Check, FieldType = GffFieldType.Byte },
-                            new FieldDescriptor { Label = "Player vs Player", FieldName = "PlayerVsPlayer", Kind = EditorKind.Integer, FieldType = GffFieldType.Byte }
-                        }
-                    },
-                    new FieldGroup
-                    {
-                        Title = "Lighting",
-                        Fields = new[]
-                        {
-                            new FieldDescriptor { Label = "Lighting Scheme", FieldName = "LightingScheme", Kind = EditorKind.Integer, FieldType = GffFieldType.Byte },
-                            new FieldDescriptor { Label = "Sky Box", FieldName = "SkyBox", Kind = EditorKind.Integer, FieldType = GffFieldType.Byte },
-                            new FieldDescriptor { Label = "Day/Night Cycle", FieldName = "DayNightCycle", Kind = EditorKind.Check, FieldType = GffFieldType.Byte },
-                            new FieldDescriptor { Label = "Is Night", FieldName = "IsNight", Kind = EditorKind.Check, FieldType = GffFieldType.Byte },
-                            new FieldDescriptor { Label = "Sun Ambient Color", FieldName = "SunAmbientColor", Kind = EditorKind.Integer, FieldType = GffFieldType.Dword },
-                            new FieldDescriptor { Label = "Sun Diffuse Color", FieldName = "SunDiffuseColor", Kind = EditorKind.Integer, FieldType = GffFieldType.Dword },
-                            new FieldDescriptor { Label = "Sun Shadows", FieldName = "SunShadows", Kind = EditorKind.Check, FieldType = GffFieldType.Byte },
-                            new FieldDescriptor { Label = "Sun Fog Amount", FieldName = "SunFogAmount", Kind = EditorKind.Integer, FieldType = GffFieldType.Byte },
-                            new FieldDescriptor { Label = "Moon Ambient Color", FieldName = "MoonAmbientColor", Kind = EditorKind.Integer, FieldType = GffFieldType.Dword },
-                            new FieldDescriptor { Label = "Moon Diffuse Color", FieldName = "MoonDiffuseColor", Kind = EditorKind.Integer, FieldType = GffFieldType.Dword },
-                            new FieldDescriptor { Label = "Moon Shadows", FieldName = "MoonShadows", Kind = EditorKind.Check, FieldType = GffFieldType.Byte },
-                            new FieldDescriptor { Label = "Moon Fog Amount", FieldName = "MoonFogAmount", Kind = EditorKind.Integer, FieldType = GffFieldType.Byte },
-                            new FieldDescriptor { Label = "Fog Clip Distance", FieldName = "FogClipDist", Kind = EditorKind.Float, FieldType = GffFieldType.Float }
-                        }
-                    },
-                    new FieldGroup
-                    {
-                        Title = "Weather",
-                        Fields = new[]
-                        {
-                            new FieldDescriptor { Label = "Chance of Rain", FieldName = "ChanceRain", Kind = EditorKind.Integer, FieldType = GffFieldType.Int },
-                            new FieldDescriptor { Label = "Chance of Snow", FieldName = "ChanceSnow", Kind = EditorKind.Integer, FieldType = GffFieldType.Int },
-                            new FieldDescriptor { Label = "Chance of Lightning", FieldName = "ChanceLightning", Kind = EditorKind.Integer, FieldType = GffFieldType.Int },
-                            new FieldDescriptor { Label = "Wind Power", FieldName = "WindPower", Kind = EditorKind.Integer, FieldType = GffFieldType.Int }
-                        }
-                    },
-                    new FieldGroup
-                    {
-                        Title = "Loading",
-                        Fields = new[]
-                        {
-                            new FieldDescriptor { Label = "Load Screen", FieldName = "LoadScreenID", Kind = EditorKind.Integer, FieldType = GffFieldType.Word }
-                        }
-                    }
-                },
-                HasVarTable = false
+                        Label = FieldLabel(field.Id),
+                        FieldName = field.NativeName,
+                        Kind = EditorKindFor(field.Kind),
+                        FieldType = field.FieldType,
+                        IsReadOnly = field.IsReadOnly,
+                        Description = field.Id == AreaPropertyFieldId.ResRef
+                            ? "The ResRef. Matches the file name."
+                            : field.Id == AreaPropertyFieldId.Flags
+                                ? "Area type bitmask (interior/underground/natural)."
+                                : null,
+                    }).ToArray(),
+                }).ToArray(),
+                HasVarTable = false,
             };
         }
+
+        private static EditorKind EditorKindFor(BehaviorFieldKind kind) => kind switch
+        {
+            BehaviorFieldKind.LocalizedText => EditorKind.LocString,
+            BehaviorFieldKind.Text => EditorKind.Text,
+            BehaviorFieldKind.Integer => EditorKind.Integer,
+            BehaviorFieldKind.Float => EditorKind.Float,
+            BehaviorFieldKind.Check => EditorKind.Check,
+            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null),
+        };
+
+        private static string GroupTitle(AreaPropertyGroupId id) => id switch
+        {
+            AreaPropertyGroupId.Identity => "Identity",
+            AreaPropertyGroupId.Flags => "Flags",
+            AreaPropertyGroupId.Lighting => "Lighting",
+            AreaPropertyGroupId.Weather => "Weather",
+            AreaPropertyGroupId.Loading => "Loading",
+            _ => throw new ArgumentOutOfRangeException(nameof(id), id, null),
+        };
+
+        private static string FieldLabel(AreaPropertyFieldId id) => id switch
+        {
+            AreaPropertyFieldId.Name => "Name",
+            AreaPropertyFieldId.Tag => "Tag",
+            AreaPropertyFieldId.ResRef => "ResRef",
+            AreaPropertyFieldId.Tileset => "Tileset",
+            AreaPropertyFieldId.Width => "Width",
+            AreaPropertyFieldId.Height => "Height",
+            AreaPropertyFieldId.Comments => "Comments",
+            AreaPropertyFieldId.Flags => "Flags",
+            AreaPropertyFieldId.NoRest => "No Rest",
+            AreaPropertyFieldId.PlayerVsPlayer => "Player vs Player",
+            AreaPropertyFieldId.LightingScheme => "Lighting Scheme",
+            AreaPropertyFieldId.SkyBox => "Sky Box",
+            AreaPropertyFieldId.DayNightCycle => "Day/Night Cycle",
+            AreaPropertyFieldId.IsNight => "Is Night",
+            AreaPropertyFieldId.SunAmbientColor => "Sun Ambient Color",
+            AreaPropertyFieldId.SunDiffuseColor => "Sun Diffuse Color",
+            AreaPropertyFieldId.SunShadows => "Sun Shadows",
+            AreaPropertyFieldId.SunFogAmount => "Sun Fog Amount",
+            AreaPropertyFieldId.MoonAmbientColor => "Moon Ambient Color",
+            AreaPropertyFieldId.MoonDiffuseColor => "Moon Diffuse Color",
+            AreaPropertyFieldId.MoonShadows => "Moon Shadows",
+            AreaPropertyFieldId.MoonFogAmount => "Moon Fog Amount",
+            AreaPropertyFieldId.FogClipDist => "Fog Clip Distance",
+            AreaPropertyFieldId.ChanceRain => "Chance of Rain",
+            AreaPropertyFieldId.ChanceSnow => "Chance of Snow",
+            AreaPropertyFieldId.ChanceLightning => "Chance of Lightning",
+            AreaPropertyFieldId.WindPower => "Wind Power",
+            AreaPropertyFieldId.LoadScreenID => "Load Screen",
+            _ => throw new ArgumentOutOfRangeException(nameof(id), id, null),
+        };
     }
 }

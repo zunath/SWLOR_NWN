@@ -223,7 +223,9 @@ public class EspionageSystemTests
         var resolveDetection = stealthSource[resolveStart..resolveEnd];
 
         var exitIndex = resolveDetection.IndexOf("ExitDetectedPlayerStealth(observer, target);", StringComparison.Ordinal);
-        var acquireGuardIndex = resolveDetection.IndexOf("if (acquireAggroOnDetection)", StringComparison.Ordinal);
+        resolveDetection.Should().Contain("GetIsEnemy(target, observer)");
+        resolveDetection.Should().Contain("ShouldBreakStealthOnDetection(true, hostile)");
+        var acquireGuardIndex = resolveDetection.IndexOf("if (acquireAggroOnDetection && hostile)", StringComparison.Ordinal);
         var acquireIndex = resolveDetection.IndexOf(
             "AI.TryAcquireAggroAfterDetection(observer, target);",
             StringComparison.Ordinal);
@@ -253,6 +255,30 @@ public class EspionageSystemTests
         successfulAggroIndex.Should().BeGreaterThanOrEqualTo(0);
         successfulAggroLogIndex.Should().BeGreaterThan(successfulAggroIndex,
             "the handoff log must describe a completed acquisition, not a rejected attempt");
+    }
+
+    [TestCase(true, true, true, TestName = "Hostile observer success breaks stealth")]
+    [TestCase(true, false, false, TestName = "Friendly or neutral observer success does not break stealth")]
+    [TestCase(false, true, false, TestName = "Hostile observer failure does not break stealth")]
+    [TestCase(false, false, false, TestName = "Friendly observer failure does not break stealth")]
+    public void StealthBreaksOnlyOnHostileSuccessfulDetection(bool detected, bool hostile, bool expectedBreak)
+    {
+        Stealth.ShouldBreakStealthOnDetection(detected, hostile).Should().Be(expectedBreak);
+    }
+
+    [Test]
+    public void ResolveDetection_KeepsFriendlySuccessAsDetectedWithoutBreakingStealth()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Stealth.cs"));
+        var start = source.IndexOf("private static bool ResolveDetection(", StringComparison.Ordinal);
+        var end = source.IndexOf("public static bool ShouldBreakStealthOnDetection", start, StringComparison.Ordinal);
+        var body = source[start..end];
+
+        body.Should().Contain("return detected;", "friendly success must still reach the native event and cache");
+        body.Should().Contain("EspionageInfiltration.RecordDetection(observer, target, detected);");
+        body.IndexOf("GetIsEnemy(target, observer)", StringComparison.Ordinal)
+            .Should().BeGreaterThan(body.IndexOf("if (detected)", StringComparison.Ordinal));
     }
 
     [Test]

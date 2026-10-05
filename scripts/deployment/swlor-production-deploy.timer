@@ -1,0 +1,11 @@
+[Unit]
+Description=Poll for an explicit SWLOR production release
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=3min
+RandomizedDelaySec=20
+Unit=swlor-production-deploy.service
+
+[Install]
+WantedBy=timers.target

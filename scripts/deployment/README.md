@@ -1,7 +1,97 @@
-# SWLOR production deployment
+# SWLOR deployment
 
-This directory contains the manual-first deployment system. The checked-in
-example currently describes the test host:
+## Production on the separate Linux host
+
+Use `swlor-production-deploy.sh` and `swlor-production.conf.example` for the
+production host at `/home/nwn/server`, with the existing Compose project name
+`server`. The older `swlor-deploy.sh` described below is the test-host updater:
+it requires host .NET and a local NWSync repository and is not the production
+installation procedure.
+
+Production builds run in a disposable, digest-pinned official .NET 10 SDK
+container. Its writable mounts are build work, staged artifacts, and NuGet
+cache. The source and native packaging tools are read-only; no live server
+directory, production environment file, persistent data, Docker socket, or
+test-server connection is passed into the builder. CPU, memory, and process
+limits apply. The versioned game image supplies the runtime. Do not install or
+repair host .NET for this updater.
+
+`Update Production Server` accepts an exact full lowercase master commit SHA
+and a published NWSync hash. The production poller reads these from the public
+workflow run title only after GitHub reports a successful owner-authorized
+request on master. Both the original and triggering actors must be `zunath`.
+The source checkout uses that exact commit and its pinned HAK gitlink, even if
+master advances later. Production neither contacts the test box nor generates,
+publishes, or probes NWSync. The operator must ensure the supplied hash is the
+published manifest for the tested commit. Clients use
+`https://nwsync2.starwarsnwn.com`.
+
+Preparation and release are distinct:
+
+- `--check` reads prerequisites and Compose configuration without creating
+  deployment directories, pulling images, building, or changing services.
+- `--prepare --commit SHA --hash HASH` builds in separate staging directories,
+  verifies the complete HAK set, TLK, module, runtime output, and image identity,
+  and records checksums. It preserves the live configuration and containers.
+  Image pulls/building use disk and CPU, so schedule preparation appropriately.
+- Staged environment edits set the production environment, .NET bootstrap,
+  player-name plugin options, character-list privacy, material-name tweak,
+  disabled engine tests, and supplied NWSync hash while preserving other keys.
+  Staged TOML edits disable legal-character enforcement and enable party
+  control; schema defaults are preserved. Live files are changed only at cutover.
+- `--verify --commit SHA --hash HASH` checks an existing staged release.
+- `--deploy --commit SHA --hash HASH` requires the explicit deployment gate,
+  unchanged live configuration since preparation, and a verified backup hook.
+  It stops/recreates only the game service with `--no-deps --no-build`.
+  Redis, Redis Commander, monitoring, and Duplicati are not recreated. The
+  old artifacts and configuration are retained for recovery.
+
+`install-production.sh` installs separate production commands and units. It
+refuses an enabled deployment gate or active/enabled production timer and never
+starts/enables any timer or server service. Its default configuration has
+`DEPLOYMENTS_ENABLED=false` and an empty `BACKUP_COMMAND`. It does not install
+SDKs, clone source, pull images, or modify `/home/nwn/server`.
+
+Before enabling production deployment, inspect the actual host Compose/env
+paths, runtime permissions, other data writers, and existing backups. Configure
+a root-owned executable `BACKUP_COMMAND` with this contract:
+
+1. `BACKUP_COMMAND --check` performs read-only prerequisite/space checks and
+   fails if it cannot guarantee an adequate coordinated backup.
+2. `BACKUP_COMMAND BACKUP_DIRECTORY` runs after the game stops. It must stop or
+   exclude all other writers and take a consistent, restorable snapshot of
+   Redis, servervault, and other persistent server state. Preserve ownership,
+   permissions/ACLs and required Redis module data. It must verify its backup
+   and only then write a nonempty `BACKUP_DIRECTORY/backup-verified` marker.
+
+No generic host backup/restore script is bundled: Redis volume layout,
+persistence settings, authentication, and existing backup scripts have not yet
+been inspected. Never claim a directory copy made while writers are active is
+a consistent rollback snapshot. Rehearse the migration and paired data restore
+on isolated production-data copies before the first release.
+
+Any failure after stopping the game keeps it stopped, disables its restart
+policy, preserves recovery files, and records `state/recovery-required`.
+The poller/deployer refuse further cutovers while that marker exists. Recovery
+requires restoring the matching data, artifacts, config, permissions, and image
+before a deliberate restart. It never starts the old image automatically against
+potentially migrated data. Artifact-only rollback is insufficient for this release.
+
+When enabling later during the release window, reset
+`state/github-dispatch-enabled-at` to the current UTC time before opening the
+deployment gate/starting the timer, then submit a fresh owner request. This
+prevents requests made while preparation was disabled from being replayed.
+Never enable the timer or gate as part of advance preparation.
+
+Local verification uses `tests/Dockerfile`, Python fixture tests, ShellCheck,
+and `tests/build-smoke.sh`. The latter builds the real C# projects and uses the
+pinned native tools to package small HAK/SET/TLK/module fixtures; it does not
+start NWN or rehearse production data migrations.
+
+## Existing test-host updater
+
+The original manual-first deployment system's `swlor-deploy.conf.example`
+describes the test host:
 
 - Git source: `https://github.com/zunath/SWLOR_NWN`
 - Current branch: `origin/feature/combat-upgrade`
@@ -9,10 +99,10 @@ example currently describes the test host:
 - NWSync repository: `/mnt/swlor-web-vol/nwsync`
 - NWN Compose project: `/mnt/swlor-web-vol/nwn-server`
 
-The executable contains no environment-specific deployment paths. Test and
-production each receive their own root-owned `/etc/swlor-deploy.conf`. Change
-that host configuration when its paths, branch, Compose layout, thresholds, or
-health marker differ.
+That executable receives a root-owned `/etc/swlor-deploy.conf` for a host with
+local NWSync storage. Change its host configuration when paths, branch, Compose
+layout, thresholds, or health marker differ. The separate production tools
+above use `/etc/swlor-production-deploy.conf` instead.
 
 ## Safety model
 

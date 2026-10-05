@@ -1,0 +1,41 @@
+name: Update Production Server
+run-name: Deploy production ${{ inputs.release_commit }} ${{ inputs.nwsync_hash }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_commit:
+        description: Exact 40-character master commit tested for this release
+        type: string
+        required: true
+      nwsync_hash:
+        description: Published 40-character NWSync manifest hash for that commit
+        type: string
+        required: true
+
+# Credential-free signal only. Production polls the public workflow-runs API.
+permissions: {}
+concurrency:
+  group: request-production-server-deployment
+  cancel-in-progress: false
+jobs:
+  authorize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate owner and explicit release inputs
+        shell: bash
+        env:
+          REQUEST_REPOSITORY: ${{ github.repository }}
+          REQUEST_ACTOR: ${{ github.actor }}
+          TRIGGERING_ACTOR: ${{ github.triggering_actor }}
+          REQUEST_BRANCH: ${{ github.ref }}
+          RELEASE_COMMIT: ${{ inputs.release_commit }}
+          NWSYNC_HASH: ${{ inputs.nwsync_hash }}
+        run: |
+          set -euo pipefail
+          [[ "$REQUEST_REPOSITORY" == zunath/SWLOR_NWN &&
+             "$REQUEST_ACTOR" == zunath && "$TRIGGERING_ACTOR" == zunath &&
+             "$REQUEST_BRANCH" == refs/heads/master ]] || exit 1
+          [[ "$RELEASE_COMMIT" =~ ^[0-9a-f]{40}$ &&
+             "$NWSYNC_HASH" =~ ^[0-9a-f]{40}$ ]] || exit 1
+          echo "Explicit production release authorized."

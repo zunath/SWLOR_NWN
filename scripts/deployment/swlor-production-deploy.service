@@ -1,0 +1,12 @@
+[Unit]
+Description=Accept an owner-authorized SWLOR production release
+After=network-online.target docker.service
+ConditionPathExists=/etc/swlor-production-deploy.conf
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/swlor-production-dispatch
+TimeoutStartSec=infinity
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7

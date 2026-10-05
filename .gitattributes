@@ -60,3 +60,5 @@
 
 # This script is executed by bash from a Windows bind mount.
 SWLOR.Game.Server/Docker/prepare-server-home.sh text eol=lf
+scripts/deployment/*.sh text eol=lf
+scripts/deployment/tests/*.sh text eol=lf

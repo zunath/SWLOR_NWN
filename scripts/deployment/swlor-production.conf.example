@@ -1,0 +1,48 @@
+# Production preparation is inert until an operator explicitly changes this.
+DEPLOYMENTS_ENABLED=false
+SERVER_ROOT=/home/nwn/server
+COMPOSE_FILE="$SERVER_ROOT/docker-compose.yml"
+COMPOSE_PROJECT_NAME=server
+SERVER_SERVICE=swlor-server
+REDIS_SERVICE=redis
+SERVER_ENV_FILE="$SERVER_ROOT/swlor.env"
+SETTINGS_FILE="$SERVER_ROOT/settings.tml"
+NWSYNC_URL=https://nwsync2.starwarsnwn.com
+MODULE_NAME="Star Wars LOR v2.mod"
+SERVER_RUNTIME_UID=1000
+SERVER_RUNTIME_GID=1000
+
+# All of these are separate from the live server and on its filesystem.
+DEPLOYMENT_ROOT=/home/nwn/production-deployment
+SOURCE_ROOT="$DEPLOYMENT_ROOT/source"
+STATE_ROOT="$DEPLOYMENT_ROOT/state"
+CACHE_ROOT="$DEPLOYMENT_ROOT/cache"
+RELEASE_ROOT="$DEPLOYMENT_ROOT/releases"
+BACKUP_ROOT="$DEPLOYMENT_ROOT/backups"
+REPOSITORY_URL=https://github.com/zunath/SWLOR_NWN
+RELEASE_BRANCH=master
+
+# Verified official Linux SDK image; no host dotnet installation is used.
+SDK_IMAGE=mcr.microsoft.com/dotnet/sdk:10.0-noble@sha256:e70cdb7f80b0348f5cb85f19a8f670fca061f033d57eed12fa003d58b0e06317
+BUILD_CPUS=2
+BUILD_MEMORY=4g
+NEVERWINTER_NIM_RELEASE_URL=https://github.com/niv/neverwinter.nim/releases/download/2.1.2/neverwinter-x86_64-linux-gnu.zip
+NEVERWINTER_NIM_SHA256=f9cc2e50fbe6f750954d11b824434a92b12913cc0a3442e95dcc5eefd4ddc387
+BUILD_SCRIPT=/usr/local/lib/swlor-production/build.sh
+LOCK_FILE="$STATE_ROOT/deploy.lock"
+MIN_FREE_GIB=20
+STOP_TIMEOUT_SECONDS=120
+HEALTH_TIMEOUT_SECONDS=900
+HEALTH_STABLE_SECONDS=120
+HEALTH_LOG_MARKER="Server: Module loaded"
+HEALTH_FATAL_LOG_PATTERN="buffer overflow|Fatal error|has crashed|Segmentation fault"
+
+# A root-owned executable must take and verify a coordinated Redis + server
+# state backup AFTER game writers stop. Its argument is an empty backup directory.
+# Deliberately unset until the existing production backup process is inspected.
+BACKUP_COMMAND=
+
+GITHUB_DEPLOY_REPOSITORY=zunath/SWLOR_NWN
+GITHUB_DEPLOY_WORKFLOW=request-production-deployment.yml
+GITHUB_DEPLOY_WORKFLOW_BRANCH=master
+GITHUB_DEPLOY_ACTOR=zunath

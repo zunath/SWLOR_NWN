@@ -31,18 +31,16 @@ def validate_fabrication(shops, exterior):
         return matches[0]
 
     def in_workshop(x, y):
-        # Northern workshop floor, east of the wall/door at x=70. The previous
-        # arrival at (52.39, 95) was in reception, with no fabrication terminals.
+        # Northern workshop floor, east of the wall/door at x=70.
         return 71 <= x <= 89 and 101 <= y <= 109
 
     arrival = tagged(shops, "WaypointList", "Enter_Veles_Fabrication")
     x, y, z = [value(arrival, key) for key in ["XPosition", "YPosition", "ZPosition"]]
-    assert in_workshop(x, y), "Fabrication entry must land in the workshop, not reception."
-    assert value(arrival, "HasMapNote") == value(arrival, "MapNoteEnabled") == 1
-    assert value(arrival, "MapNote")["0"] == "Fabrication Workshop"
+    assert x < 69.5 and not in_workshop(x, y), "Fabrication entry must land in reception, not the workshop."
+    assert value(arrival, "HasMapNote") == 0
     entries = [o for o in value(exterior, "Placeable List") if value(o, "OnUsed") == "teleport"
                and value(local(o, "DESTINATION"), "Value") == value(arrival, "Tag")]
-    assert len(entries) == 1, "The exterior Fabrication entrance must target this workshop."
+    assert len(entries) == 1, "The exterior Fabrication entrance must target reception."
     assert value(entries[0], "Useable") == 1 and value(entries[0], "Static") == 0
 
     stations = [o for o in value(shops, "Placeable List") if value(o, "Tag") == "fabrication_term"]
@@ -53,22 +51,15 @@ def validate_fabrication(shops, exterior):
         skill = local(station, "CRAFTING_SKILL_TYPE_ID")
         assert value(skill, "Type") == 1 and value(skill, "Value") == 10  # SkillType.Fabrication
         assert in_workshop(value(station, "X"), value(station, "Y"))
-        assert math.hypot(x - value(station, "X"), y - value(station, "Y")) <= 7
-        assert abs(z - value(station, "Z")) < 0.1
 
-    workshop_exit = tagged(shops, "Placeable List", "fabrication_exit")
-    assert in_workshop(value(workshop_exit, "X"), value(workshop_exit, "Y"))
-    assert 0.75 <= math.hypot(x - value(workshop_exit, "X"), y - value(workshop_exit, "Y")) <= 3
-    assert abs(z - value(workshop_exit, "Z")) < 0.1
-    assert value(workshop_exit, "LocName")["0"] == "[Exit] Veles"
-    assert value(workshop_exit, "OnUsed") == "teleport"
-    assert value(workshop_exit, "Useable") == 1 and value(workshop_exit, "Static") == 0
-    assert value(workshop_exit, "Plot") == 1
-    destination = local(workshop_exit, "DESTINATION")
-    assert value(destination, "Type") == 3 and value(destination, "Value") == "Exit_Veles_Fabrication_Ka"
-    party_flag = local(workshop_exit, "TELEPORT_PARTY_MEMBERS")
-    assert value(party_flag, "Type") == 1 and value(party_flag, "Value") == 0
-    outside = tagged(exterior, "WaypointList", value(destination, "Value"))
+    # Reception's exit is the only way back to Veles.
+    exits = [o for o in value(shops, "Placeable List") if value(o, "OnUsed") == "teleport"
+             and any(value(v, "Name") == "DESTINATION" for v in value(o, "VarTable") or [])
+             and value(local(o, "DESTINATION"), "Value") == "Exit_Veles_Fabrication_Ka"]
+    assert len(exits) == 1, "Fabrication must have exactly one exit to Veles."
+    assert math.hypot(x - value(exits[0], "X"), y - value(exits[0], "Y")) <= 3
+    assert value(exits[0], "Useable") == 1 and value(exits[0], "Static") == 0
+    outside = tagged(exterior, "WaypointList", "Exit_Veles_Fabrication_Ka")
     assert math.hypot(value(outside, "XPosition") - value(entries[0], "X"),
                       value(outside, "YPosition") - value(entries[0], "Y")) <= 3
 

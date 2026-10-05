@@ -1,6 +1,7 @@
 using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -47,7 +48,17 @@ namespace SWLOR.Game.Server.Service
             var potency = GetLocalInt(weapon, CoatingPotencyVariable);
             var durationSeconds = GetVenomDurationSeconds(tier);
 
-            StatusEffect.ApplyStatusEffect(attacker, defender, new VenomStatusEffect(potency), durationSeconds);
+            // Refresh the existing instance so attacks near the six-second boundary cannot
+            // continually replace Venom before its first damage tick.
+            var venom = StatusEffect.GetStatusEffect(defender, typeof(VenomStatusEffect), attacker) as VenomStatusEffect;
+            var applied = venom != null && !venom.IsFlaggedForRemoval
+                ? StatusEffect.RefreshStatusEffectDuration(defender, typeof(VenomStatusEffect), attacker, durationSeconds)
+                : StatusEffect.ApplyStatusEffect(attacker, defender, new VenomStatusEffect(potency), durationSeconds);
+            if (applied)
+            {
+                venom?.UpdateDamageBonusPercent(potency);
+                CombatPoint.AddCombatPoint(attacker, defender, SkillType.Espionage);
+            }
 
             var charges = GetLocalInt(weapon, CoatingChargesVariable) - 1;
             if (charges > 0)

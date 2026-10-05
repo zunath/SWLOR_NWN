@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class VenomStatusEffect : StatusEffectBase
     {
         private const int BaseDamagePerTick = 8;
-        private readonly int _damageBonusPercent;
+        private int _damageBonusPercent;
 
         public VenomStatusEffect()
             : this(0)
@@ -17,6 +17,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         }
 
         public VenomStatusEffect(int damageBonusPercent)
+        {
+            UpdateDamageBonusPercent(damageBonusPercent);
+        }
+
+        public void UpdateDamageBonusPercent(int damageBonusPercent)
         {
             _damageBonusPercent = Math.Max(0, damageBonusPercent);
         }

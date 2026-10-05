@@ -52,6 +52,24 @@ public class DamageOverTimeStatusEffectTests
     }
 
     [Test]
+    public void RefreshingTickDuration_PreservesThePendingDamageTick()
+    {
+        var statusEffect = new CountingStatusEffect();
+        statusEffect.ApplyEffect(1, 1, 2);
+        var lastRunField = typeof(StatusEffectBase).GetField(
+            "_lastRun", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var pendingTick = DateTime.UtcNow.AddSeconds(-3.1);
+        lastRunField.SetValue(statusEffect, pendingTick);
+
+        statusEffect.SetDurationTicks(2);
+
+        lastRunField.GetValue(statusEffect).Should().Be(pendingTick);
+        statusEffect.TickEffect(1);
+        statusEffect.TickCount.Should().Be(1);
+        statusEffect.DurationTicks.Should().Be(1);
+    }
+
+    [Test]
     public void BurnStatusEffect_FloorsTickDamageAndAttributesFireDamageToSource()
     {
         var burnSource = ReadStatusEffectSource("BurnStatusEffect.cs");

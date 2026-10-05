@@ -191722,11 +191722,11 @@
         },
         "OnOpenStore": {
           "type": "resref",
-          "value": ""
+          "value": "on_open_store"
         },
         "OnStoreClosed": {
           "type": "resref",
-          "value": ""
+          "value": "on_close_store"
         },
         "ResRef": {
           "type": "resref",
@@ -191747,7 +191747,7 @@
               }
             },
             {
-              "__struct_id": 4,
+              "__struct_id": 1,
               "ItemList": {
                 "type": "list",
                 "value": []
@@ -191768,7 +191768,7 @@
               }
             },
             {
-              "__struct_id": 1,
+              "__struct_id": 4,
               "ItemList": {
                 "type": "list",
                 "value": [
@@ -191955,11 +191955,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 2
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 4
+                      "value": 0
                     }
                   },
                   {
@@ -192050,11 +192050,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 4
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 8
+                      "value": 0
                     }
                   },
                   {
@@ -192208,11 +192208,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 6
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 12
+                      "value": 0
                     }
                   }
                 ]
@@ -193062,11 +193062,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 2
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 4
+                      "value": 0
                     }
                   },
                   {
@@ -193360,11 +193360,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 4
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 8
+                      "value": 0
                     }
                   },
                   {
@@ -193646,11 +193646,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 6
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 12
+                      "value": 0
                     }
                   }
                 ]
@@ -194332,11 +194332,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 2
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 4
+                      "value": 0
                     }
                   },
                   {
@@ -194536,11 +194536,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 4
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 8
+                      "value": 0
                     }
                   }
                 ]

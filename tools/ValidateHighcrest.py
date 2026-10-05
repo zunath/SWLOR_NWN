@@ -5,6 +5,22 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 AREA = "pw_ar_sc_eshancm"
+# MerchantEditorViewModel's mandatory policy, independent of blueprint/instance parity.
+STORE_POLICY = {
+    "BlackMarket": ("byte", 1),
+    "IdentifyPrice": ("int", 0),
+    "MaxBuyPrice": ("int", -1),
+    "StoreGold": ("int", -1),
+    "OnOpenStore": ("resref", "on_open_store"),
+    "OnStoreClosed": ("resref", "on_close_store"),
+}
+# Stock categories verified against baseitems.2da StorePanel. Keep this small content
+# check runnable without downloading the HAK submodule or installing NWN.
+STOCK_PANELS = {
+    "hc_nema_shop": {"distilled_water": 4, "butter_1": 4, "sugar": 4, "bread": 4},
+    "hc_vesa_shop": {"tran_tunic": 0, "tran_cap": 0, "tran_boots": 0, "tran_gloves": 0, "bag_b": 4},
+    "hc_orel_shop": {"b_knife": 1, "b_longsword": 1, "b_spear": 1},
+}
 
 
 def read(path):
@@ -113,19 +129,29 @@ def validate():
         ref = value(shop, "ResRef")
         blueprint = read(f"Module/utm/{ref}.utm.json")
         assert shop["__struct_id"] == 11 and value(shop, "Tag") == ref
-        for key, expected in [("BlackMarket", 1), ("IdentifyPrice", 0)]:
-            assert value(shop, key) == value(blueprint, key) == expected, (ref, "merchant policy", key)
-        for key in ["MarkUp", "MarkDown", "OnOpenStore", "OnStoreClosed"]:
-            assert shop[key] == blueprint[key]
-        stock_count = 0
-        for placed_category, category in zip(value(shop, "StoreList"), value(blueprint, "StoreList"), strict=True):
-            assert placed_category["__struct_id"] == category["__struct_id"]
-            for placed, entry in zip(value(placed_category, "ItemList"), value(category, "ItemList"), strict=True):
-                item = read(f"Module/uti/{value(entry, 'InventoryRes')}.uti.json")
+        assert value(blueprint, "Comment") == ""
+        for key, (kind, expected) in STORE_POLICY.items():
+            assert shop[key] == blueprint[key] == {"type": kind, "value": expected}, (ref, "merchant policy", key)
+        for key, field in blueprint.items():
+            if key not in {"__data_type", "ID", "Comment", "StoreList"}:
+                assert shop[key] == field, (ref, "store blueprint mismatch", key)
+        for store in [shop, blueprint]:
+            assert [pane["__struct_id"] for pane in value(store, "StoreList")] == list(range(5))
+            for key in ["WillNotBuy", "WillOnlyBuy"]:
+                assert store[key]["type"] == "list"
+        stock = {}
+        for panel, (placed_category, category) in enumerate(zip(value(shop, "StoreList"), value(blueprint, "StoreList"), strict=True)):
+            for index, (placed, entry) in enumerate(zip(value(placed_category, "ItemList"), value(category, "ItemList"), strict=True)):
+                item_ref = value(entry, "InventoryRes")
+                assert item_ref not in stock, (ref, "duplicate stock", item_ref)
+                stock[item_ref] = panel
+                item = read(f"Module/uti/{item_ref}.uti.json")
                 assert all(placed[k] == v for k, v in item.items() if k != "__data_type")
-                assert value(placed, "Infinite") == value(entry, "Infinite")
-                stock_count += 1
-        assert stock_count > 0
+                assert all(placed[k] == v for k, v in entry.items() if k != "InventoryRes")
+                assert entry["__struct_id"] == index
+                assert value(entry, "Repos_PosX") == index % 5 * 2
+                assert value(entry, "Repos_Posy") == index // 5 * 2
+        assert stock == STOCK_PANELS[ref], (ref, "stock/category mismatch")
     print("PASS: 15 distinct conversations, NPC/equipment parity, 3 bounded wanderers, both guard genders and 3 linked shops.")
 
 

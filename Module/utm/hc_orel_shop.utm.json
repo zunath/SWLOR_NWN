@@ -10,7 +10,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Highcrest stall stock; existing merchant prices."
+    "value": ""
   },
   "ID": {
     "type": "byte",
@@ -100,11 +100,11 @@
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 0
+                "value": 2
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 4
+                "value": 0
               }
             },
             {
@@ -119,11 +119,11 @@
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 0
+                "value": 4
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 8
+                "value": 0
               }
             }
           ]

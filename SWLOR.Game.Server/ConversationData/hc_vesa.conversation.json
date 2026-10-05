@@ -1,0 +1,230 @@
+{
+  "Id": "hc_vesa",
+  "Title": "Vesa Neral - Clothier",
+  "EntryPoints": [
+    {
+      "TargetNodeId": "greeting",
+      "Conditions": []
+    }
+  ],
+  "Nodes": {
+    "greeting": {
+      "Id": "greeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Look closely at the stitching. Highcrest looks closely at everything else about you.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "topic-1",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "topic-2",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "shop",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "topic-1": {
+      "Id": "topic-1",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "For the length of a greeting. Then they ask your house, your tutor, your address. I can alter a hem. I cannot alter the answer they expect.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "topic-2": {
+      "Id": "topic-2",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I could afford a room. No household will sponsor the lease. So I rent above a shop and mend sleeves for people who tell me trade is vulgar.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    }
+  },
+  "Choices": {
+    "farewell": {
+      "Id": "farewell",
+      "Text": {
+        "Text": "I will leave you to your day.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "return": {
+      "Id": "return",
+      "Text": {
+        "Text": "There was something else I wanted to ask.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "greeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "topic-1": {
+      "Id": "topic-1",
+      "Text": {
+        "Text": "Can clothes change how people treat me?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "topic-1",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "topic-2": {
+      "Id": "topic-2",
+      "Text": {
+        "Text": "Would you live on the terraces?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "topic-2",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "shop": {
+      "Id": "shop",
+      "Text": {
+        "Text": "Let me see your stock.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-open-store",
+          "Arguments": [
+            "hc_vesa_shop"
+          ]
+        }
+      ],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    }
+  },
+  "DefaultNpcDelay": 0,
+  "DefaultPlayerDelay": 0,
+  "PreventZoomIn": false,
+  "OnStartActions": [],
+  "OnEndActions": [],
+  "OnAbortActions": []
+}

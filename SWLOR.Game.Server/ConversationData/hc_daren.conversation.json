@@ -1,0 +1,201 @@
+{
+  "Id": "hc_daren",
+  "Title": "Sentinel Daren Or",
+  "EntryPoints": [
+    {
+      "TargetNodeId": "greeting",
+      "Conditions": []
+    }
+  ],
+  "Nodes": {
+    "greeting": {
+      "Id": "greeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The shuttle approach stays clear. Deliveries to the high houses go through their stewards; do not leave a cart here and expect us to mind it.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "topic-1",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "topic-2",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "topic-1": {
+      "Id": "topic-1",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Lost visitors, mostly. They see the fine roofs and assume everyone here lives well. Walk past the service doors before you decide that.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "topic-2": {
+      "Id": "topic-2",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I know every household crest by sight. I would like to know what lies beyond the next ridge by sight, too. For now, the next shuttle will have to do.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    }
+  },
+  "Choices": {
+    "farewell": {
+      "Id": "farewell",
+      "Text": {
+        "Text": "I will leave you to your day.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "return": {
+      "Id": "return",
+      "Text": {
+        "Text": "There was something else I wanted to ask.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "greeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "topic-1": {
+      "Id": "topic-1",
+      "Text": {
+        "Text": "What are you watching for?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "topic-1",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "topic-2": {
+      "Id": "topic-2",
+      "Text": {
+        "Text": "You sound tired of this duty.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "topic-2",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    }
+  },
+  "DefaultNpcDelay": 0,
+  "DefaultPlayerDelay": 0,
+  "PreventZoomIn": false,
+  "OnStartActions": [],
+  "OnEndActions": [],
+  "OnAbortActions": []
+}

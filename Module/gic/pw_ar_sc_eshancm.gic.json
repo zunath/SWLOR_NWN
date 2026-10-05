@@ -2,7 +2,113 @@
   "__data_type": "GIC ",
   "Creature List": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Highcrest guard. Stationary."
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Highcrest guard. Stationary."
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Highcrest guard. Stationary."
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Highcrest guard. Stationary."
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Highcrest merchant. Stationary."
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Highcrest merchant. Stationary."
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Highcrest merchant. Stationary."
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Highcrest labor. Wanders within the standard 15m home radius."
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Highcrest labor. Wanders within the standard 15m home radius."
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Highcrest labor. Wanders within the standard 15m home radius."
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Highcrest warrior. Stationary."
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Highcrest warrior. Stationary."
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Highcrest noble. Stationary."
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Highcrest noble. Stationary."
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Highcrest noble. Stationary."
+        }
+      }
+    ]
   },
   "Door List": {
     "type": "list",
@@ -5439,7 +5545,29 @@
   },
   "StoreList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 11,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shop for hc_nema"
+        }
+      },
+      {
+        "__struct_id": 11,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shop for hc_vesa"
+        }
+      },
+      {
+        "__struct_id": 11,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shop for hc_orel"
+        }
+      }
+    ]
   },
   "TriggerList": {
     "type": "list",

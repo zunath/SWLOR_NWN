@@ -1,0 +1,230 @@
+{
+  "Id": "hc_nema",
+  "Title": "Nema Tal - Provisioner",
+  "EntryPoints": [
+    {
+      "TargetNodeId": "greeting",
+      "Conditions": []
+    }
+  ],
+  "Nodes": {
+    "greeting": {
+      "Id": "greeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Fresh bread and dry provisions. Tell me what you need, not whom your grandmother married.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "topic-1",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "topic-2",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "shop",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "topic-1": {
+      "Id": "topic-1",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "A steward once returned perfectly good bread because the wrapping lacked his house color. His cook bought it back before noon. Hunger has better judgment than pedigree.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    },
+    "topic-2": {
+      "Id": "topic-2",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The wealthy send lists down from the terraces. Warriors stop on their way home. Workers buy what a shift leaves them enough to afford. Same counter, very different baskets.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "return",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "farewell",
+          "Conditions": []
+        }
+      ]
+    }
+  },
+  "Choices": {
+    "farewell": {
+      "Id": "farewell",
+      "Text": {
+        "Text": "I will leave you to your day.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "return": {
+      "Id": "return",
+      "Text": {
+        "Text": "There was something else I wanted to ask.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "greeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "topic-1": {
+      "Id": "topic-1",
+      "Text": {
+        "Text": "Is ancestry really that important here?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "topic-1",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "topic-2": {
+      "Id": "topic-2",
+      "Text": {
+        "Text": "Where do your customers live?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "topic-2",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "shop": {
+      "Id": "shop",
+      "Text": {
+        "Text": "Let me see your stock.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-open-store",
+          "Arguments": [
+            "hc_nema_shop"
+          ]
+        }
+      ],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    }
+  },
+  "DefaultNpcDelay": 0,
+  "DefaultPlayerDelay": 0,
+  "PreventZoomIn": false,
+  "OnStartActions": [],
+  "OnEndActions": [],
+  "OnAbortActions": []
+}

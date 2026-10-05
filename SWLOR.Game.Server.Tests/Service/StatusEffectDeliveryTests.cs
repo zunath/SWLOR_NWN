@@ -77,6 +77,23 @@ public class StatusEffectDeliveryTests
     }
 
     [Test]
+    public void DurationRefresh_AppliesOutgoingBonusesBeforeResistanceWithoutRestartingTicks()
+    {
+        var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"))).GetRoot();
+        var method = syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.ValueText == "RefreshStatusEffectDuration");
+        var calls = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
+        var outgoing = calls.Single(call => call.Expression.ToString() == "ApplyOutgoingStatusDurationAdjustments");
+        outgoing.ArgumentList.Arguments.Select(arg => arg.ToString()).Should()
+            .Equal("statusEffect", "source", "ticks", "false");
+        var resisted = calls.Single(call => call.Expression.ToString() == "Resistance.CalculateResistedTicks");
+        outgoing.Span.End.Should().BeLessThan(resisted.Span.Start);
+        calls.Should().Contain(call => call.Expression.ToString() == "statusEffect.SetDurationTicks");
+        calls.Should().NotContain(call => call.Expression.ToString() == "statusEffect.ApplyEffect");
+    }
+
+    [Test]
     public void ForceAffinity_DoesNotAlterStatusDuration()
     {
         var root = FindRepositoryRoot();

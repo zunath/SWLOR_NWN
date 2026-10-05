@@ -49,9 +49,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             // A viewer-specific window avoids persisting personal stats on a shared item.
+            // Skipping the event does not stop the client from opening the native examine panel,
+            // so suppress the panel briefly while the NUI window replaces it.
+            SetGuiPanelDisabled(viewer, GuiPanel.ExamineItem, true);
             Gui.ClosePlayerWindow(viewer, GuiWindowType.ExamineItem);
             Gui.TogglePlayerWindow(viewer, GuiWindowType.ExamineItem, new ExamineItemPayload(item, trackLiveItem: true));
-            EventsPlugin.SkipEvent();
+            DelayCommand(1f, () => SetGuiPanelDisabled(viewer, GuiPanel.ExamineItem, false));
         }
 
         protected override void Initialize(ExamineItemPayload initialPayload)

@@ -4741,14 +4741,18 @@ namespace SWLOR.Game.Server.Service
             var bonusPerHit = Stat.GetStatAdjustment(attacker, StatType.RangedRepeatedTargetDamageBonusPerHit);
             var maxBonus = Stat.GetStatAdjustment(attacker, StatType.RangedRepeatedTargetDamageBonusMax);
             var durationSeconds = Stat.GetStatAdjustment(attacker, StatType.RangedRepeatedTargetDamageDurationSeconds);
-            if (!IsWeaponSkillType(skillType) ||
-                bonusPerHit <= 0 ||
+            if (bonusPerHit <= 0 ||
                 maxBonus <= 0 ||
                 durationSeconds <= 0)
             {
                 ClearRangedRepeatedTargetDamageTracker(attacker);
                 return damage;
             }
+
+            // Non-weapon damage (device pulses, Force powers) neither builds nor breaks the
+            // weapon-hit streak, so it leaves the stack untouched.
+            if (!IsWeaponSkillType(skillType))
+                return damage;
 
             var now = DateTime.UtcNow;
             if (!_rangedRepeatedTargetDamageStates.TryGetValue(attacker, out var state) ||

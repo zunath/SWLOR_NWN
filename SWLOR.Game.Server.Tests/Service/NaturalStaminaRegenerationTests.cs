@@ -20,6 +20,17 @@ public class NaturalStaminaRegenerationTests
             .Should().BeTrue();
     }
 
+    [TestCase(0, 1)]
+    [TestCase(9, 1)]
+    [TestCase(10, 2)]
+    [TestCase(25, 3)]
+    [TestCase(34, 4)]
+    [TestCase(-5, 1)]
+    public void BeastNaturalRegeneration_ScalesWithGoverningAttribute(int attribute, int expected)
+    {
+        Stat.GetBeastNaturalRegenAmount(attribute).Should().Be(expected);
+    }
+
     [Test]
     public void BeastHeartbeat_UsesDelayedStaminaRegenerationWithoutCombatGating()
     {

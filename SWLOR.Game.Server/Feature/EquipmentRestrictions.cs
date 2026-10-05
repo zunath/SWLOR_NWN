@@ -128,7 +128,11 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
         public static void MarkLegacyOffHandPistolOnExamine()
         {
-            var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
+            MarkLegacyOffHandPistol(StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID")));
+        }
+
+        public static void MarkLegacyOffHandPistol(uint item)
+        {
             if (GetObjectType(item) != ObjectType.Item ||
                 GetBaseItemType(item) != BaseItem.OffHandPistol)
             {

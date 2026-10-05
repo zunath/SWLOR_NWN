@@ -892,6 +892,14 @@ namespace SWLOR.Game.Server.Service
             }
 
             SetCreatureAppearanceType(player, appearance);
+
+            // The ship model leaves the previous visual transform behind; restore the character's own height.
+            var scale = dbPlayer.AppearanceScale <= 0f ? 1.0f : dbPlayer.AppearanceScale;
+            SetObjectVisualTransform(player, ObjectVisualTransform.Scale, scale);
+            var headScale = dbPlayer.HeadAppearanceScale <= 0f ? 1.0f : dbPlayer.HeadAppearanceScale;
+            SetObjectVisualTransform(player, ObjectVisualTransform.Scale, headScale,
+                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+
             // Reapply material colors after the client rebuilds the character model.
             TintMapService.QueueRefresh(player);
         }
@@ -1071,8 +1079,20 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExamineShipModuleItem()
         {
-            var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
+            ApplyShipModuleExamineDetails(StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID")));
+        }
 
+        /// <summary>
+        /// Applies ship and ship module examine details to an item.
+        /// </summary>
+        public static void ApplyExamineDetails(uint item)
+        {
+            ApplyShipModuleExamineDetails(item);
+            ApplyShipExamineDetails(item);
+        }
+
+        private static void ApplyShipModuleExamineDetails(uint item)
+        {
             // Must be an item
             if (GetObjectType(item) != ObjectType.Item) return;
 
@@ -1104,8 +1124,11 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExamineShipItem()
         {
-            var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
+            ApplyShipExamineDetails(StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID")));
+        }
 
+        private static void ApplyShipExamineDetails(uint item)
+        {
             // Must be an item
             if (GetObjectType(item) != ObjectType.Item) return;
 
@@ -1918,6 +1941,10 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(dbProperty);
                 DB.Set(dbPlayerShip);
                 DB.Set(dbPlayer);
+
+                // The pilot is no longer in space mode; stop tracking them and refresh space-dependent UI.
+                _playersInSpace.Remove(creature);
+                ExecuteScript("space_exit", creature);
 
                 // Murder everyone inside the ship's instance.
                 if (Property.TryGetLoadedInstance(dbPlayerShip.PropertyId, out var instance))

@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Service
             // Already have a respawn point, no need to set the default one.
             if (!string.IsNullOrWhiteSpace(dbPlayer.RespawnAreaResref)) return;
 
-            var waypoint = GetWaypointByTag("DEATH_DEFAULT_RESPAWN_POINT");
+            var waypoint = GetWaypointByTag("DTH_DEFAULT_RESPAWN_POINT");
             var position = GetPosition(waypoint);
             var areaResref = GetResRef(GetArea(waypoint));
             var facing = GetFacing(waypoint);
@@ -154,16 +154,17 @@ namespace SWLOR.Game.Server.Service
                 entity.RespawnLocationY,
                 entity.RespawnLocationZ);
 
-            if (!GetIsObjectValid(area))
+            var destination = GetIsObjectValid(area)
+                ? Location(area, position, entity.RespawnLocationOrientation)
+                : GetLocation(GetWaypointByTag("DTH_DEFAULT_RESPAWN_POINT"));
+
+            // Jump immediately rather than queueing an action: resurrection and the death
+            // state clear the action queue, which left players respawning where they died.
+            AssignCommand(player, () =>
             {
-                var defaultLocation = GetLocation(GetWaypointByTag("DTH_DEFAULT_RESPAWN_POINT"));
-                AssignCommand(player, () => ActionJumpToLocation(defaultLocation));
-            }
-            else
-            {
-                var location = Location(area, position, entity.RespawnLocationOrientation);
-                AssignCommand(player, () => ActionJumpToLocation(location));
-            }
+                ClearAllActions(true);
+                JumpToLocation(destination);
+            });
         }
 
         /// <summary>

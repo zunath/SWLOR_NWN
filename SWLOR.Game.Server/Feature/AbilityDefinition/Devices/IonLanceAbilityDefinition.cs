@@ -17,9 +17,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     {
         private const float LineLengthMeters = 8f;
         private const float LineWidthMeters = 2.5f;
-        private const int Rank1BaseDamage = 16;
-        private const int Rank2BaseDamage = 30;
-        private const int Rank3BaseDamage = 44;
+        private const int Rank1BaseDamage = 10;
+        private const int Rank2BaseDamage = 20;
+        private const int Rank3BaseDamage = 30;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {

@@ -30,6 +30,29 @@ public class EnmityTests
     }
 
     [Test]
+    public void IsThreatSecured_RequiresLeadingTheNextHighestByTheSecureMargin()
+    {
+        const uint enemy = 100;
+        const uint beast = 1;
+        const uint player = 2;
+
+        Enmity.IsThreatSecured(enemy, beast).Should().BeFalse();
+
+        EnemyEnmityTables()[enemy] = new Dictionary<uint, int> { [beast] = 500 };
+        Enmity.IsThreatSecured(enemy, beast).Should().BeTrue();
+
+        EnemyEnmityTables()[enemy][player] = 450;
+        Enmity.IsThreatSecured(enemy, beast).Should().BeFalse();
+
+        EnemyEnmityTables()[enemy][player] = 400;
+        Enmity.IsThreatSecured(enemy, beast).Should().BeTrue();
+
+        EnemyEnmityTables()[enemy][player] = 900;
+        Enmity.IsThreatSecured(enemy, beast).Should().BeFalse();
+        Enmity.IsThreatSecured(enemy, player).Should().BeTrue();
+    }
+
+    [Test]
     public void ClearEnmityTable_RemovesEnemyFromAllTrackedTargets()
     {
         const uint enemy = 100;

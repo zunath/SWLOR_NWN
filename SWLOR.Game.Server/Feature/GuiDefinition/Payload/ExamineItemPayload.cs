@@ -13,10 +13,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
         public BaseItem ItemType { get; set; } = BaseItem.Invalid;
         public int ItemDMG { get; set; }
         public bool HasItemDMG { get; set; }
+        public bool IsIdentified { get; set; } = true;
 
         public ExamineItemPayload(uint item, bool trackLiveItem = false)
-            : this(GetName(item), GetDescription(item), Service.Item.BuildItemPropertyString(item))
+            : this(GetName(item),
+                GetDescription(item, false, GetIdentified(item)),
+                GetIdentified(item) ? Service.Item.BuildItemPropertyString(item) : string.Empty)
         {
+            IsIdentified = GetIdentified(item);
             if (trackLiveItem)
             {
                 ItemObject = item;

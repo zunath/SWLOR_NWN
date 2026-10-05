@@ -16,6 +16,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public sealed class SonicBurstAbilityDefinition : IAbilityListDefinition
     {
+        private const int Rank1BaseDamage = 10;
+        private const int Rank2BaseDamage = 14;
+        private const int Rank3BaseDamage = 18;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -112,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 SkillType.Devices,
-                10,
+                Rank1BaseDamage,
                 12,
                 null,
                 CombatImpactAreaShape.Sphere,
@@ -142,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 SkillType.Devices,
-                14,
+                Rank2BaseDamage,
                 30,
                 typeof(SonicBurst2StatusEffect),
                 CombatImpactAreaShape.Sphere,
@@ -172,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 SkillType.Devices,
-                18,
+                Rank3BaseDamage,
                 30,
                 typeof(SonicBurst3StatusEffect),
                 CombatImpactAreaShape.Sphere,

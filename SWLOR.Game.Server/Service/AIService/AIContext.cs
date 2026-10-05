@@ -98,6 +98,11 @@ namespace SWLOR.Game.Server.Service.AIService
 
         public int CountHostilesNearTarget(float radius)
         {
+            return CountHostilesNearTarget(radius, null);
+        }
+
+        public int CountHostilesNearTarget(float radius, Func<uint, bool> predicate)
+        {
             var origin = GetIsObjectValid(EvaluatedTarget)
                 ? GetLocation(EvaluatedTarget)
                 : GetLocation(Self);
@@ -108,7 +113,8 @@ namespace SWLOR.Game.Server.Service.AIService
             {
                 if (creature != Self &&
                     GetIsEnemy(creature, Self) &&
-                    GetCurrentHitPoints(creature) > 0)
+                    GetCurrentHitPoints(creature) > 0 &&
+                    (predicate == null || predicate(creature)))
                 {
                     count++;
                 }

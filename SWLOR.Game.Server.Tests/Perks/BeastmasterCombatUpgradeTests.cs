@@ -70,9 +70,9 @@ public class BeastmasterCombatUpgradeTests
         var tank = BuildPerksWithout2daLookup(new BeastTankPerkDefinition(), "FocusAttention", "LastGuardian");
         AssertStatBonus(tank[PerkType.FocusAttention].PerkLevels[3], StatType.AbilityRecastDelayFlatAdjustmentPerkType, (int)PerkType.Anger);
         AssertStatBonus(tank[PerkType.FocusAttention].PerkLevels[3], StatType.AbilityRecastDelayFlatAdjustment, -3);
-        AssertStatBonus(tank[PerkType.FocusAttention].PerkLevels[1], StatType.EnmityPercentAdjustment, 10);
-        AssertStatBonus(tank[PerkType.FocusAttention].PerkLevels[2], StatType.EnmityPercentAdjustment, 15);
-        AssertStatBonus(tank[PerkType.FocusAttention].PerkLevels[3], StatType.EnmityPercentAdjustment, 20);
+        AssertStatBonus(tank[PerkType.FocusAttention].PerkLevels[1], StatType.EnmityPercentAdjustment, 15);
+        AssertStatBonus(tank[PerkType.FocusAttention].PerkLevels[2], StatType.EnmityPercentAdjustment, 30);
+        AssertStatBonus(tank[PerkType.FocusAttention].PerkLevels[3], StatType.EnmityPercentAdjustment, 45);
         AssertStatBonus(tank[PerkType.LastGuardian].PerkLevels[1], StatType.FatalDamageTemporaryHPPercent, 20);
         AssertStatBonus(tank[PerkType.LastGuardian].PerkLevels[1], StatType.FatalDamageTemporaryHPCooldownSeconds, 180);
 
@@ -93,17 +93,18 @@ public class BeastmasterCombatUpgradeTests
     }
 
     [Test]
-    public void TankBeastEnmityBonuses_FitWithinEnmityCap()
+    public void TankBeastEnmityBonuses_DoNotExceedEnmityCapIndividually()
     {
-        // Focus Attention and Guarding Bond Stance are meant to stack. Any amount above the shared
-        // enmity cap is silently discarded, so the advertised total must fit within it.
+        // Any enmity bonus above the shared cap is silently discarded, so no single source may
+        // advertise more than the cap can deliver.
         var tank = BuildPerksWithout2daLookup(new BeastTankPerkDefinition(), "FocusAttention", "LastGuardian");
         var focusAttention = tank[PerkType.FocusAttention].PerkLevels[3].StatBonuses
             .Single(x => x.Stat == StatType.EnmityPercentAdjustment)
             .Calculate(0);
         var guardingBond = new GuardingBondStanceBeastStatusEffect().StatGroup.Stats[StatType.EnmityPercentAdjustment];
 
-        (focusAttention + guardingBond).Should().BeLessThanOrEqualTo(Enmity.MaximumEnmityPercentAdjustment);
+        focusAttention.Should().BeLessThanOrEqualTo(Enmity.MaximumEnmityPercentAdjustment);
+        guardingBond.Should().BeLessThanOrEqualTo(Enmity.MaximumEnmityPercentAdjustment);
     }
 
     [Test]
@@ -129,7 +130,7 @@ public class BeastmasterCombatUpgradeTests
         new GuardingBondStanceBeastStatusEffect().StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(20);
         new GuardingBondStanceBeastStatusEffect().StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(20);
         new GuardingBondStanceBeastStatusEffect().StatGroup.Stats[StatType.DamageTakenPercentAdjustment].Should().Be(-15);
-        new GuardingBondStanceBeastStatusEffect().StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(30);
+        new GuardingBondStanceBeastStatusEffect().StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(50);
         new PredatoryBondStanceBeastStatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(25);
         new PredatoryBondStanceBeastStatusEffect().StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(15);
         new PredatoryBondStanceBeastStatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(10);

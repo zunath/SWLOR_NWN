@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
     /// skill requirement are set to the tier 5 values, while off-tier modifiers
     /// (weapon damage type, enhancement/damage/accuracy bonuses) are deliberately
     /// removed because the tier baseline carries none - that removal is the point
-    /// of normalization. The weapon is stamped with the saber tier variable so the
+    /// of normalization. The one exception is elemental damage: the single strongest
+    /// elemental bonus (first found on ties) is carried over. The weapon is stamped with the saber tier variable so the
     /// tiered upgrade kits recognize it. Owners keep their weapons; nothing is
     /// removed from their inventories.
     /// </summary>
@@ -54,6 +55,15 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             ItemPropertyType.EnhancementBonus,
             ItemPropertyType.DamageBonus,
             ItemPropertyType.AccuracyBonus,
+        };
+
+        private static readonly HashSet<ItemPropertyDamageType> ElementalDamageTypes = new()
+        {
+            ItemPropertyDamageType.Acid,
+            ItemPropertyDamageType.Cold,
+            ItemPropertyDamageType.Electrical,
+            ItemPropertyDamageType.Fire,
+            ItemPropertyDamageType.Sonic,
         };
 
         /// <summary>
@@ -123,12 +133,39 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             var isSaberstaff = GetBaseItemType(item) == BaseItem.Saberstaff;
 
             var propertiesToRemove = new List<SWLOR.NWN.API.Engine.ItemProperty>();
+            ItemPropertyDamageType? elementalType = null;
+            var elementalAmount = 0;
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-                if (NormalizedPropertyTypes.Contains(GetItemPropertyType(ip)))
-                    propertiesToRemove.Add(ip);
+            {
+                var propertyType = GetItemPropertyType(ip);
+                if (!NormalizedPropertyTypes.Contains(propertyType))
+                    continue;
+
+                propertiesToRemove.Add(ip);
+
+                // Keep the single strongest elemental bonus; the first one found wins ties.
+                if (propertyType != ItemPropertyType.DamageBonus)
+                    continue;
+
+                var damageType = (ItemPropertyDamageType)GetItemPropertySubType(ip);
+                var amount = GetItemPropertyCostTableValue(ip);
+                if (ElementalDamageTypes.Contains(damageType) && amount > elementalAmount)
+                {
+                    elementalType = damageType;
+                    elementalAmount = amount;
+                }
+            }
 
             foreach (var property in propertiesToRemove)
                 MigrationObject.RemoveProperty(item, property);
+
+            if (elementalType.HasValue)
+            {
+                MigrationObject.AddProperty(
+                    item,
+                    ItemPropertyDamageBonus(elementalType.Value, (DamageBonus)elementalAmount),
+                    AddItemPropertyPolicy.ReplaceExisting);
+            }
 
             var damage = isSaberstaff ? SaberstaffTierDamage : LightsaberTierDamage;
             var delay = isSaberstaff ? SaberstaffDelay : LightsaberDelay;

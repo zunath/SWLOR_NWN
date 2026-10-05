@@ -58,7 +58,7 @@ public sealed class NativeModelPreviewAdapterTests
     [Test]
     public void Load_ComposesTheActualChestMaterialWithSwlorPalettePolicy()
     {
-        var root = Environment.GetEnvironmentVariable("SWLOR_HAKS_ROOT");
+        var root = Environment.GetEnvironmentVariable("SWLOR_HAKS_ROOT") ?? SWLOR.Toolset.Tests.Support.ToolsetCorpusPaths.HaksRoot;
         Assert.That(root, Is.Not.Null.And.Not.Empty, "Select the read-only corpus with SWLOR_HAKS_ROOT.");
         var resources = new ResourceIndex(null, [new("chest", Path.Combine(root!, "sw_pt_chest")),
             new("materials", Path.Combine(root!, "sw_tint_mtr")), new("tint", Path.Combine(root!, "sw_tint0")),
@@ -78,7 +78,7 @@ public sealed class NativeModelPreviewAdapterTests
     [Test]
     public void Load_UsesSharedRigidReaderForNativeChestFixture()
     {
-        var haksRoot = Environment.GetEnvironmentVariable("SWLOR_HAKS_ROOT");
+        var haksRoot = Environment.GetEnvironmentVariable("SWLOR_HAKS_ROOT") ?? SWLOR.Toolset.Tests.Support.ToolsetCorpusPaths.HaksRoot;
         if (string.IsNullOrWhiteSpace(haksRoot) || !Directory.Exists(Path.Combine(haksRoot, "sw_pt_chest")))
             Assert.Ignore("Set SWLOR_HAKS_ROOT to run the scoped native chest fixture check.");
         var resources = new ResourceIndex(null,

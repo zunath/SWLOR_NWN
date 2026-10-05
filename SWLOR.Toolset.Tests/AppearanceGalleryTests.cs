@@ -644,19 +644,7 @@ namespace SWLOR.Toolset.Tests
             creatureView.Should().Contain("<TabItem Header=\"Equipment\"");
             creatureView.Should().Contain("SelectedItem=\"{Binding EquipmentSlots.SelectedSlot, Mode=TwoWay}\"",
                 "equipment reuses the merchant editor's focused rail/work-pane interaction");
-            var sharedRoot = Environment.GetEnvironmentVariable("SWLOR_TEST_SHARED_SOURCE_ROOT")
-                ?? Environment.GetEnvironmentVariable("NwnToolsetSourceRoot")
-                ?? throw new InvalidOperationException("Set SWLOR_TEST_SHARED_SOURCE_ROOT to the shared source checkout.");
-            var appearanceView = File.ReadAllText(Path.Combine(
-                sharedRoot, "src", "Nwn.Toolset.Avalonia", "Appearances", "Views", "AppearanceGalleryView.axaml"));
-            appearanceView.Should().Contain("<controls:VirtualizingWrapPanel />");
-            appearanceView.Should().Contain("Loaded=\"OnTileLoaded\"",
-                "appearance previews must follow the palette's viewport-driven loading pattern");
-            appearanceView.Should().Contain("IsVisible=\"{Binding !HasPreview}\"",
-                "the letter is only a temporary placeholder and must not remain behind real artwork");
-            appearanceView.Should().Contain("IsVisible=\"{Binding HasPreview}\"",
-                "the rendered model replaces rather than overlays the fallback letter");
-
+            // The shared gallery's own markup rules are checked in the shared library's tests.
             Directory.Exists(Path.Combine(
                     ToolsetSourceRoot, "SWLOR.Toolset", "Editors", "Appearance"))
                 .Should().BeTrue();

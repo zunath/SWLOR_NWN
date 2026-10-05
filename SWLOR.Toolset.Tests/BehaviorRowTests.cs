@@ -373,17 +373,6 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void SearchableChoicePicker_LoadsMoreChoicesAsTheUserScrolls()
-        {
-            var picker = Support.SharedToolsetSource.ReadBehaviorFile("SearchableChoicePickerView.axaml");
-            var codeBehind = Support.SharedToolsetSource.ReadBehaviorFile("SearchableChoicePickerView.axaml.cs");
-
-            picker.Should().Contain("ScrollViewer.ScrollChanged=\"OnSearchResultsScrollChanged\"");
-            picker.Should().NotContain("Content=\"Load more\"");
-            codeBehind.Should().Contain("row.LoadMoreSearchResultsCommand.Execute(null)");
-        }
-
-        [Test]
         public void ATruncatedListStillShowsWhatIsStored()
         {
             // The cap excludes options by accident where a filter excludes them on purpose. A value

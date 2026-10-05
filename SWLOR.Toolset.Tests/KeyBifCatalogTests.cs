@@ -12,7 +12,7 @@ public sealed class KeyBifCatalogTests
     [Category("LicensedCorpus")]
     public void InstalledXp3TilesetMatchesItsIndependentHashThroughBoundedStockReads()
     {
-        var dataDirectory = Environment.GetEnvironmentVariable("SWLOR_TEST_NWN_DATA_ROOT");
+        var dataDirectory = StockDataDirectory();
         dataDirectory.Should().NotBeNullOrWhiteSpace("the actual stock corpus must be selected explicitly");
         new FileInfo(Path.Combine(dataDirectory!, "xp3.bif")).Length.Should().Be(683611953);
         var catalog = KeyBifCatalog.Load(dataDirectory!);
@@ -156,7 +156,7 @@ public sealed class KeyBifCatalogTests
     [Test]
     public void Load_UsesExplicitStockInstallDataRoot()
     {
-        var dataDirectory = Environment.GetEnvironmentVariable("SWLOR_TEST_NWN_DATA_ROOT");
+        var dataDirectory = StockDataDirectory();
         if (string.IsNullOrWhiteSpace(dataDirectory))
         {
             Assert.Ignore("Set SWLOR_TEST_NWN_DATA_ROOT to the explicit stock NWN data directory for this corpus check.");
@@ -230,5 +230,15 @@ public sealed class KeyBifCatalogTests
         writer.Write((uint)resourceType);
         writer.Write(payload);
         return stream.ToArray();
+    }
+
+    /// <summary>SWLOR_TEST_NWN_DATA_ROOT selects an explicit stock data directory; otherwise the located install's.</summary>
+    private static string? StockDataDirectory()
+    {
+        var configured = Environment.GetEnvironmentVariable("SWLOR_TEST_NWN_DATA_ROOT");
+        if (!string.IsNullOrWhiteSpace(configured)) return configured;
+        return NwnInstallLocator.Locate(Environment.GetEnvironmentVariable("NWN_INSTALL_PATH")) is { } install
+            ? Path.Combine(install, "data")
+            : null;
     }
 }

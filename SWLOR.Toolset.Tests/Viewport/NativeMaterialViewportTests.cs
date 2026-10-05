@@ -10,7 +10,7 @@ public sealed class NativeMaterialViewportTests
     [Test]
     public async Task ProductionMaterialRendersInThePackagedSharedViewport()
     {
-        var root = Environment.GetEnvironmentVariable("SWLOR_HAKS_ROOT");
+        var root = Environment.GetEnvironmentVariable("SWLOR_HAKS_ROOT") ?? SWLOR.Toolset.Tests.Support.ToolsetCorpusPaths.HaksRoot;
         Assert.That(root, Is.Not.Null.And.Not.Empty, "Select the read-only corpus with SWLOR_HAKS_ROOT; a real desktop/GPU is required.");
         var framework = new DirectoryInfo(AppContext.BaseDirectory);
         var configuration = framework.Parent!;

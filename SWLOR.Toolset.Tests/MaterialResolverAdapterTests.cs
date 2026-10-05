@@ -124,7 +124,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void AllConfiguredHakMaterialsParseAndKeepUnsupportedLinesVisible()
         {
-            var haksRoot = Environment.GetEnvironmentVariable("SWLOR_TEST_HAKS_ROOT");
+            var haksRoot = Support.ToolsetCorpusPaths.HaksRoot;
             haksRoot.Should().NotBeNullOrWhiteSpace(
                 "the MTR corpus gate must use an explicit, complete HAK fixture root");
             Directory.Exists(haksRoot).Should().BeTrue($"configured HAK root exists: {haksRoot}");

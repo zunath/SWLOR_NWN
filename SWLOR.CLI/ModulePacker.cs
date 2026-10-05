@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -623,13 +623,13 @@ namespace SWLOR.CLI
         /// </summary>
         private static void RequireNoInterruptedAreaCreation()
         {
-            var markers = PendingAreaCreationMarker.Enumerate(Environment.CurrentDirectory).ToArray();
+            var markers = PendingAreaCreationMarker.Enumerate(Environment.CurrentDirectory, SwlorAreaCreationMarker.Prefix).ToArray();
             if (markers.Length == 0)
                 return;
 
             var pendingResRefs = markers
                 .Select(marker => Path.GetFileNameWithoutExtension(Path.GetFileName(marker)))
-                .Select(nameWithoutMarkerExtension => nameWithoutMarkerExtension[PendingAreaCreationMarker.DefaultPrefix.Length..])
+                .Select(nameWithoutMarkerExtension => nameWithoutMarkerExtension[SwlorAreaCreationMarker.Prefix.Length..])
                 .ToList();
 
             throw new InvalidOperationException(

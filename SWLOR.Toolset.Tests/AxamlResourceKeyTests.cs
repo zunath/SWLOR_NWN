@@ -1,11 +1,15 @@
 using System.Text.RegularExpressions;
+using Avalonia.Controls;
+using Avalonia.Headless.NUnit;
+using Avalonia.Markup.Xaml;
+using Avalonia.Styling;
 using FluentAssertions;
 using NUnit.Framework;
 
 namespace SWLOR.Toolset.Tests
 {
     /// <summary>
-    /// Every resource key the XAML asks for is defined somewhere in the app.
+    /// Every resource key the XAML asks for is defined in the app or in the shared toolset styles it includes.
     /// </summary>
     /// <remarks>
     /// A misspelled or invented key is not an error at build time and not an error at runtime - the
@@ -31,9 +35,18 @@ namespace SWLOR.Toolset.Tests
         private static readonly Regex Declaration =
             new(@"x:Key=""([A-Za-z0-9_.]+)""", RegexOptions.Compiled);
 
-        [Test]
+        /// <summary>The shared toolset styles and icons App.axaml includes; keys they declare resolve at runtime.</summary>
+        private static readonly Uri[] SharedToolsetResources =
+        {
+            new("avares://Nwn.Toolset.Avalonia/Styles/ToolsetStyles.axaml"),
+            new("avares://Nwn.Toolset.Avalonia/Styles/ToolsetIcons.axaml")
+        };
+
+        [AvaloniaTest]
         public void EveryReferencedResourceKeyIsDeclared()
         {
+            var shared = SharedToolsetResources.Select(uri => (IResourceNode)AvaloniaXamlLoader.Load(uri)).ToArray();
+
             var toolset = Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR.Toolset");
             Directory.Exists(toolset).Should().BeTrue("the app's XAML is the subject of this test");
 
@@ -54,7 +67,8 @@ namespace SWLOR.Toolset.Tests
             }
 
             var missing = referenced
-                .Where(pair => !declared.Contains(pair.Key) && !ProvidedByAvalonia.Contains(pair.Key))
+                .Where(pair => !declared.Contains(pair.Key) && !ProvidedByAvalonia.Contains(pair.Key)
+                    && !shared.Any(node => node.TryGetResource(pair.Key, ThemeVariant.Default, out _)))
                 .Select(pair => $"{pair.Key} (first seen in {pair.Value})")
                 .OrderBy(entry => entry)
                 .ToList();

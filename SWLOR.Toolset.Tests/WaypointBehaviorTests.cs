@@ -483,28 +483,14 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void PlainChoiceTemplateWrapsLongWaypointLabels()
-        {
-            // The row markup is shared by every behavior editor now, so the wrapping rule lives in
-            // one place rather than in a waypoint-only template.
-            var view = Support.SharedToolsetSource.ReadBehaviorFile("BehaviorRowView.axaml");
-
-            view.Should().Contain(
-                "<TextBlock Text=\"{Binding Display}\" TextWrapping=\"Wrap\" MaxWidth=\"420\" />");
-        }
-
-        [Test]
         public void TheRowGivesItsWidthToTheValueRatherThanTheLabel()
         {
             // Every pixel the label column takes comes out of the value, and the value is the part
-            // that has to hold a search list, a picture grid, or a tag.
-            foreach (var (path, file) in SharedRowMarkup())
-            {
-                file.Should().NotContain("ColumnDefinitions=\"220,*\"",
-                    $"{path} still reserves the old label column");
-                file.Should().NotContain("ColumnDefinitions=\"180,*\"",
-                    $"{path} still reserves the old label column");
-            }
+            // that has to hold a search list, a picture grid, or a tag. The shared row markup has
+            // its own check in the shared library's tests; this covers the app's own templates.
+            var app = File.ReadAllText(Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "App.axaml"));
+            app.Should().NotContain("ColumnDefinitions=\"220,*\"", "App.axaml still reserves the old label column");
+            app.Should().NotContain("ColumnDefinitions=\"180,*\"", "App.axaml still reserves the old label column");
 
             // Anything drawn underneath a row follows the row: indented under the label column when
             // there is room for one, and full width when there is not. A fixed grid cannot do the
@@ -527,22 +513,6 @@ namespace SWLOR.Toolset.Tests
                 markup.Should().Contain("ColumnDefinitions=\"210,*\"",
                     $"{view}'s behavior rail lists short names and does not need more");
             }
-        }
-
-        [Test]
-        public void APictureSetThatFitsThePageIsNotHiddenBehindAButton()
-        {
-            var row = Support.SharedToolsetSource.ReadBehaviorFile("BehaviorRowView.axaml");
-
-            // The inline grid is the whole point of a picture picker: names are what it replaces.
-            row.Should().Contain("IsVisible=\"{Binding IsInlineGallery}\"");
-            row.Should().NotContain("Content=\"Choose&#x2026;\"",
-                "a picture set on the page needs no button, and one behind the preview is opened by "
-                + "clicking the preview");
-
-            // The large sets keep their popup, opened by the picture itself.
-            row.Should().Contain("IsVisible=\"{Binding IsPopupGallery}\"");
-            row.Should().Contain("Command=\"{Binding OpenGalleryCommand}\"");
         }
 
         [Test]
@@ -718,14 +688,6 @@ namespace SWLOR.Toolset.Tests
                     field.Kind == BehaviorFieldKind.Statement &&
                     field.Label == "Planet" &&
                     field.Note == "Determined by the containing area");
-        }
-
-        /// <summary>Every markup file that declares a field row's label column.</summary>
-        private static IEnumerable<(string Path, string Markup)> SharedRowMarkup()
-        {
-            yield return ("BehaviorRowView.axaml", Support.SharedToolsetSource.ReadBehaviorFile("BehaviorRowView.axaml"));
-            var app = Path.Combine("SWLOR.Toolset", "App.axaml");
-            yield return (app, File.ReadAllText(Path.Combine(CorpusLocator.RepositoryRoot, app)));
         }
 
         private static JsonGffStruct Waypoint(string tag, bool hasMapNote = false)

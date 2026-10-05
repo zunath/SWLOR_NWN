@@ -1,6 +1,6 @@
 using Nwn.Authoring.Areas.Creation;
 using Nwn.Authoring.Documents.NimGff;
-using Nwn.Formats.Io;
+using SWLOR.NWN.Formats.Common;
 
 namespace SWLOR.Toolset.Domain.Workspace;
 
@@ -44,7 +44,7 @@ public static class NewAreaWriter
             Path.Combine(workspace.ModuleRoot, "git", canonicalResRef + ".git.json"),
             Path.Combine(workspace.ModuleRoot, "gic", canonicalResRef + ".gic.json"),
             Path.Combine(workspace.ModuleRoot, "ifo", "module.ifo.json"),
-            PendingAreaCreationMarker.DefaultPrefix);
+            SwlorAreaCreationMarker.Prefix);
         return AreaCreationWriter.TryCreate(paths, new NimGffDocumentCodec(), resolveTileset,
             canonicalResRef, displayName, tilesetResRef, width, height, populate, out error);
     }

@@ -26,7 +26,7 @@ public sealed class NativeModelPreviewWindow : Window
         var load = new Button { Content = "Load", MinWidth = 80 };
         load.Click += async (_, _) => await LoadModelAsync();
         var header = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(8) };
-        header.Children.Add(new TextBlock { Text = "Model resref:", VerticalAlignment = VerticalAlignment.Center });
+        header.Children.Add(new TextBlock { Text = "Model ResRef:", VerticalAlignment = VerticalAlignment.Center });
         header.Children.Add(_resRefBox);
         header.Children.Add(load);
         header.Children.Add(_status);

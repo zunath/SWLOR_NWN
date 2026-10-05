@@ -46,7 +46,7 @@ public sealed class TwoDaCorpusQualificationTests
 
     private static TwoDaService OpenSelectedCorpus()
     {
-        var root = Environment.GetEnvironmentVariable(CorpusRootVariable);
+        var root = Support.ToolsetCorpusPaths.HaksRoot;
         if (string.IsNullOrWhiteSpace(root))
             throw new InvalidOperationException($"Select the read-only full HAK corpus with {CorpusRootVariable}.");
         return new TwoDaService(Path.Combine(Path.GetFullPath(root), TableDirectory));

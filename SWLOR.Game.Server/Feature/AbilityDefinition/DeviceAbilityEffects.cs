@@ -280,12 +280,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         public static Func<uint, int> GetAssaultGadgetBaseDamageAdjustment(uint activator)
         {
-            var adjustment = CalculateAssaultGadgetWeaponDamageEquivalent(
-                Skill.GetCreatureSkillRank(activator, SkillType.Devices));
+            var adjustment = GetAssaultGadgetWeaponDamageEquivalent(activator);
 
             return adjustment == 0
                 ? null
                 : _ => adjustment;
+        }
+
+        /// <summary>
+        /// Gadget DMG: the weapon-DMG equivalent every Assault Gadget adds to its base damage, scaled by Devices rank.
+        /// </summary>
+        public static int GetAssaultGadgetWeaponDamageEquivalent(uint creature)
+        {
+            return CalculateAssaultGadgetWeaponDamageEquivalent(
+                Skill.GetCreatureSkillRank(creature, SkillType.Devices));
         }
 
         public static int CalculateAssaultGadgetWeaponDamageEquivalent(int devicesRank)

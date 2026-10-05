@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 SkillType.Devices,
-                6,
+                10,
                 30,
                 typeof(HobbleStatusEffect),
                 CombatImpactAreaShape.Cone,

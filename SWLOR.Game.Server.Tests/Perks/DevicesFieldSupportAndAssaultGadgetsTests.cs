@@ -4,7 +4,6 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
-using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -20,14 +19,30 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class DevicesFieldSupportAndAssaultGadgetsTests
 {
     [Test]
-    public void AssaultGadgetTwins_MatchForceBaseDamage()
+    public void AssaultGadgetBaseDamage_IsTheBonusAddedToGadgetDMG()
     {
-        foreach (var fieldName in new[] { "Rank1BaseDamage", "Rank2BaseDamage", "Rank3BaseDamage" })
+        // Assault Gadgets add Gadget DMG the way weapon abilities add weapon DMG, so their base
+        // damage is a weapon-style "+X" ladder rather than a Force-style full base.
+        GetRankBaseDamages(typeof(ArcProjectorAbilityDefinition)).Should().Equal(12, 24, 36);
+        GetRankBaseDamages(typeof(IonLanceAbilityDefinition)).Should().Equal(10, 20, 30);
+    }
+
+    [Test]
+    public void AssaultGadgetDescriptions_StateDamageAsGadgetDMGPlusBonus()
+    {
+        var perks = BuildDevicesAssaultGadgetsPerksWithout2daLookup();
+        var damageDescriptions = perks.Values
+            .SelectMany(perk => perk.PerkLevels.Values)
+            .Select(level => level.Description)
+            .Where(description => description.Contains(" DMG", StringComparison.Ordinal))
+            .ToList();
+
+        damageDescriptions.Should().NotBeEmpty();
+        foreach (var description in damageDescriptions)
         {
-            GetAbilityConstant<int>(typeof(ArcProjectorAbilityDefinition), fieldName)
-                .Should().Be(GetAbilityConstant<int>(typeof(ThrowRockAbilityDefinition), fieldName));
-            GetAbilityConstant<int>(typeof(IonLanceAbilityDefinition), fieldName)
-                .Should().Be(GetAbilityConstant<int>(typeof(RadiantLanceAbilityDefinition), fieldName));
+            var damageMentions = System.Text.RegularExpressions.Regex.Matches(description, @"\bDMG\b").Count;
+            var gadgetMentions = System.Text.RegularExpressions.Regex.Matches(description, @"gadget DMG \+ \d+ \w+ DMG").Count;
+            (gadgetMentions * 2).Should().Be(damageMentions, description);
         }
     }
 
@@ -484,6 +499,13 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         };
 
         return BuildPerksWithout2daLookup(definition, methodNames);
+    }
+
+    private static int[] GetRankBaseDamages(Type abilityDefinitionType)
+    {
+        return new[] { "Rank1BaseDamage", "Rank2BaseDamage", "Rank3BaseDamage" }
+            .Select(fieldName => GetAbilityConstant<int>(abilityDefinitionType, fieldName))
+            .ToArray();
     }
 
     private static T GetAbilityConstant<T>(Type abilityDefinitionType, string fieldName)

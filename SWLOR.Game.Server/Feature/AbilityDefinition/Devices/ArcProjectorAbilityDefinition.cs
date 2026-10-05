@@ -15,9 +15,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public sealed class ArcProjectorAbilityDefinition : IAbilityListDefinition
     {
-        private const int Rank1BaseDamage = 22;
-        private const int Rank2BaseDamage = 40;
-        private const int Rank3BaseDamage = 60;
+        private const int Rank1BaseDamage = 12;
+        private const int Rank2BaseDamage = 24;
+        private const int Rank3BaseDamage = 36;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {

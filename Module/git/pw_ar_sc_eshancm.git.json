@@ -9080,7 +9080,7 @@
         },
         "ScriptSpawn": {
           "type": "resref",
-          "value": ""
+          "value": "x2_def_spawn"
         },
         "ScriptSpellAt": {
           "type": "resref",
@@ -10124,7 +10124,7 @@
         },
         "ScriptSpawn": {
           "type": "resref",
-          "value": ""
+          "value": "x2_def_spawn"
         },
         "ScriptSpellAt": {
           "type": "resref",
@@ -11168,7 +11168,7 @@
         },
         "ScriptSpawn": {
           "type": "resref",
-          "value": ""
+          "value": "x2_def_spawn"
         },
         "ScriptSpellAt": {
           "type": "resref",
@@ -191692,7 +191692,7 @@
       {
         "BlackMarket": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "BM_MarkDown": {
           "type": "int",
@@ -191700,7 +191700,7 @@
         },
         "IdentifyPrice": {
           "type": "int",
-          "value": 100
+          "value": 0
         },
         "LocName": {
           "type": "cexolocstring",
@@ -192257,7 +192257,7 @@
       {
         "BlackMarket": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "BM_MarkDown": {
           "type": "int",
@@ -192265,7 +192265,7 @@
         },
         "IdentifyPrice": {
           "type": "int",
-          "value": 100
+          "value": 0
         },
         "LocName": {
           "type": "cexolocstring",
@@ -193870,7 +193870,7 @@
       {
         "BlackMarket": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "BM_MarkDown": {
           "type": "int",
@@ -193878,7 +193878,7 @@
         },
         "IdentifyPrice": {
           "type": "int",
-          "value": 100
+          "value": 0
         },
         "LocName": {
           "type": "cexolocstring",

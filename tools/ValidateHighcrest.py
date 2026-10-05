@@ -88,6 +88,7 @@ def validate():
         flags = {value(v, "Name"): value(v, "Value") for v in value(npc, "VarTable")}
         if flags["AI_FLAGS"]:
             assert flags["AI_FLAGS"] == 3  # RandomWalk | ReturnHome.
+            assert value(npc, "ScriptSpawn") == "x2_def_spawn", (ref, "home location must initialize on spawn")
             wanderers.add(ref)
         x, y, z = [value(npc, key) for key in ["XPosition", "YPosition", "ZPosition"]]
         assert 0 < x < value(metadata, "Width") * 10 and 0 < y < value(metadata, "Height") * 10
@@ -112,6 +113,8 @@ def validate():
         ref = value(shop, "ResRef")
         blueprint = read(f"Module/utm/{ref}.utm.json")
         assert shop["__struct_id"] == 11 and value(shop, "Tag") == ref
+        for key, expected in [("BlackMarket", 1), ("IdentifyPrice", 0)]:
+            assert value(shop, key) == value(blueprint, key) == expected, (ref, "merchant policy", key)
         for key in ["MarkUp", "MarkDown", "OnOpenStore", "OnStoreClosed"]:
             assert shop[key] == blueprint[key]
         stock_count = 0

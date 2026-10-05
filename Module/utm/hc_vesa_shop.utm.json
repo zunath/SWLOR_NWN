@@ -2,7 +2,7 @@
   "__data_type": "UTM ",
   "BlackMarket": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "BM_MarkDown": {
     "type": "int",
@@ -18,7 +18,7 @@
   },
   "IdentifyPrice": {
     "type": "int",
-    "value": 100
+    "value": 0
   },
   "LocName": {
     "type": "cexolocstring",

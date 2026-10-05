@@ -398,7 +398,7 @@
   },
   "ScriptSpawn": {
     "type": "resref",
-    "value": ""
+    "value": "x2_def_spawn"
   },
   "ScriptSpellAt": {
     "type": "resref",

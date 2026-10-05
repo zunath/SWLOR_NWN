@@ -24,14 +24,14 @@ $perkChanges = @(
         Sheet = "Leadership"
         PerkName = "Decisive Command"
         Values = @{
-            Notes = "Player capstone: shared Capstone timer; uses a fixed 90-second capstone cooldown with a 45-second active duration and has no weapon/tool activation requirement. Only one Leadership command effect can be active per leader; a new command replaces the previous one. Ordinary Leadership damage-reduction effects do not stack; the strongest active source applies. Bolster Resolve's additional Field Steward recovery rider stacks with that strongest source."
+            Notes = ""
         }
     },
     @{
         Sheet = "Leadership"
         PerkName = "Bolster Resolve II"
         Values = @{
-            Notes = "Support command. Affects the leader and nearby party members; valid use grants +2 Leadership CP to tagged NPCs. Its physical and Force reduction is an additional Field Steward recovery rider that stacks with the strongest ordinary Leadership damage-reduction source."
+            Notes = ""
         }
     },
     @{
@@ -723,19 +723,19 @@ foreach ($entry in $mimicryRequirements.GetEnumerator()) {
 $mimicryAnalyzerChanges = @{
     "Combat Analyzer I" = @{
         Description = "Grants a combat analyzer capable of recording enemy creature techniques. Unlocks technique learning and the Techniques window. Provides 2 technique slots."
-        Notes = "Open the Techniques window with /techniques. Learn techniques from creatures using the combat analyzer."
+        Notes = ""
     }
     "Combat Analyzer II" = @{
         Description = "Upgrades the combat analyzer, increasing equipped technique potency by 5%."
-        Notes = "Cumulative equipped technique potency bonus: +5%."
+        Notes = ""
     }
     "Combat Analyzer III" = @{
         Description = "Further upgrades the combat analyzer, increasing equipped technique potency by 10% in total."
-        Notes = "Cumulative equipped technique potency bonus: +10%."
+        Notes = ""
     }
     "Combat Analyzer IV" = @{
         Description = "Maximizes the combat analyzer, increasing equipped technique potency by 15% in total."
-        Notes = "Cumulative equipped technique potency bonus: +15%."
+        Notes = ""
     }
 }
 foreach ($entry in $mimicryAnalyzerChanges.GetEnumerator()) {

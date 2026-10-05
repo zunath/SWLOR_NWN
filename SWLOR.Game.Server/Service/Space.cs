@@ -1079,8 +1079,20 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExamineShipModuleItem()
         {
-            var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
+            ApplyShipModuleExamineDetails(StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID")));
+        }
 
+        /// <summary>
+        /// Applies ship and ship module examine details to an item.
+        /// </summary>
+        public static void ApplyExamineDetails(uint item)
+        {
+            ApplyShipModuleExamineDetails(item);
+            ApplyShipExamineDetails(item);
+        }
+
+        private static void ApplyShipModuleExamineDetails(uint item)
+        {
             // Must be an item
             if (GetObjectType(item) != ObjectType.Item) return;
 
@@ -1112,8 +1124,11 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExamineShipItem()
         {
-            var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
+            ApplyShipExamineDetails(StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID")));
+        }
 
+        private static void ApplyShipExamineDetails(uint item)
+        {
             // Must be an item
             if (GetObjectType(item) != ObjectType.Item) return;
 

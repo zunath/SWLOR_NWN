@@ -25,6 +25,9 @@ namespace SWLOR.Game.Server.Feature
             // Journal - A NUI replacement is used
             SetGuiPanelDisabled(player, GuiPanel.Journal, true);
 
+            // Item Examine - A NUI replacement is used
+            SetGuiPanelDisabled(player, GuiPanel.ExamineItem, true);
+
             // Compass - Space is used by HP/FP/STM bars.
             SetGuiPanelDisabled(player, GuiPanel.Compass, true);
         }

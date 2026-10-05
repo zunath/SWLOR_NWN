@@ -1,4 +1,3 @@
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -6,7 +5,6 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -39,19 +37,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
-        public static void ExamineWeapon()
+        /// <summary>
+        /// Replaces the native item examine panel, which is disabled for players on login.
+        /// </summary>
+        public static void ShowExamineWindow(uint viewer, uint item)
         {
-            var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
-            var viewer = OBJECT_SELF;
-            if (!GetIsPC(viewer) || GetObjectType(item) != ObjectType.Item || !GetIdentified(item) ||
-                !WeaponDamage.IsSingleWeaponType(GetBaseItemType(item)))
+            if (GetObjectType(item) != ObjectType.Item)
                 return;
+
+            // The native examine events do not run for a disabled panel, so apply their item details here.
+            EquipmentRestrictions.MarkLegacyOffHandPistol(item);
+            Space.ApplyExamineDetails(item);
 
             // A viewer-specific window avoids persisting personal stats on a shared item.
             Gui.ClosePlayerWindow(viewer, GuiWindowType.ExamineItem);
             Gui.TogglePlayerWindow(viewer, GuiWindowType.ExamineItem, new ExamineItemPayload(item, trackLiveItem: true));
-            EventsPlugin.SkipEvent();
         }
 
         protected override void Initialize(ExamineItemPayload initialPayload)
@@ -70,14 +70,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var itemDMG = _payload.ItemDMG;
             var hasItemDMG = _payload.HasItemDMG;
             var hasLiveItem = GetIsObjectValid(_payload.ItemObject) && GetObjectUUID(_payload.ItemObject) == _payload.ItemId;
-            if (hasLiveItem)
+            if (hasLiveItem && _payload.IsIdentified)
             {
                 itemDMG = Item.GetDMG(_payload.ItemObject);
                 hasItemDMG = GetItemHasItemProperty(_payload.ItemObject, ItemPropertyType.DMG);
                 ItemProperties = Item.BuildItemPropertyString(_payload.ItemObject);
             }
             Description = _payload.Description;
-            if (!WeaponDamage.IsSingleWeaponType(_payload.ItemType))
+            if (!_payload.IsIdentified || !WeaponDamage.IsSingleWeaponType(_payload.ItemType))
                 return;
 
             var preview = WeaponDamage.BuildSingleWeaponDescription(itemDMG,

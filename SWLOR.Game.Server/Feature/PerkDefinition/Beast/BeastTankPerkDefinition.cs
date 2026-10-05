@@ -85,25 +85,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FocusAttentionTrait)
-                .Description("The beast's enmity generation is increased by 15%.")
+                .Description("The beast's enmity generation is increased by 10%.")
                 .Price(2)
                 .RequirementBeastLevel(12)
+                .RequirementBeastRole(BeastRoleType.Tank)
+                .IncreasesStat(StatType.EnmityPercentAdjustment, 10)
+
+                .AddPerkLevel()
+                .Description("The beast's enmity generation is increased by 15%.")
+                .Price(3)
+                .RequirementBeastLevel(25)
                 .RequirementBeastRole(BeastRoleType.Tank)
                 .IncreasesStat(StatType.EnmityPercentAdjustment, 15)
 
                 .AddPerkLevel()
-                .Description("The beast's enmity generation is increased by 30%.")
-                .Price(3)
-                .RequirementBeastLevel(25)
-                .RequirementBeastRole(BeastRoleType.Tank)
-                .IncreasesStat(StatType.EnmityPercentAdjustment, 30)
-
-                .AddPerkLevel()
-                .Description("The beast's enmity generation is increased by 45% and Anger cooldown is reduced by 3 seconds.")
+                .Description("The beast's enmity generation is increased by 20% and Anger cooldown is reduced by 3 seconds.")
                 .Price(4)
                 .RequirementBeastLevel(42)
                 .RequirementBeastRole(BeastRoleType.Tank)
-                .IncreasesStat(StatType.EnmityPercentAdjustment, 45)
+                .IncreasesStat(StatType.EnmityPercentAdjustment, 20)
                 .IncreasesStat(StatType.AbilityRecastDelayFlatAdjustmentPerkType, (int)PerkType.Anger)
                 .IncreasesStat(StatType.AbilityRecastDelayFlatAdjustment, -3);
         }

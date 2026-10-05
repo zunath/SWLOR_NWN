@@ -29,7 +29,7 @@
     "InternalName": "sw_guardbond",
     "Category": "Beast Mastery",
     "Type": "Stance",
-    "Description": "While active, your beast gains +20% Defense, +20% Force Defense, takes 15% less damage, and generates +75% enmity. Only one stance may be active at a time.",
+    "Description": "While active, your beast gains +20% Defense, +20% Force Defense, takes 15% less damage, and generates +30% enmity. Only one stance may be active at a time.",
     "Reference": "",
     "BibleAnimationRow": 122,
     "PerkId": "GuardingBondStance",

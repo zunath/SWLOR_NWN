@@ -134,6 +134,39 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void TransitionDestinationsDistinguishTheOtherKindOfObjectCarryingTheTag()
+        {
+            WriteArea(
+                "typed",
+                waypointTag: "WP_ONLY",
+                displayName: "Typed",
+                doorTag: "DOOR_ONLY",
+                storeTag: "STORE_ONLY");
+            var index = new ModuleTagIndex(new ModuleWorkspace(_root));
+
+            SwlorTransitionDestinations.Resolve(index, BehaviorTagScope.Door, "DOOR_ONLY")
+                .Should().Be(TransitionDestinationResult.Resolved("door in typed"));
+            SwlorTransitionDestinations.Resolve(index, BehaviorTagScope.Waypoint, "WP_ONLY")
+                .Should().Be(TransitionDestinationResult.Resolved("waypoint in typed"));
+            SwlorTransitionDestinations.Resolve(index, BehaviorTagScope.Waypoint, "DOOR_ONLY")
+                .Should().Be(TransitionDestinationResult.WrongType(BehaviorTagScope.Door));
+            SwlorTransitionDestinations.Resolve(index, BehaviorTagScope.Door, "WP_ONLY")
+                .Should().Be(TransitionDestinationResult.WrongType(BehaviorTagScope.Waypoint));
+            SwlorTransitionDestinations.Resolve(index, BehaviorTagScope.Waypoint, "STORE_ONLY")
+                .Should().Be(TransitionDestinationResult.NotFound, "a store never satisfies a destination");
+            SwlorTransitionDestinations.Resolve(index, BehaviorTagScope.WaypointOrDoor, "WP_ONLY")
+                .Should().Be(TransitionDestinationResult.Resolved("waypoint in typed"));
+            SwlorTransitionDestinations.Resolve(index, BehaviorTagScope.None, "DOOR_ONLY")
+                .Should().Be(TransitionDestinationResult.TypeUnset);
+
+            var adapted = SwlorTransitionDestinations.FromLocations(
+                (scope, _) => scope == BehaviorTagScope.Door ? "somewhere" : null);
+            adapted(BehaviorTagScope.Door, "x").Should().Be(TransitionDestinationResult.Resolved("somewhere"));
+            adapted(BehaviorTagScope.Waypoint, "x").Should().Be(TransitionDestinationResult.NotFound);
+            adapted(BehaviorTagScope.None, "x").Should().Be(TransitionDestinationResult.TypeUnset);
+        }
+
+        [Test]
         public void TriggerTransitionValidatesAgainstTheSelectedDestinationType()
         {
             WriteArea(

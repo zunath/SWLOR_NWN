@@ -4,6 +4,7 @@ using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Render;
+using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Shell.Panels.PaletteHost;
 using SWLOR.Toolset.Viewport;
@@ -56,13 +57,17 @@ namespace SWLOR.Toolset.Editors.Doors
             ThumbnailService? thumbnails = null,
             ChoicePreviewService? choicePreviews = null,
             Services.IEditorPromptService? prompts = null,
-            OutputLogService? log = null)
+            OutputLogService? log = null,
+            TransitionDestinationResolver? resolveDestination = null)
             : base(
                 door,
                 headerOwner,
                 isInstance,
                 runEdit,
-                CreateHost(gameCodeIndex, resolveTag, resolveChoices, appearances, thumbnails, choicePreviews, prompts, log),
+                CreateHost(
+                    gameCodeIndex,
+                    resolveDestination ?? (resolveTag == null ? null : SwlorTransitionDestinations.FromLocations(resolveTag)),
+                    resolveChoices, appearances, thumbnails, choicePreviews, prompts, log),
                 isDirty)
         {
             _resolveModel = resolveModel;
@@ -73,7 +78,7 @@ namespace SWLOR.Toolset.Editors.Doors
         /// <summary>SWLOR's door data and services for the shared door editor.</summary>
         public static DoorBehaviorEditorHost CreateHost(
             IGameCodeIndex? gameCodeIndex,
-            Func<BehaviorTagScope, string, string?>? resolveTag,
+            TransitionDestinationResolver? resolveDestination,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices,
             IReadOnlyList<DoorAppearanceChoice>? appearances,
             ThumbnailService? thumbnails,
@@ -82,7 +87,7 @@ namespace SWLOR.Toolset.Editors.Doors
             OutputLogService? log) => new()
         {
             Catalog = SwlorDoorBehaviorCatalog.Instance,
-            ResolveTag = resolveTag,
+            ResolveDestination = resolveDestination,
             ResolveChoices = resolveChoices,
             Appearances = appearances ?? Array.Empty<DoorAppearanceChoice>(),
             AppearancePreviews = thumbnails == null ? null : new SwlorDoorAppearancePreviews(thumbnails),

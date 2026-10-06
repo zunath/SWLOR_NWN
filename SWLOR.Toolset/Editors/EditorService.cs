@@ -3267,6 +3267,11 @@ namespace SWLOR.Toolset.Editors
                         out _);
                     foreach (var editor in _openTriggerEditors.Values)
                         editor.Editor.RefreshPaletteChoices();
+                    foreach (var section in _openAreaEditors.Values.SelectMany(editor => editor.Sections)
+                                 .Where(section => section.BlueprintType == ResourceType.Utt))
+                    {
+                        section.RefreshPaletteChoices();
+                    }
                     break;
                 case "waypointpalcus":
                     _choiceSets.TryRemove(
@@ -3335,6 +3340,22 @@ namespace SWLOR.Toolset.Editors
                 _log.AppendLine($"Could not read the door palette categories: {ex.Message}");
                 return Array.Empty<Nwn.Authoring.Behaviors.BehaviorChoice>();
             }
+        }
+
+        /// <summary>
+        /// What a door or trigger destination tag reaches in the open module: where it lives, or that only
+        /// the other kind of object carries it.
+        /// </summary>
+        private Nwn.Authoring.Behaviors.TransitionDestinationResult ResolveTransitionDestination(
+            Nwn.Authoring.Behaviors.BehaviorTagScope scope,
+            string tag)
+        {
+            var workspace = _workspaceContext.Workspace;
+            return workspace == null
+                ? scope == Nwn.Authoring.Behaviors.BehaviorTagScope.None
+                    ? Nwn.Authoring.Behaviors.TransitionDestinationResult.TypeUnset
+                    : Nwn.Authoring.Behaviors.TransitionDestinationResult.NotFound
+                : Domain.Workspace.SwlorTransitionDestinations.Resolve(workspace.TagIndex, scope, tag);
         }
 
         private string? ResolveDoorTag(Nwn.Authoring.Behaviors.BehaviorTagScope scope, string tag)
@@ -3799,7 +3820,8 @@ namespace SWLOR.Toolset.Editors
                                 ? door => _previewRenderer.BuildModelResult(ResourceType.Utd, door)
                                 : null,
                             _thumbnails,
-                            ChoicePreviews()),
+                            ChoicePreviews(),
+                            ResolveDestination: ResolveTransitionDestination),
                         new Waypoints.WaypointEditorServices(
                             resRef,
                             new Domain.Editors.Waypoints.WaypointBehaviorCatalog(
@@ -3814,7 +3836,12 @@ namespace SWLOR.Toolset.Editors
                         TryEditCopyAndOpenBlueprint,
                         _mutationLock,
                         _areaInstanceClipboard,
-                        TlkRowOpener);
+                        TlkRowOpener,
+                        new Triggers.TriggerEditorServices(
+                            resRef,
+                            ResolveTransitionDestination,
+                            ResolveTriggerChoices,
+                            ChoicePreviews()));
                     editor.Closed += _ => _openAreaEditors.Remove(resRef);
                     editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
                     editor.CloseRequested += _ => _factory.CloseDocument(editor);

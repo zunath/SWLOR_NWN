@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Worldbreaker trial: closed. Structural rating: confirmed. No further action required of this unit. Maintain rating.",
+          "Text": "Unauthorized demolition operation: closed. Operator assessment: passed. Apply force within the limits of the structure around you. Worldbreaker trials: complete. Further assignments: none.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Designation: KX-17. Function: structural failure analysis. Skeletal assessment: adequate for standing, inadequate for this trial. Staff proficiency below required threshold. Recommendation: continue training. Return when proficiency meets threshold.",
+          "Text": "Staff proficiency requirement: rank 50. Current clearance: insufficient. Continue training, then return for the demolition trials.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Designation: KX-17. Function: structural failure analysis. Skeletal assessment: two hundred six load-bearing components, several below rated tolerance for the work ahead. Six organic operators are drilling demolition staff-technique at CZ-220 Breaker Yard without certification. Force applied exceeds rated tolerance of surrounding structure. That is the definition of Worldbreaker. Correct six of them. Return with the breaker yard work order they are falsifying.",
+          "Text": "Six operators are conducting uncertified demolition drills at CZ-220. Their work order is required for the failure investigation. Defeat six Worldbreaker Adepts in CZ-220, Breaker Bay. Their defeat secures the Worldbreaker Breaker Yard Work Order; bring it back to me here in Dantooine, Battle Monster Gym. I'll give you the CZ-220 Breaker Yard Key when you accept. Complete all five trials to earn the right to train Worldbreaker.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Acknowledged. Breaker Yard key issued. Bay seven, six operators, one work order. Proceed.",
+          "Text": "Access credential issued: CZ-220 Breaker Yard Key. Use 'Enter the Breaker Bay' on the CZ-220 Maintenance Level. Keep additional party operators near the entrance during transit. Defeat six Worldbreaker Adepts and return with the work order to this unit at the Dantooine Battle Monster Gym.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "CZ-220 Breaker Yard, this station. Access authorization transferred to your credentials: one breaker yard key. It unlocks bay seven. Beyond bay seven, this unit's authority ends and yours begins.",
+          "Text": "Use 'Enter the Breaker Bay' in CZ-220, Maintenance Level. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Worldbreaker Adepts in CZ-220, Breaker Bay. Their defeat secures the Worldbreaker Breaker Yard Work Order; bring it back to me here in Dantooine, Battle Monster Gym.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six operators remain uncorrected at CZ-220 Breaker Yard. Work order not yet recovered. Trial incomplete.",
+          "Text": "Defeat six Worldbreaker Adepts in CZ-220, Breaker Bay. Their defeat secures the Worldbreaker Breaker Yard Work Order; bring it back to me here in Dantooine, Battle Monster Gym.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six operators corrected. Work order detected on your person. Transfer it.",
+          "Text": "You've defeated six Worldbreaker Adepts. Let me see the Worldbreaker Breaker Yard Work Order.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Work order logged. First structural checkpoint: passed. Compensation transferred. Priority: correction. Secondary priority: your continued function. First priority: the data.",
+          "Text": "Work order received. Investigation record updated. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists have replaced the six operators. Their technique is calibrated, unlike the first group. Calibrated force is more dangerous than improvised force: it fails less often, and less predictably. Correct five of them. Recover the junkline control relay; it is currently misrouting bay power.",
+          "Text": "Specialists are misrouting bay power through the junkline relay. Recover the component for inspection. Defeat five Worldbreaker Specialists in CZ-220, Breaker Bay. Their defeat secures the Worldbreaker Junkline Control Relay; bring it back to me here in Dantooine, Battle Monster Gym.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Acknowledged. Five specialists, one relay. Proceed.",
+          "Text": "Your key still grants access to CZ-220, Breaker Bay. Defeat five Worldbreaker Specialists to secure the Worldbreaker Junkline Control Relay, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -558,7 +558,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same bay, deeper section. Junkline access is restricted past the first gantry. Your key still opens it.",
+          "Text": "Use 'Enter the Breaker Bay' in CZ-220, Maintenance Level. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat five Worldbreaker Specialists in CZ-220, Breaker Bay. Their defeat secures the Worldbreaker Junkline Control Relay; bring it back to me here in Dantooine, Battle Monster Gym.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists remain at CZ-220 Breaker Yard. Junkline control relay not yet recovered.",
+          "Text": "Defeat five Worldbreaker Specialists in CZ-220, Breaker Bay. Their defeat secures the Worldbreaker Junkline Control Relay; bring it back to me here in Dantooine, Battle Monster Gym.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists corrected. Relay signature detected. Transfer it.",
+          "Text": "You've defeated five Worldbreaker Specialists. Let me see the Worldbreaker Junkline Control Relay.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Relay logged. Bay power rerouting corrected. Second structural checkpoint: passed.",
+          "Text": "Relay received. Power-routing fault identified. Your payment is ready. Speak to me again for the warden trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "One unit oversees bay operations: designated warden. Her demolition technique is not calibrated. It is optimized. Optimized force fails the least of any category this unit has measured. Recommend three operators for this correction, not one. This unit's failure-rate model shows a measurable drop in operator loss above two additional units. Correct the warden. Recover the sheared bay sigil.",
+          "Text": "The warden controls the Breaker Bay. Recover the bay sigil to complete this phase of the investigation. Defeat the Worldbreaker Warden in CZ-220, Breaker Bay. Their defeat secures the Worldbreaker Sheared Bay Sigil; bring it back to me here in Dantooine, Battle Monster Gym. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Acknowledged. Bring two additional operators. Proceed to the warden's section.",
+          "Text": "In CZ-220, Breaker Bay, use the '???' challenge marker to call the Worldbreaker Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Worldbreaker Sheared Bay Sigil.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same bay, restricted section, past the junkline. Your key still authorizes entry. The warden does not patrol. She remains stationary until provoked, then does not remain stationary.",
+          "Text": "In CZ-220, Breaker Bay, use the '???' challenge marker to call the Worldbreaker Warden. Accept this assignment before using the marker.",
           "Style": 0,
           "Color": null
         }
@@ -793,7 +793,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Bring two additional operators. This unit's model shows solo correction attempts against the warden fail at a materially higher rate than three-operator attempts. This unit recommends the safer configuration.",
+          "Text": "Yes. I recommend two companions for the Worldbreaker Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden remains uncorrected at CZ-220 Breaker Yard. Sheared bay sigil not yet recovered. Recommend additional operators before proceeding.",
+          "Text": "Defeat the Worldbreaker Warden in CZ-220, Breaker Bay. Their defeat secures the Worldbreaker Sheared Bay Sigil; bring it back to me here in Dantooine, Battle Monster Gym. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden corrected. Sigil signature detected, sheared but intact. Transfer it.",
+          "Text": "You've defeated the Worldbreaker Warden. Let me see the Worldbreaker Sheared Bay Sigil.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Sigil logged. Third structural checkpoint: passed. Operator survival rate: acceptable. Function noted.",
+          "Text": "Bay sigil received. Warden deactivation confirmed. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four units, organic, form what the yard calls an inner circle. They coordinate demolition staff-work in formation, which multiplies applied force beyond what any one of them could generate. Correct all four. Recover the foreman's override chip; it is currently authorizing unlogged bay activity.",
+          "Text": "Four operators still authorize unlogged demolition work. Recover the foreman's override chip. Defeat four members of the Worldbreaker Inner Circle in CZ-220, Breaker Bay. Their defeat secures the Worldbreaker Foreman's Override Chip; bring it back to me here in Dantooine, Battle Monster Gym.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Acknowledged. Match their number if possible. Proceed.",
+          "Text": "Your key still grants access to CZ-220, Breaker Bay. Defeat four members of the Worldbreaker Inner Circle to secure the Worldbreaker Foreman's Override Chip, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -950,7 +950,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Formation multiplies force the way redundant support beams multiply a structure's rated load. Remove one beam, the others compensate. Remove all four simultaneously, and compensation is not possible. That is the correction this unit requires of you.",
+          "Text": "The Worldbreaker Inner Circle fight together. Bring help if you can, and focus on one opponent at a time. Defeat four members to secure the Worldbreaker Foreman's Override Chip; simultaneous kills aren't required.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +976,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same bay, formation typically holds the central floor. Four positions, four angles. Your key remains valid.",
+          "Text": "Use 'Enter the Breaker Bay' in CZ-220, Maintenance Level. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat four members of the Worldbreaker Inner Circle in CZ-220, Breaker Bay. Their defeat secures the Worldbreaker Foreman's Override Chip; bring it back to me here in Dantooine, Battle Monster Gym.",
           "Style": 0,
           "Color": null
         }
@@ -1002,7 +1002,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four simultaneous vectors of force. This unit's model does not recommend a one-operator response to a four-operator formation. Match their number, or approximate it.",
+          "Text": "Yes. I recommend two companions for the Worldbreaker Inner Circle fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four inner-circle units remain uncorrected. Override chip not yet recovered.",
+          "Text": "Defeat four members of the Worldbreaker Inner Circle in CZ-220, Breaker Bay. Their defeat secures the Worldbreaker Foreman's Override Chip; bring it back to me here in Dantooine, Battle Monster Gym.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four units corrected. Override chip signature detected. Transfer it.",
+          "Text": "You've defeated four members of the Worldbreaker Inner Circle. Let me see the Worldbreaker Foreman's Override Chip.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Chip logged. Unlogged bay activity terminated. Fourth structural checkpoint: passed. One checkpoint remains.",
+          "Text": "Override chip received. Unauthorized orders disabled. Your payment is ready. Speak to me again for the final trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "One unit remains: designation unknown to this database, function classification master. It exceeded its own rated tolerance and did not fail. This unit has recalculated that outcome eleven times. Each calculation returns the same result: an anomaly this unit cannot classify as safe. Recommend three operators, minimum. Correction: recommend redundant operators, plural, exceeding two. Correct the master. There is no work order for this one. What remains after will be the record.",
+          "Text": "The master remains active in the Breaker Yard. Defeat it to complete the structural failure investigation. Defeat the Worldbreaker Master in CZ-220, Breaker Yard. Report back to me here in Dantooine, Battle Monster Gym; no item is needed for this final trial. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Acknowledged. Three operators, minimum. This unit will log the outcome either way.",
+          "Text": "In CZ-220, Breaker Yard, use the '???' challenge marker to call the Worldbreaker Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same station, deepest bay, unrestricted by any key this unit has issued. The master goes where it calculates it needs to go. This unit cannot predict its position with confidence.",
+          "Text": "In CZ-220, Breaker Yard, use the '???' challenge marker to call the Worldbreaker Master. Accept this assignment before using the marker.",
           "Style": 0,
           "Color": null
         }
@@ -1211,7 +1211,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Force exceeding rated tolerance, applied without the hesitation a governor would provide. This unit's failure-rate model breaks down above a single operator; the sample size for solo correction attempts is zero survivors to model from. Bring redundant operators. Three, minimum. This is not a recommendation this unit will repeat as a suggestion.",
+          "Text": "Recommended deployment: you and two additional operators. Target: Worldbreaker Master. Multiple operators distribute incoming force. Solo entry is permitted; risk remains high.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The master remains uncorrected at CZ-220 Breaker Yard. Recommend redundant operators before proceeding. This unit is still calculating.",
+          "Text": "Defeat the Worldbreaker Master in CZ-220, Breaker Yard. Report back to me here in Dantooine, Battle Monster Gym; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The master is no longer generating readings. No further correction required. Confirm status.",
+          "Text": "You've defeated the Worldbreaker Master. Give me your report and we'll finish the trial.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Status confirmed. Worldbreaker rating: yours now, logged and rated. This unit recommends you do not exceed it the way the master did. This unit will not recommend it twice.",
+          "Text": "Unauthorized demolition operation: closed. Operator assessment: passed. Apply force within the limits of the structure around you. You've earned the right to train Worldbreaker. Your final payment is ready.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "Six operators, one work order. I'm on it.",
+        "Text": "I'll defeat six Worldbreaker Adepts.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the work order.",
+        "Text": "Here's the Worldbreaker Breaker Yard Work Order.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "Five specialists. Understood.",
+        "Text": "I'll defeat five Worldbreaker Specialists.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the relay.",
+        "Text": "Here's the Worldbreaker Junkline Control Relay.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll bring two more. Where's the warden?",
+        "Text": "I'll defeat the Worldbreaker Warden.",
         "Style": 4,
         "Color": null
       },
@@ -1736,7 +1736,7 @@
     "reply-00018": {
       "Id": "reply-00018",
       "Text": {
-        "Text": "How many should I bring?",
+        "Text": "Would you recommend bringing help?",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the sigil. The warden's down.",
+        "Text": "Here's the Worldbreaker Sheared Bay Sigil.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll match their numbers.",
+        "Text": "I'll defeat four members of the Worldbreaker Inner Circle.",
         "Style": 4,
         "Color": null
       },
@@ -1906,7 +1906,7 @@
     "reply-00025": {
       "Id": "reply-00025",
       "Text": {
-        "Text": "How many should I bring?",
+        "Text": "Would you recommend bringing help?",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the chip. All four are down.",
+        "Text": "Here's the Worldbreaker Foreman's Override Chip.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "Three of us, then. Where is it?",
+        "Text": "I'll face the Worldbreaker Master and report back.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "It's done. No more readings.",
+        "Text": "The Worldbreaker Master is defeated. Here's my report.",
         "Style": 4,
         "Color": null
       },

@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Unbreakable Beast. You took everything that preserve had and you're still standing. Nothing left in there worth testing you against. Go hold something worth holding.",
+          "Text": "The preserve is clear of that school. Help your beast endure because it trusts you, never because it fears you. You've finished my Unbreakable Beast trials. I have no further work for you here.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "This one. Rancor, north pens, three years back. Near took my arm. I kept the arm. You haven't taken anything yet worth naming. Come back when you have.",
+          "Text": "These trials require rank 50 in Beast Mastery. Reach that rank as a handler, then come back. Toughness starts with knowing what your beast can bear.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Something took over my Tarn Jungle Preserve. Adepts, six of them. Toughen young beasts with beatings instead of trust, call it training. Go in, on Dathomir. Take the six down. Bring back the Unbreakable Beast Tarn Hunt Tally they're keeping score with.",
+          "Text": "A keeper crew took over my preserve and calls beatings training. Recover their tally so I can account for what they've done. Defeat six Unbreakable Beast Adepts in Dathomir, Tarn Jungle Preserve. Their defeat secures the Unbreakable Beast Tarn Hunt Tally; bring it back to me here in Dathomir, Czerka Base. I'll give you the Dathomir Tarn Jungle Preserve Key when you accept. Complete all five trials to earn the right to train Unbreakable Beast.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Key's yours. North fence, same gap I've been meaning to weld shut for a year. Go in. Take what's coming. Come back standing.",
+          "Text": "Here's the Dathomir Tarn Jungle Preserve Key. Use 'Tarn Jungle Preserve' in Dathomir, Tarnished Jungles. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Unbreakable Beast Adepts, then return with the Unbreakable Beast Tarn Hunt Tally.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six adepts still swinging. Tally's still with them.",
+          "Text": "Defeat six Unbreakable Beast Adepts in Dathomir, Tarn Jungle Preserve. Their defeat secures the Unbreakable Beast Tarn Hunt Tally; bring it back to me here in Dathomir, Czerka Base.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You're upright. That's the whole test, passed. Let's see it.",
+          "Text": "You've defeated six Unbreakable Beast Adepts. Let me see the Unbreakable Beast Tarn Hunt Tally.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Marked, every hit. That's evidence I can use. There's more standing between you and the rest of this preserve, if you've got the stomach.",
+          "Text": "That's the record I needed. We can account for the trails again. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists past the adepts. They've moved on from beatings to something with a needle in it, scent vial, dosed wrong on purpose to keep the beasts in constant pain. That's not toughening. That's just cruelty with a schedule. Take the five down. Bring me the Unbreakable Beast Beast-Pen Scent Vial.",
+          "Text": "The specialists have moved from beatings to chemical pressure. Take back their scent vial. Defeat five Unbreakable Beast Specialists in Dathomir, Tarn Jungle Preserve. Their defeat secures the Unbreakable Beast Beast-Pen Scent Vial; bring it back to me here in Dathomir, Czerka Base.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same gap in the fence. Deeper pens this time. Watch your footing near the troughs; they've let the ground rot.",
+          "Text": "Your key still grants access to Dathomir, Tarn Jungle Preserve. Defeat five Unbreakable Beast Specialists to secure the Unbreakable Beast Beast-Pen Scent Vial, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists, still dosing my pens. Bring that vial back.",
+          "Text": "Defeat five Unbreakable Beast Specialists in Dathomir, Tarn Jungle Preserve. Their defeat secures the Unbreakable Beast Beast-Pen Scent Vial; bring it back to me here in Dathomir, Czerka Base.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You look like you took a few doses yourself. Hand it over.",
+          "Text": "You've defeated five Unbreakable Beast Specialists. Let me see the Unbreakable Beast Beast-Pen Scent Vial.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That vial's proof enough on its own. Whoever's running this operation just made my case for me. Good work. Rest up.",
+          "Text": "This belongs with the handlers who know how to use it. Your payment is ready. Speak to me again for the warden trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden holds the deep pens. His hide's the reason blades bounce off him instead of biting, years of taking hits on purpose until nothing gets through clean anymore. One blade against that just wears its edge down for nothing. Bring friends who can take a hit themselves, not just deal one. Take him down. Bring me the Unbreakable Beast Clawed Alpha Totem.",
+          "Text": "The warden protects those methods. Recover his alpha totem and break that authority. Defeat the Unbreakable Beast Warden in Dathomir, Tarn Jungle Preserve. Their defeat secures the Unbreakable Beast Clawed Alpha Totem; bring it back to me here in Dathomir, Czerka Base. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same gap. Deep pens past the rotted troughs. Bring people who can stand there and keep standing, not just people who hit hard once.",
+          "Text": "In Dathomir, Tarn Jungle Preserve, use the '???' challenge marker to call the Unbreakable Beast Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Unbreakable Beast Clawed Alpha Totem.",
           "Style": 0,
           "Color": null
         }
@@ -793,7 +793,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Because one blade tires before his hide does. Simple as that. Bring friends who can take a hit and keep standing, and he's got three fights instead of one easy one, and none of you tire out at the same time he does. That's the whole trick to a hide like his. Outlast it in numbers, since you can't outlast it alone.",
+          "Text": "I recommend two companions against the Unbreakable Beast Warden. Spread the pressure so one person doesn't have to carry the whole fight. You can enter alone, but prepare carefully before you call the challenge.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden's hide is still holding. Bring friends who can take a hit.",
+          "Text": "Defeat the Unbreakable Beast Warden in Dathomir, Tarn Jungle Preserve. Their defeat secures the Unbreakable Beast Clawed Alpha Totem; bring it back to me here in Dathomir, Czerka Base. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Everybody still standing? Good sign. Let's see the totem.",
+          "Text": "You've defeated the Unbreakable Beast Warden. Let me see the Unbreakable Beast Clawed Alpha Totem.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Whole. That's the real bloodline proven again, finally. Not bad, for people who could take a hit. Rest up. The ones who taught him that trick are next.",
+          "Text": "The totem is back in our keeping. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of them run the deep floor now, inner circle, the ones who taught the warden that his hide should stop feeling anything at all. Bring your people back. Four of them hitting at once is its own kind of endurance test. Take them down. Bring me the Unbreakable Beast Preserve Keeper's Token.",
+          "Text": "Four keepers still control the preserve's training. Take their token out of the pens. Defeat four members of the Unbreakable Beast Inner Circle in Dathomir, Tarn Jungle Preserve. Their defeat secures the Unbreakable Beast Preserve Keeper's Token; bring it back to me here in Dathomir, Czerka Base.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same gap. Deepest part of the preserve. Stand together. Four of them hitting from four sides tests whether your people can hold a line as much as it tests you.",
+          "Text": "Your key still grants access to Dathomir, Tarn Jungle Preserve. Defeat four members of the Unbreakable Beast Inner Circle to secure the Unbreakable Beast Preserve Keeper's Token, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of them still running the deep floor. Bring the token back.",
+          "Text": "Defeat four members of the Unbreakable Beast Inner Circle in Dathomir, Tarn Jungle Preserve. Their defeat secures the Unbreakable Beast Preserve Keeper's Token; bring it back to me here in Dathomir, Czerka Base.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your people still standing beside you. Good. Let's see the token.",
+          "Text": "You've defeated four members of the Unbreakable Beast Inner Circle. Let me see the Unbreakable Beast Preserve Keeper's Token.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Whole. Deep floor's mine to sign again. One name left down there, and he's the one who taught all four of them to stop feeling anything. You're ready for that.",
+          "Text": "The keepers can no longer claim authority here. Your payment is ready. Speak to me again for the final trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Last one. The master's hide doesn't just stop feeling it. It doesn't break, period, not the way the warden's doesn't break, not the way anything in this preserve doesn't break. He built that out of the same endurance I've spent my life teaching, and pointed it at anyone who questioned him. Bring your people. All of them. His hide answers to a lot of hits landing together or it doesn't answer to anything. No token this time. Him going down, and staying down, is the whole proof.",
+          "Text": "Their master is the last keeper enforcing those methods. Defeat him in the Alpha Beast Hollow and end the abuse. Defeat the Unbreakable Beast Master in Dathomir, Alpha Beast Hollow. Report back to me here in Dathomir, Czerka Base; no item is needed for this final trial. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then go. All your people, together, same gap in the fence. His hide's felt one hit at a time for years and shrugged it off. Give it a lot of hits, all at once, for once.",
+          "Text": "In Dathomir, Alpha Beast Hollow, use the '???' challenge marker to call the Unbreakable Beast Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "His hide's still standing. Bring everyone you've got.",
+          "Text": "Defeat the Unbreakable Beast Master in Dathomir, Alpha Beast Hollow. Report back to me here in Dathomir, Czerka Base; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Preserve's gone quiet. Even the pens have stopped fighting the fences. Tell me he's down.",
+          "Text": "You've defeated the Unbreakable Beast Master. Give me your report and we'll finish the trial.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then he's down, and staying down, which is the whole proof right there. You took everything that preserve had to give and you're still standing, same as I've always measured it. That's the unbreakable bond, both ways, held all the way through. Go hold something worth holding.",
+          "Text": "The preserve is clear of that school. Help your beast endure because it trusts you, never because it fears you. You've earned the right to train Unbreakable Beast. Your final payment is ready.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll take the six down and bring your tally.",
+        "Text": "I'll defeat six Unbreakable Beast Adepts.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll take the five down and bring the vial.",
+        "Text": "I'll defeat five Unbreakable Beast Specialists.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll bring friends who can take a hit too.",
+        "Text": "I'll defeat the Unbreakable Beast Warden.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Unbreakable Beast Clawed Alpha Totem, whole.",
+        "Text": "Here's the Unbreakable Beast Clawed Alpha Totem.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "We'll take the four together and hold.",
+        "Text": "I'll defeat four members of the Unbreakable Beast Inner Circle.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Unbreakable Beast Preserve Keeper's Token, whole.",
+        "Text": "Here's the Unbreakable Beast Preserve Keeper's Token.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "All of us, together, against him.",
+        "Text": "I'll face the Unbreakable Beast Master and report back.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "He's down. Staying down.",
+        "Text": "The Unbreakable Beast Master is defeated. Here's my report.",
         "Style": 4,
         "Color": null
       },

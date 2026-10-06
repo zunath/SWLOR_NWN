@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The conduits are singing steady, and so are you. The current runs through you now -- both blades, one river, pooling nowhere. Come sit in the ward sometimes when your hands are empty. Healing is the same flow, pointed gently.",
+          "Text": "The conduits can flow through the ward again. Carry that lesson with your staff. You've finished my Infinite Conduit trials. I have no further work for you here.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Listen -- the conduits are low and even today. The ward below is calm. You are not, quite. The current still snags on you somewhere; I can hear it in how you carry that staff. Finish learning it -- all of it, until nothing about the saberstaff is still a stranger to you -- and then come sit with me. The conduit form waits better than most teachers.",
+          "Text": "The conduit trials require rank 50 in Saberstaff. Reach that rank, then return. Learn to guide the current before you test how much you can carry.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Do you hear the conduits this morning? Under the ward -- there, that low note. Out of tune. There are practitioners in the Dantooine Medical Sublevel who took the conduit form from me and dammed it: they pool the Force in their blades and let it stagnate, and stagnant power always finds somewhere to spill. Go down, defeat six of their adepts, and bring me the Infinite Conduit Triage Ward Ledger they carried off when they sealed the stair. The ward cannot sort its sick without it, and I cannot reach them anymore.",
+          "Text": "Practitioners in the medical sublevel are hoarding power instead of keeping it flowing. They also took the ward's ledger. Bring that record home. Defeat six Infinite Conduit Adepts in Dantooine, Medical Sublevel. Their defeat secures the Infinite Conduit Triage Ward Ledger; bring it back to me here in Dantooine, Medical Interior. I'll give you the Dantooine Medical Sublevel Key when you accept. Complete all five trials to earn the right to train Infinite Conduit.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then go quietly and come back whole. The key I've given you opens the service door behind the recovery ward; past it, follow the pipes down. Six adepts, the ledger, and back to me. I'll keep a bed warm. I always do.",
+          "Text": "Here's the Dantooine Medical Sublevel Key. Use 'Dantooine Medical Sublevel' in Dantooine, Abandoned Warehouse. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Infinite Conduit Adepts, then return with the Infinite Conduit Triage Ward Ledger.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Beneath us. The sublevel runs under this whole facility -- it was cut as a kolto reserve, and I taught the form down there because the conduits keep honest time. Take the work and I'll give you the sublevel key; it opens the sealed service door behind the recovery ward. Past that seal, everything is theirs now. Follow the pipes.",
+          "Text": "Use 'Dantooine Medical Sublevel' in Dantooine, Abandoned Warehouse. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Infinite Conduit Adepts in Dantooine, Medical Sublevel. Their defeat secures the Infinite Conduit Triage Ward Ledger; bring it back to me here in Dantooine, Medical Interior.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The stair is still sealed behind you and the ledger is still below. Six adepts stand between the ward and its Infinite Conduit Triage Ward Ledger. Go gently. But go.",
+          "Text": "Defeat six Infinite Conduit Adepts in Dantooine, Medical Sublevel. Their defeat secures the Infinite Conduit Triage Ward Ledger; bring it back to me here in Dantooine, Medical Interior.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You're back -- and the current under the floor sounds looser already. That's the ledger under your arm, water-stained and all. May I?",
+          "Text": "You've defeated six Infinite Conduit Adepts. Let me see the Infinite Conduit Triage Ward Ledger.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Thank you. No -- don't wave that off. A ward runs on its ledger the way a form runs on breath. Six of theirs are quiet below, and forty of mine are safer above. Take the credits, drink some water, and rest. The current has more to show you.",
+          "Text": "The training record is back. We can see what went wrong. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Sit a moment. The conduits changed pitch in the night, and that pitch means pressure. The specialists below have pulled the Infinite Conduit Kolto Conduit Coupler off the main line -- they use it to throttle the flow to their practice chamber. Famine, then flood. It is starving the ward's kolto pressure and teaching them exactly the wrong lesson at once. Defeat the five specialists and bring the coupler home to the line it belongs to.",
+          "Text": "The specialists are using a kolto coupler to control the conduits. Recover it so the ward can use its own equipment again. Defeat five Infinite Conduit Specialists in Dantooine, Medical Sublevel. Their defeat secures the Infinite Conduit Kolto Conduit Coupler; bring it back to me here in Dantooine, Medical Interior.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Go with the flow steady in you. The galleries are loud -- let the noise set your rhythm, not theirs. And carry the coupler kindly on the way up. It is older than both of us and better behaved.",
+          "Text": "Your key still grants access to Dantooine, Medical Sublevel. Defeat five Infinite Conduit Specialists to secure the Infinite Conduit Kolto Conduit Coupler, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -558,7 +558,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Deeper than the adepts kept -- the pump galleries, where the main kolto lines run. Your key still opens the service door. From there, follow the sound of water being made to wait; their practice chamber leans against the main line, and you will feel the throttled current before you see them.",
+          "Text": "Use 'Dantooine Medical Sublevel' in Dantooine, Abandoned Warehouse. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat five Infinite Conduit Specialists in Dantooine, Medical Sublevel. Their defeat secures the Infinite Conduit Kolto Conduit Coupler; bring it back to me here in Dantooine, Medical Interior.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The galleries still run throttled -- I hear it every hour, like a held note. Five specialists, and the Infinite Conduit Kolto Conduit Coupler comes back to the main line. The ward is patient. The patients are less so.",
+          "Text": "Defeat five Infinite Conduit Specialists in Dantooine, Medical Sublevel. Their defeat secures the Infinite Conduit Kolto Conduit Coupler; bring it back to me here in Dantooine, Medical Interior.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I felt the pressure even out before dawn -- the whole ward exhaled at once. You have it, then. Let me see.",
+          "Text": "You've defeated five Infinite Conduit Specialists. Let me see the Infinite Conduit Kolto Conduit Coupler.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Not even scorched. The line takes it back tonight, and the ward sleeps to a steady hum for the first time in weeks. You're learning the form the right way round -- flow first, blades after. Rest now. The next current runs colder.",
+          "Text": "That equipment no longer serves their drills. Your payment is ready. Speak to me again for the warden trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Come sit. I will say this slowly, because it deserves slowness. The deep sublevel has a warden now -- their word, and he has earned it in the worst way. He holds the flooded ward at the bottom of the stair, and he wears that ward's fractured sigil as if guarding a thing were the same as keeping it alive. The current breaks against him, and he drinks what breaks. Hear me completely: no one has come back from him alone, and I have sat at enough bedsides to say that with certainty. Bring companions to share the load -- two at the very least. Defeat him, and bring me the Infinite Conduit Fractured Ward Sigil, so the deep ward can be given back to healing.",
+          "Text": "The warden holds the conduit chambers. Take back the ward sigil. Defeat the Infinite Conduit Warden in Dantooine, Medical Sublevel. Their defeat secures the Infinite Conduit Fractured Ward Sigil; bring it back to me here in Dantooine, Medical Interior. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good. When you face him, remember -- he must hold everything, and you must hold nothing. Let his weight be his problem. Strike, release, let a companion strike while you breathe. The sigil never leaves him; it will come up with you or not at all.",
+          "Text": "In Dantooine, Medical Sublevel, use the '???' challenge marker to call the Infinite Conduit Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Infinite Conduit Fractured Ward Sigil.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Down every stair you have cleared, and one more -- the flooded ward at the sublevel's floor, where the kolto stands waist-deep and the light comes up through it. Your key brings you to the last door; he broke its lock himself, from the inside. He is not hiding. Things that full never do.",
+          "Text": "In Dantooine, Medical Sublevel, use the '???' challenge marker to call the Infinite Conduit Warden. Accept this assignment before using the marker.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The flooded ward still presses on the whole sublevel -- I feel it in the conduits like a breath being held. Gather your companions before you go down. The Infinite Conduit Fractured Ward Sigil comes up into the light with you, or it stays in the dark with him.",
+          "Text": "Defeat the Infinite Conduit Warden in Dantooine, Medical Sublevel. Their defeat secures the Infinite Conduit Fractured Ward Sigil; bring it back to me here in Dantooine, Medical Interior. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The held breath is gone. The whole sublevel let it out in the night, and I have been smiling at pipes all morning like a fool. Sit down first -- sit. Now. The sigil.",
+          "Text": "You've defeated the Infinite Conduit Warden. Let me see the Infinite Conduit Fractured Ward Sigil.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Fractured, and it held its shape anyway. Most of us do. I will consecrate the deep ward again this week, and his name goes back on the keepers' wall -- the old name, from before. That mercy was yours, and you did it wisely: with others. Keep those people close. The last doors down there do not open for one pair of hands.",
+          "Text": "The warden's watch is over. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The conduits sing almost clean now. Almost. Four voices still out of tune -- the inner circle, the ones who taught everyone below to dam the flow in the first place. They have taken the matron's old station at the heart of the sublevel, and they pass her ward token hand to hand like something to be proud of. Defeat all four and bring me the Infinite Conduit Matron's Ward Token. It belongs to the station, and the station belongs to the sick.",
+          "Text": "Four senior practitioners still authorize the blocked flow. Recover the matron's token. Defeat four members of the Infinite Conduit Inner Circle in Dantooine, Medical Sublevel. Their defeat secures the Infinite Conduit Matron's Ward Token; bring it back to me here in Dantooine, Medical Interior.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Go steadily. If any of them truly pause -- not a feint, a pause -- give them room to step back from it. They won't take it. But the form asks that we offer, so we offer. Then finish it, and bring the token home.",
+          "Text": "Your key still grants access to Dantooine, Medical Sublevel. Defeat four members of the Infinite Conduit Inner Circle to secure the Infinite Conduit Matron's Ward Token, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +976,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The matron's station -- the round chamber at the heart of the sublevel, where every kolto line meets. Follow any main line inward and it will take you there. They know the warden fell. They will be standing close together by now. Fear does that, even to the practiced.",
+          "Text": "Use 'Dantooine Medical Sublevel' in Dantooine, Abandoned Warehouse. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat four members of the Infinite Conduit Inner Circle in Dantooine, Medical Sublevel. Their defeat secures the Infinite Conduit Matron's Ward Token; bring it back to me here in Dantooine, Medical Interior.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of them still hold the matron's station, and the Infinite Conduit Matron's Ward Token still passes between their hands. The heart of the sublevel beats around them. Go when you are braided, and not before.",
+          "Text": "Defeat four members of the Infinite Conduit Inner Circle in Dantooine, Medical Sublevel. Their defeat secures the Infinite Conduit Matron's Ward Token; bring it back to me here in Dantooine, Medical Interior.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I know that weight from across a room. She wore it thirty years, and it never once sat well in proud hands. Yours aren't. Give it here -- gently.",
+          "Text": "You've defeated four members of the Infinite Conduit Inner Circle. Let me see the Infinite Conduit Matron's Ward Token.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then only the deepest room is left. The matron who wore this saved more lives than I can count without ever raising a blade, and she taught me that the ward and the form are the same practice. I will hang it back at her station myself. One current remains -- and it runs through someone I do not have the strength to face. You might.",
+          "Text": "Their instructors no longer hold the authority to teach. Your payment is ready. Speak to me again for the final trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Sit with me. Both of us this time -- I have been standing over this decision for days. At the bottom of the sublevel, past every door you have opened, there is a reservoir chamber, and the one waiting in it perfected the form you came here to learn. Infinite conduit, truly -- the Force pouring through both blades without pooling, without pausing, without end. Then he turned the river inward, and now it pours only into him. He taught the four you defeated. He learned beside me, once. A current needs more than one channel -- go with companions, three channels at the least, and let the river divide among you where it would drown one alone. There is nothing to carry back. When he falls, the current comes home by itself, and I will feel it arrive.",
+          "Text": "Their master is the last obstruction. Defeat him in the Protected Ward and finish the conduit trials. Defeat the Infinite Conduit Master in Dantooine, Protected Ward. Report back to me here in Dantooine, Medical Interior; no item is needed for this final trial. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then take the last lesson with you through the door: do not admire him mid-fight. Everyone does -- it is the opening he waits for. Watch his feet, trade the current between you, and come home. All of you. I will be listening to the conduits until you do.",
+          "Text": "In Dantooine, Protected Ward, use the '???' challenge marker to call the Infinite Conduit Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The reservoir chamber at the very bottom -- below the flooded ward, below the station, where the sublevel keeps its deepest kolto in the dark. Your key ends at his door, and the door is not barred. A river that only accepts stays open at the mouth.",
+          "Text": "In Dantooine, Protected Ward, use the '???' challenge marker to call the Infinite Conduit Master. Accept this assignment before using the marker.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He is still down there. The conduits sing around him the way water sings around a stone. Gather your companions -- three channels, no fewer -- and finish the form's long argument with itself. I will be here. I am always here.",
+          "Text": "Defeat the Infinite Conduit Master in Dantooine, Protected Ward. Report back to me here in Dantooine, Medical Interior; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I felt it at dawn. The current turned and came home -- every line in the sublevel at once, like a tide remembering the moon. The ward thinks the kolto pressure fixed itself. We know better. Come here. Tell me it is done; I want to hear it in a voice.",
+          "Text": "You've defeated the Infinite Conduit Master. Give me your report and we'll finish the trial.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "And now it runs through you. I can hear it under your breathing -- in one hand, out the other, pooling nowhere. That is the whole form; there was never anything else to teach. He would have wanted a student like you, back when he still wanted students. Go gently with it. And when you find someone worth teaching, teach them the way you learned it: flow first, blades after, and never -- never -- alone.",
+          "Text": "The conduits can flow through the ward again. Carry that lesson with your staff. You've earned the right to train Infinite Conduit. Your final payment is ready.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "Six adepts, one ledger. The stair opens today.",
+        "Text": "I'll defeat six Infinite Conduit Adepts.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "The Infinite Conduit Triage Ward Ledger. The ward can sort its sick again.",
+        "Text": "Here's the Infinite Conduit Triage Ward Ledger.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "Five specialists. The line gets its coupler back.",
+        "Text": "I'll defeat five Infinite Conduit Specialists.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "The Infinite Conduit Kolto Conduit Coupler. It wants its line back.",
+        "Text": "Here's the Infinite Conduit Kolto Conduit Coupler.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I won't go alone. The warden falls, and the sigil comes home.",
+        "Text": "I'll defeat the Infinite Conduit Warden.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "The Infinite Conduit Fractured Ward Sigil. The deep ward is draining clean.",
+        "Text": "Here's the Infinite Conduit Fractured Ward Sigil.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "Four teachers of one bad lesson. I'll bring the token home.",
+        "Text": "I'll defeat four members of the Infinite Conduit Inner Circle.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "The Infinite Conduit Matron's Ward Token. The station is quiet.",
+        "Text": "Here's the Infinite Conduit Matron's Ward Token.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "Three channels, one current. We'll end it.",
+        "Text": "I'll face the Infinite Conduit Master and report back.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "It is done. He is defeated, and the river runs through.",
+        "Text": "The Infinite Conduit Master is defeated. Here's my report.",
         "Style": 4,
         "Color": null
       },

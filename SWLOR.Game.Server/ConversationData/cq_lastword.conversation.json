@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Nothing left to teach. The range is honest again and the name's yours now. Wear it quiet.",
+          "Text": "The ambush school is finished. You've earned your training honestly; keep it that way. You've finished my Last Word trials. I have no further work for you here.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Holster's worn wrong. You lean on that pistol; you don't live in it yet. Come back when it answers before you've finished asking.",
+          "Text": "Come back at rank 50 in Pistol. The canyon trials need a trained shooter, and I won't mistake confidence for training.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Holster's worn right. That buys you one conversation. Down that canyon a crew is running a school on my name. Last Word, taught by men who never heard one. Six of their adepts hold the near stretch. Put them down and bring me the Last Word Canyon Range Tally they keep score on.",
+          "Text": "A crew in the canyon is selling my shooting discipline as an ambush school. Recover their tally so I can start shutting it down. Defeat six Last Word Adepts in Tatooine, Anchorhead Canyon Range. Their defeat secures the Last Word Canyon Range Tally; bring it back to me here in Tatooine, Anchorhead, Smuggler's Den. I'll give you the Anchorhead Canyon Range Key when you accept. Complete all five trials to earn the right to train Last Word.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Key's yours. Marshal's gate, near stretch, six adepts. Don't come back with almost.",
+          "Text": "Here's the Anchorhead Canyon Range Key. Use 'Anchorhead Canyon Range' in Tatooine, Anchorhead, North Entrance. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Last Word Adepts, then return with the Last Word Canyon Range Tally.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Through the marshal's gate below; my key fits the lock. Near stretch first, long lanes past that, deep range at the bottom. Watch the high walls. Sound lies in that canyon.",
+          "Text": "Use 'Anchorhead Canyon Range' in Tatooine, Anchorhead, North Entrance. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Last Word Adepts in Tatooine, Anchorhead Canyon Range. Their defeat secures the Last Word Canyon Range Tally; bring it back to me here in Tatooine, Anchorhead, Smuggler's Den.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six adepts still breathing and my tally still in their shack. The argument isn't over till it's over.",
+          "Text": "Defeat six Last Word Adepts in Tatooine, Anchorhead Canyon Range. Their defeat secures the Last Word Canyon Range Tally; bring it back to me here in Tatooine, Anchorhead, Smuggler's Den.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You walk quieter than you did. That's the range teaching. Let's see the tally.",
+          "Text": "You've defeated six Last Word Adepts. Let me see the Last Word Canyon Range Tally.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six lines, all closed. Credits buy ammunition. The lesson is the part you keep.",
+          "Text": "The training record is back. We can see what went wrong. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You came back. The adepts didn't. Next problem: five specialists working the long lanes. They've dialed my old sightlines into ambush work. Put all five down and bring back the Last Word Sightline Calibrator before they teach the rock itself to cheat.",
+          "Text": "The specialists have turned my old sightlines into ambush lanes. Bring back their calibrator. Defeat five Last Word Specialists in Tatooine, Anchorhead Canyon Range. Their defeat secures the Last Word Sightline Calibrator; bring it back to me here in Tatooine, Anchorhead, Smuggler's Den.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Long lanes, five shooters. Walk soft, shoot once.",
+          "Text": "Your key still grants access to Tatooine, Anchorhead Canyon Range. Defeat five Last Word Specialists to secure the Last Word Sightline Calibrator, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists, still shooting. My calibrator, still theirs. The long lanes are waiting on your answer.",
+          "Text": "Defeat five Last Word Specialists in Tatooine, Anchorhead Canyon Range. Their defeat secures the Last Word Sightline Calibrator; bring it back to me here in Tatooine, Anchorhead, Smuggler's Den.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Heard the long lanes go quiet. Five funerals' worth of quiet. Show me the calibrator.",
+          "Text": "You've defeated five Last Word Specialists. Let me see the Last Word Sightline Calibrator.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Zeroed and honest again. You shoot like the argument's already over. They've noticed. Good.",
+          "Text": "That equipment no longer serves their drills. Your payment is ready. Speak to me again for the warden trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Now the warden. He holds the deep range past the old marshal's stand, and he was the best I ever passed. Wears my crest like he earned all of it. Break him and bring me what's left of it, the Last Word Shattered Range Crest. And hear this plain: I'd take two guns I trust to that gate. So will you.",
+          "Text": "The warden is protecting the school's deep range. Defeat him and take back my crest. Defeat the Last Word Warden in Tatooine, Anchorhead Canyon Range. Their defeat secures the Last Word Shattered Range Crest; bring it back to me here in Tatooine, Anchorhead, Smuggler's Den. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "One more thing. Pride is a caliber that never stopped anybody. Bring the friends.",
+          "Text": "In Tatooine, Anchorhead Canyon Range, use the '???' challenge marker to call the Last Word Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Last Word Shattered Range Crest.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Deep range, past the old marshal's stand. Follow the firing line down till the canyon narrows. He'll know you're coming. He always knows.",
+          "Text": "In Tatooine, Anchorhead Canyon Range, use the '???' challenge marker to call the Last Word Warden. Accept this assignment before using the marker.",
           "Style": 0,
           "Color": null
         }
@@ -793,7 +793,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Help. Yes. The warden's put faster hands than yours in the ground, one at a time, because they came one at a time. Bring two guns you trust and hand him three arguments at once. Even his patience can't answer all of them.",
+          "Text": "Yes. I recommend two companions for the Last Word Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden's still standing and my crest is still on his coat. Deep range. Three of you. I meant that.",
+          "Text": "Defeat the Last Word Warden in Tatooine, Anchorhead Canyon Range. Their defeat secures the Last Word Shattered Range Crest; bring it back to me here in Tatooine, Anchorhead, Smuggler's Den. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You're standing here. Means he isn't standing anywhere. The crest.",
+          "Text": "You've defeated the Last Word Warden. Let me see the Last Word Shattered Range Crest.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Shattered. Fitting. He carried it wrong and it carried him nowhere. His toll road is closed, and that canyon gets its first honest night in years.",
+          "Text": "The warden's watch is over. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four left that matter. The inner circle, the ones who ran the school after they buried my name in it. They hold the old marshal's stand and they bank a challenge chit that used to mean something: lay it on the marshal's table and the marshal must answer. Kill the four and bring me the Last Word Marshal's Challenge Chit. We're going to use it properly.",
+          "Text": "The four running the school hold the marshal's challenge chit. Recover it so we can challenge the master. Defeat four members of the Last Word Inner Circle in Tatooine, Anchorhead Canyon Range. Their defeat secures the Last Word Marshal's Challenge Chit; bring it back to me here in Tatooine, Anchorhead, Smuggler's Den.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Marshal's stand, four corners. Shoot the polite one first. He's the signal.",
+          "Text": "Your key still grants access to Tatooine, Anchorhead Canyon Range. Defeat four members of the Last Word Inner Circle to secure the Last Word Marshal's Challenge Chit, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of the circle still hold the marshal's stand, and the chit's still in their strongbox. Arguments don't settle themselves.",
+          "Text": "Defeat four members of the Last Word Inner Circle in Tatooine, Anchorhead Canyon Range. Their defeat secures the Last Word Marshal's Challenge Chit; bring it back to me here in Tatooine, Anchorhead, Smuggler's Den.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four chairs empty at their table. Arithmetic I like. The chit.",
+          "Text": "You've defeated four members of the Last Word Inner Circle. Let me see the Last Word Marshal's Challenge Chit.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You know what this buys. I'll post it on the marshal's board myself; some rights I kept. He'll answer. Rest first. You'll want steady hands for the introduction.",
+          "Text": "Their instructors no longer hold the authority to teach. Your payment is ready. Speak to me again for the final trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Chit's posted. He answered. Understand what's waiting: the master has the real Last Word, the shot that ends arguments, the thing you've been circling this whole climb. He has never lost one. Go end his streak. Take your two friends up with you; nobody walks off the master's range alone. Nobody ever has.",
+          "Text": "The master has answered the challenge. Defeat him in the Canyon Dueling Pit to finish the Last Word trials. Defeat the Last Word Master in Tatooine, Canyon Dueling Pit. Report back to me here in Tatooine, Anchorhead, Smuggler's Den; no item is needed for this final trial. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "No advice left worth giving. Except this. He'll offer you the first word. Don't take it. Take the last.",
+          "Text": "In Tatooine, Canyon Dueling Pit, use the '???' challenge marker to call the Last Word Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Top of the range. The marshal's overlook, where the challenge board hangs. He'll meet you in the open. He's not a coward. That would be easier.",
+          "Text": "In Tatooine, Canyon Dueling Pit, use the '???' challenge marker to call the Last Word Master. Accept this assignment before using the marker.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Master's still on the overlook and the challenge is still open. Arguments age badly. So does he. Finish it.",
+          "Text": "Defeat the Last Word Master in Tatooine, Canyon Dueling Pit. Report back to me here in Tatooine, Anchorhead, Smuggler's Den; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Canyon's gone quiet. Whole town heard the quiet. Say the words.",
+          "Text": "You've defeated the Last Word Master. Give me your report and we'll finish the trial.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then the name is yours. Last Word, worn by somebody who earned it, and I'm done being the last who did. Take the pay, buy your two friends whatever they drink, and keep that holster worn right.",
+          "Text": "The ambush school is finished. You've earned your training honestly; keep it that way. You've earned the right to train Last Word. Your final payment is ready.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "Six adepts. I'll bring your tally.",
+        "Text": "I'll defeat six Last Word Adepts.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Their tally. Six lines closed.",
+        "Text": "Here's the Last Word Canyon Range Tally.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "Five specialists. Consider it argued.",
+        "Text": "I'll defeat five Last Word Specialists.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Your calibrator. The lanes are quiet.",
+        "Text": "Here's the Last Word Sightline Calibrator.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "Then the warden falls. I won't go alone.",
+        "Text": "I'll defeat the Last Word Warden.",
         "Style": 4,
         "Color": null
       },
@@ -1736,7 +1736,7 @@
     "reply-00018": {
       "Id": "reply-00018",
       "Text": {
-        "Text": "You think I need help?",
+        "Text": "Would you recommend bringing help?",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "His crest. It broke when he did.",
+        "Text": "Here's the Last Word Shattered Range Crest.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "Four names. I'll bring the chit.",
+        "Text": "I'll defeat four members of the Last Word Inner Circle.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "The chit. Their table's cleared.",
+        "Text": "Here's the Last Word Marshal's Challenge Chit.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "Then it's the last argument. We'll settle it.",
+        "Text": "I'll face the Last Word Master and report back.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The argument's over. For good.",
+        "Text": "The Last Word Master is defeated. Here's my report.",
         "Style": 4,
         "Color": null
       },

@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Ledger's closed, final page signed. The annex is a school again instead of a wound, and the guard you carry out of it never broke once. That's the only grade that matters now. Hold it where nobody's keeping score.",
+          "Text": "The annex is quiet and your assessment is complete. Hold that guard for the people behind you. You've finished my Invincible trials. I have no further work for you here.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Hold. Feet wrong, grip lazy, and you walked through my door leading with your chin. Fail. The annex line is for blades with nothing left to learn from ordinary drills. Finish your vibroblade schooling, all of it, then report back and I'll read your stance again.",
+          "Text": "The annex trials require rank 50 in Vibroblade. Reach it, then report back. A good stance comes from training, not a confident entrance.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Hold still. Feet, grip, elbow, eyes. Huh. Passable. First time this month I've said that. So hear the assignment: my old command, the Veles Militia Annex, got sealed with my trainees still drilling inside, and they've kept my program running without me. Six adepts hold the drill floor. Put them down and bring me the Invincible Veles Drill Ledger they log every rotation in. Then I'll know what they've become, and I'll know what you are.",
+          "Text": "My trainees sealed the militia annex and kept drilling without command oversight. Recover their drill ledger so I can see what the program has become. Defeat six Invincible Adepts in Viscara, Veles Militia Annex. Their defeat secures the Invincible Veles Drill Ledger; bring it back to me here in Viscara, Veles, Sheriff/Clinic. I'll give you the Veles Militia Annex Key when you accept. Complete all five trials to earn the right to train Invincible.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Signed and logged. This key opens the side entry, west gate off the Veles post. Six adepts, one ledger, no detours. I grade what comes back, not what you meant to bring.",
+          "Text": "Here's the Veles Militia Annex Key. Use 'Veles Militia Annex' in Viscara, Veles, Sheriff/Clinic. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Invincible Adepts, then return with the Invincible Veles Drill Ledger.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "West of the Veles command post, behind a gate the militia welded shut. Only sealed drill hall on Viscara, and I wrote the program that earned it the honor. My trainees refused the stand-down order when command cut us, so command locked the door on them. The key I sign over opens the side entry. Quietly.",
+          "Text": "My trainees refused the stand-down order and kept the drill program running without oversight. The annex was sealed during the dispute. I can grant access now: use 'Veles Militia Annex' in the Veles Sheriff/Clinic after accepting my key.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "First rotation's still open on my ledger. Six adepts on the annex drill floor, and the drill ledger back in my hands. Everything else is noise.",
+          "Text": "Defeat six Invincible Adepts in Viscara, Veles Militia Annex. Their defeat secures the Invincible Veles Drill Ledger; bring it back to me here in Viscara, Veles, Sheriff/Clinic.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That shape in your pack had better be my drill ledger. On the table.",
+          "Text": "You've defeated six Invincible Adepts. Let me see the Invincible Veles Drill Ledger.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Present and intact. Blood on the corner, not yours, by the way you're standing. First rotation: pass. Take the pay, eat something, sleep. The next line on this ledger is not this polite.",
+          "Text": "Record recovered. We can trace the orders now. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your stance survived the drill floor. Noted in the margin. Next line: the annex range block, where my specialists run scored guard drills off a range relay. Timers, targets, tally lights, the lot. Five specialists, each a full grade over the adepts you dropped. Retire them and pull the Invincible Militia Range Relay off its mount. Their scores stop counting the day it sits on my desk.",
+          "Text": "The specialists control the militia's range relay. Recover it and stop those unauthorized drills. Defeat five Invincible Specialists in Viscara, Veles Militia Annex. Their defeat secures the Invincible Militia Range Relay; bring it back to me here in Viscara, Veles, Sheriff/Clinic.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Logged. Range block sits past the drill floor you cleared. Five specialists, one relay, two bolts and a hard pull to free it. Bring me the machine, not the scores.",
+          "Text": "Your key still grants access to Viscara, Veles Militia Annex. Defeat five Invincible Specialists to secure the Invincible Militia Range Relay, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Range block. Five specialists. Two bolts and a hard pull, and the relay comes home. My desk is still empty.",
+          "Text": "Defeat five Invincible Specialists in Viscara, Veles Militia Annex. Their defeat secures the Invincible Militia Range Relay; bring it back to me here in Viscara, Veles, Sheriff/Clinic.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You're standing straighter than last week. Range time does that. The relay, on the desk.",
+          "Text": "You've defeated five Invincible Specialists. Let me see the Invincible Militia Range Relay.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Relay checks out. Last run it ever logged is yours, which is a kind of score I can live with. Second rotation: pass. You're no stranger to the annex now, which means the annex knows you're coming. Watch the shadows past the range.",
+          "Text": "Equipment recovered. Their training operation is disrupted. Your payment is ready. Speak to me again for the warden trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Stop. Look at me before you take this line. The inner gate past the range belongs to the annex warden. Sarn. He was my second for six years, the best guard I ever graded, and he has ended better duelists than you for walking onto his floor alone. So you won't. Bring two blades you trust, minimum, and that's an order, not advice. Beat him and take the Invincible Scored Challenge Badge he wears. The inner annex opens with it.",
+          "Text": "The warden holds the annex for the trainees. Take the challenge badge and break that command. Defeat the Invincible Warden in Viscara, Veles Militia Annex. Their defeat secures the Invincible Scored Challenge Badge; bring it back to me here in Viscara, Veles, Sheriff/Clinic. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Logged, and I'm holding you to the company you promised. When Sarn squares up, keep your own guard honest and let your partners cost him angles. He can't grade three tests at once. Bring my badge home.",
+          "Text": "In Viscara, Veles Militia Annex, use the '???' challenge marker to call the Invincible Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Invincible Scored Challenge Badge.",
           "Style": 0,
           "Color": null
         }
@@ -793,7 +793,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Corporal Dessa Vane. Fast feet, good guard, no patience. She took the inner gate alone against my written order. Sarn's first exchange broke her arm through the block, and the second she never saw. I signed for the body. I'm not signing for another one, so you go with company or you don't go.",
+          "Text": "I recommend two companions against the Invincible Warden. Spread the pressure so one person doesn't have to carry the whole fight. You can enter alone, but prepare carefully before you call the challenge.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The inner gate is still shut and Sarn still wears my badge. If your two blades fell through, replace them before he replaces you.",
+          "Text": "Defeat the Invincible Warden in Viscara, Veles Militia Annex. Their defeat secures the Invincible Scored Challenge Badge; bring it back to me here in Viscara, Veles, Sheriff/Clinic. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You're walking in without a limp. Either you never fought him, or you learned faster than Vane did. The badge. Show me.",
+          "Text": "You've defeated the Invincible Warden. Let me see the Invincible Scored Challenge Badge.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "His badge. Blood on the pin and a perfect score under it. He'd have fought you seriously, which means you passed something I can't teach from this side of the gate. Third rotation: pass, distinguished. Buy your partners a round. Log it as equipment maintenance.",
+          "Text": "Warden defeated. That breaks their enforcement. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've read enough of my ledger to know what's left. Four names. My inner circle, promoted by my own hand, and they hold the last floor before the master's line. They fight as one unit, four guards overlapping like plate. Break all four and recover the Invincible Captain's Challenge Chit they keep. That chit was mine, and I want it back.",
+          "Text": "Four officers still carry my old authority. Recover their challenge chit. Defeat four members of the Invincible Inner Circle in Viscara, Veles Militia Annex. Their defeat secures the Invincible Captain's Challenge Chit; bring it back to me here in Viscara, Veles, Sheriff/Clinic.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Logged. Last floor before the center. Work it like a drill: pull one guard out of formation, punish the seam, reset, repeat. Four names down, one chit home, and I'll owe you more than pay.",
+          "Text": "Your key still grants access to Viscara, Veles Militia Annex. Defeat four members of the Invincible Inner Circle to secure the Invincible Captain's Challenge Chit, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The circle still holds the last floor and my chit is still in their keeping. One seam at a time. Report when there's no formation left.",
+          "Text": "Defeat four members of the Invincible Inner Circle in Viscara, Veles Militia Annex. Their defeat secures the Invincible Captain's Challenge Chit; bring it back to me here in Viscara, Veles, Sheriff/Clinic.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four at once. I drilled that formation for ten years and never once saw it opened. The chit, trainee. Last time I get to call you that.",
+          "Text": "You've defeated four members of the Invincible Inner Circle. Let me see the Invincible Captain's Challenge Chit.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "My chit. Lighter than I remembered. Fourth rotation: pass, full marks, and I'm done pretending you're a trainee. One line left in this ledger. In twenty years I have never had cause to mark it.",
+          "Text": "Their officers no longer control the authorizations. Your payment is ready. Speak to me again for the final trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Last line. The center floor belongs to the annex master. Serra Kel. I trained her, promoted her past my own grade, and her guard is the finished form: Invincible, whole, the thing you've been earning in pieces. I challenged it once and failed. Nobody walks off her floor alone, so take the partners who carried you through the gate and the circle, and I mean that as an order. No token to recover this time. Her guard breaks, or the ledger stays open forever.",
+          "Text": "Their master is the final test of that defense. Defeat her in the Militia Command Room, then report back for your assessment. Defeat the Invincible Master in Viscara, Militia Command Room. Report back to me here in Viscara, Veles, Sheriff/Clinic; no item is needed for this final trial. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Logged, final line. Center floor, past where the circle stood. Partners on your flanks, patience in the first minute, no heroics. And whatever she says to you in there, she's earned the right to say it.",
+          "Text": "In Viscara, Militia Command Room, use the '???' challenge marker to call the Invincible Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The center floor is still hers and the final line is still blank. Partners, tempo, patience. I'll be here. The ledger stays open until you close it.",
+          "Text": "Defeat the Invincible Master in Viscara, Militia Command Room. Report back to me here in Viscara, Veles, Sheriff/Clinic; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The annex went quiet an hour ago. I've stood posts outside that gate half my life and never once heard it quiet. Report, plainly: did her guard break?",
+          "Text": "You've defeated the Invincible Master. Give me your report and we'll finish the trial.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then it's done. Final grading: pass. The highest mark I've ever entered, and the first one I've written with my hand shaking. Her guard is yours now. That's how the form has always passed, one unbroken line to the next. Hold it for the people behind you, not for the score. And stop standing at attention. Peers don't.",
+          "Text": "The annex is quiet and your assessment is complete. Hold that guard for the people behind you. You've earned the right to train Invincible. Your final payment is ready.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "Sign me in, Captain.",
+        "Text": "I'll defeat six Invincible Adepts.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Your drill ledger, Captain. Six adepts couldn't hold their line.",
+        "Text": "Here's the Invincible Veles Drill Ledger.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "Consider them retired.",
+        "Text": "I'll defeat five Invincible Specialists.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "One range relay, five specialists off the score sheet.",
+        "Text": "Here's the Invincible Militia Range Relay.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll bring the blades. Sign me in.",
+        "Text": "I'll defeat the Invincible Warden.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Sarn's badge, Captain. Perfect score and all.",
+        "Text": "Here's the Invincible Scored Challenge Badge.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "The circle breaks. You have my word.",
+        "Text": "I'll defeat four members of the Invincible Inner Circle.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "No formation left standing. Your chit, Captain.",
+        "Text": "Here's the Invincible Captain's Challenge Chit.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "Then let's close your ledger.",
+        "Text": "I'll face the Invincible Master and report back.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "It broke, Captain. The floor is yours again.",
+        "Text": "The Invincible Master is defeated. Here's my report.",
         "Style": 4,
         "Color": null
       },

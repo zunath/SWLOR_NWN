@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Force-Bonded Beast. The thread is whole in you now, both directions, always. Nothing left in that den can teach either of you anything new. Go. Mind the thread; it minds you back.",
+          "Text": "The rite can be practiced freely again. Keep the bond a choice for both of you. You've finished my Force-Bonded Beast trials. I have no further work for you here.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Not you, first. It. I feel the thread between you, thin still, more suggestion than cord. Go. Let it thicken before you bring it here again.",
+          "Text": "You need rank 50 in Beast Mastery for this rite. Train your own handling skill, then return. A strong bond begins with a responsible handler.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "There. I see it now, faint, but real, a thread trying to grow between you and yours. The den's adepts sever threads like that on purpose, six of them, teaching young bonds to choke instead of hold. Go to the Grotto Apex Den on Dathomir. End the six. Bring me the Force-Bonded Beast Grotto Track Slate they keep; it once mapped where a proper rite could be spoken.",
+          "Text": "Handlers in the den are teaching bonds through force and fear. Recover the trail slate they use for their rites. Defeat six Force-Bonded Beast Adepts in Dathomir, Grotto Apex Den. Their defeat secures the Force-Bonded Beast Grotto Track Slate; bring it back to me here in Dathomir, Waterfall Ruins. I'll give you the Dathomir Grotto Apex Den Key when you accept. Complete all five trials to earn the right to train Force-Bonded Beast.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take the key; it is yours now, as much as the gate is. Go slow at the threshold, both of you. The den answers to patience before it answers to force.",
+          "Text": "Here's the Dathomir Grotto Apex Den Key. Use 'Enter the Grotto Apex Den' in Dathomir, Grotto Caverns. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Force-Bonded Beast Adepts, then return with the Force-Bonded Beast Grotto Track Slate.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six adepts still severing what should be tied. The slate waits with them.",
+          "Text": "Defeat six Force-Bonded Beast Adepts in Dathomir, Grotto Apex Den. Their defeat secures the Force-Bonded Beast Grotto Track Slate; bring it back to me here in Dathomir, Waterfall Ruins.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The thread between you is thicker already. Show me what you carried out.",
+          "Text": "You've defeated six Force-Bonded Beast Adepts. Let me see the Force-Bonded Beast Grotto Track Slate.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The ground remembers again. That is no small thing. Rest, both of you. There is a second knot to tie, when you are ready.",
+          "Text": "That's the record I needed. We can account for the trails again. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists tie forced bonds on purpose now, five of them, and teach the beast to mistake pain for devotion. That is not a knot. That is a wound wearing a knot's shape. Go back to the Grotto Apex Den. End the five. Bring me the Force-Bonded Beast Resonant Fang Charm from one of them.",
+          "Text": "The specialists use a fang charm to sustain those forced bonds. Bring it home. Defeat five Force-Bonded Beast Specialists in Dathomir, Grotto Apex Den. Their defeat secures the Force-Bonded Beast Resonant Fang Charm; bring it back to me here in Dathomir, Waterfall Ruins.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same gate, deeper trail. Walk it together this time, truly together. Let it lead, or you lead. Either is honest. Just do not drag.",
+          "Text": "Your key still grants access to Dathomir, Grotto Apex Den. Defeat five Force-Bonded Beast Specialists to secure the Force-Bonded Beast Resonant Fang Charm, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists, five wounds wearing knots. Bring the charm back true.",
+          "Text": "Defeat five Force-Bonded Beast Specialists in Dathomir, Grotto Apex Den. Their defeat secures the Force-Bonded Beast Resonant Fang Charm; bring it back to me here in Dathomir, Waterfall Ruins.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The hum is on you both now. Let me hear it properly.",
+          "Text": "You've defeated five Force-Bonded Beast Specialists. Let me see the Force-Bonded Beast Resonant Fang Charm.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "True again. Second knot, tied honest. You are further along this rite than either of you know yet.",
+          "Text": "This belongs with the handlers who know how to use it. Your payment is ready. Speak to me again for the warden trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A warden holds the deeper weave, the one who taught every specialist how to force a thread and call it devotion. His own bond has been forced so long it has stopped looking like one at all. No single thread can unpick a weave that size alone. Bring two others, each with their own honest bond if they carry one, and cut his weave apart together. End him. Bring me the Force-Bonded Beast Cracked Apex Totem he wears.",
+          "Text": "The warden carries an apex totem from the old rite. Defeat him and recover it. Defeat the Force-Bonded Beast Warden in Dathomir, Grotto Apex Den. Their defeat secures the Force-Bonded Beast Cracked Apex Totem; bring it back to me here in Dathomir, Waterfall Ruins. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Go to the gate together, all your threads at once. He will feel more than one coming. Let him. That is the point.",
+          "Text": "In Dathomir, Grotto Apex Den, use the '???' challenge marker to call the Force-Bonded Beast Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Force-Bonded Beast Cracked Apex Totem.",
           "Style": 0,
           "Color": null
         }
@@ -793,7 +793,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "One thread pulls at a weave and the weave simply moves around it, absorbs it, keeps pulling from every other direction instead. Three threads pulling together do not move around each other. They cut. That is not strategy. That is just what a weave cannot survive.",
+          "Text": "Yes. I recommend two companions for the Force-Bonded Beast Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden still wears a weave instead of a thread. Bring your own bonds when you go.",
+          "Text": "Defeat the Force-Bonded Beast Warden in Dathomir, Grotto Apex Den. Their defeat secures the Force-Bonded Beast Cracked Apex Totem; bring it back to me here in Dathomir, Waterfall Ruins. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "All your threads, still whole, still tied. Let me see what came off him.",
+          "Text": "You've defeated the Force-Bonded Beast Warden. Let me see the Force-Bonded Beast Cracked Apex Totem.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The first bond, honored again. That is a rite older than this den's corruption, spoken true for the first time in longer than I want to guess. The inner cord will have felt that.",
+          "Text": "The totem is back in our keeping. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four remain who braided the corrupted rite into a cord and taught it as scripture, the inner circle. A cord does not fray one strand at a time; it holds until every strand is cut at once. Bring your bonds back in, all of you together. End the four. Bring me the Force-Bonded Beast Den-Mother's Fang Token they keep between them.",
+          "Text": "Four keepers turned the binding rite into an excuse for cruelty. Take back the den-mother's token. Defeat four members of the Force-Bonded Beast Inner Circle in Dathomir, Grotto Apex Den. Their defeat secures the Force-Bonded Beast Den-Mother's Fang Token; bring it back to me here in Dathomir, Waterfall Ruins.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Go as one weave yourselves, then, if you are going to unmake theirs. Four strands, cut together, or not cut at all.",
+          "Text": "Your key still grants access to Dathomir, Grotto Apex Den. Defeat four members of the Force-Bonded Beast Inner Circle to secure the Force-Bonded Beast Den-Mother's Fang Token, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four strands still holding their false cord. Go cut it, together.",
+          "Text": "Defeat four members of the Force-Bonded Beast Inner Circle in Dathomir, Grotto Apex Den. Their defeat secures the Force-Bonded Beast Den-Mother's Fang Token; bring it back to me here in Dathomir, Waterfall Ruins.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Every bond among you still whole. Show me the token.",
+          "Text": "You've defeated four members of the Force-Bonded Beast Inner Circle. Let me see the Force-Bonded Beast Den-Mother's Fang Token.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Whole, and warm with the truth again. One thread left down there, and it is the one every other thread was copied from, badly. You are close enough now that I will speak plainly: you are ready for the last knot.",
+          "Text": "The keepers can no longer claim authority here. Your payment is ready. Speak to me again for the final trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The last thread is his. The master's bond is the rite itself, forced past anything the others managed, strong enough now that it barely needs the beast's choosing at all anymore. That is the horror of it: it still works, without consent, because he perfected the forcing instead of abandoning it. Bring your bonds, every one, because a weave that size answers to many threads pulling as one or it answers to nothing. There is no relic this time. His bond breaking is the whole rite completed.",
+          "Text": "Their master is the source of the forced binding. Defeat him in the Sealed Apex Den so the true rite can be restored. Defeat the Force-Bonded Beast Master in Dathomir, Sealed Apex Den. Report back to me here in Dathomir, Waterfall Ruins; no item is needed for this final trial. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then go, all of you, as one weave. He will feel every thread coming. Let him feel exactly how many.",
+          "Text": "In Dathomir, Sealed Apex Den, use the '???' challenge marker to call the Force-Bonded Beast Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "His weave still holds, forced and enormous. Bring every thread you have.",
+          "Text": "Defeat the Force-Bonded Beast Master in Dathomir, Sealed Apex Den. Report back to me here in Dathomir, Waterfall Ruins; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Still. The whole den, still, and threads I have not felt settle in longer than I can say. Tell me it is done.",
+          "Text": "You've defeated the Force-Bonded Beast Master. Give me your report and we'll finish the trial.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then the rite is complete, spoken true from first thread to last: freely, both directions, always. His weave could not survive being asked instead of forced, in the end. Go. Mind the thread between you. It will mind you back, for as long as you keep choosing it honestly.",
+          "Text": "The rite can be practiced freely again. Keep the bond a choice for both of you. You've earned the right to train Force-Bonded Beast. Your final payment is ready.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll end the six and bring the slate.",
+        "Text": "I'll defeat six Force-Bonded Beast Adepts.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll end the five and bring the charm.",
+        "Text": "I'll defeat five Force-Bonded Beast Specialists.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "We'll bring our own bonds and cut his weave apart.",
+        "Text": "I'll defeat the Force-Bonded Beast Warden.",
         "Style": 4,
         "Color": null
       },
@@ -1736,7 +1736,7 @@
     "reply-00018": {
       "Id": "reply-00018",
       "Text": {
-        "Text": "Why does one thread fail against a weave?",
+        "Text": "Would you recommend bringing help?",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Force-Bonded Beast Cracked Apex Totem, whole.",
+        "Text": "Here's the Force-Bonded Beast Cracked Apex Totem.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "We'll cut every strand of their cord together.",
+        "Text": "I'll defeat four members of the Force-Bonded Beast Inner Circle.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Force-Bonded Beast Den-Mother's Fang Token, whole.",
+        "Text": "Here's the Force-Bonded Beast Den-Mother's Fang Token.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "All our bonds, together, against his.",
+        "Text": "I'll face the Force-Bonded Beast Master and report back.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "It's done. His weave broke.",
+        "Text": "The Force-Bonded Beast Master is defeated. Here's my report.",
         "Style": 4,
         "Color": null
       },

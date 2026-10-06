@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You're in my incident file under resolution. First time I've written that word since I took this office. The lower yard holds, the lockdown is lifted, and I still don't trust you - but it's professional courtesy now, not suspicion. Carry it well.",
+          "Text": "The case is complete and the crew's lockdown is broken. Your hazard pay is approved. You've finished my Scrapheap Lockdown trials. I have no further work for you here.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Stop there. You've passed my checkpoint twice this week, and I file patterns. You're not cleared for what's below, and your hands say your katar work still has teachers left in it. When there is nothing left for anyone to show you, we talk. Until then you're a civilian, and civilians stay above deck.",
+          "Text": "Clearance requires rank 50 in Katar. Reach that rank, then report back. The sealed yard needs a trained response.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Where were you when the lower yard went into lockdown? Don't answer - I already pulled the records. You were off-station, which makes you the only katar hand on CZ-220 I can't place inside the breach. That makes you useful. A crew sealed the CZ-220 Breaker Yard's lower level and they're running katar drills behind my own containment doors. Six adepts hold the outer bays under a work order my office never issued. Put all six down and bring me the Scrapheap Lockdown Breaker Yard Work Order. The flimsi is forged, and forgeries name their forgers.",
+          "Text": "A crew sealed the lower yard and is drilling under a work order my office never issued. Recover the forgery so I can trace who authorized the lockdown. Defeat six Scrapheap Lockdown Adepts in CZ-220, Breaker Bay. Their defeat secures the Scrapheap Lockdown Breaker Yard Work Order; bring it back to me here in CZ-220, Hangar. I'll give you the CZ-220 Breaker Yard Key when you accept. Complete all five trials to earn the right to train Scrapheap Lockdown.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "No codes. A key - physical, logged to you, and if it walks I know exactly who walked it. The way down is the containment door my own board insists doesn't exist anymore. Six adepts. One flimsi. Anything else you touch down there ends up in my report, so touch carefully.",
+          "Text": "Here's the CZ-220 Breaker Yard Key. Use 'Enter the Breaker Bay' in CZ-220, Maintenance Level. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Scrapheap Lockdown Adepts, then return with the Scrapheap Lockdown Breaker Yard Work Order.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The outer bays are still theirs and my evidence is still on the wrong side of a containment door. Six adepts. One work order. Report back.",
+          "Text": "Defeat six Scrapheap Lockdown Adepts in CZ-220, Breaker Bay. Their defeat secures the Scrapheap Lockdown Breaker Yard Work Order; bring it back to me here in CZ-220, Hangar.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You came up the south lift eight minutes faster than your last exit, and your hand hasn't left your pack since you stepped off it. That's evidence you're carrying. The work order. Now.",
+          "Text": "You've defeated six Scrapheap Lockdown Adepts. Let me see the Scrapheap Lockdown Breaker Yard Work Order.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Routing marks. Requisition chain. There. He taps the flimsi once. \"This format revision was retired years before you ever docked here. Whoever fed it to them worked this office back then. That's a shorter list than I feared and a longer one than I like. Payment's logged. You're still a suspect - but you're my suspect now.\"",
+          "Text": "Record recovered. We can trace the orders now. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Second incident. While you were clearing the outer bays, their specialists pulled the junkline control relay and wired it into a stand-off grid of their own design. Every belt down there is a wall that moves now. Five specialists run the grid in rotation - I've timed them through the door sensors. Break the rotation, put all five down, and recover the Scrapheap Lockdown Junkline Control Relay. Without it, their lockdown starts eating its own power.",
+          "Text": "The specialists are controlling the junkline through its relay. Recover it and cut their access to the machinery. Defeat five Scrapheap Lockdown Specialists in CZ-220, Breaker Bay. Their defeat secures the Scrapheap Lockdown Junkline Control Relay; bring it back to me here in CZ-220, Hangar.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The reroute hub is north along the junkline. You'll hear it before you see it - belts running against their own load rating. The five keep a two-on watch, and they are better than the adepts you filed away. Assume everything I tell you is understatement. It usually is.",
+          "Text": "Your key still grants access to CZ-220, Breaker Bay. Defeat five Scrapheap Lockdown Specialists to secure the Scrapheap Lockdown Junkline Control Relay, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -584,7 +584,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Regulation. My teams deploy three-strong or not at all - I enforce that rule, and I've buried the exceptions to it. Right now every three-man cell I trust is holding the upper yard so this stays contained to one deck. You're what I have left that fights like three. When you go below the sheared bay line, that regulation applies to you as well. Remember that I said so.",
+          "Text": "My response teams are holding the upper yard so the occupation stays contained. I don't have a spare team to send below. I recommend taking two companions for the harder fights; that's practical advice, not a clearance rule.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their walls still move. Five specialists at the reroute hub, one relay. My board goes quiet the moment you pull it, so I'll know before you do.",
+          "Text": "Defeat five Scrapheap Lockdown Specialists in CZ-220, Breaker Bay. Their defeat secures the Scrapheap Lockdown Junkline Control Relay; bring it back to me here in CZ-220, Hangar.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "My board went static forty minutes ago. Their grid is furniture now, which means my relay is in your pack. That burn on your forearm is junkline voltage - don't clean it with yard water. The relay. Here.",
+          "Text": "You've defeated five Scrapheap Lockdown Specialists. Let me see the Scrapheap Lockdown Junkline Control Relay.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Already checking the access log. He reads the maintenance record, and something in his jaw sets. \"Retired credentials. Same era as the forged format. I know who trained this crew. I think I've known since the first door sealed on me. Payment's logged. Keep the key. This incident file just grew a name I'm not ready to say out loud.\"",
+          "Text": "Equipment recovered. Their training operation is disrupted. Your payment is ready. Speak to me again for the warden trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "New classification: containment failure. Their warden has fortified the sheared bay, the deepest sealed section, and every probe I send past his line stops existing. He wears the bay's sigil plate as authorization - as long as it hangs on him, the old dock systems read his lockdown as legitimate. Kill the warden and take the Scrapheap Lockdown Sheared Bay Sigil, and their authority down there dies with him. Regulation applies: you go three-strong or you don't go. That's not advice. That's the section of the protocol written in other people's blood.",
+          "Text": "The warden enforces the crew's containment orders. Recover his bay sigil and break that control. Defeat the Scrapheap Lockdown Warden in CZ-220, Breaker Bay. Their defeat secures the Scrapheap Lockdown Sheared Bay Sigil; bring it back to me here in CZ-220, Hangar. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Names. Give me the names of your two before you go - if this goes wrong I want three accurate lines in the casualty report, not guesses. He writes, then looks up. \"The sheared bay is past the reroute hub, at the bottom of the junkline. He'll let all three of you in. Wardens like him don't stop entries. They stop exits.\"",
+          "Text": "In CZ-220, Breaker Bay, use the '???' challenge marker to call the Scrapheap Lockdown Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Scrapheap Lockdown Sheared Bay Sigil.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden still holds the sheared bay and my probes still die at his line. Three of you. One of him. Those still aren't good odds, so stop standing here.",
+          "Text": "Defeat the Scrapheap Lockdown Warden in CZ-220, Breaker Bay. Their defeat secures the Scrapheap Lockdown Sheared Bay Sigil; bring it back to me here in CZ-220, Hangar. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Probe eight crossed the threshold this morning and came back. First one in two quarters. There's a body in the center frame and a bare hook where a sigil plate used to hang. Give it to me.",
+          "Text": "You've defeated the Scrapheap Lockdown Warden. Let me see the Scrapheap Lockdown Sheared Bay Sigil.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then the old docks answer to this office again. He hangs the plate on the board behind him, dead center. \"Casualty report reads: none, ours. I have filed a great deal of paper against that man's line, and this is the first page that says we crossed it. Hazard rate for all three of you - tell your two to collect in person. I want faces for the names I didn't have to file.\"",
+          "Text": "Warden defeated. That breaks their enforcement. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "This one is a conspiracy charge. Four remain of the crew's inner circle, and between them they hold the foreman's override chip - the master key to every containment system on the lower decks. My lockdown, their lockdown, anyone's: whoever holds that chip owns the concept. They know their warden is gone. They've stopped drilling and started fortifying, which means they've stopped being students and become accomplices. All four go down, and the Scrapheap Lockdown Foreman's Override Chip comes to me. Keep your two with you. This is still deep-yard work.",
+          "Text": "Four officers still have the override authority to keep the yard sealed. Bring me their chip. Defeat four members of the Scrapheap Lockdown Inner Circle in CZ-220, Breaker Bay. Their defeat secures the Scrapheap Lockdown Foreman's Override Chip; bring it back to me here in CZ-220, Hangar.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "They hold the crane deck above the drill pit, and every gate on the way answers to the chip they carry - expect each door to be a decision they've already made. Don't try to out-lock lockdown students. Go through them. It's the one argument their doctrine respects.",
+          "Text": "Your key still grants access to CZ-220, Breaker Bay. Defeat four members of the Scrapheap Lockdown Inner Circle to secure the Scrapheap Lockdown Foreman's Override Chip, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +976,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Because my office runs on authorization, and that chip is authorization - physical, final, older than the network. Seated in the yardmaster's board, it's a tool. Loose, in doctrine-drilled hands, it's the power to declare any deck, dock, or corridor a sealed exercise, and every system I run would call it legal. Recover it, and their occupation goes back to being what it always was. Trespass.",
+          "Text": "The Scrapheap Lockdown Inner Circle fight together. Bring help if you can, and focus on one opponent at a time. Defeat four members to secure the Scrapheap Lockdown Foreman's Override Chip; simultaneous kills aren't required.",
           "Style": 0,
           "Color": null
         }
@@ -1002,7 +1002,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Fine. You've earned the file. The man below wrote the lockdown protocol this station still runs. My predecessor. I inherited his office, his regulations, and his signature on half the standing orders I still enforce - three-strong deployment included. He resigned the week I was promoted, walked below decks, and I certified the report that said he left the station. The crew, the drills, the stand-off: his doctrine, taught by his own hand. When the circle falls, he is what's left, and I will be sending you down to correct my own paperwork.",
+          "Text": "The master was my predecessor. He wrote the station's lockdown protocol, resigned, then went below decks to teach it to this crew. I signed a report saying he'd left the station because the truth was harder to explain. When the circle falls, he's the last part of that false report to correct.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four believers on the crane deck, one override chip. Until it seats in my board, every sealed door on this station is arguing about who it works for.",
+          "Text": "Defeat four members of the Scrapheap Lockdown Inner Circle in CZ-220, Breaker Bay. Their defeat secures the Scrapheap Lockdown Foreman's Override Chip; bring it back to me here in CZ-220, Hangar.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Every gate on the lower decks reverted to my authority in the same second. That's not a malfunction. That's a chip coming loose from four dead grips. Let me see it.",
+          "Text": "You've defeated four members of the Scrapheap Lockdown Inner Circle. Let me see the Scrapheap Lockdown Foreman's Override Chip.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Seated. Verified. Mine. The chip clicks into the yardmaster's board, and half the alarm lights he has lived under go dark. \"The conspiracy charge closes at four counts. What's left below isn't a crew anymore - it's one man, one bay, and one conversation I've spent years not having. Collect your pay, then sleep. The last incident is the oldest one.\"",
+          "Text": "Their officers no longer control the authorizations. Your payment is ready. Speak to me again for the final trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Final incident. The man who wrote the lockdown is all that's left below. He holds the deepest bay under the original protocol - his own, unrevised, the pure version he never let anyone file. I watch him through the one feed he permits me to keep, and you should understand what that means: he wants this. Everything you've fought down there was his doctrine secondhand. He is the doctrine, and the katar work you've bled to learn is his, finished. There's nothing to recover this time. He is the last item on the charge sheet, and the charge is everything. Take your two. No one has ever walked out of a room he decided to close - my three-strong regulation exists because of him, and it's the only part of his work I intend to keep.",
+          "Text": "The master is the last person enforcing the lockdown. Defeat him in the Breaker Yard to close the case. Defeat the Scrapheap Lockdown Master in CZ-220, Breaker Yard. Report back to me here in CZ-220, Hangar; no item is needed for this final trial. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The last door is at the bottom of everything - past the sheared bay, past the crane deck, the bay with no number. Your key will open it because he wants it to. Understand that going in: every door that opens for you down there is him accepting the appointment. Keep your two inside arm's reach, and do not let him choose the room.",
+          "Text": "In CZ-220, Breaker Yard, use the '???' challenge marker to call the Scrapheap Lockdown Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The finished form of everything they drilled at you. The adepts held floors. The specialists held rooms. The warden held a line for two quarters against everything I could send. He taught all of them, and I hold exactly one recording of him working: a boarding raid, eleven years back, four raiders sealed in a cargo lock with him. The door cycled once. He walked out carrying the manifest they came for. That lock is still classified. Whatever your katars learned on the way down to him - it's his, and he will use it back at you without the copies' flaws.",
+          "Text": "I recommend two companions against the Scrapheap Lockdown Master. Spread the pressure so one person doesn't have to carry the whole fight. You can enter alone, but prepare carefully before you call the challenge.",
           "Style": 0,
           "Color": null
         }
@@ -1211,7 +1211,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Chief of security with a clean file, for the first time since I took the office. I certified a false report once - that he left this station - because it was easier than certifying what he had become. Every incident since is interest on that lie. When this is done I write the correction myself: full account, my signature, whatever it costs. He taught me that the paperwork has to hold even when nothing else does. Especially then.",
+          "Text": "It means I can finally correct the report I signed when he disappeared. I'll give the full account under my own name, whatever it costs. A security office can't run on records it knows are false.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He's still below, holding the pure protocol, and my charge sheet still has one open line. Three-strong. Go close it.",
+          "Text": "Defeat the Scrapheap Lockdown Master in CZ-220, Breaker Yard. Report back to me here in CZ-220, Hangar; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "His feed went dark an hour ago. Then every containment door on the lower decks released - all of them, in the same breath, like the station exhaling. The protocol only lets go one way. Report.",
+          "Text": "You've defeated the Scrapheap Lockdown Master. Give me your report and we'll finish the trial.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then the file is complete. First page to last, every charge resolved. He signs it slowly, and for once his eyes are not checking the corridor behind you. \"You beat containment doctrine with the one thing it can't plan for - three people who trust each other inside a sealed room. He'd have called that the flaw in his protocol. I'm filing it as the fix. Your pay, at hazard rate, and my correction goes up the chain tonight. The lockdown below is lifted. Both of them are.\"",
+          "Text": "The case is complete and the crew's lockdown is broken. Your hazard pay is approved. You've earned the right to train Scrapheap Lockdown. Your final payment is ready.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "Sign out the key. I'll bring you the forgery.",
+        "Text": "I'll defeat six Scrapheap Lockdown Adepts.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "The Scrapheap Lockdown Breaker Yard Work Order. Six fewer people can explain it.",
+        "Text": "Here's the Scrapheap Lockdown Breaker Yard Work Order.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "Five specialists. I'll break the rotation.",
+        "Text": "I'll defeat five Scrapheap Lockdown Specialists.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "The Scrapheap Lockdown Junkline Control Relay. Check the access log - your hardware doesn't lie.",
+        "Text": "Here's the Scrapheap Lockdown Junkline Control Relay.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "Three-strong, then. I'll bring two I'd trust in a sealed room.",
+        "Text": "I'll defeat the Scrapheap Lockdown Warden.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "The Scrapheap Lockdown Sheared Bay Sigil. Your single point of failure, audited.",
+        "Text": "Here's the Scrapheap Lockdown Sheared Bay Sigil.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "Four accomplices, one chip. Filed by morning.",
+        "Text": "I'll defeat four members of the Scrapheap Lockdown Inner Circle.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "The Scrapheap Lockdown Foreman's Override Chip. Your conspiracy is down to one man.",
+        "Text": "Here's the Scrapheap Lockdown Foreman's Override Chip.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "Then we close his room around him. All three of us.",
+        "Text": "I'll face the Scrapheap Lockdown Master and report back.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "It's closed. His lockdown ended with him.",
+        "Text": "The Scrapheap Lockdown Master is defeated. Here's my report.",
         "Style": 4,
         "Color": null
       },

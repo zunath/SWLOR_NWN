@@ -251,7 +251,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You came back with the rhythm still under your skin. Good. Blood Frenzy is yours now; do not let anyone sell it back to you as hunger.",
+          "Text": "You've finished the Blood Frenzy trials and earned the right to train the technique. Keep practicing control after a kill; that lesson doesn't end with Kess.",
           "Style": 0,
           "Color": null
         }
@@ -281,7 +281,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "No. Your hands are still chasing the kill. When your blade can end a fight without begging for the next one, come back.",
+          "Text": "Reach rank 50 in Vibroblade before you take these lessons. The Sewers Depths aren't a place to finish your basic training.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Do not answer yet. Your grip says you know how to kill; your breath after a kill says the lesson is not finished. Blood Frenzy starts below Veles, in the Viscara Sewers Depths. Red Vein scavengers are studying my codex there. Bring it back before they turn warnings into scripture.",
+          "Text": "Blood Frenzy starts below Veles, in the Viscara Sewers Depths. Red Vein scavengers stole my codex and are treating its warnings as instructions. Defeat six Red Vein Scavengers to secure the Red Vein Codex, then return it to me here in the Veles Trade Concourse. I'll give you the Sewers Depths key when you accept. Complete all five lessons to earn the right to train Blood Frenzy.",
           "Style": 0,
           "Color": null
         }
@@ -344,7 +344,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then take the key and go through the Veles sewer access into the Sewers Depths. Six scavengers. One Red Vein Codex. Keep the breath after each kill quiet.",
+          "Text": "Take the Viscara Sewers Depths Key. In the Veles Sewers, use 'Enter Sewers Depths'. Keep your party close when you enter so they can come with you. Defeat six Red Vein Scavengers, then bring the Red Vein Codex back to me in the Trade Concourse.",
           "Style": 0,
           "Color": null
         }
@@ -365,7 +365,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Red Vein Codex is still in the Viscara Sewers Depths. Six scavengers, one codex. No wasted motion.",
+          "Text": "Defeat six Red Vein Scavengers in the Viscara Sewers Depths. Their defeat secures the Red Vein Codex; no separate search is needed. Bring it back to me in the Veles Trade Concourse.",
           "Style": 0,
           "Color": null
         }
@@ -391,7 +391,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That binding. Hm. They read the warnings and kept only the appetite. At least the book came home before it learned their stink.",
+          "Text": "The scavengers are defeated and you've recovered the Red Vein Codex. Let me see what they've done to it.",
           "Style": 0,
           "Color": null
         }
@@ -417,7 +417,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Credits for the hazard. Spend them on repairs, not celebration. The lesson starts with timing, not rage.",
+          "Text": "The codex is home before they could pass those mistakes on. Here's your hazard pay. Speak to me again for the timing lesson when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -438,7 +438,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good. You brought back the warning. Now the rhythm. Pulse-Frame Training Droids are hammering my old cadence into anyone foolish enough to listen in the Viscara Sewers Depths. Break them and bring me the pulse metronome before Kess's circle learns patience without restraint.",
+          "Text": "Pulse-Frame Training Droids are hammering my old cadence into anyone who will listen in the Viscara Sewers Depths. Destroy five Pulse-Frame Training Droids to secure the Pulse Metronome, then return it to me in the Veles Trade Concourse. Kess's students don't need another lesson stripped of its restraint.",
           "Style": 0,
           "Color": null
         }
@@ -476,7 +476,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Count thirteen beats. On the thirteenth, the opening is yours. Bring the metronome core back intact; if it still clicks, it can still teach.",
+          "Text": "Your key still opens the Sewers Depths. Destroy five Pulse-Frame Training Droids and bring the Pulse Metronome back to me. Timing is the lesson; you don't need to perform a special sequence to recover the core.",
           "Style": 0,
           "Color": null
         }
@@ -497,7 +497,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Pulse-Frame Droids are still keeping time in the Viscara Sewers Depths. Shut them down and bring me the metronome.",
+          "Text": "Destroy five Pulse-Frame Training Droids in the Viscara Sewers Depths to secure the Pulse Metronome. Return it to me in the Veles Trade Concourse.",
           "Style": 0,
           "Color": null
         }
@@ -523,7 +523,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Hear that tiny skip? That is where a patient blade wins. Most duelists mistake that silence for mercy. It is not.",
+          "Text": "The five droids are destroyed. Hand me the Pulse Metronome; I want to check its timing.",
           "Style": 0,
           "Color": null
         }
@@ -549,7 +549,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Keep the metronome in your head, not your pack. Your hand moves after the beat, never before it.",
+          "Text": "It still keeps time. Good. Your pay is ready. Speak to me again when you're ready to deal with the Butcher.",
           "Style": 0,
           "Color": null
         }
@@ -570,7 +570,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The next lesson stinks of stim smoke. Someone took Blood Frenzy and made it chemical. The Blood Frenzy Butcher is working in a black-market lab under the Sewers Depths. Kill him and secure a shard of adrenal glass from his table.",
+          "Text": "The next lesson stinks of stim smoke. The Blood Frenzy Butcher has turned the technique into a chemical leash. In the Viscara Sewers Depths, use the '???' challenge marker to call him. Defeat him to secure the Adrenal Glass, then bring it to me in the Veles Trade Concourse. I'd bring two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -608,7 +608,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Do not match his speed. Let him spend it. When the stim leaves him hollow, end him.",
+          "Text": "Accepting this lesson lets you call the Butcher through the '???' marker in the Sewers Depths. Gather your help before using it. Once he's defeated, bring the Adrenal Glass back to me; there's no separate lab search.",
           "Style": 0,
           "Color": null
         }
@@ -629,7 +629,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Butcher is still in the Viscara Sewers Depths lab. I need the adrenal glass, and I need him gone.",
+          "Text": "Use the '???' challenge marker in the Viscara Sewers Depths to call the Blood Frenzy Butcher. Defeat him and bring the Adrenal Glass to me in the Veles Trade Concourse. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -655,7 +655,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Clotted, overcooked, ugly. This is what happens when discipline rots and someone mistakes a syringe for a teacher.",
+          "Text": "The Butcher is defeated. Hand me the Adrenal Glass; I can use it to bind a restraint charm.",
           "Style": 0,
           "Color": null
         }
@@ -681,7 +681,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Hazard pay. And a warning: if your pulse starts asking for orders, stop listening.",
+          "Text": "This glass will take a binding. Take your hazard pay, then speak to me again about the duelists when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -702,7 +702,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Now we make restraint you can hold. The glass will take a binding, but Kess's duelists carry the matching charm fragments like saints' bones. Take four fragments from Blood Frenzy Duelists in the Viscara Sewers Depths.",
+          "Text": "Now we make restraint you can hold. Kess's duelists carry the pieces we need to finish the charm. Defeat four Blood Frenzy Duelists in the Viscara Sewers Depths to secure the Blood Frenzy Charm Fragments, then return them to me in the Veles Trade Concourse.",
           "Style": 0,
           "Color": null
         }
@@ -740,7 +740,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four fragments. No trophies, no speeches. Bring them back before their school finds a new throat to shout through.",
+          "Text": "Defeat four Blood Frenzy Duelists in the Sewers Depths. Their defeat secures the charm fragments; you don't need to hunt for four separate drops. Bring the fragments back to me.",
           "Style": 0,
           "Color": null
         }
@@ -761,7 +761,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four charm fragments from the Blood Frenzy Duelists. If they posture, let them. Posture has openings.",
+          "Text": "Defeat four Blood Frenzy Duelists in the Viscara Sewers Depths, then bring the Blood Frenzy Charm Fragments to me in the Veles Trade Concourse.",
           "Style": 0,
           "Color": null
         }
@@ -787,7 +787,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good. These pieces remember restraint better than their owners did. That is sad, useful, and common.",
+          "Text": "The four duelists are defeated and the charm fragments are recovered. Let's finish the binding.",
           "Style": 0,
           "Color": null
         }
@@ -813,7 +813,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Now I can bind the lesson. The next cut is the one that matters.",
+          "Text": "The charm is complete. Your pay is ready. Speak to me again when you're prepared for the final lesson: Kess himself.",
           "Style": 0,
           "Color": null
         }
@@ -834,7 +834,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Kess Draavo calls himself the Blood Frenzy King. He teaches the breath after a kill as hunger, not control. Find his circle in the Viscara Sewers Depths and end it before his lesson starts breeding.",
+          "Text": "Kess Draavo calls himself the Blood Frenzy King. He's the source of the corrupted school. Go to the Cistern Ring beyond the Viscara Sewers Depths and use its '???' challenge marker to call him. Defeat Kess, then report to me in the Veles Trade Concourse. Bring two companions if you can. No item is needed for this final lesson.",
           "Style": 0,
           "Color": null
         }
@@ -872,7 +872,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "No codex this time. No charm. Just the teacher who broke the lesson. Bring back silence.",
+          "Text": "The final lesson is accepted. Use the '???' challenge marker in the Cistern Ring to call Kess Draavo. Gather your party first. After he's defeated, come back to me in the Trade Concourse for the final lesson and payment.",
           "Style": 0,
           "Color": null
         }
@@ -893,7 +893,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Kess Draavo is still breathing in the Viscara Sewers Depths. The Blood Frenzy King does not get a second school.",
+          "Text": "Kess Draavo is still your target. Use the '???' challenge marker in the Cistern Ring beyond the Sewers Depths, defeat him, and report to me in the Veles Trade Concourse. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -919,7 +919,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I felt the rhythm stop from here. Either Kess is dead, or the whole undercity learned discipline at once. I know which one I believe.",
+          "Text": "Kess Draavo is defeated. Give me your report and we'll close the lesson.",
           "Style": 0,
           "Color": null
         }
@@ -945,7 +945,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then Blood Frenzy is yours. Not bloodlust. Not a crown. It is the half-second after victory when your body wants to waste itself, and you refuse.",
+          "Text": "The corrupted school is finished. You've earned the right to train Blood Frenzy, and your final payment is ready. Keep control of the surge after victory; that's what Kess forgot.",
           "Style": 0,
           "Color": null
         }
@@ -1042,7 +1042,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "'Take the key when you accept. In the Veles sewers, find the access marker for the Viscara Sewers Depths. It opens for the key holder. If you bring allies, keep them close when you step through.'",
+          "Text": "Take the key when you accept. In the Veles Sewers, use the marker named 'Enter Sewers Depths'. It opens for the key holder. Keep your party close to the marker when you use it so they can enter with you.",
           "Style": 0,
           "Color": null
         }
@@ -1318,7 +1318,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "'Then I teach you the last part. Not a flourish. Not a secret stance. The refusal. Victory gives you heat. Blood Frenzy makes it obey.'",
+          "Text": "Then I finish your training qualification. The refusal is the lesson: a victory gives you a surge, and you decide how to use it. Completing the trials earns you the right to train Blood Frenzy; it doesn't replace practice.",
           "Style": 0,
           "Color": null
         }

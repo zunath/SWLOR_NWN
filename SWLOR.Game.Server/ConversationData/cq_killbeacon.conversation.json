@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Killzone Beacon, designation closed, file complete. You're released from this briefing and from my ledger. Carry the doctrine correctly; the Republic does not reissue this clearance twice.",
+          "Text": "The unauthorized test cell is shut down. Put that fire-control training to better use. You've finished my Killzone Beacon trials. I have no further work for you here.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Negative. This briefing requires full command of Devices doctrine, and your file doesn't clear that bar yet. Return when it does.",
+          "Text": "Briefing access requires rank 50 in Devices. Reach that rank, then report back for the bunker assignment.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Grid reference Viscara, Republic Engineering Bunker, designation contested. An engineering cell has repurposed bunker fire-control hardware for unsanctioned live testing, six adepts confirmed on site. Your objective: neutralize the six, recover the Killzone Beacon Republic Bunker Docket, and report back. Briefing's already running; catch up.",
+          "Text": "An engineering cell has repurposed bunker fire-control hardware for unauthorized live testing. Recover their docket and report back. Defeat six Killzone Beacon Adepts in Viscara, Republic Engineering Bunker. Their defeat secures the Killzone Beacon Republic Bunker Docket; bring it back to me here in Viscara, Republic Base, Entrance. I'll give you the Viscara Republic Engineering Bunker Key when you accept. Complete all five trials to earn the right to train Killzone Beacon.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Confirmed. Bunker key issued. Grid reference logged, six hostiles expected, docket is the extraction priority. Report on return.",
+          "Text": "Here's the Viscara Republic Engineering Bunker Key. Use 'Republic Engineering Bunker' in Viscara, Republic Base, Combat Deck. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Killzone Beacon Adepts, then return with the Killzone Beacon Republic Bunker Docket.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Objective unchanged: six adepts, one docket, Viscara Republic Engineering Bunker. Report when both are in hand.",
+          "Text": "Defeat six Killzone Beacon Adepts in Viscara, Republic Engineering Bunker. Their defeat secures the Killzone Beacon Republic Bunker Docket; bring it back to me here in Viscara, Republic Base, Entrance.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Confirm the docket is intact and hand it over for verification.",
+          "Text": "You've defeated six Killzone Beacon Adepts. Let me see the Killzone Beacon Republic Bunker Docket.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Verified. Six hostiles down, docket intact, and a name I'll be following up on privately. Payment's logged. Good first briefing.",
+          "Text": "Record recovered. We can trace the orders now. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Second objective: their specialists have a Republic shield grid relay wired into the same bunker hardware, feeding targeting data outward instead of holding it. Five specialists, same bunker, recover the relay before it broadcasts anything further.",
+          "Text": "The specialists are using the shield grid to support those tests. Recover their relay. Defeat five Killzone Beacon Specialists in Viscara, Republic Engineering Bunker. Their defeat secures the Killzone Beacon Shield Grid Relay; bring it back to me here in Viscara, Republic Base, Entrance.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Delay noted, but keep it short. Every hour that relay stays live is an hour more data leaves that bunker.",
+          "Text": "Your key still grants access to Viscara, Republic Engineering Bunker. Defeat five Killzone Beacon Specialists to secure the Killzone Beacon Shield Grid Relay, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -584,7 +584,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five, dug in around the relay itself. They'll defend it like it's worth more than their own lives. To them, right now, it is.",
+          "Text": "Yes. I recommend two companions for the Killzone Beacon Specialist fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Relay's still broadcasting from Viscara Republic Engineering Bunker. Five specialists standing between you and silence. Move.",
+          "Text": "Defeat five Killzone Beacon Specialists in Viscara, Republic Engineering Bunker. Their defeat secures the Killzone Beacon Shield Grid Relay; bring it back to me here in Viscara, Republic Base, Entrance.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Confirm relay status and hand it over.",
+          "Text": "You've defeated five Killzone Beacon Specialists. Let me see the Killzone Beacon Shield Grid Relay.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Confirmed silent. That's two objectives clean. You're proving reliable enough that I'm considering trusting you with the part of this briefing I haven't said out loud yet.",
+          "Text": "Equipment recovered. Their training operation is disrupted. Your payment is ready. Speak to me again for the warden trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Third objective, and this one I will not authorize solo. Their warden holds a Cracked Command Crest, which tells me he's commanding actual fire teams now, not just adepts. Republic doctrine deploys fire teams of three against a command target. I am not making an exception for you. Bring two.",
+          "Text": "The warden protects the cell's command hardware. Recover the command crest and end his watch. Defeat the Killzone Beacon Warden in Viscara, Republic Engineering Bunker. Their defeat secures the Killzone Beacon Cracked Command Crest; bring it back to me here in Viscara, Republic Base, Entrance. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Granted. Take the time you need. I would rather delay this briefing than close it with your name on a casualty report.",
+          "Text": "In Viscara, Republic Engineering Bunker, use the '???' challenge marker to call the Killzone Beacon Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Killzone Beacon Cracked Command Crest.",
           "Style": 0,
           "Color": null
         }
@@ -741,7 +741,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "One holds forward position, one flanks, one commands the engagement. Republic doctrine didn't invent that number for tradition. It's the minimum that survives a command target with return fire discipline.",
+          "Text": "Yes. I recommend two companions for the Killzone Beacon Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Fire team of three, Viscara Republic Engineering Bunker, warden objective. Do not deploy short-handed.",
+          "Text": "Defeat the Killzone Beacon Warden in Viscara, Republic Engineering Bunker. Their defeat secures the Killzone Beacon Cracked Command Crest; bring it back to me here in Viscara, Republic Base, Entrance. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Confirm the warden is neutralized and the crest is secured.",
+          "Text": "You've defeated the Killzone Beacon Warden. Let me see the Killzone Beacon Cracked Command Crest.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Confirmed and logged. Three of you where one of you would have failed. That's not a compliment, that's doctrine working exactly as designed. Proceed to the fourth objective.",
+          "Text": "Warden defeated. That breaks their enforcement. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Fourth objective: the inner circle holds a Quartermaster Override Chip, the authorization trail for every requisition that armed this cell. Four hostiles. Recover the chip; I need to know who signed for this hardware.",
+          "Text": "Four quartermasters still authorize the cell's supplies. Take their override chip. Defeat four members of the Killzone Beacon Inner Circle in Viscara, Republic Engineering Bunker. Their defeat secures the Killzone Beacon Quartermaster Override Chip; bring it back to me here in Viscara, Republic Base, Entrance.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Delay logged. Return when ready. This objective isn't going anywhere; unfortunately, neither is the chain of command I'm about to expose.",
+          "Text": "Your key still grants access to Viscara, Republic Engineering Bunker. Defeat four members of the Killzone Beacon Inner Circle to secure the Killzone Beacon Quartermaster Override Chip, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Inner circle, four hostiles, chip objective, Viscara Republic Engineering Bunker. Report on completion.",
+          "Text": "Defeat four members of the Killzone Beacon Inner Circle in Viscara, Republic Engineering Bunker. Their defeat secures the Killzone Beacon Quartermaster Override Chip; bring it back to me here in Viscara, Republic Base, Entrance.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Confirm the chip and hand it over for cross-reference.",
+          "Text": "You've defeated four members of the Killzone Beacon Inner Circle. Let me see the Killzone Beacon Quartermaster Override Chip.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Cross-referenced. The signature is one I recognize, and I don't like what that means for the fifth objective. Command's been compromised further up than I want to say out loud yet.",
+          "Text": "Their officers no longer control the authorizations. Your payment is ready. Speak to me again for the final trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Final objective, and I'll say this plainly instead of by the book: the bunker's master holds killzone beacon doctrine at a level the Republic never cleared for field use, and he intends to paint a live position as the target, not a range marker. Fire team of three, minimum, non-negotiable. I've watched this doctrine used correctly exactly once. I'd like to watch it again.",
+          "Text": "The master controls the firing doctrine behind the tests. Defeat him in the Engineering Command Room. Defeat the Killzone Beacon Master in Viscara, Engineering Command Room. Report back to me here in Viscara, Republic Base, Entrance; no item is needed for this final trial. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take it. I would rather you go in ready than go in on my schedule. This briefing ends when the objective is actually secure, not before.",
+          "Text": "In Viscara, Engineering Command Room, use the '???' challenge marker to call the Killzone Beacon Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "From this briefing room, originally, back when I still thought doctrine couldn't be misused by someone who understood it well enough. I was wrong. I've stopped pretending otherwise.",
+          "Text": "In Viscara, Engineering Command Room, use the '???' challenge marker to call the Killzone Beacon Master. Accept this assignment before using the marker.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Final objective unchanged. Team of three, Viscara Republic Engineering Bunker, master designation. Report only on completion.",
+          "Text": "Defeat the Killzone Beacon Master in Viscara, Engineering Command Room. Report back to me here in Viscara, Republic Base, Entrance; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Confirm status. Is the objective secure?",
+          "Text": "You've defeated the Killzone Beacon Master. Give me your report and we'll finish the trial.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then this briefing is closed, properly, for the first time since I opened this file. Killzone Beacon is yours. Carry it like the Republic I still believe it can be, not the one that let this happen.",
+          "Text": "The unauthorized test cell is shut down. Put that fire-control training to better use. You've earned the right to train Killzone Beacon. Your final payment is ready.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "Understood. Moving on the objective.",
+        "Text": "I'll defeat six Killzone Beacon Adepts.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Docket recovered, here it is.",
+        "Text": "Here's the Killzone Beacon Republic Bunker Docket.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "Copy. Moving to intercept the relay.",
+        "Text": "I'll defeat five Killzone Beacon Specialists.",
         "Style": 4,
         "Color": null
       },
@@ -1566,7 +1566,7 @@
     "reply-00011": {
       "Id": "reply-00011",
       "Text": {
-        "Text": "How many specialists am I looking at?",
+        "Text": "Would you recommend bringing help?",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Relay's down, here it is.",
+        "Text": "Here's the Killzone Beacon Shield Grid Relay.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "Understood. Assembling a fire team.",
+        "Text": "I'll defeat the Killzone Beacon Warden.",
         "Style": 4,
         "Color": null
       },
@@ -1690,7 +1690,7 @@
     "reply-00016": {
       "Id": "reply-00016",
       "Text": {
-        "Text": "Why fire teams of three specifically?",
+        "Text": "Would you recommend bringing help?",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Crest secured, warden down.",
+        "Text": "Here's the Killzone Beacon Cracked Command Crest.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "Copy. Moving on the inner circle.",
+        "Text": "I'll defeat four members of the Killzone Beacon Inner Circle.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Chip secured, here it is.",
+        "Text": "Here's the Killzone Beacon Quartermaster Override Chip.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "Team of three, and we finish this properly.",
+        "Text": "I'll face the Killzone Beacon Master and report back.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "Objective secure. He's down.",
+        "Text": "The Killzone Beacon Master is defeated. Here's my report.",
         "Style": 4,
         "Color": null
       },

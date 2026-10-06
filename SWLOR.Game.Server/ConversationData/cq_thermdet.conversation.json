@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Thermal Detonator's closed on my ledger, and yours is the only name signed clean at the bottom of it. Every charge you set from here on, I want it built like I'm still standing behind you counting fingers.",
+          "Text": "The unsafe test program is over. Set your own charges with more care than that crew showed. You've finished my Frag Grenade trials. I have no further work for you here.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Not yet. I don't badge civilians into a live range on reputation. Come back when Devices work is reflex for you, not something you're still counting through on your fingers.",
+          "Text": "Live-range clearance requires rank 50 in Devices. Reach it, then return. I won't send untrained hands into live ordnance.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That marker you just walked past means live ordnance, and you strolled by it like it was a fence post. Second one today. First one's the reason Hutlar Qion Test Site is locked to everyone but me: there's a crew in there cooking oversized charges with no containment plan, and I am done finding their mistakes after the fact. Put down six of their adepts in the test site on Hutlar, and bring me back a Thermal Detonator Qion Test Log so I know exactly what they were building before it built itself into a crater.",
+          "Text": "A crew at the Qion site is building oversized charges without a containment plan. Recover their log before another test becomes a crater. Defeat six Thermal Detonator Adepts in Hutlar, Qion Test Site. Their defeat secures the Thermal Detonator Qion Test Log; bring it back to me here in Hutlar, Outpost. I'll give you the Hutlar Qion Test Site Key when you accept. Complete all five trials to earn the right to train Frag Grenade.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good. Here's the test-site key. Don't touch anything marked, don't skip a step because it looks finished, and don't come back until you can hand me the log instead of an excuse.",
+          "Text": "Here's the Hutlar Qion Test Site Key. Use 'Qion Test Site' in Hutlar, Qion Box Canyon. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Thermal Detonator Adepts, then return with the Thermal Detonator Qion Test Log.",
           "Style": 0,
           "Color": null
         }
@@ -323,7 +323,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Because the last crew that got sloppy here took out two range walls and a supply shed with them. I sealed Hutlar Qion Test Site the same week and haven't unsealed it since. Whoever's in there now, I want their names before I want their heads.",
+          "Text": "Thermal Detonator is the name of the school you're confronting. The technique these trials qualify you to learn is Frag Grenade. Recovering its records and defeating its master will show me you're ready for that training.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Hutlar Qion Test Site still owes me that Test Log. Six adepts down, log in hand, then we talk.",
+          "Text": "Defeat six Thermal Detonator Adepts in Hutlar, Qion Test Site. Their defeat secures the Thermal Detonator Qion Test Log; bring it back to me here in Hutlar, Outpost.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That's the log I asked for. Hand it here before you lose a finger carrying it wrong.",
+          "Text": "You've defeated six Thermal Detonator Adepts. Let me see the Thermal Detonator Qion Test Log.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six adepts and an honest log, first day. Credits are hazard pay. The lesson is that Thermal Detonator answers to paperwork before it answers to you.",
+          "Text": "Now I have a record of their modifications. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The log you brought me raised more questions than it answered. Their specialists are running a cryo-range regulator hot enough to crack, and if that thing lets go near the test wells it won't be a training accident, it'll be a funeral. Go back to Hutlar Qion Test Site, drop five of their specialists, and bring me the regulator before it decides for itself when it's done.",
+          "Text": "The specialists are pushing the cold-weather regulator beyond safe limits. Bring it back for inspection. Defeat five Thermal Detonator Specialists in Hutlar, Qion Test Site. Their defeat secures the Thermal Detonator Cryo-Range Regulator; bring it back to me here in Hutlar, Outpost.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A day I don't have, but fine. Go when you're ready, and go careful. That regulator doesn't warn you before it lets go.",
+          "Text": "Your key still grants access to Hutlar, Qion Test Site. Defeat five Thermal Detonator Specialists to secure the Thermal Detonator Cryo-Range Regulator, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That regulator is still ticking down in Hutlar Qion Test Site. Five specialists, one regulator, then back here.",
+          "Text": "Defeat five Thermal Detonator Specialists in Hutlar, Qion Test Site. Their defeat secures the Thermal Detonator Cryo-Range Regulator; bring it back to me here in Hutlar, Outpost.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You're still standing, so the regulator behaved. Hand it over before your luck changes its mind.",
+          "Text": "You've defeated five Thermal Detonator Specialists. Let me see the Thermal Detonator Cryo-Range Regulator.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Cold, intact, and thoroughly incriminating. You're starting to look less like a liability and more like someone I can send back in without losing sleep over it.",
+          "Text": "I'll inspect this before anything goes back into service. Your payment is ready. Speak to me again for the warden trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their warden's been running that site like a private range, and frostburn scarring on the last crest we recovered says the tests are getting bigger, not smaller. I am not sending you at that alone. Bring two people you'd trust to carry a live charge, go to Hutlar Qion Test Site, put the warden down, and bring me back the Frostburned Test Crest.",
+          "Text": "The warden protects the crew's live tests. Recover the test crest and end that watch. Defeat the Thermal Detonator Warden in Hutlar, Qion Test Site. Their defeat secures the Thermal Detonator Frostburned Test Crest; bring it back to me here in Hutlar, Outpost. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good, go find them. A test site is not a duel, and the warden doesn't fight like one either.",
+          "Text": "In Hutlar, Qion Test Site, use the '???' challenge marker to call the Thermal Detonator Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Thermal Detonator Frostburned Test Crest.",
           "Style": 0,
           "Color": null
         }
@@ -741,7 +741,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Because the last one who tried it solo, I found in three pieces and none of them near each other. One set of hands can't watch a blast radius and a warden at the same time. Two more sets can.",
+          "Text": "Yes. I recommend two companions for the Thermal Detonator Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden and that crest are still waiting in Hutlar Qion Test Site. Don't go back in without the company I told you to bring.",
+          "Text": "Defeat the Thermal Detonator Warden in Hutlar, Qion Test Site. Their defeat secures the Thermal Detonator Frostburned Test Crest; bring it back to me here in Hutlar, Outpost. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You're walking, and so is your crew, apparently. Hand over the crest and let's see what frostburn actually looks like up close.",
+          "Text": "You've defeated the Thermal Detonator Warden. Let me see the Thermal Detonator Frostburned Test Crest.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That's a warden down and a crest that'll keep me up reading it tonight. You didn't do that with a will and a prayer, you did it with backup. Remember that.",
+          "Text": "That confirms who was in charge of the unsafe work. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden was muscle. The inner circle is the ones who signed off on using him that way. I want their Site Chief's Override Chip; it'll tell me who authorized what, and there's no version of that list I like the look of. Four of them, Hutlar Qion Test Site, bring the chip back whole.",
+          "Text": "Four senior operators still authorize the unsafe charges. Take their override chip. Defeat four members of the Thermal Detonator Inner Circle in Hutlar, Qion Test Site. Their defeat secures the Thermal Detonator Site Chief's Override Chip; bring it back to me here in Hutlar, Outpost.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then go. Four names on that chip is four fewer people I have to guess about.",
+          "Text": "Your key still grants access to Hutlar, Qion Test Site. Defeat four members of the Thermal Detonator Inner Circle to secure the Thermal Detonator Site Chief's Override Chip, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That override chip is still sitting in Hutlar Qion Test Site with four people standing on top of it. Go get it.",
+          "Text": "Defeat four members of the Thermal Detonator Inner Circle in Hutlar, Qion Test Site. Their defeat secures the Thermal Detonator Site Chief's Override Chip; bring it back to me here in Hutlar, Outpost.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four down and a chip in hand. Let's see exactly how deep this goes.",
+          "Text": "You've defeated four members of the Thermal Detonator Inner Circle. Let me see the Thermal Detonator Site Chief's Override Chip.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Deep enough that I'm glad I sent you instead of going myself. One name left on this list, and it's the one that matters.",
+          "Text": "No more unauthorized orders from that crew. Your payment is ready. Speak to me again for the final trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That chip led exactly where I didn't want it to: the site's master, and he doesn't run tests anymore, he runs Thermal Detonator the way I taught it before I knew better. He'll drop more ordinance in thirty seconds than the whole crew combined, aimed at whoever's still standing closest together. Don't go in with fewer than three. This is the last lesson, and there's no partial credit on it.",
+          "Text": "The master is the last operator behind the unsafe testing. Defeat him in the Overload Chamber to finish the trial. Defeat the Thermal Detonator Master in Hutlar, Overload Chamber. Report back to me here in Hutlar, Outpost; no item is needed for this final trial. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take it. Come back with two people who trust you and a plan you actually believe in, not just the one that sounded good standing here.",
+          "Text": "In Hutlar, Overload Chamber, use the '???' challenge marker to call the Thermal Detonator Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He's still down there, and I'm not sending you back in short-handed. Bring your two, then go.",
+          "Text": "Defeat the Thermal Detonator Master in Hutlar, Overload Chamber. Report back to me here in Hutlar, Outpost; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You're standing, he's not, and Hutlar Qion Test Site just got a lot quieter. That's all the proof I needed.",
+          "Text": "You've defeated the Thermal Detonator Master. Give me your report and we'll finish the trial.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then it's done properly, for the first time in longer than I'd like to admit. Thermal Detonator is yours now. Set your charges cleaner than the fools who made me lock this place down.",
+          "Text": "The unsafe test program is over. Set your own charges with more care than that crew showed. You've earned the right to train Frag Grenade. Your final payment is ready.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll count the charges for you.",
+        "Text": "I'll defeat six Thermal Detonator Adepts.",
         "Style": 4,
         "Color": null
       },
@@ -1350,7 +1350,7 @@
     "reply-00002": {
       "Id": "reply-00002",
       "Text": {
-        "Text": "Why is the range locked down in the first place?",
+        "Text": "How does this school relate to Frag Grenade?",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the log.",
+        "Text": "Here's the Thermal Detonator Qion Test Log.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll bring it back before it fails.",
+        "Text": "I'll defeat five Thermal Detonator Specialists.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the regulator, still in one piece.",
+        "Text": "Here's the Thermal Detonator Cryo-Range Regulator.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll bring company.",
+        "Text": "I'll defeat the Thermal Detonator Warden.",
         "Style": 4,
         "Color": null
       },
@@ -1690,7 +1690,7 @@
     "reply-00016": {
       "Id": "reply-00016",
       "Text": {
-        "Text": "Why can't I handle the warden alone?",
+        "Text": "Would you recommend bringing help?",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the crest.",
+        "Text": "Here's the Thermal Detonator Frostburned Test Crest.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll get you that chip.",
+        "Text": "I'll defeat four members of the Thermal Detonator Inner Circle.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the chip.",
+        "Text": "Here's the Thermal Detonator Site Chief's Override Chip.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'm going in, and I'm not going alone.",
+        "Text": "I'll face the Thermal Detonator Master and report back.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "It's done. He's down.",
+        "Text": "The Thermal Detonator Master is defeated. Here's my report.",
         "Style": 4,
         "Color": null
       },

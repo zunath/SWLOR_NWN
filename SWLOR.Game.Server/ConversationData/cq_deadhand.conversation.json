@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Table's clean, the board's empty, and I'm back to dealing for fun. Aces and eights ride with you now. Pull up a chair anytime; first round's on the house you beat.",
+          "Text": "The crooked game is over. Aces and eights are a better hand when the one holding them is still breathing. You've finished my Dead Man's Hand trials. I have no further work for you here.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Easy, friend. This table has a buy-in, and it's everything that pistol can teach you. You're still learning the deck. Come back when there's nothing left in it you haven't drawn.",
+          "Text": "The buy-in is rank 50 in Pistol. Train until you meet it, then we'll talk about the canyon job.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's a card, face-down. Yours the day you earn a look at it. Now the game. Somebody's dealing my hand down in that canyon: my old table, my marked deck, and six eager adepts learning to shoot like me and cheat like them. Fold all six and bring me the Dead Man's Hand Canyon Range Tally they keep count on. I like an honest pot.",
+          "Text": "A crew in the canyon is teaching my shooting and selling its own cheats. Bring me their tally; I want to know who's playing at my old table. Defeat six Dead Man's Hand Adepts in Tatooine, Anchorhead Canyon Range. Their defeat secures the Dead Man's Hand Canyon Range Tally; bring it back to me here in Tatooine, Anchorhead, Club d'Ash. I'll give you the Anchorhead Canyon Range Key when you accept. Complete all five trials to earn the right to train Dead Man's Hand.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "There's the spirit. Gate key's yours. Don't count the pot before the sixth card falls.",
+          "Text": "Here's the Anchorhead Canyon Range Key. Use 'Anchorhead Canyon Range' in Tatooine, Anchorhead, North Entrance. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Dead Man's Hand Adepts, then return with the Dead Man's Hand Canyon Range Tally.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Right down there. My key opens the marshal's gate at the canyon mouth; past it, the house rules are theirs. Long walk, bad light, worse company. Play accordingly.",
+          "Text": "Use 'Anchorhead Canyon Range' in Tatooine, Anchorhead, North Entrance. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Dead Man's Hand Adepts in Tatooine, Anchorhead Canyon Range. Their defeat secures the Dead Man's Hand Canyon Range Tally; bring it back to me here in Tatooine, Anchorhead, Club d'Ash.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six adepts, one tally, and the pot's still sitting in the canyon. Hands don't fold themselves, friend.",
+          "Text": "Defeat six Dead Man's Hand Adepts in Tatooine, Anchorhead Canyon Range. Their defeat secures the Dead Man's Hand Canyon Range Tally; bring it back to me here in Tatooine, Anchorhead, Club d'Ash.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Word travels fast at a small table. Six players left the game feet-first. Let's see that tally.",
+          "Text": "You've defeated six Dead Man's Hand Adepts. Let me see the Dead Man's Hand Canyon Range Tally.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "All there, honest to the last line. Take your cut. And that face-down card of yours? It just got interesting.",
+          "Text": "The book is back in honest hands. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The adepts were the ante. Now the sharps: five specialists who turned my sightline calibrator into a stacked deck. Long lanes, patient triggers, every angle pre-dealt. Bust all five and bring me the Dead Man's Hand Sightline Calibrator before they mark the whole canyon.",
+          "Text": "The specialists have turned my sightlines into ambush lanes. Take back their calibrator. Defeat five Dead Man's Hand Specialists in Tatooine, Anchorhead Canyon Range. Their defeat secures the Dead Man's Hand Sightline Calibrator; bring it back to me here in Tatooine, Anchorhead, Club d'Ash.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five sharps, long lanes, one honest gun. I like those odds. They shouldn't.",
+          "Text": "Your key still grants access to Tatooine, Anchorhead Canyon Range. Defeat five Dead Man's Hand Specialists to secure the Dead Man's Hand Sightline Calibrator, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five sharps still working the long lanes, and my calibrator's still marking their cards. The game's waiting on you, friend.",
+          "Text": "Defeat five Dead Man's Hand Specialists in Tatooine, Anchorhead Canyon Range. Their defeat secures the Dead Man's Hand Sightline Calibrator; bring it back to me here in Tatooine, Anchorhead, Club d'Ash.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five sharps busted and the canyon's odds gone honest. The calibrator, if you please.",
+          "Text": "You've defeated five Dead Man's Hand Specialists. Let me see the Dead Man's Hand Sightline Calibrator.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Clean deck, honest table. You play tighter than you did. The house upstairs has noticed, which is bad news and good news. Mostly bad. Around here that means interesting.",
+          "Text": "One less rigged test to worry about. Your payment is ready. Speak to me again for the warden trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Now the pit boss. The warden holds the deep range, wears the house crest, and decides who plays and who pays. Best hand at that table and he knows it, which is his tell. Break him and bring me the Dead Man's Hand Shattered Range Crest when it cracks. One rule from me, house law: stake two friends and sit down as three. The house folds to a full hand. It eats a lone ace.",
+          "Text": "The warden is protecting the crew's game. Beat him and bring back the crest he wears. Defeat the Dead Man's Hand Warden in Tatooine, Anchorhead Canyon Range. Their defeat secures the Dead Man's Hand Shattered Range Crest; bring it back to me here in Tatooine, Anchorhead, Club d'Ash. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A full hand against the pit boss. That's a game I'd pay to watch. Don't make me pay for anything else.",
+          "Text": "In Tatooine, Anchorhead Canyon Range, use the '???' challenge marker to call the Dead Man's Hand Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Dead Man's Hand Shattered Range Crest.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Past the marshal's gate, follow the firing line down until the walls close in. That pit is his seat, picked years ago: worst light for you, best for him. He'll be in it.",
+          "Text": "In Tatooine, Anchorhead Canyon Range, use the '???' challenge marker to call the Dead Man's Hand Warden. Accept this assignment before using the marker.",
           "Style": 0,
           "Color": null
         }
@@ -793,7 +793,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Because I've staked lone aces against him before, friend, and paid for three funerals out of my own winnings. Cards don't beat the warden. Numbers do. Three guns, three angles, and his perfect hand is suddenly playing the whole table.",
+          "Text": "Yes. I recommend two companions for the Dead Man's Hand Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden's still holding the deep range and his crest is still in one piece. Gather your three, friend. The pot doesn't split for effort.",
+          "Text": "Defeat the Dead Man's Hand Warden in Tatooine, Anchorhead Canyon Range. Their defeat secures the Dead Man's Hand Shattered Range Crest; bring it back to me here in Tatooine, Anchorhead, Club d'Ash. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The pit boss, busted at his own table. I'd have paid for a seat at that one. Show me the crest.",
+          "Text": "You've defeated the Dead Man's Hand Warden. Let me see the Dead Man's Hand Shattered Range Crest.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Shattered. Couldn't have cracked it cleaner myself. The deep range just lost its house edge, and somewhere upstairs a man is counting his chips and coming up short.",
+          "Text": "The warden's protection is broken. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four players left at the high table: the inner circle. They bank the whole operation, and they hold a marshal's challenge chit, the old kind, the kind that buys a seat across from the man who runs it all. Clear all four chairs and bring me the Dead Man's Hand Marshal's Challenge Chit. It's the buy-in for the last game.",
+          "Text": "The four at the high table hold the marshal's challenge chit. Take it, and we can call the master out. Defeat four members of the Dead Man's Hand Inner Circle in Tatooine, Anchorhead Canyon Range. Their defeat secures the Dead Man's Hand Marshal's Challenge Chit; bring it back to me here in Tatooine, Anchorhead, Club d'Ash.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Clear the chairs, lift the chit, and don't scratch it. It's the most honest thing left in that canyon.",
+          "Text": "Your key still grants access to Tatooine, Anchorhead Canyon Range. Defeat four members of the Dead Man's Hand Inner Circle to secure the Dead Man's Hand Marshal's Challenge Chit, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four chairs at the high table are still warm, and the chit's still in their bank. The last game can't start without the buy-in, friend.",
+          "Text": "Defeat four members of the Dead Man's Hand Inner Circle in Tatooine, Anchorhead Canyon Range. Their defeat secures the Dead Man's Hand Marshal's Challenge Chit; bring it back to me here in Tatooine, Anchorhead, Club d'Ash.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "High table's empty and the bank is open. Hand it over. Let's see the buy-in.",
+          "Text": "You've defeated four members of the Dead Man's Hand Inner Circle. Let me see the Dead Man's Hand Marshal's Challenge Chit.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "One marshal's chit, paid in full. I'll post the challenge myself; answering it is the one law even he kept. Sleep, eat, kiss whoever you kiss. The last hand gets dealt when you're ready.",
+          "Text": "That closes the crew's account. Your payment is ready. Speak to me again for the final trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Challenge posted, challenge answered. Now the truth, friend. The man up there holds the real Dead Man's Hand: the draw that comes after he's beaten, the hand you can't fold against. I dealt it to him myself, back when he was mine to teach, and he has never lost with it. Go to the overlook and take it from him. And hear me plain: nobody plays the master heads-up and cashes out. Bring your two. Full hand or no hand.",
+          "Text": "The master has answered the challenge. This is the last hand: defeat him in the Canyon Dueling Pit. Defeat the Dead Man's Hand Master in Tatooine, Canyon Dueling Pit. Report back to me here in Tatooine, Anchorhead, Club d'Ash; no item is needed for this final trial. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Three players, one last pot. Whatever happens up there, it's been a pleasure staking you.",
+          "Text": "In Tatooine, Canyon Dueling Pit, use the '???' challenge marker to call the Dead Man's Hand Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The marshal's overlook, top of the range, where the challenge board hangs. He'll honor the chit in the open. Style matters to him. It's the last honest thing in the man.",
+          "Text": "In Tatooine, Canyon Dueling Pit, use the '???' challenge marker to call the Dead Man's Hand Master. Accept this assignment before using the marker.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The marshal's still at the overlook holding the last hand, and challenges don't expire. You might, friend, so take your two along and finish the game.",
+          "Text": "Defeat the Dead Man's Hand Master in Tatooine, Canyon Dueling Pit. Report back to me here in Tatooine, Anchorhead, Club d'Ash; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The canyon went quiet an hour ago. Quiet like a table after last call. Tell me how the hand played.",
+          "Text": "You've defeated the Dead Man's Hand Master. Give me your report and we'll finish the trial.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then turn over the card I dealt you. Aces and eights, friend. The dead man's hand, held by somebody still breathing. That's the whole lesson, and it's yours now, along with the pay and my marker: any table I sit at, you have a seat.",
+          "Text": "The crooked game is over. Aces and eights are a better hand when the one holding them is still breathing. You've earned the right to train Dead Man's Hand. Your final payment is ready.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "Deal me in. Six folds, one tally.",
+        "Text": "I'll defeat six Dead Man's Hand Adepts.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Six folds. Here's their count.",
+        "Text": "Here's the Dead Man's Hand Canyon Range Tally.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "Five sharps. I'll bring your calibrator.",
+        "Text": "I'll defeat five Dead Man's Hand Specialists.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Your calibrator. The deck's clean.",
+        "Text": "Here's the Dead Man's Hand Sightline Calibrator.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "Three of us, then. The pit boss busts.",
+        "Text": "I'll defeat the Dead Man's Hand Warden.",
         "Style": 4,
         "Color": null
       },
@@ -1736,7 +1736,7 @@
     "reply-00018": {
       "Id": "reply-00018",
       "Text": {
-        "Text": "Why three? I've done fine alone.",
+        "Text": "Would you recommend bringing help?",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "His crest. It didn't survive the last round.",
+        "Text": "Here's the Dead Man's Hand Shattered Range Crest.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "Four chairs. I'll clear the table.",
+        "Text": "I'll defeat four members of the Dead Man's Hand Inner Circle.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "The chit. The circle cashed out.",
+        "Text": "Here's the Dead Man's Hand Marshal's Challenge Chit.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "Then we play the last hand. All three of us.",
+        "Text": "I'll face the Dead Man's Hand Master and report back.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "He drew his dead hand. We answered it. It's done.",
+        "Text": "The Dead Man's Hand Master is defeated. Here's my report.",
         "Style": 4,
         "Color": null
       },

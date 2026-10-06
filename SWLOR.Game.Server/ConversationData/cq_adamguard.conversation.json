@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Bay One is cutting again and my paperwork finally matches my yard. That was your doing, so I'll say it once: the guard you carry now doesn't break, and neither does my word. There's a standing line on my roster with your name on it. Now stop blocking my light.",
+          "Text": "Work order complete. My crews can return to the yard, and your hazard pay is settled. You've finished my Adamantine Guard trials. I have no further work for you here.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Don't touch anything. I post this work for katar hands that have nothing left to learn on a public floor, and yours aren't there yet. Come back when the blades on your fists are the last thing anybody could teach you about.",
+          "Text": "This work needs rank 50 in Katar. Train those hands first, then come back for the yard contract.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Work order. Signed, dated, unfilled. She slaps the flimsi flat against your chest. \"A wreck crew set up shop in the CZ-220 Breaker Yard, this station's lower level, and they're drilling katar guard-work on my tonnage and my clock. Six adepts hold the outer floor. Put them down, pull the Adamantine Guard Breaker Yard Work Order they're cutting under, and get it on my desk. Take the job and I cut you a key for the door they welded off my grid.\"",
+          "Text": "A wreck crew is running unauthorized katar drills on my tonnage and my clock. Their work order will tell me who signed them in. Defeat six Adamantine Guard Adepts in CZ-220, Breaker Bay. Their defeat secures the Adamantine Guard Breaker Yard Work Order; bring it back to me here in CZ-220, Offices & Labs. I'll give you the CZ-220 Breaker Yard Key when you accept. Complete all five trials to earn the right to train Adamantine Guard.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Key's cut. The door is the welded one off the main junkline - it reads the key, not your face, so don't bother smiling at it. Six adepts. One work order. My desk. The shift clock started when you nodded.",
+          "Text": "Here's the CZ-220 Breaker Yard Key. Use 'Enter the Breaker Bay' in CZ-220, Maintenance Level. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Adamantine Guard Adepts, then return with the Adamantine Guard Breaker Yard Work Order.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Order's still open. Six adepts in the Breaker Yard, one work order, my desk. The shift clock doesn't care how your day is going and neither do I.",
+          "Text": "Defeat six Adamantine Guard Adepts in CZ-220, Breaker Bay. Their defeat secures the Adamantine Guard Breaker Yard Work Order; bring it back to me here in CZ-220, Offices & Labs.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That's junkline grease on your sleeves, and nobody comes back from bay work standing that straight unless the work is done. Flimsi. Desk.",
+          "Text": "You've defeated six Adamantine Guard Adepts. Let me see the Adamantine Guard Breaker Yard Work Order.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Signed by their foreman, countersigned by nobody, forged stamp and all. I'll file it under evidence and frame the copy. She counts out your pay without looking at it. \"Hazard rate, no deductions. That's as warm as I get.\"",
+          "Text": "Work order received. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You again. Good, saves me posting it. The crew rerouted my junkline - every conveyor down there feeds their drill pit now instead of my smelters, and my throughput is down forty tons a shift. Five specialists run the line. Break their guard, take back the Adamantine Guard Junkline Control Relay, and my belts start obeying people who actually work here.",
+          "Text": "The specialists have taken over the junkline controls. I need that relay back before they wreck another shift's work. Defeat five Adamantine Guard Specialists in CZ-220, Breaker Bay. Their defeat secures the Adamantine Guard Junkline Control Relay; bring it back to me here in CZ-220, Offices & Labs.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same door, same key. Follow the junkline north until the belts run the wrong direction - that's their handiwork, and the specialists post where the reroute starts. The relay comes back in one piece. It bills as salvage, not scrap.",
+          "Text": "Your key still grants access to CZ-220, Breaker Bay. Defeat five Adamantine Guard Specialists to secure the Adamantine Guard Junkline Control Relay, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -584,7 +584,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Because they never work alone and my people do. Every bay they took, they took in pairs and threes - one holds the floor, the rest move the work. It's in my own regs: nobody works a live bay without two spotters. They read my rulebook better than my shift leads do. Learn from that before the deeper bays make you learn it.",
+          "Text": "They work together: one holds the bay while the others move the equipment. My riggers were trying to handle each problem alone. Bring help if you can; teamwork is the part of their method worth copying.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "My belts still feed their pit. Five specialists on the junkline, one control relay. Everything else in that yard is somebody else's problem.",
+          "Text": "Defeat five Adamantine Guard Specialists in CZ-220, Breaker Bay. Their defeat secures the Adamantine Guard Junkline Control Relay; bring it back to me here in CZ-220, Offices & Labs.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The belts changed direction an hour ago. I felt it through the deck plating before the sensors bothered telling me, which means you're carrying my relay. Hand it here.",
+          "Text": "You've defeated five Adamantine Guard Specialists. Let me see the Adamantine Guard Junkline Control Relay.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Serial matches. The scorch marks are new, but I'll bill those to their foreman. She logs the relay and your pay in the same motion. \"Throughput's already climbing. You're the first line on tomorrow's report. Around here that's a love letter.\"",
+          "Text": "Component received and accounted for. Your payment is ready. Speak to me again for the warden trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Stop. Read the terms before you take this one. Their warden holds the sheared bay - the bay where a crane cable snapped years back and cut a barge hull like bread. He is the reason my recovery crews come back on stretchers. Put him down and pull the Adamantine Guard Sheared Bay Sigil off him. And you go in on my regs: two spotters, minimum. Nobody works a live bay alone, and that bay has been eating people since before this crew ever docked.",
+          "Text": "Their warden is holding the Breaker Bay. Recover her sigil so I can establish who authorized the damage. Defeat the Adamantine Guard Warden in CZ-220, Breaker Bay. Their defeat secures the Adamantine Guard Sheared Bay Sigil; bring it back to me here in CZ-220, Offices & Labs. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good answer. The sheared bay is at the bottom of the junkline, past their drill pit - you'll know it by the cable scar down the far wall. My last recovery team lasted long enough to describe his guard and nothing else. Yours comes back with the sigil, or I stop signing orders with your name on them.",
+          "Text": "In CZ-220, Breaker Bay, use the '???' challenge marker to call the Adamantine Guard Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Adamantine Guard Sheared Bay Sigil.",
           "Style": 0,
           "Color": null
         }
@@ -741,7 +741,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He inspects a fight the way I inspect a wreck - finds the load point and plants himself under it. Two of my riggers put a cutting crew's worth of steel into him and his back foot never moved. Understand me: he is not their best. He is their doorman. That's what you're climbing toward, and it's why I said two spotters like I meant it.",
+          "Text": "I recommend two companions against the Adamantine Guard Warden. Spread the pressure so one person doesn't have to carry the whole fight. You can enter alone, but prepare carefully before you call the challenge.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The sheared bay is still his. One warden, one sigil, and don't you dare walk in there without your two spotters. Stretchers cost more than you do.",
+          "Text": "Defeat the Adamantine Guard Warden in CZ-220, Breaker Bay. Their defeat secures the Adamantine Guard Sheared Bay Sigil; bring it back to me here in CZ-220, Offices & Labs. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You're limping on the left and grinning anyway. That's either a concussion or my sigil in your pack. Show me.",
+          "Text": "You've defeated the Adamantine Guard Warden. Let me see the Adamantine Guard Sheared Bay Sigil.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Twenty years overdue and not a corner bent. She sets the sigil on her desk, square to the edge. \"First thing I've filed on time all quarter. Your pay is rated for bay-death work - the highest line I sign. Spend it slower than you earned it.\"",
+          "Text": "The warden's defeat is verified. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Now it's personal. Their inner circle - four of them, the foreman's own hands - pulled my override chip out of the yardmaster's board. That chip outranks every lock, belt, and crane in this yard, including the ones keeping stacked hulls from becoming weather. Put all four down and bring back the Adamantine Guard Foreman's Override Chip. And keep your spotters close. Every bay past the sheared line is live.",
+          "Text": "Four foremen still have the authority to keep this operation running. Recover their override chip. Defeat four members of the Adamantine Guard Inner Circle in CZ-220, Breaker Bay. Their defeat secures the Adamantine Guard Foreman's Override Chip; bring it back to me here in CZ-220, Offices & Labs.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "They hold the crane deck above the drill pit. High ground, narrow catwalks, and every gate between here and there answers to the chip they're carrying, so there is no clever way in. There's just through. Which, I'm told, is the entire philosophy you people climb down there to learn.",
+          "Text": "Your key still grants access to CZ-220, Breaker Bay. Defeat four members of the Adamantine Guard Inner Circle to secure the Adamantine Guard Foreman's Override Chip, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four hands, one chip, crane deck over the drill pit. Until that chip is back in my board, every gate in this yard is a suggestion.",
+          "Text": "Defeat four members of the Adamantine Guard Inner Circle in CZ-220, Breaker Bay. Their defeat secures the Adamantine Guard Foreman's Override Chip; bring it back to me here in CZ-220, Offices & Labs.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The gates started answering my board again mid-shift. Either you have my chip or that crew grew a conscience, and their kind doesn't grow anything. Hand it over.",
+          "Text": "You've defeated four members of the Adamantine Guard Inner Circle. Let me see the Adamantine Guard Foreman's Override Chip.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The chip seats clean. The board is mine again - cranes, gates, belts, all of it. For one second she just breathes, and her shoulders drop half an inch. \"That's the yard back. All but one room. Rest up. The last work order I write you is the one I've wanted to write since this started.\"",
+          "Text": "Authorization recovered. Your payment is ready. Speak to me again for the final trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Last order on the book. Bay One. Their foreman is alone in there now - no crew, no chip, no line out. Just him and the guard he taught the rest of them, the same one your katars have been learning the hard way. I've watched him on the bay feed: cutters, riggers, one of my cranes at full swing, and his feet haven't moved in a week. Put him down and there's nothing to carry back - the yard will know, and so will I. But you don't go in alone. That bay has ended better spotters than you, and I don't stock stretchers in threes for nothing.",
+          "Text": "Their master is keeping the yard under his own guard. Remove him and I can close this work order. Defeat the Adamantine Guard Master in CZ-220, Breaker Yard. Report back to me here in CZ-220, Offices & Labs; no item is needed for this final trial. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then it's on the clock. Bay One sits at the dead end of the junkline, past the sheared bay, behind the oldest blast door on this station - your key is the last thing it will ever read. Keep your two inside arm's reach, watch his feet, and when they finally give ground, you'll own the thing he came here to keep.",
+          "Text": "In CZ-220, Breaker Yard, use the '???' challenge marker to call the Adamantine Guard Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
           "Style": 0,
           "Color": null
         }
@@ -1159,7 +1159,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The finished article. Everything his adepts drilled at, he already is. My crane operator swears the load alarm tripped when she swung at him - he caught the wreck ball on crossed blades and the system logged him as a structure. Maybe by now he is one. He came down here to stand in front of the one thing that never breaks, and he stayed until there were two of them. Your job is to put the count back at one.",
+          "Text": "He's the best guard in that crew. My crane operator saw him stop a wrecking ball on crossed blades. I don't know how much of that story to believe, but I know he hasn't given the yard back. Defeating him is the last part of your contract.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He's still standing in my bay. Collect your two spotters, walk the junkline to the end, and close out the last order on my book.",
+          "Text": "Defeat the Adamantine Guard Master in CZ-220, Breaker Yard. Report back to me here in CZ-220, Offices & Labs; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The whole yard went quiet for a second mid-shift. Every belt, every crane, like the place was listening. That was him hitting the deck, wasn't it. Bay One's door is showing open on my board for the first time in twenty years. Get over here.",
+          "Text": "You've defeated the Adamantine Guard Master. Give me your report and we'll finish the trial.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then the guard is yours. He taught it to everyone who ever put my people on stretchers, and now it walks out of my yard on the right fists for once. She stamps the file closed and slides your pay across, counted exact. \"Work order complete. Best line in this yard's ledger. Now get off my dock - Bay One cuts at first shift, and you're standing in my light.\"",
+          "Text": "Work order complete. My crews can return to the yard, and your hazard pay is settled. You've earned the right to train Adamantine Guard. Your final payment is ready.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "Cut the key. I'll fill the order.",
+        "Text": "I'll defeat six Adamantine Guard Adepts.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "The Adamantine Guard Breaker Yard Work Order. Filled and pulled.",
+        "Text": "Here's the Adamantine Guard Breaker Yard Work Order.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "Your belts will run the right way by next shift.",
+        "Text": "I'll defeat five Adamantine Guard Specialists.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "The Adamantine Guard Junkline Control Relay. Careful - it still sparks.",
+        "Text": "Here's the Adamantine Guard Junkline Control Relay.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "Two spotters. I'll bring blades, not stretcher-bearers.",
+        "Text": "I'll defeat the Adamantine Guard Warden.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "The Adamantine Guard Sheared Bay Sigil. It was on his shoulder.",
+        "Text": "Here's the Adamantine Guard Sheared Bay Sigil.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "The chip comes back to your board.",
+        "Text": "I'll defeat four members of the Adamantine Guard Inner Circle.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "The Adamantine Guard Foreman's Override Chip. Their roster is four names shorter.",
+        "Text": "Here's the Adamantine Guard Foreman's Override Chip.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "Bay One opens today. I'll bring my two.",
+        "Text": "I'll face the Adamantine Guard Master and report back.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "It's done. His guard broke before he did.",
+        "Text": "The Adamantine Guard Master is defeated. Here's my report.",
         "Style": 4,
         "Color": null
       },

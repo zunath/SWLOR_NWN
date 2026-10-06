@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Unmoving Center isn't a lesson anymore. It's just how you stand now. Keep it that way when the wind picks up.",
+          "Text": "The range can teach a sounder discipline. Keep your center without forgetting the people around you. You've finished my Unmoving Center trials. I have no further work for you here.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You still need the wind to tell you where to stand. Come back when you don't.",
+          "Text": "The canyon trials require rank 50 in Staff. Reach that rank, then return. Stillness needs practice as much as movement does.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You're still moving. Even standing still, you're moving. Six adepts drill wrong at Anchorhead Canyon Range on Tatooine, mistaking fidgeting for stillness. Put six of them down and bring me their canyon range tally, so I know it was you and not the wind.",
+          "Text": "A crew at the canyon range is teaching poor staff work in the name of stillness. Bring back their tally so I can begin correcting it. Defeat six Unmoving Center Adepts in Tatooine, Anchorhead Canyon Range. Their defeat secures the Unmoving Center Canyon Range Tally; bring it back to me here in Tatooine, Anchorhead, Cantina. I'll give you the Anchorhead Canyon Range Key when you accept. Complete all five trials to earn the right to train Unmoving Center.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take the range key. Six adepts, one tally. Go.",
+          "Text": "Here's the Anchorhead Canyon Range Key. Use 'Anchorhead Canyon Range' in Tatooine, Anchorhead, North Entrance. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Unmoving Center Adepts, then return with the Unmoving Center Canyon Range Tally.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Anchorhead Canyon Range, out past the town, on Tatooine. I've cleared you through the range gate. That key opens it, nothing else will.",
+          "Text": "Use 'Anchorhead Canyon Range' in Tatooine, Anchorhead, North Entrance. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Unmoving Center Adepts in Tatooine, Anchorhead Canyon Range. Their defeat secures the Unmoving Center Canyon Range Tally; bring it back to me here in Tatooine, Anchorhead, Cantina.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six adepts. One tally. Anchorhead Canyon Range hasn't moved, and neither should you until it's done.",
+          "Text": "Defeat six Unmoving Center Adepts in Tatooine, Anchorhead Canyon Range. Their defeat secures the Unmoving Center Canyon Range Tally; bring it back to me here in Tatooine, Anchorhead, Cantina.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six down, and the tally to prove it. Let's see it.",
+          "Text": "You've defeated six Unmoving Center Adepts. Let me see the Unmoving Center Canyon Range Tally.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Recorded. The first stillness holds. Rest today; tomorrow the range gets harder to fool.",
+          "Text": "The training record is back. We can see what went wrong. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The adepts were noise. Now go measure the ones who think they've already arrived. Five specialists down at the range mistake rigidity for stillness; they lock up and call it calm. Put five of them down and bring me their sightline calibrator. I want to see how far off their aim really was.",
+          "Text": "The specialists control the range's sightline calibrator. Take it back before they train more students around it. Defeat five Unmoving Center Specialists in Tatooine, Anchorhead Canyon Range. Their defeat secures the Unmoving Center Sightline Calibrator; bring it back to me here in Tatooine, Anchorhead, Cantina.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists, one calibrator. You know the gate.",
+          "Text": "Your key still grants access to Tatooine, Anchorhead Canyon Range. Defeat five Unmoving Center Specialists to secure the Unmoving Center Sightline Calibrator, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -558,7 +558,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same gate, same key, same Anchorhead Canyon Range. Go further in this time; the specialists don't drill at the entrance.",
+          "Text": "Use 'Anchorhead Canyon Range' in Tatooine, Anchorhead, North Entrance. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat five Unmoving Center Specialists in Tatooine, Anchorhead Canyon Range. Their defeat secures the Unmoving Center Sightline Calibrator; bring it back to me here in Tatooine, Anchorhead, Cantina.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists. One sightline calibrator. Anchorhead Canyon Range is exactly where you left it.",
+          "Text": "Defeat five Unmoving Center Specialists in Tatooine, Anchorhead Canyon Range. Their defeat secures the Unmoving Center Sightline Calibrator; bring it back to me here in Tatooine, Anchorhead, Cantina.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five down, and their calibrator in your hand. Show me.",
+          "Text": "You've defeated five Unmoving Center Specialists. Let me see the Unmoving Center Sightline Calibrator.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Recorded. You're not fidgeting either, not yet. Keep that.",
+          "Text": "That equipment no longer serves their drills. Your payment is ready. Speak to me again for the warden trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Now the one who runs the floor. Go to Anchorhead Canyon Range, on Tatooine, and put the warden down. Bring me her shattered range crest after. Don't go alone. She has outlasted stronger arms than yours, each one standing by itself.",
+          "Text": "The warden holds the deeper range. Recover her crest and end that defense. Defeat the Unmoving Center Warden in Tatooine, Anchorhead Canyon Range. Their defeat secures the Unmoving Center Shattered Range Crest; bring it back to me here in Tatooine, Anchorhead, Cantina. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Bring two who can be still when you cannot. The warden won't care that you came alone.",
+          "Text": "In Tatooine, Anchorhead Canyon Range, use the '???' challenge marker to call the Unmoving Center Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Unmoving Center Shattered Range Crest.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden doesn't patrol. She waits at the center of the floor for someone stupid enough to walk to her.",
+          "Text": "In Tatooine, Anchorhead Canyon Range, use the '???' challenge marker to call the Unmoving Center Warden. Accept this assignment before using the marker.",
           "Style": 0,
           "Color": null
         }
@@ -793,7 +793,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Bring company. Stillness holds when someone else is drawing the storm toward them instead of you. That's the only reason I send you with two others instead of alone. The warden won't wait for you to be ready.",
+          "Text": "Yes. I recommend two companions for the Unmoving Center Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden's still standing at Anchorhead Canyon Range. Go back with company, and don't come back without her crest.",
+          "Text": "Defeat the Unmoving Center Warden in Tatooine, Anchorhead Canyon Range. Their defeat secures the Unmoving Center Shattered Range Crest; bring it back to me here in Tatooine, Anchorhead, Cantina. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden's down and you're still standing. Let's see the crest.",
+          "Text": "You've defeated the Unmoving Center Warden. Let me see the Unmoving Center Shattered Range Crest.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Recorded. That's the first proof I didn't expect to see. Don't let it go to your head; the ones after her are worse.",
+          "Text": "The warden's watch is over. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of them run the inner ring now. Her students, once. They drill the same stillness and call it a circle so no one has to stand alone in it. Go back to Anchorhead Canyon Range, put down all four, and bring me the marshal's challenge chit they've been trading between themselves like a trophy.",
+          "Text": "Four instructors still control the range's challenge chit. Take it so we can challenge their master. Defeat four members of the Unmoving Center Inner Circle in Tatooine, Anchorhead Canyon Range. Their defeat secures the Unmoving Center Marshal's Challenge Chit; bring it back to me here in Tatooine, Anchorhead, Cantina.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of them, one chit. Bring people who can watch your back while you watch theirs.",
+          "Text": "Your key still grants access to Tatooine, Anchorhead Canyon Range. Defeat four members of the Unmoving Center Inner Circle to secure the Unmoving Center Marshal's Challenge Chit, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +976,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same range. They've claimed the inner floor for themselves, like it belongs to them because they showed up together.",
+          "Text": "Use 'Anchorhead Canyon Range' in Tatooine, Anchorhead, North Entrance. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat four members of the Unmoving Center Inner Circle in Tatooine, Anchorhead Canyon Range. Their defeat secures the Unmoving Center Marshal's Challenge Chit; bring it back to me here in Tatooine, Anchorhead, Cantina.",
           "Style": 0,
           "Color": null
         }
@@ -1002,7 +1002,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four means four angles at once. Bring your own circle, or you'll spend the whole fight turning.",
+          "Text": "Yes. I recommend two companions for the Unmoving Center Inner Circle fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The inner circle's still holding the floor at Anchorhead Canyon Range. Four down, one chit, then you're done there.",
+          "Text": "Defeat four members of the Unmoving Center Inner Circle in Tatooine, Anchorhead Canyon Range. Their defeat secures the Unmoving Center Marshal's Challenge Chit; bring it back to me here in Tatooine, Anchorhead, Cantina.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "All four, and their chit besides. You've earned a look at it.",
+          "Text": "You've defeated four members of the Unmoving Center Inner Circle. Let me see the Unmoving Center Marshal's Challenge Chit.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Recorded. There's one lesson left, and it isn't mine to give lightly. Rest first.",
+          "Text": "Their instructors no longer hold the authority to teach. Your payment is ready. Speak to me again for the final trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The master's the reason I stopped teaching this to anyone who asked. She found the same stillness I did and never came back out of it. She hasn't taken a step in years, they say, and she doesn't need to anymore. Go to Anchorhead Canyon Range and end that. Don't go alone. Nobody has walked away from her circle by themselves, not once.",
+          "Text": "The master has answered the challenge. Defeat her in the Canyon Dueling Pit to finish the trials. Defeat the Unmoving Center Master in Tatooine, Canyon Dueling Pit. Report back to me here in Tatooine, Anchorhead, Cantina; no item is needed for this final trial. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Bring your two. I'll be waiting for word either way.",
+          "Text": "In Tatooine, Canyon Dueling Pit, use the '???' challenge marker to call the Unmoving Center Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same range, same gate, all the way to the back of it: the one place on that floor that's never moved, and neither has she.",
+          "Text": "In Tatooine, Canyon Dueling Pit, use the '???' challenge marker to call the Unmoving Center Master. Accept this assignment before using the marker.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "She's still standing at Anchorhead Canyon Range, however she's standing. Go back when you have company.",
+          "Text": "Defeat the Unmoving Center Master in Tatooine, Canyon Dueling Pit. Report back to me here in Tatooine, Anchorhead, Cantina; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "She's not standing anymore. That's all the proof I need. Tell me it's done.",
+          "Text": "You've defeated the Unmoving Center Master. Give me your report and we'll finish the trial.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Recorded. The Unmoving Center is yours now, not mine, not hers. Try not to let it swallow you the way it did her.",
+          "Text": "The range can teach a sounder discipline. Keep your center without forgetting the people around you. You've earned the right to train Unmoving Center. Your final payment is ready.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "Six adepts. I can do that.",
+        "Text": "I'll defeat six Unmoving Center Adepts.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's your tally.",
+        "Text": "Here's the Unmoving Center Canyon Range Tally.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "Five specialists, then.",
+        "Text": "I'll defeat five Unmoving Center Specialists.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the calibrator.",
+        "Text": "Here's the Unmoving Center Sightline Calibrator.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll bring people. Where's the warden?",
+        "Text": "I'll defeat the Unmoving Center Warden.",
         "Style": 4,
         "Color": null
       },
@@ -1736,7 +1736,7 @@
     "reply-00018": {
       "Id": "reply-00018",
       "Text": {
-        "Text": "How many should I bring?",
+        "Text": "Would you recommend bringing help?",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Her crest. We got her.",
+        "Text": "Here's the Unmoving Center Shattered Range Crest.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll gather my circle.",
+        "Text": "I'll defeat four members of the Unmoving Center Inner Circle.",
         "Style": 4,
         "Color": null
       },
@@ -1906,7 +1906,7 @@
     "reply-00025": {
       "Id": "reply-00025",
       "Text": {
-        "Text": "How many should I bring this time?",
+        "Text": "Would you recommend bringing help?",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Their chit. All four are down.",
+        "Text": "Here's the Unmoving Center Marshal's Challenge Chit.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll bring two. Tell me where she is.",
+        "Text": "I'll face the Unmoving Center Master and report back.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "It's done. She's not standing.",
+        "Text": "The Unmoving Center Master is defeated. Here's my report.",
         "Style": 4,
         "Color": null
       },

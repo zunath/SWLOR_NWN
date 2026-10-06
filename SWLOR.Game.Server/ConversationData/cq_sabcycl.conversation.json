@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Look at that turn. You carry the eye with you now -- the students copy your footwork when they think I'm not watching. The halls are open, the form has a center again, and I have nothing left to teach you that the staff won't say better.",
+          "Text": "The halls can teach safely again. Keep your footing, and help your next student find theirs. You've finished my Saber Cyclone trials. I have no further work for you here.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Keep walking, I don't stop between forms. Your grip says staff; your feet say the staff is still two blades to you. Finish that education first. When it stops being two blades and starts being one motion -- when there's nothing left of the discipline you haven't made your own -- come find me about the cyclone.",
+          "Text": "The cyclone trials require rank 50 in Saberstaff. Reach that rank, then come back. One motion needs two steady hands.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Walk with me -- I think better moving. You came for the cyclone, and you're about to say you're ready, so I'll finish the sentence: you're ready to start. The trial halls under this enclave are full of students spinning the form with no center, and their masters won't intervene. I will, through you. Go down into the Dantooine Jedi Enclave Trial Halls, defeat six of the adepts, and bring me the Saber Cyclone Enclave Trial Slate they drill from. Their bad orbit starts on that slate.",
+          "Text": "Students in the trial halls are practicing the cyclone without control. Recover their trial slate so I can see where the instruction failed. Defeat six Saber Cyclone Adepts in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Cyclone Enclave Trial Slate; bring it back to me here in Dantooine, Interior. I'll give you the Dantooine Jedi Enclave Trial Halls Key when you accept. Complete all five trials to earn the right to train Saber Cyclone.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then keep up. The key I've just put in your hand opens the sealed door on the enclave's lower ring. Six adepts, the slate, back to me before your sweat dries. And watch their turns while you break them -- even a wrong lesson teaches.",
+          "Text": "Here's the Dantooine Jedi Enclave Trial Halls Key. Use 'Jedi Enclave Trial Halls' in Dantooine, Jedi Enclave Library. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Saber Cyclone Adepts, then return with the Saber Cyclone Enclave Trial Slate.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Below us. The enclave sealed the lower trial halls when the drills turned bloody -- the door is on the lower ring, past the meditation court, and the key I'll give you when you take the work opens the seal. Once you're through, stay in the halls. Everything past that door considers itself part of the trial.",
+          "Text": "Use 'Jedi Enclave Trial Halls' in Dantooine, Jedi Enclave Library. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Saber Cyclone Adepts in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Cyclone Enclave Trial Slate; bring it back to me here in Dantooine, Interior.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You still owe the lower halls six adepts, and I still want the Saber Cyclone Enclave Trial Slate they drill from. Walk with me later -- right now the only conversation you owe is down there.",
+          "Text": "Defeat six Saber Cyclone Adepts in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Cyclone Enclave Trial Slate; bring it back to me here in Dantooine, Interior.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "There -- your arcs came back shorter. The halls did that in a day; imagine a year. And that's the slate under your arm. Hand it over.",
+          "Text": "You've defeated six Saber Cyclone Adepts. Let me see the Saber Cyclone Enclave Trial Slate.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six adepts and their drill slate. Want to know what's wrong with it? Nothing. Every form on it is copied perfectly -- that's the lesson. Perfect copies, no center. The credits are for your time. The next turn is faster.",
+          "Text": "The training record is back. We can see what went wrong. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Fall in beside me -- colonnade pace. The adepts were students; the specialists are the ones teaching them. Five of them run focus drills in the deep chambers, and they've hung the whole practice on a kyber shard that should never have left the vaults. Take the five apart and bring me the Saber Cyclone Kyber Focus Shard before it teaches anyone else to spin blind.",
+          "Text": "The specialists have taken the enclave's focus shard for their drills. Bring it back. Defeat five Saber Cyclone Specialists in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Cyclone Kyber Focus Shard; bring it back to me here in Dantooine, Interior.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Quick answer. I like that better than a careful one. Deep chambers, five specialists, and the shard comes back wrapped -- kyber listens, and I don't want it learning anything on the way. If you catch yourself matching their rhythm, break your own first.",
+          "Text": "Your key still grants access to Dantooine, Jedi Enclave Trial Halls. Defeat five Saber Cyclone Specialists to secure the Saber Cyclone Kyber Focus Shard, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -558,7 +558,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same door on the lower ring -- your key still turns the seal. The specialists keep past the chambers where you met the adepts, deeper in. You'll hear them before you see them; kyber hums when it's working, and theirs never rests.",
+          "Text": "Use 'Jedi Enclave Trial Halls' in Dantooine, Jedi Enclave Library. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat five Saber Cyclone Specialists in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Cyclone Kyber Focus Shard; bring it back to me here in Dantooine, Interior.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists, deep chambers, and the Saber Cyclone Kyber Focus Shard comes home with you. Nothing about the assignment has changed while you stood here -- except how long it's been waiting.",
+          "Text": "Defeat five Saber Cyclone Specialists in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Cyclone Kyber Focus Shard; bring it back to me here in Dantooine, Interior.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I can hear it from here. Even wrapped, that shard hums like it's mid-drill. You outlasted five teachers at their own tempo -- give it over.",
+          "Text": "You've defeated five Saber Cyclone Specialists. Let me see the Saber Cyclone Kyber Focus Shard.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Listen to it. Kyber sings whatever you feed it, and they fed it certainty for a year. You heard the difference; they never did. Take your pay, walk the long way back, and let your arms argue about what they learned.",
+          "Text": "That equipment no longer serves their drills. Your payment is ready. Speak to me again for the warden trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Stop. Don't fall in beside me this time -- stand still, because this I say once. The trial ring below has a warden. He proctored these halls for twenty years, and when the cyclone drills turned bad he didn't end them; he started keeping score. Now he holds the ring, wears a sigil he cracked with his own grading hand, and he has flung stronger blades than yours out of the ring for interrupting his orbit. Bring two blades you trust -- that's instruction, not advice. Put him down and bring me the Saber Cyclone Fractured Trial Sigil.",
+          "Text": "The warden holds the trial ring for the students. Recover his fractured sigil and end his watch. Defeat the Saber Cyclone Warden in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Cyclone Fractured Trial Sigil; bring it back to me here in Dantooine, Interior. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then hear the rest at walking pace. He fights the ring like it's his orbit, because it is -- don't take turns with him. Overlap him: one draws the arc, one breaks it, one finishes. That's why you're bringing company. Sigil off his belt, and come back standing.",
+          "Text": "In Dantooine, Jedi Enclave Trial Halls, use the '???' challenge marker to call the Saber Cyclone Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Saber Cyclone Fractured Trial Sigil.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Through your usual door, past the deep chambers, down to the trial ring itself. He's sealed it from inside, but the seal answers the key you already carry -- he wants challengers. He just wants them tired when they arrive. Don't oblige him. Go rested, go fed, go three.",
+          "Text": "In Dantooine, Jedi Enclave Trial Halls, use the '???' challenge marker to call the Saber Cyclone Warden. Accept this assignment before using the marker.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden still holds the trial ring, and the Saber Cyclone Fractured Trial Sigil still hangs off his belt. If you're waiting on your blades to arrive, good. That's the assignment working.",
+          "Text": "Defeat the Saber Cyclone Warden in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Cyclone Fractured Trial Sigil; bring it back to me here in Dantooine, Interior. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You walked back up the stairs -- I know because the students stopped whispering about the ring an hour ago. Sigil first. Then breathe.",
+          "Text": "You've defeated the Saber Cyclone Warden. Let me see the Saber Cyclone Fractured Trial Sigil.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Cracked down the middle. He did that himself the day he decided his orbit was the standard everything else fell short of. I'll set it back where the masters' mark belongs, crack and all -- some lessons should stay visible. You did this the right way: not alone. Keep that shape. You'll need it once more.",
+          "Text": "The warden's watch is over. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Walk with me -- you've earned the fast pace. With the warden gone, his inner circle has no one left to grade them, and it's made them honest at last: four duelists barricaded in the council chamber, because the form is all they have left to hold. They keep the council's trial chit among them like it's a title. It isn't. Take all four down and bring me the Saber Cyclone Council Trial Chit -- the council wants it back before they'll reopen the halls.",
+          "Text": "Four senior students still control the school's trials. Take back their council chit. Defeat four members of the Saber Cyclone Inner Circle in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Cyclone Council Trial Chit; bring it back to me here in Dantooine, Interior.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good. One more thing, between strides: don't let them make it four duels. It's one fight with four parts -- treat it that way and you're back by nightfall. The chit comes straight to me; the council counts hours now.",
+          "Text": "Your key still grants access to Dantooine, Jedi Enclave Trial Halls. Defeat four members of the Saber Cyclone Inner Circle to secure the Saber Cyclone Council Trial Chit, then return to me.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +976,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The council chamber, one hall past the trial ring you cleared -- same key, same stairs, further in. They know the ring fell. They'll be waiting, which spares you the trouble of looking.",
+          "Text": "Use 'Jedi Enclave Trial Halls' in Dantooine, Jedi Enclave Library. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat four members of the Saber Cyclone Inner Circle in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Cyclone Council Trial Chit; bring it back to me here in Dantooine, Interior.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of the inner circle still hold the council chamber, and the Saber Cyclone Council Trial Chit is still in their keeping. The council keeps asking me questions I'd rather answer with the chit in my hand.",
+          "Text": "Defeat four members of the Saber Cyclone Inner Circle in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Cyclone Council Trial Chit; bring it back to me here in Dantooine, Interior.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The chamber went quiet yesterday -- the whole enclave felt it. You're carrying the chit like it's heavier than it looks. It is. Give it here.",
+          "Text": "You've defeated four members of the Saber Cyclone Inner Circle. Let me see the Saber Cyclone Council Trial Chit.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Sealed and unspent. They held the council's proof for a year and never once earned the right to open it. You've earned it four times over. The halls reopen, the council owes me a favor, and I lose my best excuse for walking fast. One trial left -- and I've been avoiding saying her name.",
+          "Text": "Their instructors no longer hold the authority to teach. Your payment is ready. Speak to me again for the final trial when you're ready.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "No drill today. Stand with me a moment -- I don't ask that often. The master in the deep hall: I trained her. I gave her the cyclone the way it was given to me, and she took it somewhere I couldn't follow -- an orbit with no center at all, no self left inside the turn. She holds the deepest hall, and she wields the finished form you came here to earn. No one walks out of her circle alone; I've read every report that says so. Take two partners who can hold the turn beside you and end the lesson I couldn't. There's nothing to carry back. Her defeat is the proof, and I'll feel it from up here.",
+          "Text": "The master is the last teacher holding the halls. Defeat her in the Saber Trial Chamber to finish the cyclone trials. Defeat the Saber Cyclone Master in Dantooine, Saber Trial Chamber. Report back to me here in Dantooine, Interior; no item is needed for this final trial. I recommend bringing two companions for this fight.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then the last part, plainly, standing still: her orbit widens as she tires. Most people back away from it -- that's when she takes them. Step in when everyone else would step out. That's the whole secret, and it took me twenty years and one empty chair to learn it. Come back, and I'll finish your sentence one last time.",
+          "Text": "In Dantooine, Saber Trial Chamber, use the '???' challenge marker to call the Saber Cyclone Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The deepest hall, below the council chamber -- the one built for masters' trials, never meant to be sealed. Your key carries anyone who has cleared the ring and the chamber; her door opens to that and nothing else. She knows the halls above have gone quiet. She's waiting for whoever quieted them.",
+          "Text": "In Dantooine, Saber Trial Chamber, use the '???' challenge marker to call the Saber Cyclone Master. Accept this assignment before using the marker.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "She's still in the deep hall. I'd know the moment that changed -- so would every stone in this enclave. Gather your blades. Don't come walk with me again until it's done; I'll only slow you down.",
+          "Text": "Defeat the Saber Cyclone Master in Dantooine, Saber Trial Chamber. Report back to me here in Dantooine, Interior; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The halls are quiet all the way to the bottom. I walked down to the ring this morning just to listen. I know already -- say it anyway. I want the words.",
+          "Text": "You've defeated the Saber Cyclone Master. Give me your report and we'll finish the trial.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then it's yours. The whole turn -- defense into orbit, orbit into stillness. She'd have been proud of how you did it: with others, and not for the spin. I have no trials left for you. Go correct somebody's footing; I hear it's how the best of us start. Me? I finally feel like standing still.",
+          "Text": "The halls can teach safely again. Keep your footing, and help your next student find theirs. You've earned the right to train Saber Cyclone. Your final payment is ready.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "Six adepts and the slate. Point me at the stairs.",
+        "Text": "I'll defeat six Saber Cyclone Adepts.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "The Saber Cyclone Enclave Trial Slate. Take it.",
+        "Text": "Here's the Saber Cyclone Enclave Trial Slate.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "Five specialists. The shard comes back with me.",
+        "Text": "I'll defeat five Saber Cyclone Specialists.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "The Saber Cyclone Kyber Focus Shard. It hasn't stopped humming.",
+        "Text": "Here's the Saber Cyclone Kyber Focus Shard.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll bring the blades. The warden falls.",
+        "Text": "I'll defeat the Saber Cyclone Warden.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "The Saber Cyclone Fractured Trial Sigil. The ring is open.",
+        "Text": "Here's the Saber Cyclone Fractured Trial Sigil.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "Four duelists, one chit. Done.",
+        "Text": "I'll defeat four members of the Saber Cyclone Inner Circle.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "The Saber Cyclone Council Trial Chit. The chamber is quiet.",
+        "Text": "Here's the Saber Cyclone Council Trial Chit.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "We go together, three of us. It ends there.",
+        "Text": "I'll face the Saber Cyclone Master and report back.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "She's defeated. The cyclone has a center again.",
+        "Text": "The Saber Cyclone Master is defeated. Here's my report.",
         "Style": 4,
         "Color": null
       },

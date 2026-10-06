@@ -270,6 +270,23 @@ namespace SWLOR.Game.Server.Feature
             });
         }
 
+        private static void ResumeAttackAfterImpact(uint activator, uint target, AbilityDetail ability)
+        {
+            // Let the native sound action dispatch before resumed combat can interrupt it.
+            // NPC activation animations likewise finish before their combat-state reset.
+            if (!string.IsNullOrWhiteSpace(ability.ImpactSound) ||
+                AbilityAnimationBinding.ActivationClip(ability, activator) != null && !GetIsPC(activator))
+            {
+                void QueueResume() => ActionDoCommand(() => ResumeAttackAfterDelay(activator, target, 0.1f));
+                if (OBJECT_SELF == activator)
+                    QueueResume();
+                else
+                    ServerManager.Executor.ExecuteInScriptContext(QueueResume, activator);
+            }
+            else
+                ResumeAttackAfterDelay(activator, target, 0.1f);
+        }
+
         /// <summary>
         /// Breaks stealth and invisibility effects if the ability is configured to do so.
         /// </summary>
@@ -432,17 +449,10 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            var area = GetArea(activator);
-            if (!GetIsObjectValid(area))
-                return;
-
-            // PlaySound queues a creature action which combat or animation playback can
-            // interrupt. Send positional audio immediately, anchored to the caster.
-            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
-            {
-                if (GetArea(player) == area)
-                    PlayerPlugin.PlaySound(player, soundResref, activator);
-            }
+            if (OBJECT_SELF == activator)
+                PlaySound(soundResref);
+            else
+                ServerManager.Executor.ExecuteInScriptContext(() => PlaySound(soundResref), activator);
         }
 
         /// <summary>
@@ -735,13 +745,7 @@ namespace SWLOR.Game.Server.Feature
                         ability,
                         targetLocation,
                         activationAreaTelegraphs);
-                    // NPCs must clear their combat state before reattacking. Queue that reset
-                    // after the authored clip, so it cannot erase the animation at impact.
-                    if (AbilityAnimationBinding.ActivationClip(ability, activator) != null && !GetIsPC(activator))
-                        AssignCommand(activator, () => ActionDoCommand(() =>
-                            ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f)));
-                    else
-                        ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);
+                    ResumeAttackAfterImpact(activator, resumeAttackTarget, ability);
 
                     // If this is an attack make the NPC react.
                     if (GetIsObjectValid(target) && target != activator)

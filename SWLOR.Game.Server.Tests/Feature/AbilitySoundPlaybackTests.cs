@@ -16,15 +16,16 @@ public class AbilitySoundPlaybackTests
     [OneTimeSetUp]
     public void CompilePlaybackHarness()
     {
-        // Run the real helper with a blocked creature action queue and observable client packets.
+        // Run the real helpers with observable script context and a slow creature action queue.
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
         while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
             directory = directory.Parent;
         var root = directory?.FullName ?? throw new DirectoryNotFoundException("Could not locate repository root.");
         var production = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(
             root, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"))).GetRoot();
-        var helper = production.DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Single(method => method.Identifier.ValueText == "PlayAbilitySound");
+        var helpers = production.DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Where(method => method.Identifier.ValueText is "PlayAbilitySound" or "ResumeAttackAfterImpact")
+            .Select(method => method.ToFullString());
         var source = $$"""
             using System;
             using System.Collections.Generic;
@@ -32,40 +33,71 @@ public class AbilitySoundPlaybackTests
 
             public static class UsePerkFeat
             {
-                {{helper}}
+                {{string.Join(Environment.NewLine, helpers)}}
                 public static void Play(uint caster, string sound) => PlayAbilitySound(caster, sound);
+                public static void Resume(uint caster, string sound) =>
+                    ResumeAttackAfterImpact(caster, 50, new AbilityDetail { ImpactSound = sound });
+            }
+            public class AbilityDetail
+            {
+                public string ImpactSound;
+            }
+            public static class AbilityAnimationBinding
+            {
+                public static object ActivationClip(AbilityDetail ability, uint caster) => null;
             }
             public static class World
             {
-                public const uint OBJECT_INVALID = 0x7F000000;
-                private static readonly Dictionary<uint, uint> Areas = new();
-                private static readonly List<(uint Player, string Sound, uint Source)> Packets = new();
+                public static uint OBJECT_SELF => Self;
+                private static readonly List<string> Events = new();
                 private static readonly Queue<Action> Actions = new();
-                private static int PlayerIndex;
-                private static readonly uint[] Players = { 10, 20, 30 };
+                private static readonly Queue<Action> Timers = new();
+                private static uint Self;
 
-                public static bool GetIsObjectValid(uint obj) => obj != OBJECT_INVALID &&
-                    (Areas.ContainsKey(obj) || obj is 1000 or 2000);
-                public static uint GetArea(uint obj) => Areas[obj];
-                public static uint GetFirstPC() { PlayerIndex = 0; return Players[0]; }
-                public static uint GetNextPC() => ++PlayerIndex < Players.Length ? Players[PlayerIndex] : OBJECT_INVALID;
-                public static void AssignCommand(uint obj, Action action) => Actions.Enqueue(action);
-                public static void PlaySound(string sound) => throw new InvalidOperationException("Creature audio uses the action queue.");
-                public static class PlayerPlugin
+                public static bool GetIsObjectValid(uint obj) => obj is 10 or 100;
+                public static bool GetIsPC(uint obj) => obj == 10;
+                public static void AssignCommand(uint obj, Action action) =>
+                    throw new InvalidOperationException("Audio must not defer another script command.");
+                public static class ServerManager
                 {
-                    public static void PlaySound(uint player, string sound, uint source) => Packets.Add((player, sound, source));
+                    public static readonly ScriptExecutor Executor = new();
                 }
-
-                public static (uint Player, string Sound, uint Source)[] Play(uint caster, string sound, bool hasArea)
+                public class ScriptExecutor
                 {
-                    Areas.Clear();
-                    Areas[10] = Areas[20] = Areas[100] = 1000;
-                    Areas[30] = 2000;
-                    if (Areas.ContainsKey(caster) && !hasArea) Areas[caster] = OBJECT_INVALID;
-                    Packets.Clear();
+                    public void ExecuteInScriptContext(Action action, uint caster)
+                    {
+                        var previous = Self;
+                        Self = caster;
+                        try { action(); }
+                        finally { Self = previous; }
+                    }
+                }
+                public static void ActionDoCommand(Action action) => Actions.Enqueue(action);
+                public static void PlaySound(string sound)
+                {
+                    var caster = Self;
+                    Actions.Enqueue(() => Events.Add($"Sound:{caster}:{sound}"));
+                }
+                public static void ResumeAttackAfterDelay(uint caster, uint target, float delay) => Timers.Enqueue(() =>
+                {
+                    if (!GetIsPC(caster)) Actions.Clear();
+                    Events.Add($"Attack:{caster}:{target}");
+                });
+
+                public static string[] Play(uint caster, string sound, bool resumeAttack, bool casterContext)
+                {
+                    Events.Clear();
                     Actions.Clear();
+                    Timers.Clear();
+                    var originalContext = Self = casterContext ? caster : 20;
                     UsePerkFeat.Play(caster, sound);
-                    return Packets.ToArray();
+                    if (resumeAttack) UsePerkFeat.Resume(caster, sound);
+                    if (Self != originalContext) throw new InvalidOperationException("Caller context was not restored.");
+                    // The resume timer may fire before the engine processes the queued sound.
+                    while (Timers.TryDequeue(out var timer)) timer();
+                    while (Actions.TryDequeue(out var action)) action();
+                    while (Timers.TryDequeue(out var timer)) timer();
+                    return Events.ToArray();
                 }
             }
             """;
@@ -90,42 +122,52 @@ public class AbilitySoundPlaybackTests
         ];
         foreach (var definition in definitions)
         foreach (var (feat, ability) in definition.BuildAbilities())
-            yield return new TestCaseData(ability.ImpactSound).SetName($"{feat}_SoundBypassesBusyCasterQueue");
+            yield return new TestCaseData(ability.ImpactSound).SetName($"{feat}_SoundDispatchesBeforeCombatResumes");
     }
 
     [TestCaseSource(nameof(ReportedForceRanks))]
-    public void ReportedForcePowers_PlayImmediatelyForCasterAndSameAreaObservers(string sound)
+    public void ReportedForcePowers_DispatchNativeSoundBeforeCombatResumes(string sound)
     {
         sound.Should().NotBeNullOrWhiteSpace();
-        Play(10, sound).Should().BeEquivalentTo(new[] { (10u, sound, 10u), (20u, sound, 10u) },
-            "the caster and observers should hear one positional cue even while the caster's action queue is blocked");
+        Play(10, sound, resumeAttack: true).Should().Equal(new[] { $"Sound:10:{sound}", "Attack:10:50" },
+            "resumed combat must not overtake the native sound action, even when the action queue is slow");
     }
 
     [Test]
-    public void NpcCast_PlaysAtTheNpcForSameAreaPlayersOnly()
+    public void NpcCast_DispatchesSoundBeforeTheCombatResetClearsActions()
     {
-        Play(100, "ksfx_frc_drain").Should().BeEquivalentTo(new[]
-        {
-            (10u, "ksfx_frc_drain", 100u), (20u, "ksfx_frc_drain", 100u)
-        });
+        Play(100, "ksfx_frc_drain", resumeAttack: true).Should().Equal("Sound:100:ksfx_frc_drain", "Attack:100:50");
+    }
+
+    [Test]
+    public void CompanionAbilityFromOwnerContext_PlaysAtTheCompanionAndRestoresCallerContext()
+    {
+        Play(100, "ksfx_frc_drain", resumeAttack: true, casterContext: false)
+            .Should().Equal("Sound:100:ksfx_frc_drain", "Attack:100:50");
     }
 
     [TestCase(null)]
     [TestCase("")]
     [TestCase(" ")]
-    public void UnconfiguredSound_SendsNoPackets(string sound)
+    public void UnconfiguredSound_DoesNotQueueAudio(string sound)
     {
         Play(10, sound).Should().BeEmpty();
     }
 
-    [TestCase(0x7F000000u, true)]
-    [TestCase(999u, true)]
-    [TestCase(10u, false)]
-    public void MissingCasterOrArea_SendsNoPackets(uint caster, bool hasArea)
+    [TestCase(0x7F000000u)]
+    [TestCase(999u)]
+    public void MissingCaster_DoesNotQueueAudio(uint caster)
     {
-        Play(caster, "ksfx_frc_drain", hasArea).Should().BeEmpty();
+        Play(caster, "ksfx_frc_drain").Should().BeEmpty();
     }
 
-    private (uint Player, string Sound, uint Source)[] Play(uint caster, string sound, bool hasArea = true) =>
-        ((uint Player, string Sound, uint Source)[])_play.Invoke(null, [caster, sound, hasArea])!;
+    [TestCase(10u)]
+    [TestCase(100u)]
+    public void AbilityWithoutImpactSound_ResumesCombatNormally(uint caster)
+    {
+        Play(caster, "", resumeAttack: true).Should().Equal($"Attack:{caster}:50");
+    }
+
+    private string[] Play(uint caster, string sound, bool resumeAttack = false, bool casterContext = true) =>
+        (string[])_play.Invoke(null, [caster, sound, resumeAttack, casterContext])!;
 }

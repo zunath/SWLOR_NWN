@@ -118,7 +118,7 @@ public class AbilityDamageQueueTests
         source.Should().Contain("private static void ResumeAttackAfterDelay(uint activator, uint target, float delay, bool clearActions = true)");
         source.Should().Contain("DelayCommand(delay, () =>");
         var impactIndex = completeBody.IndexOf("ExecuteAbilityImpact(", StringComparison.Ordinal);
-        var resumeIndex = completeBody.IndexOf("ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f)", StringComparison.Ordinal);
+        var resumeIndex = completeBody.IndexOf("ResumeAttackAfterImpact(activator, resumeAttackTarget, ability)", StringComparison.Ordinal);
 
         impactIndex.Should().BeGreaterThanOrEqualTo(0);
         resumeIndex.Should().BeGreaterThanOrEqualTo(0);
@@ -170,7 +170,7 @@ public class AbilityDamageQueueTests
             completeBody.IndexOf("void ResolveImpact()", StringComparison.Ordinal));
         var executeImpactIndex = resolveImpact.IndexOf("ExecuteAbilityImpact(", StringComparison.Ordinal);
         var delayedResumeIndex = resolveImpact.IndexOf(
-            "ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f)",
+            "ResumeAttackAfterImpact(activator, resumeAttackTarget, ability)",
             StringComparison.Ordinal);
         executeImpactIndex.Should().BeGreaterThanOrEqualTo(0);
         delayedResumeIndex.Should().BeGreaterThanOrEqualTo(0);

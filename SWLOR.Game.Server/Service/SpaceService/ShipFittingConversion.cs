@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
@@ -38,7 +36,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                     if (string.IsNullOrWhiteSpace(sourceIdentity))
                         throw new ArgumentException("A persisted ship identity is required when equipment has no item identity.", nameof(sourceIdentity));
                     var key = $"{sourceIdentity}:{bank}:{slot}:{module.SerializedItem}";
-                    identity = new Guid(SHA256.HashData(Encoding.UTF8.GetBytes(key)).AsSpan(0, 16)).ToString();
+                    identity = new Guid(SpacePersistentIdentity.Digest(key).AsSpan(0, 16)).ToString();
                 }
                 if (installed.Any(x => x.ItemInstanceId == identity) || status.RefitRecovery.ContainsKey(identity))
                     throw new InvalidOperationException("Duplicate fitted item identity: " + identity);

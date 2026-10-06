@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Summary=$"Standard fittings and supplies. Unload cargo before ore commissions.\nOre allowance: {economy.OreAvailable(DateTime.UtcNow)}/1,000 today | Reputation: {economy.Reputation} ({economy.Day(DateTime.UtcNow).Reputation}/100 today)\nService voucher: {economy.ServiceVoucher}cr | Starter grant: {(economy.ClaimedStarterRevision==economy.StarterRevision?"claimed":"available")}\nRegister your deed, install fittings, launch and use /spacejobs for a timed route and objective.";
             Stock=new();Ore=new();
             var discount=Space.GetShipStatAdjustments(Player).GetValueOrDefault(Service.StatService.StatType.ShipAmmunitionDiscount)/10000d;
-            foreach(var id in _stock){var p=SpaceEconomyCatalog.Default.Items[id];var quantity=p.Ammunition?10:1;Stock.Add($"{p.Name} Ã—{quantity} | {SpaceEconomyCatalog.SupplyPrice(p,quantity,discount)}cr");}
+            foreach(var id in _stock){var p=SpaceEconomyCatalog.Default.Items[id];var quantity=p.Ammunition?10:1;Stock.Add($"{p.Name} ×{quantity} | {SpaceEconomyCatalog.SupplyPrice(p,quantity,discount)}cr");}
             foreach(var id in _ores)Ore.Add($"{Cache.GetItemNameByResref(id)} | {SpaceEconomyCatalog.Default.OreBids[id]}cr/unit | sell up to 20");
         }
         private void Run(Action action){try{action();Message="";}catch(InvalidOperationException ex){Message=ex.Message;}Refresh();}

@@ -16,23 +16,27 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static bool Supports(FeatType feat)=>ShipTechniqueCatalog.Default.Profiles.Any(x=>x.Feat==feat&&x.Kind!=ShipPerkKind.Trait);
         public static async Task RunCaseAsync(EngineTestContext ctx,FeatType feat)
         {
-            var profile=ShipTechniqueCatalog.Default.Get(feat);
             using var actor=await PlayerAbilityFixture.CreateAsync(ctx);
             using var ally=await PlayerAbilityFixture.CreateAsync(ctx,2f);
+            await RunCaseAsync(ctx, feat, actor, ally);
+        }
+        public static async Task RunCaseAsync(EngineTestContext ctx, FeatType feat, PlayerAbilityFixture actor, PlayerAbilityFixture ally)
+        {
+            var profile=ShipTechniqueCatalog.Default.Get(feat);
             var shipId="engine-ship/"+actor.Id;var allyId="engine-ship/"+ally.Id;string siteId=null;
             var hull=ShipFittingCatalog.Default.Hulls.Values.OrderByDescending(x=>x.Power).First();
             ShipStatus NewShip()=>new(){ItemTag=hull.Id,FittingVersion=ShipFittingConversion.CurrentVersion,FlightId=Guid.NewGuid().ToString()};
             var status=NewShip();var other=NewShip();
             var modules=ShipFittingCatalog.Default.Modules.Values.Where(x=>x.Action!=ShipModuleAction.Passive&&profile.Allows(x)).ToArray();
             if(profile.Actions.Count>0)ctx.Assert(modules.Length>0,"technique has real compatible hardware");
-            var module=modules.FirstOrDefault();
+            var module=modules.OrderByDescending(x=>x.Output).FirstOrDefault();
             if(module!=null){var fitted=new ShipStatus.ShipStatusModule{Design=module.Id,Calibration="Standard",Condition=100,ItemInstanceId=Guid.NewGuid().ToString()};status.HighPowerModules[1]=fitted;status.BankModules[1]=new(){fitted.ItemInstanceId};}
-            actor.Update(p=>{foreach(var skill in new[]{SkillType.Piloting,SkillType.Gunnery,SkillType.ShipSystems,SkillType.Astrometrics,SkillType.SpaceIndustry})p.Skills[skill].Rank=50;p.Perks[profile.Perk]=profile.Rank;p.ActiveShipId=shipId;p.ShipOperations.Prepared.Add(profile.Key);p.ShipOperations.SelectedToolId=status.HighPowerModules.GetValueOrDefault(1)?.ItemInstanceId;});
+            actor.Update(p=>{p.Perks.Clear();p.ShipOperations=new();p.RecastTimes.Clear();foreach(var skill in new[]{SkillType.Piloting,SkillType.Gunnery,SkillType.ShipSystems,SkillType.Astrometrics,SkillType.SpaceIndustry})p.Skills[skill].Rank=50;p.Perks[profile.Perk]=profile.Rank;p.ActiveShipId=shipId;p.ShipOperations.Prepared.Add(profile.Key);p.ShipOperations.SelectedToolId=status.HighPowerModules.GetValueOrDefault(1)?.ItemInstanceId;});
             ally.Update(p=>p.ActiveShipId=allyId);
             ShipFittedStats.Recompute(status,Space.GetOperatingSkills(actor.Creature),Space.GetShipStatAdjustments(actor.Creature));ShipFittedStats.Recompute(other);
             status.CommittedLegId="paid-test-leg";other.Signature=Math.Max(other.Signature,profile.MinimumSignature);
             var target=ally.Creature;
-            SpaceSite site=null;
+            SpaceSite site=null;ShipEnemyFixture enemy=null;
             try
             {
                 if(profile.Target is ShipTechniqueTarget.Site or ShipTechniqueTarget.SurveyedSite or ShipTechniqueTarget.Anomaly)
@@ -50,7 +54,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var selected=site.Reserves.Keys.First();actor.Update(p=>p.ShipOperations.SelectedConstituent=selected);
                 }
                 if(profile.Target is ShipTechniqueTarget.Hostile or ShipTechniqueTarget.ExposedHostile or ShipTechniqueTarget.Pursuit)
-                {SetIsTemporaryEnemy(actor.Creature,ally.Creature);SetIsTemporaryEnemy(ally.Creature,actor.Creature);}
+                {enemy=new ShipEnemyFixture(ctx,actor.Creature,other);target=enemy.Creature;}
                 if(profile.Target==ShipTechniqueTarget.ExposedHostile)ShipTemporaryStats.Add(other,StatType.ShipExposedSystems,1,60,"test exposed",DateTime.UtcNow);
                 DB.Set(new PlayerShip{Id=shipId,OwnerPlayerId=actor.Id,Status=status});DB.Set(new PlayerShip{Id=allyId,OwnerPlayerId=ally.Id,Status=other});
                 SetLocalObject(actor.Creature,"SPACE_TARGET",target);
@@ -69,12 +73,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 else
                 {
                     foreach(var effect in profile.Effects.Where(x=>profile.Channel<=0||!x.Once))
-                    {var recipient=effect.Scope==ShipEffectScope.Target?DB.Get<PlayerShip>(allyId).Status:live;ctx.Assert(recipient.TemporaryAdjustments.Any(x=>x.Family==profile.Key&&x.Stat==effect.Stat),"declared scoped effect committed: "+effect.Stat);}
+                    {var recipient=effect.Scope==ShipEffectScope.Target?Space.GetShipStatus(target):live;ctx.Assert(recipient.TemporaryAdjustments.Any(x=>x.Family==profile.Key&&x.Stat==effect.Stat),"declared scoped effect committed: "+effect.Stat);}
                     if(profile.Channel>0)ctx.Assert(DB.Get<SpaceSite>(siteId).Claims.Values.Any(x=>x.PlayerId==actor.Id&&x.ModuleId==state.SelectedToolId),"paid channel reserved exactly one finite claim");
                 }
             }
             finally
-            {DB.Delete<PlayerShip>(shipId);DB.Delete<PlayerShip>(allyId);if(siteId!=null)DB.Delete<SpaceSite>(siteId);}
+            {enemy?.Dispose();DB.Delete<PlayerShip>(shipId);DB.Delete<PlayerShip>(allyId);if(siteId!=null)DB.Delete<SpaceSite>(siteId);}
         }
     }
 }

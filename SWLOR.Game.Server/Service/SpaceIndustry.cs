@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Security.Cryptography;
-using System.Text;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
@@ -35,7 +33,7 @@ namespace SWLOR.Game.Server.Service
                 var ids = new List<string>();
                 for (var slot = 0; slot < indices.Length; slot++)
                 {
-                    var hash = SHA256.HashData(Encoding.UTF8.GetBytes("space-site/" + GetResRef(area) + "/" + slot));
+                    var hash = SpacePersistentIdentity.Digest("space-site/" + GetResRef(area) + "/" + slot);
                     var id = "space-site-" + Convert.ToHexString(hash.AsSpan(0, 16)).ToLowerInvariant();
                     var site = DB.Get<SpaceSite>(id);
                     if (site == null)

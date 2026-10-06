@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var rank=player.Perks.GetValueOrDefault(group.First().Perk);var p=group.FirstOrDefault(x=>x.Rank==rank);if(p==null||!Space.StationAllowsSkill(Player,p.Skill))continue;
                 var ready=state.Cooldowns.GetValueOrDefault(p.Recast.ToString());var seconds=Math.Max(0,(ready-now).TotalSeconds);
-                rows.Add(p.Name+" Â· "+p.Kind+" Â· "+p.Capacitor+" CAP");icons.Add(p.Icon);descriptions.Add(p.Description);
+                rows.Add(p.Name+" · "+p.Kind+" · "+p.Capacitor+" CAP");icons.Add(p.Icon);descriptions.Add(p.Description);
                 uses.Add(seconds>0?$"{seconds:0}s":"Activate");prepare.Add(p.Kind==ShipPerkKind.Mode?(state.SelectedMode==p.Key?"Selected":"Select"):(state.Prepared.Contains(p.Key)?"Prepared":"Prepare"));
                 canUse.Add(InFlight&&Space.CanOperateSkill(Player,p.Skill)&&seconds<=0&&(p.Kind==ShipPerkKind.Mode||state.Prepared.Contains(p.Key))&&now>=state.ReadyAt);_perks.Add(p);
             }
@@ -116,15 +116,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var profile=ShipFittingCatalog.Default.Modules[fitted.Design];if(profile.Action==ShipModuleAction.Passive)continue;
                     var operation=ShipOperations.Resolve(ship.Status,withCondition(),temporary:ShipTemporaryStats.Current(ship.Status,now,fitted.ItemInstanceId));
-                    modules.Add(profile.Name+" Â· "+fitted.Calibration+" Â· "+fitted.Condition+"%");
-                    moduleDescriptions.Add($"{operation.Output:0.##} output Â· {operation.CapacitorCost} CAP Â· {operation.Variant.Cycle:0.##}s Â· {operation.Variant.Range:0.#}m Â· quality {fitted.Quality} ({fitted.QualityDimension})");
+                    modules.Add(profile.Name+" · "+fitted.Calibration+" · "+fitted.Condition+"%");
+                    moduleDescriptions.Add($"{operation.Output:0.##} output · {operation.CapacitorCost} CAP · {operation.Variant.Cycle:0.##}s · {operation.Variant.Range:0.#}m · quality {fitted.Quality} ({fitted.QualityDimension})");
                     bank1.Add((ship.Status.BankModules.GetValueOrDefault(1)?.Contains(fitted.ItemInstanceId)==true?"In ":"Add ")+"Bank 1");bank2.Add((ship.Status.BankModules.GetValueOrDefault(2)?.Contains(fitted.ItemInstanceId)==true?"In ":"Add ")+"Bank 2");_modules.Add(fitted.ItemInstanceId);
                     ShipStatus.ShipStatusModule withCondition()=>new(){Design=fitted.Design,Calibration=fitted.Calibration,Quality=fitted.Quality,QualityDimension=fitted.QualityDimension,Condition=100};
                 }
                 EffectsText=string.Join("; ",ship.Status.TemporaryAdjustments.Where(x=>x.ExpiresAt>now&&!string.IsNullOrEmpty(x.Label)).GroupBy(x=>x.Family).Select(g=>$"{g.First().Label} {(g.Max(x=>x.ExpiresAt)-now).TotalSeconds:0}s"));
             }
             else EffectsText="";
-            StatusText=_message??(Docked?"Prepare at this ship's dock. Each change needs 5 seconds. Compatible banks hold 1â€“4 modules.":"The pilot selects exterior targets. Each assigned station controls its own hardware and techniques; all stations share capacitor and module cooldowns.");
+            StatusText=_message??(Docked?"Prepare at this ship's dock. Each change needs 5 seconds. Compatible banks hold 1–4 modules.":"The pilot selects exterior targets. Each assigned station controls its own hardware and techniques; all stations share capacitor and module cooldowns.");
             PerkRows=rows;PerkIcons=icons;PerkDescriptions=descriptions;PerkUseText=uses;PerkPrepareText=prepare;CanUsePerk=canUse;ModuleRows=modules;ModuleDescriptions=moduleDescriptions;ModuleBank1=bank1;ModuleBank2=bank2;
         }
     }

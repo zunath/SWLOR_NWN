@@ -195,7 +195,7 @@ def specifications():
     ]
     return {
         "version": "2026-10-05",
-        "status": "Pre-implementation numerical design baseline; runtime and live-market validation remain release gates",
+        "status": "Implemented numerical baseline; connected-client play and live-market validation remain release gates",
         "rules": [record("name value units description", r) for r in rules],
         "hulls": [record(hull_headers, r) for r in hull_values],
         "modules": [record(module_headers, r) for r in module_values],

@@ -1,6 +1,6 @@
 {
   "version": "2026-10-05",
-  "status": "Pre-implementation numerical design baseline; runtime and live-market validation remain release gates",
+  "status": "Implemented numerical baseline; connected-client play and live-market validation remain release gates",
   "rules": [
     {
       "name": "Skill ranks",

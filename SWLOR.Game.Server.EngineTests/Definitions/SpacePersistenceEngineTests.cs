@@ -13,12 +13,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class SpacePersistenceEngineTests
     {
+        [EngineTest("Space identity digest remains stable inside the native host", Category="SpacePersistence", TimeoutSeconds=10f)]
+        public static Task IdentityDigest(EngineTestContext ctx)
+        {
+            ctx.AssertEqual("BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD", Convert.ToHexString(SpacePersistentIdentity.Digest("abc")), "SHA-256 bytes remain compatible without invoking native OpenSSL");
+            return Task.CompletedTask;
+        }
         [EngineTest("Ship equipment native conversion and withdrawal preserve identity and quality",Category="SpacePersistence",TimeoutSeconds=30f)]
         public static async Task EquipmentRoundTrip(EngineTestContext ctx)
         {
             using var player=await PlayerAbilityFixture.CreateAsync(ctx);var container=ctx.SpawnCreature("civilian",2);
             var legacy=ShipFittingCatalog.Default.LegacyModules.Values.First(x=>ShipFittingCatalog.Default.Modules.TryGetValue(x.Target,out var module)&&module.QualityDimensions.HasFlag(ShipQualityDimension.Output));
-            var item=CreateItemOnObject(legacy.Resref,container);ctx.Track(item);ctx.Assert(GetIsObjectValid(item),"legacy blueprint exists in packed module");
+            uint item=OBJECT_INVALID;await ctx.ExecuteInCreatureContextAsync(container,()=>item=CreateItemOnObject(legacy.Resref,container));ctx.Track(item);ctx.Assert(GetIsObjectValid(item),"legacy blueprint exists in packed module");
             var id=GetObjectUUID(item);AddItemProperty(DurationType.Permanent,ItemPropertyCustom(ItemPropertyType.ModuleBonus,0,80),item);
             var migration=typeof(Space).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ShipEquipmentMigration").GetMethod("MigrateObject",BindingFlags.Public|BindingFlags.Static);
             ctx.Assert((bool)migration.Invoke(null,new object[]{item}),"legacy equipment converted in place");
@@ -45,7 +51,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("Ship research delivers a prepared output once after interrupted acknowledgement",Category="SpacePersistence",TimeoutSeconds=20f)]
         public static async Task ResearchReplay(EngineTestContext ctx)
         {
-            using var actor=await PlayerAbilityFixture.CreateAsync(ctx);var item=CreateItemOnObject("blueprint",actor.Creature);ctx.Track(item);
+            using var actor=await PlayerAbilityFixture.CreateAsync(ctx);uint item=OBJECT_INVALID;await ctx.ExecuteInCreatureContextAsync(actor.Creature,()=>item=CreateItemOnObject("blueprint",actor.Creature));ctx.Track(item);ctx.Assert(GetIsObjectValid(item),"native blueprint input exists");
             var recipe=Craft.GetAllRecipes().First(x=>x.Value.IsShipEquipment).Key;
             var details=Craft.GetBlueprintDetails(item);details.Recipe=recipe;details.Level=4;details.LicensedRuns=7;Craft.SetBlueprintDetails(item,details);
             var job=new ResearchJob{Id="engine-research/"+actor.Id,PlayerId=actor.Id,Recipe=recipe,IsShipResearch=true,InputSettled=true,Success=false,OutputPrepared=true,DateCompleted=DateTime.UtcNow.AddMinutes(-1)};

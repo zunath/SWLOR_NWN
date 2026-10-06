@@ -1027,6 +1027,10 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Removes declared self effects and effects granted by the refunded perk's abilities.
+        /// Source-owned effects retain their ability identity even when another perk uses the same status class.
+        /// </summary>
         public static void RemoveStatusEffectsOnPerkRefund(uint creature, PerkType perkType)
         {
             if (perkType == PerkType.Invalid || !GetIsObjectValid(creature))
@@ -1059,6 +1063,10 @@ namespace SWLOR.Game.Server.Service
             Combat.RefreshStatDrivenTrackerEffects(creature);
         }
 
+        /// <summary>
+        /// Selects distinct ability/status pairs for a perk refund. Deduplication retains separate
+        /// abilities that share a status class so each cleanup uses its own originating ability.
+        /// </summary>
         public static IReadOnlyList<(AbilityDetail Ability, Type StatusEffectType)> GetSourceOwnedStatusEffectRefunds(
             IEnumerable<AbilityDetail> abilities, PerkType perkType)
         {

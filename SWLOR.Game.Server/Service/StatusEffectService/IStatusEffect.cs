@@ -9,6 +9,11 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
     {
         string Id { get; }
         uint Source { get; }
+        /// <summary>
+        /// The cached definition that granted this effect, retained across logout and source-handle
+        /// reassignment. Periodic child effects must inherit this identity from their parent.
+        /// Null means the granting ability is unknown, not that the effect belongs to any ability.
+        /// </summary>
         AbilityDetail OriginatingAbility { get; set; }
         StatusEffectActivationType ActivationType { get; }
         StatusEffectSourceType SourceType { get; }

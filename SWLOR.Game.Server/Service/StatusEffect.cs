@@ -1419,6 +1419,17 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Removes matching instances from active and logged-out targets without clearing unrelated
+        /// effects of the same class. Cached targets lose the matching stat payload before restoration.
+        /// </summary>
+        /// <param name="source">The creature that granted the effects.</param>
+        /// <param name="statusEffectType">The status class, including derived classes, to remove.</param>
+        /// <param name="sendsWornOffMessage">Whether active targets receive expiration feedback.</param>
+        /// <param name="originatingAbility">
+        /// A cached ability definition for exact ownership matching, or null for source-wide cleanup.
+        /// Effects with an unknown origin are preserved when an ability is specified.
+        /// </param>
         public static void RemoveStatusEffectsFromAllTargetsBySource(
             uint source,
             Type statusEffectType,
@@ -1454,6 +1465,11 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Snapshots effects matching their status type, current source, and optional ability origin.
+        /// A null requested origin permits source-wide matching; an effect's null origin is never
+        /// a wildcard for a specific ability.
+        /// </summary>
         public static IReadOnlyList<IStatusEffect> GetSourceOwnedStatusEffects(
             IEnumerable<IStatusEffect> effects, Type statusEffectType, uint source, AbilityDetail originatingAbility = null)
         {

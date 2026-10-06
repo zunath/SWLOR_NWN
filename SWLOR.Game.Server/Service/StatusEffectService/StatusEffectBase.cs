@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
 
         public string Id { get; }
         public uint Source { get; private set; }
+        /// <inheritdoc />
         public AbilityDetail OriginatingAbility { get; set; }
         public virtual StatusEffectActivationType ActivationType => StatusEffectActivationType.Tick;
         public virtual StatusEffectSourceType SourceType => StatusEffectSourceType.Normal;
@@ -85,6 +86,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             Apply(creature, durationTicks);
         }
 
+        /// <summary>Updates a reconnected creature's handle without changing the granting ability.</summary>
         public void ReassignSource(uint source)
         {
             Source = source;

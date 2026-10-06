@@ -227,7 +227,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Guarding Bond Stance")
 
                 .AddPerkLevel()
-                .Description("While active, your beast gains +20% Defense, +20% Force Defense, takes 15% less damage, and generates +75% enmity. Only one stance may be active at a time.")
+                .Description("While active, your beast gains +20% Defense, +20% Force Defense, takes 15% less damage, and generates +50% enmity. Only one stance may be active at a time.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 15)
                 .GrantsFeat(FeatType.GuardingBondStance);

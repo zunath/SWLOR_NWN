@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatusEffectCleanseType.TreatmentKit2 |
             StatusEffectCleanseType.SoothePet;
         public override float Frequency => 6f;
+        public override bool PreservesTickScheduleOnRefresh => true;
 
         public BurnStatusEffect()
             : this(1)

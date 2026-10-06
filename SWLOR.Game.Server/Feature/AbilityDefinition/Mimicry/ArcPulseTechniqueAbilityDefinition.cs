@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 1.3f,
                 24f,
                 8,
-                0,
+                32,
                 30,
                 typeof(ShockStatusEffect),
                 CombatImpactAreaShape.Sphere,

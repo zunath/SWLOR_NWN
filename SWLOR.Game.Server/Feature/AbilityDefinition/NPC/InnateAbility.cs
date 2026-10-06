@@ -106,7 +106,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         /// <summary>Restores <paramref name="amount"/> Stamina to the caster on each successful hit.</summary>
         public static Action<uint, uint> RestoreStaminaOnHit(int amount)
         {
-            return (activator, _) => Stat.RestoreStamina(activator, amount);
+            return (activator, _) => Combat.RestoreAbilityHitStamina(
+                activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability, amount);
         }
 
         /// <summary>Restores <paramref name="amount"/> FP to the caster on each successful hit.</summary>

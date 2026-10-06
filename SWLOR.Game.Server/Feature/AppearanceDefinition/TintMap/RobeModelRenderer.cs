@@ -39,10 +39,15 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         public int GetBasePhenotype(int phenotype) => _basePhenotypes.GetValueOrDefault(phenotype, phenotype);
         public bool Supports(string model) => !string.IsNullOrWhiteSpace(model) && _phenotypes.ContainsKey(model);
 
-        public int ResolvePhenotype(int currentPhenotype, string robeModel, bool hasRgb)
+        /// <summary>
+        /// Every catalogued robe renders through its generated body root, tinted or not. The root binds
+        /// the garment to the wearer's bones; the separate native robe attachment animates on its own
+        /// skeleton and can drift from the body during emotes and ability animations.
+        /// </summary>
+        public int ResolvePhenotype(int currentPhenotype, string robeModel)
         {
             var basePhenotype = GetBasePhenotype(currentPhenotype);
-            if (!hasRgb || string.IsNullOrWhiteSpace(robeModel) ||
+            if (string.IsNullOrWhiteSpace(robeModel) ||
                 !_phenotypes.TryGetValue(robeModel, out var rendered) ||
                 GetBasePhenotype(rendered) != basePhenotype)
                 return basePhenotype;
@@ -86,11 +91,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         public static bool SupportsRgb(TintMapMaterialSelection selection) =>
             selection.ArmorPart != AppearanceArmor.Robe || _catalog.Supports(selection.ModelResref);
 
-        public static bool Apply(uint creature, IReadOnlyList<TintMapMaterialSelection> selections, bool hasRobeRgb)
+        public static bool Apply(uint creature, IReadOnlyList<TintMapMaterialSelection> selections)
         {
             var robe = selections.FirstOrDefault(selection => selection.ArmorPart == AppearanceArmor.Robe);
             var current = (int)GetPhenoType(creature);
-            var desired = _catalog.ResolvePhenotype(current, robe?.ModelResref, hasRobeRgb);
+            var desired = _catalog.ResolvePhenotype(current, robe?.ModelResref);
             if (desired != current)
             {
                 var server = NWNXLib.g_pAppManager.m_pServerExoApp;

@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.FinalMandate, 49, 3)
                 .MimicryUtility()
+                .RemoveSourceOwnedStatusEffectOnPerkRefund(typeof(FinalMandateStatusEffect))
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 8.0f))

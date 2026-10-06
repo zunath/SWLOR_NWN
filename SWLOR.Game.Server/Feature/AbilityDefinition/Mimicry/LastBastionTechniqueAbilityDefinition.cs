@@ -30,13 +30,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.LastBastion, 47, 3)
                 .MimicryUtility()
+                .RemoveSourceOwnedStatusEffectOnPerkRefund(typeof(LastBastionBarrierStatusEffect))
+                .RemoveSourceOwnedStatusEffectOnPerkRefund(typeof(LastBastionStatusEffect))
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     // Allies get a shield that absorbs 30 damage (temporary HP) for 30 seconds.
                     foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 8.0f))
                     {
-                        TemporaryHitPointEffects.ApplyFlat(ally, "LAST_BASTION", 30, 30f);
-                        Ability.PlaySuccessfulImpactVisualEffect(activator, ally);
+                        if (StatusEffect.ApplyStatusEffect(activator, ally, new LastBastionBarrierStatusEffect(), 30f))
+                            Ability.PlaySuccessfulImpactVisualEffect(activator, ally);
                     }
 
                     // Nearby enemies generate +25% enmity toward the caster for the duration.

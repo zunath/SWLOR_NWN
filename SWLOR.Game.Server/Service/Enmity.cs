@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Service
     {
         public const int MinimumEnmityPercentAdjustment = -50;
         public const int MaximumEnmityPercentAdjustment = 50;
+        public const int SecureThreatLeadPercent = 25;
         // Enemy -> Creature -> EnmityAmount mapping
         private static readonly Dictionary<uint, Dictionary<uint, int>> _enemyEnmityTables = new();
 
@@ -143,6 +144,40 @@ namespace SWLOR.Game.Server.Service
                 : enmityTable.MaxBy(o => o.Value).Key;
 
             return target;
+        }
+
+        /// <summary>
+        /// Determines whether a creature holds the enemy's attention by a safe margin: it must be the
+        /// enemy's highest enmity target and lead the next-highest creature by at least
+        /// <see cref="SecureThreatLeadPercent"/>. Taunts are wasted when this is already true.
+        /// </summary>
+        /// <param name="enemy">The enemy whose enmity table is checked.</param>
+        /// <param name="creature">The creature expected to hold the enemy's attention.</param>
+        /// <returns>true if the creature's threat lead is secure, false otherwise.</returns>
+        public static bool IsThreatSecured(uint enemy, uint creature)
+        {
+            if (!_enemyEnmityTables.TryGetValue(enemy, out var table) ||
+                !table.TryGetValue(creature, out var creatureEnmity))
+            {
+                return false;
+            }
+
+            var nextHighest = 0;
+            foreach (var (other, amount) in table)
+            {
+                if (other != creature && amount > nextHighest)
+                    nextHighest = amount;
+            }
+
+            return IsThreatLeadSecure(creatureEnmity, nextHighest);
+        }
+
+        public static bool IsThreatLeadSecure(int holderEnmity, int nextHighestEnmity)
+        {
+            if (holderEnmity <= 0 || holderEnmity < nextHighestEnmity)
+                return false;
+
+            return (long)holderEnmity * 100 >= (long)nextHighestEnmity * (100 + SecureThreatLeadPercent);
         }
 
         /// <summary>

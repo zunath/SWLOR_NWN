@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The forced rhythm is broken. Let your beast set a pace with you, never under you. You've finished my Alpha Rhythm trials. I have no further work for you here.",
+          "Text": "The preserve sounds easier these days. Keep listening to your beast. When you're ready to work on Alpha Rhythm, come find me; I can hear the difference already.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "These trials need rank 50 in Beast Mastery. Keep training as a handler, then return. The pack needs a lead it can trust.",
+          "Text": "You keep asking your beast to follow before you've listened. Bring your Beast Mastery to rank 50, then return. We can work on the lead after that.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Handlers in the preserve are forcing their beasts into a killing rhythm. The hunt tally will tell me where they started. Defeat six Alpha Rhythm Adepts in Dathomir, Tarn Jungle Preserve. Their defeat secures the Alpha Rhythm Tarn Hunt Tally; bring it back to me here in Dathomir, Waterfall Ruins. I'll give you the Dathomir Tarn Jungle Preserve Key when you accept. Complete all five trials to earn the right to train Alpha Rhythm.",
+          "Text": "Listen past the trees. The handlers in the Tarn Jungle Preserve are forcing their beasts into the same killing rhythm. Six Alpha Rhythm adepts started it. Defeat those six and bring me their hunt tally. I want to know which packs they've put through this.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Dathomir Tarn Jungle Preserve Key. Use 'Tarn Jungle Preserve' in Dathomir, Tarnished Jungles. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Alpha Rhythm Adepts, then return with the Alpha Rhythm Tarn Hunt Tally.",
+          "Text": "Take the key to the preserve entrance in the Tarnished Jungles. Listen before you move. Your beast may hear the trouble before you do.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Alpha Rhythm Adepts in Dathomir, Tarn Jungle Preserve. Their defeat secures the Alpha Rhythm Tarn Hunt Tally; bring it back to me here in Dathomir, Waterfall Ruins.",
+          "Text": "Six Alpha Rhythm adepts in the Tarn Jungle Preserve. Bring their hunt tally here to the Waterfall Ruins when you've stopped them.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Alpha Rhythm Adepts. Let me see the Alpha Rhythm Tarn Hunt Tally.",
+          "Text": "You're moving different. Steadier. Let me see what you brought back.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That's the record I needed. We can account for the trails again. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "There's the true count, home again. Preserve's already sitting a little straighter for it. More noise further in, if you want to keep quieting it.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists use scent to keep that forced rhythm going. Bring back their vial so I can study it. Defeat five Alpha Rhythm Specialists in Dathomir, Tarn Jungle Preserve. Their defeat secures the Alpha Rhythm Beast-Pen Scent Vial; bring it back to me here in Dathomir, Waterfall Ruins.",
+          "Text": "Five specialists are keeping that rhythm going with scent. No pack gets to choose when to rest. Beat the five in the preserve and bring me their scent vial. I want to know what's being forced into the air.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Dathomir, Tarn Jungle Preserve. Defeat five Alpha Rhythm Specialists to secure the Alpha Rhythm Beast-Pen Scent Vial, then return to me.",
+          "Text": "Go back to the preserve. Listen for your beast before you answer anything they've put in the air.",
           "Style": 0,
           "Color": null
         }
@@ -584,7 +584,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "No. A pack under a forced tempo isn't moving together, it's just moving at the same time, which sounds the same for about a beat and a half before it falls apart. True rhythm holds because every player in it is choosing the same beat freely. Force it, and the first missed step brings the whole line down.",
+          "Text": "A frightened pack can move at the same time without trusting its lead. You'll hear the difference when one beast misses a step: the handlers punish it instead of helping the pack settle. A rhythm freely followed can survive that stumble.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Alpha Rhythm Specialists in Dathomir, Tarn Jungle Preserve. Their defeat secures the Alpha Rhythm Beast-Pen Scent Vial; bring it back to me here in Dathomir, Waterfall Ruins.",
+          "Text": "Five specialists are dosing the preserve's packs. Deal with them and bring me the scent vial.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Alpha Rhythm Specialists. Let me see the Alpha Rhythm Beast-Pen Scent Vial.",
+          "Text": "You've got the rhythm of it now, I think. Let's hear what you brought.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "This belongs with the handlers who know how to use it. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "Forced beat, isolated and dead. That's proof this preserve can use. You're keeping better time every visit.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden holds the preserve's alpha totem. We need it back before the old pack order can be restored. Defeat the Alpha Rhythm Warden in Dathomir, Tarn Jungle Preserve. Their defeat secures the Alpha Rhythm Clawed Alpha Totem; bring it back to me here in Dathomir, Waterfall Ruins. I recommend bringing two companions for this fight.",
+          "Text": "The warden carries the preserve's alpha totem. He's the one the handlers make their beasts follow. Call him out at the preserve's challenge marker, defeat him, and bring me that totem. Take others along; give the pack more than one voice to answer.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Dathomir, Tarn Jungle Preserve, use the '???' challenge marker to call the Alpha Rhythm Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Alpha Rhythm Clawed Alpha Totem.",
+          "Text": "Call the warden at the preserve's challenge marker. Listen to anyone you've brought as much as you listen to him. Your beast still has a rhythm of its own.",
           "Style": 0,
           "Color": null
         }
@@ -793,7 +793,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Alpha Rhythm Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "A fast rhythm can sweep you into reacting before you notice it. Other hunters give you something familiar to listen for while you catch your breath. Choose people who can hear each other under pressure.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Alpha Rhythm Warden in Dathomir, Tarn Jungle Preserve. Their defeat secures the Alpha Rhythm Clawed Alpha Totem; bring it back to me here in Dathomir, Waterfall Ruins. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "The preserve's challenge marker calls the warden. Beat him and bring the alpha totem to me.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Alpha Rhythm Warden. Let me see the Alpha Rhythm Clawed Alpha Totem.",
+          "Text": "Your whole pack still moving. Good rhythm holds. Let me see the totem.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The totem is back in our keeping. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "Whole. The true lead's honored again, first time in longer than this preserve's kept count. Rest your pack. The ones who taught him that beat are next, and they know it's coming.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The four keepers made this abuse into a training method. Take their token and end their control of the preserve. Defeat four members of the Alpha Rhythm Inner Circle in Dathomir, Tarn Jungle Preserve. Their defeat secures the Alpha Rhythm Preserve Keeper's Token; bring it back to me here in Dathomir, Waterfall Ruins.",
+          "Text": "Four keepers made the forced rhythm into doctrine. They still hold the keeper's token in the preserve. Defeat all four and bring it back. A pack deserves a lead it can leave.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Dathomir, Tarn Jungle Preserve. Defeat four members of the Alpha Rhythm Inner Circle to secure the Alpha Rhythm Preserve Keeper's Token, then return to me.",
+          "Text": "Four keepers, all trying to make you follow them. Keep listening to your own pack first.",
           "Style": 0,
           "Color": null
         }
@@ -1002,7 +1002,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Alpha Rhythm Inner Circle fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "Listen to each other before you answer the keepers. If you've brought hunters, agree who watches which approach. If it's you and your beast, leave room to hear what it notices. The keepers would rather you rushed.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Alpha Rhythm Inner Circle in Dathomir, Tarn Jungle Preserve. Their defeat secures the Alpha Rhythm Preserve Keeper's Token; bring it back to me here in Dathomir, Waterfall Ruins.",
+          "Text": "Four keepers still hold the token in the preserve. Bring it home when you've broken their circle.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Alpha Rhythm Inner Circle. Let me see the Alpha Rhythm Preserve Keeper's Token.",
+          "Text": "Whole pack, still together. Let's hear what you brought.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The keepers can no longer claim authority here. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "Whole. Their false beat's silenced for good. One rhythm left down there, and it's the one every other broken beat in this preserve got copied from. Your pack's ready for that one, I think.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their master sets the rhythm the others follow. Defeat him to finish the trial and let the pack choose its own lead. Defeat the Alpha Rhythm Master in Dathomir, Alpha Beast Hollow. Report back to me here in Dathomir, Waterfall Ruins; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The master sets the rhythm for every handler you fought. He's in the Alpha Beast Hollow now. Use its challenge marker to call him, and beat him before another pack is taught to follow by fear. Come back afterward. I want to hear how your beast moved.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Dathomir, Alpha Beast Hollow, use the '???' challenge marker to call the Alpha Rhythm Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "The Alpha Beast Hollow has the master's challenge marker. Take your own rhythm in with you. He's used to everyone listening only to his.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Alpha Rhythm Master fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "Listen for your own pack. If you go alone, watch your beast instead of watching only him. His rhythm becomes harder to resist when you forget there was another one before it.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Alpha Rhythm Master in Dathomir, Alpha Beast Hollow. Report back to me here in Dathomir, Waterfall Ruins; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Call the master in the Alpha Beast Hollow. Once he's beaten, return to the Waterfall Ruins. I'll listen here.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Alpha Rhythm Master. Give me your report and we'll finish the trial.",
+          "Text": "Quiet. Whole preserve's gone quiet, no beat at all, first time in longer than I've been listening. Tell me it's him.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The forced rhythm is broken. Let your beast set a pace with you, never under you. You've earned the right to train Alpha Rhythm. Your final payment is ready.",
+          "Text": "Hear that? The pack isn't being driven anymore. Keep listening to your own beast in the same way. If you still want to learn Alpha Rhythm, we have a much better place to begin now.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Alpha Rhythm Adepts.",
+        "Text": "I'll quiet the six and bring the tally.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Alpha Rhythm Specialists.",
+        "Text": "I'll quiet the five and bring the vial.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Alpha Rhythm Warden.",
+        "Text": "I'll answer his beat with my own.",
         "Style": 4,
         "Color": null
       },
@@ -1736,7 +1736,7 @@
     "reply-00018": {
       "Id": "reply-00018",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "Why bring other hunters?",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Alpha Rhythm Clawed Alpha Totem.",
+        "Text": "Here's the Alpha Rhythm Clawed Alpha Totem, whole.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Alpha Rhythm Inner Circle.",
+        "Text": "We'll answer all four beats together.",
         "Style": 4,
         "Color": null
       },
@@ -1906,7 +1906,7 @@
     "reply-00025": {
       "Id": "reply-00025",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "How do we keep our own rhythm?",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Alpha Rhythm Preserve Keeper's Token.",
+        "Text": "Here's the Alpha Rhythm Preserve Keeper's Token, whole.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Alpha Rhythm Master and report back.",
+        "Text": "Our whole pack, answering his beat together.",
         "Style": 4,
         "Color": null
       },
@@ -2053,7 +2053,7 @@
     "reply-00031": {
       "Id": "reply-00031",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "How do I resist his rhythm?",
         "Style": 4,
         "Color": null
       },
@@ -2099,7 +2099,7 @@
     "reply-00033": {
       "Id": "reply-00033",
       "Text": {
-        "Text": "Not until every player's ready.",
+        "Text": "Let me make sure everyone is ready.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Alpha Rhythm Master is defeated. Here's my report.",
+        "Text": "It's done. His beat broke.",
         "Style": 4,
         "Color": null
       },

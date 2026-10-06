@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The ward can take patients again. Hold your next line for the people behind it. You've finished my Hold the Line trials. I have no further work for you here.",
+          "Text": "You held it the way it should have been held the first time. The sublevel is a hospital again - Sera is back on nights, and the beds are full of patients instead of barricades. Whatever door you stand in front of next, it is lucky to have you.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "These trials require rank 50 in Leadership. Build that experience and return. The people behind a line need more than good intentions.",
+          "Text": "Rank 50 in Leadership before I put this in your hands. The people downstairs need someone who can keep a line together when the easy orders stop helping.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The staff I trained have sealed the medical sublevel and turned the sick away. Recover the intake ledger so we can account for those patients. Defeat six Hold the Line Adepts in Dantooine, Medical Sublevel. Their defeat secures the Hold the Line Triage Ward Ledger; bring it back to me here in Dantooine, Republic Garrison. I'll give you the Dantooine Medical Sublevel Key when you accept. Complete all five trials to earn the right to train Hold the Line.",
+          "Text": "Twenty years in a ward, and now I'm being told the sick can't come in. Six Hold the Line adepts have taken Dantooine's Medical Sublevel. Defeat the six and bring me their triage ledger. I want to see who they've decided can be left outside.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Dantooine Medical Sublevel Key. Use 'Dantooine Medical Sublevel' in Dantooine, Abandoned Warehouse. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Hold the Line Adepts, then return with the Hold the Line Triage Ward Ledger.",
+          "Text": "Take the key to the Medical Sublevel entrance in the Abandoned Warehouse. Gather your people before you go in. No one gets left on the wrong side of the door.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Hold the Line Adepts in Dantooine, Medical Sublevel. Their defeat secures the Hold the Line Triage Ward Ledger; bring it back to me here in Dantooine, Republic Garrison.",
+          "Text": "Six adepts in the Medical Sublevel. Their triage ledger comes back here to the Republic Garrison. Those names matter.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Hold the Line Adepts. Let me see the Hold the Line Triage Ward Ledger.",
+          "Text": "You are carrying my book. I would know its weight anywhere - I carried it through two collapses. Let me see it.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Record recovered. We can trace the orders now. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "There. Marn. Sera's mother. Old Toben, who lies about his breathing. Names again, not obstacles. You did more than clear a room - you gave the ward back its memory. Rest. I will have more for you, and it will be heavier.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists have taken control of the kolto conduits. Recover the coupler we need to restore them. Defeat five Hold the Line Specialists in Dantooine, Medical Sublevel. Their defeat secures the Hold the Line Kolto Conduit Coupler; bring it back to me here in Dantooine, Republic Garrison.",
+          "Text": "Five specialists are controlling the kolto supply through a coupler in the sublevel. They can cut a bed off without leaving their posts. Get the five away from it and bring it here. We don't ration care to punish people.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Dantooine, Medical Sublevel. Defeat five Hold the Line Specialists to secure the Hold the Line Kolto Conduit Coupler, then return to me.",
+          "Text": "Get the coupler out of their hands. I'll make sure it gets used for patients again.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Hold the Line Specialists in Dantooine, Medical Sublevel. Their defeat secures the Hold the Line Kolto Conduit Coupler; bring it back to me here in Dantooine, Republic Garrison.",
+          "Text": "The five specialists in the sublevel have the kolto coupler. Bring it to me after you've stopped them.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Hold the Line Specialists. Let me see the Hold the Line Kolto Conduit Coupler.",
+          "Text": "The pressure gauges climbed an hour ago - I felt the pipes hum through the floor. That is the coupler in your pack, or I am no judge of plumbing. Give it here.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Equipment recovered. Their training operation is disrupted. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "Listen. That hiss in the walls is kolto moving where it should. Recovery gets full flow tonight for the first time in a season. You are not a stranger to this ward anymore - the night staff know your name, and I use it carefully. Be ready for what I ask next. It is the door I have been dreading.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden is keeping the ward closed. Recover her sigil and break that hold. Defeat the Hold the Line Warden in Dantooine, Medical Sublevel. Their defeat secures the Hold the Line Fractured Ward Sigil; bring it back to me here in Dantooine, Republic Garrison. I recommend bringing two companions for this fight.",
+          "Text": "Isa is holding the Medical Sublevel against the patients it was built for. Challenge her and bring back the ward sigil when she's beaten. Take people who'll hold with you. She knows how to put pressure where it hurts.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Dantooine, Medical Sublevel, use the '???' challenge marker to call the Hold the Line Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Hold the Line Fractured Ward Sigil.",
+          "Text": "Take whoever you bring past the junction level and down the recovery stair. She will meet you at the door - she will not hide, hiding is not in her. When it is done, do not linger over her. Take the sigil and come home.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Hold the Line Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "Think about who helps when you can't keep standing. A line is stronger when someone can relieve the person taking the worst of it. I've watched too many good people try to spare everyone else that work.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Hold the Line Warden in Dantooine, Medical Sublevel. Their defeat secures the Hold the Line Fractured Ward Sigil; bring it back to me here in Dantooine, Republic Garrison. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Use the Medical Sublevel's challenge marker to call Isa. Defeat her and bring back the ward sigil.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Hold the Line Warden. Let me see the Hold the Line Fractured Ward Sigil.",
+          "Text": "You came back up the stairs slower than you went down. I know what that weight is. Show me the sigil.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden defeated. That breaks their enforcement. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "Fractured, but whole enough. I will have it recast when this is over - the crack can stay, as a record. You did what I could not, and you did it without making it cruel. The night staff lit a lamp for Isa. So did I. What is left below is the circle that taught her, and then the one who taught them all.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four senior staff still claim authority over the ward. Take back the matron's token. Defeat four members of the Hold the Line Inner Circle in Dantooine, Medical Sublevel. Their defeat secures the Hold the Line Matron's Ward Token; bring it back to me here in Dantooine, Republic Garrison.",
+          "Text": "Four officers still carry the matron's token. They're calling their refusals orders, as though that makes them easier to live with. Defeat the four in the sublevel and bring the token to me. I'll answer for putting it back to use.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Dantooine, Medical Sublevel. Defeat four members of the Hold the Line Inner Circle to secure the Hold the Line Matron's Ward Token, then return to me.",
+          "Text": "Bring the token here to the garrison. I'll take responsibility for where it goes next.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +976,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The matron's token identifies who answers for the ward. In their hands, it's a claim that the patients' beds belong to them. Bring it back, and we can restore the ward's authority to the people caring for those patients.",
+          "Text": "A flat disc, worn smooth, older than the facility's charter. Whoever holds it answers for every bed. That is all it means, and that is everything. In their hands it says the ward belongs to them. In yours, on the way back up the stairs, it will say the ward belongs to its patients again. Do you see now why I sent you for a book first? You have been earning the right to carry that token since the day you walked in.",
           "Style": 0,
           "Color": null
         }
@@ -1002,7 +1002,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Hold the Line Inner Circle fight together. Bring help if you can, and focus on one opponent at a time. Defeat four members to secure the Hold the Line Matron's Ward Token; simultaneous kills aren't required.",
+          "Text": "The deep wards are a maze of privacy screens and dead lifts - sight lines of three beds at most. They will use that. Bring the same people who stood with you at Isa's door; rooms like those punish anyone who clears them alone, and I would rather you inherit my token than my regrets.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Hold the Line Inner Circle in Dantooine, Medical Sublevel. Their defeat secures the Hold the Line Matron's Ward Token; bring it back to me here in Dantooine, Republic Garrison.",
+          "Text": "Four officers in the sublevel still have the matron's token. Bring it here when they're beaten.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Hold the Line Inner Circle. Let me see the Hold the Line Matron's Ward Token.",
+          "Text": "Your hand has been closed around something since you walked in. I know the shape of it. Let me see my token.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their officers no longer control the authorizations. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "Smooth as I remember. My thumb wore this edge down over twenty years of night rounds - feel it, there. When this is over, I will not take it back. Note that I did not say if. There is one room left, and the one inside it has held a line longer than anyone alive. Go and rest first. That is not a suggestion. Matrons do not make suggestions.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their master taught them to hold a line against the people it should protect. Defeat him in the Protected Ward. Defeat the Hold the Line Master in Dantooine, Protected Ward. Report back to me here in Dantooine, Republic Garrison; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The master is in the Protected Ward. Call him at the challenge marker and defeat him. I taught that stance to protect evacuees. I'd like you to show him what a line is for, then come back here to the garrison.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Dantooine, Protected Ward, use the '???' challenge marker to call the Hold the Line Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "Take the people who have bled for this with you, and when you face him, do not try to outlast him - you cannot, no one can. Break the thing he is protecting instead: his certainty that he is still needed. Hold your own line in front of his, and let him see it held by more than one pair of shoulders. That is the only argument he has ever lost.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Hold the Line Master in Dantooine, Protected Ward. Report back to me here in Dantooine, Republic Garrison; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "The master's challenge marker is in the Protected Ward. Defeat him and return to the garrison. Don't leave your people behind.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Hold the Line Master. Give me your report and we'll finish the trial.",
+          "Text": "The floor is quiet. Not the barricade quiet - the real kind, the kind a ward makes when it finally sleeps. He is finished, then. Tell me it was clean.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The ward can take patients again. Hold your next line for the people behind it. You've earned the right to train Hold the Line. Your final payment is ready.",
+          "Text": "The ward can do its work again. Take your pay. You've stood for people who couldn't stand for themselves; if you want to learn Hold the Line, I can teach you from there. First, go check on whoever came back with you.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Hold the Line Adepts.",
+        "Text": "I'll bring your ledger home.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the Hold the Line Triage Ward Ledger.",
+        "Text": "Your ledger, matron. Every page accounted for.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Hold the Line Specialists.",
+        "Text": "Your wards will have their kolto.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the Hold the Line Kolto Conduit Coupler.",
+        "Text": "The coupler. Your pipes should already be singing.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Hold the Line Warden.",
+        "Text": "I'll take the ward back.",
         "Style": 4,
         "Color": null
       },
@@ -1713,7 +1713,7 @@
     "reply-00017": {
       "Id": "reply-00017",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "You think I should bring help?",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Hold the Line Fractured Ward Sigil.",
+        "Text": "The sigil. She held until the very end.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Hold the Line Inner Circle.",
+        "Text": "All four, and your token comes home.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Hold the Line Matron's Ward Token.",
+        "Text": "Your token, matron. Carried up the stairs, like you said.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Hold the Line Master and report back.",
+        "Text": "Then his stand ends. We go together, all of us.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Hold the Line Master is defeated. Here's my report.",
+        "Text": "It's done. He fell standing, and no one fell with him.",
         "Style": 4,
         "Color": null
       },

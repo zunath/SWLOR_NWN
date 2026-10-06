@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That deserves an ovation. The stolen routine is stopped, and your own act has earned its place. You've finished my Perfect Flurry trials. I have no further work for you here.",
+          "Text": "There's my headliner. I still tell the story - six adepts, five specialists, a warden, four producers, and a master who nodded. Nobody believes the nod. Keep the act alive; an audience is watching even when the house looks empty.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Admission to these trials requires rank 50 in Throwing. Reach it and come back. A good act starts with practiced hands.",
+          "Text": "Pretty throw. Now do it tired, cold, and under pressure. Reach rank 50 in Throwing before I lend you my stage.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A Qion test crew has turned my throwing routine into a reckless weapons trial. Recover their log so I can see how they've changed it. Defeat six Perfect Flurry Adepts in Hutlar, Qion Test Site. Their defeat secures the Perfect Flurry Qion Test Log; bring it back to me here in Hutlar, Qion Box Canyon. I'll give you the Hutlar Qion Test Site Key when you accept. Complete all five trials to earn the right to train Perfect Flurry.",
+          "Text": "They've stolen my routine and moved it to the Qion Test Site. Six Perfect Flurry adepts, all practicing the flourish and skipping the recovery. Defeat the six and bring me their test log. I want to see where they think the performance ends.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Hutlar Qion Test Site Key. Use 'Qion Test Site' in Hutlar, Qion Box Canyon. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Perfect Flurry Adepts, then return with the Perfect Flurry Qion Test Log.",
+          "Text": "Here's your key. The Qion Test Site entrance is here in the box canyon. Warm your hands before you go in. Even a stolen routine deserves a proper ending.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Perfect Flurry Adepts in Hutlar, Qion Test Site. Their defeat secures the Perfect Flurry Qion Test Log; bring it back to me here in Hutlar, Qion Box Canyon.",
+          "Text": "Six adepts at the Qion Test Site, then their log back here in the box canyon. Don't waste the good throws on empty air.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Perfect Flurry Adepts. Let me see the Perfect Flurry Qion Test Log.",
+          "Text": "Frost on the cover and my routine misfiled inside - the Perfect Flurry Qion Test Log, or I've never read a bad review. Hand it over and let's settle our bet.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The book is back in honest hands. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "Collected in full, and worth every step. Look at this - they graded my triple release 'inefficient.' Inefficient! The credits are your cut of the wager. Rest that arm. The next act asks more of it.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists are using a regulator to drive the trials harder. Take it out of their hands. Defeat five Perfect Flurry Specialists in Hutlar, Qion Test Site. Their defeat secures the Perfect Flurry Cryo-Range Regulator; bring it back to me here in Hutlar, Qion Box Canyon.",
+          "Text": "Five specialists have rigged the range with a cryo-regulator. No wonder their hands stay steady between throws. Beat the five at Qion and bring it here. I'd like to try their routine without the scenery doing half the work.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Hutlar, Qion Test Site. Defeat five Perfect Flurry Specialists to secure the Perfect Flurry Cryo-Range Regulator, then return to me.",
+          "Text": "Back to Qion. Keep your hands warm and bring me their trick regulator.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Perfect Flurry Specialists in Hutlar, Qion Test Site. Their defeat secures the Perfect Flurry Cryo-Range Regulator; bring it back to me here in Hutlar, Qion Box Canyon.",
+          "Text": "Five specialists at Qion have the cryo-regulator. Beat them and bring it here. I want a look at their stagecraft.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Perfect Flurry Specialists. Let me see the Perfect Flurry Cryo-Range Regulator.",
+          "Text": "Listen - even off the stage it hums on pitch. The Perfect Flurry Cryo-Range Regulator, home at last. Set it here and take a bow. You've earned exactly one.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "One less rigged test to worry about. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "And there's the sound my finale used to make. You're not just an arm anymore - you're an ear. That's rarer. Your cut, as posted. Next visit we talk about the warden, and you bring friends. The wagers get serious now.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden controls the site's next test. Beat him and recover the test crest. Defeat the Perfect Flurry Warden in Hutlar, Qion Test Site. Their defeat secures the Perfect Flurry Frostburned Test Crest; bring it back to me here in Hutlar, Qion Box Canyon. I recommend bringing two companions for this fight.",
+          "Text": "The warden is taking all challengers at the test site. He learned my timing, unfortunately. Call him there and bring me his frostburned crest when he's beaten. Bring an audience that can help if the show gets ugly.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Hutlar, Qion Test Site, use the '???' challenge marker to call the Perfect Flurry Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Perfect Flurry Frostburned Test Crest.",
+          "Text": "Call him at the Qion Test Site challenge marker. Warm your hands and keep your recovery clean. Headliners watch the opening you leave after a good throw.",
           "Style": 0,
           "Color": null
         }
@@ -741,7 +741,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Perfect Flurry Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "I was the star because other people kept the stage standing. Bring help if you can. You may throw beautifully alone, but it's nice to have someone watching the part of the room you're not performing toward.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Perfect Flurry Warden in Hutlar, Qion Test Site. Their defeat secures the Perfect Flurry Frostburned Test Crest; bring it back to me here in Hutlar, Qion Box Canyon. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Call the warden at the Qion Test Site challenge marker. Beat him and bring me the frostburned crest.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Perfect Flurry Warden. Let me see the Perfect Flurry Frostburned Test Crest.",
+          "Text": "There it is. Frostburned, blast-scarred, heavier than it looks - like every real title. Hand me the Perfect Flurry Frostburned Test Crest, headliner.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden's protection is broken. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "The stage changes hands. I wish I'd seen his face when the routine failed him. Your purse, as posted. Rest; the instructors still using my show won't give it up quietly.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four senior operators are still signing off on the routine. Bring me their override chip. Defeat four members of the Perfect Flurry Inner Circle in Hutlar, Qion Test Site. Their defeat secures the Perfect Flurry Site Chief's Override Chip; bring it back to me here in Hutlar, Qion Box Canyon.",
+          "Text": "Four instructors still hold the site chief's override chip. They've been changing the range to suit each new trick. Defeat the four at Qion and bring it back. It's time they worked on their hands instead.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Hutlar, Qion Test Site. Defeat four members of the Perfect Flurry Inner Circle to secure the Perfect Flurry Site Chief's Override Chip, then return to me.",
+          "Text": "Get the chip out of their hands. Then we'll see how good the show is when the range stops changing for it.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +976,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The four who found that recording of my final season and decided it was ordnance. Two handled the money, two ran the drills - and all four throw. Don't let the word 'producer' fool you; on that circuit even the bookkeepers came up through the act. Together they'll try to stage a flurry around you. Answer with your own. Three voices, one phrase.",
+          "Text": "Two handled the money and two ran the drills, but all four can throw. Even our bookkeepers came up through the act. Watch what their hands are doing, whatever they call themselves.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Perfect Flurry Inner Circle in Hutlar, Qion Test Site. Their defeat secures the Perfect Flurry Site Chief's Override Chip; bring it back to me here in Hutlar, Qion Box Canyon.",
+          "Text": "Four instructors at Qion still have the override chip. Bring it back when you've spoiled their rehearsal.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Perfect Flurry Inner Circle. Let me see the Perfect Flurry Site Chief's Override Chip.",
+          "Text": "The Perfect Flurry Site Chief's Override Chip. Small, isn't it? Every stage that site ever lit, and it fits behind a bracelet. Hand it over - gently. That's the deed to the theater.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That closes the crew's account. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "Dark house, full purse. Take your winnings. Which leaves one name on the bill, and I'll be honest, because you've earned honesty from a vain old performer: the master frightens even me. Rest your arm. Then come hear about the only act I never beat.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their master is the final act. Defeat him in the Overload Chamber to complete the throwing trials. Defeat the Perfect Flurry Master in Hutlar, Overload Chamber. Report back to me here in Hutlar, Qion Box Canyon; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The master is waiting in the Overload Chamber. Call him at the challenge marker and beat him. He knows how to make a big entrance. Watch what he does after it, then come back here and tell me how the show went.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Hutlar, Overload Chamber, use the '???' challenge marker to call the Perfect Flurry Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "One last performance, then. The Overload Chamber has his challenge marker. Call him, keep your recovery clean, and come tell me whether he finally bowed.",
           "Style": 0,
           "Color": null
         }
@@ -1211,7 +1211,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Bring companions and make him divide his attention. If he controls the whole fight's pace, you spend it reacting. Prepare your own timing and help whoever gets pressured. If he bows when it's done, tell me; I still have a private wager on that.",
+          "Text": "Change your count. He knows how to answer a clean phrase because he's spent years performing it. If you've brought company, throw on different beats. Make him decide what to watch, then use the moment he gives you.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Perfect Flurry Master in Hutlar, Overload Chamber. Report back to me here in Hutlar, Qion Box Canyon; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Call the master in the Overload Chamber. Beat him, then find me here in the box canyon. I'll want the whole story.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Perfect Flurry Master. Give me your report and we'll finish the trial.",
+          "Text": "You walked in counting under your breath and your hands are steady. I've read enough houses to know a closed show. Tell me plainly - did he bow?",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That deserves an ovation. The stolen routine is stopped, and your own act has earned its place. You've earned the right to train Perfect Flurry. Your final payment is ready.",
+          "Text": "Now that is an ending worth applauding. Your pay, as promised. If you want Perfect Flurry taught by the woman who had to learn every recovery herself, come back when your hands have warmed up. I expect a good second act.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Perfect Flurry Adepts.",
+        "Text": "You're on. Six adepts, one test log.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the Perfect Flurry Qion Test Log.",
+        "Text": "Your winnings. One test log, six acts short.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Perfect Flurry Specialists.",
+        "Text": "Raise taken. Five specialists.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the Perfect Flurry Cryo-Range Regulator.",
+        "Text": "One regulator, still humming. Pay up.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Perfect Flurry Warden.",
+        "Text": "I'll take the stage.",
         "Style": 4,
         "Color": null
       },
@@ -1690,7 +1690,7 @@
     "reply-00016": {
       "Id": "reply-00016",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "Why bring a crew? You were the star.",
         "Style": 4,
         "Color": null
       },
@@ -1759,7 +1759,7 @@
     "reply-00019": {
       "Id": "reply-00019",
       "Text": {
-        "Text": "Let me book my two first.",
+        "Text": "Let me get my corner ready.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Perfect Flurry Frostburned Test Crest.",
+        "Text": "The warden closed. Here's his star.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Perfect Flurry Inner Circle.",
+        "Text": "Four producers, one chip. The house goes dark.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Perfect Flurry Site Chief's Override Chip.",
+        "Text": "The production is cancelled. Here's the deed.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Perfect Flurry Master and report back.",
+        "Text": "Time for his final performance.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Perfect Flurry Master is defeated. Here's my report.",
+        "Text": "The master's show is closed. And no - he didn't bow. He nodded.",
         "Style": 4,
         "Color": null
       },

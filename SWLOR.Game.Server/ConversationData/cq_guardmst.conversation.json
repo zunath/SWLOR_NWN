@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The enclave has its halls back. Stand where you are needed, Guardian. You've finished my Aegis Eternal trials. I have no further work for you here.",
+          "Text": "'And when I fail, I answer for it.' You never had to speak that line, and I am glad beyond the telling. The wards are whole, the halls keep their watch, and the oath has a living answer again. Wherever you stand now, the people beside you are safer than they know. That is the whole of the discipline. Go gently, Guardian.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The guardian trials require rank 50 in Lightsaber. Reach that rank, then return. 'While I stand, none fall' is a promise that needs practice.",
+          "Text": "You've learned to stand your ground. Bring your Lightsaber training to rank 50 before I ask you to stand for someone else. These halls have taken enough unfinished students.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The guardians have barred the trial halls and turned their oath toward protecting only themselves. Recover their trial slate so we can begin setting that right. Defeat six Guardian Master Adepts in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Guardian Master Enclave Trial Slate; bring it back to me here in Dantooine, Jedi Library. I'll give you the Dantooine Jedi Enclave Trial Halls Key when you accept. Complete all five trials to earn the right to train Aegis Eternal.",
+          "Text": "We used to say, 'While I stand, none fall.' Six Guardian Master adepts have barred the Enclave Trial Halls and forgotten who the oath was for. Defeat the six and bring me their enclave slate. I need to know what they're teaching in our place.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Dantooine Jedi Enclave Trial Halls Key. Use 'Jedi Enclave Trial Halls' in Dantooine, Jedi Enclave Library. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Guardian Master Adepts, then return with the Guardian Master Enclave Trial Slate.",
+          "Text": "The key opens the Trial Halls entrance here in the Enclave Library. Take your time at the threshold. Decide who you're standing for before you draw.",
           "Style": 0,
           "Color": null
         }
@@ -323,7 +323,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Guardian Master is the name of the school you're confronting. The technique these trials qualify you to learn is Aegis Eternal. Recovering its records and defeating its master will show me you're ready for that training.",
+          "Text": "A promise weighed line by line. While I stand, none fall. Not for my own hand do I draw. The discipline you seek was never about the blade. It is placement, patience, and the willingness to take a blow meant for someone smaller. The adepts within learned the strength and unlearned the promise, and that is the most dangerous student there is.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Use 'Jedi Enclave Trial Halls' in Dantooine, Jedi Enclave Library. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Guardian Master Adepts in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Guardian Master Enclave Trial Slate; bring it back to me here in Dantooine, Jedi Library.",
+          "Text": "The Trial Halls entrance is in the Jedi Enclave Library on Dantooine. My key opens it. Have your companions beside you when you enter; the halls needn't separate you.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Guardian Master Adepts in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Guardian Master Enclave Trial Slate; bring it back to me here in Dantooine, Jedi Library.",
+          "Text": "Six Guardian Master adepts in the Enclave Trial Halls. Bring their slate here to the library. We'll read it together.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Guardian Master Adepts. Let me see the Guardian Master Enclave Trial Slate.",
+          "Text": "You carry something with the weight of an old promise about it. Show me the slate.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The training record is back. We can see what went wrong. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "So it is. Every guardian of this enclave swore their first line upon this slate. I did, at fifteen, with my hand shaking. I will see it cleaned and returned to its alcove. You have relit the outer ward in the way that matters. Rest now. The second line is heavier, and you have earned the hearing of it.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists took a focus shard from the meditation shrine. Bring it back to the enclave. Defeat five Guardian Master Specialists in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Guardian Master Kyber Focus Shard; bring it back to me here in Dantooine, Jedi Library.",
+          "Text": "Five specialists are practicing with a kyber shard from the old trials. They've made protecting the halls more important than protecting anyone inside them. Beat the five and bring me the shard. I would like it used for teaching again.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Dantooine, Jedi Enclave Trial Halls. Defeat five Guardian Master Specialists to secure the Guardian Master Kyber Focus Shard, then return to me.",
+          "Text": "The shard comes back to the library. Keep your patience in the halls; they will try to spend it for you.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Guardian Master Specialists in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Guardian Master Kyber Focus Shard; bring it back to me here in Dantooine, Jedi Library.",
+          "Text": "Five specialists in the Trial Halls have the kyber shard. Bring it back once you've defeated them.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Guardian Master Specialists. Let me see the Guardian Master Kyber Focus Shard.",
+          "Text": "I hear it from here. The shard, singing an old song again. Show me.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That equipment no longer serves their drills. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "Let me hold it. ... There. It remembers the shrine. Whatever they taught it, you have begun the unteaching simply by carrying it kindly. The middle ward stands empty, and the second line stands kept. Two lines remain, and beyond them the ward that broke my heart. Sleep first. That is the oath's own arithmetic, not mere kindness.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden holds the halls against the people she once protected. Recover her fractured sigil and end her watch. Defeat the Guardian Master Warden in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Guardian Master Fractured Trial Sigil; bring it back to me here in Dantooine, Jedi Library. I recommend bringing two companions for this fight.",
+          "Text": "The warden was one of mine. I still know the guard she'll raise when you challenge her in the Trial Halls. Defeat her and bring back her fractured sigil. I'd like you to have someone beside you when you do. You needn't carry this alone.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Dantooine, Jedi Enclave Trial Halls, use the '???' challenge marker to call the Guardian Master Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Guardian Master Fractured Trial Sigil.",
+          "Text": "Use the Trial Halls challenge marker to call her. The key lets you enter, with company or without. If she speaks of the students she lost, listen. It should not stay your blade, but it may slow your judgment.",
           "Style": 0,
           "Color": null
         }
@@ -741,7 +741,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Guardian Master Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "A guardian learns a great deal beside someone they want to keep standing. I've seen her outlast fine duelists who had only themselves to watch. I hope you'll ask for company before you face her.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Guardian Master Warden in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Guardian Master Fractured Trial Sigil; bring it back to me here in Dantooine, Jedi Library. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "The Trial Halls challenge marker calls the warden. Defeat her and bring her fractured sigil back to me.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Guardian Master Warden. Let me see the Guardian Master Fractured Trial Sigil.",
+          "Text": "The pillars are still. They have not been still since her investiture. Tell me it is finished, and show me the sigil.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden's watch is over. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "Both halves, still fitted together. She kept them joined to the last, and that tells me something of her I intend to keep. You stood between harm and each other, and the ward-law counts that as the third line spoken true. I will sit with this awhile after you go. Forgive me. Even a sentinel is allowed one hour of grief.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The four ward-captains still carry the council's authority to teach. Take their council chit out of their keeping. Defeat four members of the Guardian Master Inner Circle in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Guardian Master Council Trial Chit; bring it back to me here in Dantooine, Jedi Library.",
+          "Text": "Four council keepers gave this school their approval. They have the trial chit in the halls. Defeat the four and bring it to me. An oath doesn't excuse what they have let happen under it.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Dantooine, Jedi Enclave Trial Halls. Defeat four members of the Guardian Master Inner Circle to secure the Guardian Master Council Trial Chit, then return to me.",
+          "Text": "Recover the trial chit. I will read every name on it, even the ones I hoped not to find.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Guardian Master Inner Circle in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Guardian Master Council Trial Chit; bring it back to me here in Dantooine, Jedi Library.",
+          "Text": "Four council keepers in the halls still have the trial chit. Return it when their circle is broken.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Guardian Master Inner Circle. Let me see the Guardian Master Council Trial Chit.",
+          "Text": "Four ward-captains, and the deep ward open at your back. I have dreaded this hour for a year, and you carry it in like the day's post. The chit, please.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their instructors no longer hold the authority to teach. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "The council convenes tomorrow and will find its token waiting for them, which will discomfort them wonderfully. Four lines of the oath now stand kept. Only the fifth remains, behind the last seal, with the one who taught me every line I know. I must tell you of the Paragon before you face it. But not tonight. Tonight, be somewhere warm.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Guardian Master Paragon is the last guardian holding the halls. Defeat him in the Saber Trial Chamber to complete the oath's trials. Defeat the Guardian Master Paragon in Dantooine, Saber Trial Chamber. Report back to me here in Dantooine, Jedi Library; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The Guardian Master Paragon is in the Saber Trial Chamber. Call him at the challenge marker and defeat him. His guard is excellent. What he's chosen to guard is why you're there. Come back afterward; I would like to hear your account before we speak of your own lesson.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Dantooine, Saber Trial Chamber, use the '???' challenge marker to call the Guardian Master Paragon. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "That is the fifth line beginning, whether you hear it yet or not. The last seal has known your key since the deep ward fell. Walk slowly on the way in. Not for tactics. Because you will want to remember these halls as they were, before they become yours to keep.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Don't spend the whole fight exhausting yourself against his guard. Bring companions, share the pressure, and support whoever he turns on. Keep enough strength to answer an opening when it comes. The oath is to keep each other standing, not to prove you can do it alone.",
+          "Text": "Her guard is excellent. The choice behind it is where you must look. With companions, trade her attention without leaving someone exposed. Alone, wait for the turn you can actually use. A rash strike is exactly what she knows how to answer.",
           "Style": 0,
           "Color": null
         }
@@ -1211,7 +1211,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I recommend two companions against the Guardian Master Paragon. Spread the pressure so one person doesn't have to carry the whole fight. You can enter alone, but prepare carefully before you call the challenge.",
+          "Text": "The halls open. Students return, and the oath has somewhere to be practiced again. I will offer you instruction in Aegis Eternal. I can't promise a light burden, but I can promise one worth learning to carry.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Guardian Master Paragon in Dantooine, Saber Trial Chamber. Report back to me here in Dantooine, Jedi Library; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Call the Guardian Master Paragon in the Saber Trial Chamber. Defeat him, then return to the library. I'll be here.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Guardian Master Paragon. Give me your report and we'll finish the trial.",
+          "Text": "The lamps in the last hall are burning. I did not light them. Tell me what happened, and leave nothing out. I will keep every word.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The enclave has its halls back. Stand where you are needed, Guardian. You've earned the right to train Aegis Eternal. Your final payment is ready.",
+          "Text": "The halls can welcome students again. You have my thanks, and the pay we agreed. If you still wish to learn Aegis Eternal, I will teach you. The oath is worth keeping, even after all this.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Guardian Master Adepts.",
+        "Text": "Then I'll go and end their watch. The slate comes back with me.",
         "Style": 4,
         "Color": null
       },
@@ -1350,7 +1350,7 @@
     "reply-00002": {
       "Id": "reply-00002",
       "Text": {
-        "Text": "How does this school relate to Aegis Eternal?",
+        "Text": "What is the guardian's oath?",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the Guardian Master Enclave Trial Slate.",
+        "Text": "The Enclave Trial Slate. Their watch is ended.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Guardian Master Specialists.",
+        "Text": "I'll draw for the shrine, not for myself. The shard comes home.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the Guardian Master Kyber Focus Shard.",
+        "Text": "It sang the whole way here. Take it.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Guardian Master Warden.",
+        "Text": "I'll challenge her.",
         "Style": 4,
         "Color": null
       },
@@ -1690,7 +1690,7 @@
     "reply-00016": {
       "Id": "reply-00016",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "Should I ask someone to come?",
         "Style": 4,
         "Color": null
       },
@@ -1759,7 +1759,7 @@
     "reply-00019": {
       "Id": "reply-00019",
       "Text": {
-        "Text": "Not until two I trust can stand with me.",
+        "Text": "Give me time to ask for company.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Guardian Master Fractured Trial Sigil.",
+        "Text": "The third ward is open. Here is her sigil.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Guardian Master Inner Circle.",
+        "Text": "I'll break the square and bring the council its chit.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Guardian Master Council Trial Chit.",
+        "Text": "The square is broken. Here is the council's chit.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Guardian Master Paragon and report back.",
+        "Text": "I'll face the Paragon.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Guardian Master Paragon is defeated. Here's my report.",
+        "Text": "The Paragon's watch is ended. We guarded each other, and the guard chose wrong.",
         "Style": 4,
         "Color": null
       },

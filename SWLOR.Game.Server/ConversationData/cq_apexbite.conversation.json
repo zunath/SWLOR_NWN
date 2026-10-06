@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The pens are mine again, and the audit has the evidence it needs. Feed your beast before you celebrate. You've finished my Apex Bite trials. I have no further work for you here.",
+          "Text": "Apex Bite. Closed the file. You put six tallies of trouble in the ground and the preserve's mine again on paper and in fact. Don't come back looking for more of it; there isn't any.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You need rank 50 in Beast Mastery before I can send you into the preserve. Train as a handler, then come back. I won't lose another beast to an unready keeper.",
+          "Text": "I can't risk another beast on a keeper who isn't ready. Get your Beast Mastery to rank 50, then come back. The pens will still need us.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A keeper crew has taken over my preserve and falsified the pen count. Their tally is the first record I need to get control back. Defeat six Apex Bite Adepts in Dathomir, Tarn Jungle Preserve. Their defeat secures the Apex Bite Tarn Hunt Tally; bring it back to me here in Dathomir, Jungle Landing. I'll give you the Dathomir Tarn Jungle Preserve Key when you accept. Complete all five trials to earn the right to train Apex Bite.",
+          "Text": "My pen count is wrong, and the crew in the Tarn Jungle Preserve knows why. Six Apex Bite adepts are keeping the tally. Defeat them and bring it here. The surveyors won't take my word over a signed count, however many teeth are missing from it.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Dathomir Tarn Jungle Preserve Key. Use 'Tarn Jungle Preserve' in Dathomir, Tarnished Jungles. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Apex Bite Adepts, then return with the Apex Bite Tarn Hunt Tally.",
+          "Text": "Here's the preserve key. Take it to the entrance in the Tarnished Jungles. And feed your own beast before you start arguing with their keepers.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Apex Bite Adepts in Dathomir, Tarn Jungle Preserve. Their defeat secures the Apex Bite Tarn Hunt Tally; bring it back to me here in Dathomir, Jungle Landing.",
+          "Text": "Six Apex Bite adepts in the Tarn Jungle Preserve. Bring their tally to the Jungle Landing when you've dealt with them.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Apex Bite Adepts. Let me see the Apex Bite Tarn Hunt Tally.",
+          "Text": "You're still standing, which is more than I expected honestly. Hand it over.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That's the record I needed. We can account for the trails again. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "Numbers match again. That's one problem off my desk. There's more of them in there if you're not done making yourself useful.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists keep the beasts agitated with a scent mixture. Take that vial out of their hands. Defeat five Apex Bite Specialists in Dathomir, Tarn Jungle Preserve. Their defeat secures the Apex Bite Beast-Pen Scent Vial; bring it back to me here in Dathomir, Jungle Landing.",
+          "Text": "The tally makes more sense now. Five specialists are keeping the animals angry with scent. Beat the five in the preserve and bring back their vial. I want the mixture as evidence before they start blaming the beasts.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Dathomir, Tarn Jungle Preserve. Defeat five Apex Bite Specialists to secure the Apex Bite Beast-Pen Scent Vial, then return to me.",
+          "Text": "Bring the vial back to the landing. And keep your beast away from any feed they've left out.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Apex Bite Specialists in Dathomir, Tarn Jungle Preserve. Their defeat secures the Apex Bite Beast-Pen Scent Vial; bring it back to me here in Dathomir, Jungle Landing.",
+          "Text": "Five specialists in the preserve, one scent vial. Bring it back whole enough for me to test.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Apex Bite Specialists. Let me see the Apex Bite Beast-Pen Scent Vial.",
+          "Text": "You smell like the pens. Hopefully in the good way. Let's see it.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "This belongs with the handlers who know how to use it. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "That's evidence, that is. Whatever audit finally shows up, this makes my case for me. Good work.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden carries the alpha totem that backs the crew's claim to the pens. Recover it. Defeat the Apex Bite Warden in Dathomir, Tarn Jungle Preserve. Their defeat secures the Apex Bite Clawed Alpha Totem; bring it back to me here in Dathomir, Jungle Landing. I recommend bringing two companions for this fight.",
+          "Text": "The warden used to run my breeding program. Now he uses everything he knows about the pens to hold them against me. Challenge him in the preserve, defeat him, and bring back the alpha totem. Don't give him just one person to watch.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Dathomir, Tarn Jungle Preserve, use the '???' challenge marker to call the Apex Bite Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Apex Bite Clawed Alpha Totem.",
+          "Text": "Call him at the preserve's challenge marker. Keep anyone you've brought close enough to help. I want you back with the totem, not waiting on someone who stayed behind.",
           "Style": 0,
           "Color": null
         }
@@ -793,7 +793,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Apex Bite Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "It isn't a rule. It's advice from someone who's filed too many deaths in those pens. A friend can see the bite you miss while you're watching the keeper. Take help you trust if you can find it.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Apex Bite Warden in Dathomir, Tarn Jungle Preserve. Their defeat secures the Apex Bite Clawed Alpha Totem; bring it back to me here in Dathomir, Jungle Landing. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Use the preserve's challenge marker to call the warden. I want him beaten and the alpha totem returned.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Apex Bite Warden. Let me see the Apex Bite Clawed Alpha Totem.",
+          "Text": "You're upright. Good. Let's see the totem; the audit needs something harder to dispute than my word.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The totem is back in our keeping. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "Whole. That's the breeding line back under honest management, at least on paper. I'll be filing this one myself. Rest up. The inner circle's next, and they won't like what just happened to their warden.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four keepers still control the preserve's records and orders. Recover their token so I can dispute their claim. Defeat four members of the Apex Bite Inner Circle in Dathomir, Tarn Jungle Preserve. Their defeat secures the Apex Bite Preserve Keeper's Token; bring it back to me here in Dathomir, Jungle Landing.",
+          "Text": "Four keepers still claim the preserve is theirs. Their keeper's token is the claim the auditors will recognize. Beat all four in the preserve and bring me that token. Then I can make their paperwork tell the truth.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Dathomir, Tarn Jungle Preserve. Defeat four members of the Apex Bite Inner Circle to secure the Apex Bite Preserve Keeper's Token, then return to me.",
+          "Text": "Clear the keepers out of the preserve. Stay close to anyone you've brought; those four know how to work together.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Apex Bite Inner Circle in Dathomir, Tarn Jungle Preserve. Their defeat secures the Apex Bite Preserve Keeper's Token; bring it back to me here in Dathomir, Jungle Landing.",
+          "Text": "The four keepers in the preserve still have the token. Clear them out and bring it here.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Apex Bite Inner Circle. Let me see the Apex Bite Preserve Keeper's Token.",
+          "Text": "Back in one piece. Let's see what they were holding.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The keepers can no longer claim authority here. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "That's the deed back where it belongs. One name left on this whole operation, and it's the one who built it. You've earned the last entry in this file.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their master is the last keeper standing between me and the pens. Defeat him and we'll finish your lesson. Defeat the Apex Bite Master in Dathomir, Alpha Beast Hollow. Report back to me here in Dathomir, Jungle Landing; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The master is in the Alpha Beast Hollow. He's the last keeper who can keep my people out of the pens. Call him at the challenge marker, defeat him, then return here. I'd like the next feeding count to be an ordinary one.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Dathomir, Alpha Beast Hollow, use the '???' challenge marker to call the Apex Bite Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "The master answers the challenge marker in the Alpha Beast Hollow. Go carefully, then come back to the landing. I'd like to file a report about keepers getting home for a change.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Apex Bite Master fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "Keep him from choosing every opening. Spread his attention if you have company; if you don't, be very careful about the reach you give him. That bite punishes a careless step faster than you can take it back.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Apex Bite Master in Dathomir, Alpha Beast Hollow. Report back to me here in Dathomir, Jungle Landing; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "The master answers the challenge in the Alpha Beast Hollow. Beat him, then find me at the Jungle Landing.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Apex Bite Master. Give me your report and we'll finish the trial.",
+          "Text": "Quiet out past the fence. Preserve hasn't been that quiet since before all this started. Tell me it's him.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The pens are mine again, and the audit has the evidence it needs. Feed your beast before you celebrate. You've earned the right to train Apex Bite. Your final payment is ready.",
+          "Text": "Pens accounted for. Keepers gone. For once I can sign the report without lying. Feed your beast, take your pay, then find me when you're ready for the Apex Bite lesson. You understand the commitment it takes now.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Apex Bite Adepts.",
+        "Text": "I'll settle your tally and bring it back.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Apex Bite Specialists.",
+        "Text": "I'll shut down the five and bring the vial.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Apex Bite Warden.",
+        "Text": "I'll challenge the warden.",
         "Style": 4,
         "Color": null
       },
@@ -1736,7 +1736,7 @@
     "reply-00018": {
       "Id": "reply-00018",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "Why are you so keen on me bringing help?",
         "Style": 4,
         "Color": null
       },
@@ -1759,7 +1759,7 @@
     "reply-00019": {
       "Id": "reply-00019",
       "Text": {
-        "Text": "Haven't got my two yet.",
+        "Text": "I need to prepare first.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Apex Bite Clawed Alpha Totem.",
+        "Text": "Here's the Apex Bite Clawed Alpha Totem, whole.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Apex Bite Inner Circle.",
+        "Text": "We'll take the four of them together.",
         "Style": 4,
         "Color": null
       },
@@ -1929,7 +1929,7 @@
     "reply-00026": {
       "Id": "reply-00026",
       "Text": {
-        "Text": "My two need a rest first.",
+        "Text": "We need a rest first.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Apex Bite Preserve Keeper's Token.",
+        "Text": "Here's the Apex Bite Preserve Keeper's Token, whole.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Apex Bite Master and report back.",
+        "Text": "We're going in for him, together.",
         "Style": 4,
         "Color": null
       },
@@ -2053,7 +2053,7 @@
     "reply-00031": {
       "Id": "reply-00031",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "How do I keep him from landing that bite?",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Apex Bite Master is defeated. Here's my report.",
+        "Text": "It's done. He's down.",
         "Style": 4,
         "Color": null
       },

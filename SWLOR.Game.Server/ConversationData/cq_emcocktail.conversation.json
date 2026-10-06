@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The experiments are over. Your patients deserve skilled hands and a choice; remember both. You've finished my Emergency Cocktail trials. I have no further work for you here.",
+          "Text": "You know the rule of my counter by now: if you're standing there, you're holding something. Here - keep that level while I titrate. The sublevel drains clean these days, the wards upstairs got their kolto pressure back, and the only person building an emergency cocktail below Dantooine is you, when someone's dying and the minutes run short. That's how it should be. I even slept last week. Don't spread that around.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "These lessons require rank 50 in First Aid. Reach that rank and come back to my counter. I won't send an unprepared medic into that ward.",
+          "Text": "Hold that thought. I need a medic with rank 50 in Medicine for this. The patients down there have already had enough eager people trying things on them.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A crew in the Medical Sublevel is testing unstable mixtures on patients who can't refuse. Recover their dose ledger so I can identify what they used. Defeat six Emergency Cocktail Adepts in Dantooine, Medical Sublevel. Their defeat secures the Emergency Cocktail Triage Ward Ledger; bring it back to me here in Dantooine, Republic Med Center. I'll give you the Dantooine Medical Sublevel Key when you accept. Complete all five trials to earn the right to train Emergency Cocktail.",
+          "Text": "Don't touch that vial. I've finally got the dose right. Six Emergency Cocktail adepts in the Medical Sublevel aren't being nearly as careful with theirs. Stop the six and bring me their triage ledger. I need to know what the patients have been given.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Dantooine Medical Sublevel Key. Use 'Dantooine Medical Sublevel' in Dantooine, Abandoned Warehouse. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Emergency Cocktail Adepts, then return with the Emergency Cocktail Triage Ward Ledger.",
+          "Text": "Take this key to the Medical Sublevel entrance in the Abandoned Warehouse. And don't sample anything you find down there. Bring the ledger to me.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Use 'Dantooine Medical Sublevel' in Dantooine, Abandoned Warehouse. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Emergency Cocktail Adepts in Dantooine, Medical Sublevel. Their defeat secures the Emergency Cocktail Triage Ward Ledger; bring it back to me here in Dantooine, Republic Med Center.",
+          "Text": "The entrance to the Medical Sublevel is in the Abandoned Warehouse on Dantooine. Take my key there. Keep your company close when you enter so no one gets left upstairs.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Emergency Cocktail Adepts in Dantooine, Medical Sublevel. Their defeat secures the Emergency Cocktail Triage Ward Ledger; bring it back to me here in Dantooine, Republic Med Center.",
+          "Text": "Six adepts in Dantooine's Medical Sublevel. Bring their triage ledger to me at the med center. I need the doses, not their excuses.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Emergency Cocktail Adepts. Let me see the Emergency Cocktail Triage Ward Ledger.",
+          "Text": "That smell - antiseptic and scorched sugar. You found their counter. Hand the ledger over before I say something grateful.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Now we can account for what happened under their care. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "Forty doses in nine days, initialed like it's something to be proud of. Six sets of initials that won't appear again, thanks to you. Credits are in the drawer - hazard rate, because I'm not insulting either of us. When your hands have recovered, come back. The next lesson costs more.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists have taken the kolto conduit coupler. Bring it back so we can restore the ward's equipment. Defeat five Emergency Cocktail Specialists in Dantooine, Medical Sublevel. Their defeat secures the Emergency Cocktail Kolto Conduit Coupler; bring it back to me here in Dantooine, Republic Med Center.",
+          "Text": "Five specialists have fitted the sublevel's kolto lines with a coupler that lets them alter every dose at once. Get them away from it and bring it here. I can't treat a reaction while they're still changing the mixture.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Dantooine, Medical Sublevel. Defeat five Emergency Cocktail Specialists to secure the Emergency Cocktail Kolto Conduit Coupler, then return to me.",
+          "Text": "Bring the coupler here. If someone downstairs tells you the mixture is harmless, don't take their word for it.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Emergency Cocktail Specialists in Dantooine, Medical Sublevel. Their defeat secures the Emergency Cocktail Kolto Conduit Coupler; bring it back to me here in Dantooine, Republic Med Center.",
+          "Text": "The five specialists in the Medical Sublevel have the kolto coupler. Get it back here so I can check the mixture.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Emergency Cocktail Specialists. Let me see the Emergency Cocktail Kolto Conduit Coupler.",
+          "Text": "You're carrying something heavy and machined, and your jacket smells like kolto steam. That's my coupler. Counter. Now.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The equipment is back where it belongs. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "Look at this draw gauge - they were pulling triple what a ward pulls in a full emergency, around the clock. This goes to the board with my compliments and your fingerprints wiped off. Credits in the drawer. You're becoming a line item in my budget, which is the closest thing to affection I keep in stock.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden protects their experiments. Recover the ward sigil and end that protection. Defeat the Emergency Cocktail Warden in Dantooine, Medical Sublevel. Their defeat secures the Emergency Cocktail Fractured Ward Sigil; bring it back to me here in Dantooine, Republic Med Center. I recommend bringing two companions for this fight.",
+          "Text": "The warden is keeping us out of the Medical Sublevel. Challenge her there and bring back her ward sigil when she's beaten. Take someone you trust. If she catches you working on one problem, she'll give you another.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Dantooine, Medical Sublevel, use the '???' challenge marker to call the Emergency Cocktail Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Emergency Cocktail Fractured Ward Sigil.",
+          "Text": "Call her at the Medical Sublevel's challenge marker. Keep someone able to help when a dose goes wrong. Beat her and bring me the sigil. I'll have a strong opinion waiting.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Emergency Cocktail Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "A companion can pull you clear while you're bleeding. More help means more chances to recover. I've done this arithmetic over too many cots to call going alone a sensible choice.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Emergency Cocktail Warden in Dantooine, Medical Sublevel. Their defeat secures the Emergency Cocktail Fractured Ward Sigil; bring it back to me here in Dantooine, Republic Med Center. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Call the warden at the Medical Sublevel's challenge marker. Defeat her and bring the ward sigil back.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Emergency Cocktail Warden. Let me see the Emergency Cocktail Fractured Ward Sigil.",
+          "Text": "You're moving like someone who got hit hard and treated fast - which means your companions did their jobs. Is that the sigil? Give it here.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden can no longer protect that school. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "There's the crack through the ward mark. They wanted it left as a joke; now it's evidence. Here's your pay. If anyone stood with you, tell them they've got credit at my counter. I'd like to hear they made it home.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four senior staff still authorize the treatments. Take back the matron's token. Defeat four members of the Emergency Cocktail Inner Circle in Dantooine, Medical Sublevel. Their defeat secures the Emergency Cocktail Matron's Ward Token; bring it back to me here in Dantooine, Republic Med Center.",
+          "Text": "Four senior medics still have the matron's token. They're using it to approve treatments she would never have signed. Stop the four in the sublevel and recover that token. I've got enough bad doses to account for already.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Dantooine, Medical Sublevel. Defeat four members of the Emergency Cocktail Inner Circle to secure the Emergency Cocktail Matron's Ward Token, then return to me.",
+          "Text": "Stop the four in the sublevel. The matron's token belongs at a treatment desk, not in their pocket.",
           "Style": 0,
           "Color": null
         }
@@ -1002,7 +1002,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Emergency Cocktail Inner Circle fight together. Bring help if you can, and focus on one opponent at a time. Defeat four members to secure the Emergency Cocktail Matron's Ward Token; simultaneous kills aren't required.",
+          "Text": "They keep spare doses and know how to cover one another while they use them. Don't let that make you spend all your strength on the first opening. Keep anyone you've brought close enough to help when you need a breather.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Emergency Cocktail Inner Circle in Dantooine, Medical Sublevel. Their defeat secures the Emergency Cocktail Matron's Ward Token; bring it back to me here in Dantooine, Republic Med Center.",
+          "Text": "Four senior medics in the sublevel still have the matron's token. Stop them and return it to me.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Emergency Cocktail Inner Circle. Let me see the Emergency Cocktail Matron's Ward Token.",
+          "Text": "Your hands are steadier than mine tonight, and that's a first for this counter. Show me the token.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their senior staff have lost the authority to continue. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "Brass, and lighter than its job description. Four signatures closed out, and the ward they were squatting in goes back to being a ward. I'd call that a good shift, and I haven't called anything a good shift in two years. Credits in the drawer. Rest and restock - the deep room is still lit, and we both know who's in it.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their master perfected his mixture at the patients' expense. Defeat him in the Protected Ward and stop the experiments. Defeat the Emergency Cocktail Master in Dantooine, Protected Ward. Report back to me here in Dantooine, Republic Med Center; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The master has retreated to the Protected Ward. Call him at its challenge marker and stop him. Then come back to the med center. I'd like to work on a treatment without wondering who's going to undo it downstairs.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Dantooine, Protected Ward, use the '???' challenge marker to call the Emergency Cocktail Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "Call the master at the Protected Ward's challenge marker. He'll know you're coming. When he goes down, leave his mixtures where they are and come back here breathing. That's the proof I need.",
           "Style": 0,
           "Color": null
         }
@@ -1211,7 +1211,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I recommend two companions against the Emergency Cocktail Master. Spread the pressure so one person doesn't have to carry the whole fight. You can enter alone, but prepare carefully before you call the challenge.",
+          "Text": "He takes wounds, drinks his own work, and comes back at you as though the wounds never happened. Watch the time between doses. That's where you can make progress. Share the pressure if you've brought help, and don't spend yourself waiting for him to tire.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Emergency Cocktail Master in Dantooine, Protected Ward. Report back to me here in Dantooine, Republic Med Center; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Use the challenge marker in the Protected Ward. Once the master's beaten, find me here at the med center.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Emergency Cocktail Master. Give me your report and we'll finish the trial.",
+          "Text": "You came up those stairs slow, and you're not carrying anything - which, this one time, is exactly right. Tell me it's done.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The experiments are over. Your patients deserve skilled hands and a choice; remember both. You've earned the right to train Emergency Cocktail. Your final payment is ready.",
+          "Text": "Good. Now I can start untangling what they did to those patients. Your pay's ready. If you want to learn Emergency Cocktail, come back when you've slept. I'd like at least one of us reading the dose with fresh eyes.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Emergency Cocktail Adepts.",
+        "Text": "Give me the way down. I'll get your ledger.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the Emergency Cocktail Triage Ward Ledger.",
+        "Text": "Their Triage Ward Ledger. Every dose is in it.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Emergency Cocktail Specialists.",
+        "Text": "Five specialists. I'll bring you the coupler.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the Emergency Cocktail Kolto Conduit Coupler.",
+        "Text": "One Kolto Conduit Coupler, mostly intact.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Emergency Cocktail Warden.",
+        "Text": "I'll find help and put the warden down.",
         "Style": 4,
         "Color": null
       },
@@ -1713,7 +1713,7 @@
     "reply-00017": {
       "Id": "reply-00017",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "Walk me through your triage math.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Emergency Cocktail Fractured Ward Sigil.",
+        "Text": "The Fractured Ward Sigil, off the clean room door.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Emergency Cocktail Inner Circle.",
+        "Text": "Four of them, one token. Done.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Emergency Cocktail Matron's Ward Token.",
+        "Text": "The Matron's Ward Token. The circle is finished.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Emergency Cocktail Master and report back.",
+        "Text": "We go down together, and I'll finish it.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Emergency Cocktail Master is defeated. Here's my report.",
+        "Text": "He's dead. The recipe is ours now.",
         "Style": 4,
         "Color": null
       },

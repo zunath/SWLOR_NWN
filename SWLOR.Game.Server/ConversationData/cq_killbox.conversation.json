@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The contract is closed and final payment is approved. The range can return to supervised work. You've finished my Kill Box trials. I have no further work for you here.",
+          "Text": "Our business is concluded, and I don't say that often without an invoice attached. The range shoots straighter with your name in its file. If Czerka ever fields a kill box it can't close, I know exactly which contractor I'm calling.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Czerka accepts this contract at rank 50 in Rifle. Reach that rank, then return. Compensation follows qualified work.",
+          "Text": "I contract this work to rifle specialists at rank 50. Reach that standard, then come back. You'll want the rate I'm offering for it.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A test cell in the Czerka range has gone off-contract and is running live kill-box drills. Recover its trial docket for my records. Defeat six Kill Box Adepts in Smuggler's Moon, Czerka Weapons Testing Facility. Their defeat secures the Kill Box Czerka Test Docket; bring it back to me here in Smuggler's Moon, Czerka Arms, Store. I'll give you the Czerka Arms Test Range Key when you accept. Complete all five trials to earn the right to train Kill Box.",
+          "Text": "Six Kill Box adepts are selling my range doctrine without a license. They're also conducting live tests in the Czerka Weapons Testing Facility without approved subjects. Defeat the six and recover their test docket. I need evidence before Corporate decides this was all my idea.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Czerka Arms Test Range Key. Use '[Enter Czerka Weapons Testing Facility]' in Smuggler's Moon, Corporate District. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Kill Box Adepts, then return with the Kill Box Czerka Test Docket.",
+          "Text": "Your access key. The testing facility entrance is in the Corporate District. Gather any support there before entering. Your contract begins at the door.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Kill Box Adepts in Smuggler's Moon, Czerka Weapons Testing Facility. Their defeat secures the Kill Box Czerka Test Docket; bring it back to me here in Smuggler's Moon, Czerka Arms, Store.",
+          "Text": "The six adepts are in the Czerka Weapons Testing Facility. Bring their docket here to the arms store. Keep it legible.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Kill Box Adepts. Let me see the Kill Box Czerka Test Docket.",
+          "Text": "Six confirmed clears, and you're holding paper with my company's seal on it. My assessors bill triple for slower work. Let's see it.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Work order received. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "Received and filed. Credits are in your account at hazard rate, per the schedule. Czerka now lists you as a known vendor - which is worth more than the credits, though you didn't hear that from the director.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists are running the blast-cell equipment outside approved limits. Recover the regulator. Defeat five Kill Box Specialists in Smuggler's Moon, Czerka Weapons Testing Facility. Their defeat secures the Kill Box Blast-Cell Regulator; bring it back to me here in Smuggler's Moon, Czerka Arms, Store.",
+          "Text": "Five specialists are running the facility's blast cells. Their regulator has my approval code on it, but I never approved this work. Beat the five and bring me the regulator. Someone's going to explain how that code got there.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Smuggler's Moon, Czerka Weapons Testing Facility. Defeat five Kill Box Specialists to secure the Kill Box Blast-Cell Regulator, then return to me.",
+          "Text": "The regulator comes back to the arms store. I want the code intact for the complaint.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Kill Box Specialists in Smuggler's Moon, Czerka Weapons Testing Facility. Their defeat secures the Kill Box Blast-Cell Regulator; bring it back to me here in Smuggler's Moon, Czerka Arms, Store.",
+          "Text": "Five specialists in the testing facility have the blast-cell regulator. Recover it and return here.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Kill Box Specialists. Let me see the Kill Box Blast-Cell Regulator.",
+          "Text": "My bench diagnostics steadied this morning for the first time in a month, which means the regulator has left their hands. Five lanes have gone quiet as well. Show me.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Component received and accounted for. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "Back in spec by tonight. Payment has cleared, and your vendor rating just went up a tier - you now qualify for the contracts I don't post. Convenient. The next one was never postable.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The range warden protects the off-contract cell. Take the range crest and end that protection. Defeat the Kill Box Warden in Smuggler's Moon, Czerka Weapons Testing Facility. Their defeat secures the Kill Box Scored Range Crest; bring it back to me here in Smuggler's Moon, Czerka Arms, Store. I recommend bringing two companions for this fight.",
+          "Text": "The warden is refusing inspection of the testing facility. Challenge him there and recover his range crest when he's beaten. Hire some support if you can. I pay for results, and a wounded contractor is an expensive delay.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Smuggler's Moon, Czerka Weapons Testing Facility, use the '???' challenge marker to call the Kill Box Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Kill Box Scored Range Crest.",
+          "Text": "Call the warden at the testing facility's challenge marker. He'll know what the invitation means. Plan for getting out as carefully as getting in; my former contractors didn't.",
           "Style": 0,
           "Color": null
         }
@@ -741,7 +741,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He runs the proving lanes like an audit. Every angle you take, he has already scored; every piece of cover carries a failure rating he memorized years ago. Alone, you're a data point. Three of you, moving on separate clocks, and his whole scoring model comes apart. That isn't encouragement. That's the actuarial table.",
+          "Text": "He has spent years scoring those angles and testing the cover. Keep changing the problem instead of settling into the lane he expects. Support can give him more to watch while you choose your shot.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Kill Box Warden in Smuggler's Moon, Czerka Weapons Testing Facility. Their defeat secures the Kill Box Scored Range Crest; bring it back to me here in Smuggler's Moon, Czerka Arms, Store. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Call the warden at the testing facility's challenge marker. His range crest is still required for my complaint.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Kill Box Warden. Let me see the Kill Box Scored Range Crest.",
+          "Text": "The deep range went silent in the middle of its own schedule yesterday. Wardens do not miss schedules while breathing. I believe you are holding my crest.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden's defeat is verified. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "Then by Czerka bylaw the range has no master, and mastership reverts to the director. Me. You've handed my own facility's law back to me, and the hazard pay reflects it. Rest your crew. The inner circle will not read this as a settlement offer.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four officers still authorize the cell's tests. Recover their clearance chit. Defeat four members of the Kill Box Inner Circle in Smuggler's Moon, Czerka Weapons Testing Facility. Their defeat secures the Kill Box Czerka Clearance Chit; bring it back to me here in Smuggler's Moon, Czerka Arms, Store.",
+          "Text": "Four supervisors still hold the clearance chit. They can approve another test before I finish filing this complaint. Defeat the four in the facility and recover it. Then I can stop their work with something Corporate will recognize.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Smuggler's Moon, Czerka Weapons Testing Facility. Defeat four members of the Kill Box Inner Circle to secure the Kill Box Czerka Clearance Chit, then return to me.",
+          "Text": "Recover the clearance chit. Any contract they offer you lacks my signature.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Kill Box Inner Circle in Smuggler's Moon, Czerka Weapons Testing Facility. Their defeat secures the Kill Box Czerka Clearance Chit; bring it back to me here in Smuggler's Moon, Czerka Arms, Store.",
+          "Text": "Four supervisors in the testing facility have the clearance chit. Beat them and bring it to me.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Kill Box Inner Circle. Let me see the Kill Box Czerka Clearance Chit.",
+          "Text": "Four termination notices cleared this morning - backdated, but legal never minds that. The chit. Let me see it.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Authorization recovered. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "Uncontested. My favorite word in any language. The cell now has no authors, no authority, and no paperwork - as far as Czerka's records show, they never happened. Full rate plus a discretion bonus. One name remains on my range, and I'll be honest with you: he was never in their chain of command.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The master is the final outstanding liability. Defeat him in the Czerka Blast-Safe Cell to close the contract. Defeat the Kill Box Master in Smuggler's Moon, Czerka Blast-Safe Cell. Report back to me here in Smuggler's Moon, Czerka Arms, Store; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The master is holding the Czerka Blast-Safe Cell. Call him at its challenge marker and defeat him. Return here afterward. I intend to close this contract before anyone tries to add his losses to my account.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Smuggler's Moon, Czerka Blast-Safe Cell, use the '???' challenge marker to call the Kill Box Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "Call him at the Czerka Blast-Safe Cell's challenge marker. Keep moving when he gives you time to set up; he knows what that invitation costs. Return here when he's beaten. I'll have the settlement ready.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Kill Box Master in Smuggler's Moon, Czerka Blast-Safe Cell. Report back to me here in Smuggler's Moon, Czerka Arms, Store; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "The master's challenge is in the Czerka Blast-Safe Cell. Defeat him, then return to the arms store for settlement.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Kill Box Master. Give me your report and we'll finish the trial.",
+          "Text": "The deep range is silent. Genuinely silent, not holding-its-breath silent. My instruments logged the last lane clearing, and yet here you stand, unbilled. Say the words. I want them on record.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The contract is closed and final payment is approved. The range can return to supervised work. You've earned the right to train Kill Box. Your final payment is ready.",
+          "Text": "The tests are stopped, and my signature is accounted for. Here is your payment. You've also earned my attention as a pupil. If you want to study Kill Box, we can discuss that arrangement without Corporate in the room.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Kill Box Adepts.",
+        "Text": "Terms accepted. I'll clear the lane.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the Kill Box Czerka Test Docket.",
+        "Text": "The Kill Box Czerka Test Docket. Signed for.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Kill Box Specialists.",
+        "Text": "Phase two. Consider it signed.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the Kill Box Blast-Cell Regulator.",
+        "Text": "The Kill Box Blast-Cell Regulator. Recovered per contract.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Kill Box Warden.",
+        "Text": "Then I'll bring two names I trust and we'll close it.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Kill Box Scored Range Crest.",
+        "Text": "The Kill Box Scored Range Crest. The warden won't contest it.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Kill Box Inner Circle.",
+        "Text": "Four names. I'll close the dispute.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Kill Box Czerka Clearance Chit.",
+        "Text": "The Kill Box Czerka Clearance Chit. Uncontested.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Kill Box Master and report back.",
+        "Text": "I'll sign it. And I won't be signing alone.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Kill Box Master is defeated. Here's my report.",
+        "Text": "It's done. The box closed on its maker.",
         "Style": 4,
         "Color": null
       },

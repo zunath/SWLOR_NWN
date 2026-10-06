@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The shutdown cell is finished. Keep your future work as quiet and deliberate as this one. You've finished my Escape Artist trials. I have no further work for you here.",
+          "Text": "The annex file is closed. If you still want the Escape Artist lesson, you know where to find me. Keep what you saw downstairs out of idle conversation.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Reach rank 50 in Vibroknife, then come back for this assignment. Quiet work still requires practiced hands.",
+          "Text": "I keep this work for rank 50 in Vibroknife. Get there first. When the job goes wrong, a quiet exit takes more than good intentions.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "An unauthorized crew is running shutdown drills in the militia annex. Recover its ledger so I can trace the operation. Defeat six Systemic Shutdown Adepts in Viscara, Veles Militia Annex. Their defeat secures the Systemic Shutdown Veles Drill Ledger; bring it back to me here in Viscara, Veles, Czerka Tower. I'll give you the Veles Militia Annex Key when you accept. Complete all five trials to earn the right to train Escape Artist.",
+          "Text": "Six Systemic Shutdown adepts have taken the Veles Militia Annex. They're practicing containment on people who never agreed to the drill. Defeat the six and bring me their ledger. Quietly, if you can. I want the orders before someone loses them.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Veles Militia Annex Key. Use 'Veles Militia Annex' in Viscara, Veles, Sheriff/Clinic. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Systemic Shutdown Adepts, then return with the Systemic Shutdown Veles Drill Ledger.",
+          "Text": "Take the key to the Militia Annex entrance in the Sheriff and Clinic. Don't let the familiar surroundings make you careless.",
           "Style": 0,
           "Color": null
         }
@@ -323,7 +323,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Systemic Shutdown is the name of the school you're confronting. The technique these trials qualify you to learn is Escape Artist. Recovering its records and defeating its master will show me you're ready for that training.",
+          "Text": "A shutdown is useful until it fails. Then you need a way out that doesn't depend on the system cooperating. That's why I teach Escape Artist. The people in the annex have forgotten there's anyone worth getting out with them.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Use 'Veles Militia Annex' in Viscara, Veles, Sheriff/Clinic. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Systemic Shutdown Adepts in Viscara, Veles Militia Annex. Their defeat secures the Systemic Shutdown Veles Drill Ledger; bring it back to me here in Viscara, Veles, Czerka Tower.",
+          "Text": "The annex entrance is in the Veles Sheriff and Clinic on Viscara. Take my key there. Anyone coming with you should gather close before you go through.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Systemic Shutdown Adepts in Viscara, Veles Militia Annex. Their defeat secures the Systemic Shutdown Veles Drill Ledger; bring it back to me here in Viscara, Veles, Czerka Tower.",
+          "Text": "Six adepts in the Veles Militia Annex. Bring their drill ledger here to Czerka Tower. Keep the orders intact.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Systemic Shutdown Adepts. Let me see the Systemic Shutdown Veles Drill Ledger.",
+          "Text": "You're back, and nobody followed you. Hand over the ledger.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Record recovered. We can trace the orders now. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "Names, dates, whose technique came from where. Useful. Six down and nobody official noticed - that's the standard I expect, not the exception.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists control the annex's range relay. Recover it and cut off their training equipment. Defeat five Systemic Shutdown Specialists in Viscara, Veles Militia Annex. Their defeat secures the Systemic Shutdown Militia Range Relay; bring it back to me here in Viscara, Veles, Czerka Tower.",
+          "Text": "Five specialists are working the annex range relay. They know how to stop a system and make the failure look ordinary. Beat the five and bring the relay here. I'd like to know which ordinary failures we should worry about.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Viscara, Veles Militia Annex. Defeat five Systemic Shutdown Specialists to secure the Systemic Shutdown Militia Range Relay, then return to me.",
+          "Text": "Back to the annex. Get the relay out before someone has a chance to erase its settings.",
           "Style": 0,
           "Color": null
         }
@@ -558,7 +558,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Use 'Veles Militia Annex' in Viscara, Veles, Sheriff/Clinic. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat five Systemic Shutdown Specialists in Viscara, Veles Militia Annex. Their defeat secures the Systemic Shutdown Militia Range Relay; bring it back to me here in Viscara, Veles, Czerka Tower.",
+          "Text": "The annex entrance is in the Veles Sheriff and Clinic on Viscara. Take my key there. Anyone coming with you should gather close before you go through.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Systemic Shutdown Specialists in Viscara, Veles Militia Annex. Their defeat secures the Systemic Shutdown Militia Range Relay; bring it back to me here in Viscara, Veles, Czerka Tower.",
+          "Text": "Five specialists in the annex have the range relay. Beat them and bring it here.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Systemic Shutdown Specialists. Let me see the Systemic Shutdown Militia Range Relay.",
+          "Text": "The relay, and you're still unremarked. Hand it over.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Equipment recovered. Their training operation is disrupted. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "Kill logs, timestamps, more than I expected them to keep. Whoever's running this has a warden covering for all of it. That's who's next.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden protects the shutdown crew. Bring back his challenge badge. Defeat the Systemic Shutdown Warden in Viscara, Veles Militia Annex. Their defeat secures the Systemic Shutdown Scored Challenge Badge; bring it back to me here in Viscara, Veles, Czerka Tower. I recommend bringing two companions for this fight.",
+          "Text": "The warden holds the annex. Challenge him there and bring me his scored badge when he's beaten. I'd take someone you trust. Quiet work doesn't have to mean nobody knows where you went.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Viscara, Veles Militia Annex, use the '???' challenge marker to call the Systemic Shutdown Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Systemic Shutdown Scored Challenge Badge.",
+          "Text": "Arrange your company, then go. I won't ask who. I will ask that they can keep a secret.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Viscara, Veles Militia Annex, use the '???' challenge marker to call the Systemic Shutdown Warden. Accept this assignment before using the marker.",
+          "Text": "He answers the challenge marker in the Militia Annex. Your key still gets you inside. Look for your way out before you call him.",
           "Style": 0,
           "Color": null
         }
@@ -793,7 +793,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He's put down better than you, alone, against people who came alone. I won't send you into that same mistake. Three sets of eyes are harder to silence than one, and harder to explain away if something goes wrong.",
+          "Text": "He punishes a careless approach quickly. I'd bring help that can notice when you need to get clear. The annex has had enough people disappear into its drills without anyone left to account for them.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Systemic Shutdown Warden in Viscara, Veles Militia Annex. Their defeat secures the Systemic Shutdown Scored Challenge Badge; bring it back to me here in Viscara, Veles, Czerka Tower. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Use the annex challenge marker to call the warden. Defeat him and recover the challenge badge.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Systemic Shutdown Warden. Let me see the Systemic Shutdown Scored Challenge Badge.",
+          "Text": "You're back, and quiet about it. That's the badge, I take it. Hand it over.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden defeated. That breaks their enforcement. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "Scored and cracked - his record, not yours. He taught more than adepts and specialists. There's an inner circle above him I need accounted for next, and I'd rather account for them before they notice their warden stopped answering.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four senior operators are still authorizing the drills. Recover their challenge chit. Defeat four members of the Systemic Shutdown Inner Circle in Viscara, Veles Militia Annex. Their defeat secures the Systemic Shutdown Captain's Challenge Chit; bring it back to me here in Viscara, Veles, Czerka Tower.",
+          "Text": "Four officers still have the captain's chit. They can keep this operation running under militia authority. Defeat the four in the annex and recover it. Then I can start closing the file without leaving the work alive behind it.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Viscara, Veles Militia Annex. Defeat four members of the Systemic Shutdown Inner Circle to secure the Systemic Shutdown Captain's Challenge Chit, then return to me.",
+          "Text": "Recover the chit. I want the authority closed off as well as the operation.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +976,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Use 'Veles Militia Annex' in Viscara, Veles, Sheriff/Clinic. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat four members of the Systemic Shutdown Inner Circle in Viscara, Veles Militia Annex. Their defeat secures the Systemic Shutdown Captain's Challenge Chit; bring it back to me here in Viscara, Veles, Czerka Tower.",
+          "Text": "The four officers are inside the Militia Annex. They still have the captain's chit. Recover it, then come back to the tower.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Systemic Shutdown Inner Circle in Viscara, Veles Militia Annex. Their defeat secures the Systemic Shutdown Captain's Challenge Chit; bring it back to me here in Viscara, Veles, Czerka Tower.",
+          "Text": "Four officers in the annex still have the captain's chit. Return it when they're beaten.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Systemic Shutdown Inner Circle. Let me see the Systemic Shutdown Captain's Challenge Chit.",
+          "Text": "That's the chit. Let's see exactly how far this went.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their officers no longer control the authorizations. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "Signatures, authorizations, all of it improvised after the fact to look official. This runs all the way to whoever taught the warden in the first place. One name left on the list.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The master is the last operator keeping the cell running. Defeat him in the Militia Command Room and report back. Defeat the Systemic Shutdown Master in Viscara, Militia Command Room. Report back to me here in Viscara, Veles, Czerka Tower; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The master is in the Militia Command Room. Call him at the challenge marker and defeat him. Know your way out before you start. Come back to the tower afterward; we'll see whether this can finally stay finished.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Viscara, Militia Command Room, use the '???' challenge marker to call the Systemic Shutdown Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "Then go end it. Quietly, if you can manage it. Permanently, either way.",
           "Style": 0,
           "Color": null
         }
@@ -1159,7 +1159,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Systemic Shutdown Master fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "I work alone because one person is easy to account for, easy to disappear if something goes wrong. You're not disposable the same way, and this isn't a job that forgives one mistake. Bring company. Let someone else carry half the risk of what happens down there.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Viscara, Militia Command Room, use the '???' challenge marker to call the Systemic Shutdown Master. Accept this assignment before using the marker.",
+          "Text": "The Militia Command Room. Use the challenge marker there. It's time to find out whether he can finish what he taught the others.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Systemic Shutdown Master in Viscara, Militia Command Room. Report back to me here in Viscara, Veles, Czerka Tower; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "The master's challenge marker is in the Militia Command Room. Beat him, get out, and return to Czerka Tower.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Systemic Shutdown Master. Give me your report and we'll finish the trial.",
+          "Text": "You're back, and there's no report to write about him anymore. That's the confirmation I needed.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The shutdown cell is finished. Keep your future work as quiet and deliberate as this one. You've earned the right to train Escape Artist. Your final payment is ready.",
+          "Text": "The shutdown school won't be issuing another order. Your pay is here. You've earned a lesson in Escape Artist, if you want it. We'll start with the route that gets you out when stopping the system doesn't stop the people.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Systemic Shutdown Adepts.",
+        "Text": "I'll take the first job.",
         "Style": 4,
         "Color": null
       },
@@ -1350,7 +1350,7 @@
     "reply-00002": {
       "Id": "reply-00002",
       "Text": {
-        "Text": "How does this school relate to Escape Artist?",
+        "Text": "What exactly is a shutdown strike?",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the Systemic Shutdown Veles Drill Ledger.",
+        "Text": "Here's the drill ledger.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Systemic Shutdown Specialists.",
+        "Text": "I'll take the second job.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the Systemic Shutdown Militia Range Relay.",
+        "Text": "Here's the range relay.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Systemic Shutdown Warden.",
+        "Text": "I'll bring the company and go.",
         "Style": 4,
         "Color": null
       },
@@ -1759,7 +1759,7 @@
     "reply-00019": {
       "Id": "reply-00019",
       "Text": {
-        "Text": "I need to find the right two first.",
+        "Text": "I need to find people I trust first.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Systemic Shutdown Scored Challenge Badge.",
+        "Text": "Here's the badge.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Systemic Shutdown Inner Circle.",
+        "Text": "I'll clean house.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Systemic Shutdown Captain's Challenge Chit.",
+        "Text": "Here's the chit.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Systemic Shutdown Master and report back.",
+        "Text": "I'll bring people I trust. Let's close this out.",
         "Style": 4,
         "Color": null
       },
@@ -2030,7 +2030,7 @@
     "reply-00030": {
       "Id": "reply-00030",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "Why send me with company when you work alone?",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Systemic Shutdown Master is defeated. Here's my report.",
+        "Text": "It's done. He's off the books for good.",
         "Style": 4,
         "Color": null
       },

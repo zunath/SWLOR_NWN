@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their authority is revoked and your examination is complete. Keep your resolve; don't mistake it for certainty. You've finished my Eclipse of Resolve trials. I have no further work for you here.",
+          "Text": "The record stands at one pass: yours. The last one I issued held the bottom of a crypt for years before you revoked it for me. I never praise twice, and I have already spent yours. Go and be the verdict I do not have to correct.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Admission to this examination requires rank 50 in Force. Return when you meet that standard. Resolve must survive more than a conversation.",
+          "Text": "You want the examination early. I don't admit candidates below rank 50 in Force. Reach it, and I shall enjoy seeing whether that confidence survives.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Former candidates are teaching a corrupted doctrine in the crypt depths. Confiscate their tablet so I can examine what they've changed. Defeat six Eclipse of Resolve Adepts in Korriban, Sith Crypt Depths. Their defeat secures the Eclipse of Resolve Crypt Trial Tablet; bring it back to me here in Korriban, Wastelands Tunnels. I'll give you the Korriban Sith Crypt Depths Key when you accept. Complete all five trials to earn the right to train Eclipse of Resolve.",
+          "Text": "Six former candidates are teaching Eclipse of Resolve in the Sith Crypt Depths. I failed them. They chose to correct the record by starting their own school. Cull the six adepts and confiscate their trial tablet. I would like to read their improvements.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Korriban Sith Crypt Depths Key. Use 'Sith Crypt Depths' in Korriban, Sith Crypt. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Eclipse of Resolve Adepts, then return with the Eclipse of Resolve Crypt Trial Tablet.",
+          "Text": "Take the key to the Crypt Depths entrance inside the Sith Crypt. Six candidates. I have read enough incomplete submissions from them; spare me another.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Former candidates who failed my examination and decided to teach themselves. They continued their training in the Sith Crypt Depths without supervision. Use 'Sith Crypt Depths' in the Sith Crypt once you've accepted my key. Their confidence has grown faster than their understanding.",
+          "Text": "Students I failed for fixing their will on the wrong things. They took the judgment badly. Their school is in the Sith Crypt Depths now, reached from inside the Sith Crypt. You may examine their arguments there.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Eclipse of Resolve Adepts in Korriban, Sith Crypt Depths. Their defeat secures the Eclipse of Resolve Crypt Trial Tablet; bring it back to me here in Korriban, Wastelands Tunnels.",
+          "Text": "Six failed candidates in the Sith Crypt Depths. Their trial tablet is your first submission. Bring it here complete.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Eclipse of Resolve Adepts. Let me see the Eclipse of Resolve Crypt Trial Tablet.",
+          "Text": "Six struck from the rolls, and the tablet out of circulation. Hand it to me. I will assess how much damage they did to the text.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The tablet gives us a clear account of their teaching. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "Assessment: the text is corrupted, the corruption is contained, and the candidate returned intact. Provisional pass. Do not glow. Provisional is the highest grade this stage offers. Your credits, per the standard schedule. The next examination is available whenever your nerve is. Bring less doubt than you brought today. I counted.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists sustain their doctrine with a focus shard. Recover it for the next examination. Defeat five Eclipse of Resolve Specialists in Korriban, Sith Crypt Depths. Their defeat secures the Eclipse of Resolve Ritual Focus Shard; bring it back to me here in Korriban, Wastelands Tunnels.",
+          "Text": "Five specialists have built their practice around a ritual focus shard. They mistake keeping a thought fixed for keeping it sound. Cull the five in the crypt depths and recover that shard. We will examine what it has been made to sustain.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Korriban, Sith Crypt Depths. Defeat five Eclipse of Resolve Specialists to secure the Eclipse of Resolve Ritual Focus Shard, then return to me.",
+          "Text": "They'll be gathered in the crypt depths. Examine their certainty before you let it disturb yours.",
           "Style": 0,
           "Color": null
         }
@@ -558,7 +558,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Use 'Sith Crypt Depths' in Korriban, Sith Crypt. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat five Eclipse of Resolve Specialists in Korriban, Sith Crypt Depths. Their defeat secures the Eclipse of Resolve Ritual Focus Shard; bring it back to me here in Korriban, Wastelands Tunnels.",
+          "Text": "Enter the Sith Crypt on Korriban, then take the entrance marked for the Crypt Depths. The key I give you opens it. Bring your companions to the threshold together.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Eclipse of Resolve Specialists in Korriban, Sith Crypt Depths. Their defeat secures the Eclipse of Resolve Ritual Focus Shard; bring it back to me here in Korriban, Wastelands Tunnels.",
+          "Text": "Five specialists in the crypt depths, and the focus shard they practice with. Recover it after they're defeated.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Eclipse of Resolve Specialists. Let me see the Eclipse of Resolve Ritual Focus Shard.",
+          "Text": "The shard, and a candidate still in possession of their own fear. Correct on both counts. Surrender the stone.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The focus is out of their hands. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "Graded and archived. The shard confirms everything I have taught over their objections: emptiness is not eclipse. You begin to be evidence for the doctrine instead of against it, which is the first useful thing most candidates ever accomplish. Credits per schedule. The third examination has a proctor, and he does not share my restraint.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden carries a sigil he was never fit to hold. Take it back and end his claim. Defeat the Eclipse of Resolve Warden in Korriban, Sith Crypt Depths. Their defeat secures the Eclipse of Resolve Splintered Tomb Sigil; bring it back to me here in Korriban, Wastelands Tunnels. I recommend bringing two companions for this fight.",
+          "Text": "The warden wears a sigil awarded before I understood his failure. Challenge him in the crypt depths and bring the sigil back when he's beaten. Bring companions if you can. A different mind beside yours can be useful when one certainty begins to look absolute.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Korriban, Sith Crypt Depths, use the '???' challenge marker to call the Eclipse of Resolve Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Eclipse of Resolve Splintered Tomb Sigil.",
+          "Text": "The examination is live. Call him at the crypt depths' challenge marker. Spread his attention if you've brought colleagues. When he falls, collect the sigil. I still expect a complete exhibit.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Eclipse of Resolve Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "I recommend colleagues because another mind can spot the certainty you've stopped examining. You may attempt the challenge alone. I am interested in your judgment, not the number of people standing beside you.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Eclipse of Resolve Warden in Korriban, Sith Crypt Depths. Their defeat secures the Eclipse of Resolve Splintered Tomb Sigil; bring it back to me here in Korriban, Wastelands Tunnels. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "The crypt depths' challenge marker calls the warden. His defeat and his sigil are the matters still before us.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Eclipse of Resolve Warden. Let me see the Eclipse of Resolve Splintered Tomb Sigil.",
+          "Text": "You return, your companions return, and the breach stands empty. The sigil. All of it.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The sigil no longer backs the warden's claim. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "Denied and closed, after years of my failures dying in its service. I will say this once, so listen carefully: adequate work. That is the only time you will hear it. The sigil joins the record, your credits join your account, and the fourth examination joins your schedule. The inner circle wrote the corrupted curriculum. You will now retract it.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The four keepers are still passing that doctrine on. Recover their rite token and revoke their authority. Defeat four members of the Eclipse of Resolve Inner Circle in Korriban, Sith Crypt Depths. Their defeat secures the Eclipse of Resolve Keeper's Rite Token; bring it back to me here in Korriban, Wastelands Tunnels.",
+          "Text": "Four keepers still certify this doctrine as fit to teach. Cull all four in the crypt depths and recover their rite token. They may appeal my judgment. They will have difficulty finding a signature to support the appeal.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Korriban, Sith Crypt Depths. Defeat four members of the Eclipse of Resolve Inner Circle to secure the Eclipse of Resolve Keeper's Rite Token, then return to me.",
+          "Text": "Four signatures to strike from the record. Bring me the token when their teaching is ended.",
           "Style": 0,
           "Color": null
         }
@@ -1002,7 +1002,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "One recommendation, not a condition. You have earned the distinction. They defend the token as a single body, four wills braided into one doctrine, and braided wills unravel from the ends. Whichever of them breaks formation first is the thread to cut. If you bring your two from the breach, so much the better. I no longer grade whether you need others. I grade the others fortunate.",
+          "Text": "They defend the token together. Watch for the one who breaks formation first; that is where their certainty becomes useful to you. Bring colleagues who served you well before, if they're willing. I prefer adaptable candidates.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Eclipse of Resolve Inner Circle in Korriban, Sith Crypt Depths. Their defeat secures the Eclipse of Resolve Keeper's Rite Token; bring it back to me here in Korriban, Wastelands Tunnels.",
+          "Text": "Four keepers in the crypt depths still have the rite token. End their teaching and submit it to me.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Eclipse of Resolve Inner Circle. Let me see the Eclipse of Resolve Keeper's Rite Token.",
+          "Text": "Struck, all four. And my token, back within reach after years of being forged against me. Hand it over.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their authority to teach is ended. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "Retraction complete. The curriculum below is authorless, its ordinations void, its enrollment ended by your hand. The record will show the doctrine was defended. It will not show gratitude; that is not a field on the form. Credits per schedule. One examination remains, and I will be honest with you for the first time: I do not know whether it can be passed.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their master is the final examination. Defeat him in the ritual chamber, then bring me your report. Defeat the Eclipse of Resolve Master in Korriban, Final Ritual Chamber. Report back to me here in Korriban, Wastelands Tunnels; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The master is in the Final Ritual Chamber. Call him at the challenge marker and defeat him. He believes doubt has no place in mastery. Keep enough of yours to notice where his certainty fails, then return to me with your account.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Korriban, Final Ritual Chamber, use the '???' challenge marker to call the Eclipse of Resolve Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "Call him in the Final Ritual Chamber. Disregard what the crypt promises on the way; it is not on the committee. Don't wait for doubt to leave you before you act. A sensible candidate keeps enough to examine the result.",
           "Style": 0,
           "Color": null
         }
@@ -1211,7 +1211,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I recommend two companions against the Eclipse of Resolve Master. Spread the pressure so one person doesn't have to carry the whole fight. You can enter alone, but prepare carefully before you call the challenge.",
+          "Text": "Keep the fear that tells you when you're in danger. He has denied himself that adviser. With colleagues, protect whoever he fixes upon and make him change his answer. Alone, keep watching for what his certainty has made him overlook.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Eclipse of Resolve Master in Korriban, Final Ritual Chamber. Report back to me here in Korriban, Wastelands Tunnels; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Call the master in the Final Ritual Chamber, defeat him, then return here to the wasteland tunnels. I will hear your account.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Eclipse of Resolve Master. Give me your report and we'll finish the trial.",
+          "Text": "You stand in front of me, which means the bottom of the crypt no longer holds a pass of mine. Report the verdict.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their authority is revoked and your examination is complete. Keep your resolve; don't mistake it for certainty. You've earned the right to train Eclipse of Resolve. Your final payment is ready.",
+          "Text": "One authority revoked, one pupil worth admitting. Yours, if you still want the instruction. Take your pay. We can begin Eclipse of Resolve when you've rested. I would prefer your first lesson without a bleeding distraction.",
           "Style": 0,
           "Color": null
         }
@@ -1297,7 +1297,7 @@
     "reply-00000": {
       "Id": "reply-00000",
       "Text": {
-        "Text": "Restate the assignment.",
+        "Text": "Let me hear the offer again.",
         "Style": 4,
         "Color": null
       },
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Eclipse of Resolve Adepts.",
+        "Text": "Then grade this: six adepts, one tablet, done.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the Eclipse of Resolve Crypt Trial Tablet.",
+        "Text": "Here's their tablet. The recitals have stopped.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Eclipse of Resolve Specialists.",
+        "Text": "Five specialists. Their shard goes on your desk.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the Eclipse of Resolve Ritual Focus Shard.",
+        "Text": "One shard, untouched by me. The five are graded.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Eclipse of Resolve Warden.",
+        "Text": "Then let the examination begin.",
         "Style": 4,
         "Color": null
       },
@@ -1713,7 +1713,7 @@
     "reply-00017": {
       "Id": "reply-00017",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "Why do you recommend colleagues?",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Eclipse of Resolve Splintered Tomb Sigil.",
+        "Text": "Every splinter. His appeal is denied.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Eclipse of Resolve Inner Circle.",
+        "Text": "Four authors, one retraction. Consider it in progress.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Eclipse of Resolve Keeper's Rite Token.",
+        "Text": "Your token, out of forgery. The circle is retracted.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Eclipse of Resolve Master and report back.",
+        "Text": "Convene it. I'll face the master.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Eclipse of Resolve Master is defeated. Here's my report.",
+        "Text": "The master's beaten. I'm here to give my account.",
         "Style": 4,
         "Color": null
       },

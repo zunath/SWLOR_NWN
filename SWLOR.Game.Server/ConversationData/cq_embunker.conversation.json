@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The chamber is safe to reclaim. Build walls that protect the people inside them. You've finished my Emergency Bunker trials. I have no further work for you here.",
+          "Text": "Emergency Bunker's recertified, final stamp, your name on the inspection log. Keep every wall you build held to that standard, and I won't have to come find you.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I certify these trials at rank 50 in Devices. Reach that rank, then come back. A shelter needs steady hands before it needs thicker walls.",
+          "Text": "I'd trust you on an ordinary repair. This one needs rank 50 in Devices. Get that training first; I don't want to send another good pair of hands into a shelter that might bury them.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A crew has sealed part of the engineering bunker and rebuilt it without approval. Their docket will tell me what they've changed. Defeat six Emergency Bunker Adepts in Viscara, Republic Engineering Bunker. Their defeat secures the Emergency Bunker Republic Bunker Docket; bring it back to me here in Viscara, Republic Base, Exterior. I'll give you the Viscara Republic Engineering Bunker Key when you accept. Complete all five trials to earn the right to train Emergency Bunker.",
+          "Text": "They've locked my crew out of the Engineering Bunker. Six Emergency Bunker adepts are reinforcing it, but I know what those supports can take. Defeat the six and bring me their docket. I need to see what they've changed before someone takes shelter under it.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Viscara Republic Engineering Bunker Key. Use 'Republic Engineering Bunker' in Viscara, Republic Base, Combat Deck. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Emergency Bunker Adepts, then return with the Emergency Bunker Republic Bunker Docket.",
+          "Text": "Here's the key. The bunker entrance is on the Republic Base combat deck. If anything starts moving overhead, get yourself clear first. The docket can wait.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Emergency Bunker Adept fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "Because it's the sturdiest thing I ever built, and sturdy things get stolen for whatever someone's building next, sign-off or not. I take that personally. You would too, if you'd poured the concrete yourself.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Emergency Bunker Adepts in Viscara, Republic Engineering Bunker. Their defeat secures the Emergency Bunker Republic Bunker Docket; bring it back to me here in Viscara, Republic Base, Exterior.",
+          "Text": "The six adepts are inside the Republic Engineering Bunker. Bring their docket here to the base exterior. I need to read those changes.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Emergency Bunker Adepts. Let me see the Emergency Bunker Republic Bunker Docket.",
+          "Text": "Let's see it, then. Hand over the docket.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Now I have a record of their modifications. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "Well. Nothing structurally fatal, just arrogant. Good first day's work. Hazard pay's yours; the real prize is that sublevel remembering whose name is on the beams.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists are using the shield relay to support unsafe modifications. Bring it back for inspection. Defeat five Emergency Bunker Specialists in Viscara, Republic Engineering Bunker. Their defeat secures the Emergency Bunker Shield Grid Relay; bring it back to me here in Viscara, Republic Base, Exterior.",
+          "Text": "Five specialists are running the bunker shields through a relay I designed for emergencies. They've left it under load ever since. Get the five away from it and bring the relay here. I can still make that part safe.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Viscara, Republic Engineering Bunker. Defeat five Emergency Bunker Specialists to secure the Emergency Bunker Shield Grid Relay, then return to me.",
+          "Text": "The relay comes back to me here. Keep an eye on the supports while you're working; I haven't been able to inspect them.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Emergency Bunker Specialists in Viscara, Republic Engineering Bunker. Their defeat secures the Emergency Bunker Shield Grid Relay; bring it back to me here in Viscara, Republic Base, Exterior.",
+          "Text": "Five specialists have the shield relay in the bunker. Get it back to me before their work fails under someone.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Emergency Bunker Specialists. Let me see the Emergency Bunker Shield Grid Relay.",
+          "Text": "Let's have a look. Hand over the relay.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I'll inspect this before anything goes back into service. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "Good, still cold, still functional. I can work with that. You're measuring up steadier than most of the crews I've certified, and that's not a compliment I give for free.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden holds the altered chamber. Recover the command crest so I can trace the orders behind the work. Defeat the Emergency Bunker Warden in Viscara, Republic Engineering Bunker. Their defeat secures the Emergency Bunker Cracked Command Crest; bring it back to me here in Viscara, Republic Base, Exterior. I recommend bringing two companions for this fight.",
+          "Text": "The warden won't let anyone near the old controls. Challenge him inside the Engineering Bunker and bring back his command crest when he's beaten. I'd bring help. Someone should be watching your back while you're watching the ceiling.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Viscara, Republic Engineering Bunker, use the '???' challenge marker to call the Emergency Bunker Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Emergency Bunker Cracked Command Crest.",
+          "Text": "Go find them. I've buried the results of people who thought the protocol was a suggestion, and I'm not doing that again on my own sublevel.",
           "Style": 0,
           "Color": null
         }
@@ -741,7 +741,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Emergency Bunker Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "It doesn't require a particular number. I want someone watching the approach while the work gets done, and someone able to help if it goes wrong. One person can try to manage all that. I wouldn't design a shelter assuming they could.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Emergency Bunker Warden in Viscara, Republic Engineering Bunker. Their defeat secures the Emergency Bunker Cracked Command Crest; bring it back to me here in Viscara, Republic Base, Exterior. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Use the Engineering Bunker's challenge marker to call the warden. Beat him and bring the command crest back.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Emergency Bunker Warden. Let me see the Emergency Bunker Cracked Command Crest.",
+          "Text": "You're all still standing. Let's see the crest.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That confirms who was in charge of the unsafe work. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "The warden's down, and the chamber can be inspected. You've done the part my crew couldn't. Here's your pay. I would much rather write a repair order than another eulogy.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four quartermasters are still authorizing materials for the crew. Recover their override chip. Defeat four members of the Emergency Bunker Inner Circle in Viscara, Republic Engineering Bunker. Their defeat secures the Emergency Bunker Quartermaster Override Chip; bring it back to me here in Viscara, Republic Base, Exterior.",
+          "Text": "Four officers have the quartermaster's override chip. My crew can't even get spare parts without their permission. Deal with the four in the bunker and recover it. I'd like to fix something before I'm asked to explain why it fell.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Viscara, Republic Engineering Bunker. Defeat four members of the Emergency Bunker Inner Circle to secure the Emergency Bunker Quartermaster Override Chip, then return to me.",
+          "Text": "Recover that chip. My crew will finally be able to order what the shelter actually needs.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Emergency Bunker Inner Circle in Viscara, Republic Engineering Bunker. Their defeat secures the Emergency Bunker Quartermaster Override Chip; bring it back to me here in Viscara, Republic Base, Exterior.",
+          "Text": "The four officers still have the override chip inside the bunker. Bring it here after you've dealt with them.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Emergency Bunker Inner Circle. Let me see the Emergency Bunker Quartermaster Override Chip.",
+          "Text": "Four down and a chip in hand. Let's see what it says.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "No more unauthorized orders from that crew. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "There's the name I was dreading. One left to deal with, and he's the one who thinks my walls make him patient instead of caught.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The master has turned shelter doctrine into a way to trap people. Defeat him in the command room and end it. Defeat the Emergency Bunker Master in Viscara, Engineering Command Room. Report back to me here in Viscara, Republic Base, Exterior; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "Their master is holding the Engineering Command Room. He thinks the bunker is sound because nobody's been able to get him out. Call him at the challenge marker and prove otherwise. Come back when he's beaten. We'll have a crew waiting to inspect the damage.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Viscara, Engineering Command Room, use the '???' challenge marker to call the Emergency Bunker Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "The master answers the challenge marker in the Engineering Command Room. Take the time to prepare. The shelter's waited this long for the right hands; it can wait a little longer.",
           "Style": 0,
           "Color": null
         }
@@ -1211,7 +1211,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then Emergency Bunker goes back to what I built it for: holding people who need holding, not men who think walls make them untouchable. That's yours now, properly, and I trust you'll keep it that way.",
+          "Text": "The shelter can protect people again. I'd like to teach you Emergency Bunker once the crew has inspected the damage. You've shown me hands I can trust with that work.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Emergency Bunker Master in Viscara, Engineering Command Room. Report back to me here in Viscara, Republic Base, Exterior; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "The master answers the Engineering Command Room's challenge marker. Beat him, then meet me here. I'll get the repair crew ready.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Emergency Bunker Master. Give me your report and we'll finish the trial.",
+          "Text": "Is it done? Tell me straight.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The chamber is safe to reclaim. Build walls that protect the people inside them. You've earned the right to train Emergency Bunker. Your final payment is ready.",
+          "Text": "The crew can get back inside. That means a great deal to me. Take your pay, and when you're ready, we'll work on Emergency Bunker together. A shelter ought to give people somewhere to go, not something else to fear.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Emergency Bunker Adepts.",
+        "Text": "I'll clear it and bring back the docket.",
         "Style": 4,
         "Color": null
       },
@@ -1373,7 +1373,7 @@
     "reply-00003": {
       "Id": "reply-00003",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "Why would a crew seal off your own sublevel?",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the Emergency Bunker Republic Bunker Docket.",
+        "Text": "Here's the docket.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Emergency Bunker Specialists.",
+        "Text": "I'll pull the relay before it fails.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the Emergency Bunker Shield Grid Relay.",
+        "Text": "Here's the relay.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Emergency Bunker Warden.",
+        "Text": "I'll take good hands and challenge him.",
         "Style": 4,
         "Color": null
       },
@@ -1690,7 +1690,7 @@
     "reply-00016": {
       "Id": "reply-00016",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "What help should I bring?",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Emergency Bunker Cracked Command Crest.",
+        "Text": "Here's the crest.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Emergency Bunker Inner Circle.",
+        "Text": "I'll bring back the chip.",
         "Style": 4,
         "Color": null
       },
@@ -1906,7 +1906,7 @@
     "reply-00025": {
       "Id": "reply-00025",
       "Text": {
-        "Text": "Should I bring the same two as before?",
+        "Text": "Should I bring the same people?",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Emergency Bunker Quartermaster Override Chip.",
+        "Text": "Here's the chip.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Emergency Bunker Master and report back.",
+        "Text": "I'll get your shelter back.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Emergency Bunker Master is defeated. Here's my report.",
+        "Text": "It's done. He's out of the room for good.",
         "Style": 4,
         "Color": null
       },

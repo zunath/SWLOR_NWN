@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The bunker is free of his orders. Remember who your own orders are meant to serve. Dismissed. You've finished my Decisive Command trials. I have no further work for you here.",
+          "Text": "Rhee is answered for, and the bunker runs Republic drills again. I have stopped testing you. If you noticed, you will also have noticed I never say that. Carry it well, commander.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "This assignment requires rank 50 in Leadership. Build that command experience, then report back. People need orders they can trust.",
+          "Text": "Rank 50 in Leadership, then report back. You need people who trust your orders before I can ask you to challenge mine.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "My old adjutant sealed the engineering bunker and kept the garrison. His junior officers are training obedience through fear. Recover their duty record. Defeat six Decisive Command Adepts in Viscara, Republic Engineering Bunker. Their defeat secures the Decisive Command Republic Bunker Docket; bring it back to me here in Viscara, Republic Base, Combat Deck. I'll give you the Viscara Republic Engineering Bunker Key when you accept. Complete all five trials to earn the right to train Decisive Command.",
+          "Text": "My old adjutant has kept the Republic Engineering Bunker on Viscara and the garrison inside it. Six Decisive Command adepts are drilling obedience through fear. Defeat the six and recover their bunker docket. I want the orders they've been following in front of me.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Viscara Republic Engineering Bunker Key. Use 'Republic Engineering Bunker' in Viscara, Republic Base, Combat Deck. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Decisive Command Adepts, then return with the Decisive Command Republic Bunker Docket.",
+          "Text": "Take the bunker key to its entrance on the Republic combat deck. Keep your people together as you enter. Bring me that docket.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Decisive Command Adepts in Viscara, Republic Engineering Bunker. Their defeat secures the Decisive Command Republic Bunker Docket; bring it back to me here in Viscara, Republic Base, Combat Deck.",
+          "Text": "Six adepts in the Republic Engineering Bunker. Bring their docket back to the combat deck. I want names and orders.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Decisive Command Adepts. Let me see the Decisive Command Republic Bunker Docket.",
+          "Text": "That folder under your arm has a Republic spine. Hand it over and stand easy while I read.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Record recovered. We can trace the orders now. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "Countersigned, every page. Some of these names I trained... and two I will ask you about another day. You executed the order as given, on time, without theater. That is rarer than courage. Draw your pay and stay close - the next order is already written.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists control the shield grid. Recover the relay so we can see how they've altered it. Defeat five Decisive Command Specialists in Viscara, Republic Engineering Bunker. Their defeat secures the Decisive Command Shield Grid Relay; bring it back to me here in Viscara, Republic Base, Combat Deck.",
+          "Text": "Five specialists are holding the bunker shield grid. Those shields used to cover an evacuation; now they keep the garrison in. Defeat the five and bring me the relay. I'll find out whose orders made that change.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Viscara, Republic Engineering Bunker. Defeat five Decisive Command Specialists to secure the Decisive Command Shield Grid Relay, then return to me.",
+          "Text": "Break their drill rather than joining it. The relay comes back to the combat deck.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Decisive Command Specialists in Viscara, Republic Engineering Bunker. Their defeat secures the Decisive Command Shield Grid Relay; bring it back to me here in Viscara, Republic Base, Combat Deck.",
+          "Text": "Five specialists hold the bunker's shield relay. Defeat them and return the relay to me.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Decisive Command Specialists. Let me see the Decisive Command Shield Grid Relay.",
+          "Text": "The glow over the bunker died last night. If the relay is in your pack, the fortress problem is over and the criminal problem is all that is left. Let me see it.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Equipment recovered. Their training operation is disrupted. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "Republic stamp, corps pattern, carbon on the contacts - you pulled it live. Good. The screen is down and Rhee knows it, which means the easy stages are over. You have stopped being an errand and started being a threat. He will treat you accordingly. So will I, and from me that is promotion.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden enforces the adjutant's orders. Recover his command crest and break that authority. Defeat the Decisive Command Warden in Viscara, Republic Engineering Bunker. Their defeat secures the Decisive Command Cracked Command Crest; bring it back to me here in Viscara, Republic Base, Combat Deck. I recommend bringing two companions for this fight.",
+          "Text": "Vhon enforces the adjutant's orders. Challenge her in the Engineering Bunker, defeat her, and recover her command crest. Take people who can act while you're under pressure. She learned that part of command well enough.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Viscara, Republic Engineering Bunker, use the '???' challenge marker to call the Decisive Command Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Decisive Command Cracked Command Crest.",
+          "Text": "Call Vhon at the Engineering Bunker's challenge marker. Move decisively when the opening comes. Recover the crest and come back with the people you brought.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Decisive Command Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "I'm advising you, not barring the door. A breach goes better when someone covers the person moving through it. Vhon knows how to punish the moment you can't do both. Take support if you can.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Decisive Command Warden in Viscara, Republic Engineering Bunker. Their defeat secures the Decisive Command Cracked Command Crest; bring it back to me here in Viscara, Republic Base, Combat Deck. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Call Vhon at the bunker's challenge marker. Defeat her, recover the crest, and bring your people home.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Decisive Command Warden. Let me see the Decisive Command Cracked Command Crest.",
+          "Text": "You are standing straighter and your people are alive - that tells me the door is open before you say it. The crest. Let me see what he did to it.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden defeated. That breaks their enforcement. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "Split clean through the emblem... he always did have precise hands. I will wear it cracked until this ends; mended honors lie. Vhon deserved a better war and a worse commander, and you gave her the cleanest ending on offer. Two links of his chain are cut. What remains is the circle that runs his supply, and then the man whose voice all of it obeys.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four officers still control the bunker's supplies. Take their override chip out of circulation. Defeat four members of the Decisive Command Inner Circle in Viscara, Republic Engineering Bunker. Their defeat secures the Decisive Command Quartermaster Override Chip; bring it back to me here in Viscara, Republic Base, Combat Deck.",
+          "Text": "Four officers still control the bunker's supplies. Their override chip keeps the garrison dependent on them. Defeat the four and recover it. Nobody should have to obey an order just to eat.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Viscara, Republic Engineering Bunker. Defeat four members of the Decisive Command Inner Circle to secure the Decisive Command Quartermaster Override Chip, then return to me.",
+          "Text": "Recover the chip. Then we can see what obedience looks like when the quartermaster stops enforcing it.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Decisive Command Inner Circle in Viscara, Republic Engineering Bunker. Their defeat secures the Decisive Command Quartermaster Override Chip; bring it back to me here in Viscara, Republic Base, Combat Deck.",
+          "Text": "Four officers in the bunker have the override chip. Return it after they're defeated.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Decisive Command Inner Circle. Let me see the Decisive Command Quartermaster Override Chip.",
+          "Text": "If the vaults have gone quiet, then it is done, and the thing in your pocket outranks every officer left down there. Hand it over.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their officers no longer control the authorizations. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "The override chip. With this, the Republic decides who eats in that bunker - which means the garrison's obedience is already looking for a new home. You have unmade his chain of command link by link, and you did it my way: no theater, no speeches, orders executed as issued. One door remains. Behind it is the voice all of this obeyed. Sleep first, commander. That is an order.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their master is the source of those orders. Defeat him in the command room and end the garrison's occupation. Defeat the Decisive Command Master in Viscara, Engineering Command Room. Report back to me here in Viscara, Republic Base, Combat Deck; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The master commands from the Engineering Command Room. Call him at its challenge marker and defeat him. Keep your own plan when he starts issuing orders. Then report to me here on the combat deck. This command needs a proper end.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Viscara, Engineering Command Room, use the '???' challenge marker to call the Decisive Command Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "Last briefing, then. Do not try to out-shout him - you cannot, and volume was never the point. Give your orders to your own people and let him give his to a garrison that no longer eats, hides, or believes at his word. You have spent four errands cutting his voice away from its echoes. In that room, finish the argument: two commands, one door, and the one that holds is the one with an oath still in it.",
           "Style": 0,
           "Color": null
         }
@@ -1159,7 +1159,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Viscara, Engineering Command Room, use the '???' challenge marker to call the Decisive Command Master. Accept this assignment before using the marker.",
+          "Text": "His last order - the last one I obeyed? A sealing drill, years ago, a raid scare. He called seal-and-hold half a second before the confirmation came through, and he was right, and I countersigned it. That half second is the whole tragedy. He learned the confirmation was optional. Every order since has been given on no authority but his own reflexes, and the garrison obeyed because obeying him had always been right before. The mutiny did not begin with treason. It began with applause.",
           "Style": 0,
           "Color": null
         }
@@ -1211,7 +1211,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Keep your own plan when he starts issuing orders. Bring companions who can act without waiting for you to recover from every setback. Defeating him completes the trial; then report back to me to settle the assignment.",
+          "Text": "He decides before most people have finished being afraid. He's done it so long that the reason for deciding has stopped mattering to him. Keep your own plan, give your own orders, and listen to the people he would tell you to ignore.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Decisive Command Master in Viscara, Engineering Command Room. Report back to me here in Viscara, Republic Base, Combat Deck; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "The Engineering Command Room has the master's challenge marker. Defeat him and report back to the combat deck.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Decisive Command Master. Give me your report and we'll finish the trial.",
+          "Text": "The bunker went quiet before dawn - garrison-quiet, surrender-quiet. I have waited years to hear it. Report.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The bunker is free of his orders. Remember who your own orders are meant to serve. Dismissed. You've earned the right to train Decisive Command. Your final payment is ready.",
+          "Text": "His last order is answered. Take the pay and see to whoever stood with you. When you're ready to study Decisive Command, I'll teach you what my adjutant forgot: the people who follow you are the reason to decide well. Dismissed.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Decisive Command Adepts.",
+        "Text": "On my way. You'll have the docket.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the Decisive Command Republic Bunker Docket.",
+        "Text": "Your docket. Every page intact.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Decisive Command Specialists.",
+        "Text": "The shield comes down. You have my word.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the Decisive Command Shield Grid Relay.",
+        "Text": "One relay, pulled live. Your fortress is a basement now.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Decisive Command Warden.",
+        "Text": "We'll take the door as one motion. All of us.",
         "Style": 4,
         "Color": null
       },
@@ -1713,7 +1713,7 @@
     "reply-00017": {
       "Id": "reply-00017",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "Why do you recommend support?",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Decisive Command Cracked Command Crest.",
+        "Text": "The crest, off her shoulder. She met us head-on, like you said.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Decisive Command Inner Circle.",
+        "Text": "Four quartermasters. The chip comes home.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Decisive Command Quartermaster Override Chip.",
+        "Text": "The override chip. The vaults answer to the Republic now.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Decisive Command Master and report back.",
+        "Text": "Then we take his door together, and his last order dies in that room.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Decisive Command Master is defeated. Here's my report.",
+        "Text": "It's done. His room is silent, and everyone I brought walked out of it.",
         "Style": 4,
         "Color": null
       },

@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The enclave can reclaim the halls. Teach with more restraint than my former students did. You've finished my Epicenter trials. I have no further work for you here.",
+          "Text": "There you are. The storm with an eye. I watched you cross the yard just now and found nothing to correct, which is a strange feeling for a sparring master. The trial halls keep their rhythm again, and every student who drills there owes you more than they'll ever know. Spar with me sometime. I want to lose properly.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "These trials require rank 50 in Lightsaber. Reach it and return. Control your footing before you test it under pressure.",
+          "Text": "You're already watching for the next strike. Good. Bring your Lightsaber training to rank 50 before I send you into the halls. There won't be time to mend the basics there.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "My students barred the trial halls and kept teaching the storm drills without restraint. Recover their slate so I can start putting that right. Defeat six Saber Storm Adepts in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Storm Enclave Trial Slate; bring it back to me here in Dantooine, Jedi Enclave. I'll give you the Dantooine Jedi Enclave Trial Halls Key when you accept. Complete all five trials to earn the right to train Epicenter.",
+          "Text": "Six Saber Storm adepts have shut the Enclave Trial Halls to everyone they consider unworthy. Their form is strong; their judgment isn't. Defeat the six and bring me their enclave slate. I want to know what they're calling a lesson now.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Dantooine Jedi Enclave Trial Halls Key. Use 'Jedi Enclave Trial Halls' in Dantooine, Jedi Enclave Library. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Saber Storm Adepts, then return with the Saber Storm Enclave Trial Slate.",
+          "Text": "Take the key to the Trial Halls entrance in the Enclave Library. Look at what they've chosen to shut out before you draw.",
           "Style": 0,
           "Color": null
         }
@@ -323,7 +323,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Saber Storm is the name of the school you're confronting. The technique these trials qualify you to learn is Epicenter. Recovering its records and defeating its master will show me you're ready for that training.",
+          "Text": "Saber Storm was our name for the drills: keep the blade moving, keep your feet beneath it, don't give a good opponent an easy reset. The lesson beyond them is Epicenter. These students have made the drills their whole practice, and forgotten to keep room for anyone else.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Use 'Jedi Enclave Trial Halls' in Dantooine, Jedi Enclave Library. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Saber Storm Adepts in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Storm Enclave Trial Slate; bring it back to me here in Dantooine, Jedi Enclave.",
+          "Text": "The Trial Halls entrance is in the Jedi Enclave Library on Dantooine. My key opens it. Have your companions beside you when you enter; the halls needn't separate you.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Saber Storm Adepts in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Storm Enclave Trial Slate; bring it back to me here in Dantooine, Jedi Enclave.",
+          "Text": "Six Saber Storm adepts in the Enclave Trial Halls. Bring their slate back here to the Enclave.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Saber Storm Adepts. Let me see the Saber Storm Enclave Trial Slate.",
+          "Text": "That's the slate under your arm, or I've forgotten the weight of it. Let me see.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The training record is back. We can see what went wrong. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "Scored, scuffed, whole. I wrote my first storm drills on this slate, you know. The outer ring is clear, and you've earned the second lesson once you've caught your breath. Your footwork is already better. I noticed before you did.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists are using the enclave's focus shard in their unsupervised drills. Take it back. Defeat five Saber Storm Specialists in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Storm Kyber Focus Shard; bring it back to me here in Dantooine, Jedi Enclave.",
+          "Text": "Five specialists hold a kyber shard deeper in the Trial Halls. They've turned the drills into something that never lets an opponent breathe. Beat the five and recover the shard. We'll see where their discipline became hunger.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Dantooine, Jedi Enclave Trial Halls. Defeat five Saber Storm Specialists to secure the Saber Storm Kyber Focus Shard, then return to me.",
+          "Text": "Back to the halls. Shoulders down, even when they make you want to hurry.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Saber Storm Specialists in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Storm Kyber Focus Shard; bring it back to me here in Dantooine, Jedi Enclave.",
+          "Text": "Five specialists in the Trial Halls have the kyber shard. Recover it and come back to me.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Saber Storm Specialists. Let me see the Saber Storm Kyber Focus Shard.",
+          "Text": "You're carrying a hum I haven't heard in a year. That's the shard. Hand it over before it syncs to your heartbeat. That is not a joke.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That equipment no longer serves their drills. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "There it is. Warm, like I said. I'll cage it in the resonance box where it belongs. The middle ring is silent for the first time in months, and the silence is yours. Rest the wrists. The next lesson does not share.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden keeps the trial halls closed to the enclave. Recover his fractured sigil and end his watch. Defeat the Saber Storm Warden in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Storm Fractured Trial Sigil; bring it back to me here in Dantooine, Jedi Enclave. I recommend bringing two companions for this fight.",
+          "Text": "The warden was my finest student. She's holding the Trial Halls against the Order she trained to serve. Challenge her there, defeat her, and bring me her fractured sigil. Take company if you can. She'll open with everything she has.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Dantooine, Jedi Enclave Trial Halls, use the '???' challenge marker to call the Saber Storm Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Saber Storm Fractured Trial Sigil.",
+          "Text": "Call her at the Trial Halls challenge marker. She opens with everything. Survive that without forgetting your own footwork, then recover the sigil. Come back with whoever you brought.",
           "Style": 0,
           "Color": null
         }
@@ -741,7 +741,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Saber Storm Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "Company gives you room to recover while someone else holds her attention. It isn't a condition of the trial. It's advice from someone who trained her, and has seen how politely she ends a careless challenge.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Saber Storm Warden in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Storm Fractured Trial Sigil; bring it back to me here in Dantooine, Jedi Enclave. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Call the warden at the Trial Halls challenge marker. Defeat her and return her fractured sigil.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Saber Storm Warden. Let me see the Saber Storm Fractured Trial Sigil.",
+          "Text": "The third door stands open. I felt it from here; don't ask how. Show me the sigil.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden's watch is over. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "She always fought like that. Give me a moment with this one. ... All right. The council can mend the sigil or mourn it; that's their drill, not ours. You held the seam work through her opening minute, and that isn't a thing I can teach, only witness. Two rings left. The inner circle knows you're coming.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four senior students still hold the council's authority to teach. Recover their trial chit. Defeat four members of the Saber Storm Inner Circle in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Storm Council Trial Chit; bring it back to me here in Dantooine, Jedi Enclave.",
+          "Text": "Four council keepers still have the trial chit. They approved the school after they knew what it was becoming. Defeat the four in the halls and bring it to me. This doesn't end with blaming the students.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Dantooine, Jedi Enclave Trial Halls. Defeat four members of the Saber Storm Inner Circle to secure the Saber Storm Council Trial Chit, then return to me.",
+          "Text": "Bring me the council chit. We won't let the people who approved this lesson hide behind the pupils.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Saber Storm Inner Circle in Dantooine, Jedi Enclave Trial Halls. Their defeat secures the Saber Storm Council Trial Chit; bring it back to me here in Dantooine, Jedi Enclave.",
+          "Text": "Four council keepers in the halls still have the trial chit. Bring it here after they're defeated.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Saber Storm Inner Circle. Let me see the Saber Storm Council Trial Chit.",
+          "Text": "The high ring is empty. All four. I would make you narrate every exchange if that chit weren't more urgent. Well?",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their instructors no longer hold the authority to teach. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "Filed and witnessed. The council will want to reissue this under a better custodian, and I intend to nominate you, which should horrify us both. One door remains, and the storm itself behind it. Rest first. That is not advice. It is a drill instruction.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their master is the final trial. Defeat him in the Saber Trial Chamber and end the school's hold on the halls. Defeat the Saber Storm Master in Dantooine, Saber Trial Chamber. Report back to me here in Dantooine, Jedi Enclave; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The master is in the Saber Trial Chamber. Call him at the challenge marker and defeat him. He has made the storm his whole answer. Find room for your own, then come back to the Enclave. We'll talk about the lesson you've earned.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Dantooine, Saber Trial Chamber, use the '???' challenge marker to call the Saber Storm Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "Then it's a true trial, witnessed and chalked. Weather his first storm, guard each other's seams, and when the rhythm falters, that isn't him tiring. It's him testing. Press anyway. I'll be listening for the quiet.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Every storm the rest of us make has a center, a still point where the duelist actually lives. Find it and you've found the man. His has none. He is offense with nothing at the middle, and that is the tragedy and the technique both. Three of you means three centers. He cannot erase what he does not have.",
+          "Text": "He has made attacking the answer to every question. Don't let that make you hurry. Keep your feet, look for the opening you can use, and cover each other if you've brought company. You still have choices he stopped making.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Saber Storm Master in Dantooine, Saber Trial Chamber. Report back to me here in Dantooine, Jedi Enclave; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "The Saber Trial Chamber has the master's challenge marker. Defeat him, then return to the Enclave. There is still something to learn from this.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Saber Storm Master. Give me your report and we'll finish the trial.",
+          "Text": "The halls are quiet. Truly quiet. I haven't heard them like this since before he sealed the doors. Tell me it's done.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The enclave can reclaim the halls. Teach with more restraint than my former students did. You've earned the right to train Epicenter. Your final payment is ready.",
+          "Text": "The halls are open again. You've earned the pay, and you've earned a better lesson than the one they were teaching. They called their drills Saber Storm. What I can teach you now is Epicenter. Come back when you're ready to work on it.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Saber Storm Adepts.",
+        "Text": "Adjust my stance all you like. I'm in.",
         "Style": 4,
         "Color": null
       },
@@ -1350,7 +1350,7 @@
     "reply-00002": {
       "Id": "reply-00002",
       "Text": {
-        "Text": "How does this school relate to Epicenter?",
+        "Text": "What is Saber Storm, exactly?",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the Saber Storm Enclave Trial Slate.",
+        "Text": "Here. One trial slate, hard won.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Saber Storm Specialists.",
+        "Text": "Middle ring, five blades, one shard. I'm gone.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the Saber Storm Kyber Focus Shard.",
+        "Text": "Here's your shard. It hummed at me the entire walk back.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Saber Storm Warden.",
+        "Text": "I'll challenge her.",
         "Style": 4,
         "Color": null
       },
@@ -1690,7 +1690,7 @@
     "reply-00016": {
       "Id": "reply-00016",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "Why bring help for one warden?",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Saber Storm Fractured Trial Sigil.",
+        "Text": "The Fractured Trial Sigil. She fought like you taught her.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Saber Storm Inner Circle.",
+        "Text": "Then examine me. I'll be in the high ring.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Saber Storm Council Trial Chit.",
+        "Text": "The Council Trial Chit. They graded me. I disagreed.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Saber Storm Master and report back.",
+        "Text": "I'll take the last trial.",
         "Style": 4,
         "Color": null
       },
@@ -2076,7 +2076,7 @@
     "reply-00032": {
       "Id": "reply-00032",
       "Text": {
-        "Text": "And if the three of us fall?",
+        "Text": "And if we fall?",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Saber Storm Master is defeated. Here's my report.",
+        "Text": "It's done. The storm has an eye now. Me.",
         "Style": 4,
         "Color": null
       },

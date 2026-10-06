@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The congregation's corrupt work is ended. Let what your blade takes have a purpose beyond appetite. You've finished my Soul Ascension trials. I have no further work for you here.",
+          "Text": "When you enter now, the liturgy does not pause. It includes you. The blade drank, the soul rose, and I have nothing left to confess that your own edge hasn't already heard. Go. Sing it your own way.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The forge rite requires rank 50 in Heavy Vibroblade. Reach that rank, then return. A blade should serve its bearer before it serves a ritual.",
+          "Text": "Your blade is ready for more than your hands are. Reach rank 50 in Heavy Vibroblade, then return. There are verses I won't ask an unfinished pupil to carry.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "My former congregation has turned the forge rite into an excuse to take without giving. Recover their heat ledger so I can trace the work. Defeat six Soul Ascension Adepts in Korriban, Forge Caverns. Their defeat secures the Soul Ascension Forge Heat Ledger; bring it back to me here in Korriban, Wasteland Interiors. I'll give you the Korriban Forge Caverns Key when you accept. Complete all five trials to earn the right to train Soul Ascension.",
+          "Text": "Six Soul Ascension adepts are reciting my verses in the Forge Caverns. The people they cut are no longer offerings anyone chose to make. Defeat the six and bring me their heat ledger. I need to know what my congregation has been doing in my absence.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Korriban Forge Caverns Key. Use 'Forge Caverns' in Korriban, Sith Fortress, Forgeworks. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Soul Ascension Adepts, then return with the Soul Ascension Forge Heat Ledger.",
+          "Text": "Take the key to the Forge Caverns entrance in the Sith Fortress forgeworks. Carry your blade carefully. It needn't answer every voice you hear.",
           "Style": 0,
           "Color": null
         }
@@ -323,7 +323,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Soul Ascension is a heavy-blade discipline that uses the strength taken in battle to sustain its bearer. My congregation learned to take and forgot what that strength was for. The rite demands restraint, because an appetite can survive long after a useful fight is over.",
+          "Text": "A heavy blade takes. Every strike takes: breath, blood, warmth. Most spill what the blade takes and call it victory. Soul Ascension is the discipline of receiving it instead. The edge drinks, and what it drinks rises through your arms and mends you while you fight. From whom, you should ask. From those who chose to stand against you. That is the whole ethics of it, and you will doubt it later, and you should come ask me again when you do.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Soul Ascension Adepts in Korriban, Forge Caverns. Their defeat secures the Soul Ascension Forge Heat Ledger; bring it back to me here in Korriban, Wasteland Interiors.",
+          "Text": "Six adepts in the Forge Caverns. Bring their heat ledger here to the wasteland interiors. I will read the account.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Soul Ascension Adepts. Let me see the Soul Ascension Forge Heat Ledger.",
+          "Text": "You return on the exhale of the verse, exactly where you left it. And your pack is heavier with confession. Give it to me.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The tablet gives us a clear account of their teaching. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "Sixty heats they never confessed... yes. This is the debt, carried up into the light, and that is the first verse whether you felt it happen or not. The blade drank tonight, and you stand here taller, not hollower. Notice that. Remember it. There is more liturgy below.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists use the tempering matrix to sustain that practice. Bring it back to me. Defeat five Soul Ascension Specialists in Korriban, Forge Caverns. Their defeat secures the Soul Ascension Sith Tempering Matrix; bring it back to me here in Korriban, Wasteland Interiors.",
+          "Text": "Five specialists are using a Sith tempering matrix in the caverns. They have made feeding the edge the whole rite. Beat the five and bring the matrix to me. There was meant to be more to ascension than that.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Korriban, Forge Caverns. Defeat five Soul Ascension Specialists to secure the Soul Ascension Sith Tempering Matrix, then return to me.",
+          "Text": "Bring the matrix here. Listen to what they're saying before you decide which parts of my rite they kept.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Soul Ascension Specialists in Korriban, Forge Caverns. Their defeat secures the Soul Ascension Sith Tempering Matrix; bring it back to me here in Korriban, Wasteland Interiors.",
+          "Text": "Five specialists in the caverns hold the tempering matrix. Recover it after they're defeated.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Soul Ascension Specialists. Let me see the Soul Ascension Sith Tempering Matrix.",
+          "Text": "I can hear it from here, flattering your pack straps, promising your blade an appetite. You didn't listen. Good. Hand it over.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The focus is out of their hands. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "There, cup. Home... Forgive me. One greets old relics, or one becomes the kind of man who melts them. Five deacons weighed and found wanting, and you stand here neither hollowed nor drunk on it. The second verse suits you. The third is louder.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden guards the congregation's forge. Recover his anvil sigil and end that protection. Defeat the Soul Ascension Warden in Korriban, Forge Caverns. Their defeat secures the Soul Ascension Cracked Anvil Sigil; bring it back to me here in Korriban, Wasteland Interiors. I recommend bringing two companions for this fight.",
+          "Text": "The warden holds the Forge Caverns. Challenge him and return his cracked anvil sigil when he's defeated. Ask others to stand beside you. He has spent years taking strength from the people who came to him alone.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Korriban, Forge Caverns, use the '???' challenge marker to call the Soul Ascension Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Soul Ascension Cracked Anvil Sigil.",
+          "Text": "Witnesses, then. Choose them the way you'd choose pallbearers: for strength, and because you trust them with something of yours. When the warden falls, one of you will want to kneel a moment. Let them. Then bring me the shard.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I recommend two companions against the Soul Ascension Warden. Spread the pressure so one person doesn't have to carry the whole fight. You can enter alone, but prepare carefully before you call the challenge.",
+          "Text": "His edge can take strength from a fight. Company makes it harder for him to choose every exchange. You may face him alone. I ask you to bring help because I would like you alive to question the doctrine afterward.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Soul Ascension Warden in Korriban, Forge Caverns. Their defeat secures the Soul Ascension Cracked Anvil Sigil; bring it back to me here in Korriban, Wasteland Interiors. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Call the warden at the Forge Caverns challenge marker. Defeat him and return his anvil sigil.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Soul Ascension Warden. Let me see the Soul Ascension Cracked Anvil Sigil.",
+          "Text": "You walk like a pallbearer. So it is done, and done properly. Show me what came off his neck.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The sigil no longer backs the warden's claim. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "He would thank you. He would... Enough. The altar's shard comes home, the vessel is broken, and I notice you shared the verse with others and came back more, not less. That is the entire lesson of the third verse, and most never learn it. Rest. The inner choir will have felt this.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four overseers still authorize the corrupted rite. Take their clearance token. Defeat four members of the Soul Ascension Inner Circle in Korriban, Forge Caverns. Their defeat secures the Soul Ascension Overseer's Clearance Token; bring it back to me here in Korriban, Wasteland Interiors.",
+          "Text": "Four overseers still have the clearance token. They authorize the congregation's work and call every consequence an offering. Defeat the four in the caverns and recover it. I'll read their names without the verses around them.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Korriban, Forge Caverns. Defeat four members of the Soul Ascension Inner Circle to secure the Soul Ascension Overseer's Clearance Token, then return to me.",
+          "Text": "Recover the token. They will recite my own verses at you. You needn't accept their use of them.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +976,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He practiced the rite until taking became its only purpose. He still has the skill I taught him; what he's lost is the restraint. Defeating him ends the congregation's corrupted teaching.",
+          "Text": "I said I would owe you this, and you're strong enough now to collect. He drank past the rim. Ascension has a height, and a wise blade stops there. He did not stop. What sits in that sanctum wears his face, his guard, and my finest verse, and it is not rising anymore. It is a soul standing at its full height with nowhere left to go, drinking so it never has to look down. You will end him. I am long past pretending I want anything else.",
           "Style": 0,
           "Color": null
         }
@@ -1002,7 +1002,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The discipline sustains you through a fight. It doesn't decide whether the fight should continue. That judgment stays with you, and it's the part the congregation abandoned.",
+          "Text": "Warmth, first. You've felt that. Then wounds close that you never showed the blade. And at the height of it, the fight goes quiet, and you can hear what your own soul is doing, which almost no one living gets to hear. That is the ascension, and it is worth every verse. It is also, drunk without offering, exactly what broke every man you have killed down there. Hold both truths at once. That is the fourth verse entire.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Soul Ascension Inner Circle in Korriban, Forge Caverns. Their defeat secures the Soul Ascension Overseer's Clearance Token; bring it back to me here in Korriban, Wasteland Interiors.",
+          "Text": "Four overseers in the caverns still have the clearance token. Bring it here when their work ends.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Soul Ascension Inner Circle. Let me see the Soul Ascension Overseer's Clearance Token.",
+          "Text": "Quiet, below. The particular quiet a choir leaves behind it. The token, then. Let me hold their whole false church in one palm.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their authority to teach is ended. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "Stamped authority, already cooling... You have unmade their canon, witness. I use the word deliberately. You are one now: mine, and the rite's. One verse remains, and I won't insult you by pretending either of us needs to rehearse it.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their master is the last voice sustaining the congregation. Defeat him in the Champion Forge and finish the rite. Defeat the Soul Ascension Master in Korriban, Champion Forge. Report back to me here in Korriban, Wasteland Interiors; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The master is in the Champion Forge. Call him at its challenge marker and defeat him. He knows the rite as I wrote it. You know what it has cost. Come back afterward; I owe you an answer as much as a lesson.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Korriban, Champion Forge, use the '???' challenge marker to call the Soul Ascension Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "Then go, and take one final instruction with you. When his soul spills, and it will spill, it is far too full for anything else, do not drink from it. Not out of mercy. Out of hygiene. Let it go down into the stone, where the forge can hold it. Yours must rise on its own weight, or the whole rite was for nothing.",
           "Style": 0,
           "Color": null
         }
@@ -1159,7 +1159,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I recommend two companions against the Soul Ascension Master. Spread the pressure so one person doesn't have to carry the whole fight. You can enter alone, but prepare carefully before you call the challenge.",
+          "Text": "Yes. He still has to choose where to strike and where to turn his guard. Help can make those choices harder. Don't try to match his hunger; make use of the openings his hunger makes him overlook.",
           "Style": 0,
           "Color": null
         }
@@ -1211,7 +1211,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You can avoid his mistake by keeping a purpose beyond the next fight. Ask why your blade is drawn, and be willing to put it away. He stopped asking. Keep people beside you who will ask when you forget.",
+          "Text": "You ask. He never did. Keep people beside you who can question what you're doing, and keep listening when they do. I taught him to see every objection as weakness. You've brought me enough evidence to know what that lesson cost.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Soul Ascension Master in Korriban, Champion Forge. Report back to me here in Korriban, Wasteland Interiors; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "The Champion Forge holds the master's challenge marker. Defeat him, then return to me here. We still have something to discuss.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Soul Ascension Master. Give me your report and we'll finish the trial.",
+          "Text": "...and the blade is lowered, and the cup is poured, and the soul... Say it. Say the verse is finished.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The congregation's corrupt work is ended. Let what your blade takes have a purpose beyond appetite. You've earned the right to train Soul Ascension. Your final payment is ready.",
+          "Text": "The congregation is ended. I won't hide that behind a verse. Take your pay. If you still want Soul Ascension, I will teach it to someone who has seen where my words failed. I hope you will keep asking me what they mean.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Soul Ascension Adepts.",
+        "Text": "Teach me. I'll bring back your ledger.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the Soul Ascension Forge Heat Ledger.",
+        "Text": "The Soul Ascension Forge Heat Ledger. The six adepts are silent.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Soul Ascension Specialists.",
+        "Text": "I'll weigh your deacons myself.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the Soul Ascension Sith Tempering Matrix.",
+        "Text": "The Soul Ascension Sith Tempering Matrix. It flattered. I didn't listen.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Soul Ascension Warden.",
+        "Text": "I'll gather my witnesses and break your vessel.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Soul Ascension Cracked Anvil Sigil.",
+        "Text": "The Soul Ascension Cracked Anvil Sigil. He thanked us at the end.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Soul Ascension Inner Circle.",
+        "Text": "Four voices. We'll quiet the choir.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Soul Ascension Overseer's Clearance Token.",
+        "Text": "One Soul Ascension Overseer's Clearance Token, off your inner choir.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Soul Ascension Master and report back.",
+        "Text": "We'll finish your liturgy. All of us together.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Soul Ascension Master is defeated. Here's my report.",
+        "Text": "It's finished. His soul went down into the stone.",
         "Style": 4,
         "Color": null
       },

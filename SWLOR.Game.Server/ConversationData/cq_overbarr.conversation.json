@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Finally, a test with a clean ending. I can rebuild the charge model with readings I trust. You've finished my Overload Barrage trials. I have no further work for you here.",
+          "Text": "--Overload Barrage, done, filed, verified three times because I don't trust verifying it twice-- you're clear. Go slag something on your own time.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I need rank 50 in Devices for these tests. Reach that rank and come back; this rig needs an operator who understands it.",
+          "Text": "Wait, you want to take this outside? Rank 50 in Devices first. I have enough scorch marks from people who understood most of the charge table.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Someone at the Qion site is falsifying charge tables. Bring me their test log before I trust another reading from the range. Defeat six Overload Barrage Adepts in Hutlar, Qion Test Site. Their defeat secures the Overload Barrage Qion Test Log; bring it back to me here in Hutlar, Qion Box Canyon, Fort Ka'ra. I'll give you the Hutlar Qion Test Site Key when you accept. Complete all five trials to earn the right to train Overload Barrage.",
+          "Text": "I'm short two hands and one explanation. Six Overload Barrage adepts at the Qion Test Site are using my charge tables, and their totals don't match the damage. Defeat the six and bring me the site log. I need to know which version they've copied.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Hutlar Qion Test Site Key. Use 'Qion Test Site' in Hutlar, Qion Box Canyon. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Overload Barrage Adepts, then return with the Overload Barrage Qion Test Log.",
+          "Text": "Take the key to the Qion Test Site entrance in the box canyon. If the equipment starts sounding pleased with itself, give it room.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Overload Barrage Adepts in Hutlar, Qion Test Site. Their defeat secures the Overload Barrage Qion Test Log; bring it back to me here in Hutlar, Qion Box Canyon, Fort Ka'ra.",
+          "Text": "Six adepts at the Qion Test Site. Bring the log here to Fort Ka'ra. I need their numbers before I change mine.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Overload Barrage Adepts. Let me see the Overload Barrage Qion Test Log.",
+          "Text": "That's my log, or close enough to make me furious. Hand it over.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Now I have a record of their modifications. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "--mine, definitely mine, third revision, I can tell by the annotation error I never fixed-- good. That's one leak identified. Ninety-nine more numbers to reconcile, but who's counting. I am. Constantly.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists are pushing the cold-weather regulator past its limits. Recover it before the charge tables get worse. Defeat five Overload Barrage Specialists in Hutlar, Qion Test Site. Their defeat secures the Overload Barrage Cryo-Range Regulator; bring it back to me here in Hutlar, Qion Box Canyon, Fort Ka'ra.",
+          "Text": "Five specialists are feeding those tests through a cryo-range regulator. They think cooling buys them more charge. Beat the five at the test site and bring me the regulator. I want to see what they've done to the cutoff.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Hutlar, Qion Test Site. Defeat five Overload Barrage Specialists to secure the Overload Barrage Cryo-Range Regulator, then return to me.",
+          "Text": "Bring me the regulator. I'll clear some room on the bench. Don't connect it to anything on the way.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Overload Barrage Specialists in Hutlar, Qion Test Site. Their defeat secures the Overload Barrage Cryo-Range Regulator; bring it back to me here in Hutlar, Qion Box Canyon, Fort Ka'ra.",
+          "Text": "Five specialists at Qion have the cryo-range regulator. Bring it back after you've stopped the tests.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Overload Barrage Specialists. Let me see the Overload Barrage Cryo-Range Regulator.",
+          "Text": "Intact and still cold, excellent, hand it here before it warms up and tells me nothing useful.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I'll inspect this before anything goes back into service. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "--safety curve's already half-rebuilt in my head just looking at this-- good work. You're less of a liability than my last three probe-holders combined, and one of them was a protocol droid.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden protects the site's unsafe firing program. Bring back the test crest. Defeat the Overload Barrage Warden in Hutlar, Qion Test Site. Their defeat secures the Overload Barrage Frostburned Test Crest; bring it back to me here in Hutlar, Qion Box Canyon, Fort Ka'ra. I recommend bringing two companions for this fight.",
+          "Text": "The warden has made himself part of the Qion test program. Challenge him at the site and bring back his frostburned crest when he's beaten. Take help. I can work out a bad reading after the fact; I'd rather not work out yours.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Hutlar, Qion Test Site, use the '???' challenge marker to call the Overload Barrage Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Overload Barrage Frostburned Test Crest.",
+          "Text": "Go find them, then, and don't come back with fewer. I'm not rebuilding a shield model off a single data point, and I'm definitely not writing your eulogy off one either.",
           "Style": 0,
           "Color": null
         }
@@ -793,7 +793,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Overload Barrage Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "I don't need a particular number. I need you with enough help to watch the equipment and the warden. If you can divide the work, divide it. I'd rather the readings came back with someone to explain them.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Overload Barrage Warden in Hutlar, Qion Test Site. Their defeat secures the Overload Barrage Frostburned Test Crest; bring it back to me here in Hutlar, Qion Box Canyon, Fort Ka'ra. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Use the Qion Test Site challenge marker to call the warden. Beat him and recover the frostburned crest.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Overload Barrage Warden. Let me see the Overload Barrage Frostburned Test Crest.",
+          "Text": "You're all still standing, which tells me the field theory holds. Hand over the crest.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That confirms who was in charge of the unsafe work. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "The threshold's right there in the scoring. I can see what they changed. Good work. Take your pay while I write this down before it escapes me.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four senior operators still authorize those loads. Take their override chip. Defeat four members of the Overload Barrage Inner Circle in Hutlar, Qion Test Site. Their defeat secures the Overload Barrage Site Chief's Override Chip; bring it back to me here in Hutlar, Qion Box Canyon, Fort Ka'ra.",
+          "Text": "Four senior technicians still have the site chief's override chip. Every safety limit I put back, they take out again. Defeat the four at Qion and recover it. Then we might get a test that actually stops.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Hutlar, Qion Test Site. Defeat four members of the Overload Barrage Inner Circle to secure the Overload Barrage Site Chief's Override Chip, then return to me.",
+          "Text": "Recover the chip. I would like the next limit I set to remain set.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Overload Barrage Inner Circle in Hutlar, Qion Test Site. Their defeat secures the Overload Barrage Site Chief's Override Chip; bring it back to me here in Hutlar, Qion Box Canyon, Fort Ka'ra.",
+          "Text": "Four technicians at Qion still have the override chip. Get it back here so the limits stay set.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Overload Barrage Inner Circle. Let me see the Overload Barrage Site Chief's Override Chip.",
+          "Text": "Four down, chip in hand. Let's see how bad this actually is.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "No more unauthorized orders from that crew. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "--recognize this signature, unfortunately, very unfortunately-- that answers a question I didn't want answered. One name left, and it's the one holding my original tables.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The master is running the final barrage trial. Defeat him in the Overload Chamber so I can finish the diagnostic. Defeat the Overload Barrage Master in Hutlar, Overload Chamber. Report back to me here in Hutlar, Qion Box Canyon, Fort Ka'ra; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The master is in the Overload Chamber. Call him at the challenge marker and beat him. Watch the space around you; he's spent years finding ways to fill it. Come back with your observations. And yourself, please.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Hutlar, Overload Chamber, use the '???' challenge marker to call the Overload Barrage Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "Call him in the Overload Chamber. Watch where you stand before you watch where the barrage lands. Then come back here and tell me what he did to my tables.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Overload Barrage Master in Hutlar, Overload Chamber. Report back to me here in Hutlar, Qion Box Canyon, Fort Ka'ra; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "The master's challenge marker is in the Overload Chamber. Beat him, then return to Fort Ka'ra. I'll clear the bench.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Overload Barrage Master. Give me your report and we'll finish the trial.",
+          "Text": "You're standing and he isn't. That's the verification I needed. Tell me what happened.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Finally, a test with a clean ending. I can rebuild the charge model with readings I trust. You've earned the right to train Overload Barrage. Your final payment is ready.",
+          "Text": "Ah. That explains the readings. You've stopped the tests, so now I can fix the tables. Your pay's ready. If you'd like to learn Overload Barrage, come by the bench when I've got a version I'm willing to stand beside.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Overload Barrage Adepts.",
+        "Text": "Tell me where to start.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the Overload Barrage Qion Test Log.",
+        "Text": "Here.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Overload Barrage Specialists.",
+        "Text": "I'll pull the regulator.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the Overload Barrage Cryo-Range Regulator.",
+        "Text": "Here's the regulator.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Overload Barrage Warden.",
+        "Text": "I'll challenge him and bring the crest.",
         "Style": 4,
         "Color": null
       },
@@ -1736,7 +1736,7 @@
     "reply-00018": {
       "Id": "reply-00018",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "How much help do you think I'll need?",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Overload Barrage Frostburned Test Crest.",
+        "Text": "Here's the crest.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Overload Barrage Inner Circle.",
+        "Text": "I'll get the chip.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Overload Barrage Site Chief's Override Chip.",
+        "Text": "Here's the chip.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Overload Barrage Master and report back.",
+        "Text": "I'll stop the master.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Overload Barrage Master is defeated. Here's my report.",
+        "Text": "It's done.",
         "Style": 4,
         "Color": null
       },

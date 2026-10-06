@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The smith-guards no longer answer to him. The forge can serve its workers again. You've finished my Absolute Defense trials. I have no further work for you here.",
+          "Text": "Finished work stands in front of me. The temper is in you now the way it sits in good steel: invisible, and permanent. My forge has nothing left to teach you. Go be an anvil for somebody else.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your heavy-blade guard isn't ready for the forge trials. Reach rank 50 in Heavy Vibroblade, then return. A sound guard comes before a harder test.",
+          "Text": "You're fighting the weight of that blade. Get your Heavy Vibroblade training to rank 50 first. I can't temper a guard you haven't learned to hold.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Smith-guards have taken the Forge Caverns and are teaching a defense that serves only themselves. I want their training records back. Defeat six Absolute Defense Adepts in Korriban, Forge Caverns. Their defeat secures the Absolute Defense Forge Heat Ledger; bring it back to me here in Korriban, Sith Academy. I'll give you the Korriban Forge Caverns Key when you accept. Complete all five trials to earn the right to train Absolute Defense.",
+          "Text": "Your guard drops when you breathe out. I can work with that. In the Forge Caverns on Korriban, six Absolute Defense adepts are drilling under an oath I never approved. Defeat them and bring me their heat ledger. I want to know whose steel they're wasting.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Korriban Forge Caverns Key. Use 'Forge Caverns' in Korriban, Sith Fortress, Forgeworks. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Absolute Defense Adepts, then return with the Absolute Defense Forge Heat Ledger.",
+          "Text": "Here's the key. Find the Forge Caverns entrance in the Sith Fortress forgeworks. Come back with that ledger, and we'll talk about the flaw in your guard.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Absolute Defense Adepts in Korriban, Forge Caverns. Their defeat secures the Absolute Defense Forge Heat Ledger; bring it back to me here in Korriban, Sith Academy.",
+          "Text": "Six adepts in the Forge Caverns, and their heat ledger back on my bench. Don't rush the guard just because the first cut looks easy.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Absolute Defense Adepts. Let me see the Absolute Defense Forge Heat Ledger.",
+          "Text": "You smell of slag and crucible smoke. Something came out of that fire with you. Show me.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The ledger is back where it belongs. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "Every heat they've run, signed in their own hands. Rushed quenches, sloppy tempers. I'd have broken half these blades over my knee. You held your guard against their steel and came back whole; that's the first pass of the hammer. There will be more heat next time.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The ledger points to specialists using our tempering equipment. Recover their matrix before they ruin more of the forge's work. Defeat five Absolute Defense Specialists in Korriban, Forge Caverns. Their defeat secures the Absolute Defense Sith Tempering Matrix; bring it back to me here in Korriban, Sith Academy.",
+          "Text": "The ledger points to five specialists using my tempering matrix. They know the forge well enough to damage it properly. Beat the five in the caverns and bring the matrix home. Then we'll see what their work has taught your guard.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Korriban, Forge Caverns. Defeat five Absolute Defense Specialists to secure the Absolute Defense Sith Tempering Matrix, then return to me.",
+          "Text": "The key still gets you into the caverns. Keep your guard closed, and don't let the heat hurry you.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Absolute Defense Specialists in Korriban, Forge Caverns. Their defeat secures the Absolute Defense Sith Tempering Matrix; bring it back to me here in Korriban, Sith Academy.",
+          "Text": "The five specialists have the tempering matrix in the Forge Caverns. Bring it out before they ruin another batch.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Absolute Defense Specialists. Let me see the Absolute Defense Sith Tempering Matrix.",
+          "Text": "Your pack is humming. That's the matrix wanting its trough back. Set it down slow.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "This matrix will let the smiths work safely again. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "Cold, and quieter already. You cut off their tempering and their journeymen in one heat. Second pass of the hammer. The grain in you is starting to close.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden keeps the smith-guards in line. Defeating him will break their hold on the caverns. Defeat the Absolute Defense Warden in Korriban, Forge Caverns. Their defeat secures the Absolute Defense Cracked Anvil Sigil; bring it back to me here in Korriban, Sith Academy. I recommend bringing two companions for this fight.",
+          "Text": "The warden holds the Forge Caverns for those smiths. He carries the cracked anvil sigil of my old office. Challenge him there and bring the sigil back. Take a crew if you can; his guard has worn through better blades than yours.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Korriban, Forge Caverns, use the '???' challenge marker to call the Absolute Defense Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Absolute Defense Cracked Anvil Sigil.",
+          "Text": "Gather your crew if you can. The Forge Caverns challenge marker calls the warden. Keep the pressure on without spending your whole guard, and bring the sigil back to my bench.",
           "Style": 0,
           "Color": null
         }
@@ -793,7 +793,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Absolute Defense Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "A heavy blade tires the hands holding it. Friends give those hands a chance to rest while someone else keeps his guard busy. You can face him alone. I wouldn't mistake being allowed to for being ready to.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Absolute Defense Warden in Korriban, Forge Caverns. Their defeat secures the Absolute Defense Cracked Anvil Sigil; bring it back to me here in Korriban, Sith Academy. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Call the warden at the Forge Caverns challenge marker. The cracked anvil sigil is what I want back.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Absolute Defense Warden. Let me see the Absolute Defense Cracked Anvil Sigil.",
+          "Text": "You're standing straighter under that blade's weight. The anvil has a new keeper, then. Show me.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "His sigil confirms the warden's defeat. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "So his guard could be passed after all. It took a crew, and that doesn't lessen the work; that is the work. Third pass of the hammer. The grain is nearly closed. Rest your hands, because the inner ring will not be gentler.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The overseer's inner circle still controls the forge's clearances. Take back their authority to order the smiths around. Defeat four members of the Absolute Defense Inner Circle in Korriban, Forge Caverns. Their defeat secures the Absolute Defense Overseer's Clearance Token; bring it back to me here in Korriban, Sith Academy.",
+          "Text": "Four overseers still sign the work down there. Their clearance token keeps the smiths at their posts. Defeat the four in the caverns and bring it back. No more orders stamped with my authority.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Korriban, Forge Caverns. Defeat four members of the Absolute Defense Inner Circle to secure the Absolute Defense Overseer's Clearance Token, then return to me.",
+          "Text": "Their signatures made the work possible. Bring the token to my bench; I'll see they can't sign another batch.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Absolute Defense Inner Circle in Korriban, Forge Caverns. Their defeat secures the Absolute Defense Overseer's Clearance Token; bring it back to me here in Korriban, Sith Academy.",
+          "Text": "Four overseers in the caverns still have the clearance token. End their work and return it.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Absolute Defense Inner Circle. Let me see the Absolute Defense Overseer's Clearance Token.",
+          "Text": "Deep-floor scale on your boots. The circle is broken, then. Let me see the token.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The forge's clearances are ours again. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "Genuine. Their signatures die with this stamp. Fourth pass of the hammer, and I notice I've stopped inspecting your guard and started learning from it. Strange feeling for an old overseer. One heat remains.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their master is the last obstacle. His guard is formidable; this is the final forge trial. Defeat the Absolute Defense Master in Korriban, Champion Forge. Report back to me here in Korriban, Sith Academy; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The master is in the Champion Forge. I've spent years looking for a fault in his guard. You've seen enough of his students to know the cost of guessing. Use the challenge marker, face him with your crew, and return when he's beaten.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Korriban, Champion Forge, use the '???' challenge marker to call the Absolute Defense Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "Then this is the last heat. When the ring goes quiet, don't stand around admiring the anvil. Come up. I want to see what walks out of that fire, because I already know what walked in.",
           "Style": 0,
           "Color": null
         }
@@ -1159,7 +1159,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I recommend two companions against the Absolute Defense Master. Spread the pressure so one person doesn't have to carry the whole fight. You can enter alone, but prepare carefully before you call the challenge.",
+          "Text": "His guard holds one arc at a time. That's the seam. A crew can make him choose which threat to answer; alone, you'll have to earn each opening yourself. He counts on challengers trying to break the whole wall at once.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Absolute Defense Master in Korriban, Champion Forge. Report back to me here in Korriban, Sith Academy; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "The master's challenge is in the Champion Forge. Beat him and come back to my bench at the academy.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Absolute Defense Master. Give me your report and we'll finish the trial.",
+          "Text": "Quiet. The whole rock has gone quiet. Forty years I've listened to that ring and it was never once quiet. Tell me.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The smith-guards no longer answer to him. The forge can serve its workers again. You've earned the right to train Absolute Defense. Your final payment is ready.",
+          "Text": "The forge's work can belong to its smiths again. You've earned your place at my bench, too. Take your pay, set down the blade, and I'll show you what Absolute Defense asks of the hands holding it.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Absolute Defense Adepts.",
+        "Text": "Put me in the fire, then.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the Absolute Defense Forge Heat Ledger.",
+        "Text": "The Absolute Defense Forge Heat Ledger. Six adepts won't add to it again.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Absolute Defense Specialists.",
+        "Text": "I'll pull it out of the trough myself.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the Absolute Defense Sith Tempering Matrix.",
+        "Text": "The Absolute Defense Sith Tempering Matrix, cold as you asked.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Absolute Defense Warden.",
+        "Text": "I'll bring hands I trust to the anvil.",
         "Style": 4,
         "Color": null
       },
@@ -1736,7 +1736,7 @@
     "reply-00018": {
       "Id": "reply-00018",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "Why a crew? I've held alone so far.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Absolute Defense Cracked Anvil Sigil.",
+        "Text": "The Absolute Defense Cracked Anvil Sigil, off the warden himself.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Absolute Defense Inner Circle.",
+        "Text": "Four overseers. Consider them worked.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Absolute Defense Overseer's Clearance Token.",
+        "Text": "One Absolute Defense Overseer's Clearance Token, taken whole.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Absolute Defense Master and report back.",
+        "Text": "We'll take the ring together. I'll finish it.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Absolute Defense Master is defeated. Here's my report.",
+        "Text": "The master's guard broke. The ring is quiet.",
         "Style": 4,
         "Color": null
       },

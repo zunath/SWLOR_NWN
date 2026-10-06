@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The backroom bill is closed. Take your purse, and give that routine a better audience. You've finished my Tempest Bloom trials. I have no further work for you here.",
+          "Text": "The backroom bill is closed. I retired the poster. If you're still willing to study Tempest Bloom, come by; I'd like to teach it without wondering who'll buy tickets to the damage.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "This bill needs rank 50 in Twin Blade. Reach it, then come back. I'll save the grand introduction until your hands can keep up with it.",
+          "Text": "A promising entrance. Now give me rank 50 in Twin Blade to announce. The backrooms aren't kind to an act that hasn't learned its ending.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Someone's selling my paired-blade routine as backroom blood sport. Bring me their bout ledger so I can see every fight they've booked. Defeat six Tempest Bloom Adepts in Smuggler's Moon, Fight Club Backrooms. Their defeat secures the Tempest Bloom Backroom Bout Ledger; bring it back to me here in Smuggler's Moon, The Tilted Visor. I'll give you the Smuggler's Moon Fight Club Backrooms Key when you accept. Complete all five trials to earn the right to train Tempest Bloom.",
+          "Text": "And tonight's challenger is... well, you. The mop bucket's a poor audience, but it's better than the one six Tempest Bloom adepts have in the fight club backrooms. Beat the six and bring me their bout ledger. I'd like to know who's still buying this bill.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Smuggler's Moon Fight Club Backrooms Key. Use '[Back Rooms]' in Smuggler's Moon, Fight Club. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Tempest Bloom Adepts, then return with the Tempest Bloom Backroom Bout Ledger.",
+          "Text": "Take my key into the fight club and find the backrooms entrance. The Tilted Visor's where you come afterward. I won't make you bow.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Tempest Bloom Adepts in Smuggler's Moon, Fight Club Backrooms. Their defeat secures the Tempest Bloom Backroom Bout Ledger; bring it back to me here in Smuggler's Moon, The Tilted Visor.",
+          "Text": "Six adepts in the fight club backrooms. Bring their ledger here to the Tilted Visor. I'll keep the good microphone off.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Tempest Bloom Adepts. Let me see the Tempest Bloom Backroom Bout Ledger.",
+          "Text": "You came up walking and the noise downstairs stopped. That's the review I wanted. The ledger -- let's see who they've been booking to bleed.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The book is back in honest hands. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "Ha. Half these names are fighters I banned for exactly this. You just cancelled six acts and the crowd upstairs doesn't even know it owes you. Take the purse. When you've caught your breath, come back -- the bill goes deeper than its undercard.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists are using the ring's shock regulator in their act. Take it out of the bill. Defeat five Tempest Bloom Specialists in Smuggler's Moon, Fight Club Backrooms. Their defeat secures the Tempest Bloom Ring Shock Regulator; bring it back to me here in Smuggler's Moon, The Tilted Visor.",
+          "Text": "Five specialists have added shock gear to the backroom pits. Apparently a losing fighter wasn't entertaining enough. Beat the five and bring me their regulator. I used to think a good announcer could make any show worth watching. I was wrong.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Smuggler's Moon, Fight Club Backrooms. Defeat five Tempest Bloom Specialists to secure the Tempest Bloom Ring Shock Regulator, then return to me.",
+          "Text": "They know what you did to the undercard. Bring the regulator back intact; I want to show it to the people who called me paranoid.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Tempest Bloom Specialists in Smuggler's Moon, Fight Club Backrooms. Their defeat secures the Tempest Bloom Ring Shock Regulator; bring it back to me here in Smuggler's Moon, The Tilted Visor.",
+          "Text": "Five specialists in the backrooms have the shock regulator. Bring it here after you've stopped their show.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Tempest Bloom Specialists. Let me see the Tempest Bloom Ring Shock Regulator.",
+          "Text": "You smell like ozone and somebody else's blood. Beautiful. The regulator -- hand it here.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "One less rigged test to worry about. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "Look at this butchery -- they bridged the safety cutout with a credit chit. A credit chit. Somebody's whole life ended over five decicreds of copper. You've turned their main card into an empty room, friend. Next time you come in, we talk about the man guarding the deep door -- and that talk happens before you go anywhere near him.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden protects the backroom show. Recover his pit sigil and end that protection. Defeat the Tempest Bloom Warden in Smuggler's Moon, Fight Club Backrooms. Their defeat secures the Tempest Bloom Cracked Pit Sigil; bring it back to me here in Smuggler's Moon, The Tilted Visor. I recommend bringing two companions for this fight.",
+          "Text": "The warden is waiting in the backrooms. Fourteen seasons, no losses. I called every one. Challenge him there and bring me his pit sigil when he's beaten. Take a corner you trust; I've read what happens to fighters who don't.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Smuggler's Moon, Fight Club Backrooms, use the '???' challenge marker to call the Tempest Bloom Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Tempest Bloom Cracked Pit Sigil.",
+          "Text": "The backrooms challenge marker calls the warden. I'd take a corner you trust. Beat him and bring the sigil straight here. Don't stop to read the names on the walls.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Tempest Bloom Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "I've read his whole record and wrote half of it. He learns a lone fighter's rhythm very quickly. Company gives him more to read. I'd take that advantage before giving him another proud entrance to remember.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Tempest Bloom Warden in Smuggler's Moon, Fight Club Backrooms. Their defeat secures the Tempest Bloom Cracked Pit Sigil; bring it back to me here in Smuggler's Moon, The Tilted Visor. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Call the warden at the backrooms challenge marker. Beat him and bring back his pit sigil.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Tempest Bloom Warden. Let me see the Tempest Bloom Cracked Pit Sigil.",
+          "Text": "The whole club felt that. Lights flickered mid-bout upstairs and I knew. Show me the sigil.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden's protection is broken. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "Cracked twice. Fitting. You did what fourteen seasons of contenders couldn't. Take your pay and rest. The promoters still in the backrooms won't queue up for a fair bout.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The four running the circuit still hold its payout chit. Recover it so we can close their bill. Defeat four members of the Tempest Bloom Inner Circle in Smuggler's Moon, Fight Club Backrooms. Their defeat secures the Tempest Bloom Promoter's Payout Chit; bring it back to me here in Smuggler's Moon, The Tilted Visor.",
+          "Text": "Four promoters still have the payout chit. It records every death they've paid for, and I want it in daylight. Defeat the four in the backrooms and bring it here. No applause for this part.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Smuggler's Moon, Fight Club Backrooms. Defeat four members of the Tempest Bloom Inner Circle to secure the Tempest Bloom Promoter's Payout Chit, then return to me.",
+          "Text": "Bring the payout chit here. If they ask you to name your price, keep walking.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +976,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The promoter signs payout chits by hand because he doesn't trust the banks. The circle's chit records the fights and deaths he paid for. It's evidence we need to close their bill, not another entrance key.",
+          "Text": "Every purse he paid, signed by hand. He trusts banks even less than fighters. That chit is evidence, and he knows it. Bring it here before he finds someone else to put their name to the accounts.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Tempest Bloom Inner Circle in Smuggler's Moon, Fight Club Backrooms. Their defeat secures the Tempest Bloom Promoter's Payout Chit; bring it back to me here in Smuggler's Moon, The Tilted Visor.",
+          "Text": "Four promoters in the backrooms still have the payout chit. Bring it to the Tilted Visor when they're beaten.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Tempest Bloom Inner Circle. Let me see the Tempest Bloom Promoter's Payout Chit.",
+          "Text": "Four empty dressing rooms downstairs. You're a wrecking crew with footwork, friend. The chit -- careful. The ink is blood in more ways than one.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That closes the crew's account. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "His thumbprint, his hand, his numbers. Twenty years I wanted this, and now I mostly feel tired. That's the whole bill cancelled except the headliner -- and before you square your shoulders at me, sit down for the next part. When you're ready to hear about the master, I'll be here. Not selling anything, for once.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The master is the last act keeping the circuit alive. Defeat him in the Private Pit and give this show an ending. Defeat the Tempest Bloom Master in Smuggler's Moon, Private Pit. Report back to me here in Smuggler's Moon, The Tilted Visor; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The master is in the Private Pit. Call him at the challenge marker and beat him. His last performance emptied a house, and I sold the tickets. Come back afterward. I'd like to announce an ending I can bear to remember.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Smuggler's Moon, Private Pit, use the '???' challenge marker to call the Tempest Bloom Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "Then that's the card -- you and two names I'll never get to announce, against the last act on the bill. I'd wish you luck, but I've watched you work; luck is for the undercard. Bring me the only proof that counts. Walk back up those stairs.",
           "Style": 0,
           "Color": null
         }
@@ -1159,7 +1159,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Don't let him set the rhythm of the whole fight. Bring companions, share the pressure, and help whoever his paired blades turn on. He knows the form well; your advantage is a plan he has to answer instead of one he can dictate.",
+          "Text": "He knows his own form better than you will. Don't try to make a better version of his fight. Keep your feet, deny him easy room, and answer the openings you see. If you've brought company, make him watch them too.",
           "Style": 0,
           "Color": null
         }
@@ -1211,7 +1211,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Tempest Bloom Master fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "Because I've announced enough lone challengers who never made it back to the microphone. You can go alone. I'd like you to have someone watching the opening you're too busy fighting to see.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Tempest Bloom Master in Smuggler's Moon, Private Pit. Report back to me here in Smuggler's Moon, The Tilted Visor; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "The Private Pit has the master's challenge marker. Beat him, then return here. I want to see the challenger walk back in.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Tempest Bloom Master. Give me your report and we'll finish the trial.",
+          "Text": "The floor stopped humming an hour ago. Fifteen years I've felt his footwork through these boards, and now the building is just a building. Say it, so I can stop holding my breath.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The backroom bill is closed. Take your purse, and give that routine a better audience. You've earned the right to train Tempest Bloom. Your final payment is ready.",
+          "Text": "The challenger returns. Alive. That's an announcement I can make without dressing it up. Your pay's here. If you still want to learn Tempest Bloom, I'll teach you. We can keep the lesson between us.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Tempest Bloom Adepts.",
+        "Text": "Put my name on the card.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the Tempest Bloom Backroom Bout Ledger.",
+        "Text": "Here. Every bout they ever booked.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Tempest Bloom Specialists.",
+        "Text": "Five specialists. Done.",
         "Style": 4,
         "Color": null
       },
@@ -1566,7 +1566,7 @@
     "reply-00011": {
       "Id": "reply-00011",
       "Text": {
-        "Text": "How did the bill get this deep under your club?",
+        "Text": "How did the backroom bill get so bad?",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the Tempest Bloom Ring Shock Regulator.",
+        "Text": "One regulator, wiring intact.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Tempest Bloom Warden.",
+        "Text": "Then I'll knock. With company.",
         "Style": 4,
         "Color": null
       },
@@ -1713,7 +1713,7 @@
     "reply-00017": {
       "Id": "reply-00017",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "Why bring others? I've done fine alone.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Tempest Bloom Cracked Pit Sigil.",
+        "Text": "The warden's sigil. It's over.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Tempest Bloom Inner Circle.",
+        "Text": "Four names. Consider them cancelled.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Tempest Bloom Promoter's Payout Chit.",
+        "Text": "The promoter's chit. Signed and everything.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Tempest Bloom Master and report back.",
+        "Text": "Then it's the main event.",
         "Style": 4,
         "Color": null
       },
@@ -2076,7 +2076,7 @@
     "reply-00032": {
       "Id": "reply-00032",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "Why are you so set on me bringing company?",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Tempest Bloom Master is defeated. Here's my report.",
+        "Text": "The final bloom is finished. He's gone.",
         "Style": 4,
         "Color": null
       },

@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The school no longer holds the forge. Keep your timing sharper than your grudges. You've finished my Forcebane trials. I have no further work for you here.",
+          "Text": "It's done, then. The forge answers to iron again, and every robe on this rock has to wonder if the spear behind them learned from you. Rule the last: a doctrine is only clean while someone keeps it clean. That's you now. Go be inconvenient to sorcerers.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "These trials require rank 50 in Spear. Reach it before you hunt trained Force users. Timing matters more than ambition.",
+          "Text": "You've got nerve. Now get your Spear training to rank 50. Nerve won't catch a blade, and the people I hunt know it.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Someone in the Forge Caverns is teaching my counters to the people they were built against. Recover their ledger so I can trace the school. Defeat six Forcebane Adepts in Korriban, Forge Caverns. Their defeat secures the Forcebane Forge Heat Ledger; bring it back to me here in Korriban, Valley Temples. I'll give you the Korriban Forge Caverns Key when you accept. Complete all five trials to earn the right to train Forcebane.",
+          "Text": "Six Forcebane adepts have taken my counters into the Forge Caverns and sold them to the people they were meant to stop. Put the six down and bring me their heat ledger. I want names. Especially the names wearing robes.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Korriban Forge Caverns Key. Use 'Forge Caverns' in Korriban, Sith Fortress, Forgeworks. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Forcebane Adepts, then return with the Forcebane Forge Heat Ledger.",
+          "Text": "Take the key to the Forge Caverns entrance in the Sith Fortress forgeworks. Keep your spear ready. Nobody down there is going to thank you for coming.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Use 'Forge Caverns' in Korriban, Sith Fortress, Forgeworks. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Forcebane Adepts in Korriban, Forge Caverns. Their defeat secures the Forcebane Forge Heat Ledger; bring it back to me here in Korriban, Valley Temples.",
+          "Text": "Go to the Sith Fortress forgeworks on Korriban. The entrance to the Forge Caverns is there; my key opens it. Bring your company up to the entrance together.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Forcebane Adepts in Korriban, Forge Caverns. Their defeat secures the Forcebane Forge Heat Ledger; bring it back to me here in Korriban, Valley Temples.",
+          "Text": "Six Forcebane adepts in the Forge Caverns. Their heat ledger comes back here to the Valley Temples.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Forcebane Adepts. Let me see the Forcebane Forge Heat Ledger.",
+          "Text": "Forge-smoke on your coat and ash on your hands. Let's see it, then.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The training record is back. We can see what went wrong. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "Look at these rosters. They're not training a class, they're training a market. Every name in here paid in Sith script. Clean work; the credits are yours. Rest the arm, you'll want it. This goes deeper.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists are refining those counters with a tempering matrix. Bring it back before their work spreads. Defeat five Forcebane Specialists in Korriban, Forge Caverns. Their defeat secures the Forcebane Sith Tempering Matrix; bring it back to me here in Korriban, Valley Temples.",
+          "Text": "Five specialists are hardening blades with a Sith tempering matrix. They used to ask me where to put the point. Now they're making sure no one else can. Beat the five in the caverns and bring that matrix here.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Korriban, Forge Caverns. Defeat five Forcebane Specialists to secure the Forcebane Sith Tempering Matrix, then return to me.",
+          "Text": "Back into the caverns. Don't stand admiring the steel while someone decides where to put it.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Forcebane Specialists in Korriban, Forge Caverns. Their defeat secures the Forcebane Sith Tempering Matrix; bring it back to me here in Korriban, Valley Temples.",
+          "Text": "Five specialists in the caverns have the tempering matrix. Put them down and bring it here.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Forcebane Specialists. Let me see the Forcebane Sith Tempering Matrix.",
+          "Text": "That box under your arm is humming. Good sign. Worse sign for them.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That equipment no longer serves their drills. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "There it is. My angles, scored into a Sith quench-frame like scripture. I'll burn the imprint out tonight. You're not a stranger anymore, so hear this plain: what's past the tempering line doesn't fight fair, and I'm going to ask you to go there anyway.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their warden protects the tempering line. Recover his anvil sigil and break that defense. Defeat the Forcebane Warden in Korriban, Forge Caverns. Their defeat secures the Forcebane Cracked Anvil Sigil; bring it back to me here in Korriban, Valley Temples. I recommend bringing two companions for this fight.",
+          "Text": "The warden's keeping the Forge Caverns shut to anyone who objects. Challenge him there. When he's down, bring me the anvil sigil he wears. Take friends if you've got them; a spear only reaches so many throats at once.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Korriban, Forge Caverns, use the '???' challenge marker to call the Forcebane Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Forcebane Cracked Anvil Sigil.",
+          "Text": "The Forge Caverns challenge marker calls the warden. Recruit help first if you can. Last lone hunter I sent came back in a crate. I'd like the sigil without having to fold your spear beside it.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Forcebane Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "Bait draws the commitment, blade punishes it, net closes the escape. Good work for hunters who trust one another. The warden learned all of it. I'd find people who can keep him busy while you put the point where it belongs.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Forcebane Warden in Korriban, Forge Caverns. Their defeat secures the Forcebane Cracked Anvil Sigil; bring it back to me here in Korriban, Valley Temples. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "The Forge Caverns challenge marker calls the warden. Beat him and bring me his anvil sigil.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Forcebane Warden. Let me see the Forcebane Cracked Anvil Sigil.",
+          "Text": "The hammering stopped two nights ago. The whole ridge noticed. That was you.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden's watch is over. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "Cracked. Good. The warden's gone and my watchers say the apprentices have noticed. Take your pay. The overseers who remain will know your name now; let that make them careless before it makes you proud.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The four overseers still authorize the school's work. Take their clearance token. Defeat four members of the Forcebane Inner Circle in Korriban, Forge Caverns. Their defeat secures the Forcebane Overseer's Clearance Token; bring it back to me here in Korriban, Valley Temples.",
+          "Text": "Four overseers signed off on this little school. They hold the clearance token in the caverns. Put the four down and bring it back. We'll see how eager their customers are when there's nobody left to vouch for the steel.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Korriban, Forge Caverns. Defeat four members of the Forcebane Inner Circle to secure the Forcebane Overseer's Clearance Token, then return to me.",
+          "Text": "Bring the clearance token here. I'd like their customers to have one reason less to call this honest work.",
           "Style": 0,
           "Color": null
         }
@@ -1002,7 +1002,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Not one at a time, if they can help it. The circle fights as a set. Staggered, patient, the duelist floating loose to take whoever overextends. Bringing your two again wouldn't shame you. Four against one is their favorite arithmetic. Change the numbers.",
+          "Text": "They'll try to cover each other, with the duelist waiting for you to overextend. Pick your reach carefully. Bringing help wouldn't shame you; fighting outnumbered just to be proud would waste a good spear.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Forcebane Inner Circle in Korriban, Forge Caverns. Their defeat secures the Forcebane Overseer's Clearance Token; bring it back to me here in Korriban, Valley Temples.",
+          "Text": "Four overseers in the caverns still have the clearance token. I want it when they're finished.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Forcebane Inner Circle. Let me see the Forcebane Overseer's Clearance Token.",
+          "Text": "You're standing straighter. That's what killing a circle does. Show me.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their instructors no longer hold the authority to teach. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "Four names I trained, once removed, closed out in a week. The stamp still smells of ink. They were clearing a shipment when you arrived. That's the trade dead, the school headless, the buyers furious. All that's left is the man who taught them, and that one I have to talk about sitting down.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their master wrote the counters the school now uses. Beat him in the Champion Forge to finish this lesson. Defeat the Forcebane Master in Korriban, Champion Forge. Report back to me here in Korriban, Valley Temples; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The master is in the Champion Forge. Use the challenge marker and call him out. He knows every counter I taught, so don't offer him the fight he's expecting. Beat him, then come back to the temples. I'll want to hear where you put the point.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Korriban, Champion Forge, use the '???' challenge marker to call the Forcebane Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "That's the last order I have. Call him in the Champion Forge. When he's down, come stand here again. I want to hear it from you, not from the watchers.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I recommend two companions against the Forcebane Master. Spread the pressure so one person doesn't have to carry the whole fight. You can enter alone, but prepare carefully before you call the challenge.",
+          "Text": "Don't fight the duel he offers you. Watch the exits, hold your reach, and make him commit before you do. With help, give him different angles to answer. He'd prefer you trying to prove you can take him alone.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Forcebane Master in Korriban, Champion Forge. Report back to me here in Korriban, Valley Temples; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Call the master at the Champion Forge challenge marker. Beat him, then find me here at the temples.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Forcebane Master. Give me your report and we'll finish the trial.",
+          "Text": "The watchers went quiet, then came the smoke, then you, walking like a man with nothing left to prove. Say it anyway. I've earned hearing it.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The school no longer holds the forge. Keep your timing sharper than your grudges. You've earned the right to train Forcebane. Your final payment is ready.",
+          "Text": "So he had an answer for my counters, and you had an answer for him. Good. Take the pay. If you're ready to learn Forcebane, plant your feet. We're starting with the thing a robe can't make you forget.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Forcebane Adepts.",
+        "Text": "Six adepts. One ledger. I'll get it done.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the Forcebane Forge Heat Ledger.",
+        "Text": "The Forcebane Forge Heat Ledger. Six adepts stopped arguing about it.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Forcebane Specialists.",
+        "Text": "Five specialists. I'll bring the matrix back whole.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the Forcebane Sith Tempering Matrix.",
+        "Text": "One Forcebane Sith Tempering Matrix, warm off the rack.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Forcebane Warden.",
+        "Text": "I'll hunt the warden.",
         "Style": 4,
         "Color": null
       },
@@ -1713,7 +1713,7 @@
     "reply-00017": {
       "Id": "reply-00017",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "Why bait, blade, and net?",
         "Style": 4,
         "Color": null
       },
@@ -1759,7 +1759,7 @@
     "reply-00019": {
       "Id": "reply-00019",
       "Text": {
-        "Text": "I need to find my two first.",
+        "Text": "Let me find people I trust first.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Forcebane Cracked Anvil Sigil.",
+        "Text": "The Forcebane Cracked Anvil Sigil. He didn't want to part with it.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Forcebane Inner Circle.",
+        "Text": "All four. And the token comes home.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Forcebane Overseer's Clearance Token.",
+        "Text": "The Forcebane Overseer's Clearance Token. The circle's signatures are done.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Forcebane Master and report back.",
+        "Text": "I'll put him down.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Forcebane Master is defeated. Here's my report.",
+        "Text": "It's finished. The master is dead, and the doctrine is yours again.",
         "Style": 4,
         "Color": null
       },

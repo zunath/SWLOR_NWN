@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The missing stock has a paper trail and the operation is closed. That's an account I can finally settle. You've finished my Rain of Steel trials. I have no further work for you here.",
+          "Text": "The ledger's clean. I'd like to keep it that way. If you want the Rain of Steel lesson, come by the cage. My standing order hasn't changed: account for your blades before you go home.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "This range work requires rank 50 in Throwing. Reach it, then come back about my missing stock.",
+          "Text": "I issue this stock to hands with rank 50 in Throwing. Come back when yours qualify. Replacing blades is easier than replacing the people I give them to.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Throwing arms signed out of my cage never came back. The range crew's docket will tell me who's using them and who authorized it. Defeat six Rain of Steel Adepts in Smuggler's Moon, Czerka Weapons Testing Facility. Their defeat secures the Rain of Steel Czerka Test Docket; bring it back to me here in Smuggler's Moon, Fabrication Facility. I'll give you the Czerka Arms Test Range Key when you accept. Complete all five trials to earn the right to train Rain of Steel.",
+          "Text": "Someone's drawing my stock for a school I never supplied. Six Rain of Steel adepts hold the Czerka Weapons Testing Facility. Defeat the six and bring me their test docket. Let's find out whose signature is emptying my cage.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Czerka Arms Test Range Key. Use '[Enter Czerka Weapons Testing Facility]' in Smuggler's Moon, Corporate District. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Rain of Steel Adepts, then return with the Rain of Steel Czerka Test Docket.",
+          "Text": "Here's the access key. The testing facility entrance is in the Corporate District. Check what you're carrying before you go. A missing blade is a bad time to count stock.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Rain of Steel Adepts in Smuggler's Moon, Czerka Weapons Testing Facility. Their defeat secures the Rain of Steel Czerka Test Docket; bring it back to me here in Smuggler's Moon, Fabrication Facility.",
+          "Text": "Six adepts in the Czerka Weapons Testing Facility. Bring the docket here to the Fabrication Facility. I want the stock draws accounted for.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Rain of Steel Adepts. Let me see the Rain of Steel Czerka Test Docket.",
+          "Text": "Czerka watermark, blast residue and all. The Rain of Steel Czerka Test Docket - hand it across the counter.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Work order received. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "Counted, filed, reconciled. The credits are your recovery fee. Your first entry in my book reads 'acceptable.' Don't let it depreciate.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists control the blast-cell regulator. Recover it before they burn through more of my stock. Defeat five Rain of Steel Specialists in Smuggler's Moon, Czerka Weapons Testing Facility. Their defeat secures the Rain of Steel Blast-Cell Regulator; bring it back to me here in Smuggler's Moon, Fabrication Facility.",
+          "Text": "Five specialists are running the range's blast-cell regulator. They're throwing enough of my stock to keep the air full all day. Beat the five in the facility and bring that regulator here. I want this line shut before the next shipment.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Smuggler's Moon, Czerka Weapons Testing Facility. Defeat five Rain of Steel Specialists to secure the Rain of Steel Blast-Cell Regulator, then return to me.",
+          "Text": "Bring the regulator to the cage. Check your stock before you go; that's a habit worth keeping.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Rain of Steel Specialists in Smuggler's Moon, Czerka Weapons Testing Facility. Their defeat secures the Rain of Steel Blast-Cell Regulator; bring it back to me here in Smuggler's Moon, Fabrication Facility.",
+          "Text": "Five specialists at the testing facility have the blast-cell regulator. Recover it and bring it to my cage.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Rain of Steel Specialists. Let me see the Rain of Steel Blast-Cell Regulator.",
+          "Text": "There it is - housing's scorched, but the meter still reads true. The Rain of Steel Blast-Cell Regulator. Set it down gently. On paper it's worth more than both of us.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Component received and accounted for. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "Reads within tolerance. You're the first hand in a year I'd let near my bench. Rest and restock, then come see me - the range's warden and I have an account to settle.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden is protecting the unauthorized trials. Take his range crest as proof we've broken that protection. Defeat the Rain of Steel Warden in Smuggler's Moon, Czerka Weapons Testing Facility. Their defeat secures the Rain of Steel Scored Range Crest; bring it back to me here in Smuggler's Moon, Fabrication Facility. I recommend bringing two companions for this fight.",
+          "Text": "The warden has turned the testing facility into his own stockroom. Challenge him there, beat him, and bring back his range crest. Bring support if you can. I'll issue gear for a team more gladly than I write off one good hand.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Smuggler's Moon, Czerka Weapons Testing Facility, use the '???' challenge marker to call the Rain of Steel Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Rain of Steel Scored Range Crest.",
+          "Text": "Signed. Triple issue drawn against your name - that's trust, in my currency. The deep range opens past the calibration lanes, and he'll hear you coming. Watch the high racks. He likes altitude.",
           "Style": 0,
           "Color": null
         }
@@ -741,7 +741,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Rain of Steel Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "I'll sign for you. I'll also tell you I'd rather issue gear to people who can cover each other. A companion can keep the air busy while your hands recover. That's worth more than an extra crate of blades.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Rain of Steel Warden in Smuggler's Moon, Czerka Weapons Testing Facility. Their defeat secures the Rain of Steel Scored Range Crest; bring it back to me here in Smuggler's Moon, Fabrication Facility. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Call the warden at the testing facility's challenge marker. Beat him and bring back his range crest.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Rain of Steel Warden. Let me see the Rain of Steel Scored Range Crest.",
+          "Text": "Ha. Scored steel, seventeen marks - I remember every one of them. Hand me the Rain of Steel Scored Range Crest and let me put the range's history back where it audits clean.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden's defeat is verified. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "You know what this is? The first line in my book that isn't a loss. Take your pay. The warden was only the muscle - the inner circle keeps the books, and theirs are dirtier than mine ever ran.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four officers still authorize the missing equipment. Recover their clearance chit. Defeat four members of the Rain of Steel Inner Circle in Smuggler's Moon, Czerka Weapons Testing Facility. Their defeat secures the Rain of Steel Czerka Clearance Chit; bring it back to me here in Smuggler's Moon, Fabrication Facility.",
+          "Text": "Four instructors still have the clearance chit. Every missing crate came out under its authority. Defeat the four in the testing facility and bring it here. The ledger needs a last honest entry.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Smuggler's Moon, Czerka Weapons Testing Facility. Defeat four members of the Rain of Steel Inner Circle to secure the Rain of Steel Czerka Clearance Chit, then return to me.",
+          "Text": "Recover the clearance chit. Procurement doesn't get to excuse itself just because someone else did the throwing.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +976,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden's paymasters. Two came up through procurement - they know stock movement better than fighting, but don't relax. The other two were trial leads with a thousand hours of range time apiece on the discipline you're still learning. Together, the four of them will be a worse fight than the warden. Keep your two beside you. I extended their issue for a reason.",
+          "Text": "His paymasters. Two came through procurement, two ran trials, and all of them know how to protect stock they expect to profit from. Keep any help you've brought close. I'd like the chit without writing off another good hand.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Rain of Steel Inner Circle in Smuggler's Moon, Czerka Weapons Testing Facility. Their defeat secures the Rain of Steel Czerka Clearance Chit; bring it back to me here in Smuggler's Moon, Fabrication Facility.",
+          "Text": "Four instructors in the facility still hold the clearance chit. Bring it here after they're beaten.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Rain of Steel Inner Circle. Let me see the Rain of Steel Czerka Clearance Chit.",
+          "Text": "The Rain of Steel Czerka Clearance Chit. Four names cancelled, one authorization recovered. Pass it here - slowly. That little wafer is worth the whole range.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Authorization recovered. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "Void, all four, and the range reads honest for the first time in years. That leaves one entry open, and I'll be straight with you: it's the one I've been dreading pricing. Rest first. Then we talk about the master.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their master is the last hand keeping the range operation going. Defeat him in the Czerka Blast-Safe Cell. Defeat the Rain of Steel Master in Smuggler's Moon, Czerka Blast-Safe Cell. Report back to me here in Smuggler's Moon, Fabrication Facility; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The master is in the Czerka Blast-Safe Cell. Call him at the challenge marker and beat him. Watch his recovery between throws; even he has to put a hand on the next blade. Come back afterward. We'll balance the book.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Smuggler's Moon, Czerka Blast-Safe Cell, use the '???' challenge marker to call the Rain of Steel Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "Call him at the challenge marker in the Czerka Blast-Safe Cell. Check your gear, keep enough in hand for the recovery, and come back to balance my book.",
           "Style": 0,
           "Color": null
         }
@@ -1211,7 +1211,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You don't. You out-supply him. Three of you means every recovery gets contested - each blade he lands near, one of yours is already claiming the ground. Starve the return line. The moment his off hand reaches for a rack instead of his belt, he's feeling the only shortage he's ever known. Spend it.",
+          "Text": "Watch his hands between throws. He has to recover a blade or reach for another, however many he puts in the air. Keep pressure on that moment if you've brought help. Don't waste your own stock trying to match every throw.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Rain of Steel Master in Smuggler's Moon, Czerka Blast-Safe Cell. Report back to me here in Smuggler's Moon, Fabrication Facility; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Call the master in the Czerka Blast-Safe Cell. Beat him, then return to the Fabrication Facility for settlement.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Rain of Steel Master. Give me your report and we'll finish the trial.",
+          "Text": "You're standing square, and your crates came back heavier than they went out. That's the news, isn't it. Say it plain, for the record.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The missing stock has a paper trail and the operation is closed. That's an account I can finally settle. You've earned the right to train Rain of Steel. Your final payment is ready.",
+          "Text": "Stock accounted for, school closed. Your pay is drawn. If you'd like Rain of Steel taught with gear honestly issued, come back to the cage. I'll keep a practice set aside for you.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Rain of Steel Adepts.",
+        "Text": "Six adepts, one docket. I'll sign for it.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the Rain of Steel Czerka Test Docket.",
+        "Text": "One docket, recovered. Count it.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Rain of Steel Specialists.",
+        "Text": "Five specialists. The regulator comes home.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the Rain of Steel Blast-Cell Regulator.",
+        "Text": "One regulator, slightly scorched, fully functional.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Rain of Steel Warden.",
+        "Text": "I'll bring the hands. The crest comes back.",
         "Style": 4,
         "Color": null
       },
@@ -1690,7 +1690,7 @@
     "reply-00016": {
       "Id": "reply-00016",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "Why are you recommending a team?",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Rain of Steel Scored Range Crest.",
+        "Text": "The crest. He won't be missing it.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Rain of Steel Inner Circle.",
+        "Text": "Four signatures. Cancelled.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Rain of Steel Czerka Clearance Chit.",
+        "Text": "The chit. All four signatures are void.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Rain of Steel Master and report back.",
+        "Text": "Then I'll spend everything and recover it after.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Rain of Steel Master is defeated. Here's my report.",
+        "Text": "The master's down. The floor is yours to count.",
         "Style": 4,
         "Color": null
       },

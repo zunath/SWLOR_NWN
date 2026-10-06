@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The school is finished. Carry the form with its restraint intact; that matters more than a title. You've finished my Red Bloom trials. I have no further work for you here.",
+          "Text": "The circuit's quiet. I'm still getting used to it. If you want to work on Red Bloom, find me here. We can keep the rules closer than the blades this time.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The backroom trials require rank 50 in Twin Blade. Reach it before you take this job. Almost ready is a dangerous way to enter a ring.",
+          "Text": "You're quick with those blades. Bring your Twin Blade training to rank 50, then we can speak of the rest. Speed was the easy part for me, too.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The backroom school is teaching my paired-blade form without its restraint. Recover the ledger so I can identify the people booking those fights. Defeat six Red Bloom Adepts in Smuggler's Moon, Fight Club Backrooms. Their defeat secures the Red Bloom Backroom Bout Ledger; bring it back to me here in Smuggler's Moon, Casino. I'll give you the Smuggler's Moon Fight Club Backrooms Key when you accept. Complete all five trials to earn the right to train Red Bloom.",
+          "Text": "They still use my name to sell fights in the club backrooms. Six Red Bloom adepts are performing a form I taught them without its restraint. Defeat the six and bring me their bout ledger. I'd like to know who paid to watch that lesson discarded.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Smuggler's Moon Fight Club Backrooms Key. Use '[Back Rooms]' in Smuggler's Moon, Fight Club. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Red Bloom Adepts, then return with the Red Bloom Backroom Bout Ledger.",
+          "Text": "Take this key into the fight club and find the backrooms entrance. They won't know your name there. I hope you'll leave it that way.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Red Bloom Adepts in Smuggler's Moon, Fight Club Backrooms. Their defeat secures the Red Bloom Backroom Bout Ledger; bring it back to me here in Smuggler's Moon, Casino.",
+          "Text": "Six adepts in the fight club backrooms. Bring their ledger here to the casino. I'll read the names myself.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Red Bloom Adepts. Let me see the Red Bloom Backroom Bout Ledger.",
+          "Text": "You're moving differently. Slower. Good -- that's the weight of doing it right. The ledger.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The training record is back. We can see what went wrong. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "Thirty-one bouts. Nine marked to end wrong. You stopped six students; the school barely noticed. It will. Take your pay. Come back when your cuts have settled.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists are running the ring's shock regulator. Bring it back and stop those bouts. Defeat five Red Bloom Specialists in Smuggler's Moon, Fight Club Backrooms. Their defeat secures the Red Bloom Ring Shock Regulator; bring it back to me here in Smuggler's Moon, Casino.",
+          "Text": "Five specialists have fitted the backroom pits with shock gear. A fighter who falls gets hurt for the crowd a second time. Beat the five and bring me their regulator. There was a time I thought winning there meant something.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Smuggler's Moon, Fight Club Backrooms. Defeat five Red Bloom Specialists to secure the Red Bloom Ring Shock Regulator, then return to me.",
+          "Text": "Bring the regulator here. I want it away from any ring that still has a fighter in it.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Red Bloom Specialists in Smuggler's Moon, Fight Club Backrooms. Their defeat secures the Red Bloom Ring Shock Regulator; bring it back to me here in Smuggler's Moon, Casino.",
+          "Text": "Five specialists in the backrooms have the shock regulator. Beat them and bring it here.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Red Bloom Specialists. Let me see the Red Bloom Ring Shock Regulator.",
+          "Text": "Burns on your knuckles. You pulled it live. The regulator, then.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That equipment no longer serves their drills. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "They soldered the mercy out of it. Cheap work. I'll rebuild it the way it hung in my day. You've cut the school's teachers out from under it -- which means the man at the deep gate knows your name now. Before you go near him, we talk. That's not a request.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden protects the school. Recover his pit sigil and break that protection. Defeat the Red Bloom Warden in Smuggler's Moon, Fight Club Backrooms. Their defeat secures the Red Bloom Cracked Pit Sigil; bring it back to me here in Smuggler's Moon, Casino. I recommend bringing two companions for this fight.",
+          "Text": "The warden will answer a challenge in the backrooms. I know him well enough to be sure of that. Defeat him and bring me his pit sigil. Take someone beside you. He was very good at finding the moment a fighter thought the danger had passed.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Smuggler's Moon, Fight Club Backrooms, use the '???' challenge marker to call the Red Bloom Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Red Bloom Cracked Pit Sigil.",
+          "Text": "Use the backrooms challenge marker to call him. He'll consider it a courtesy. When he's beaten, bring me the sigil. He'd rather it went to someone who earned it through him.",
           "Style": 0,
           "Color": null
         }
@@ -793,7 +793,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Red Bloom Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "He learns a lone fighter's rhythm quickly. Company gives him more to read. I still count the names of challengers who went in proud; I'd rather you gave him a harder fight than that.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Red Bloom Warden in Smuggler's Moon, Fight Club Backrooms. Their defeat secures the Red Bloom Cracked Pit Sigil; bring it back to me here in Smuggler's Moon, Casino. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Call the warden at the backrooms challenge marker. Beat him and return his pit sigil.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Red Bloom Warden. Let me see the Red Bloom Cracked Pit Sigil.",
+          "Text": "I felt it from up here. Don't ask me how. Let me see the sigil.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden's watch is over. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "Both cracks are mine, in a way. He was the best thing about that circuit and the last of my era standing. Take your pay and rest. The promoters still in the backrooms fight for something less complicated: their purses.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The four running the circuit still hold its payout chit. Take it so we can close their fight book. Defeat four members of the Red Bloom Inner Circle in Smuggler's Moon, Fight Club Backrooms. Their defeat secures the Red Bloom Promoter's Payout Chit; bring it back to me here in Smuggler's Moon, Casino.",
+          "Text": "Four promoters still hold the circuit's payout chit. They've made a living selling what we did to one another. Defeat the four in the backrooms and bring it here. I'm ready to see the accounts closed.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Smuggler's Moon, Fight Club Backrooms. Defeat four members of the Red Bloom Inner Circle to secure the Red Bloom Promoter's Payout Chit, then return to me.",
+          "Text": "Collect the chit from the promoters. Don't let them put your name on another purse.",
           "Style": 0,
           "Color": null
         }
@@ -950,7 +950,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A counter-fighter who waits better than most people breathe. A pair who share one tempo -- kill the tempo, not the pair, whichever body you can reach first. And a big one who thinks pain is a currency he's rich in. They'll come staggered; the promoter pays per rescue. Keep your two close anyway. Staggered becomes together when money is dying.",
+          "Text": "A patient counter-fighter, a pair who share a tempo, and a big one who thinks pain makes him rich. Watch the pair; don't stand between them. If you've brought help, keep close enough to cover whoever they choose first.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Red Bloom Inner Circle in Smuggler's Moon, Fight Club Backrooms. Their defeat secures the Red Bloom Promoter's Payout Chit; bring it back to me here in Smuggler's Moon, Casino.",
+          "Text": "The four promoters in the backrooms have the payout chit. Bring it here when their circuit is finished.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Red Bloom Inner Circle. Let me see the Red Bloom Promoter's Payout Chit.",
+          "Text": "You're not bleeding. They were the promoter's best and you're not bleeding. Show me the chit.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their instructors no longer hold the authority to teach. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "Good ink. Heavy hand. Frightened man. This closes every account but one -- the room where my title lives. Sit down before you ask. When you're ready to hear about her, I'll tell you all of it, and then you'll wish I hadn't.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The master is the last teacher keeping the school alive. Defeat her in the Private Pit. Defeat the Red Bloom Master in Smuggler's Moon, Private Pit. Report back to me here in Smuggler's Moon, Casino; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The master is in the Private Pit. Call her at the challenge marker and defeat her. You know the form now; don't let knowing it make you careless. Come back to the casino afterward. I want to see you walk out of this school.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Smuggler's Moon, Private Pit, use the '???' challenge marker to call the Red Bloom Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "She'll answer the Private Pit's challenge marker. Keep your distance when the first cut comes, and don't mistake the pause for the end. Come back here when she's beaten.",
           "Style": 0,
           "Color": null
         }
@@ -1159,7 +1159,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You don't out-bloom her. She holds the full form -- the one you're here to earn -- and she spends lives keeping it sharp. So deny her the second cut. The bloom is two cuts agreeing; break the agreement. One of you takes the first, the other two answer before the second opens. She has never fought people who fight for each other. Down there, nobody does.",
+          "Text": "Watch the second cut. She makes it follow the first so neatly that people answer one and forget the other. If you've brought help, cover whoever takes that first exchange. Alone, keep enough guard to answer both. Don't race her simply because she invites you to.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Red Bloom Master in Smuggler's Moon, Private Pit. Report back to me here in Smuggler's Moon, Casino; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "The Private Pit has the master's challenge marker. Beat her, then come back to the casino. Leave the crowd to itself.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Red Bloom Master. Give me your report and we'll finish the trial.",
+          "Text": "The backrooms went quiet an hour ago. Real quiet, not held-breath quiet. Say it anyway. I want to hear it in a living voice.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The school is finished. Carry the form with its restraint intact; that matters more than a title. You've earned the right to train Red Bloom. Your final payment is ready.",
+          "Text": "You walked back out. I'm glad. Your pay is here, and I'm willing to teach you Red Bloom if you still want it. We won't need a crowd for that. Just enough room to learn when the blades should stop.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Red Bloom Adepts.",
+        "Text": "Whatever it costs. I'm in.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "Here's the Red Bloom Backroom Bout Ledger.",
+        "Text": "Here. The whole book.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Red Bloom Specialists.",
+        "Text": "Five, and the regulator. Done.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "Here's the Red Bloom Ring Shock Regulator.",
+        "Text": "Off the wall. It's yours.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Red Bloom Warden.",
+        "Text": "I'll face him. You have my word.",
         "Style": 4,
         "Color": null
       },
@@ -1736,7 +1736,7 @@
     "reply-00018": {
       "Id": "reply-00018",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "What difference will company make?",
         "Style": 4,
         "Color": null
       },
@@ -1759,7 +1759,7 @@
     "reply-00019": {
       "Id": "reply-00019",
       "Text": {
-        "Text": "I don't have two people I'd trust with this. Not yet.",
+        "Text": "I need to find people I trust.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Red Bloom Cracked Pit Sigil.",
+        "Text": "It's done. Here's his sigil.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Red Bloom Inner Circle.",
+        "Text": "Four. And I'll bring you his ink.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Red Bloom Promoter's Payout Chit.",
+        "Text": "The chit. His signature is on everything.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Red Bloom Master and report back.",
+        "Text": "I'll challenge her.",
         "Style": 4,
         "Color": null
       },
@@ -2099,7 +2099,7 @@
     "reply-00033": {
       "Id": "reply-00033",
       "Text": {
-        "Text": "When my two are ready. Not before.",
+        "Text": "I need time to get ready.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Red Bloom Master is defeated. Here's my report.",
+        "Text": "She's dead. The bloom is finished.",
         "Style": 4,
         "Color": null
       },

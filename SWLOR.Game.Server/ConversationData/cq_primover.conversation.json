@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "My clan has a reason to consider returning to the den. Go run with your beast; you've both earned safer ground. You've finished my Primal Overrun trials. I have no further work for you here.",
+          "Text": "Primal Overrun. You already put it through the den and out the other side. Nothing left in these thickets tests you the way that did. Go run with your beast; that is the whole lesson now.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Reach rank 50 in Beast Mastery before you enter these trials. It's your training as a handler I need to trust. The den punishes careless handling.",
+          "Text": "You've got a willing beast. Don't spend that trust before you're ready. Reach rank 50 in Beast Mastery, then come back to me.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Handlers took my clan's den and turned its beasts into weapons. Recover their trail slate so we can begin undoing that work. Defeat six Primal Overrun Adepts in Dathomir, Grotto Apex Den. Their defeat secures the Primal Overrun Grotto Track Slate; bring it back to me here in Dathomir, Jungle Landing. I'll give you the Dathomir Grotto Apex Den Key when you accept. Complete all five trials to earn the right to train Primal Overrun.",
+          "Text": "My clan kept that den for three generations. Now six Primal Overrun adepts in the Grotto Apex Den are teaching beasts to charge until they break. Defeat the six and bring me their slate. I can't go back there. I can still answer for what happens in it.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Here's the Dathomir Grotto Apex Den Key. Use 'Enter the Grotto Apex Den' in Dathomir, Grotto Caverns. My key grants access. Keep your party close to the entrance when you use it so they can enter with you. Defeat six Primal Overrun Adepts, then return with the Primal Overrun Grotto Track Slate.",
+          "Text": "Take the key into the Grotto Caverns. It opens the Apex Den entrance there. Keep your beast close. If it balks, listen before you pull.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat six Primal Overrun Adepts in Dathomir, Grotto Apex Den. Their defeat secures the Primal Overrun Grotto Track Slate; bring it back to me here in Dathomir, Jungle Landing.",
+          "Text": "Six adepts in the Grotto Apex Den. Bring their slate here to the Jungle Landing. Let your beast stop when it needs to.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated six Primal Overrun Adepts. Let me see the Primal Overrun Grotto Track Slate.",
+          "Text": "You made it out and you are not missing pieces. That is already better than the last two off-worlders who tried. Let's see the slate.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That's the record I needed. We can account for the trails again. Your payment is ready. Speak to me again for the specialist trial when you're ready.",
+          "Text": "That is clan work, done right. The trails still remember how to read true because of it. Rest up. There is more of this if you want it, and I think you do.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The specialists keep driving beasts past the warnings from their fang charm. Bring that charm back. Defeat five Primal Overrun Specialists in Dathomir, Grotto Apex Den. Their defeat secures the Primal Overrun Resonant Fang Charm; bring it back to me here in Dathomir, Jungle Landing.",
+          "Text": "Five specialists are using a resonant fang charm on the beasts. The handlers call it courage when the animals can no longer refuse. Beat the five in the den and bring the charm here. I want it out of their hands.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Dathomir, Grotto Apex Den. Defeat five Primal Overrun Specialists to secure the Primal Overrun Resonant Fang Charm, then return to me.",
+          "Text": "Bring the charm here to the landing. Give your beast time to settle before you take it back into that den.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat five Primal Overrun Specialists in Dathomir, Grotto Apex Den. Their defeat secures the Primal Overrun Resonant Fang Charm; bring it back to me here in Dathomir, Jungle Landing.",
+          "Text": "The five specialists in the den have the resonant fang charm. Bring it here after you've stopped them.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated five Primal Overrun Specialists. Let me see the Primal Overrun Resonant Fang Charm.",
+          "Text": "You have got their hum on you; I can feel it from here. Hand it over before it starts working on you too.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "This belongs with the handlers who know how to use it. Your payment is ready. Speak to me again for the warden trial when you're ready.",
+          "Text": "Good. The warning bell is back where it belongs. You are starting to move like someone the den might actually let leave twice.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden trained those handlers to break beasts instead of bond with them. Defeat him and recover the apex totem. Defeat the Primal Overrun Warden in Dathomir, Grotto Apex Den. Their defeat secures the Primal Overrun Cracked Apex Totem; bring it back to me here in Dathomir, Jungle Landing. I recommend bringing two companions for this fight.",
+          "Text": "The warden holds the Grotto Apex Den. Challenge him there and bring back the cracked apex totem when he's beaten. Take other hunters if you can. I learned what being alone in that den costs, and I'm not sending you to learn it too.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Dathomir, Grotto Apex Den, use the '???' challenge marker to call the Primal Overrun Warden. Accept this assignment before using the marker. Bring two companions if you can. After the fight, return with the Primal Overrun Cracked Apex Totem.",
+          "Text": "Gate is the same. Ground past it is not; the warden does not wait for you to be ready, so do not wait either. Go in together, come out together.",
           "Style": 0,
           "Color": null
         }
@@ -793,7 +793,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Primal Overrun Warden fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "He doesn't give a hunter much time to recover. Other blades make him turn while you find your feet. You can go alone, but don't do it just to prove you weren't afraid to ask.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Primal Overrun Warden in Dathomir, Grotto Apex Den. Their defeat secures the Primal Overrun Cracked Apex Totem; bring it back to me here in Dathomir, Jungle Landing. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "Call the warden at the Grotto Apex Den challenge marker. Beat him and recover the cracked totem.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Primal Overrun Warden. Let me see the Primal Overrun Cracked Apex Totem.",
+          "Text": "You're standing. I hope anyone who came with you is, too. Let's see the totem.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The totem is back in our keeping. Your payment is ready. Speak to me again for the inner circle trial when you're ready.",
+          "Text": "The apex totem, whole and readable. That is the first true blow against what this den became. Rest. The inner circle will have felt this.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four keepers still run the den's training. Take back the den-mother's token and end their orders. Defeat four members of the Primal Overrun Inner Circle in Dathomir, Grotto Apex Den. Their defeat secures the Primal Overrun Den-Mother's Fang Token; bring it back to me here in Dathomir, Jungle Landing.",
+          "Text": "Four keepers still have the den-mother's fang token. That's my clan's claim, passed down until someone sold it. Defeat the four in the den and bring it home. We can decide what it ought to mean now.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your key still grants access to Dathomir, Grotto Apex Den. Defeat four members of the Primal Overrun Inner Circle to secure the Primal Overrun Den-Mother's Fang Token, then return to me.",
+          "Text": "Recover the fang token. I'll be here. Some memories can wait until you've got the work done.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat four members of the Primal Overrun Inner Circle in Dathomir, Grotto Apex Den. Their defeat secures the Primal Overrun Den-Mother's Fang Token; bring it back to me here in Dathomir, Jungle Landing.",
+          "Text": "Four keepers in the den still have the fang token. Bring it back to the Jungle Landing when they're beaten.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated four members of the Primal Overrun Inner Circle. Let me see the Primal Overrun Den-Mother's Fang Token.",
+          "Text": "Company is still breathing, and so are you. That token had better be in one piece. Hand it here.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The keepers can no longer claim authority here. Your payment is ready. Speak to me again for the final trial when you're ready.",
+          "Text": "Whole, and warm, like it has been waiting. One voice left down there, and it is the one that made all the others. The trail is short now, so I will say it plain: you have earned this last one.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their master wrote the cruel methods the others follow. Defeat him in the Sealed Apex Den to finish the hunt. Defeat the Primal Overrun Master in Dathomir, Sealed Apex Den. Report back to me here in Dathomir, Jungle Landing; no item is needed for this final trial. I recommend bringing two companions for this fight.",
+          "Text": "The master has gone into the Sealed Apex Den. Use its challenge marker and call him out. Beat him, then come back with your beast. I don't need a trophy from that room. I need to see that you both got out.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "In Dathomir, Sealed Apex Den, use the '???' challenge marker to call the Primal Overrun Master. Accept this assignment before using the marker. Bring two companions if you can. Once the master is defeated, come back for the final lesson.",
+          "Text": "Call him at the Sealed Apex Den's challenge marker. This is the part I can't tell you how to win. I can tell you to prepare, and to bring people you trust if they'll come.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Yes. I recommend two companions for the Primal Overrun Master fight. That's advice for a dangerous encounter, not an entry requirement. Gather your party before calling the challenge; a second pair of hands can keep a bad opening from ending the fight.",
+          "Text": "Watch the beast as well as the master. The charge starts before the keeper looks committed. Companions can give you room to recover, but you still need to hear the warning and leave yourself somewhere to move.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat the Primal Overrun Master in Dathomir, Sealed Apex Den. Report back to me here in Dathomir, Jungle Landing; no item is needed for this final trial. Use the '???' challenge marker there to begin the fight. Two companions are recommended.",
+          "Text": "The Sealed Apex Den has the master's challenge marker. Beat him and come back here with your beast.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You've defeated the Primal Overrun Master. Give me your report and we'll finish the trial.",
+          "Text": "Quiet. The whole den has gone quiet, and it has never once done that in my lifetime. Tell me it is him.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "My clan has a reason to consider returning to the den. Go run with your beast; you've both earned safer ground. You've earned the right to train Primal Overrun. Your final payment is ready.",
+          "Text": "You're both here. Good. Take your pay. My clan's den can wait a little longer; if you want to learn Primal Overrun, we start with knowing when to call your beast back. I wish someone had made me learn that sooner.",
           "Style": 0,
           "Color": null
         }
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I'll defeat six Primal Overrun Adepts.",
+        "Text": "I'll clear the six and bring your slate.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll defeat five Primal Overrun Specialists.",
+        "Text": "I'll take the five specialists.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll defeat the Primal Overrun Warden.",
+        "Text": "I'll bring company and take the warden down.",
         "Style": 4,
         "Color": null
       },
@@ -1736,7 +1736,7 @@
     "reply-00018": {
       "Id": "reply-00018",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "Why do I need help for one target?",
         "Style": 4,
         "Color": null
       },
@@ -1759,7 +1759,7 @@
     "reply-00019": {
       "Id": "reply-00019",
       "Text": {
-        "Text": "Not until I've got my two.",
+        "Text": "Let me find company first.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "Here's the Primal Overrun Cracked Apex Totem.",
+        "Text": "Here's the Primal Overrun Cracked Apex Totem, whole.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I'll defeat four members of the Primal Overrun Inner Circle.",
+        "Text": "I'll take my company back in for the four.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here's the Primal Overrun Den-Mother's Fang Token.",
+        "Text": "Here's the Primal Overrun Den-Mother's Fang Token, whole.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "I'll face the Primal Overrun Master and report back.",
+        "Text": "We're going in for the master.",
         "Style": 4,
         "Color": null
       },
@@ -2053,7 +2053,7 @@
     "reply-00031": {
       "Id": "reply-00031",
       "Text": {
-        "Text": "Would you recommend bringing help?",
+        "Text": "How do I stop his overrun?",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The Primal Overrun Master is defeated. Here's my report.",
+        "Text": "It's done. He's down.",
         "Style": 4,
         "Color": null
       },

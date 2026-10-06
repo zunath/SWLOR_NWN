@@ -19,7 +19,10 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
             Tier4();
             Tier5();
 
-            return _builder.Build();
+            var ships = _builder.Build();
+            foreach (var (id, ship) in ships)
+                ship.FittingProfile = ShipFittingCatalog.Default.Hulls[id];
+            return ships;
         }
 
         private void StoreBoughtShips()

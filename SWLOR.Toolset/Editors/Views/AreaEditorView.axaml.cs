@@ -42,11 +42,11 @@ namespace SWLOR.Toolset.Editors
             // view takes them straight from the shared options object rather than through its own
             // view model - two open areas disagreeing about fog would only be confusing.
             _display = Avalonia.Application.Current is App app ? app.Services?.GetService(
-                typeof(Viewport.ViewportDisplayOptions)) as Viewport.ViewportDisplayOptions : null;
+                typeof(AreaViewportDisplayOptions)) as AreaViewportDisplayOptions : null;
             ApplyDisplayOptions();
         }
 
-        private readonly Viewport.ViewportDisplayOptions? _display;
+        private readonly AreaViewportDisplayOptions? _display;
 
         protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
         {
@@ -85,10 +85,7 @@ namespace SWLOR.Toolset.Editors
             if (_display == null)
                 return;
 
-            AreaView.Viewport.ShowAreaLighting = _display.ShowAreaLighting;
-            AreaView.Viewport.ShowFog = _display.ShowFog;
-            AreaView.Viewport.ShowCeilings = _display.ShowCeilings;
-            AreaView.Viewport.ShowMaterialMaps = _display.ShowMaterialMaps;
+            _display.ApplyTo(AreaView.Viewport);
         }
 
         private void AttachViewModel()

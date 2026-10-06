@@ -172,11 +172,44 @@ def update_csharp(changes: list[tuple[str, str, str]]) -> tuple[int, int]:
     return files_changed, replacements
 
 
+def mimicry_description_targets(changes: list[tuple[str, str, str]]) -> dict[str, set[int]]:
+    """Scope technique text to its feat reference; unrelated techniques may share old wording."""
+    technique_names = {
+        row["PerkName"] for row in read_current_manifest()
+        if row["Tab"] == "Mimicry" and row["Style"] == "Technique"
+    }
+    technique_changes = [(name, old) for name, old, _ in changes if name in technique_names]
+    if not technique_changes:
+        return {}
+
+    lines = (ROOT / "SWLOR_Haks" / "sw_2da" / "feat.2da").read_text(encoding="utf-8-sig").splitlines()
+    header = next(line.split() for line in lines if "DESCRIPTION" in line.split() and "LABEL" in line.split())
+    label_index = header.index("LABEL") + 1
+    description_index = header.index("DESCRIPTION") + 1
+    references = {}
+    for line in lines:
+        columns = line.split()
+        if not columns or not columns[0].isdigit() or len(columns) <= description_index:
+            continue
+        reference = columns[description_index]
+        if reference.isdigit() and int(reference) >= 16777216:
+            references[columns[label_index]] = int(reference) - 16777216
+
+    targets: dict[str, set[int]] = {}
+    for name, old in technique_changes:
+        label = re.sub(r"[^A-Za-z0-9]", "", name) + "Technique"
+        if label not in references:
+            raise RuntimeError(f"Cannot resolve Mimicry technique description reference for {name}.")
+        targets.setdefault(old, set()).add(references[label])
+    return targets
+
+
 def update_tlk(changes: list[tuple[str, str, str]]) -> tuple[int, int]:
     raw_bytes = TLK_JSON.read_bytes()
     had_utf8_bom = raw_bytes.startswith(b"\xef\xbb\xbf")
     raw = raw_bytes.decode("utf-8-sig")
     new_by_old = build_replacement_map(changes)
+    technique_targets = mimicry_description_targets(changes)
 
     tree_result = subprocess.run(
         ["git", "ls-tree", "HEAD", "SWLOR_Haks"],
@@ -211,6 +244,8 @@ def update_tlk(changes: list[tuple[str, str, str]]) -> tuple[int, int]:
         entry_id: new_by_old[collapse_whitespace(head_text)]
         for entry_id, head_text in head_text_by_id.items()
         if collapse_whitespace(head_text) in new_by_old
+        and (collapse_whitespace(head_text) not in technique_targets
+             or entry_id in technique_targets[collapse_whitespace(head_text)])
     }
 
     entry_pattern = re.compile(

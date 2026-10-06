@@ -14,12 +14,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override string Name => "Warden Wall Stance Aura";
         public override EffectIconType Icon => EffectIconType.WardenWallStanceAuraStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
+        public override StatusEffectStackType StackingType => StatusEffectStackType.StackFromMultipleSources;
         public override bool PersistsOnLogout => false;
 
         public WardenWallStanceAuraStatusEffect()
         {
-            StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 20;
-            StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 20;
+            StatGroup.Stats[StatType.PhysicalAndForceDefenseAuraPercentAdjustment] = 10;
         }
     }
 }

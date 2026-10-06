@@ -118,6 +118,34 @@ def main():
         xml=xml[:total.start()]+new+xml[total.end():]
         ET.fromstring(xml);replacements[member]=xml.encode('utf-8')
         print(skill, start, subtotal, '7 ranks, 20 SP')
+    # A:L is the historical chance model. Add a separate, cached example of the manual evaluator.
+    calc_member='xl/worksheets/sheet50.xml';calc=z.read(calc_member).decode('utf-8')
+    engineering=ET.fromstring(replacements['xl/worksheets/sheet32.xml'])
+    description_style=engineering.find(".//s:c[@r='G16']",NS).get('s','0')
+    values={
+        'N1':'Manual crafting (rules v2)', 'O1':'Runtime reference: CraftWorkEvaluator.cs. Columns A:L retain the historical chance model.',
+        'N2':'Example and scope', 'O2':'Unconditioned gains before action efficiency, profile, conditions, preparations and perks. Live previews also clamp gains to remaining targets.',
+        'N6':'Skill rank', 'O6':50, 'N7':'Recipe level', 'O7':50, 'N8':'Craftsmanship', 'O8':30, 'N9':'Control', 'O9':29, 'N10':'Equipment CP', 'O10':37,
+        'N11':'Profile rules', 'O11':'Sturdy: synthesis durability x0.75, touch quality and target x0.9. Delicate: touch quality and target x1.1, Rapid spends 5 extra durability. Calibrated: alternate successful work for x1.2 gain; progress target x1.1.',
+        'N12':'Basic progress (unconditioned)', 'N13':'Basic quality (unconditioned)', 'N14':'Maximum CP', 'N15':'Basic Touch during Fine',
+        'N16':'Conditions', 'O16':'Workable: +25% synthesis progress. Fine: +50% touch quality. Economical: 25% CP discount. Reinforced: 50% work durability discount. Combined discounts cap at 50%, rounded up.',
+    }
+    formulas={
+        'O12':('MAX(0,INT((10+IF(O6>=20,21,0)+O8*0.65)*MAX(0,1+0.05*(O6-O7))))',50),
+        'O13':('MAX(0,INT((10+IF(O6>=40,70,0)+O9*0.75)*IF(O6<O7,MAX(0,1+0.05*(O6-O7)),1)))',101),
+        'O14':('MAX(0,INT(O10+O6*0.75)+IF(O6>=25,31,0))',105), 'O15':('INT(O13*1.5)',151),
+    }
+    for reference in list(values)+list(formulas):
+        index=int(re.sub(r'\D','',reference));row=re.search(r'<row\b[^>]*\br="'+str(index)+r'"[^>]*>.*?</row>',calc,re.S);assert row
+        current=re.search(r'<c\b[^>]*\br="'+reference+r'"[^>]*(?:/>|>.*?</c>)',row.group(),re.S)
+        style=f' s="{description_style}"'
+        if reference in formulas:
+            formula,cached=formulas[reference];cell=f'<c r="{reference}"{style}><f>{escape(formula)}</f><v>{cached}</v></c>'
+        elif isinstance(values[reference],int):cell=f'<c r="{reference}"{style}><v>{values[reference]}</v></c>'
+        else:cell=f'<c r="{reference}"{style} t="inlineStr"><is><t>{escape(values[reference])}</t></is></c>'
+        changed=row.group()[:current.start()]+cell+row.group()[current.end():] if current else row.group().replace('</row>',cell+'</row>')
+        calc=calc[:row.start()]+changed+calc[row.end():]
+    replacements[calc_member]=calc.encode('utf-8')
     result=replace_members(original,replacements)
     temporary=WORKBOOK.with_suffix('.xlsx.tmp');temporary.write_bytes(result);temporary.replace(WORKBOOK)
     print(f'Updated {len(replacements)} worksheets; every other compressed ZIP member is byte-for-byte identical.')

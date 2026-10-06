@@ -558,10 +558,10 @@ python -B tools/GenerateRobeRgbModels.py --check --game-data "<NWN installation>
 The alignment pass updates ordinary clothing overrides to the body's current
 clip timing and standard skeleton motion, retaining independent cloth helpers.
 It validates the compiled corrections and updates affected descendants' native
-part IDs without re-exporting unchanged binary meshes or bindings. RGB bridges
-use the same body motion, with explicit private
-garment-root resets for channels omitted by the next clip. Those resets use each
-garment's authored bind pose and wearer scale, including after canceled casts.
+part IDs without re-exporting unchanged binary meshes or bindings. RGB roots
+bind each garment wearer joint beneath the matching body bone with no tracks,
+so emotes, latched channels and canceled casts cannot separate the robe from
+its wearer (see `SWLOR.Game.Server/Readmes/TintMapRendering.md`).
 
 For a packaging or sharing conversion that must preserve all installed movement,
 add `--verify-existing-motion` to generation. This additionally compares each

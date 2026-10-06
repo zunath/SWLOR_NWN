@@ -75,18 +75,29 @@ namespace SWLOR.Game.Server.Service.AIService
             };
         }
 
+        /// <summary>
+        /// Scores a taunt. Taunting a target the creature already holds by a secure margin wastes
+        /// resources that its other abilities need, so the taunt only scores when threat has slipped.
+        /// </summary>
         public static AIScoreCalculation ThreatControl(int abilityLevel)
         {
-            return context => context.EvaluatedTarget != OBJECT_INVALID
+            return context => context.EvaluatedTarget != OBJECT_INVALID &&
+                              !Enmity.IsThreatSecured(context.EvaluatedTarget, context.Self)
                 ? AIScoreBand.ThreatControl + abilityLevel
                 : 0;
         }
 
+        /// <summary>
+        /// Scores an area taunt by the number of nearby hostiles whose threat the creature does not
+        /// already hold by a secure margin.
+        /// </summary>
         public static AIScoreCalculation AreaThreatControl(int abilityLevel, float radius)
         {
             return context =>
             {
-                var count = context.CountHostilesNearTarget(radius);
+                var count = context.CountHostilesNearTarget(
+                    radius,
+                    hostile => !Enmity.IsThreatSecured(hostile, context.Self));
                 return count <= 0
                     ? 0
                     : AIScoreBand.ThreatControl + abilityLevel + count * 25;

@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Service
         private const int MaximumNPCHitPoints = 30000;
         private const int MaximumNPCHitPointAlignmentPasses = 4;
         public const float BeastNaturalStaminaRegenDelaySeconds = 6f;
+        public const int BeastNaturalRegenStatDivisor = 10;
         private const string BeastNaturalStaminaRegenAvailableAtVariable = "BEAST_STAMINA_REGEN_AVAILABLE_AT";
         public const int DefaultMeleeDeflectionChanceCap = 50;
         public const int DefaultRangedDeflectionChanceCap = 50;
@@ -2676,8 +2677,9 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Restores a beast's FP and STM. STM regeneration remains active in and out of combat,
-        /// but cannot begin until six seconds after the beast last spent STM.
+        /// Restores a beast's FP and STM. Each heartbeat restores 1 + WIL/10 FP and 1 + MGT/10 STM.
+        /// STM regeneration remains active in and out of combat, but cannot begin until six seconds
+        /// after the beast last spent STM.
         /// </summary>
         public static void RestoreBeastStats()
         {
@@ -2689,7 +2691,16 @@ namespace SWLOR.Game.Server.Service
             return availableAtTicks <= 0 || currentTicks >= availableAtTicks;
         }
 
-        private static void RestoreNPCStats(bool outOfCombatRegen, bool respectsStaminaRegenDelay)
+        /// <summary>
+        /// Amount of FP or STM a beast restores per heartbeat, scaled by the governing attribute
+        /// (WIL for FP, MGT for STM).
+        /// </summary>
+        public static int GetBeastNaturalRegenAmount(int attribute)
+        {
+            return 1 + Math.Max(0, attribute) / BeastNaturalRegenStatDivisor;
+        }
+
+        private static void RestoreNPCStats(bool outOfCombatRegen, bool isBeast)
         {
             var self = OBJECT_SELF;
             if (GetLocalInt(self, SuppressNaturalRegenVariable) != 0)
@@ -2699,11 +2710,17 @@ namespace SWLOR.Game.Server.Service
             var maxSTM = GetMaxStamina(self);
             var previousFP = GetLocalInt(self, "FP");
             var previousSTM = GetLocalInt(self, "STAMINA");
-            var fp = previousFP + 1;
+            var fpRegen = isBeast
+                ? GetBeastNaturalRegenAmount(GetAbilityScore(self, AbilityType.Willpower))
+                : 1;
+            var stmRegen = isBeast
+                ? GetBeastNaturalRegenAmount(GetAbilityScore(self, AbilityType.Might))
+                : 1;
+            var fp = previousFP + fpRegen;
             var stm = previousSTM;
-            var canRestoreStamina = !respectsStaminaRegenDelay || CanRestoreBeastStamina(self);
+            var canRestoreStamina = !isBeast || CanRestoreBeastStamina(self);
             if (canRestoreStamina)
-                stm++;
+                stm += stmRegen;
 
             if (fp > maxFP)
                 fp = maxFP;

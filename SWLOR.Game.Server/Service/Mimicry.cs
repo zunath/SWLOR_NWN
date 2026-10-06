@@ -906,7 +906,8 @@ namespace SWLOR.Game.Server.Service
                     StatusEffect.RemoveStatusEffectsFromAllTargetsBySource(
                         player,
                         statusEffectType,
-                        false);
+                        false,
+                        detail);
                 }
             }
 

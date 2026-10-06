@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.FinishingDrive, 48, 3)
                 .MimicryUtility()
+                .RemoveSourceOwnedStatusEffectOnPerkRefund(typeof(FinishingDriveMomentumStatusEffect))
                 .HasActivationDelay(0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()

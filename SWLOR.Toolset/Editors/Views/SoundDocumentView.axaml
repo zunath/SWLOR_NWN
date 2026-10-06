@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:sounds="using:SWLOR.Toolset.Editors.Sounds"
              xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
+             xmlns:soundViews="using:Nwn.Toolset.Avalonia.Sounds.Views"
              x:Class="SWLOR.Toolset.Editors.Sounds.SoundDocumentView"
              x:DataType="sounds:SoundDocumentViewModel">
   <DockPanel>
@@ -23,7 +24,7 @@
 
     <TabControl SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
       <TabItem Header="Edit">
-        <sounds:SoundEditorView DataContext="{Binding Editor}" />
+        <soundViews:SoundBehaviorEditorView DataContext="{Binding Editor}" />
       </TabItem>
       <TabItem Header="Source" IsVisible="{Binding Source, Converter={x:Static ObjectConverters.IsNotNull}}">
         <sources:ObjectSourceView DataContext="{Binding Source}" />

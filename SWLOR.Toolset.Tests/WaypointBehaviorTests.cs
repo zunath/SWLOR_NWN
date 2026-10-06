@@ -493,20 +493,12 @@ namespace SWLOR.Toolset.Tests
             app.Should().NotContain("ColumnDefinitions=\"180,*\"", "App.axaml still reserves the old label column");
 
             // Anything drawn underneath a row follows the row: indented under the label column when
-            // there is room for one, and full width when there is not. A fixed grid cannot do the
-            // second, which is how a key-item list ends up hanging off the side of a narrow pane.
-            foreach (var view in new[] { "DoorEditorView.axaml", "SoundEditorView.axaml" })
-            {
-                File.ReadAllText(Path.Combine(
-                        CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", view))
-                    .Should().Contain("sharedBehaviors:LabeledFieldPanel", $"{view} follows the shared row");
-            }
+            // there is room for one, and full width when there is not. The door, sound and waypoint
+            // editors are the shared behavior editor views, whose markup the shared library's
+            // BehaviorEditorMarkupTests hold to the same rules; the app must host those views.
+            AssertHostsSharedBehaviorEditors();
 
-            foreach (var view in new[]
-                     {
-                         "WaypointEditorView.axaml", "TriggerDocumentView.axaml",
-                         "DoorEditorView.axaml", "SoundEditorView.axaml"
-                     })
+            foreach (var view in new[] { "TriggerDocumentView.axaml" })
             {
                 var markup = File.ReadAllText(Path.Combine(
                     CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", view));
@@ -525,21 +517,41 @@ namespace SWLOR.Toolset.Tests
             app.Should().Contain("<DataTemplate DataType=\"sharedBehaviors:BehaviorRowViewModel\">");
             app.Should().NotContain("DataType=\"waypoints:WaypointRowViewModel\"");
 
-            foreach (var view in new[] { "DoorEditorView.axaml", "SoundEditorView.axaml" })
+            // The door and sound row templates are the shared editor views' own.
+            AssertHostsSharedBehaviorEditors();
+        }
+
+        /// <summary>The app's door, sound and waypoint documents draw the shared behavior editor views.</summary>
+        private static void AssertHostsSharedBehaviorEditors()
+        {
+            foreach (var (view, editor) in new[]
+                     {
+                         ("DoorDocumentView.axaml", "<doorViews:DoorBehaviorEditorView"),
+                         ("SoundDocumentView.axaml", "<soundViews:SoundBehaviorEditorView"),
+                         ("WaypointDocumentView.axaml", "<waypointViews:WaypointBehaviorEditorView")
+                     })
             {
-                var markup = File.ReadAllText(Path.Combine(
-                    CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", view));
-                markup.Should().Contain("<sharedBehaviors:BehaviorRowView />", $"{view} reuses the shared row");
+                File.ReadAllText(Path.Combine(
+                        CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", view))
+                    .Should().Contain(editor, $"{view} hosts the shared behavior editor");
+            }
+
+            foreach (var view in new[] { "DoorEditorView.axaml", "SoundEditorView.axaml", "WaypointEditorView.axaml" })
+            {
+                File.Exists(Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", view))
+                    .Should().BeFalse($"{view} moved to the shared library and must not return as a second copy");
             }
         }
 
         [Test]
         public void NoBehaviorEditorShowsAnAdvancedTab()
         {
+            AssertHostsSharedBehaviorEditors();
+
             foreach (var view in new[]
                      {
                          "WaypointDocumentView.axaml", "TriggerDocumentView.axaml",
-                         "DoorEditorView.axaml", "SoundEditorView.axaml"
+                         "DoorDocumentView.axaml", "SoundDocumentView.axaml"
                      })
             {
                 var markup = File.ReadAllText(Path.Combine(

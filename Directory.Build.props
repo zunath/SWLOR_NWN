@@ -2,11 +2,20 @@
   <ItemGroup Condition="'$(MSBuildProjectName)' == 'SWLOR.Toolset' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Tests' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.PreviewRender'">
     <Using Include="Nwn.Toolset.Avalonia.Behaviors" />
     <Using Include="Nwn.Toolset.Avalonia.Variables" />
+    <Using Include="Nwn.Toolset.Avalonia.Fields" />
+    <Using Include="Nwn.Toolset.Avalonia.Doors" />
+    <Using Include="Nwn.Toolset.Avalonia.Waypoints" />
+    <Using Include="Nwn.Toolset.Avalonia.Sounds" />
+    <Using Include="Nwn.Toolset.Avalonia.Areas.Properties" />
     <Using Include="Nwn.Toolset.Avalonia.Docking.DockProportions" Alias="DockProportions" />
   </ItemGroup>
   <ItemGroup Condition="'$(MSBuildProjectName)' == 'SWLOR.Toolset' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Domain' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Tests' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.PreviewRender' Or '$(MSBuildProjectName)' == 'SWLOR.AnimationDrafts' Or '$(MSBuildProjectName)' == 'SWLOR.ConversationMigrator'">
     <Using Include="Nwn.Authoring.Resources.ModuleResourceType" Alias="ResourceType" />
     <Using Include="Nwn.Authoring.Behaviors" />
+    <Using Include="Nwn.Authoring.Fields" />
+    <Using Include="Nwn.Authoring.Doors" />
+    <Using Include="Nwn.Authoring.Waypoints" />
+    <Using Include="Nwn.Authoring.Sounds" />
   </ItemGroup>
   <PropertyGroup Condition="'$(MSBuildProjectName)' == 'SWLOR.Toolset' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Domain' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Tests' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.PreviewRender'">
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>

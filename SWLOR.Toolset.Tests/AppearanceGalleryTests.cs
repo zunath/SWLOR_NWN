@@ -583,9 +583,11 @@ namespace SWLOR.Toolset.Tests
         {
             // The door editor and the creature editor draw the same control. They had arrived at
             // the same design separately, and the creature editor had not arrived at it at all.
+            // The door editor view is the shared DoorBehaviorEditorView; its gallery markup is
+            // asserted by the shared library's BehaviorEditorMarkupTests.
             var doorView = File.ReadAllText(Path.Combine(
                 ToolsetSourceRoot,
-                "SWLOR.Toolset", "Editors", "Views", "DoorEditorView.axaml"));
+                "SWLOR.Toolset", "Editors", "Views", "DoorDocumentView.axaml"));
             var blueprintView = File.ReadAllText(Path.Combine(
                 ToolsetSourceRoot,
                 "SWLOR.Toolset", "Editors", "Views", "BlueprintEditorView.axaml"));
@@ -593,7 +595,7 @@ namespace SWLOR.Toolset.Tests
                 ToolsetSourceRoot,
                 "SWLOR.Toolset", "Editors", "Views", "CreatureEditorView.axaml"));
 
-            doorView.Should().Contain("<appearance:AppearanceGalleryView");
+            doorView.Should().Contain("<doorViews:DoorBehaviorEditorView");
             blueprintView.Should().Contain("xmlns:gallery=\"using:Nwn.Toolset.Avalonia.Appearances\"");
             blueprintView.Should().Contain("<DataTemplate DataType=\"gallery:AppearanceGalleryViewModel\">");
             blueprintView.Should().Contain("<appearance:AppearanceGalleryView />");

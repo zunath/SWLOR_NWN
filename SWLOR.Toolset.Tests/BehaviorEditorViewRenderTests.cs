@@ -26,6 +26,9 @@ using SWLOR.Toolset.Editors.Merchants;
 using SWLOR.Toolset.Editors.Sounds;
 using SWLOR.Toolset.Editors.Triggers;
 using SWLOR.Toolset.Editors.Waypoints;
+using Nwn.Toolset.Avalonia.Doors.Views;
+using Nwn.Toolset.Avalonia.Sounds.Views;
+using Nwn.Toolset.Avalonia.Waypoints.Views;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -51,7 +54,7 @@ namespace SWLOR.Toolset.Tests
                 Accept,
                 new WaypointBehaviorCatalog(gameCodeIndex: null, transitionDestinationTags: null));
 
-            AssertRenders(new WaypointEditorView { DataContext = editor }, editor.BehaviorList);
+            AssertRenders(new WaypointBehaviorEditorView { DataContext = editor }, editor.BehaviorList);
         }
 
         [AvaloniaTest]
@@ -300,7 +303,7 @@ namespace SWLOR.Toolset.Tests
                 Items = waypoint.BehaviorList,
                 ChooseCommand = waypoint.ChooseBehaviorCommand
             };
-            yield return new WaypointEditorView { DataContext = waypoint };
+            yield return new WaypointBehaviorEditorView { DataContext = waypoint };
 
             var trigger = new TriggerEditorViewModel(
                 Struct("UTT "), "trg_test", isInstance: false, Accept);
@@ -312,11 +315,11 @@ namespace SWLOR.Toolset.Tests
 
             var door = new DoorEditorViewModel(
                 Struct("UTD "), "dor_test", isInstance: false, Accept);
-            yield return new DoorEditorView { DataContext = door };
+            yield return new DoorBehaviorEditorView { DataContext = door };
 
             var sound = new SoundEditorViewModel(
                 Struct("UTS "), "snd_test", isInstance: false, Accept);
-            yield return new SoundEditorView { DataContext = sound };
+            yield return new SoundBehaviorEditorView { DataContext = sound };
 
             var merchant = new MerchantEditorViewModel(
                 Struct("UTM "),

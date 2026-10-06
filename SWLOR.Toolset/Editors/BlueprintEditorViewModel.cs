@@ -16,9 +16,6 @@ using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Editors
 {
-    /// <summary>A titled group of field view models.</summary>
-    public sealed record EditorGroup(string Title, IReadOnlyList<FieldViewModel> Fields);
-
     /// <summary>
     /// The generic schema-driven blueprint editor, docked as a document tab. Every mutation
     /// flows through a one-step DocumentTransaction on the session's undo stack; Save writes
@@ -158,14 +155,16 @@ namespace SWLOR.Toolset.Editors
             BlueprintType = type;
             Id = $"editor:{filePath}";
             _session = DocumentSession.Open(filePath);
-            _context = new EditorFieldContext(_session.Document, RunEdit, resolveStrRef, openTlkRow);
+            _context = new EditorFieldContext(
+                _session.Document, RunEdit, resolveStrRef, openTlkRow,
+                Domain.GameData.Tlk.TlkService.IsEditableCustomStrRef);
 
             var tabbedGroups = new List<(string Tab, EditorGroup Group)>();
             foreach (var group in schema.Groups)
             {
                 var fields = group.Fields
                     .Select(descriptor => FieldViewModelFactory.Create(
-                        descriptor, _context, lookups, scriptSlotHost, ResourceChoices))
+                        descriptor, _context, lookups.GetOptions, scriptSlotHost, ResourceChoices))
                     .ToList();
                 var editorGroup = new EditorGroup(group.Title, fields);
                 Groups.Add(editorGroup);

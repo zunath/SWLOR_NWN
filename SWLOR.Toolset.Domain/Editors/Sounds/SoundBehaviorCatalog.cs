@@ -65,6 +65,7 @@ namespace SWLOR.Toolset.Domain.Editors.Sounds
                 new SoundBehavior
                 {
                     Id = PointLoopId,
+                    IsLoop = true,
                     DisplayName = "Point Loop",
                     Group = "POINT",
                     Fields = new[]
@@ -117,6 +118,7 @@ namespace SWLOR.Toolset.Domain.Editors.Sounds
                 new SoundBehavior
                 {
                     Id = AreaLoopId,
+                    IsLoop = true,
                     DisplayName = "Area Loop",
                     Group = "AREA",
                     Fields = new[]

@@ -174,11 +174,7 @@ namespace SWLOR.Toolset.Editors
                 if (_viewModel == null)
                     return;
 
-                PropertiesScroll
-                    .GetVisualDescendants()
-                    .OfType<Expander>()
-                    .FirstOrDefault(expander => ReferenceEquals(expander.DataContext, section))
-                    ?.BringIntoView();
+                PropertiesPage.BringSectionIntoView(section);
             }, DispatcherPriority.Render);
         }
 

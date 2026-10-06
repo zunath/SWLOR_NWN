@@ -48,19 +48,6 @@ namespace SWLOR.Toolset.Editors
     public partial class AreaEditorViewModel
         : Document, IEditorDocument, IDocumentStatusSource, Shell.Panels.IAreaPlacementTarget
     {
-        private static readonly (string Title, string ListFieldName, ResourceType BlueprintType)[] InstanceListConfigs =
-        {
-            ("Creatures", "Creature List", ResourceType.Utc),
-            ("Placeables", "Placeable List", ResourceType.Utp),
-            ("Doors", "Door List", ResourceType.Utd),
-            ("Waypoints", "WaypointList", ResourceType.Utw),
-            ("Stores", "StoreList", ResourceType.Utm),
-            ("Sounds", "SoundList", ResourceType.Uts),
-            ("Triggers", "TriggerList", ResourceType.Utt),
-            // Loose items on the ground. The GIT calls this one just "List".
-            ("Items", "List", ResourceType.Uti)
-        };
-
         private readonly DocumentSession _areSession;
         private readonly DocumentSession _gitSession;
         private readonly DocumentSession _gicSession;
@@ -71,7 +58,6 @@ namespace SWLOR.Toolset.Editors
         private byte[] _savedGicBytes = Array.Empty<byte>();
         private bool _gicDirty;
         private readonly OutputLogService _log;
-        private readonly LookupOptionProvider _lookups;
         private readonly ModuleWorkspace _workspace;
         private readonly string _areResRef;
         private readonly TilesetCatalog? _tilesetCatalog;
@@ -111,7 +97,10 @@ namespace SWLOR.Toolset.Editors
         private bool _closePromptOpen;
         private bool _disposed;
 
-        public ObservableCollection<EditorGroup> AreaPropertyGroups { get; } = new();
+        /// <summary>The shared Properties page: area property groups and one section per instance list.</summary>
+        public AreaPropertiesPageViewModel PropertiesPage { get; }
+
+        public ObservableCollection<EditorGroup> AreaPropertyGroups => PropertiesPage.AreaPropertyGroups;
 
         public ObservableCollection<InstanceListSectionViewModel> Sections { get; } = new();
 
@@ -124,8 +113,18 @@ namespace SWLOR.Toolset.Editors
         private int _selectedRootTabIndex;
 
         /// <summary>Whether the top-level Area Properties card is expanded in this open document.</summary>
-        [ObservableProperty]
-        private bool _areaPropertiesExpanded;
+        public bool AreaPropertiesExpanded
+        {
+            get => PropertiesPage.AreaPropertiesExpanded;
+            set
+            {
+                if (PropertiesPage.AreaPropertiesExpanded == value)
+                    return;
+
+                PropertiesPage.AreaPropertiesExpanded = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>The Properties page's retained scroll position, stored without an Avalonia dependency.</summary>
         public Vector2 PropertiesScrollOffset { get; set; }
@@ -1342,7 +1341,6 @@ namespace SWLOR.Toolset.Editors
             if (_mutationLock != null)
                 _mutationLock.Changed += OnMutationLockChanged;
             _log = log;
-            _lookups = lookups;
             _workspace = workspace;
             _areResRef = areResRef;
             _tilesetCatalog = tilesetCatalog;
@@ -1381,24 +1379,23 @@ namespace SWLOR.Toolset.Editors
                 _areSession.Document,
                 (description, mutation) => RunAreEdit(description, mutation),
                 resolveStrRef,
-                openTlkRow);
-            foreach (var group in AreSchema.Build().Groups)
-            {
-                var fields = group.Fields.Select(descriptor => CreateFieldViewModel(descriptor, areContext, lookups, scriptSlotHost)).ToList();
-                AreaPropertyGroups.Add(new EditorGroup(group.Title, fields));
-            }
+                openTlkRow,
+                Domain.GameData.Tlk.TlkService.IsEditableCustomStrRef);
+            PropertiesPage = new AreaPropertiesPageViewModel(areContext);
 
-            foreach (var config in InstanceListConfigs)
+            foreach (var definition in AreaInstanceSectionCatalog.All)
             {
-                Sections.Add(new InstanceListSectionViewModel(
-                    config.Title, config.ListFieldName, config.BlueprintType,
+                var section = new InstanceListSectionViewModel(
+                    PropertiesPage.SectionTitle(definition), definition.ListFieldName, definition.Type,
                     _gitSession, _gicSession, workspace, RunGitEdit, gameCodeIndex, log, _prompts, resolveStrRef,
-                    config.BlueprintType == ResourceType.Utd ? doorEditorServices : null,
-                    config.BlueprintType == ResourceType.Utw ? waypointEditorServices : null,
+                    definition.Type == ResourceType.Utd ? doorEditorServices : null,
+                    definition.Type == ResourceType.Utw ? waypointEditorServices : null,
                     areResRef,
                     resolveSoundChoices,
                     audioResources,
-                    soundPreview));
+                    soundPreview);
+                Sections.Add(section);
+                PropertiesPage.Sections.Add(section);
             }
 
             // A row click in any section should update the 3D-view highlight
@@ -1873,23 +1870,6 @@ namespace SWLOR.Toolset.Editors
         /// like the viewport had frozen.
         /// </summary>
         private static readonly TimeSpan SceneBuildBannerDelay = TimeSpan.FromMilliseconds(250);
-
-        private static FieldViewModel CreateFieldViewModel(
-            FieldDescriptor descriptor, EditorFieldContext context, LookupOptionProvider lookups,
-            IScriptSlotHost? scriptSlotHost)
-        {
-            return descriptor.Kind switch
-            {
-                EditorKind.Integer => new IntegerFieldViewModel(descriptor, context),
-                EditorKind.Float => new FloatFieldViewModel(descriptor, context),
-                EditorKind.Check => new CheckFieldViewModel(descriptor, context),
-                EditorKind.LocString => new LocStringFieldViewModel(descriptor, context),
-                EditorKind.TwoDaDropdown => new DropdownFieldViewModel(
-                    descriptor, context, lookups.GetOptions(descriptor.LookupKey)),
-                EditorKind.ScriptSlot => new ScriptFieldViewModel(descriptor, context, scriptSlotHost),
-                _ => new TextFieldViewModel(descriptor, context)
-            };
-        }
 
         private bool RunAreEdit(string description, Action mutation, bool immediateSceneRefresh = false) =>
             RunEdit(_areSession, description, mutation, immediateSceneRefresh);
@@ -2438,24 +2418,10 @@ namespace SWLOR.Toolset.Editors
             }
         }
 
-        private void RefreshAreaPropertyFields()
-        {
-            foreach (var group in AreaPropertyGroups)
-            foreach (var field in group.Fields)
-                field.RefreshFromDocument();
-        }
+        private void RefreshAreaPropertyFields() => PropertiesPage.RefreshAreaPropertyFields();
 
         /// <summary>Re-resolves custom-TLK watermarks after the shared table is regenerated.</summary>
-        public void RefreshTlkLabels()
-        {
-            var fields = AreaPropertyGroups.SelectMany(group => group.Fields).ToArray();
-            foreach (var field in fields.OfType<LocStringFieldViewModel>())
-                field.RefreshFromDocument();
-            foreach (var field in fields.OfType<DropdownFieldViewModel>())
-                field.RefreshOptions(_lookups.GetOptions(field.Descriptor.LookupKey));
-            foreach (var section in Sections)
-                section.RefreshTlkLabels();
-        }
+        public void RefreshTlkLabels() => PropertiesPage.RefreshTlkLabels();
 
         private void RefreshInstanceSections()
         {

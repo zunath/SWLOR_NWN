@@ -1,8 +1,9 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:waypoints="using:SWLOR.Toolset.Editors.Waypoints"
-             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:behaviors="using:Nwn.Toolset.Avalonia.Behaviors"
              xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
+             xmlns:waypointViews="using:Nwn.Toolset.Avalonia.Waypoints.Views"
              x:Class="SWLOR.Toolset.Editors.Waypoints.WaypointDocumentView"
              x:DataType="waypoints:WaypointDocumentViewModel">
 
@@ -29,7 +30,7 @@
 
     <TabControl SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
       <TabItem Header="Edit">
-        <waypoints:WaypointEditorView DataContext="{Binding Editor}" />
+        <waypointViews:WaypointBehaviorEditorView DataContext="{Binding Editor}" />
       </TabItem>
       <TabItem Header="Source" IsVisible="{Binding Source, Converter={x:Static ObjectConverters.IsNotNull}}">
         <sources:ObjectSourceView DataContext="{Binding Source}" />

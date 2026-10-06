@@ -107,13 +107,6 @@ namespace SWLOR.Toolset.Domain.Editors
         /// The canonical "nothing assigned" value a populated dropdown should expose for this
         /// GFF field width. Unsigned fields use their all-bits-set value; signed fields use -1.
         /// </summary>
-        public static long GetUnsetSentinel(GffFieldType fieldType) => fieldType switch
-        {
-            GffFieldType.Byte => byte.MaxValue,
-            GffFieldType.Word => ushort.MaxValue,
-            GffFieldType.Dword => uint.MaxValue,
-            GffFieldType.Char or GffFieldType.Short or GffFieldType.Int or GffFieldType.Int64 => -1,
-            _ => -1
-        };
+        public static long GetUnsetSentinel(GffFieldType fieldType) => FieldUnsetSentinel.For(fieldType);
     }
 }

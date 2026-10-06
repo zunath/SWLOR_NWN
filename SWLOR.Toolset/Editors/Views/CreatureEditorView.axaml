@@ -1,7 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:creatures="using:SWLOR.Toolset.Editors.Creatures"
-             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:behaviors="using:Nwn.Toolset.Avalonia.Behaviors"
              xmlns:variables="using:Nwn.Toolset.Avalonia.Variables"
              xmlns:sharedBehaviors="using:Nwn.Toolset.Avalonia.Behaviors"
              xmlns:appearance="using:Nwn.Toolset.Avalonia.Appearances.Views"

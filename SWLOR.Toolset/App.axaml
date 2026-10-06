@@ -7,6 +7,8 @@
              xmlns:placeables="using:SWLOR.Toolset.Editors.Placeables"
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
              xmlns:sharedBehaviors="using:Nwn.Toolset.Avalonia.Behaviors"
+             xmlns:fields="using:Nwn.Toolset.Avalonia.Fields"
+             xmlns:fieldViews="using:Nwn.Toolset.Avalonia.Fields.Views"
              xmlns:tints="using:SWLOR.Toolset.Editors.TintMaps"
              x:Class="SWLOR.Toolset.App"
              RequestedThemeVariant="Dark">
@@ -15,145 +17,17 @@
     <!-- Shared editor field templates: one app-wide copy for every blueprint/area field
          editor, formerly duplicated verbatim in BlueprintEditorView and AreaEditorView. Listed
          before the ViewLocator catch-all. -->
-    <!-- The strref is a watermark rather than a column. It exists to explain a blank box - the name
-         comes from the TLK and this field edits the override - and as a column it was a line of grey
-         text as wide as the box it explained, on every row, whether or not the box was blank. A
-         description then got what was left, which was a couple of characters. -->
-    <DataTemplate DataType="editors:LocStringFieldViewModel">
-      <sharedBehaviors:LabeledFieldPanel Margin="0,2">
-        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,5,0,0"
-                   Classes="dim" TextWrapping="Wrap" />
-        <Panel>
-          <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsSingleLine}">
-            <TextBox Grid.Column="0" Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"
-                     Watermark="{Binding StrRefDisplay}" />
-            <Button Grid.Column="1" Content="Open TLK row" Margin="5,0,0,0" Padding="8,4"
-                    Command="{Binding OpenTlkRowCommand}" IsVisible="{Binding CanOpenTlkRow}"
-                    ToolTip.Tip="Open this custom StrRef in the TLK Editor" />
-          </Grid>
-          <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsMultiline}">
-            <TextBox Grid.Column="0" Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"
-                     Watermark="{Binding StrRefDisplay}"
-                     AcceptsReturn="True" TextWrapping="Wrap"
-                     MinHeight="140" VerticalContentAlignment="Top"
-                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                     ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
-            <Button Grid.Column="1" Content="Open TLK row" Margin="5,0,0,0" Padding="8,4"
-                    VerticalAlignment="Top"
-                    Command="{Binding OpenTlkRowCommand}" IsVisible="{Binding CanOpenTlkRow}"
-                    ToolTip.Tip="Open this custom StrRef in the TLK Editor" />
-          </Grid>
-        </Panel>
-      </sharedBehaviors:LabeledFieldPanel>
+    <!-- Every schema field, from the shared field control: one copy of the LocString, check,
+         number, dropdown, script, resource-picker and text templates for every blueprint and
+         area editor. -->
+    <DataTemplate DataType="fields:FieldViewModel">
+      <fieldViews:FieldView />
     </DataTemplate>
 
     <!-- Every behavior editor's row, from one control. The trigger, waypoint, door and sound
          editors each used to carry their own copy of this markup. -->
     <DataTemplate DataType="sharedBehaviors:BehaviorRowViewModel">
       <sharedBehaviors:BehaviorRowView Margin="4,1" />
-    </DataTemplate>
-
-    <DataTemplate DataType="editors:CheckFieldViewModel">
-      <sharedBehaviors:LabeledFieldPanel Margin="0,2">
-        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,4,0,0"
-                   Classes="dim" TextWrapping="Wrap" />
-        <StackPanel>
-          <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" IsEnabled="{Binding !IsReadOnly}" />
-          <TextBlock Text="{Binding Description}" Classes="dim"
-                     FontSize="11" TextWrapping="Wrap" Margin="0,3,0,3"
-                     IsVisible="{Binding HasDescription}" />
-        </StackPanel>
-      </sharedBehaviors:LabeledFieldPanel>
-    </DataTemplate>
-
-    <DataTemplate DataType="editors:IntegerFieldViewModel">
-      <sharedBehaviors:LabeledFieldPanel Margin="0,2">
-        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
-                   Classes="dim" TextWrapping="Wrap" />
-        <NumericUpDown Value="{Binding Value, Mode=TwoWay}" MinWidth="110" MaxWidth="220"
-                       HorizontalAlignment="Left"
-                       FormatString="0" Increment="1" IsEnabled="{Binding !IsReadOnly}" />
-      </sharedBehaviors:LabeledFieldPanel>
-    </DataTemplate>
-
-    <DataTemplate DataType="editors:FloatFieldViewModel">
-      <sharedBehaviors:LabeledFieldPanel Margin="0,2">
-        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
-                   Classes="dim" TextWrapping="Wrap" />
-        <NumericUpDown Value="{Binding Value, Mode=TwoWay}" MinWidth="110" MaxWidth="220"
-                       HorizontalAlignment="Left"
-                       Increment="0.5" IsEnabled="{Binding !IsReadOnly}" />
-      </sharedBehaviors:LabeledFieldPanel>
-    </DataTemplate>
-
-    <DataTemplate DataType="editors:DropdownFieldViewModel">
-      <sharedBehaviors:LabeledFieldPanel Margin="0,2">
-        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
-                   Classes="dim" TextWrapping="Wrap" />
-        <StackPanel>
-          <ComboBox IsVisible="{Binding HasOptions}" HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Left"
-                    ItemsSource="{Binding Options}" SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
-                    MaxDropDownHeight="400" />
-          <NumericUpDown IsVisible="{Binding !HasOptions}" MinWidth="110" MaxWidth="220"
-                         HorizontalAlignment="Left"
-                         Value="{Binding RawValue, Mode=OneWay}" FormatString="0" Increment="1"
-                         IsEnabled="False"
-                         ToolTip.Tip="2DA metadata unavailable; stored value shown read-only." />
-          <TextBlock IsVisible="{Binding !HasOptions}"
-                     Text="{Binding LookupUnavailableMessage}"
-                     Classes="dim" FontSize="11" TextWrapping="Wrap" Margin="0,3,0,0" />
-        </StackPanel>
-      </sharedBehaviors:LabeledFieldPanel>
-    </DataTemplate>
-
-    <DataTemplate DataType="editors:ScriptFieldViewModel">
-      <StackPanel Margin="0,2">
-        <sharedBehaviors:LabeledFieldPanel>
-          <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
-                     Classes="dim" TextWrapping="Wrap" />
-          <Grid ColumnDefinitions="*,Auto,Auto">
-            <TextBox Grid.Column="0" Text="{Binding Text, Mode=TwoWay}"
-                     FontFamily="{DynamicResource MonoFont}" />
-            <Button Grid.Column="1" Content="..." Margin="4,0,0,0" Padding="8,4"
-                    Command="{Binding BrowseCommand}" IsVisible="{Binding CanBrowse}"
-                    ToolTip.Tip="Browse module scripts" />
-            <Button Grid.Column="2" Content="Open" Margin="4,0,0,0" Padding="8,4"
-                    Command="{Binding OpenScriptCommand}" IsVisible="{Binding CanBrowse}"
-                    ToolTip.Tip="Open this script in an editor tab" />
-          </Grid>
-        </sharedBehaviors:LabeledFieldPanel>
-        <!-- A slot naming a script that does not exist is a live, otherwise invisible bug across the
-             2,250 module resources that name one. -->
-        <TextBlock Margin="0,2,0,0" FontSize="11" TextWrapping="Wrap"
-                   Foreground="{DynamicResource AmberBrush}"
-                   IsVisible="{Binding IsMissing}" Text="{Binding MissingMessage}" />
-      </StackPanel>
-    </DataTemplate>
-
-    <!-- A resref that names another module resource. Editable text with the real list attached, so
-         a value from a hak stays typeable and an unknown one says so rather than being rejected. -->
-    <DataTemplate DataType="editors:ResourcePickerFieldViewModel">
-      <sharedBehaviors:LabeledFieldPanel Margin="0,2">
-        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
-                   Classes="dim" TextWrapping="Wrap" />
-        <StackPanel>
-          <AutoCompleteBox Text="{Binding Text, Mode=TwoWay}"
-                           ItemsSource="{Binding Choices}" FilterMode="Contains"
-                           FontFamily="Consolas,monospace" />
-          <TextBlock Text="{Binding UnknownHint}" Classes="label"
-                     Foreground="{DynamicResource AmberBrush}" Margin="0,3,0,0"
-                     IsVisible="{Binding IsUnknown}" TextWrapping="Wrap" />
-        </StackPanel>
-      </sharedBehaviors:LabeledFieldPanel>
-    </DataTemplate>
-
-    <DataTemplate DataType="editors:TextFieldViewModel">
-      <sharedBehaviors:LabeledFieldPanel Margin="0,2">
-        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
-                   Classes="dim" TextWrapping="Wrap" />
-        <TextBox Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}" />
-      </sharedBehaviors:LabeledFieldPanel>
     </DataTemplate>
 
     <!-- One behavior field. Seven shapes over the same row so the label column stays aligned with

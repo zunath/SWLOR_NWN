@@ -1,16 +1,13 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:editors="using:SWLOR.Toolset.Editors"
-             xmlns:doors="using:SWLOR.Toolset.Editors.Doors"
-             xmlns:sounds="using:SWLOR.Toolset.Editors.Sounds"
-             xmlns:waypoints="using:SWLOR.Toolset.Editors.Waypoints"
              xmlns:viewport="using:Nwn.Toolset.Avalonia.Areas"
-             xmlns:variables="using:Nwn.Toolset.Avalonia.Variables"
+             xmlns:properties="using:Nwn.Toolset.Avalonia.Areas.Properties.Views"
              x:Class="SWLOR.Toolset.Editors.AreaEditorView"
              x:DataType="editors:AreaEditorViewModel">
 
-  <!-- Field editor DataTemplates (LocString/Check/Integer/Float/Dropdown/Script/Text) are shared
-       app-wide from App.axaml's Application.DataTemplates. -->
+  <!-- The Properties tab hosts the shared area Properties page, which draws its own field editors
+       with the same shared field control App.axaml uses for blueprint editors. -->
   <!-- No per-document toolbar: File > Save (Ctrl+S) and Edit > Undo/Redo (Ctrl+Z/Ctrl+Y) act on the
        active document tab, so a row of buttons repeating them here only costs height. The shell's
        Undo prefers whichever of this editor's two histories (.git instances / .are properties) was
@@ -31,119 +28,8 @@
       </viewport:AreaEditorLayout.Scene>
       <viewport:AreaEditorLayout.Properties>
     <ScrollViewer x:Name="PropertiesScroll">
-      <StackPanel Margin="8" Spacing="6">
-        <Expander Header="Area Properties"
-                  IsExpanded="{Binding AreaPropertiesExpanded, Mode=TwoWay}"
-                  HorizontalAlignment="Stretch">
-          <ItemsControl ItemsSource="{Binding AreaPropertyGroups}" Margin="8,4">
-            <ItemsControl.ItemTemplate>
-              <DataTemplate DataType="editors:EditorGroup">
-                <Expander Header="{Binding Title}" IsExpanded="True" Margin="0,0,0,6"
-                          HorizontalAlignment="Stretch">
-                  <ItemsControl ItemsSource="{Binding Fields}" Margin="8,4" />
-                </Expander>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
-        </Expander>
-
-        <ItemsControl ItemsSource="{Binding Sections}">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="editors:InstanceListSectionViewModel">
-              <Expander HorizontalAlignment="Stretch" Margin="0,0,0,6"
-                        IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
-                <Expander.Header>
-                  <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Text="{Binding Title}" FontWeight="Bold" />
-                    <TextBlock Text="{Binding Rows.Count}" Opacity="0.6" />
-                  </StackPanel>
-                </Expander.Header>
-                <StackPanel Margin="8,4" Spacing="6">
-                  <StackPanel Orientation="Horizontal" Spacing="6">
-                    <Button Content="Add..." Command="{Binding AddCommand}" />
-                    <Button Content="Duplicate" Command="{Binding DuplicateCommand}" IsEnabled="{Binding HasSelection}" />
-                    <Button Content="Delete" Command="{Binding DeleteCommand}" IsEnabled="{Binding HasSelection}" />
-                  </StackPanel>
-
-                  <Border IsVisible="{Binding ActivePaletteBrowser, Converter={x:Static ObjectConverters.IsNotNull}}"
-                          BorderBrush="{DynamicResource DockThemeBorderMidBrush}" BorderThickness="1"
-                          Padding="8" CornerRadius="4">
-                    <StackPanel Spacing="6" DataContext="{Binding ActivePaletteBrowser}"
-                                x:DataType="editors:PaletteBrowserViewModel">
-                      <TextBlock Text="{Binding Title, StringFormat='Choose {0} blueprint'}" FontWeight="Bold" />
-                      <TreeView ItemsSource="{Binding Nodes}" SelectedItem="{Binding SelectedNode, Mode=TwoWay}"
-                                MaxHeight="320">
-                        <TreeView.ItemTemplate>
-                          <TreeDataTemplate DataType="editors:PaletteNodeViewModel" ItemsSource="{Binding Children}">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                              <TextBlock Text="{Binding DisplayName}" />
-                              <TextBlock Text="{Binding ResRef}" Opacity="0.6" />
-                            </StackPanel>
-                          </TreeDataTemplate>
-                        </TreeView.ItemTemplate>
-                      </TreeView>
-                      <StackPanel Orientation="Horizontal" Spacing="6">
-                        <Button Content="Place" Command="{Binding ChooseCommand}" />
-                        <Button Content="Cancel" Command="{Binding CancelCommand}" />
-                      </StackPanel>
-                      <TextBlock Text="{Binding StatusMessage}" Foreground="Orange"
-                                 IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                    </StackPanel>
-                  </Border>
-
-                  <DataGrid ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
-                            AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="260"
-                            GridLinesVisibility="Horizontal">
-                    <DataGrid.Columns>
-                      <DataGridTextColumn Header="Tag" Binding="{Binding Tag}" Width="2*" />
-                      <DataGridTextColumn Header="Template" Binding="{Binding TemplateResRef}" Width="2*" />
-                      <DataGridTextColumn Header="X" Binding="{Binding X}" Width="*" />
-                      <DataGridTextColumn Header="Y" Binding="{Binding Y}" Width="*" />
-                      <DataGridTextColumn Header="Z" Binding="{Binding Z}" Width="*" />
-                    </DataGrid.Columns>
-                  </DataGrid>
-
-                  <StackPanel IsVisible="{Binding HasSelection}" Spacing="4">
-                    <Border IsVisible="{Binding UsesDoorEditor}">
-                      <doors:DoorEditorView DataContext="{Binding DoorEditor}" MinHeight="520" />
-                    </Border>
-                    <!-- Every non-sound instance keeps the existing generic detail form. -->
-                    <StackPanel IsVisible="{Binding !HasSoundBehaviorEditor}" Spacing="4">
-                    <viewport:AreaInstanceDetailForm />
-                    <Expander Header="Local Variables"
-                              IsVisible="{Binding VarTableSection, Converter={x:Static ObjectConverters.IsNotNull}}"
-                              HorizontalAlignment="Stretch" IsExpanded="False">
-                      <variables:VarTableSectionView DataContext="{Binding VarTableSection}" />
-                    </Expander>
-                    </StackPanel>
-
-                    <!-- Waypoint placements carry their behavior fields directly in the area's
-                         GIT. Transform remains an area concern; every other field belongs to the
-                         same editor used by a UTW blueprint. -->
-                    <StackPanel IsVisible="{Binding HasWaypointBehaviorEditor}" Spacing="8">
-                      <waypoints:WaypointEditorView DataContext="{Binding WaypointEditor}" Height="620" />
-                    </StackPanel>
-
-                    <!-- A placed sound owns all UTS behavior fields itself. World position remains
-                         an area concern; Elevation is a sound falloff value inside the editor. -->
-                    <StackPanel IsVisible="{Binding HasSoundBehaviorEditor}" Spacing="8">
-                      <Grid ColumnDefinitions="24,*,24,*,24,*" ColumnSpacing="6">
-                        <TextBlock Grid.Column="0" Text="X" VerticalAlignment="Center" />
-                        <NumericUpDown Grid.Column="1" Value="{Binding DetailX, Mode=TwoWay}" Increment="0.5" />
-                        <TextBlock Grid.Column="2" Text="Y" VerticalAlignment="Center" />
-                        <NumericUpDown Grid.Column="3" Value="{Binding DetailY, Mode=TwoWay}" Increment="0.5" />
-                        <TextBlock Grid.Column="4" Text="Z" VerticalAlignment="Center" />
-                        <NumericUpDown Grid.Column="5" Value="{Binding DetailZ, Mode=TwoWay}" Increment="0.5" />
-                      </Grid>
-                      <sounds:SoundEditorView DataContext="{Binding SoundEditor}" Height="620" />
-                    </StackPanel>
-                  </StackPanel>
-                </StackPanel>
-              </Expander>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-      </StackPanel>
+      <!-- The shared Properties page: area property groups and one section per instance list. -->
+      <properties:AreaPropertiesPageView x:Name="PropertiesPage" DataContext="{Binding PropertiesPage}" />
     </ScrollViewer>
       </viewport:AreaEditorLayout.Properties>
 

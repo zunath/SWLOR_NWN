@@ -122,7 +122,7 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, Creatures.CreatureEquipmentChoice> _creatureEquipmentDetails =
             new(StringComparer.OrdinalIgnoreCase);
         private Creatures.CreatureSoundSetPreviewResolver? _creatureSoundSetPreviews;
-        private IReadOnlyList<Domain.Editors.Doors.DoorAppearanceChoice>? _doorAppearances;
+        private IReadOnlyList<Nwn.Authoring.Doors.DoorAppearanceChoice>? _doorAppearances;
         private readonly Dictionary<string, Items.ItemDocumentViewModel> _openItemEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Merchants.MerchantDocumentViewModel> _openMerchantEditors =
             new(StringComparer.OrdinalIgnoreCase);
@@ -2782,7 +2782,7 @@ namespace SWLOR.Toolset.Editors
             }
         }
 
-        private IReadOnlyList<Domain.Editors.Doors.DoorAppearanceChoice> DoorAppearances() =>
+        private IReadOnlyList<Nwn.Authoring.Doors.DoorAppearanceChoice> DoorAppearances() =>
             _doorAppearances ??= Domain.Editors.Doors.DoorAppearanceCatalog.Read(_doorTypes);
 
         private IReadOnlyList<BehaviorChoice> ResolveCreatureChoices(string key) =>

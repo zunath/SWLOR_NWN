@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:editors="using:SWLOR.Toolset.Editors"
              xmlns:variables="using:Nwn.Toolset.Avalonia.Variables"
+             xmlns:fields="using:Nwn.Toolset.Avalonia.Fields"
              xmlns:placeables="using:SWLOR.Toolset.Editors.Placeables"
              xmlns:appearance="using:Nwn.Toolset.Avalonia.Appearances.Views"
              xmlns:gallery="using:Nwn.Toolset.Avalonia.Appearances"
@@ -27,7 +28,7 @@
       <ScrollViewer>
         <ItemsControl ItemsSource="{Binding Groups}" Margin="8">
           <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="editors:EditorGroup">
+            <DataTemplate DataType="fields:EditorGroup">
               <Border Classes="card" Margin="0,0,0,8" Padding="12,10">
                 <StackPanel>
                   <TextBlock Text="{Binding Title}" Classes="section" Margin="0,0,0,8" />

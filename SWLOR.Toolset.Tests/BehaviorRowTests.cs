@@ -486,9 +486,9 @@ namespace SWLOR.Toolset.Tests
             typeof(WaypointRowViewModel).Should().BeAssignableTo<BehaviorRowViewModel>();
             typeof(Toolset.Editors.Triggers.TriggerRowViewModel)
                 .Should().BeAssignableTo<BehaviorRowViewModel>();
-            typeof(Toolset.Editors.Doors.DoorRowViewModel)
+            typeof(DoorRowViewModel)
                 .Should().BeAssignableTo<BehaviorRowViewModel>();
-            typeof(Toolset.Editors.Sounds.SoundRowViewModel)
+            typeof(SoundRowViewModel)
                 .Should().BeAssignableTo<BehaviorRowViewModel>();
         }
 

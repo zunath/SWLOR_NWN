@@ -715,13 +715,14 @@ namespace SWLOR.Toolset.Tests
 
             // The strref explains a blank box; it is not a second value beside the real one. As a
             // column it ran as wide as the box it explained, on every row, and a description got
-            // whatever was left.
+            // whatever was left. The field templates themselves - strref watermark and the 140px
+            // description floor - live in the shared FieldView and are asserted by the shared
+            // library's FieldViewMarkupTests; the app must draw every schema field with it.
             app.Should().NotContain("Text=\"{Binding StrRefDisplay}\"");
-            app.Should().Contain("Watermark=\"{Binding StrRefDisplay}\"");
-
-            // The description's problem was its width, not its height: a floor tall enough to write
-            // in, low enough that it does not own a short window.
-            app.Should().Contain("MinHeight=\"140\"");
+            app.Should().Contain("<DataTemplate DataType=\"fields:FieldViewModel\">");
+            app.Should().Contain("<fieldViews:FieldView />");
+            app.Should().NotContain("DataType=\"editors:LocStringFieldViewModel\"",
+                "a second LocString template would let blueprint and area fields drift apart");
 
             var blueprintView = File.ReadAllText(Path.Combine(
                 CorpusLocator.RepositoryRoot,

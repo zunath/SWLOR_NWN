@@ -432,7 +432,17 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            AssignCommand(activator, () => PlaySound(soundResref));
+            var area = GetArea(activator);
+            if (!GetIsObjectValid(area))
+                return;
+
+            // PlaySound queues a creature action which combat or animation playback can
+            // interrupt. Send positional audio immediately, anchored to the caster.
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (GetArea(player) == area)
+                    PlayerPlugin.PlaySound(player, soundResref, activator);
+            }
         }
 
         /// <summary>

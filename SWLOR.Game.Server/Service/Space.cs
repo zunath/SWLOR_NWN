@@ -22,7 +22,7 @@ using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Space
+    public static partial class Space
     {
         public const int MaxRegisteredShips = 10;
 
@@ -637,6 +637,9 @@ namespace SWLOR.Game.Server.Service
                 var feat = HighSlotToFeat(slot);
                 ApplyShipModuleFeat(player, shipModuleDetail, feat);
             }
+            foreach (var (slot, shipModule) in dbPlayerShip.Status.LowPowerModules)
+                ApplyShipModuleFeat(player, _shipModules[shipModule.ItemTag], LowSlotToFeat(slot));
+            RestoreShipModuleRecasts(player);
         }
 
         /// <summary>
@@ -784,6 +787,7 @@ namespace SWLOR.Game.Server.Service
             if(!_playersInSpace.Contains(player))
                 _playersInSpace.Add(player);
 
+            RestoreShipModuleRecasts(player);
             ExecuteScript("space_enter", player);
         }
 
@@ -925,6 +929,7 @@ namespace SWLOR.Game.Server.Service
             Stat.ApplyCreatureMovementRate(player);
             Enmity.RemoveCreatureEnmity(player);
 
+            ClearShipModuleRecasts(player, dbPlayer);
             // Save the ship's hot bar and unassign the active ship Id.
             dbShip.PlayerHotBars[playerId] = CreaturePlugin.SerializeQuickbar(player);
             dbPlayer.ActiveShipId = Guid.Empty.ToString();
@@ -1151,11 +1156,14 @@ namespace SWLOR.Game.Server.Service
         public static void HandleShipModuleFeats()
         {
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
+            ActivateShipModule(OBJECT_SELF, feat);
+        }
 
+        public static void ActivateShipModule(uint activator, FeatType feat)
+        {
             if (!ShipModuleFeats.ContainsKey(feat)) return;
-
-            var activator = OBJECT_SELF;
             var activatorShipStatus = GetShipStatus(activator);
+            if (activatorShipStatus == null) return;
             var slotNumber = GetFeatSlotNumber(feat);
             ShipStatus.ShipStatusModule shipModule;
 
@@ -1250,6 +1258,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var recastSeconds = shipModuleDetails.CalculateRecastAction(activator, activatorShipStatus, shipModule.ModuleBonus);
                 var recastTimer = now.AddSeconds(recastSeconds);
+                shipModule.RecastStartedAt = now;
                 shipModule.RecastTime = recastTimer;
                 activatorShipStatus.GlobalRecast = now.AddSeconds(2f);
             }
@@ -1269,6 +1278,7 @@ namespace SWLOR.Game.Server.Service
                 dbShip.Status = activatorShipStatus;
 
                 DB.Set(dbShip);
+                ApplyShipModuleRecast(activator, ShipModuleFeats[feat], shipModule, activatorShipStatus);
                 ExecuteScript("pc_target_upd", activator);
             }
 

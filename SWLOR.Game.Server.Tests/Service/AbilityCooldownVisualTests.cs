@@ -19,6 +19,12 @@ public class AbilityCooldownVisualTests
     }
 
     [Test]
+    public void GetCooldownTextureName_UsesEquippedShipModuleArtwork()
+    {
+        AbilityCooldownVisual.GetCooldownTextureName("iit_ess2_062", 3).Should().Be("pr3_ess2_062");
+    }
+
+    [Test]
     public void GetCooldownTextureName_AllowsMaxLengthResourceNames()
     {
         var textureName = AbilityCooldownVisual.GetCooldownTextureName("ife_wtchflprsnc3", 5);

@@ -11,6 +11,10 @@ namespace SWLOR.Toolset.Shell.Panels.PaletteHost
     /// SWLOR's blueprint writes: JSON files under the module root, written through
     /// <see cref="SwlorFileWriteAccess"/> and published to the workspace catalog straight away.
     /// </summary>
+    /// <remarks>
+    /// Each write is one small atomic file, so create and copy run synchronously and hand the palette a
+    /// completed task. A request already cancelled writes nothing.
+    /// </remarks>
     internal sealed class SwlorPaletteBlueprintOperations : IPaletteBlueprintOperations
     {
         private const string NoModuleOpen = "no module is open";
@@ -36,7 +40,25 @@ namespace SWLOR.Toolset.Shell.Panels.PaletteHost
         /// Writes a blueprint built from the type's editor schema plus whatever every real blueprint of
         /// that type carries (see <see cref="BlueprintTemplateFactory"/>), so it opens as a complete object.
         /// </summary>
-        public PaletteBlueprintCreation Create(ResourceType type, string resRef, string name)
+        public Task<PaletteBlueprintCreation> CreateAsync(
+            ResourceType type,
+            string resRef,
+            string name,
+            CancellationToken cancellationToken) =>
+            cancellationToken.IsCancellationRequested
+                ? Task.FromCanceled<PaletteBlueprintCreation>(cancellationToken)
+                : Task.FromResult(Create(type, resRef, name));
+
+        public Task<PaletteBlueprintCopy> CopyAsync(
+            ResourceType type,
+            SharedPaletteSource source,
+            string resRef,
+            CancellationToken cancellationToken) =>
+            cancellationToken.IsCancellationRequested
+                ? Task.FromCanceled<PaletteBlueprintCopy>(cancellationToken)
+                : Task.FromResult(Copy(type, source, resRef));
+
+        private PaletteBlueprintCreation Create(ResourceType type, string resRef, string name)
         {
             if (_workspaceContext.Workspace is not { } workspace)
                 return PaletteBlueprintCreation.Failed(NoModuleOpen);
@@ -62,7 +84,7 @@ namespace SWLOR.Toolset.Shell.Panels.PaletteHost
             return PaletteBlueprintCreation.Created(path);
         }
 
-        public PaletteBlueprintCopy Copy(ResourceType type, SharedPaletteSource source, string resRef)
+        private PaletteBlueprintCopy Copy(ResourceType type, SharedPaletteSource source, string resRef)
         {
             if (_workspaceContext.Workspace is not { } workspace)
                 return PaletteBlueprintCopy.Failed(NoModuleOpen);

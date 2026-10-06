@@ -16,6 +16,17 @@ public class SpaceWorkClaimsTests
         SpaceWorkClaims.Reserve(site, "operator", ship, "flight", module, Operation(module), cargo, Now);
 
     [Test]
+    public void ContractQuota_UsesAPartialFinalCycleWithoutExceedingPaidRecovery()
+    {
+        var site=Site();var operation=Operation("precision_cutter");
+        var claim=SpaceWorkClaims.Reserve(site,"operator","ship","flight","tool",operation,1.25,Now,maximumRecovered:1.25);
+        (claim.Allocations.Values.Sum()*claim.Recovery).Should().BeApproximately(1.25,1e-9);
+        SpaceWorkClaims.Complete(site,claim.Id,Now.AddSeconds(12),.5).Should().BeTrue();claim.Cargo.Values.Sum().Should().BeApproximately(1.25,1e-9);
+        var exhausted=()=>SpaceWorkClaims.Reserve(site,"operator","ship","flight","tool2",operation,100,Now,maximumRecovered:0);
+        exhausted.Should().Throw<InvalidOperationException>().WithMessage("*quota*");
+    }
+
+    [Test]
     public void MixedReservesAndCargo_AreConservedThroughRestartSettlementAndReplay()
     {
         var site = Site();

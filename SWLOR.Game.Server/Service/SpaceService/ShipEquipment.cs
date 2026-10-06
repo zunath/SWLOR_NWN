@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             return new() { ItemInstanceId = identity, ItemTag = configuration ? config.ItemTag : catalog.Modules[design].ItemTag,
                 SerializedItem = serialized, OriginalSerializedItem = legacy ? serialized : null,
                 Design = design, Calibration = calibration, QualityDimension = dimension, Quality = quality,
-                ModuleBonus = oldGrade, Condition = condition, RecastTime = recast };
+                ModuleBonus = oldGrade, Condition = condition, RecastTime = recast, BoundPlayerId=GetLocalString(item,ShipSupply.BoundOwner) };
         }
 
         public static uint CreateForWithdrawal(ShipStatus.ShipStatusModule equipment, uint player)
@@ -80,6 +80,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 if (GetIsObjectValid(item)) DestroyObject(item);
                 throw new InvalidOperationException("Unable to deliver equipment to your inventory.");
             }
+            if(!string.IsNullOrEmpty(equipment.BoundPlayerId)){SetLocalString(item,ShipSupply.BoundOwner,equipment.BoundPlayerId);SetPlotFlag(item,true);}
             SetLocalString(item, IdentityVariable, equipment.ItemInstanceId);
             ObjectPlugin.ForceAssignUUID(item, equipment.ItemInstanceId);
             SetLocalString(item, RecastVariable, equipment.RecastTime.ToUniversalTime().ToString("O", CultureInfo.InvariantCulture));

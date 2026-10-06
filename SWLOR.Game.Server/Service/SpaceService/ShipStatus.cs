@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             public int Quality { get; set; }
             public int Condition { get; set; } = 100;
             public string OriginalSerializedItem { get; set; }
+            public string BoundPlayerId {get;set;}
         }
 
         public string LastDefeatFlightId { get; set; }
@@ -46,6 +47,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public DateTime RefitReadyAt { get; set; }
         public Dictionary<string, string> LegacyEquipmentAudit { get; set; } = new();
         public Dictionary<string, ShipInventoryTransfer> PendingInventoryTransfers { get; set; } = new();
+        public string ActiveContractId { get; set; }
         public int FittingVersion { get; set; }
         public ShipResourceDeficits ResourceDeficits { get; set; }
         public Dictionary<string, ShipStatusModule> RefitRecovery { get; set; } = new();

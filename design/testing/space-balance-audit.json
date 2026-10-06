@@ -345,7 +345,7 @@
     {
       "name": "Starter patrol reward budget",
       "passed": true,
-      "detail": "Expected net7319cr/player-hour;XP14400;combined material/travel/success stress net4931."
+      "detail": "Expected net7199cr/player-hour;XP14400;combined material/travel/success stress net4835."
     },
     {
       "name": "Starter patrol XP shares",
@@ -355,7 +355,7 @@
     {
       "name": "Advanced bounty reward budget",
       "passed": true,
-      "detail": "Expected net7689cr/player-hour;XP16200;combined material/travel/success stress net4879."
+      "detail": "Expected net7599cr/player-hour;XP16200;combined material/travel/success stress net4807."
     },
     {
       "name": "Advanced bounty XP shares",
@@ -365,7 +365,7 @@
     {
       "name": "Selective prospecting reward budget",
       "passed": true,
-      "detail": "Expected net5782cr/player-hour;XP12600;combined material/travel/success stress net3028."
+      "detail": "Expected net5692cr/player-hour;XP12600;combined material/travel/success stress net2956."
     },
     {
       "name": "Selective prospecting XP shares",
@@ -375,7 +375,7 @@
     {
       "name": "Bulk expedition with escort reward budget",
       "passed": true,
-      "detail": "Expected net7161cr/player-hour;XP12000;combined material/travel/success stress net3943."
+      "detail": "Expected net7125cr/player-hour;XP12000;combined material/travel/success stress net3914."
     },
     {
       "name": "Bulk expedition with escort XP shares",
@@ -385,7 +385,7 @@
     {
       "name": "Routine salvage reward budget",
       "passed": true,
-      "detail": "Expected net7024cr/player-hour;XP13600;combined material/travel/success stress net4130."
+      "detail": "Expected net6904cr/player-hour;XP13600;combined material/travel/success stress net4034."
     },
     {
       "name": "Routine salvage XP shares",
@@ -395,7 +395,7 @@
     {
       "name": "Survey and anomaly reward budget",
       "passed": true,
-      "detail": "Expected net7084cr/player-hour;XP12600;combined material/travel/success stress net4791."
+      "detail": "Expected net6994cr/player-hour;XP12600;combined material/travel/success stress net4719."
     },
     {
       "name": "Survey and anomaly XP shares",
@@ -405,7 +405,7 @@
     {
       "name": "Resource delivery reward budget",
       "passed": true,
-      "detail": "Expected net6591cr/player-hour;XP11200;combined material/travel/success stress net4595."
+      "detail": "Expected net6471cr/player-hour;XP11200;combined material/travel/success stress net4499."
     },
     {
       "name": "Resource delivery XP shares",
@@ -415,7 +415,7 @@
     {
       "name": "Sealed freight reward budget",
       "passed": true,
-      "detail": "Expected net7161cr/player-hour;XP12000;combined material/travel/success stress net4836."
+      "detail": "Expected net7071cr/player-hour;XP12000;combined material/travel/success stress net4764."
     },
     {
       "name": "Sealed freight XP shares",
@@ -425,7 +425,7 @@
     {
       "name": "Escort and rescue reward budget",
       "passed": true,
-      "detail": "Expected net6115cr/player-hour;XP12000;combined material/travel/success stress net4067."
+      "detail": "Expected net6079cr/player-hour;XP12000;combined material/travel/success stress net4038."
     },
     {
       "name": "Escort and rescue XP shares",
@@ -435,7 +435,7 @@
     {
       "name": "Boarding operation reward budget",
       "passed": true,
-      "detail": "Expected net6598cr/player-hour;XP12000;combined material/travel/success stress net4328."
+      "detail": "Expected net6578cr/player-hour;XP12000;combined material/travel/success stress net4312."
     },
     {
       "name": "Boarding operation XP shares",
@@ -445,7 +445,7 @@
     {
       "name": "Capital fleet objective reward budget",
       "passed": true,
-      "detail": "Expected net6080cr/player-hour;XP12857;combined material/travel/success stress net3910."
+      "detail": "Expected net6067cr/player-hour;XP12857;combined material/travel/success stress net3900."
     },
     {
       "name": "Capital fleet objective XP shares",
@@ -935,90 +935,90 @@
     {
       "name": "Starter patrol",
       "gross": 2001.0,
-      "expense": 171.3,
-      "net_per_player_hour": 7318.8,
+      "expense": 201.3,
+      "net_per_player_hour": 7198.8,
       "xp_per_player_hour": 14400.0,
-      "stress_net_per_player_hour": 4930.72
+      "stress_net_per_player_hour": 4834.72
     },
     {
       "name": "Advanced bounty",
       "gross": 2951.0,
-      "expense": 388.0,
-      "net_per_player_hour": 7689.0,
+      "expense": 418.0,
+      "net_per_player_hour": 7599.0,
       "xp_per_player_hour": 16200.0,
-      "stress_net_per_player_hour": 4879.2
+      "stress_net_per_player_hour": 4807.2
     },
     {
       "name": "Selective prospecting",
       "gross": 2132.48,
-      "expense": 205.28,
-      "net_per_player_hour": 5781.6,
+      "expense": 235.28,
+      "net_per_player_hour": 5691.6,
       "xp_per_player_hour": 12600.0,
-      "stress_net_per_player_hour": 3028.0320000000006
+      "stress_net_per_player_hour": 2956.0320000000006
     },
     {
       "name": "Bulk expedition with escort",
       "gross": 6494.400000000001,
-      "expense": 527.2,
-      "net_per_player_hour": 7160.640000000001,
+      "expense": 557.2,
+      "net_per_player_hour": 7124.640000000001,
       "xp_per_player_hour": 12000.0,
-      "stress_net_per_player_hour": 3942.9120000000007
+      "stress_net_per_player_hour": 3914.1120000000005
     },
     {
       "name": "Routine salvage",
       "gross": 1924.36896,
-      "expense": 168.36,
-      "net_per_player_hour": 7024.0358400000005,
+      "expense": 198.36,
+      "net_per_player_hour": 6904.0358400000005,
       "xp_per_player_hour": 13600.0,
-      "stress_net_per_player_hour": 4129.5293440000005
+      "stress_net_per_player_hour": 4033.529344
     },
     {
       "name": "Survey and anomaly",
       "gross": 2545.2,
-      "expense": 183.7,
-      "net_per_player_hour": 7084.5,
+      "expense": 213.7,
+      "net_per_player_hour": 6994.5,
       "xp_per_player_hour": 12600.0,
-      "stress_net_per_player_hour": 4790.88
+      "stress_net_per_player_hour": 4718.88
     },
     {
       "name": "Resource delivery",
       "gross": 1764.0,
-      "expense": 116.32,
-      "net_per_player_hour": 6590.72,
+      "expense": 146.32,
+      "net_per_player_hour": 6470.72,
       "xp_per_player_hour": 11200.0,
-      "stress_net_per_player_hour": 4595.456
+      "stress_net_per_player_hour": 4499.456
     },
     {
       "name": "Sealed freight",
       "gross": 2632.0,
-      "expense": 245.07999999999998,
-      "net_per_player_hour": 7160.76,
+      "expense": 275.08,
+      "net_per_player_hour": 7070.76,
       "xp_per_player_hour": 12000.0,
-      "stress_net_per_player_hour": 4836.288
+      "stress_net_per_player_hour": 4764.288
     },
     {
       "name": "Escort and rescue",
       "gross": 5545.6,
-      "expense": 450.08,
-      "net_per_player_hour": 6114.624,
+      "expense": 480.08,
+      "net_per_player_hour": 6078.624,
       "xp_per_player_hour": 12000.0,
-      "stress_net_per_player_hour": 4067.0591999999997
+      "stress_net_per_player_hour": 4038.2591999999995
     },
     {
       "name": "Boarding operation",
       "gross": 10896.0,
-      "expense": 999.2,
-      "net_per_player_hour": 6597.866666666666,
+      "expense": 1029.2,
+      "net_per_player_hour": 6577.866666666666,
       "xp_per_player_hour": 12000.0,
-      "stress_net_per_player_hour": 4328.32
+      "stress_net_per_player_hour": 4312.32
     },
     {
       "name": "Capital fleet objective",
       "gross": 15890.0,
-      "expense": 1703.1,
-      "net_per_player_hour": 6080.1,
+      "expense": 1733.1,
+      "net_per_player_hour": 6067.242857142857,
       "xp_per_player_hour": 12857.142857142857,
-      "stress_net_per_player_hour": 3909.8742857142856
+      "stress_net_per_player_hour": 3899.5885714285714
     }
   ],
   "industry": [

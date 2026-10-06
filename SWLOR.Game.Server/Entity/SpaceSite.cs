@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Entity
     public sealed class SpaceSite : EntityBase
     {
         [Indexed] public string AreaResref { get; set; }
+        public string ActivityId { get; set; }
         public int Slot { get; set; }
         public string Generation { get; set; }
         public string Profile { get; set; }

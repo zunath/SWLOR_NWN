@@ -12,10 +12,12 @@ namespace SWLOR.Game.Server.Service
     {
         public static bool RescueFittedShipPilot(uint player)
         {
-            if (!IsPlayerInSpaceMode(player)) return false;
+            if (!IsPlayerInSpaceMode(player)) return TryRescueBoardingPlayer(player);
             var record = DB.Get<Player>(GetObjectUUID(player));
             var ship = DB.Get<PlayerShip>(record.ActiveShipId);
             if (ship?.Status.FittingVersion != ShipFittingConversion.CurrentVersion) return false;
+            if (!string.IsNullOrEmpty(ship.Status.ActiveContractId))
+            {var contract=DB.Get<SpaceContract>(ship.Status.ActiveContractId);if(SpaceContractPolicy.IsActive(contract))CloseSpaceContract(contract,false);ship=DB.Get<PlayerShip>(ship.Id);}
             var settlement = ShipRecovery.Defeat(ship.Status);
             DB.Set(ship);
             var property = DB.Get<WorldProperty>(ship.PropertyId);

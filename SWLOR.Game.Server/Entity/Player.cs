@@ -22,6 +22,10 @@ namespace SWLOR.Game.Server.Entity
     {
         public Dictionary<string, DateTime> SkillXPReceipts { get; set; } = new();
         public Service.SpaceService.SpaceExperienceLedger SpaceExperience { get; set; } = new();
+        public Service.SpaceService.SpaceEconomyLedger SpaceEconomy { get; set; } = new();
+        public string SpaceBoardingReturnPlanet {get;set;}
+        public string SpaceBoardingReturnShipId {get;set;}
+        public string ActiveSpaceContractId { get; set; }
         public Service.SpaceService.ShipOperatingState ShipOperations { get; set; } = new();
         public const int DefaultOutfitSlotLimit = 25;
         public const int DefaultDisguiseSlotLimit = 1;

@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Service
 
         private static bool IsResearchableRecipe(RecipeDetail recipe)
         {
-            return recipe.EnhancementType == RecipeEnhancementType.Weapon ||
+            return recipe.IsShipEquipment || recipe.EnhancementType == RecipeEnhancementType.Weapon ||
                    recipe.EnhancementType == RecipeEnhancementType.Armor ||
                    recipe.EnhancementType == RecipeEnhancementType.Food;
         }
@@ -1167,7 +1167,9 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The number of seconds to wait before the blueprint is researched to the next level.</returns>
         public static int CalculateBlueprintResearchSeconds(RecipeType recipe, int blueprintLevel, int reductionBonus)
         {
-            return CalculateResearchCost(recipe, blueprintLevel, 200, reductionBonus * 0.01f);
+            var detail = GetRecipe(recipe);
+            return detail.IsShipEquipment ? SpaceService.ShipResearchPolicy.Duration(detail.Level, reductionBonus) :
+                CalculateResearchCost(recipe, blueprintLevel, 200, reductionBonus * 0.01f);
         }
 
         /// <summary>

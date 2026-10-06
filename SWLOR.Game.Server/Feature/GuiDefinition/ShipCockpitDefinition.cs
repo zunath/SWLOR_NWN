@@ -23,11 +23,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 content.AddRow(r=>r.AddText().BindText(m=>m.Summary).SetWidth(626f).SetHeight(45f).SetShowBorder(false).SetScrollbars(NuiScrollbars.Auto));
                 content.AddRow(r=>
                 {
-                    r.AddButton().BindText(m=>m.Bank1Text).SetWidth(120f).SetHeight(32f).BindOnClicked(m=>m.OnSelectBank(1));
-                    r.AddButton().SetText("Fire Bank 1").SetWidth(110f).SetHeight(32f).BindIsEnabled(m=>m.InFlight).BindOnClicked(m=>m.OnFireBank(1));
-                    r.AddButton().BindText(m=>m.Bank2Text).SetWidth(120f).SetHeight(32f).BindOnClicked(m=>m.OnSelectBank(2));
-                    r.AddButton().SetText("Fire Bank 2").SetWidth(110f).SetHeight(32f).BindIsEnabled(m=>m.InFlight).BindOnClicked(m=>m.OnFireBank(2));
-                    r.AddButton().SetText("Refresh").SetWidth(100f).SetHeight(32f).BindOnClicked(m=>m.OnRefresh());
+                    r.AddButton().BindText(m=>m.Bank1Text).SetWidth(105f).SetHeight(32f).BindOnClicked(m=>m.OnSelectBank(1));
+                    r.AddButton().SetText("Fire Bank 1").SetWidth(100f).SetHeight(32f).BindIsEnabled(m=>m.InFlight).BindOnClicked(m=>m.OnFireBank(1));
+                    r.AddButton().BindText(m=>m.Bank2Text).SetWidth(105f).SetHeight(32f).BindOnClicked(m=>m.OnSelectBank(2));
+                    r.AddButton().SetText("Fire Bank 2").SetWidth(100f).SetHeight(32f).BindIsEnabled(m=>m.InFlight).BindOnClicked(m=>m.OnFireBank(2));
+                    r.AddButton().SetText("Contracts").SetWidth(75f).SetHeight(32f).BindOnClicked(m=>m.OnContracts());
+                    r.AddButton().SetText("Refresh").SetWidth(75f).SetHeight(32f).BindOnClicked(m=>m.OnRefresh());
                 });
                 content.AddRow(r=>r.AddLabel().BindText(m=>m.PreparedSummary).SetWidth(626f).SetHeight(24f));
                 content.AddRow(r=>r.AddList(template=>

@@ -1063,7 +1063,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             for (var item = GetFirstItemInInventory(Player); GetIsObjectValid(item); item = GetNextItemInInventory(Player))
             {
                 var resref = GetResRef(item);
-                if(recipe.Components.ContainsKey(resref))
+                if(recipe.Components.ContainsKey(resref)&&string.IsNullOrEmpty(GetLocalString(item,"SHIP_TRADE_RESERVED")))
                     components.Add(item);
             }
 
@@ -1382,6 +1382,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(_recipe);
             var item = CreateItemOnObject(recipe.Resref, Player, recipe.Quantity);
             SetLocalBool(item, Item.PlayerProducedItemVariable, true);
+            if(recipe.IsShipEquipment)DB.Set(new ShipItemProvenance {Id="ship-provenance/"+GetObjectUUID(item),Resref=recipe.Resref,RecipeMaterials=recipe.Components.ToDictionary(x=>x.Key,x=>x.Value/Math.Max(1,recipe.Quantity))});
             var firstTime = !dbPlayer.CraftedRecipes.ContainsKey(_recipe);
             var propertyTransferChance = (int)(((float)_quality / (float)_maxQuality) * 100);
             var qualityPercent = (float)_quality / (float)_maxQuality;
@@ -1395,7 +1396,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var minimumVendorBonus = Math.Max(25, (int)Math.Round(recipe.Level * 1.6f));
             const float CraftedVendorBonusMultiplier = 1.225f;
             var addGoldPiece = (int)Math.Round(Math.Max(scaledByQuality, minimumVendorBonus) * CraftedVendorBonusMultiplier);
-            ItemPlugin.SetAddGoldPieceValue(item, addGoldPiece);
+            ItemPlugin.SetAddGoldPieceValue(item, recipe.IsShipEquipment ? 0 : addGoldPiece);
 
             // Apply item properties provided by enhancements, provided the transfer check passes.
             var allProperties = _itemPropertiesEnhancement1

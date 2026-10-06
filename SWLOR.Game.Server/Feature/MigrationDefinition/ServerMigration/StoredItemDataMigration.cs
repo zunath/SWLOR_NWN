@@ -707,6 +707,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             var migrated = false;
             foreach (var module in modules.Values)
             {
+                module.OriginalSerializedItem ??= module.SerializedItem;
                 var result = MigrateSerializedObjectInPass(module.SerializedItem, disposal);
                 if (!result.Changed)
                 {
@@ -715,6 +716,20 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 }
 
                 module.SerializedItem = result.RemovedRoot ? string.Empty : result.Data;
+                if(!result.RemovedRoot)
+                {
+                    var equipment=MigrationObject.Deserialize(module.SerializedItem);
+                    try
+                    {
+                        if(GetIsObjectValid(equipment)&&GetLocalInt(equipment,"SHIP_FITTING")==1)
+                        {
+                            module.ItemInstanceId=GetLocalString(equipment,ShipEquipment.IdentityVariable);
+                            module.Design=GetLocalString(equipment,"SHIP_DESIGN");module.Calibration="Standard";
+                            module.Quality=GetLocalInt(equipment,"SHIP_QUALITY");module.QualityDimension=(ShipQualityDimension)GetLocalInt(equipment,"SHIP_QUALITY_DIM");module.Condition=100;
+                        }
+                    }
+                    finally{MigrationObject.DestroyTemporaryObject(equipment);}
+                }
                 removedItems += result.RemovedItems;
                 droidPerksMigrated += result.MigratedDroidPerks;
                 migrated = true;
@@ -876,6 +891,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             uint obj, SerializedObjectMigrationResult result, MigrationItemDisposal disposal)
         {
             var migrated = false;
+            migrated |= ShipEquipmentMigration.MigrateObject(obj);
             migrated |= EquipmentRequirementMigration.MigrateObject(obj);
             migrated |= DroidBoostStoredItemMigration.MigrateObject(obj);
             migrated |= SerializedItemResistanceMigration.MigrateObject(obj);

@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(ShipCockpitPayload payload){_shipId=payload.ShipId;Update();ChangePartialView(ContentElement,MainContentPartial);}
         protected override void OnModalClosedRestore()=>ChangePartialView(ContentElement,MainContentPartial);
         public void Refresh(ShipCockpitRefreshEvent payload)=>Update();
+        public Action OnContracts()=>()=>Gui.TogglePlayerWindow(Player,GuiWindowType.ShipContracts,new ShipContractsPayload(_shipId));
         public Action OnRefresh()=>()=>{_lastSignature=null;Update();};
         private void Run(Action action)
         {

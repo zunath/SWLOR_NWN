@@ -824,6 +824,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 dbPlayer.RebuildComplete = true;
+                dbPlayer.SpaceEconomy.StarterRevision++;
 
                 Gui.TogglePlayerWindow(Player, GuiWindowType.CharacterMigration, null, TetherObject);
                 FloatingTextStringOnCreature(ColorToken.Green("Character rebuild complete!"), Player, false);

@@ -14,6 +14,55 @@ namespace SWLOR.Game.Server.Service
     public static partial class Space
     {
         private const string CreditReceiptVariable = "SPACE_REWARD_PAID";
+        private static readonly DateTime SpaceSessionStartedAt=DateTime.UtcNow;
+        private static IEnumerable<SpaceEncounter> EncounterJournals(bool complete,bool? journal=null)
+        {
+            for(var offset=0;;offset+=100)
+            {
+                var query=new DBQuery<SpaceEncounter>().AddFieldSearch(nameof(SpaceEncounter.Completed),complete).OrderBy(nameof(SpaceEncounter.Id)).AddPaging(100,offset);
+                if(journal.HasValue)query.AddFieldSearch(nameof(SpaceEncounter.RewardJournalComplete),journal.Value);
+                var rows=DB.Search(query).ToArray();foreach(var row in rows)yield return row;if(rows.Length<100)yield break;
+            }
+        }
+        private static void CleanSpaceJournals()
+        {
+            var before=DateTime.UtcNow.AddDays(-1);
+            foreach(var encounter in EncounterJournals(true,true).Where(x=>x.CompletedAt<before).Take(100).ToArray())
+            {
+                var ids=encounter.Contributions.Participants.Keys.Select(x=>encounter.Id+"/"+x).ToArray();
+                var rewards=ids.Select(DB.Get<SpaceReward>).Where(x=>x!=null).ToArray();
+                if(rewards.Any(x=>!x.Settled))continue;
+                foreach(var reward in rewards)DeleteSettledReward(reward);
+                DB.Delete<SpaceEncounter>(encounter.Id);
+            }
+            for(var offset=0;;offset+=100)
+            {
+                var rows=DB.Search(new DBQuery<SpaceContract>().AddFieldSearch(nameof(SpaceContract.Closed),true).OrderBy(nameof(SpaceContract.Id)).AddPaging(100,offset)).ToArray();
+                foreach(var contract in rows.Where(x=>x.ExpiresAt<before).ToArray())
+                {
+                    var rewards=contract.ShipsByPlayer.Keys.Select(x=>DB.Get<SpaceReward>("space-contract/"+contract.Id+"/"+x)).Where(x=>x!=null).ToArray();
+                    if(rewards.Any(x=>!x.Settled))continue;
+                    foreach(var reward in rewards)DeleteSettledReward(reward);
+                    DB.Delete<SpaceContract>(contract.Id);
+                }
+                if(rows.Length<100)break;
+            }
+            foreach(var ship in ShipEquipmentTransfers.AllShips())
+            {
+                var stale=ship.Status.HostileDamageDebt.Keys.Where(x=>DB.Get<SpaceEncounter>(x)==null).ToArray();
+                if(stale.Length==0)continue;foreach(var id in stale)ship.Status.HostileDamageDebt.Remove(id);DB.Set(ship);
+            }
+        }
+        private static void DeleteSettledReward(SpaceReward reward)
+        {
+            var player=DB.Get<Player>(reward.PlayerId);
+            if(player!=null)
+            {
+                foreach(var skill in reward.Experience.Keys)player.SkillXPReceipts.Remove(reward.Id+"/"+skill);
+                player.SpaceEconomy.Receipts.Remove(reward.Id);DB.Set(player);
+            }
+            DB.Delete<SpaceReward>(reward.Id);
+        }
         private static string EncounterId(ShipStatus status) => status?.EncounterProfile == null ? null : "space-encounter-" + status.FlightId;
         private static void RegisterSpaceEncounter(uint creature, ShipStatus status)
         {
@@ -38,12 +87,12 @@ namespace SWLOR.Game.Server.Service
                 if (encounter != null && !encounter.Completed)
                 { encounter.Contributions.CreditDamage(GetObjectUUID(source), shield + hull); DB.Set(encounter); }
             }
-            if (GetIsPC(target) && EncounterId(sourceStatus) is string sourceId)
+            if ((GetIsPC(target) || !string.IsNullOrEmpty(GetLocalString(target,"SPACE_PROXY_SHIP")) || !string.IsNullOrEmpty(GetLocalString(target,"SPACE_RESCUE_CONTRACT"))) && EncounterId(sourceStatus) is string sourceId)
             {
                 var encounter = DB.Get<SpaceEncounter>(sourceId);
                 if (encounter == null || encounter.Completed) return;
                 var playerId = GetObjectUUID(target);
-                encounter.Contributions.Credit(playerId, SkillType.Piloting, shield + hull);
+                if(GetIsPC(target))encounter.Contributions.Credit(playerId, SkillType.Piloting, shield + hull);
                 if (!targetStatus.HostileDamageDebt.TryGetValue(sourceId, out var debt)) targetStatus.HostileDamageDebt[sourceId] = debt = new();
                 debt.Shield += shield; debt.Hull += hull;
                 TouchOperatingClock(target, DateTime.UtcNow, SpaceEncounterCatalog.Default.Profiles[sourceStatus.EncounterProfile].Cycle);
@@ -72,6 +121,14 @@ namespace SWLOR.Game.Server.Service
                 { encounter.Contributions.Credit(GetObjectUUID(source), SkillType.ShipSystems, recovered); DB.Set(encounter); remaining -= recovered; }
                 if (pair.Value.Hull + pair.Value.Shield <= 1e-9) status.HostileDamageDebt.Remove(pair.Key);
                 if (remaining <= 1e-9) break;
+            }
+            if(actual-remaining>0)TouchOperatingClock(source,DateTime.UtcNow,1);
+            var rescueContract=GetLocalString(target,"SPACE_RESCUE_CONTRACT");
+            if(!string.IsNullOrEmpty(rescueContract))
+            {
+                var contract=DB.Get<SpaceContract>(rescueContract);
+                if(contract?.State==SpaceContractState.Active&&contract.ShipsByPlayer.ContainsKey(GetObjectUUID(source)))
+                {contract.RescueRecovery=Math.Min(SpaceActivityCatalog.Default.Profiles[contract.Profile].Rescue,contract.RescueRecovery+actual-remaining);DB.Set(contract);}
             }
         }
         private static void RecordSpaceEnergy(uint source, uint recipient, double paid, double actual)
@@ -126,20 +183,22 @@ namespace SWLOR.Game.Server.Service
         public static void LoadSpaceRewards()
         {
             // Complete journals whose event was interrupted after freezing the finite pool.
-            foreach (var encounter in DB.Search(new DBQuery<SpaceEncounter>().AddFieldSearch(nameof(SpaceEncounter.Completed), true).AddFieldSearch(nameof(SpaceEncounter.RewardJournalComplete), false)).ToArray())
+            foreach (var encounter in EncounterJournals(true,false).ToArray())
             {
                 var profile = SpaceEncounterCatalog.Default.Profiles[encounter.Profile];
                 CreateEncounterWreck(encounter, profile);
                 CreateEncounterRewards(encounter, profile);
             }
+            foreach(var encounter in EncounterJournals(false).Where(x=>x.DateCreated<SpaceSessionStartedAt).ToArray())DB.Delete<SpaceEncounter>(encounter.Id);
             Scheduler.ScheduleRepeating(ProcessSpaceRewards, TimeSpan.FromSeconds(5));
+            Scheduler.ScheduleRepeating(CleanSpaceJournals,TimeSpan.FromHours(1));
         }
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void RecoverSpaceRewardsOnLogin()
         { var player = GetEnteringObject(); if (GetIsPC(player) && !GetIsDM(player)) SettleSpaceRewards(player); }
         private static void ProcessSpaceRewards()
         {
-            foreach (var encounter in DB.Search(new DBQuery<SpaceEncounter>().AddFieldSearch(nameof(SpaceEncounter.Completed), true).AddFieldSearch(nameof(SpaceEncounter.RewardJournalComplete), false)).ToArray())
+            foreach (var encounter in EncounterJournals(true,false).ToArray())
             {
                 var profile = SpaceEncounterCatalog.Default.Profiles[encounter.Profile];
                 CreateEncounterWreck(encounter, profile); CreateEncounterRewards(encounter, profile);
@@ -164,6 +223,12 @@ namespace SWLOR.Game.Server.Service
                         ExportSingleCharacter(player);
                     }
                     reward.CreditsSettled = true; DB.Set(reward);
+                }
+                if (!reward.ReputationSettled)
+                {
+                    var record=DB.Get<Player>(playerId);
+                    record.SpaceEconomy.AwardReputation(reward.Id,reward.Reputation,reward.DateCreated);
+                    DB.Set(record);reward.ReputationSettled=true;DB.Set(reward);
                 }
                 foreach (var (skill, amount) in reward.Experience.Where(x => x.Value > 0))
                     Skill.GiveSkillXP(player, skill, amount, applyHenchmanPenalty: false, receiptId: reward.Id + "/" + skill,

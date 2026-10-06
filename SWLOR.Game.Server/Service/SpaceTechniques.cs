@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Service
             try
             {
                 var bonuses=ShipFittedStats.StatUnits.Keys.ToDictionary(x=>x,x=>ShipFittedStats.Bonus(preview,x)-ShipFittedStats.Penalty(preview,x));
-                SpaceWorkClaims.Reserve(previewSite,player.Id,player.ActiveShipId,status.FlightId,tool.ItemInstanceId,operation,Math.Max(0,ShipCargo.Available(status)-ReservedSiteCargo(player.ActiveShipId)),now,bonuses,temporary,technique.Channel);
+                SpaceWorkClaims.Reserve(previewSite,player.Id,player.ActiveShipId,status.FlightId,tool.ItemInstanceId,operation,Math.Max(0,ShipCargo.Available(status)-ReservedSiteCargo(player.ActiveShipId)),now,bonuses,temporary,technique.Channel,maximumRecovered:ContractRecoveryRemaining(site));
             }
             catch(InvalidOperationException ex){return ex.Message;}
             return null;

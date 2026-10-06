@@ -11,12 +11,19 @@ namespace SWLOR.Game.Server.Service
 {
     public static partial class Space
     {
-        public static int GetOperatingAttribute(uint creature, AbilityType attribute) => GetIsPC(creature) ? GetAbilityScore(creature, attribute) :
-            attribute == AbilityType.Agility && GetShipStatus(creature)?.EncounterProfile is string profile ? SpaceEncounterCatalog.Default.Profiles[profile].Agility : 10;
-
-        public static IReadOnlyDictionary<SkillType, int> GetOperatingSkills(uint creature) =>
-            new[] { SkillType.Piloting, SkillType.Gunnery, SkillType.ShipSystems, SkillType.Astrometrics, SkillType.SpaceIndustry }
-                .ToDictionary(skill => skill, skill => Math.Clamp(GetIsPC(creature) ? Skill.GetCreatureSkillRank(creature, skill) : GetEncounterSkill(creature, skill), 0, 50));
+        public static int GetOperatingAttribute(uint creature, AbilityType attribute)
+        {
+            if(GetIsPC(creature))return GetAbilityScore(creature,attribute);
+            if(!string.IsNullOrEmpty(GetLocalString(creature,"SPACE_PROXY_SHIP")))return GetLocalInt(creature,attribute==AbilityType.Agility?"SPACE_PROXY_AGI":"SPACE_PROXY_PER");
+            return attribute==AbilityType.Agility&&GetShipStatus(creature)?.EncounterProfile is string profile?SpaceEncounterCatalog.Default.Profiles[profile].Agility:10;
+        }
+        public static IReadOnlyDictionary<SkillType,int> GetOperatingSkills(uint creature)
+        {
+            var pilot=GetLocalString(creature,"SPACE_PROXY_PILOT");
+            var record=string.IsNullOrEmpty(pilot)?null:DB.Get<Player>(pilot);
+            return new[]{SkillType.Piloting,SkillType.Gunnery,SkillType.ShipSystems,SkillType.Astrometrics,SkillType.SpaceIndustry}
+                .ToDictionary(skill=>skill,skill=>Math.Clamp(GetIsPC(creature)?Skill.GetCreatureSkillRank(creature,skill):record!=null?record.Skills.GetValueOrDefault(skill)?.Rank??0:GetEncounterSkill(creature,skill),0,50));
+        }
 
         private static int GetEncounterSkill(uint creature, SkillType skill)
         {
@@ -63,7 +70,11 @@ namespace SWLOR.Game.Server.Service
                 ship.Status = status;
                 DB.Set(ship);
             }
-            else if (_shipNPCs.ContainsKey(creature)) _shipNPCs[creature] = status;
+            else if (_shipNPCs.ContainsKey(creature))
+            {
+                _shipNPCs[creature]=status;var proxy=GetLocalString(creature,"SPACE_PROXY_SHIP");
+                if(!string.IsNullOrEmpty(proxy)){var ship=DB.Get<PlayerShip>(proxy);if(ship!=null){ship.Status=status;DB.Set(ship);}}
+            }
         }
 
         public static (double Shield, double Hull) ApplyFittedShipDamage(uint source, uint target, double amount,
@@ -98,7 +109,7 @@ namespace SWLOR.Game.Server.Service
             if (status.Hull <= 0)
             {
                 if (GetIsPC(target)) RescueFittedShipPilot(target);
-                else DelayCommand(0f, () => AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), target)));
+                else { if(!string.IsNullOrEmpty(GetLocalString(target,"SPACE_PROXY_SHIP"))){SetPlotFlag(target,false);SetImmortal(target,false);} DelayCommand(0f, () => AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), target))); }
                 ClearCurrentTarget(source);
             }
             return damage;

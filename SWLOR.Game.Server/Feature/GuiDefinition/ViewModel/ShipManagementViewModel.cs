@@ -634,7 +634,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private int CalculateRepairBill(PlayerShip ship)
         {
-            return ShipRecovery.DockPrice(ship.Status);
+            return ShipDockService.Quote(Player,ship.Status);
         }
 
         protected override void Initialize(ShipManagementPayload initialPayload)
@@ -1227,7 +1227,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     : isDockInstanceLoading
                         ? "Docked (loading...)"
                         : GetName(currentLocation);
-                IsRepairEnabled = (repairPrice > 0 || ship.Status.Shield < ship.Status.MaxShield || ship.Status.Capacitor < ship.Status.MaxCapacitor) &&
+                IsRepairEnabled = (ShipRecovery.DockPrice(ship.Status) > 0 || ship.Status.Shield < ship.Status.MaxShield || ship.Status.Capacitor < ship.Status.MaxCapacitor) &&
                                   gold >= repairPrice && isAtCurrentLocation && !isInSpace && permission.Permissions.GetValueOrDefault(PropertyPermissionType.RefitShip);
                 RepairText = $"Service ({repairPrice} cr)";
             }
@@ -1491,6 +1491,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             catch (InvalidOperationException error) { SendMessageToPC(Player, error.Message); }
         }
+
+        public Action OnClickSupply()=>()=>Gui.TogglePlayerWindow(Player,GuiWindowType.ShipSupply,new ShipSupplyPayload());
+        public Action OnClickContracts()=>()=> {if(SelectedShipIndex>=0&&SelectedShipIndex<_shipIds.Count)Gui.TogglePlayerWindow(Player,GuiWindowType.ShipContracts,new ShipContractsPayload(_shipIds[SelectedShipIndex]));};
 
         public Action OnClickCockpit() => () =>
         {

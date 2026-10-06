@@ -12,6 +12,15 @@ namespace SWLOR.Game.Server.Service
 {
     public static class ShipEquipmentTransfers
     {
+        public static IEnumerable<PlayerShip> AllShips()
+        {
+            for(var offset=0;;offset+=200)
+            {
+                var page=DB.Search(new DBQuery<PlayerShip>().OrderBy(nameof(PlayerShip.Id)).AddPaging(200,offset)).ToArray();
+                foreach(var ship in page)yield return ship;
+                if(page.Length<200)yield break;
+            }
+        }
         public static PlayerShip RequireDock(uint player, string shipId)
         {
             if (!GetIsPC(player) || Space.IsPlayerInSpaceMode(player)) throw new InvalidOperationException("Dock before refitting or withdrawing equipment.");
@@ -45,8 +54,10 @@ namespace SWLOR.Game.Server.Service
             var ship = RequireDock(player, shipId);
             if (GetItemPossessor(item) != player) throw new InvalidOperationException("Choose equipment in your inventory.");
             if (ship.Status.PendingInventoryTransfers.Count != 0) throw new InvalidOperationException("Complete the pending equipment transfer first.");
+            if(!Item.CanCreatureUseItem(player,item))throw new InvalidOperationException("This bound equipment belongs to another character.");
             var equipment = ShipEquipment.Read(item);
-            if (DB.Search(new DBQuery<PlayerShip>()).Any(other =>
+            if(!string.IsNullOrEmpty(equipment.BoundPlayerId)&&ship.OwnerPlayerId!=equipment.BoundPlayerId)throw new InvalidOperationException("Fit starter equipment only to your own ship.");
+            if (ShipEquipmentTransfers.AllShips().Any(other =>
                 ShipFittedStats.Modules(other.Status).Concat(other.Status.ConfigurationModules.Values).Any(x => x.ItemInstanceId == equipment.ItemInstanceId) ||
                 other.Status.RefitRecovery.ContainsKey(equipment.ItemInstanceId) || other.Status.PendingInventoryTransfers.ContainsKey(equipment.ItemInstanceId)))
                 throw new InvalidOperationException("This equipment already belongs to a ship or pending transfer.");
@@ -131,7 +142,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
             var playerId = GetObjectUUID(player);
             // Include delegated refits: the transferring player can differ from the ship owner.
-            foreach (var ship in DB.Search(new DBQuery<PlayerShip>()).ToArray())
+            foreach (var ship in ShipEquipmentTransfers.AllShips().ToArray())
             foreach (var (identity, transfer) in ship.Status.PendingInventoryTransfers.Where(x => x.Value.PlayerId == playerId).ToArray())
             {
                 if (transfer.Direction == ShipInventoryTransferDirection.Install)

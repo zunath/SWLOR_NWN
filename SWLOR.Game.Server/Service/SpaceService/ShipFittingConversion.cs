@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 if (string.IsNullOrEmpty(design))
                     design = catalog.DesignByItemTag(module.ItemTag) ?? string.Empty;
                 module.OriginalSerializedItem ??= module.SerializedItem;
-                if (isLegacy && !string.IsNullOrEmpty(module.SerializedItem)) status.LegacyEquipmentAudit[identity] = module.SerializedItem;
+                if (!string.IsNullOrEmpty(module.OriginalSerializedItem)) status.LegacyEquipmentAudit[identity] = module.OriginalSerializedItem;
                 module.Design = design;
                 if (isLegacy)
                 {

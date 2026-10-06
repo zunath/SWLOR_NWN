@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 GuaranteedBonuses = Item.BuildItemPropertyList(researchJob.GuaranteedBonuses);
                 CreditCost = $"Price: {researchJob.CreditCost}cr";
                 TimeCost = $"Time: {researchJob.TimeString}";
-                NextLevelBonus = $"Next Level: {GetUpgradeLevelBonus(researchJob.CurrentLevel + 1)}";
+                NextLevelBonus = Craft.GetRecipe(_recipeType).IsShipEquipment ? "80% success; licensed runs or time/credit savings. One recipe tuning slot." : $"Next Level: {GetUpgradeLevelBonus(researchJob.CurrentLevel + 1)}";
             }
             // In Progress
             else if (now < dbJob.DateCompleted)
@@ -348,6 +348,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         Level = researchJob.CurrentLevel,
                         Recipe = _recipeType
                     };
+                    if (Craft.GetRecipe(_recipeType).IsShipEquipment)
+                    {
+                        try { ShipResearch.Start(Player, dbResearchJob, _blueprintItem, researchJob.CreditCost); }
+                        catch (InvalidOperationException ex) { FloatingTextStringOnCreature(ex.Message, Player, false); }
+                        Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
+                        return;
+                    }
                     DB.Set(dbResearchJob);
 
                     AssignCommand(Player, () => TakeGoldFromCreature(researchJob.CreditCost, Player, true));
@@ -365,6 +372,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 () =>
                 {
                     var dbJob = GetJob();
+                    if (dbJob.IsShipResearch)
+                    {
+                        try { ShipResearch.Deliver(Player, dbJob, true); Gui.TogglePlayerWindow(Player, GuiWindowType.Research); }
+                        catch (InvalidOperationException ex) { FloatingTextStringOnCreature(ex.Message, Player, false); }
+                        return;
+                    }
 
                     if (!string.IsNullOrWhiteSpace(dbJob.SerializedItem))
                     {
@@ -389,6 +402,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var dbJob = GetJob();
             var recipe = Craft.GetRecipe(dbJob.Recipe);
+            if (dbJob.IsShipResearch)
+            {
+                try { ShipResearch.Deliver(Player, dbJob); Gui.TogglePlayerWindow(Player, GuiWindowType.Research); }
+                catch (InvalidOperationException ex) { FloatingTextStringOnCreature(ex.Message, Player, false); }
+                return;
+            }
 
             bool isNewBlueprint;
             uint item;

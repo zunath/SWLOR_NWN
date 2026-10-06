@@ -10,6 +10,8 @@ namespace SWLOR.Game.Server.Entity
         [Indexed] public bool Settled { get; set; }
         public int Credits { get; set; }
         public bool CreditsSettled { get; set; }
+        public int Reputation {get;set;}
+        public bool ReputationSettled {get;set;}
         public Dictionary<SkillType, int> Experience { get; set; } = new();
     }
 }

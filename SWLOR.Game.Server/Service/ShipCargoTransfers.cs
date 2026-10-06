@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Service
         public static bool IsCargoResource(string resref) => SpaceIndustryCatalog.Default.Commodities.ContainsKey(resref) ||
             SpaceIndustryCatalog.Default.Commodities.Values.Any(x => x.Metal == resref) ||
             ShipFittingCatalog.Default.Modules.Values.Any(x => ShipModuleActivationPolicy.Supply(x) == ShipCargo.SupplyIdentity(resref)) ||
-            resref is "elec_recover" or "elec_ruined";
+            resref is "elec_recover" or "elec_ruined" or "prec_assembly";
 
         public static void Load(uint player, string shipId, uint item)
         {
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service
             var identity = GetLocalString(item, TransferVariable);
             if (string.IsNullOrEmpty(identity))
             { identity = Guid.NewGuid().ToString(); SetLocalString(item, TransferVariable, identity); }
-            if (DB.Search(new DBQuery<PlayerShip>()).Any(x => x.Status.PendingCargoTransfers.Values.Any(t => t.InventoryId == identity)))
+            if (ShipEquipmentTransfers.AllShips().Any(x => x.Status.PendingCargoTransfers.Values.Any(t => t.InventoryId == identity)))
                 throw new InvalidOperationException("This stack already has a pending cargo transfer.");
             var transfer = new ShipCargoTransfer(Guid.NewGuid().ToString(), GetObjectUUID(player), ShipCargoTransferDirection.Load,
                 GetResRef(item), GetItemStackSize(item), identity);
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) return;
-            foreach (var ship in DB.Search(new DBQuery<PlayerShip>()).Where(x => x.Status.PendingCargoTransfers.Values.Any(t => t.PlayerId == GetObjectUUID(player))).ToArray())
+            foreach (var ship in ShipEquipmentTransfers.AllShips().Where(x => x.Status.PendingCargoTransfers.Values.Any(t => t.PlayerId == GetObjectUUID(player))).ToArray())
             {
                 try { Recover(player, ship.Id); }
                 catch (InvalidOperationException ex) { SendMessageToPC(player, ex.Message); }

@@ -781,7 +781,7 @@ namespace SWLOR.Game.Server.Service
                 var clone = _shipClones[dbPlayerShip.Id];
                 if (GetIsObjectValid(clone))
                 {
-                    DestroyObject(clone);
+                    _shipNPCs.Remove(clone);DestroyObject(clone);
                 }
             }
             // Otherwise add the ship to the list and associate an invalid object to its clone.
@@ -1004,6 +1004,11 @@ namespace SWLOR.Game.Server.Service
                     SetName(clone, dbProperty.CustomName);
 
                     _shipClones[dbShip.Id] = clone;
+                    SetLocalString(clone,"SPACE_PROXY_SHIP",dbShip.Id);SetLocalString(clone,"SPACE_PROXY_PILOT",playerId);
+                    SetLocalInt(clone,"SPACE_PROXY_AGI",GetAbilityScore(player,AbilityType.Agility));SetLocalInt(clone,"SPACE_PROXY_PER",GetAbilityScore(player,AbilityType.Perception));
+                    SetPlotFlag(clone,false);SetImmortal(clone,true);SetLocalString(clone,"SPACE_ENCOUNTER_ID","proxy/"+dbShip.Id);_shipNPCs[clone]=dbShip.Status;
+                    foreach(var enemy in _shipNPCs.Keys.Where(x=>x!=clone&&GetIsObjectValid(x)&&GetArea(x)==GetArea(clone)).ToArray())
+                    {var threat=Enmity.GetEnmityTable(enemy).GetValueOrDefault(player);if(threat>0){SetIsTemporaryEnemy(clone,enemy);Enmity.ModifyEnmity(clone,enemy,threat);}}
                 }
             }
             // Otherwise the assumption is the ship is docked. A clone isn't needed and the ship should be removed
@@ -2064,6 +2069,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (!GetIsObjectValid(creature) || GetIsDead(creature) || shipStatus.Hull <= 0) continue;
                 ApplyAutoShipRecovery(creature, shipStatus);
+                if (!string.IsNullOrEmpty(GetLocalString(creature,"SPACE_PROXY_SHIP"))) continue;
 
                 // Determine target
                 var target = Enmity.GetHighestEnmityTarget(creature);

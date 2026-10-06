@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Service
                     SettleCompletedClaims(site);
                     var profile = GetSiteProfile(site);
                     var empty = site.Reserves.Values.Sum() <= 1e-9 && !site.Claims.Values.Any(x => x.State == SpaceWorkState.Reserved);
-                    if (site.Kind == SpaceSiteKind.Wreck && (empty || now >= site.ExpiresAt))
+                    if ((site.Kind == SpaceSiteKind.Wreck || site.ActivityId != null) && (empty || now >= site.ExpiresAt))
                     {
                         foreach (var claim in site.Claims.Values.Where(x => x.State == SpaceWorkState.Reserved).Select(x => x.Id).ToArray()) SpaceWorkClaims.Cancel(site, claim);
                         if (_siteObjects.Remove(id, out var expired) && GetIsObjectValid(expired)) { _spaceObjectInstances.Remove(expired); DestroyObject(expired); }
@@ -255,9 +255,10 @@ namespace SWLOR.Game.Server.Service
                 claim = SpaceWorkClaims.Reserve(site, GetObjectUUID(player), shipId, ship.Status.FlightId, fitted.ItemInstanceId, operation,
                     Math.Max(0, ShipCargo.Available(ship.Status) - ReservedSiteCargo(shipId)), now, bonuses, temporary,
                     temporary.GetValueOrDefault(StatType.ShipCommittedCycleSeconds)>0 ? temporary[StatType.ShipCommittedCycleSeconds] :
-                    operation.Profile.Action == ShipModuleAction.Survey && site != null ? Math.Max(operation.Variant.Cycle, GetSiteProfile(site).ScanSeconds) : null, selected);
+                    operation.Profile.Action == ShipModuleAction.Survey && site != null ? Math.Max(operation.Variant.Cycle, GetSiteProfile(site).ScanSeconds) : null, selected, ContractRecoveryRemaining(site));
             }
             catch (InvalidOperationException ex) { SendMessageToPC(player, ex.Message); return false; }
+            claim.ActivityId = site.ActivityId;
             ShipModuleActivationPolicy.Pay(ship.Status, fitted, operation, now);
             ShipTemporaryStats.ConsumePaidOperation(ship.Status,fitted.ItemInstanceId,targetId,now);
             if (operation.Profile.MovementLock || temporary.GetValueOrDefault(StatType.ShipCommittedMovementLock)>0) ShipTemporaryStats.Add(ship.Status, StatType.ShipMovementLock, 1, (claim.CompletesAt - now).TotalSeconds, claim.Id, now);
@@ -288,11 +289,14 @@ namespace SWLOR.Game.Server.Service
                 var player = GetObjectByUUID(claim.PlayerId);
                 if (!claim.XPSettled && GetIsObjectValid(player) && GetIsPC(player) && !GetIsDead(player))
                 {
-                    if (claim.BaseXP > 0)
+                    var contractWork=CreditContractWork(site,claim);
+                    if(contractWork)
+                    {var record=DB.Get<Player>(claim.PlayerId);record.SpaceExperience.Touch(claim.StartedAt,claim.CompletesAt);DB.Set(record);}
+                    if (claim.BaseXP > 0 && !contractWork)
                         Skill.GiveSkillXP(player, claim.Action == ShipModuleAction.Survey ? SkillType.Astrometrics : SkillType.SpaceIndustry,
                             claim.BaseXP, applyHenchmanPenalty: false, receiptId: "space-work/" + claim.Id,
                             settleBaseXP: (record, requested) => record.SpaceExperience.Claim(claim.FlightId, claim.Action, requested, claim.StartedAt, claim.CompletesAt));
-                    if (claim.BaseXP > 0 && !DB.Get<Player>(claim.PlayerId).SkillXPReceipts.ContainsKey("space-work/" + claim.Id)) continue;
+                    if (claim.BaseXP > 0 && !contractWork && !DB.Get<Player>(claim.PlayerId).SkillXPReceipts.ContainsKey("space-work/" + claim.Id)) continue;
                     claim.XPSettled = true; changed = true;
                     if (claim.Action == ShipModuleAction.Survey)
                         SendMessageToPC(player, $"{site.Profile}: {site.Reserves.Values.Sum():0.#} reserve, hardness {site.Hardness}, stability {site.Stability}. " +
@@ -310,6 +314,8 @@ namespace SWLOR.Game.Server.Service
                 ship.Status.PaidWorkClaims.Remove(claim.Id);
                 ship.Status.SettledSiteClaims.Remove(claim.Id);
                 DB.Set(ship);
+                var player=DB.Get<Player>(claim.PlayerId);
+                if(player!=null&&player.SkillXPReceipts.Remove("space-work/"+claim.Id))DB.Set(player);
             }
         }
     }

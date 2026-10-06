@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
     public sealed record SpaceWorkClaim
     {
         public string Id { get; init; }
+        public string ActivityId { get; set; }
         public string Generation { get; init; }
         public string PlayerId { get; init; }
         public string ShipId { get; init; }
@@ -44,7 +45,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 MaximumShips = profile.Ships, Stability = profile.Stability, Reserves = reserves, InitialReserves = new(reserves),
                 ExpiresAt = now.AddSeconds(profile.Lifetime), RespawnsAt = now.AddSeconds(profile.Lifetime + profile.Respawn),
                 NextHazardAt = profile.HazardSeconds > 0 ? now.AddSeconds(profile.HazardSeconds) : DateTime.MaxValue,
-                HiddenResearchComponent = profile.Hardness >= 100 ? "space_precise" : null };
+                HiddenResearchComponent = profile.Hardness >= 100 ? "prec_assembly" : null };
         }
 
         public static SpaceSite NewWreck(string id, string area, SpaceEncounterProfile profile, IEnumerable<string> participants, DateTime now)
@@ -55,14 +56,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 Reserves = reserves, InitialReserves = new(reserves), Participants = participants.ToHashSet(),
                 ExclusiveUntil = now.AddSeconds(120), ExpiresAt = now.AddSeconds(600), RespawnsAt = DateTime.MaxValue,
                 NextHazardAt = DateTime.MaxValue, DifficultComponent = profile.Gunnery >= 35,
-                HiddenResearchComponent = profile.Gunnery >= 35 ? "space_precise" : null };
+                HiddenResearchComponent = profile.Gunnery >= 35 ? "prec_assembly" : null };
         }
 
         public static string Validate(SpaceSite site, string playerId, string shipId, ShipModuleOperation operation,
-            double freeCargo, DateTime now, IReadOnlyDictionary<StatType, double> bonuses = null, IReadOnlyDictionary<StatType, double> temporary = null)
+            double freeCargo, DateTime now, IReadOnlyDictionary<StatType, double> bonuses = null, IReadOnlyDictionary<StatType, double> temporary = null, double? maximumRecovered = null)
         {
             if (site == null || now >= site.ExpiresAt) return "That site is no longer available.";
             var action = operation.Profile.Action;
+            if (site.ActivityId != null && !site.Participants.Contains(playerId)) return "That finite site belongs to another contract party.";
             if (site.Kind == SpaceSiteKind.Wreck && site.ExclusiveUntil > now && !site.Participants.Contains(playerId)) return "The wreck remains reserved for its encounter participants.";
             if (site.Claims.Values.Where(x => x.State == SpaceWorkState.Reserved && x.ShipId != shipId).Select(x => x.ShipId).Distinct().Count() >= site.MaximumShips) return "All working positions are occupied.";
             if (action == ShipModuleAction.Survey)
@@ -89,6 +91,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
             if (available <= 1e-9) return "The relevant reserve is exhausted.";
             var recovery = Recovery(operation, bonuses, temporary);
             var required = action == ShipModuleAction.IntactSalvage ? 1 : Math.Min(available, Removal(operation, bonuses, temporary)) * recovery;
+            if (maximumRecovered.HasValue && action == ShipModuleAction.Extraction)
+            { if (!double.IsFinite(maximumRecovered.Value) || maximumRecovered.Value <= 1e-9) return "The contracted recovery quota is complete or reserved by another tool."; required = Math.Min(required, maximumRecovered.Value); }
             return required > freeCargo + 1e-9 ? "The ship does not have room for this recovery cycle." : null;
         }
 
@@ -105,12 +109,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         public static SpaceWorkClaim Reserve(SpaceSite site, string playerId, string shipId, string flightId, string moduleId,
             ShipModuleOperation operation, double freeCargo, DateTime now, IReadOnlyDictionary<StatType, double> bonuses = null,
-            IReadOnlyDictionary<StatType, double> temporary = null, double? channelSeconds = null, string selectedConstituent = null)
+            IReadOnlyDictionary<StatType, double> temporary = null, double? channelSeconds = null, string selectedConstituent = null, double? maximumRecovered = null)
         {
             if (site == null) throw new InvalidOperationException("Select a finite deposit or salvage site.");
             if (site.Claims.Values.Any(x => x.State == SpaceWorkState.Reserved && x.ShipId == shipId && x.ModuleId == moduleId))
                 throw new InvalidOperationException("That tool already has a pending claim.");
-            var error = Validate(site, playerId, shipId, operation, freeCargo, now, bonuses, temporary);
+            var error = Validate(site, playerId, shipId, operation, freeCargo, now, bonuses, temporary, maximumRecovered);
             if (error != null) throw new InvalidOperationException(error);
             var action = operation.Profile.Action;
             if (!site.DiscoveryDrawn && !string.IsNullOrWhiteSpace(site.HiddenResearchComponent) && (temporary?.GetValueOrDefault(StatType.ShipDiscoveryChance)??0)>0 && freeCargo < (action==ShipModuleAction.Survey?0:action==ShipModuleAction.IntactSalvage?1:Math.Min(AvailableReserves(site,action),Removal(operation,bonuses,temporary))*Recovery(operation,bonuses,temporary))+1-1e-9)
@@ -120,6 +124,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             {
                 var available = AvailableReserves(site, action);
                 var removed = Math.Min(available, action == ShipModuleAction.IntactSalvage ? 1 : Removal(operation, bonuses, temporary));
+                if (maximumRecovered.HasValue && action == ShipModuleAction.Extraction) removed = Math.Min(removed, maximumRecovered.Value / Math.Max(1e-9, Recovery(operation, bonuses, temporary)));
                 var selection=Math.Clamp(temporary?.GetValueOrDefault(StatType.ShipSelectedRecovery)??0,0,1);
                 if (selection>0 && action==ShipModuleAction.Extraction)
                 {

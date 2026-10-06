@@ -17,6 +17,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Data\SpaceActivities.json" LogicalName="SWLOR.SpaceActivities.json" />
+    <EmbeddedResource Include="Data\SpaceEconomy.json" LogicalName="SWLOR.SpaceEconomy.json" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="NRediSearch" Version="2.2.79" />
     <PackageReference Include="NReJSON" Version="4.0.0" />

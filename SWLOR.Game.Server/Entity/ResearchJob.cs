@@ -16,5 +16,14 @@ namespace SWLOR.Game.Server.Entity
         public string SerializedItem { get; set; }
         public int Level { get; set; }
         public RecipeType Recipe { get; set; }
+        public bool IsShipResearch { get; set; }
+        public bool InputSettled { get; set; }
+        public int CreditCost { get; set; }
+        public string InputItemId { get; set; }
+        public bool Success { get; set; }
+        public bool OutputPrepared { get; set; }
+        public bool Cancelled { get; set; }
+        public string SerializedOutput { get; set; }
+        public bool OutputSettled { get; set; }
     }
 }

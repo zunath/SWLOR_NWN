@@ -21,6 +21,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             NuiGallery();
             AnimationTester();
             ShipCargoTester();
+            _builder.Create("shipsupplytest").Description("Opens dock supply UI for validation.").Permissions(AuthorizationLevel.Admin).AvailableToAllOnTestEnvironment().Action((user,target,location,args)=>Gui.TogglePlayerWindow(user,GuiWindowType.ShipSupply,new GuiDefinition.Payload.ShipSupplyPayload()));
+            _builder.Create("shipcontracts").Description("Opens ship contract UI for validation.").Permissions(AuthorizationLevel.Admin).AvailableToAllOnTestEnvironment().Action((user,target,location,args)=>
+            {var ship=DB.Search(new Service.DBService.DBQuery<PlayerShip>().AddFieldSearch(nameof(PlayerShip.OwnerPlayerId),GetObjectUUID(user),false)).FirstOrDefault();if(ship!=null)Gui.TogglePlayerWindow(user,GuiWindowType.ShipContracts,new GuiDefinition.Payload.ShipContractsPayload(ship.Id));});
             GetObjectId();
             ResetBeast();
 

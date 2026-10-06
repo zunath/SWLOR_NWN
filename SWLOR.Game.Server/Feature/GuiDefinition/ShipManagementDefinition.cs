@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetPlaceholder("Ship Name")
                             .BindIsEnabled(model => model.IsNameEnabled);
 
+                        row.AddButton().SetText("Supplies").SetWidth(90f).SetHeight(35f).BindOnClicked(model=>model.OnClickSupply());
                         row.AddButton()
                             .SetText("Save")
                             .BindOnClicked(model => model.OnClickSaveShipName())
@@ -351,11 +352,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row => row.AddLabel().BindText(model => model.FittingSummary).SetHeight(25f));
                     col.AddRow(row =>
                     {
-                        row.AddButton().BindText(model => model.RecoveryText).SetWidth(300f)
+                        row.AddButton().BindText(model => model.RecoveryText).SetWidth(205f)
                             .BindIsEnabled(model => model.IsRefitEnabled).BindOnClicked(model => model.OnClickRecoverEquipment()).SetHeight(35f);
                         row.AddButton().SetText("Cargo").SetWidth(90f)
                             .BindIsEnabled(model => model.IsRefitEnabled).BindOnClicked(model => model.OnClickCargo()).SetHeight(35f);
-                        row.AddButton().SetText("Operations").SetWidth(100f).BindIsEnabled(model=>model.IsRefitEnabled).BindOnClicked(model=>model.OnClickCockpit()).SetHeight(35f);
+                        row.AddButton().SetText("Operations").SetWidth(95f).BindIsEnabled(model=>model.IsRefitEnabled).BindOnClicked(model=>model.OnClickCockpit()).SetHeight(35f);
+                        row.AddButton().SetText("Contracts").SetWidth(95f).BindIsEnabled(model=>model.IsRefitEnabled).BindOnClicked(model=>model.OnClickContracts()).SetHeight(35f);
                     });
                         }).SetWidth(500f);
                     }).SetWidth(520f)));

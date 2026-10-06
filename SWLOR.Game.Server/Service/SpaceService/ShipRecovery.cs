@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
-    public sealed record ShipDockPayment(string Id, string PlayerId, int Credits);
+    public sealed record ShipDockPayment(string Id, string PlayerId, int Credits, int Voucher = 0);
     public sealed record ShipDefeatSettlement(int RecoveryCredits, IReadOnlyDictionary<string, int> LostCargo, bool Applied);
     public static class ShipRecovery
     {
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             }
             foreach (var fitted in ShipFittedStats.Modules(status).Concat(status.ConfigurationModules.Values)) fitted.Condition = Math.Max(0, fitted.Condition - 20);
             var price = HullRecoveryPrice(status, catalog);
-            status.OutstandingRecoveryCredits = checked(status.OutstandingRecoveryCredits + price);
+            status.OutstandingRecoveryCredits = Math.Max(status.OutstandingRecoveryCredits,price);
             status.LastDefeatFlightId = status.FlightId;
             status.PendingModuleActivations.Clear(); status.TemporaryAdjustments.Clear(); status.HostileDamageDebt.Clear();
             status.Hull = 1; status.Shield = 0; status.Capacitor = 0;

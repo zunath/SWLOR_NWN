@@ -8,11 +8,13 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class SpaceRecastEngineTests
     {
+        /// <summary>Exercises paid module activation, independent timing, reconnect progress, legacy records, and expiry.</summary>
         [EngineTest("Existing ship modules use independent regular recasts and resume elapsed recharge",Category="SpaceRecast",TimeoutSeconds=30f)]
         public static async Task ModuleRecastLifecycle(EngineTestContext ctx)
         {
@@ -67,6 +69,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally { AbilityCooldownVisual.ClearAllRecastDelays(actor.Creature); DB.Delete<PlayerShip>(shipId); }
         }
 
+        /// <summary>Checks the native mining cycle and its shared paid capacitor cost and recast deadline.</summary>
         [EngineTest("Existing mining module pays one cooldown and displays the standard recharge",Category="SpaceRecast",TimeoutSeconds=20f)]
         public static async Task MiningRecast(EngineTestContext ctx)
         {
@@ -93,11 +96,88 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally { AbilityCooldownVisual.ClearAllRecastDelays(actor.Creature); DB.Delete<PlayerShip>(shipId); }
         }
 
+        /// <summary>Checks source-only rendering, refresh retention, expiry, and explicit artwork preference in the native scheduler.</summary>
+        [EngineTest("Source-only cooldown textures survive refresh and prefer explicit artwork", Category = "SpaceRecast", TimeoutSeconds = 15f)]
+        public static async Task SourceTextureCooldown(EngineTestContext ctx)
+        {
+            using var actor = await PlayerAbilityFixture.CreateAsync(ctx);
+            var startedAt = DateTime.UtcNow;
+            var endsAt = startedAt.AddSeconds(6);
+            try
+            {
+                Recast.ApplyRecastDelay(actor.Creature, RecastGroup.ShipModule1, startedAt, endsAt, "iit_ess_020");
+                var visual = Visual(actor.Id, RecastGroup.ShipModule1);
+                ctx.Assert(visual != null, "a source texture alone creates a native cooldown visual");
+                ctx.AssertEqual("iit_ess_020", Value<IReadOnlyList<string>>(visual, "SourceTextures").Single(), "the supplied source remains the override anchor");
+                ctx.AssertEqual<string>(null, Value<string>(visual, "IconTexture"), "source-only rendering derives frames from the anchor");
+                await ctx.DelaySecondsAsync(1.1f);
+                Recast.ReduceRecastDelay(actor.Creature, RecastGroup.ShipModule1, 2);
+                visual = Visual(actor.Id, RecastGroup.ShipModule1);
+                ctx.Assert(visual != null, "refresh retains a source-only visual for an uncached module group");
+                ctx.AssertEqual(startedAt, Value<DateTime>(visual, "StartedAt"), "refresh retains the original start");
+                ctx.AssertEqual(endsAt.AddSeconds(-2), Value<DateTime>(visual, "EndsAt"), "refresh uses the reduced deadline");
+                ctx.AssertEqual("iit_ess_020", Value<IReadOnlyList<string>>(visual, "SourceTextures").Single(), "refresh retains the custom anchor");
+                ctx.Assert(Value<int>(visual, "Stage") > 0, "refresh resumes elapsed progress");
+                await ctx.WaitUntilAsync(() => Visual(actor.Id, RecastGroup.ShipModule1) == null, 5, "source-only recharge expires through the regular scheduler");
+
+                startedAt = DateTime.UtcNow;
+                Recast.ApplyRecastDelay(actor.Creature, RecastGroup.ShipModule1, startedAt, startedAt.AddSeconds(10), "ife_sm1", "iit_ess_084");
+                visual = Visual(actor.Id, RecastGroup.ShipModule1);
+                ctx.Assert(visual != null, "separate fitted artwork still creates a visual");
+                ctx.AssertEqual("iit_ess_084", Value<string>(visual, "IconTexture"), "explicit artwork takes precedence over the slot anchor");
+                ctx.AssertEqual("ife_sm1", Value<IReadOnlyList<string>>(visual, "SourceTextures").Single(), "explicit artwork preserves its distinct anchor");
+            }
+            finally { AbilityCooldownVisual.ClearAllRecastDelays(actor.Creature); }
+        }
+
+        /// <summary>Runs ship death cleanup using a native pilot fixture and preserves a regular ability deadline.</summary>
+        [EngineTest("Ship destruction clears module recasts and preserves regular ability cooldowns", Category = "SpaceRecast", TimeoutSeconds = 15f)]
+        public static async Task ShipDestructionRecasts(EngineTestContext ctx)
+        {
+            using var actor = await PlayerAbilityFixture.CreateAsync(ctx);
+            var shipId = "engine-destroyed-recast/" + actor.Id;
+            var propertyId = "engine-destroyed-property/" + actor.Id;
+            actor.Update(p =>
+            {
+                p.ActiveShipId = shipId;
+                p.OriginalAppearanceType = GetAppearanceType(actor.Creature);
+                p.SerializedHotBar = CreaturePlugin.SerializeQuickbar(actor.Creature);
+            });
+            DB.Set(new WorldProperty { Id = propertyId, OwnerPlayerId = actor.Id });
+            DB.Set(new PlayerShip { Id = shipId, OwnerPlayerId = actor.Id, PropertyId = propertyId, Status = new ShipStatus() });
+            var startedAt = DateTime.UtcNow;
+            var endsAt = startedAt.AddMinutes(1);
+            try
+            {
+                Recast.ApplyRecastDelay(actor.Creature, RecastGroup.ShipModule1, startedAt, endsAt, "ife_sm1", "iit_ess_020");
+                Recast.ApplyRecastDelay(actor.Creature, RecastGroup.ShipModule11, startedAt, endsAt, "ife_sm11", "iit_ess_084");
+                Recast.ApplyRecastDelay(actor.Creature, RecastGroup.Flash, startedAt, endsAt);
+                ctx.Assert(Visual(actor.Id, RecastGroup.ShipModule1) != null && Visual(actor.Id, RecastGroup.ShipModule11) != null, "both high and low slot visuals exist before destruction");
+                ctx.Assert(Visual(actor.Id, RecastGroup.Flash) != null, "a regular ability visual exists before destruction");
+                // Headless fixtures do not dispatch connected-client death events; call their shared cleanup path.
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => Space.ApplyDeath(actor.Creature));
+                await ctx.WaitUntilAsync(() => DB.Get<Player>(actor.Id).ActiveShipId == Guid.Empty.ToString(), 5, "ship death cleanup exits space mode");
+                var record = DB.Get<Player>(actor.Id);
+                ctx.Assert(!record.RecastTimes.ContainsKey(RecastGroup.ShipModule1) && !record.RecastTimes.ContainsKey(RecastGroup.ShipModule11), "destruction removes persisted ship-slot timers");
+                ctx.Assert(Visual(actor.Id, RecastGroup.ShipModule1) == null && Visual(actor.Id, RecastGroup.ShipModule11) == null, "destruction removes both ship-slot visuals");
+                ctx.AssertEqual(endsAt, record.RecastTimes[RecastGroup.Flash], "destruction preserves the regular ability deadline");
+                ctx.Assert(Visual(actor.Id, RecastGroup.Flash) != null, "destruction preserves the regular ability visual");
+            }
+            finally
+            {
+                AbilityCooldownVisual.ClearAllRecastDelays(actor.Creature);
+                DB.Delete<PlayerShip>(shipId);
+                DB.Delete<WorldProperty>(propertyId);
+            }
+        }
+
+        /// <summary>Reads a live renderer entry to assert native scheduler behavior without requiring a connected client.</summary>
         private static object Visual(string playerId,RecastGroup group)
         {
             var all=(IDictionary)typeof(AbilityCooldownVisual).GetField("_activeVisuals",BindingFlags.NonPublic|BindingFlags.Static).GetValue(null);
             return all.Contains(playerId)&&((IDictionary)all[playerId]).Contains(group)?((IDictionary)all[playerId])[group]:null;
         }
+        /// <summary>Reads a renderer state property for native lifecycle assertions.</summary>
         private static T Value<T>(object state,string property)=>(T)state.GetType().GetProperty(property).GetValue(state);
     }
 }

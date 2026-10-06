@@ -96,6 +96,10 @@ function Get-FeatIcons {
     return $icons | Sort-Object
 }
 
+<#
+.SYNOPSIS
+Builds a native recharge resource name from feat or inventory artwork and rejects invalid stages or oversized names.
+#>
 function Get-CooldownIconName {
     param(
         [string]$SourceIcon,

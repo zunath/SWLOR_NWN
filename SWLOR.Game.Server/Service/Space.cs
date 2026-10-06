@@ -1159,6 +1159,7 @@ namespace SWLOR.Game.Server.Service
             ActivateShipModule(OBJECT_SELF, feat);
         }
 
+        /// <summary>Validates and activates the fitted module, then publishes its paid hardware deadline through the regular recast display.</summary>
         public static void ActivateShipModule(uint activator, FeatType feat)
         {
             if (!ShipModuleFeats.ContainsKey(feat)) return;
@@ -1861,8 +1862,12 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleDeath)]
         public static void ApplyDeath()
         {
-            var creature = GetLastPlayerDied();
+            ApplyDeath(GetLastPlayerDied());
+        }
 
+        /// <summary>Applies the existing ship destruction and pilot cleanup to the specified creature.</summary>
+        public static void ApplyDeath(uint creature)
+        {
             if (!IsPlayerInSpaceMode(creature))
                 return;
 
@@ -1939,6 +1944,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 _shipClones.Remove(dbPlayer.ActiveShipId);
+                ClearShipModuleRecasts(creature, dbPlayer);
                 dbPlayer.ActiveShipId = Guid.Empty.ToString();
 
                 // Removing the current position of the ship will automatically send it back to the last dock it was at.

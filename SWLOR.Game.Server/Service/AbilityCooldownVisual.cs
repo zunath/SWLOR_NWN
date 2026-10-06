@@ -64,6 +64,7 @@ namespace SWLOR.Game.Server.Service
             ClearAllRecastDelays(GetExitingObject());
         }
 
+        /// <summary>Builds a native recharge frame name from feat or fitted module artwork.</summary>
         public static string GetCooldownTextureName(string sourceTexture, int stage)
         {
             if (stage < 0 || stage > MaximumCooldownStage)
@@ -97,6 +98,7 @@ namespace SWLOR.Game.Server.Service
             return Math.Clamp(stage, 0, MaximumCooldownStage);
         }
 
+        /// <summary>Displays elapsed recharge on cached ability icons or a supplied texture anchor, using optional separate artwork.</summary>
         public static void ApplyRecastDelay(uint player, RecastGroup group, DateTime startedAt, DateTime endsAt,
             string sourceTexture = null, string iconTexture = null)
         {
@@ -113,7 +115,7 @@ namespace SWLOR.Game.Server.Service
             if (sourceTexture != null)
             {
                 if (string.IsNullOrWhiteSpace(sourceTexture) || sourceTexture.Length > MaxResourceNameLength ||
-                    GetCooldownTextureName(iconTexture, 0) == null) return;
+                    GetCooldownTextureName(iconTexture ?? sourceTexture, 0) == null) return;
                 textures = new List<string> { sourceTexture };
             }
             else if (!_texturesByRecastGroup.TryGetValue(group, out textures) || textures.Count <= 0)
@@ -146,6 +148,7 @@ namespace SWLOR.Game.Server.Service
             UpdateAndSchedule(state);
         }
 
+        /// <summary>Updates a deadline while retaining elapsed progress and any active single-texture anchor and artwork.</summary>
         public static void RefreshRecastDelay(uint player, RecastGroup group, DateTime endsAt)
         {
             if (!CanShowCooldownVisuals(player) ||
@@ -170,7 +173,7 @@ namespace SWLOR.Game.Server.Service
             {
                 startedAt = existing.StartedAt;
                 iconTexture = existing.IconTexture;
-                if (iconTexture != null) sourceTexture = existing.SourceTextures.Single();
+                if (existing.SourceTextures.Count == 1) sourceTexture = existing.SourceTextures[0];
             }
             else
             {
@@ -392,6 +395,7 @@ namespace SWLOR.Game.Server.Service
                    current.Token == state.Token;
         }
 
+        /// <summary>Overrides each anchor with the recharge frame derived from its artwork or the anchor itself.</summary>
         private static void ApplyStage(ActiveRecastVisual state, int stage)
         {
             foreach (var sourceTexture in state.SourceTextures)
@@ -427,6 +431,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>Restores fitted artwork, or removes the override when the anchor supplies its own artwork.</summary>
         private static void ClearTextureOverrides(ActiveRecastVisual state)
         {
             if (!GetIsObjectValid(state.Player))
@@ -450,6 +455,7 @@ namespace SWLOR.Game.Server.Service
             public Guid Token { get; } = Guid.NewGuid();
             public int Stage { get; set; } = -1;
 
+            /// <summary>Captures one scheduled recharge and the textures to restore when it finishes.</summary>
             public ActiveRecastVisual(
                 uint player,
                 string playerId,

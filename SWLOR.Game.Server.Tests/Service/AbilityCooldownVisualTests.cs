@@ -6,6 +6,7 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class AbilityCooldownVisualTests
 {
+    /// <summary>Checks that feat artwork resolves to native recharge resource names.</summary>
     [Test]
     public void GetCooldownTextureName_BuildsScriptCompatibleNames()
     {
@@ -18,12 +19,14 @@ public class AbilityCooldownVisualTests
             .Be("pr5_absdef1");
     }
 
+    /// <summary>Checks that fitted inventory artwork uses the same recharge naming convention.</summary>
     [Test]
     public void GetCooldownTextureName_UsesEquippedShipModuleArtwork()
     {
         AbilityCooldownVisual.GetCooldownTextureName("iit_ess2_062", 3).Should().Be("pr3_ess2_062");
     }
 
+    /// <summary>Checks that generated resource names respect the native length limit.</summary>
     [Test]
     public void GetCooldownTextureName_AllowsMaxLengthResourceNames()
     {
@@ -33,6 +36,7 @@ public class AbilityCooldownVisualTests
         textureName.Length.Should().Be(16);
     }
 
+    /// <summary>Checks that unsupported texture categories do not create recharge resource names.</summary>
     [Test]
     public void GetCooldownTextureName_RejectsUnsupportedSourceTextures()
     {
@@ -41,6 +45,7 @@ public class AbilityCooldownVisualTests
             .BeNull();
     }
 
+    /// <summary>Checks the six elapsed-time frames and the expiry boundary.</summary>
     [Test]
     public void CalculateCooldownStage_AdvancesThroughSixFrames()
     {

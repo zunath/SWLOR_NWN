@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class ShipModuleRecastTests
 {
+    /// <summary>Checks independent timed slots, player-facing label lengths, and untimed configuration feats.</summary>
     [Test]
     public void ActiveSlots_HaveIndependentGroupsAndPassiveConfigurationHasNone()
     {
@@ -25,6 +26,7 @@ public class ShipModuleRecastTests
         slots.Where(x => (int)x.Key >= (int)FeatType.ShipModule21).Select(x => x.Value.RecastGroup).Should().OnlyContain(x => x == RecastGroup.Invalid);
     }
 
+    /// <summary>Checks complete native texture coverage for every timed module in the current definitions.</summary>
     [Test]
     public void EveryActiveModule_HasAllSixNativeCooldownTextures()
     {
@@ -47,6 +49,7 @@ public class ShipModuleRecastTests
             data[17].Should().Be(8, "NWN icons use eight alpha bits and bottom-left origin");
         }
     }
+    /// <summary>Finds source assets from the test output directory for corpus validation.</summary>
     private static string RepositoryRoot()
     {
         for (var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory); directory != null; directory = directory.Parent)

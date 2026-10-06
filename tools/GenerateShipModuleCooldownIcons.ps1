@@ -1,3 +1,9 @@
+<#
+.SYNOPSIS
+Generates six regular recharge frames for each distinct inventory texture used by ship module definitions.
+.PARAMETER Force
+Regenerates existing frames through the established ImageMagick cooldown generator.
+#>
 param([switch]$Force)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"

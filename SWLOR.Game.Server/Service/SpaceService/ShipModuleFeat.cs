@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public string TextureName { get; set; }
         public RecastGroup RecastGroup { get; set; }
 
+        /// <summary>Defines the player-facing slot labels and texture anchor, with an optional independent recast group.</summary>
         public ShipModuleFeat(string slotName, int nameTlkId, int descriptionTlkId, string textureName, RecastGroup recastGroup = RecastGroup.Invalid)
         {
             SlotName = slotName;

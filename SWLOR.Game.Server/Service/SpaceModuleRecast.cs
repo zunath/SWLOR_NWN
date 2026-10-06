@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static partial class Space
     {
+        /// <summary>Pairs fitted high and low modules with their independent feat and recast slots.</summary>
         private static IEnumerable<(ShipModuleFeat Feat, ShipStatus.ShipStatusModule Module)> ModuleRecastSlots(ShipStatus status)
         {
             foreach (var (slot, module) in status.HighPowerModules)
@@ -16,6 +17,7 @@ namespace SWLOR.Game.Server.Service
                 yield return (ShipModuleFeats[LowSlotToFeat(slot)], module);
         }
 
+        /// <summary>Publishes a timed active module; older records retain their deadline and infer their original start.</summary>
         private static void ApplyShipModuleRecast(uint player, ShipModuleFeat feat, ShipStatus.ShipStatusModule module, ShipStatus status)
         {
             if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player) ||
@@ -31,6 +33,7 @@ namespace SWLOR.Game.Server.Service
             Recast.ApplyRecastDelay(player, feat.RecastGroup, startedAt, module.RecastTime, feat.TextureName, detail.Texture);
         }
 
+        /// <summary>Replaces stale slot displays with fitted artwork and resumes unexpired hardware cooldowns.</summary>
         public static void RestoreShipModuleRecasts(uint player)
         {
             if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) return;
@@ -44,6 +47,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>Clears ship-slot timers and texture overrides while preserving regular ability recasts.</summary>
         private static void ClearShipModuleRecasts(uint player, Player dbPlayer = null)
         {
             dbPlayer ??= DB.Get<Player>(GetObjectUUID(player));

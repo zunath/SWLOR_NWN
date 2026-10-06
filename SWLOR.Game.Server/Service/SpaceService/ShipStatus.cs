@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
@@ -11,8 +12,39 @@ namespace SWLOR.Game.Server.Service.SpaceService
             public string SerializedItem { get; set; }
             public DateTime RecastTime { get; set; }
             public int ModuleBonus { get; set; }
+            public string Design { get; set; }
+            public string Calibration { get; set; } = "Standard";
+            public ShipQualityDimension QualityDimension { get; set; }
+            public int Quality { get; set; }
+            public int Condition { get; set; } = 100;
+            public string OriginalSerializedItem { get; set; }
         }
 
+        public Dictionary<StatType, double> FittingBonuses { get; set; } = new();
+        public Dictionary<StatType, double> FittingPenalties { get; set; } = new();
+        public Dictionary<ShipResource, double> FractionalResourceDeficits { get; set; } = new();
+        public DateTime LastHostileActivity { get; set; }
+        public List<ShipTemporaryAdjustment> TemporaryAdjustments { get; set; } = new();
+        public Dictionary<string, ShipControlWindow> ControlWindows { get; set; } = new();
+        public List<ShipRecoveryReceipt> ExternalRecoveryReceipts { get; set; } = new();
+        public int ProtectedCargo { get; set; }
+        public DateTime RefitReadyAt { get; set; }
+        public Dictionary<string, string> LegacyEquipmentAudit { get; set; } = new();
+        public Dictionary<string, ShipInventoryTransfer> PendingInventoryTransfers { get; set; } = new();
+        public int FittingVersion { get; set; }
+        public ShipResourceDeficits ResourceDeficits { get; set; }
+        public Dictionary<string, ShipStatusModule> RefitRecovery { get; set; } = new();
+        public Dictionary<string, string> RefitRecoveryReasons { get; set; } = new();
+        public string ConfigurationDesign { get; set; }
+        public int FittingPowerUsed { get; set; }
+        public double CargoCapacity { get; set; }
+        public double BaseSpeed { get; set; }
+        public double Speed { get; set; }
+        public double Signature { get; set; }
+        public double HullResistance { get; set; }
+        public double ShieldResistance { get; set; }
+        public double CapacitorRecovery { get; set; }
+        public double OutOfCombatShieldRecovery { get; set; }
         public string ItemTag { get; set; }
         public int Shield { get; set; }
         public int Hull { get; set; }

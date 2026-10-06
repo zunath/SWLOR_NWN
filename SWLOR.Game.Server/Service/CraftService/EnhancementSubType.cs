@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Service.SpaceService;
+
 namespace SWLOR.Game.Server.Service.CraftService
 {
     public enum EnhancementSubType
@@ -240,16 +242,38 @@ namespace SWLOR.Game.Server.Service.CraftService
         [EnhancementSubType("Shield Deflection")]
         ShieldDeflection = 127,
 
+        [EnhancementSubType("Ship - Output", ShipQualityDimension.Output)]
+        ShipOutput = 128,
+
+        [EnhancementSubType("Ship - Tracking", ShipQualityDimension.Tracking)]
+        ShipTracking = 129,
+
+        [EnhancementSubType("Ship - Range", ShipQualityDimension.Range)]
+        ShipRange = 130,
+
+        [EnhancementSubType("Ship - Recovery", ShipQualityDimension.RecoveryFraction)]
+        ShipRecovery = 131,
+
+        [EnhancementSubType("Ship - CapacitorCost", ShipQualityDimension.ActivationCost)]
+        ShipCapacitorCost = 132,
+
+        [EnhancementSubType("Ship - Cycle", ShipQualityDimension.CycleDuration)]
+        ShipCycle = 133,
+
+
+
 
     }
 
     public class EnhancementSubTypeAttribute : Attribute
     {
         public string Name { get; set; }
+        public ShipQualityDimension ShipQualityDimension { get; }
 
-        public EnhancementSubTypeAttribute(string name)
+        public EnhancementSubTypeAttribute(string name, ShipQualityDimension shipQualityDimension = ShipQualityDimension.None)
         {
             Name = name;
+            ShipQualityDimension = shipQualityDimension;
         }
     }
 }

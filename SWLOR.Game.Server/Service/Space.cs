@@ -22,7 +22,7 @@ using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Space
+    public static partial class Space
     {
         public const int MaxRegisteredShips = 10;
 
@@ -528,6 +528,9 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            ShipEquipmentTransfers.EnsureFitting(dbShip);
+            ShipFittedStats.Recompute(dbShip.Status, GetOperatingSkills(player), GetShipStatAdjustments(player));
+            DB.Set(dbShip);
             if (!CanPlayerUseShip(player, dbShip.Status))
             {
                 SendMessageToPC(player, ColorToken.Red("You do not have the ability to pilot this ship."));
@@ -764,6 +767,7 @@ namespace SWLOR.Game.Server.Service
 
             DB.Set(dbPlayer);
             DB.Set(dbPlayerShip);
+            Stat.ApplyCreatureMovementRate(player);
 
             // If the ship is in the "actively piloted" list, it means it's in space.
             // Destroy the NPC clone that's associated with this ship since the player is taking over the controls.
@@ -1025,6 +1029,14 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
+            if (ShipFittingCatalog.Default.Hulls.ContainsKey(playerShip.ItemTag))
+            {
+                if (playerShip.FittingVersion != ShipFittingConversion.CurrentVersion || playerShip.PendingInventoryTransfers.Count != 0 ||
+                    playerShip.RefitReadyAt > DateTime.UtcNow) return false;
+                return ShipFittingCalculator.Calculate(playerShip.ItemTag, ShipFittedStats.Modules(playerShip)
+                    .Select(x => new ShipFittingModule(x.Design, x.Calibration, x.QualityDimension, x.Quality)),
+                    GetOperatingSkills(player), playerShip.ConfigurationDesign).IsLegal;
+            }
             var shipDetails = _shipTypes[playerShip.ItemTag];
 
             // Check ship requirements
@@ -1061,6 +1073,8 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var shipModule = _shipModules[itemTag];
+            if (shipModule.FittingProfile != null)
+                return Skill.GetCreatureSkillRank(player, shipModule.FittingProfile.OperatorSkill) >= shipModule.FittingProfile.OperatorRank;
 
             foreach (var (perkType, requiredLevel) in shipModule.RequiredPerks)
             {
@@ -1286,6 +1300,13 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyAutoShipRecovery(uint player, ShipStatus shipStatus)
         {
+            if (shipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
+            {
+                ShipOperations.Recover(shipStatus, DateTime.UtcNow);
+                Stat.ApplyCreatureMovementRate(player);
+                if (GetIsPC(player)) ExecuteScript("pc_target_upd", player);
+                return;
+            }
             // Shield recovery
             shipStatus.ShieldCycle++;
             var rechargeRate = shipStatus.ShieldRechargeRate;
@@ -1329,6 +1350,12 @@ namespace SWLOR.Game.Server.Service
 
         public static void RestoreShield(uint creature, ShipStatus shipStatus, int amount)
         {
+            if (shipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
+            {
+                ShipResources.RestorePrecise(shipStatus, ShipResource.Shield, Math.Max(0, amount));
+                ExecuteScript("pc_shld_adjusted", creature);
+                return;
+            }
             shipStatus.Shield += amount;
             if (shipStatus.Shield > shipStatus.MaxShield)
                 shipStatus.Shield = shipStatus.MaxShield;
@@ -1338,6 +1365,12 @@ namespace SWLOR.Game.Server.Service
 
         public static void ReduceShield(uint creature, ShipStatus shipStatus, int amount)
         {
+            if (shipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
+            {
+                ShipResources.SpendPrecise(shipStatus, ShipResource.Shield, Math.Max(0, amount));
+                ExecuteScript("pc_shld_adjusted", creature);
+                return;
+            }
             shipStatus.Shield -= amount;
             if (shipStatus.Shield < 0)
                 shipStatus.Shield = 0;
@@ -1347,6 +1380,12 @@ namespace SWLOR.Game.Server.Service
 
         public static void RestoreHull(uint creature, ShipStatus shipStatus, int amount)
         {
+            if (shipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
+            {
+                ShipResources.RestorePrecise(shipStatus, ShipResource.Hull, Math.Max(0, amount));
+                ExecuteScript("pc_hull_adjusted", creature);
+                return;
+            }
             shipStatus.Hull += amount;
             if (shipStatus.Hull > shipStatus.MaxHull)
                 shipStatus.Hull = shipStatus.MaxHull;
@@ -1356,6 +1395,13 @@ namespace SWLOR.Game.Server.Service
 
         public static void ReduceHull(uint creature, ShipStatus shipStatus, int amount)
         {
+            if (shipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
+            {
+                ShipResources.SpendPrecise(shipStatus, ShipResource.Hull, Math.Max(0, amount));
+                ExecuteScript("pc_hull_adjusted", creature);
+                if (shipStatus.Hull <= 0) AssignCommand(OBJECT_SELF, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), creature));
+                return;
+            }
             shipStatus.Hull -= amount;
             if (shipStatus.Hull < 0)
                 shipStatus.Hull = 0;
@@ -1370,6 +1416,12 @@ namespace SWLOR.Game.Server.Service
 
         public static void RestoreCapacitor(uint creature, ShipStatus shipStatus, int amount)
         {
+            if (shipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
+            {
+                ShipResources.RestorePrecise(shipStatus, ShipResource.Capacitor, Math.Max(0, amount));
+                ExecuteScript("pc_cap_adjusted", creature);
+                return;
+            }
             shipStatus.Capacitor += amount;
             if (shipStatus.Capacitor > shipStatus.MaxCapacitor)
                 shipStatus.Capacitor = shipStatus.MaxCapacitor;
@@ -1379,6 +1431,12 @@ namespace SWLOR.Game.Server.Service
 
         public static void ReduceCapacitor(uint creature, ShipStatus shipStatus, int amount)
         {
+            if (shipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
+            {
+                ShipResources.SpendPrecise(shipStatus, ShipResource.Capacitor, Math.Max(0, amount));
+                ExecuteScript("pc_cap_adjusted", creature);
+                return;
+            }
             shipStatus.Capacitor -= amount;
             if (shipStatus.Capacitor < 0)
                 shipStatus.Capacitor = 0;
@@ -1683,6 +1741,11 @@ namespace SWLOR.Game.Server.Service
             if (targetShipStatus == null)
                 return;
 
+            if (targetShipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
+            {
+                ApplyFittedShipDamage(attacker, target, amount);
+                return;
+            }
             var remainingDamage = amount;
             // First deal damage to target's shields.
             if (remainingDamage <= targetShipStatus.Shield)

@@ -358,6 +358,7 @@ def add_industry(data):
         ("Passive Compact", "For passive modules Compact multiplies only the positive capacity/rating/utility amount by85%, power by80%; drawbacks stay at base. No High Output capacitor regeneration variants."),
         ("Precision extraction", "Adds5 recovery points, removes10% less reserve, fitting+10%; no second throughput bonus. Precision bulk salvage uses the same recovery rule; component-attempt kits have no Precision variant. Precision scanners gain20% resolution with10% longer cycle, not another output reduction on that same resolution."),
         ("Quality dimension", "At most one positive eligible property per module. Magnitude at transferred q=100 is8%; interpolation is linear q/100. No extra enhancement slot from grade or material."),
+        ("Refinement input access", "Ship refinement tokens are validated by their eligible dimension and magnitude1-100, independent of the old five-level enhancement cutoff. High-skill crafters may refine accessible hull-role equipment; no extra slot or lower crafting target is granted."),
         ("Quality exclusions", "Do not enhance capacitor creation/transfer, intact drop chance, protected cargo quantity, ammunition consumption, control duration, signature or fitting demand through quality."),
         ("Research", "80% base blueprint success per committed research attempt; duration300+30*EngineeringRequirement seconds. Preserve existing Research modifiers and ownership settlement; final probability clamp10%-95%."),
         ("Manufacturing licenses", "Engineering requirements2/10/20/35/45, SP1/2/3/4/5 (15SP total), unlock matching recipe complexity. Operator does not need the manufacturing license. Replaces only starship manufacturing unlocks during rebuild."),
@@ -786,6 +787,7 @@ def source_inventory(data):
         "AdvancedThrusters":"advanced_thrusters","AssaultConcussionMissile":"heavy_missile","BeamCannon":"sustained_beam","BulwarkShieldGenerator":"shield_bank","CapacitorBooster":"storage_bank","CapitalEwar":"interference_suite","CapitalPowerDeiverter":"power_router","CombatLaser":"tracking_laser","DamageAmplifier":"output_amplifier","EvasionBooster":"maneuver_jets","HullBooster":"hull_plating","HullRepairer":"hull_repair","HypermatterInjector":"fuel_injector","IonCannon":"shield_breaker","LaserCannonBattery":"laser_battery","MiningLaser":"precision_cutter","MissileLauncher":"rapid_missile","ProtonBomb":"bombardment","QuadLaserCannon":"pulse_laser","RedundantShieldGenerator":"shield_bank","ReinforcedPlating":"armor_plating","RepairFieldGenerator":"repair_field","ShieldBooster":"shield_bank","ShieldRepairer":"shield_repair","ShipArmor":"armor_plating","StormCannon":"heavy_beam","StripMiner":"strip_miner","TargetingArray":"precision_array","TargetingSystem":"tracking_computer","Turbolaser":"heavy_beam","WeaponsComputer":"tracking_computer",
     }
     legacy={}
+    consumables={}
     for file in sorted((ROOT/"SWLOR.Game.Server/Feature/ShipModuleDefinition").glob("*ModuleDefinition.cs")):
         family=file.name.removesuffix("ModuleDefinition.cs")
         for tag in set(re.findall(r'"([a-z][a-z0-9_]{1,15})"',file.read_text(encoding="utf-8"))):
@@ -794,6 +796,10 @@ def source_inventory(data):
                 continue
             j=json.loads(item.read_text(encoding="utf-8")); locals_=j.get("VarTable",{}).get("value",[])
             if any(v.get("Name",{}).get("value")=="NO_ECONOMY" and v.get("Value",{}).get("value")==1 for v in locals_):
+                continue
+            if j.get("BaseItem",{}).get("value")==528:
+                consumables[tag]=dict(resref=tag,name=j.get("LocalizedName",{}).get("value",{}).get("0",tag),
+                    conversion="Retain original consumable identity and quantity. Never convert ammunition or fuel into fitted equipment.")
                 continue
             if family=="ShipConfiguration":
                 if tag.startswith("config_ind") or tag=="cap_indus": target="industrial_conversion"
@@ -816,6 +822,7 @@ def source_inventory(data):
             row=copy.deepcopy(legacy[tag]);row["recipe"]=block.split(",",1)[0].strip();row["components"]=components
             recipe_rows.append(row)
     data["legacy_modules"]=sorted(legacy.values(),key=lambda r:r["resref"])
+    data["legacy_consumables"]=sorted(consumables.values(),key=lambda r:r["resref"])
     data["legacy_recipes"]=recipe_rows
     new_recipes={r["id"]:r for r in data["recipes"]}
     old_by_resref={r["resref"]:r for r in recipe_rows}
@@ -899,6 +906,18 @@ def tables(data,report):
     add("Space Recipes",recipe_headers,recipe_rows,[25,32,12,10,10,16,17,16,10,12,16,12,16,14,15,15,16])
     add("Space Hull Recipes",["Existing ID","Hull","Engineering","Tilarium","Currian","Ruined electronics","Recovered electronics","Precision assemblies","Output","Quality slots","Material reference cost","Hull reference value","Progress target","Maximum quality","Durability","Research seconds"],[[r[k] for k in "id name engineering tilarium currian electronics recovered precision output quality_slots reference_cost hull_reference progress max_quality durability research_seconds".split()] for r in data["hull_recipes"]],[26,30,13,12,12,18,19,18,11,14,19,18,17,16,14,18])
     add("Space Craft Inputs",["Recipe","Engineering","Tilarium","Currian","Ruined electronics","Recovered electronics","Outputs","NPC reference per unit","Material batch cost","Material unit cost","Progress target","Maximum quality","Durability"],[[r[k] for k in "name engineering tilarium currian electronics recovered output npc_reference reference_batch_cost reference_unit_cost progress max_quality durability".split()] for r in data["craft_inputs"]],[28,13,12,12,18,20,12,22,19,18,16,16,14])
+    from ShipEquipmentResources import equipment_recipes
+    recipe_headers=["Recipe Enum","Skill","Category Enum","Skill Level","Quantity","Resref","Enhancement Type","Enhancement Slots"]
+    for number in range(1,9):recipe_headers.extend([f"Component {number}",f"Component Quantity {number}"])
+    recipe_headers.extend(["Quality Dimensions","Manufacturing License"])
+    live_rows=[]
+    for row in equipment_recipes(data):
+        values=[row["name"],"Engineering",row["category"],row["level"],row["quantity"],row["resref"],"None" if row["dimensions"]=="None" else "Module",0 if row["dimensions"]=="None" else 1]
+        components=list(row["components"].items())
+        for i in range(8):values.extend(components[i] if i<len(components) else ("",0))
+        rank=1 if row["level"]<10 else 2 if row["level"]<20 else 3 if row["level"]<35 else 4 if row["level"]<45 else 5
+        values.extend([row["dimensions"],rank]);live_rows.append(values)
+    add("Space Craft Recipes",recipe_headers,live_rows,[48,16,24,13,12,24,20,18]+[25,17]*8+[45,20])
     add("Space Craft Rules",["Rule","Description"],[[k,v] for k,v in data["recipe_rules"]],[32,112])
     add("Space Industry Rules",["Rule","Description"],[[k,v] for k,v in data["industry_rules"]],[32,112])
     add("Space Industry Benchmarks",["Activity","Complete fit","Cargo returned units","Capacity units","Work and vents seconds","Travel and other overhead seconds","Total trip budget seconds","Material reference value","Physical balance checks"],[[r[k] for k in "activity build cargo capacity working_seconds overhead_seconds trip_seconds material_reference notes".split()] for r in report["industry"]],[32,88,18,16,21,25,23,22,110])
@@ -930,6 +949,8 @@ def tables(data,report):
         conversion_rows.append([old["id"],old["name"],"Hull",new["role"],0,0,0,f"Old hull/shield/cap:{old['hull']}/{old['shield']}/{old['capacitor']}; new:{new['hull']}/{new['shield']}/{new['capacitor']}. Preserve ID, interior, ownership, cargo and absolute damage."])
     for row in data["legacy_modules"]:
         conversion_rows.append([row["resref"],row["name"],"Module/configuration",row["target"],row["old_reference_cost"],row["new_reference_cost"],row["reclaim_fraction"],row["conversion"]])
+    for row in data["legacy_consumables"]:
+        conversion_rows.append([row["resref"],row["name"],"Consumable",row["resref"],0,0,0,row["conversion"]])
     add("Space Conversion",["Existing ID or resref","Current name","Kind","New role or design","Old material reference","New material reference","Source reclaim fraction","Conversion requirements"],conversion_rows,[28,35,24,28,18,18,20,92])
     return specs
 

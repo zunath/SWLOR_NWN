@@ -6147,6 +6147,79 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         SingleWeaponDamagePercentAdjustment = 1087,
 
+        // Fractional ship adjustments use basis points; flat capacities use whole units.
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipWeaponOutput = 1088,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipRecoveryOutput = 1089,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipExternalRecoveryOutput = 1090,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipTracking = 1091,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipSpeed = 1092,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipCargoCapacity = 1093,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipHullCapacity = 1094,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipShieldCapacity = 1095,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipCapacitorCapacity = 1096,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 100)]
+        ShipCapacitorRecovery = 1097,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 100)]
+        ShipShieldRecovery = 1098,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipHullResistance = 1099,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipShieldResistance = 1100,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipAccuracy = 1101,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipEvasion = 1102,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipScannerResolution = 1103,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipProtectedCargo = 1104,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipReserveRemoval = 1105,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipResourceRecovery = 1106,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipTransferEfficiency = 1107,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipIntactSalvageChance = 1108,
+
+        [StatType(StatTypeCategory.BeneficialWhenNegative, shipUnitsPerAmount: 10000)]
+        ShipWeaponCapacitorDemand = 1109,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipCapacitorDiscount = 1110,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipOrdnanceTrackingReduction = 1111,
+
     }
 
     public class StatTypeAttribute : Attribute
@@ -6154,15 +6227,18 @@ namespace SWLOR.Game.Server.Service.StatService
         public StatTypeCategory Category { get; }
         public StatTypeAggregation Aggregation { get; }
         public DeflectionSource DeflectionSource { get; }
+        public int ShipUnitsPerAmount { get; }
 
         public StatTypeAttribute(
             StatTypeCategory category,
             StatTypeAggregation aggregation = StatTypeAggregation.Additive,
-            DeflectionSource deflectionSource = DeflectionSource.None)
+            DeflectionSource deflectionSource = DeflectionSource.None,
+            int shipUnitsPerAmount = 0)
         {
             Category = category;
             Aggregation = aggregation;
             DeflectionSource = deflectionSource;
+            ShipUnitsPerAmount = shipUnitsPerAmount;
         }
     }
 

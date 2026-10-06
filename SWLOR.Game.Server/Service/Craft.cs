@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -577,6 +578,9 @@ namespace SWLOR.Game.Server.Service
 
         public static ItemProperty BuildItemPropertyForEnhancement(EnhancementSubType subTypeId, int amount)
         {
+            var shipDimension = subTypeId.GetAttribute<EnhancementSubType, EnhancementSubTypeAttribute>()?.ShipQualityDimension ?? ShipQualityDimension.None;
+            if (shipDimension != ShipQualityDimension.None)
+                return ItemPropertyCustom(ItemPropertyType.ModuleBonus, ShipRefinement.Subtype(shipDimension), Math.Clamp(amount, 0, 100));
             switch (subTypeId)
             {
                 case EnhancementSubType.DefensePhysical: // Defense - Physical

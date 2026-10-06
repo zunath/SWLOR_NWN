@@ -6,6 +6,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
@@ -49,8 +50,36 @@ namespace SWLOR.Game.Server.Service.SpaceService
             (mount == ShipMount.Ordnance && Mounts.Split('/').Contains(nameof(ShipMount.Heavy)));
     }
 
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum ShipModuleAction
+    {
+        Passive, Weapon, SelfShieldRepair, SelfHullRepair, ShieldRepair, HullRepair, RepairField,
+        FuelInjection, CapacitorTransfer, Survey, Interference, Countermeasures, Extraction,
+        BulkSalvage, IntactSalvage, Compression
+    }
+
+    public sealed record ShipStatModifier
+    {
+        [JsonProperty("stat"), JsonConverter(typeof(StringEnumConverter))] public StatType Stat { get; init; }
+        [JsonProperty("amount")] public double Amount { get; init; }
+        [JsonProperty("scales_with_output")] public bool ScalesWithOutput { get; init; }
+        [JsonProperty("proportional")] public bool Proportional { get; init; }
+    }
+
     public sealed record ShipModuleProfile
     {
+        [JsonProperty("item_tag", Required = Required.Always)] public string ItemTag { get; init; }
+        [JsonProperty("short_name", Required = Required.Always)] public string ShortName { get; init; }
+        [JsonProperty("item_resref", Required = Required.Always)] public string ItemResref { get; init; }
+        [JsonProperty("action", Required = Required.Always)] public ShipModuleAction Action { get; init; }
+        [JsonProperty("shield_multiplier")] public double ShieldMultiplier { get; init; }
+        [JsonProperty("hull_multiplier")] public double HullMultiplier { get; init; }
+        [JsonProperty("hardness_limit")] public int HardnessLimit { get; init; }
+        [JsonProperty("preparation_seconds")] public double PreparationSeconds { get; init; }
+        [JsonProperty("ammunition")] public string Ammunition { get; init; }
+        [JsonProperty("working_speed_penalty")] public double WorkingSpeedPenalty { get; init; }
+        [JsonProperty("movement_lock")] public bool MovementLock { get; init; }
+        [JsonProperty("modifiers", Required = Required.Always)] public IReadOnlyList<ShipStatModifier> Modifiers { get; init; }
         [JsonProperty("id")] public string Id { get; init; }
         [JsonProperty("name")] public string Name { get; init; }
         [JsonProperty("family")] public string Family { get; init; }
@@ -76,6 +105,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
     public sealed record ShipModuleVariant
     {
+        [JsonProperty("item_resref", Required = Required.Always)] public string ItemResref { get; init; }
         [JsonProperty("design")] public string Design { get; init; }
         [JsonProperty("capacitor_multiplier", Required = Required.Always)] public double CapacitorMultiplier { get; init; }
         [JsonProperty("calibration")] public string Calibration { get; init; }
@@ -91,11 +121,22 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
     public sealed record ShipConfigurationProfile
     {
+        [JsonProperty("resref", Required = Required.Always)] public string ItemResref { get; init; }
+        [JsonProperty("item_tag", Required = Required.Always)] public string ItemTag { get; init; }
+        [JsonProperty("modifiers", Required = Required.Always)] public IReadOnlyList<ShipStatModifier> Modifiers { get; init; }
         [JsonProperty("id")] public string Id { get; init; }
         [JsonProperty("name")] public string Name { get; init; }
         [JsonProperty("power")] public int Power { get; init; }
         [JsonProperty("benefit")] public string Benefit { get; init; }
         [JsonProperty("drawback")] public string Drawback { get; init; }
+    }
+
+    public sealed record LegacyShipModuleProfile
+    {
+        [JsonProperty("resref")] public string Resref { get; init; }
+        [JsonProperty("item_tag")] public string ItemTag { get; init; }
+        [JsonProperty("target")] public string Target { get; init; }
+        [JsonProperty("reclaim_fraction")] public double ReclaimFraction { get; init; }
     }
 
     public sealed class ShipFittingCatalog
@@ -106,6 +147,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             public List<ShipModuleProfile> Modules { get; set; }
             public List<ShipModuleVariant> Variants { get; set; }
             public List<ShipConfigurationProfile> Configurations { get; set; }
+            [JsonProperty("legacy_modules")] public List<LegacyShipModuleProfile> LegacyModules { get; set; }
         }
 
         private static readonly Lazy<ShipFittingCatalog> _default = new(() =>
@@ -117,6 +159,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         });
 
         public static ShipFittingCatalog Default => _default.Value;
+        public IReadOnlyDictionary<string, LegacyShipModuleProfile> LegacyModules { get; }
+        public IReadOnlyDictionary<string, ShipModuleProfile> ModulesByItemTag { get; }
+        public IReadOnlyDictionary<string, ShipConfigurationProfile> ConfigurationsByItemTag { get; }
         public IReadOnlyDictionary<string, ShipHullProfile> Hulls { get; }
         public IReadOnlyDictionary<string, ShipModuleProfile> Modules { get; }
         public IReadOnlyDictionary<string, ShipConfigurationProfile> Configurations { get; }
@@ -127,13 +172,28 @@ namespace SWLOR.Game.Server.Service.SpaceService
             if (data?.Hulls == null || data.Modules == null || data.Variants == null || data.Configurations == null)
                 throw new InvalidDataException("Incomplete ship fitting definitions.");
             Hulls = new ReadOnlyDictionary<string, ShipHullProfile>(data.Hulls.ToDictionary(x => x.Id, StringComparer.Ordinal));
-            Modules = new ReadOnlyDictionary<string, ShipModuleProfile>(data.Modules.ToDictionary(x => x.Id, StringComparer.Ordinal));
-            Configurations = new ReadOnlyDictionary<string, ShipConfigurationProfile>(data.Configurations.ToDictionary(x => x.Id, StringComparer.Ordinal));
+            Modules = new ReadOnlyDictionary<string, ShipModuleProfile>(data.Modules.Select(x => x with { Modifiers = x.Modifiers == null ? null : Array.AsReadOnly(x.Modifiers.ToArray()) }).ToDictionary(x => x.Id, StringComparer.Ordinal));
+            Configurations = new ReadOnlyDictionary<string, ShipConfigurationProfile>(data.Configurations.Select(x => x with { Modifiers = x.Modifiers == null ? null : Array.AsReadOnly(x.Modifiers.ToArray()) }).ToDictionary(x => x.Id, StringComparer.Ordinal));
+            ModulesByItemTag = new ReadOnlyDictionary<string, ShipModuleProfile>(Modules.Values.ToDictionary(x => x.ItemTag, StringComparer.Ordinal));
+            ConfigurationsByItemTag = new ReadOnlyDictionary<string, ShipConfigurationProfile>(Configurations.Values.ToDictionary(x => x.ItemTag, StringComparer.Ordinal));
             Variants = new ReadOnlyDictionary<(string, string), ShipModuleVariant>(data.Variants.ToDictionary(x => (x.Design, x.Calibration)));
+            var legacy = data.LegacyModules ?? new List<LegacyShipModuleProfile>();
+            LegacyModules = new ReadOnlyDictionary<string, LegacyShipModuleProfile>(legacy
+                .GroupBy(x => x.ItemTag, StringComparer.Ordinal)
+                .ToDictionary(x => x.Key, x => x.First(), StringComparer.Ordinal));
+            if (legacy.GroupBy(x => x.ItemTag).Any(g => g.Select(x => x.Target).Distinct().Count() != 1))
+                throw new InvalidDataException("Ambiguous legacy module tags.");
             Validate();
         }
 
         public static ShipFittingCatalog Load(string json) => new(JsonConvert.DeserializeObject<Data>(json));
+        public string DesignByItemTag(string tag)
+        {
+            if (tag == null) return null;
+            if (ModulesByItemTag.TryGetValue(tag, out var module)) return module.Id;
+            if (ConfigurationsByItemTag.TryGetValue(tag, out var config)) return config.Id;
+            return LegacyModules.TryGetValue(tag, out var legacy) ? legacy.Target : null;
+        }
         public ShipModuleVariant GetVariant(string design, string calibration = "Standard") =>
             Variants.TryGetValue((design, calibration), out var variant) ? variant :
                 throw new ArgumentException($"Unsupported module calibration: {design}/{calibration}.");
@@ -146,7 +206,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 if (string.IsNullOrWhiteSpace(hull.Name) || string.IsNullOrWhiteSpace(hull.Role) ||
                     hull.PilotingRank < 0 || hull.PilotingRank > 50 || hull.Power <= 0 || hull.Hull <= 0 ||
                     hull.Shield < 0 || hull.Capacitor <= 0 || hull.HighSlots < 0 || hull.LowSlots < 0 ||
-                    hull.Cargo < 0 || !Positive(hull.Speed) || !Positive(hull.Signature) ||
+                    hull.Cargo < 0 || hull.Resistance < 0 || hull.Resistance > 60 || hull.ReferenceValue <= 0 || !Positive(hull.Speed) || !Positive(hull.Signature) ||
                     !NonNegative(hull.CapacitorRecovery) || !NonNegative(hull.ShieldRecovery) ||
                     string.IsNullOrWhiteSpace(hull.Mounts) ||
                     hull.Mounts.Split('/').Any(x => !Enum.TryParse<ShipMount>(x, out var mount) || !Enum.IsDefined(mount) || mount == ShipMount.Any))
@@ -155,19 +215,28 @@ namespace SWLOR.Game.Server.Service.SpaceService
             var operatorSkills = new[] { SkillType.Piloting, SkillType.Gunnery, SkillType.ShipSystems, SkillType.Astrometrics, SkillType.SpaceIndustry };
             foreach (var module in Modules.Values)
             {
-                if (!Enum.IsDefined(module.Mount) || !Enum.IsDefined(module.Slot) ||
+                if (!Enum.IsDefined(module.Mount) || !Enum.IsDefined(module.Slot) || !Enum.IsDefined(module.Action) ||
+                    string.IsNullOrWhiteSpace(module.ShortName) || module.ShortName.Length > 14 ||
+                    string.IsNullOrWhiteSpace(module.ItemResref) || module.ItemResref.Length > 16 ||
+                    !NonNegative(module.ShieldMultiplier) || !NonNegative(module.HullMultiplier) ||
+                    !NonNegative(module.PreparationSeconds) || !NonNegative(module.WorkingSpeedPenalty) ||
+                    (module.Action != ShipModuleAction.Passive && module.Cycle <= 0) ||
                     !NonNegative(module.RecoveryFraction) || module.RecoveryFraction > 0.95 ||
                     !operatorSkills.Contains(module.OperatorSkill) || module.OperatorRank < 0 || module.OperatorRank > 50 ||
                     module.Power <= 0 || module.Capacitor < 0 || module.MaxFitted < 0 ||
                     !NonNegative(module.Output) || !NonNegative(module.Cycle) || !NonNegative(module.Range) ||
                     !NonNegative(module.Tracking) || !NonNegative(module.Resolution) ||
-                    module.EngineeringRank < 0 || module.EngineeringRank > 50)
+                    module.EngineeringRank < 0 || module.EngineeringRank > 50 ||
+                    module.Modifiers == null || module.Modifiers.Any(x => !ShipFittedStats.StatUnits.ContainsKey(x.Stat) || !double.IsFinite(x.Amount)))
                     throw new InvalidDataException($"Invalid module profile: {module.Id}.");
                 GetVariant(module.Id);
             }
+            if (Variants.Values.Select(x => x.ItemResref).Distinct(StringComparer.Ordinal).Count() != Variants.Count)
+                throw new InvalidDataException("Duplicate module resource name.");
             foreach (var variant in Variants.Values)
             {
                 if (!Modules.TryGetValue(variant.Design, out var module) || string.IsNullOrWhiteSpace(variant.Calibration) ||
+                    string.IsNullOrWhiteSpace(variant.ItemResref) || variant.ItemResref.Length > 16 ||
                     !Positive(variant.CapacitorMultiplier) || variant.Power <= 0 || variant.Capacitor < 0 ||
                     (module.Capacitor > 0 && variant.Capacitor < Math.Ceiling(module.Capacitor * 0.75)) ||
                     !NonNegative(variant.Output) || !NonNegative(variant.Cycle) || variant.Cycle < module.Cycle * 0.85 ||
@@ -176,7 +245,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
                     variant.EngineeringRank < 0 || variant.EngineeringRank > 50)
                     throw new InvalidDataException($"Invalid module variant: {variant.Design}/{variant.Calibration}.");
             }
-            if (Configurations.Values.Any(x => x.Power <= 0)) throw new InvalidDataException("Invalid configuration fitting power.");
+            if (LegacyModules.Values.Any(x => !Modules.ContainsKey(x.Target) && !Configurations.ContainsKey(x.Target)))
+                throw new InvalidDataException("Unknown legacy module conversion target.");
+            if (Configurations.Values.Any(x => x.Power <= 0 || string.IsNullOrEmpty(x.ItemResref) || x.ItemResref.Length > 16 || x.Modifiers == null ||
+                x.Modifiers.Any(m => !ShipFittedStats.StatUnits.ContainsKey(m.Stat) || !double.IsFinite(m.Amount)))) throw new InvalidDataException("Invalid configuration fitting power.");
         }
 
         private static bool NonNegative(double value) => double.IsFinite(value) && value >= 0;

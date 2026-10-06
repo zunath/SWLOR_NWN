@@ -20,7 +20,7 @@ The [Design Bible](../../design/bible/SWLOR%20Design%20Bible%20-%20Combat%20Upgr
 | Weapon roles | Tracking laser: 12 damage/4s, 4 capacitor, 8 fitting power, tracking 110, resolution 40. Heavy beam: 56 damage/8s, 20 capacitor, 24 power, tracking 35, resolution 140. |
 | Skill mastery | Gunnery and Ship Systems add 0.2% relevant output/rank; Piloting adds 0.2% base speed/rank. Industry adds 0.1 recovery percentage point/rank; Astrometrics adds 0.4 fitted scanner resolution/rank. |
 | Source caps | Positive permanent damage/recovery bonuses total at most 40% of base output; highest temporary contribution at most 30%. Capacitor discounts cap at 25%; adjusted cycles cannot fall below 85% of base. |
-| Craft quality | One eligible positive dimension, at most 8% refinement at quality magnitude 100. Guaranteed recipe/calibration identity is separate from the shared optional enhancement-transfer roll. |
+| Craft quality | One eligible positive dimension, at most 8% refinement at quality magnitude 100. Guaranteed recipe/calibration identity is separate from the shared optional enhancement-transfer roll. Eligible ship refinement tokens use magnitude 1–100 and may tune accessible equipment without the legacy five-level enhancement cutoff. |
 | Recovery and control | External hull/shield recovery capped separately at 40% of target base pool per 30s. Capacitor transfer 80% efficient, at most 90%. Hard control at most 3s; repeated family control follows full/half/immune within 20s. |
 | Mining | Precision cutter removes 6 reserve units/12s at 80% recovery; bulk extractor 12/12s at 60%; deep drill 10/15s at 70%; strip miner 32/18s at 50%. Final recovery cannot exceed 95%. |
 | Compact advanced industry | A compact deep-core drill removes 4 reserve units/15s at 80% recovery, takes 18 fitting power, and operates at Industry 20. It provides a difficult-deposit role for the starting freighter. |
@@ -45,7 +45,7 @@ The initial model checks representative fits, legal character budgets, role adva
 | Industrial explorer with ground defense | 360 ranks, 210/370 SP, including 80 SP of space specializations, 60 ground weapon SP, and 70 other-ground SP. |
 | Support captain and ground specialist | 330 ranks, 209/340 SP, including 49 space SP, 60 ground weapon SP, and 100 other-ground SP. |
 
-The Bible retains current implementation records and labels all replacement tables as planned. Cross-references on Piloting, Starships, and Engineering direct readers to the replacement. The conversion table maps all 26 current hulls and 147 identified legacy modules/configurations, including obtainable recipe outputs. No gameplay implementation begins until the numerical audit, workbook parity, conversion coverage, and the existing Bible regression checks pass.
+The Bible retains current implementation records and labels all replacement tables as planned. Cross-references on Piloting, Starships, and Engineering direct readers to the replacement. The conversion table maps all 26 current hulls and 143 identified legacy modules/configurations and four separately retained consumables, including obtainable recipe outputs. No gameplay implementation begins until the numerical audit, workbook parity, conversion coverage, and the existing Bible regression checks pass.
 
 ## Player-facing overview
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.SpaceService
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 if (module.Slot == ShipFittingSlot.High) high++; else low++;
                 if (!hull.Allows(module.Mount)) errors.Add($"{module.Name} requires a {module.Mount} mount.");
                 if (Rank(skills, module.OperatorSkill) < module.OperatorRank)
-                    errors.Add($"{module.Name} requires {module.OperatorSkill} rank {module.OperatorRank}.");
+                    errors.Add($"{module.Name} requires {module.OperatorSkill.GetAttribute<SkillType, SkillAttribute>().Name} rank {module.OperatorRank}.");
                 counts.TryGetValue(module.Id, out var count);
                 counts[module.Id] = count + 1;
                 if (module.MaxFitted > 0 && count + 1 > module.MaxFitted)

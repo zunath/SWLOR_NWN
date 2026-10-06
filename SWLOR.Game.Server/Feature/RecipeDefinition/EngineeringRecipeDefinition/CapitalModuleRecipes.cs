@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             Tier5();
 
-            return _builder.Build();
+            var recipes = _builder.Build();
+            foreach (var recipe in recipes.Values) recipe.IsActive = false;
+            return recipes;
         }
 
         private void Tier5()

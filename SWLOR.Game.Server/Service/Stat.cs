@@ -664,6 +664,15 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
                 return 1.0f;
 
+            if (Space.IsPlayerInSpaceMode(creature))
+            {
+                var ship = Space.GetShipStatus(creature);
+                if (ship?.FittingVersion == SpaceService.ShipFittingConversion.CurrentVersion)
+                {
+                    return (float)Math.Clamp(SpaceService.ShipOperations.MovementSpeed(ship, DateTime.UtcNow),
+                        MinimumMovementSpeedMultiplier, MaximumMovementSpeedMultiplier);
+                }
+            }
             if (GetStatAdjustment(creature, StatType.MovementSpeedDisabled) > 0)
                 return MinimumMovementSpeedMultiplier;
 

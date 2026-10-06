@@ -739,6 +739,8 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         Doublehand = 803,
 
-        // IDs 650 and 804+ are free.
+        ShipManufacturing = 804,
+
+        // IDs 650 and 805+ are free.
     }
 }

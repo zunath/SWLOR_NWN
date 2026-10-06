@@ -15,6 +15,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
     public class ShipModuleDetail
     {
+        public ShipModuleProfile FittingProfile { get; init; }
+        public ShipConfigurationProfile ConfigurationProfile { get; init; }
         public string Name { get; set; }
         public string ShortName { get; set; }
         public ShipModuleType Type { get; set; }

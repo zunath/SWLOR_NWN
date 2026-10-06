@@ -6190,6 +6190,10 @@
       "At most one positive eligible property per module. Magnitude at transferred q=100 is8%; interpolation is linear q/100. No extra enhancement slot from grade or material."
     ],
     [
+      "Refinement input access",
+      "Ship refinement tokens are validated by their eligible dimension and magnitude1-100, independent of the old five-level enhancement cutoff. High-skill crafters may refine accessible hull-role equipment; no extra slot or lower crafting target is granted."
+    ],
+    [
       "Quality exclusions",
       "Do not enhance capacitor creation/transfer, intact drop chance, protected cargo quantity, ammunition consumption, control duration, signature or fitting demand through quality."
     ],
@@ -11608,16 +11612,6 @@
   ],
   "legacy_modules": [
     {
-      "resref": "acm_ammo",
-      "name": "Assault Concussion Missile",
-      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/AssaultConcussionMissileModuleDefinition.cs",
-      "target": "heavy_missile",
-      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
-      "old_reference_cost": 0,
-      "new_reference_cost": 272,
-      "reclaim_fraction": 0
-    },
-    {
       "resref": "acm_launch_1",
       "name": "Assault Concussion Missile Launcher",
       "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/AssaultConcussionMissileModuleDefinition.cs",
@@ -12798,16 +12792,6 @@
       "reclaim_fraction": 0.0
     },
     {
-      "resref": "proton_bomb",
-      "name": "Proton Bomb",
-      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ProtonBombModuleDefinition.cs",
-      "target": "bombardment",
-      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
-      "old_reference_cost": 0,
-      "new_reference_cost": 510,
-      "reclaim_fraction": 0
-    },
-    {
       "resref": "repairfield",
       "name": "Repair Field Generator",
       "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/RepairFieldGeneratorModuleDefinition.cs",
@@ -12816,26 +12800,6 @@
       "old_reference_cost": 5000,
       "new_reference_cost": 457,
       "reclaim_fraction": 0.72688
-    },
-    {
-      "resref": "ship_fuelcapsule",
-      "name": "Hypermatter Capsule",
-      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HypermatterInjectorModuleDefinition.cs",
-      "target": "fuel_injector",
-      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
-      "old_reference_cost": 0,
-      "new_reference_cost": 133,
-      "reclaim_fraction": 0
-    },
-    {
-      "resref": "ship_missile",
-      "name": "Missile",
-      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/MissileLauncherModuleDefinition.cs",
-      "target": "rapid_missile",
-      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
-      "old_reference_cost": 0,
-      "new_reference_cost": 146,
-      "reclaim_fraction": 0
     },
     {
       "resref": "shld_boost_1",
@@ -13076,6 +13040,28 @@
       "old_reference_cost": 5000,
       "new_reference_cost": 457,
       "reclaim_fraction": 0.72688
+    }
+  ],
+  "legacy_consumables": [
+    {
+      "resref": "acm_ammo",
+      "name": "Assault Concussion Missile",
+      "conversion": "Retain original consumable identity and quantity. Never convert ammunition or fuel into fitted equipment."
+    },
+    {
+      "resref": "proton_bomb",
+      "name": "Proton Bomb",
+      "conversion": "Retain original consumable identity and quantity. Never convert ammunition or fuel into fitted equipment."
+    },
+    {
+      "resref": "ship_fuelcapsule",
+      "name": "Hypermatter Capsule",
+      "conversion": "Retain original consumable identity and quantity. Never convert ammunition or fuel into fitted equipment."
+    },
+    {
+      "resref": "ship_missile",
+      "name": "Missile",
+      "conversion": "Retain original consumable identity and quantity. Never convert ammunition or fuel into fitted equipment."
     }
   ],
   "legacy_recipes": [

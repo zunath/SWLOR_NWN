@@ -92,7 +92,7 @@ public class ShipFittingTests
             [SkillType.Piloting] = 50, [SkillType.Gunnery] = 50, [SkillType.Engineering] = 50 };
         var result = ShipFittingCalculator.Calculate("ShipDeedLightFreighter",
             new[] { new ShipFittingModule("compact_drill", "Compact") }, ranks);
-        result.Errors.Should().Contain(x => x.Contains("SpaceIndustry rank 20"));
+        result.Errors.Should().Contain(x => x.Contains("Space Industry rank 20"));
     }
 
     [Test]

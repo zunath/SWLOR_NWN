@@ -539,11 +539,23 @@
       "value": 240,
       "effect": "Direct thermal damage; strong small-target tracking.",
       "resref": "tracking_laser",
+      "quality_dimensions": "Output, Tracking, Range",
+      "item_tag": "fit_tracking_laser",
+      "short_name": "Tracking Laser",
+      "item_resref": "trk_laser",
+      "action": "Weapon",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "Gunnery",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, Tracking, Range"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "sustained_beam",
@@ -562,11 +574,23 @@
       "value": 420,
       "effect": "Direct thermal damage; efficient against larger targets.",
       "resref": "sustained_beam",
+      "quality_dimensions": "Output, Tracking, Range",
+      "item_tag": "fit_sustained_beam",
+      "short_name": "Beam Emitter",
+      "item_resref": "beam_emitter",
+      "action": "Weapon",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "Gunnery",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, Tracking, Range"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "pulse_laser",
@@ -585,11 +609,23 @@
       "value": 330,
       "effect": "Direct thermal damage; concentrated cycle with lower reach.",
       "resref": "pulse_laser",
+      "quality_dimensions": "Output, Tracking, Range",
+      "item_tag": "fit_pulse_laser",
+      "short_name": "Pulse Laser",
+      "item_resref": "pulse_laser",
+      "action": "Weapon",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "Gunnery",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, Tracking, Range"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "long_emitter",
@@ -608,11 +644,23 @@
       "value": 520,
       "effect": "Direct thermal damage; reach trades against power and tracking.",
       "resref": "long_emitter",
+      "quality_dimensions": "Output, Tracking, Range",
+      "item_tag": "fit_long_emitter",
+      "short_name": "Long Emitter",
+      "item_resref": "long_emitter",
+      "action": "Weapon",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "Gunnery",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, Tracking, Range"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "laser_battery",
@@ -631,11 +679,23 @@
       "value": 620,
       "effect": "Direct thermal damage; larger fitting and activation demand.",
       "resref": "laser_battery",
+      "quality_dimensions": "Output, Tracking, Range",
+      "item_tag": "fit_laser_battery",
+      "short_name": "Laser Battery",
+      "item_resref": "laser_bank",
+      "action": "Weapon",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "Gunnery",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, Tracking, Range"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "heavy_beam",
@@ -654,11 +714,23 @@
       "value": 1100,
       "effect": "Direct thermal damage; inefficient against small evasive targets.",
       "resref": "heavy_beam",
+      "quality_dimensions": "Output, Tracking, Range, ActivationCost",
+      "item_tag": "fit_heavy_beam",
+      "short_name": "Heavy Beam",
+      "item_resref": "hvy_beam",
+      "action": "Weapon",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "Gunnery",
       "operator_rank": 10,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, Tracking, Range, ActivationCost"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "shield_breaker",
@@ -677,11 +749,23 @@
       "value": 400,
       "effect": "130% damage to shields, 50% to hull; no resource drain.",
       "resref": "shield_breaker",
+      "quality_dimensions": "Output, Tracking, Range",
+      "item_tag": "fit_shield_breaker",
+      "short_name": "Shield Breaker",
+      "item_resref": "shield_break",
+      "action": "Weapon",
+      "shield_multiplier": 1.3,
+      "hull_multiplier": 0.5,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "Gunnery",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, Tracking, Range"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "engine_disruptor",
@@ -700,11 +784,23 @@
       "value": 550,
       "effect": "Normal ion damage; landed hit slows 15% for 4s; soft-control family rules.",
       "resref": "engine_disruptor",
+      "quality_dimensions": "Output, Tracking, Range",
+      "item_tag": "fit_engine_disruptor",
+      "short_name": "Engine Disrupt",
+      "item_resref": "eng_disrupt",
+      "action": "Weapon",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "Gunnery",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, Tracking, Range"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "cap_disruptor",
@@ -723,11 +819,23 @@
       "value": 600,
       "effect": "Normal ion damage; landed hit destroys 6 capacitor; drains do not scale with damage quality.",
       "resref": "cap_disruptor",
+      "quality_dimensions": "Output, Tracking, Range",
+      "item_tag": "fit_cap_disruptor",
+      "short_name": "Cap Disrupt",
+      "item_resref": "cap_disrupt",
+      "action": "Weapon",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "Gunnery",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, Tracking, Range"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "rapid_missile",
@@ -746,11 +854,23 @@
       "value": 400,
       "effect": "One light missile/shot; 4 credits reference ammunition cost.",
       "resref": "rapid_missile",
+      "quality_dimensions": "Output, Tracking, Range",
+      "item_tag": "fit_rapid_missile",
+      "short_name": "Light Missile",
+      "item_resref": "light_launch",
+      "action": "Weapon",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": "light_missile",
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "Gunnery",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, Tracking, Range"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "heavy_missile",
@@ -769,11 +889,23 @@
       "value": 700,
       "effect": "One assault missile/shot; 15 credits reference ammunition cost.",
       "resref": "heavy_missile",
+      "quality_dimensions": "Output, Tracking, Range",
+      "item_tag": "fit_heavy_missile",
+      "short_name": "Heavy Missile",
+      "item_resref": "hvy_launch",
+      "action": "Weapon",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": "assault_missile",
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "Gunnery",
       "operator_rank": 10,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, Tracking, Range"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "torpedo",
@@ -792,11 +924,23 @@
       "value": 950,
       "effect": "One torpedo/shot, 30 credits; 2s visible preparation; committed burst.",
       "resref": "torpedo",
+      "quality_dimensions": "Output, Tracking, Range",
+      "item_tag": "fit_torpedo",
+      "short_name": "Torpedo",
+      "item_resref": "torp_launch",
+      "action": "Weapon",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 2,
+      "ammunition": "ship_torpedo",
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "Gunnery",
       "operator_rank": 10,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, Tracking, Range"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "bombardment",
@@ -815,11 +959,23 @@
       "value": 1400,
       "effect": "One bomb/shot, 70 credits; 3s preparation; selected heavy ship or objective, no unbounded area payload.",
       "resref": "bombardment",
+      "quality_dimensions": "Output, Tracking, Range, ActivationCost",
+      "item_tag": "fit_bombardment",
+      "short_name": "Bombardment",
+      "item_resref": "bomb_launch",
+      "action": "Weapon",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 3,
+      "ammunition": "ship_bomb",
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "Gunnery",
       "operator_rank": 20,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, Tracking, Range, ActivationCost"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "shield_bank",
@@ -838,11 +994,36 @@
       "value": 350,
       "effect": "+60 shield capacity, -15 capacitor capacity; no combat recharge.",
       "resref": "shield_bank",
+      "quality_dimensions": "Output",
+      "item_tag": "fit_shield_bank",
+      "short_name": "Shield Bank",
+      "item_resref": "shield_bank",
+      "action": "Passive",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output"
+      "modifiers": [
+        {
+          "stat": "ShipShieldCapacity",
+          "amount": 60,
+          "scales_with_output": true,
+          "proportional": false
+        },
+        {
+          "stat": "ShipCapacitorCapacity",
+          "amount": -15,
+          "scales_with_output": false,
+          "proportional": false
+        }
+      ],
+      "recovery_fraction": 0
     },
     {
       "id": "recharge_array",
@@ -861,11 +1042,36 @@
       "value": 380,
       "effect": "+0.6 shield/s out of combat, -10% base shield capacity.",
       "resref": "recharge_array",
+      "quality_dimensions": "Output",
+      "item_tag": "fit_recharge_array",
+      "short_name": "Shield Regen",
+      "item_resref": "recharge_arr",
+      "action": "Passive",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output"
+      "modifiers": [
+        {
+          "stat": "ShipShieldRecovery",
+          "amount": 0.6,
+          "scales_with_output": true,
+          "proportional": false
+        },
+        {
+          "stat": "ShipShieldCapacity",
+          "amount": -0.1,
+          "scales_with_output": false,
+          "proportional": true
+        }
+      ],
+      "recovery_fraction": 0
     },
     {
       "id": "shield_booster",
@@ -884,11 +1090,23 @@
       "value": 500,
       "effect": "Self shield recovery; ordinary recovery mastery applies.",
       "resref": "shield_booster",
+      "quality_dimensions": "Output, ActivationCost",
+      "item_tag": "fit_shield_booster",
+      "short_name": "Shield Boost",
+      "item_resref": "shield_boost",
+      "action": "SelfShieldRepair",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, ActivationCost"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "hull_repair",
@@ -907,11 +1125,23 @@
       "value": 350,
       "effect": "Self hull recovery; cannot repair above maximum.",
       "resref": "hull_repair",
+      "quality_dimensions": "Output",
+      "item_tag": "fit_hull_repair",
+      "short_name": "Hull Repair",
+      "item_resref": "hull_repair",
+      "action": "SelfHullRepair",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "shield_repair",
@@ -930,11 +1160,23 @@
       "value": 500,
       "effect": "Self or allied shield recovery; external reception budget applies.",
       "resref": "shield_repair",
+      "quality_dimensions": "Output, Range, ActivationCost",
+      "item_tag": "fit_shield_repair",
+      "short_name": "Shield Repair",
+      "item_resref": "shld_repair",
+      "action": "ShieldRepair",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, Range, ActivationCost"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "repair_projector",
@@ -953,11 +1195,23 @@
       "value": 600,
       "effect": "Allied hull recovery; external reception budget applies.",
       "resref": "repair_projector",
+      "quality_dimensions": "Output, Range, ActivationCost",
+      "item_tag": "fit_repair_projector",
+      "short_name": "Repair Beam",
+      "item_resref": "repair_proj",
+      "action": "HullRepair",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, Range, ActivationCost"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "repair_field",
@@ -976,11 +1230,23 @@
       "value": 1000,
       "effect": "54 total hull recovery split among up to 3 allies within 8m, including source only if damaged; one total pool.",
       "resref": "repair_field",
+      "quality_dimensions": "Output, Range, ActivationCost",
+      "item_tag": "fit_repair_field",
+      "short_name": "Repair Field",
+      "item_resref": "repair_field",
+      "action": "RepairField",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 20,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, Range, ActivationCost"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "storage_bank",
@@ -999,11 +1265,36 @@
       "value": 250,
       "effect": "+50 capacitor capacity, -10% base capacitor regeneration.",
       "resref": "storage_bank",
+      "quality_dimensions": "Output",
+      "item_tag": "fit_storage_bank",
+      "short_name": "Cap Storage",
+      "item_resref": "storage_bank",
+      "action": "Passive",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output"
+      "modifiers": [
+        {
+          "stat": "ShipCapacitorCapacity",
+          "amount": 50,
+          "scales_with_output": true,
+          "proportional": false
+        },
+        {
+          "stat": "ShipCapacitorRecovery",
+          "amount": -0.1,
+          "scales_with_output": false,
+          "proportional": true
+        }
+      ],
+      "recovery_fraction": 0
     },
     {
       "id": "recovery_regulator",
@@ -1022,11 +1313,36 @@
       "value": 600,
       "effect": "+0.6 capacitor/s, -10% base capacitor capacity; maximum 2 fitted.",
       "resref": "cap_recovery",
+      "quality_dimensions": "None",
+      "item_tag": "fit_recovery_regulator",
+      "short_name": "Cap Recovery",
+      "item_resref": "cap_recovery",
+      "action": "Passive",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 0,
-      "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "None"
+      "max_fitted": 2,
+      "modifiers": [
+        {
+          "stat": "ShipCapacitorRecovery",
+          "amount": 0.6,
+          "scales_with_output": true,
+          "proportional": false
+        },
+        {
+          "stat": "ShipCapacitorCapacity",
+          "amount": -0.1,
+          "scales_with_output": false,
+          "proportional": true
+        }
+      ],
+      "recovery_fraction": 0
     },
     {
       "id": "fuel_injector",
@@ -1045,11 +1361,23 @@
       "value": 350,
       "effect": "Consumes one injector charge per use, 6 credits reference; restoration never scales with output quality.",
       "resref": "fuel_injector",
+      "quality_dimensions": "None",
+      "item_tag": "fit_fuel_injector",
+      "short_name": "Fuel Injector",
+      "item_resref": "fuel_inject",
+      "action": "FuelInjection",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "None"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "transfer_projector",
@@ -1068,11 +1396,23 @@
       "value": 650,
       "effect": "Pay 20 capacitor; receiver gains 16 at base efficiency; sender cannot target itself.",
       "resref": "cap_transfer",
+      "quality_dimensions": "Range",
+      "item_tag": "fit_transfer_projector",
+      "short_name": "Cap Transfer",
+      "item_resref": "cap_transfer",
+      "action": "CapacitorTransfer",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Range"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "survey_scanner",
@@ -1091,11 +1431,23 @@
       "value": 280,
       "effect": "Resolution 25 before Astrometrics; reveal composition, reserve and hazards. No repeat discovery XP.",
       "resref": "survey_scanner",
+      "quality_dimensions": "Output, Range",
+      "item_tag": "fit_survey_scanner",
+      "short_name": "Survey Scan",
+      "item_resref": "survey_scan",
+      "action": "Survey",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "Astrometrics",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, Range"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "deep_scanner",
@@ -1114,11 +1466,30 @@
       "value": 650,
       "effect": "Resolution 50; -5% ship speed; deep seams need total resolution 60.",
       "resref": "deep_scanner",
+      "quality_dimensions": "Output, Range, ActivationCost",
+      "item_tag": "fit_deep_scanner",
+      "short_name": "Deep Scan",
+      "item_resref": "deep_scan",
+      "action": "Survey",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "Astrometrics",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output, Range, ActivationCost"
+      "modifiers": [
+        {
+          "stat": "ShipSpeed",
+          "amount": -0.05,
+          "scales_with_output": false,
+          "proportional": false
+        }
+      ],
+      "recovery_fraction": 0
     },
     {
       "id": "tracking_computer",
@@ -1137,11 +1508,30 @@
       "value": 380,
       "effect": "+15% weapon tracking; no direct damage or hit-ceiling bypass.",
       "resref": "track_computer",
+      "quality_dimensions": "Output",
+      "item_tag": "fit_tracking_computer",
+      "short_name": "Tracking Comp",
+      "item_resref": "track_comp",
+      "action": "Passive",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output"
+      "modifiers": [
+        {
+          "stat": "ShipTracking",
+          "amount": 0.15,
+          "scales_with_output": true,
+          "proportional": false
+        }
+      ],
+      "recovery_fraction": 0
     },
     {
       "id": "precision_array",
@@ -1160,11 +1550,36 @@
       "value": 450,
       "effect": "+4 percentage points pre-tracking accuracy, -8% base damage output.",
       "resref": "precision_array",
+      "quality_dimensions": "Output",
+      "item_tag": "fit_precision_array",
+      "short_name": "Precision",
+      "item_resref": "prec_array",
+      "action": "Passive",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output"
+      "modifiers": [
+        {
+          "stat": "ShipAccuracy",
+          "amount": 0.04,
+          "scales_with_output": true,
+          "proportional": false
+        },
+        {
+          "stat": "ShipWeaponOutput",
+          "amount": -0.08,
+          "scales_with_output": false,
+          "proportional": false
+        }
+      ],
+      "recovery_fraction": 0
     },
     {
       "id": "interference_suite",
@@ -1183,11 +1598,23 @@
       "value": 500,
       "effect": "Reduce one target's pre-tracking accuracy by 12 percentage points for 5s; highest effect and control DR.",
       "resref": "sensor_jammer",
+      "quality_dimensions": "Output",
+      "item_tag": "fit_interference_suite",
+      "short_name": "Interference",
+      "item_resref": "sensor_jam",
+      "action": "Interference",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "Astrometrics",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "countermeasures",
@@ -1206,11 +1633,23 @@
       "value": 450,
       "effect": "Reduce incoming ordnance tracking by 15% for 5s; no damage reflection.",
       "resref": "countermeasures",
+      "quality_dimensions": "Output",
+      "item_tag": "fit_countermeasures",
+      "short_name": "Decoys",
+      "item_resref": "decoy_suite",
+      "action": "Countermeasures",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "Astrometrics",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "precision_cutter",
@@ -1229,11 +1668,23 @@
       "value": 300,
       "effect": "Remove 6 reserve units/cycle; base recovery 80%; hardness <=45.",
       "resref": "precision_cutter",
+      "quality_dimensions": "RecoveryFraction, Range",
+      "item_tag": "fit_precision_cutter",
+      "short_name": "Mining Cutter",
+      "item_resref": "prec_cutter",
+      "action": "Extraction",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 45,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "SpaceIndustry",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0.8,
-      "quality_dimensions": "RecoveryFraction, Range"
+      "modifiers": [],
+      "recovery_fraction": 0.8
     },
     {
       "id": "bulk_extractor",
@@ -1252,11 +1703,23 @@
       "value": 600,
       "effect": "Remove 12 reserve units/cycle; recovery 60%; hardness <=65.",
       "resref": "bulk_extractor",
+      "quality_dimensions": "RecoveryFraction, Range",
+      "item_tag": "fit_bulk_extractor",
+      "short_name": "Bulk Extractor",
+      "item_resref": "ore_extract",
+      "action": "Extraction",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 65,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "SpaceIndustry",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0.6,
-      "quality_dimensions": "RecoveryFraction, Range"
+      "modifiers": [],
+      "recovery_fraction": 0.6
     },
     {
       "id": "deep_drill",
@@ -1275,11 +1738,23 @@
       "value": 850,
       "effect": "Remove 10 reserve units/cycle; recovery 70%; hardness <=90; speed -50% while working.",
       "resref": "deep_drill",
+      "quality_dimensions": "RecoveryFraction, Range, ActivationCost",
+      "item_tag": "fit_deep_drill",
+      "short_name": "Deep Drill",
+      "item_resref": "deep_drill",
+      "action": "Extraction",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 90,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0.5,
+      "movement_lock": false,
       "operator_skill": "SpaceIndustry",
       "operator_rank": 20,
       "max_fitted": 0,
-      "recovery_fraction": 0.7,
-      "quality_dimensions": "RecoveryFraction, Range, ActivationCost"
+      "modifiers": [],
+      "recovery_fraction": 0.7
     },
     {
       "id": "compact_drill",
@@ -1298,11 +1773,23 @@
       "value": 900,
       "effect": "Remove 4 reserve units/cycle; recovery 80%; hardness <=90; speed -50% while working; qualifies for Deep-Core Extraction.",
       "resref": "compact_drill",
+      "quality_dimensions": "RecoveryFraction, Range",
+      "item_tag": "fit_compact_drill",
+      "short_name": "Compact Drill",
+      "item_resref": "comp_drill",
+      "action": "Extraction",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 90,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0.5,
+      "movement_lock": false,
       "operator_skill": "SpaceIndustry",
       "operator_rank": 20,
       "max_fitted": 0,
-      "recovery_fraction": 0.8,
-      "quality_dimensions": "RecoveryFraction, Range"
+      "modifiers": [],
+      "recovery_fraction": 0.8
     },
     {
       "id": "strip_miner",
@@ -1321,11 +1808,23 @@
       "value": 1200,
       "effect": "Remove 32 reserve units/cycle; recovery 50%; hardness <=75; movement locked for 18s.",
       "resref": "strip_miner",
+      "quality_dimensions": "RecoveryFraction, Range, ActivationCost",
+      "item_tag": "fit_strip_miner",
+      "short_name": "Strip Miner",
+      "item_resref": "strip_miner",
+      "action": "Extraction",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 75,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": true,
       "operator_skill": "SpaceIndustry",
       "operator_rank": 20,
       "max_fitted": 0,
-      "recovery_fraction": 0.5,
-      "quality_dimensions": "RecoveryFraction, Range, ActivationCost"
+      "modifiers": [],
+      "recovery_fraction": 0.5
     },
     {
       "id": "recovery_arm",
@@ -1344,11 +1843,23 @@
       "value": 350,
       "effect": "Recover 6 bulk wreck reserve units/cycle at 75% recovery.",
       "resref": "recovery_arm",
+      "quality_dimensions": "RecoveryFraction, Range",
+      "item_tag": "fit_recovery_arm",
+      "short_name": "Salvage Arm",
+      "item_resref": "recovery_arm",
+      "action": "BulkSalvage",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "SpaceIndustry",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0.75,
-      "quality_dimensions": "RecoveryFraction, Range"
+      "modifiers": [],
+      "recovery_fraction": 0.75
     },
     {
       "id": "electronics_kit",
@@ -1367,11 +1878,23 @@
       "value": 600,
       "effect": "One intact component attempt per cycle; 35% base chance, capped 55% including perks; reserve consumed on every attempt.",
       "resref": "electronics_kit",
+      "quality_dimensions": "Range",
+      "item_tag": "fit_electronics_kit",
+      "short_name": "Recover Tech",
+      "item_resref": "elec_kit",
+      "action": "IntactSalvage",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "SpaceIndustry",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Range"
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "salvage_cutter",
@@ -1390,11 +1913,23 @@
       "value": 550,
       "effect": "Recover 12 bulk wreck reserve units/cycle at 50% recovery; cannot recover intact components.",
       "resref": "salvage_cutter",
+      "quality_dimensions": "RecoveryFraction, Range",
+      "item_tag": "fit_salvage_cutter",
+      "short_name": "Salvage Cutter",
+      "item_resref": "salvage_cut",
+      "action": "BulkSalvage",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "SpaceIndustry",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0.5,
-      "quality_dimensions": "RecoveryFraction, Range"
+      "modifiers": [],
+      "recovery_fraction": 0.5
     },
     {
       "id": "cargo_hold",
@@ -1413,11 +1948,36 @@
       "value": 350,
       "effect": "+30% base cargo capacity, -10% base shields; duplicate weights apply.",
       "resref": "cargo_hold",
+      "quality_dimensions": "Output",
+      "item_tag": "fit_cargo_hold",
+      "short_name": "Cargo Hold",
+      "item_resref": "cargo_hold",
+      "action": "Passive",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "SpaceIndustry",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output"
+      "modifiers": [
+        {
+          "stat": "ShipCargoCapacity",
+          "amount": 0.3,
+          "scales_with_output": true,
+          "proportional": false
+        },
+        {
+          "stat": "ShipShieldCapacity",
+          "amount": -0.1,
+          "scales_with_output": false,
+          "proportional": true
+        }
+      ],
+      "recovery_fraction": 0
     },
     {
       "id": "ore_compressor",
@@ -1436,11 +1996,23 @@
       "value": 650,
       "effect": "2:1 ore cargo occupancy; 20 ore/unit operation; 6 capacitor and one 2-credit packing charge; maximum one fitted.",
       "resref": "ore_compressor",
+      "quality_dimensions": "CycleDuration",
+      "item_tag": "fit_ore_compressor",
+      "short_name": "Ore Compressor",
+      "item_resref": "ore_compress",
+      "action": "Compression",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "SpaceIndustry",
       "operator_rank": 0,
-      "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "CycleDuration"
+      "max_fitted": 1,
+      "modifiers": [],
+      "recovery_fraction": 0
     },
     {
       "id": "protected_hold",
@@ -1459,11 +2031,36 @@
       "value": 600,
       "effect": "Protect 60 cargo units from ordinary defeat loss; -10% base cargo capacity; maximum one fitted.",
       "resref": "protected_hold",
+      "quality_dimensions": "None",
+      "item_tag": "fit_protected_hold",
+      "short_name": "Secure Hold",
+      "item_resref": "secure_hold",
+      "action": "Passive",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "SpaceIndustry",
       "operator_rank": 0,
       "max_fitted": 1,
-      "recovery_fraction": 0,
-      "quality_dimensions": "None"
+      "modifiers": [
+        {
+          "stat": "ShipProtectedCargo",
+          "amount": 60,
+          "scales_with_output": false,
+          "proportional": false
+        },
+        {
+          "stat": "ShipCargoCapacity",
+          "amount": -0.1,
+          "scales_with_output": false,
+          "proportional": false
+        }
+      ],
+      "recovery_fraction": 0
     },
     {
       "id": "armor_plating",
@@ -1482,11 +2079,36 @@
       "value": 400,
       "effect": "+20 hull resistance rating; -8% base speed; no shield resistance bonus.",
       "resref": "armor_plating",
+      "quality_dimensions": "Output",
+      "item_tag": "fit_armor_plating",
+      "short_name": "Armor Plate",
+      "item_resref": "armor_plate",
+      "action": "Passive",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output"
+      "modifiers": [
+        {
+          "stat": "ShipHullResistance",
+          "amount": 20,
+          "scales_with_output": true,
+          "proportional": false
+        },
+        {
+          "stat": "ShipSpeed",
+          "amount": -0.08,
+          "scales_with_output": false,
+          "proportional": false
+        }
+      ],
+      "recovery_fraction": 0
     },
     {
       "id": "hull_plating",
@@ -1505,11 +2127,36 @@
       "value": 350,
       "effect": "+60 hull HP; -5% base speed; duplicate weights apply.",
       "resref": "hull_plating",
+      "quality_dimensions": "Output",
+      "item_tag": "fit_hull_plating",
+      "short_name": "Hull Plate",
+      "item_resref": "hull_plate",
+      "action": "Passive",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output"
+      "modifiers": [
+        {
+          "stat": "ShipHullCapacity",
+          "amount": 60,
+          "scales_with_output": true,
+          "proportional": false
+        },
+        {
+          "stat": "ShipSpeed",
+          "amount": -0.05,
+          "scales_with_output": false,
+          "proportional": false
+        }
+      ],
+      "recovery_fraction": 0
     },
     {
       "id": "output_amplifier",
@@ -1528,11 +2175,36 @@
       "value": 500,
       "effect": "+8% base weapon output; +10% weapon capacitor expenditure; duplicate weights and output cap apply.",
       "resref": "output_amplifier",
+      "quality_dimensions": "Output",
+      "item_tag": "fit_output_amplifier",
+      "short_name": "Weapon Boost",
+      "item_resref": "output_amp",
+      "action": "Passive",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output"
+      "modifiers": [
+        {
+          "stat": "ShipWeaponOutput",
+          "amount": 0.08,
+          "scales_with_output": true,
+          "proportional": false
+        },
+        {
+          "stat": "ShipWeaponCapacitorDemand",
+          "amount": 0.1,
+          "scales_with_output": false,
+          "proportional": false
+        }
+      ],
+      "recovery_fraction": 0
     },
     {
       "id": "maneuver_jets",
@@ -1551,11 +2223,36 @@
       "value": 450,
       "effect": "+4 percentage points pre-tracking evasion; -10% base cargo; permanent equipment evasion cap 8 points.",
       "resref": "maneuver_jets",
+      "quality_dimensions": "Output",
+      "item_tag": "fit_maneuver_jets",
+      "short_name": "Maneuver Jets",
+      "item_resref": "maneuver_jet",
+      "action": "Passive",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output"
+      "modifiers": [
+        {
+          "stat": "ShipEvasion",
+          "amount": 0.04,
+          "scales_with_output": true,
+          "proportional": false
+        },
+        {
+          "stat": "ShipCargoCapacity",
+          "amount": -0.1,
+          "scales_with_output": false,
+          "proportional": false
+        }
+      ],
+      "recovery_fraction": 0
     },
     {
       "id": "advanced_thrusters",
@@ -1574,11 +2271,36 @@
       "value": 500,
       "effect": "+10% base speed; -10% base capacitor capacity.",
       "resref": "adv_thrusters",
+      "quality_dimensions": "Output",
+      "item_tag": "fit_advanced_thrusters",
+      "short_name": "Thrusters",
+      "item_resref": "adv_thruster",
+      "action": "Passive",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output"
+      "modifiers": [
+        {
+          "stat": "ShipSpeed",
+          "amount": 0.1,
+          "scales_with_output": true,
+          "proportional": false
+        },
+        {
+          "stat": "ShipCapacitorCapacity",
+          "amount": -0.1,
+          "scales_with_output": false,
+          "proportional": true
+        }
+      ],
+      "recovery_fraction": 0
     },
     {
       "id": "power_router",
@@ -1597,11 +2319,42 @@
       "value": 800,
       "effect": "+15 shield resistance rating; -10% base weapon output and -10% base capacitor capacity.",
       "resref": "power_router",
+      "quality_dimensions": "Output",
+      "item_tag": "fit_power_router",
+      "short_name": "Power Router",
+      "item_resref": "power_router",
+      "action": "Passive",
+      "shield_multiplier": 1,
+      "hull_multiplier": 1,
+      "hardness_limit": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "working_speed_penalty": 0,
+      "movement_lock": false,
       "operator_skill": "ShipSystems",
       "operator_rank": 0,
       "max_fitted": 0,
-      "recovery_fraction": 0,
-      "quality_dimensions": "Output"
+      "modifiers": [
+        {
+          "stat": "ShipShieldResistance",
+          "amount": 15,
+          "scales_with_output": true,
+          "proportional": false
+        },
+        {
+          "stat": "ShipWeaponOutput",
+          "amount": -0.1,
+          "scales_with_output": false,
+          "proportional": false
+        },
+        {
+          "stat": "ShipCapacitorCapacity",
+          "amount": -0.1,
+          "scales_with_output": false,
+          "proportional": true
+        }
+      ],
+      "recovery_fraction": 0
     }
   ],
   "variants": [
@@ -1621,7 +2374,8 @@
       "progress": 33,
       "max_quality": 451,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "trk_laser"
     },
     {
       "design": "tracking_laser",
@@ -1639,7 +2393,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "trk_laser_eff"
     },
     {
       "design": "tracking_laser",
@@ -1657,7 +2412,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "trk_laser_ext"
     },
     {
       "design": "tracking_laser",
@@ -1675,7 +2431,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "trk_laser_rap"
     },
     {
       "design": "tracking_laser",
@@ -1693,7 +2450,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "trk_laser_cmp"
     },
     {
       "design": "tracking_laser",
@@ -1711,7 +2469,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "trk_laser_out"
     },
     {
       "design": "tracking_laser",
@@ -1729,7 +2488,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "trk_laser_pre"
     },
     {
       "design": "sustained_beam",
@@ -1747,7 +2507,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "beam_emitter"
     },
     {
       "design": "sustained_beam",
@@ -1765,7 +2526,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "beam_emitter_eff"
     },
     {
       "design": "sustained_beam",
@@ -1783,7 +2545,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "beam_emitter_ext"
     },
     {
       "design": "sustained_beam",
@@ -1801,7 +2564,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "beam_emitter_rap"
     },
     {
       "design": "sustained_beam",
@@ -1819,7 +2583,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "beam_emitter_cmp"
     },
     {
       "design": "sustained_beam",
@@ -1837,7 +2602,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "beam_emitter_out"
     },
     {
       "design": "sustained_beam",
@@ -1855,7 +2621,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "beam_emitter_pre"
     },
     {
       "design": "pulse_laser",
@@ -1873,7 +2640,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "pulse_laser"
     },
     {
       "design": "pulse_laser",
@@ -1891,7 +2659,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "pulse_laser_eff"
     },
     {
       "design": "pulse_laser",
@@ -1909,7 +2678,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "pulse_laser_ext"
     },
     {
       "design": "pulse_laser",
@@ -1927,7 +2697,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "pulse_laser_rap"
     },
     {
       "design": "pulse_laser",
@@ -1945,7 +2716,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "pulse_laser_cmp"
     },
     {
       "design": "pulse_laser",
@@ -1963,7 +2735,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "pulse_laser_out"
     },
     {
       "design": "pulse_laser",
@@ -1981,7 +2754,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "pulse_laser_pre"
     },
     {
       "design": "long_emitter",
@@ -1999,7 +2773,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "long_emitter"
     },
     {
       "design": "long_emitter",
@@ -2017,7 +2792,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "long_emitter_eff"
     },
     {
       "design": "long_emitter",
@@ -2035,7 +2811,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "long_emitter_ext"
     },
     {
       "design": "long_emitter",
@@ -2053,7 +2830,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "long_emitter_rap"
     },
     {
       "design": "long_emitter",
@@ -2071,7 +2849,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "long_emitter_cmp"
     },
     {
       "design": "long_emitter",
@@ -2089,7 +2868,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "long_emitter_out"
     },
     {
       "design": "long_emitter",
@@ -2107,7 +2887,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "long_emitter_pre"
     },
     {
       "design": "laser_battery",
@@ -2125,7 +2906,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "laser_bank"
     },
     {
       "design": "laser_battery",
@@ -2143,7 +2925,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "laser_bank_eff"
     },
     {
       "design": "laser_battery",
@@ -2161,7 +2944,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "laser_bank_ext"
     },
     {
       "design": "laser_battery",
@@ -2179,7 +2963,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "laser_bank_rap"
     },
     {
       "design": "laser_battery",
@@ -2197,7 +2982,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "laser_bank_cmp"
     },
     {
       "design": "laser_battery",
@@ -2215,7 +3001,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "laser_bank_out"
     },
     {
       "design": "laser_battery",
@@ -2233,7 +3020,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "laser_bank_pre"
     },
     {
       "design": "heavy_beam",
@@ -2251,7 +3039,8 @@
       "progress": 138,
       "max_quality": 2050,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "hvy_beam"
     },
     {
       "design": "heavy_beam",
@@ -2269,7 +3058,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "hvy_beam_eff"
     },
     {
       "design": "heavy_beam",
@@ -2287,7 +3077,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "hvy_beam_ext"
     },
     {
       "design": "heavy_beam",
@@ -2305,7 +3096,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "hvy_beam_rap"
     },
     {
       "design": "heavy_beam",
@@ -2323,7 +3115,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "hvy_beam_cmp"
     },
     {
       "design": "heavy_beam",
@@ -2341,7 +3134,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "hvy_beam_out"
     },
     {
       "design": "heavy_beam",
@@ -2359,7 +3153,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "hvy_beam_pre"
     },
     {
       "design": "shield_breaker",
@@ -2377,7 +3172,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "shield_break"
     },
     {
       "design": "shield_breaker",
@@ -2395,7 +3191,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "shield_break_eff"
     },
     {
       "design": "shield_breaker",
@@ -2413,7 +3210,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "shield_break_ext"
     },
     {
       "design": "shield_breaker",
@@ -2431,7 +3229,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "shield_break_rap"
     },
     {
       "design": "shield_breaker",
@@ -2449,7 +3248,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "shield_break_cmp"
     },
     {
       "design": "shield_breaker",
@@ -2467,7 +3267,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "shield_break_out"
     },
     {
       "design": "shield_breaker",
@@ -2485,7 +3286,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "shield_break_pre"
     },
     {
       "design": "engine_disruptor",
@@ -2503,7 +3305,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "eng_disrupt"
     },
     {
       "design": "engine_disruptor",
@@ -2521,7 +3324,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "eng_disrupt_eff"
     },
     {
       "design": "engine_disruptor",
@@ -2539,7 +3343,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "eng_disrupt_ext"
     },
     {
       "design": "engine_disruptor",
@@ -2557,7 +3362,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "eng_disrupt_rap"
     },
     {
       "design": "engine_disruptor",
@@ -2575,7 +3381,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "eng_disrupt_cmp"
     },
     {
       "design": "engine_disruptor",
@@ -2593,7 +3400,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "eng_disrupt_out"
     },
     {
       "design": "engine_disruptor",
@@ -2611,7 +3419,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "eng_disrupt_pre"
     },
     {
       "design": "cap_disruptor",
@@ -2629,7 +3438,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "cap_disrupt"
     },
     {
       "design": "cap_disruptor",
@@ -2647,7 +3457,8 @@
       "progress": 123,
       "max_quality": 1853,
       "durability": 80,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "cap_disrupt_eff"
     },
     {
       "design": "cap_disruptor",
@@ -2665,7 +3476,8 @@
       "progress": 123,
       "max_quality": 1853,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "cap_disrupt_ext"
     },
     {
       "design": "cap_disruptor",
@@ -2683,7 +3495,8 @@
       "progress": 123,
       "max_quality": 1853,
       "durability": 80,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "cap_disrupt_rap"
     },
     {
       "design": "cap_disruptor",
@@ -2701,7 +3514,8 @@
       "progress": 123,
       "max_quality": 1853,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "cap_disrupt_cmp"
     },
     {
       "design": "cap_disruptor",
@@ -2719,7 +3533,8 @@
       "progress": 123,
       "max_quality": 1853,
       "durability": 80,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "cap_disrupt_out"
     },
     {
       "design": "cap_disruptor",
@@ -2737,7 +3552,8 @@
       "progress": 123,
       "max_quality": 1853,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "cap_disrupt_pre"
     },
     {
       "design": "rapid_missile",
@@ -2755,7 +3571,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "light_launch"
     },
     {
       "design": "rapid_missile",
@@ -2773,7 +3590,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "light_launch_ext"
     },
     {
       "design": "rapid_missile",
@@ -2791,7 +3609,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "light_launch_rap"
     },
     {
       "design": "rapid_missile",
@@ -2809,7 +3628,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "light_launch_cmp"
     },
     {
       "design": "rapid_missile",
@@ -2827,7 +3647,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "light_launch_out"
     },
     {
       "design": "rapid_missile",
@@ -2845,7 +3666,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "light_launch_pre"
     },
     {
       "design": "heavy_missile",
@@ -2863,7 +3685,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "hvy_launch"
     },
     {
       "design": "heavy_missile",
@@ -2881,7 +3704,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "hvy_launch_eff"
     },
     {
       "design": "heavy_missile",
@@ -2899,7 +3723,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "hvy_launch_ext"
     },
     {
       "design": "heavy_missile",
@@ -2917,7 +3742,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "hvy_launch_rap"
     },
     {
       "design": "heavy_missile",
@@ -2935,7 +3761,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "hvy_launch_cmp"
     },
     {
       "design": "heavy_missile",
@@ -2953,7 +3780,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "hvy_launch_out"
     },
     {
       "design": "heavy_missile",
@@ -2971,7 +3799,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "hvy_launch_pre"
     },
     {
       "design": "torpedo",
@@ -2989,7 +3818,8 @@
       "progress": 123,
       "max_quality": 1853,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "torp_launch"
     },
     {
       "design": "torpedo",
@@ -3007,7 +3837,8 @@
       "progress": 138,
       "max_quality": 2050,
       "durability": 80,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "torp_launch_eff"
     },
     {
       "design": "torpedo",
@@ -3025,7 +3856,8 @@
       "progress": 138,
       "max_quality": 2050,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "torp_launch_ext"
     },
     {
       "design": "torpedo",
@@ -3043,7 +3875,8 @@
       "progress": 138,
       "max_quality": 2050,
       "durability": 80,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "torp_launch_rap"
     },
     {
       "design": "torpedo",
@@ -3061,7 +3894,8 @@
       "progress": 138,
       "max_quality": 2050,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "torp_launch_cmp"
     },
     {
       "design": "torpedo",
@@ -3079,7 +3913,8 @@
       "progress": 138,
       "max_quality": 2050,
       "durability": 80,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "torp_launch_out"
     },
     {
       "design": "torpedo",
@@ -3097,7 +3932,8 @@
       "progress": 138,
       "max_quality": 2050,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "torp_launch_pre"
     },
     {
       "design": "bombardment",
@@ -3115,7 +3951,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "bomb_launch"
     },
     {
       "design": "bombardment",
@@ -3133,7 +3970,8 @@
       "progress": 186,
       "max_quality": 2641,
       "durability": 80,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "bomb_launch_eff"
     },
     {
       "design": "bombardment",
@@ -3151,7 +3989,8 @@
       "progress": 186,
       "max_quality": 2641,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "bomb_launch_ext"
     },
     {
       "design": "bombardment",
@@ -3169,7 +4008,8 @@
       "progress": 186,
       "max_quality": 2641,
       "durability": 80,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "bomb_launch_rap"
     },
     {
       "design": "bombardment",
@@ -3187,7 +4027,8 @@
       "progress": 186,
       "max_quality": 2641,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "bomb_launch_cmp"
     },
     {
       "design": "bombardment",
@@ -3205,7 +4046,8 @@
       "progress": 186,
       "max_quality": 2641,
       "durability": 80,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "bomb_launch_out"
     },
     {
       "design": "bombardment",
@@ -3223,7 +4065,8 @@
       "progress": 186,
       "max_quality": 2641,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "bomb_launch_pre"
     },
     {
       "design": "shield_bank",
@@ -3241,7 +4084,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "shield_bank"
     },
     {
       "design": "shield_bank",
@@ -3259,7 +4103,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "shield_bank_cmp"
     },
     {
       "design": "recharge_array",
@@ -3277,7 +4122,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "recharge_arr"
     },
     {
       "design": "recharge_array",
@@ -3295,7 +4141,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "recharge_arr_cmp"
     },
     {
       "design": "shield_booster",
@@ -3313,7 +4160,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "shield_boost"
     },
     {
       "design": "shield_booster",
@@ -3331,7 +4179,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "shield_boost_eff"
     },
     {
       "design": "shield_booster",
@@ -3349,7 +4198,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "shield_boost_cmp"
     },
     {
       "design": "shield_booster",
@@ -3367,7 +4217,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "shield_boost_out"
     },
     {
       "design": "hull_repair",
@@ -3385,7 +4236,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "hull_repair"
     },
     {
       "design": "hull_repair",
@@ -3403,7 +4255,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "hull_repair_eff"
     },
     {
       "design": "hull_repair",
@@ -3421,7 +4274,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "hull_repair_cmp"
     },
     {
       "design": "hull_repair",
@@ -3439,7 +4293,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "hull_repair_out"
     },
     {
       "design": "shield_repair",
@@ -3457,7 +4312,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "shld_repair"
     },
     {
       "design": "shield_repair",
@@ -3475,7 +4331,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "shld_repair_eff"
     },
     {
       "design": "shield_repair",
@@ -3493,7 +4350,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "shld_repair_cmp"
     },
     {
       "design": "shield_repair",
@@ -3511,7 +4369,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "shld_repair_out"
     },
     {
       "design": "repair_projector",
@@ -3529,7 +4388,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "repair_proj"
     },
     {
       "design": "repair_projector",
@@ -3547,7 +4407,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "repair_proj_eff"
     },
     {
       "design": "repair_projector",
@@ -3565,7 +4426,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "repair_proj_cmp"
     },
     {
       "design": "repair_projector",
@@ -3583,7 +4445,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "repair_proj_out"
     },
     {
       "design": "repair_field",
@@ -3601,7 +4464,8 @@
       "progress": 138,
       "max_quality": 2050,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "repair_field"
     },
     {
       "design": "repair_field",
@@ -3619,7 +4483,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "repair_field_eff"
     },
     {
       "design": "repair_field",
@@ -3637,7 +4502,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "repair_field_cmp"
     },
     {
       "design": "repair_field",
@@ -3655,7 +4521,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "repair_field_out"
     },
     {
       "design": "storage_bank",
@@ -3673,7 +4540,8 @@
       "progress": 33,
       "max_quality": 451,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "storage_bank"
     },
     {
       "design": "storage_bank",
@@ -3691,7 +4559,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "storage_bank_cmp"
     },
     {
       "design": "recovery_regulator",
@@ -3709,7 +4578,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "cap_recovery"
     },
     {
       "design": "recovery_regulator",
@@ -3727,7 +4597,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "cap_recovery_cmp"
     },
     {
       "design": "fuel_injector",
@@ -3745,7 +4616,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "fuel_inject"
     },
     {
       "design": "fuel_injector",
@@ -3763,7 +4635,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "fuel_inject_cmp"
     },
     {
       "design": "transfer_projector",
@@ -3781,7 +4654,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "cap_transfer"
     },
     {
       "design": "transfer_projector",
@@ -3799,7 +4673,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "cap_transfer_cmp"
     },
     {
       "design": "survey_scanner",
@@ -3817,7 +4692,8 @@
       "progress": 33,
       "max_quality": 451,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "survey_scan"
     },
     {
       "design": "survey_scanner",
@@ -3835,7 +4711,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "survey_scan_eff"
     },
     {
       "design": "survey_scanner",
@@ -3853,7 +4730,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "survey_scan_ext"
     },
     {
       "design": "survey_scanner",
@@ -3871,7 +4749,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "survey_scan_cmp"
     },
     {
       "design": "survey_scanner",
@@ -3889,7 +4768,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "survey_scan_pre"
     },
     {
       "design": "deep_scanner",
@@ -3907,7 +4787,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "deep_scan"
     },
     {
       "design": "deep_scanner",
@@ -3925,7 +4806,8 @@
       "progress": 123,
       "max_quality": 1853,
       "durability": 80,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "deep_scan_eff"
     },
     {
       "design": "deep_scanner",
@@ -3943,7 +4825,8 @@
       "progress": 123,
       "max_quality": 1853,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "deep_scan_ext"
     },
     {
       "design": "deep_scanner",
@@ -3961,7 +4844,8 @@
       "progress": 123,
       "max_quality": 1853,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "deep_scan_cmp"
     },
     {
       "design": "deep_scanner",
@@ -3979,7 +4863,8 @@
       "progress": 123,
       "max_quality": 1853,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "deep_scan_pre"
     },
     {
       "design": "tracking_computer",
@@ -3997,7 +4882,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "track_comp"
     },
     {
       "design": "tracking_computer",
@@ -4015,7 +4901,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "track_comp_cmp"
     },
     {
       "design": "precision_array",
@@ -4033,7 +4920,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "prec_array"
     },
     {
       "design": "precision_array",
@@ -4051,7 +4939,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "prec_array_cmp"
     },
     {
       "design": "interference_suite",
@@ -4069,7 +4958,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "sensor_jam"
     },
     {
       "design": "interference_suite",
@@ -4087,7 +4977,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "sensor_jam_eff"
     },
     {
       "design": "interference_suite",
@@ -4105,7 +4996,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "sensor_jam_ext"
     },
     {
       "design": "interference_suite",
@@ -4123,7 +5015,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "sensor_jam_cmp"
     },
     {
       "design": "countermeasures",
@@ -4141,7 +5034,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "decoy_suite"
     },
     {
       "design": "countermeasures",
@@ -4159,7 +5053,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "decoy_suite_eff"
     },
     {
       "design": "countermeasures",
@@ -4177,7 +5072,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "decoy_suite_ext"
     },
     {
       "design": "countermeasures",
@@ -4195,7 +5091,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "decoy_suite_cmp"
     },
     {
       "design": "precision_cutter",
@@ -4213,7 +5110,8 @@
       "progress": 33,
       "max_quality": 451,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "prec_cutter"
     },
     {
       "design": "precision_cutter",
@@ -4231,7 +5129,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "prec_cutter_eff"
     },
     {
       "design": "precision_cutter",
@@ -4249,7 +5148,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "prec_cutter_rap"
     },
     {
       "design": "precision_cutter",
@@ -4267,7 +5167,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "prec_cutter_cmp"
     },
     {
       "design": "precision_cutter",
@@ -4285,7 +5186,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "prec_cutter_out"
     },
     {
       "design": "precision_cutter",
@@ -4303,7 +5205,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "prec_cutter_pre"
     },
     {
       "design": "bulk_extractor",
@@ -4321,7 +5224,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "ore_extract"
     },
     {
       "design": "bulk_extractor",
@@ -4339,7 +5243,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "ore_extract_eff"
     },
     {
       "design": "bulk_extractor",
@@ -4357,7 +5262,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "ore_extract_rap"
     },
     {
       "design": "bulk_extractor",
@@ -4375,7 +5281,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "ore_extract_cmp"
     },
     {
       "design": "bulk_extractor",
@@ -4393,7 +5300,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "ore_extract_out"
     },
     {
       "design": "bulk_extractor",
@@ -4411,7 +5319,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "ore_extract_pre"
     },
     {
       "design": "deep_drill",
@@ -4429,7 +5338,8 @@
       "progress": 123,
       "max_quality": 1853,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "deep_drill"
     },
     {
       "design": "deep_drill",
@@ -4447,7 +5357,8 @@
       "progress": 138,
       "max_quality": 2050,
       "durability": 80,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "deep_drill_eff"
     },
     {
       "design": "deep_drill",
@@ -4465,7 +5376,8 @@
       "progress": 138,
       "max_quality": 2050,
       "durability": 80,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "deep_drill_rap"
     },
     {
       "design": "deep_drill",
@@ -4483,7 +5395,8 @@
       "progress": 138,
       "max_quality": 2050,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "deep_drill_cmp"
     },
     {
       "design": "deep_drill",
@@ -4501,7 +5414,8 @@
       "progress": 138,
       "max_quality": 2050,
       "durability": 80,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "deep_drill_out"
     },
     {
       "design": "deep_drill",
@@ -4519,7 +5433,8 @@
       "progress": 138,
       "max_quality": 2050,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "deep_drill_pre"
     },
     {
       "design": "compact_drill",
@@ -4537,7 +5452,8 @@
       "progress": 138,
       "max_quality": 2050,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "comp_drill"
     },
     {
       "design": "compact_drill",
@@ -4555,7 +5471,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "comp_drill_eff"
     },
     {
       "design": "compact_drill",
@@ -4573,7 +5490,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "comp_drill_rap"
     },
     {
       "design": "compact_drill",
@@ -4591,7 +5509,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "comp_drill_cmp"
     },
     {
       "design": "compact_drill",
@@ -4609,7 +5528,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "comp_drill_out"
     },
     {
       "design": "compact_drill",
@@ -4627,7 +5547,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "comp_drill_pre"
     },
     {
       "design": "strip_miner",
@@ -4645,7 +5566,8 @@
       "progress": 138,
       "max_quality": 2050,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "strip_miner"
     },
     {
       "design": "strip_miner",
@@ -4663,7 +5585,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "strip_miner_eff"
     },
     {
       "design": "strip_miner",
@@ -4681,7 +5604,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "strip_miner_rap"
     },
     {
       "design": "strip_miner",
@@ -4699,7 +5623,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "strip_miner_cmp"
     },
     {
       "design": "strip_miner",
@@ -4717,7 +5642,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "strip_miner_out"
     },
     {
       "design": "strip_miner",
@@ -4735,7 +5661,8 @@
       "progress": 158,
       "max_quality": 2309,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "strip_miner_pre"
     },
     {
       "design": "recovery_arm",
@@ -4753,7 +5680,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "recovery_arm"
     },
     {
       "design": "recovery_arm",
@@ -4771,7 +5699,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "recovery_arm_eff"
     },
     {
       "design": "recovery_arm",
@@ -4789,7 +5718,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "recovery_arm_rap"
     },
     {
       "design": "recovery_arm",
@@ -4807,7 +5737,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "recovery_arm_cmp"
     },
     {
       "design": "recovery_arm",
@@ -4825,7 +5756,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "recovery_arm_out"
     },
     {
       "design": "recovery_arm",
@@ -4843,7 +5775,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "recovery_arm_pre"
     },
     {
       "design": "electronics_kit",
@@ -4861,7 +5794,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "elec_kit"
     },
     {
       "design": "electronics_kit",
@@ -4879,7 +5813,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "elec_kit_eff"
     },
     {
       "design": "electronics_kit",
@@ -4897,7 +5832,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "elec_kit_cmp"
     },
     {
       "design": "salvage_cutter",
@@ -4915,7 +5851,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "salvage_cut"
     },
     {
       "design": "salvage_cutter",
@@ -4933,7 +5870,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 0.75
+      "capacitor_multiplier": 0.75,
+      "item_resref": "salvage_cut_eff"
     },
     {
       "design": "salvage_cutter",
@@ -4951,7 +5889,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1.2
+      "capacitor_multiplier": 1.2,
+      "item_resref": "salvage_cut_rap"
     },
     {
       "design": "salvage_cutter",
@@ -4969,7 +5908,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "salvage_cut_cmp"
     },
     {
       "design": "salvage_cutter",
@@ -4987,7 +5927,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1.25
+      "capacitor_multiplier": 1.25,
+      "item_resref": "salvage_cut_out"
     },
     {
       "design": "salvage_cutter",
@@ -5005,7 +5946,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "salvage_cut_pre"
     },
     {
       "design": "cargo_hold",
@@ -5023,7 +5965,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "cargo_hold"
     },
     {
       "design": "cargo_hold",
@@ -5041,7 +5984,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "cargo_hold_cmp"
     },
     {
       "design": "ore_compressor",
@@ -5059,7 +6003,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "ore_compress"
     },
     {
       "design": "ore_compressor",
@@ -5077,7 +6022,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "ore_compress_cmp"
     },
     {
       "design": "protected_hold",
@@ -5095,7 +6041,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "secure_hold"
     },
     {
       "design": "protected_hold",
@@ -5113,7 +6060,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "secure_hold_cmp"
     },
     {
       "design": "armor_plating",
@@ -5131,7 +6079,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "armor_plate"
     },
     {
       "design": "armor_plating",
@@ -5149,7 +6098,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "armor_plate_cmp"
     },
     {
       "design": "hull_plating",
@@ -5167,7 +6117,8 @@
       "progress": 45,
       "max_quality": 629,
       "durability": 60,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "hull_plate"
     },
     {
       "design": "hull_plating",
@@ -5185,7 +6136,8 @@
       "progress": 55,
       "max_quality": 807,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "hull_plate_cmp"
     },
     {
       "design": "output_amplifier",
@@ -5203,7 +6155,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "output_amp"
     },
     {
       "design": "output_amplifier",
@@ -5221,7 +6174,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "output_amp_cmp"
     },
     {
       "design": "maneuver_jets",
@@ -5239,7 +6193,8 @@
       "progress": 74,
       "max_quality": 1053,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "maneuver_jet"
     },
     {
       "design": "maneuver_jets",
@@ -5257,7 +6212,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "maneuver_jet_cmp"
     },
     {
       "design": "advanced_thrusters",
@@ -5275,7 +6231,8 @@
       "progress": 89,
       "max_quality": 1296,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "adv_thruster"
     },
     {
       "design": "advanced_thrusters",
@@ -5293,7 +6250,8 @@
       "progress": 102,
       "max_quality": 1584,
       "durability": 70,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "adv_thruster_cmp"
     },
     {
       "design": "power_router",
@@ -5311,7 +6269,8 @@
       "progress": 123,
       "max_quality": 1853,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "power_router"
     },
     {
       "design": "power_router",
@@ -5329,7 +6288,8 @@
       "progress": 138,
       "max_quality": 2050,
       "durability": 80,
-      "capacitor_multiplier": 1
+      "capacitor_multiplier": 1,
+      "item_resref": "power_router_cmp"
     }
   ],
   "configurations": [
@@ -5339,7 +6299,22 @@
       "power": 6,
       "benefit": "+5% base weapon output",
       "drawback": "-15% base cargo capacity",
-      "resref": "cfg_combat"
+      "resref": "cfg_combat",
+      "item_tag": "fit_combat_conversion",
+      "modifiers": [
+        {
+          "stat": "ShipWeaponOutput",
+          "amount": 0.05,
+          "scales_with_output": false,
+          "proportional": false
+        },
+        {
+          "stat": "ShipCargoCapacity",
+          "amount": -0.15,
+          "scales_with_output": false,
+          "proportional": false
+        }
+      ]
     },
     {
       "id": "survey_conversion",
@@ -5347,7 +6322,22 @@
       "power": 6,
       "benefit": "+10 scanner resolution",
       "drawback": "-10% base weapon output",
-      "resref": "cfg_survey"
+      "resref": "cfg_survey",
+      "item_tag": "fit_survey_conversion",
+      "modifiers": [
+        {
+          "stat": "ShipScannerResolution",
+          "amount": 10,
+          "scales_with_output": false,
+          "proportional": false
+        },
+        {
+          "stat": "ShipWeaponOutput",
+          "amount": -0.1,
+          "scales_with_output": false,
+          "proportional": false
+        }
+      ]
     },
     {
       "id": "industrial_conversion",
@@ -5355,7 +6345,28 @@
       "power": 6,
       "benefit": "+10% reserve removal throughput",
       "drawback": "-15% base weapon output, -5% base speed",
-      "resref": "cfg_industrial"
+      "resref": "cfg_industrial",
+      "item_tag": "fit_industrial_conversion",
+      "modifiers": [
+        {
+          "stat": "ShipReserveRemoval",
+          "amount": 0.1,
+          "scales_with_output": false,
+          "proportional": false
+        },
+        {
+          "stat": "ShipWeaponOutput",
+          "amount": -0.15,
+          "scales_with_output": false,
+          "proportional": false
+        },
+        {
+          "stat": "ShipSpeed",
+          "amount": -0.05,
+          "scales_with_output": false,
+          "proportional": false
+        }
+      ]
     },
     {
       "id": "cargo_conversion",
@@ -5363,7 +6374,22 @@
       "power": 6,
       "benefit": "+20% base cargo capacity",
       "drawback": "-15% base shields",
-      "resref": "cfg_cargo"
+      "resref": "cfg_cargo",
+      "item_tag": "fit_cargo_conversion",
+      "modifiers": [
+        {
+          "stat": "ShipCargoCapacity",
+          "amount": 0.2,
+          "scales_with_output": false,
+          "proportional": false
+        },
+        {
+          "stat": "ShipShieldCapacity",
+          "amount": -0.15,
+          "scales_with_output": false,
+          "proportional": true
+        }
+      ]
     },
     {
       "id": "support_conversion",
@@ -5371,7 +6397,1597 @@
       "power": 6,
       "benefit": "+10% base external recovery output",
       "drawback": "-15% base weapon output",
-      "resref": "cfg_support"
+      "resref": "cfg_support",
+      "item_tag": "fit_support_conversion",
+      "modifiers": [
+        {
+          "stat": "ShipExternalRecoveryOutput",
+          "amount": 0.1,
+          "scales_with_output": false,
+          "proportional": false
+        },
+        {
+          "stat": "ShipWeaponOutput",
+          "amount": -0.15,
+          "scales_with_output": false,
+          "proportional": false
+        }
+      ]
+    }
+  ],
+  "legacy_modules": [
+    {
+      "resref": "acm_launch_1",
+      "name": "Assault Concussion Missile Launcher",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/AssaultConcussionMissileModuleDefinition.cs",
+      "target": "heavy_missile",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 272,
+      "reclaim_fraction": 0.75648,
+      "item_tag": "acm_launch_1"
+    },
+    {
+      "resref": "beamcannon1",
+      "name": "Basic Beam Cannon",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/BeamCannonModuleDefinition.cs",
+      "target": "sustained_beam",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 40,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "beamcannon1"
+    },
+    {
+      "resref": "beamcannon2",
+      "name": "Beam Cannon I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/BeamCannonModuleDefinition.cs",
+      "target": "sustained_beam",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 80,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "beamcannon2"
+    },
+    {
+      "resref": "beamcannon3",
+      "name": "Beam Cannon II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/BeamCannonModuleDefinition.cs",
+      "target": "sustained_beam",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 120,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "beamcannon3"
+    },
+    {
+      "resref": "beamcannon4",
+      "name": "Beam Cannon III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/BeamCannonModuleDefinition.cs",
+      "target": "sustained_beam",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 160,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "beamcannon4"
+    },
+    {
+      "resref": "beamcannon5",
+      "name": "Beam Cannon IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/BeamCannonModuleDefinition.cs",
+      "target": "sustained_beam",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 200,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "beamcannon5"
+    },
+    {
+      "resref": "bulwarkgen",
+      "name": "Bulwark Shield Generator",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/BulwarkShieldGeneratorModuleDefinition.cs",
+      "target": "shield_bank",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.76704,
+      "item_tag": "bulwarkgen"
+    },
+    {
+      "resref": "cap_armor1",
+      "name": "Reinforced Plating",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ReinforcedPlatingModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.76704,
+      "item_tag": "cap_armor1"
+    },
+    {
+      "resref": "cap_boost_1",
+      "name": "Capacitor Booster I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/CapacitorBoosterModuleDefinition.cs",
+      "target": "storage_bank",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 120,
+      "new_reference_cost": 133,
+      "reclaim_fraction": 0.0,
+      "item_tag": "cap_boost_1"
+    },
+    {
+      "resref": "cap_boost_2",
+      "name": "Capacitor Booster II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/CapacitorBoosterModuleDefinition.cs",
+      "target": "storage_bank",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 180,
+      "new_reference_cost": 133,
+      "reclaim_fraction": 0.2088888888888889,
+      "item_tag": "cap_boost_2"
+    },
+    {
+      "resref": "cap_boost_3",
+      "name": "Capacitor Booster III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/CapacitorBoosterModuleDefinition.cs",
+      "target": "storage_bank",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 240,
+      "new_reference_cost": 133,
+      "reclaim_fraction": 0.3566666666666667,
+      "item_tag": "cap_boost_3"
+    },
+    {
+      "resref": "cap_boost_4",
+      "name": "Capacitor Booster IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/CapacitorBoosterModuleDefinition.cs",
+      "target": "storage_bank",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 300,
+      "new_reference_cost": 133,
+      "reclaim_fraction": 0.4453333333333333,
+      "item_tag": "cap_boost_4"
+    },
+    {
+      "resref": "cap_boost_b",
+      "name": "Basic Capacitor Booster",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/CapacitorBoosterModuleDefinition.cs",
+      "target": "storage_bank",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 60,
+      "new_reference_cost": 133,
+      "reclaim_fraction": 0.0,
+      "item_tag": "cap_boost_b"
+    },
+    {
+      "resref": "cap_ewar",
+      "name": "Capital E-War Module",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/CapitalEwarModuleDefinition.cs",
+      "target": "interference_suite",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.76704,
+      "item_tag": "cap_ewar"
+    },
+    {
+      "resref": "cap_indus",
+      "name": "Industrial Nexus Configuration",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "industrial_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.7638400000000001,
+      "item_tag": "cap_indus"
+    },
+    {
+      "resref": "cap_inject1",
+      "name": "Basic Hypermatter Injector",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HypermatterInjectorModuleDefinition.cs",
+      "target": "fuel_injector",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 100,
+      "new_reference_cost": 133,
+      "reclaim_fraction": 0.0,
+      "item_tag": "cap_inject1"
+    },
+    {
+      "resref": "cap_inject2",
+      "name": "Hypermatter Injector I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HypermatterInjectorModuleDefinition.cs",
+      "target": "fuel_injector",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 200,
+      "new_reference_cost": 133,
+      "reclaim_fraction": 0.268,
+      "item_tag": "cap_inject2"
+    },
+    {
+      "resref": "cap_inject3",
+      "name": "Hypermatter Injector II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HypermatterInjectorModuleDefinition.cs",
+      "target": "fuel_injector",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 300,
+      "new_reference_cost": 133,
+      "reclaim_fraction": 0.4453333333333333,
+      "item_tag": "cap_inject3"
+    },
+    {
+      "resref": "cap_inject4",
+      "name": "Hypermatter Injector III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HypermatterInjectorModuleDefinition.cs",
+      "target": "fuel_injector",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 400,
+      "new_reference_cost": 133,
+      "reclaim_fraction": 0.534,
+      "item_tag": "cap_inject4"
+    },
+    {
+      "resref": "cap_inject5",
+      "name": "Hypermatter Injector IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HypermatterInjectorModuleDefinition.cs",
+      "target": "fuel_injector",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 500,
+      "new_reference_cost": 133,
+      "reclaim_fraction": 0.5872,
+      "item_tag": "cap_inject5"
+    },
+    {
+      "resref": "cap_minlas",
+      "name": "Strip Miner",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/StripMinerModuleDefinition.cs",
+      "target": "strip_miner",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 510,
+      "reclaim_fraction": 0.7184,
+      "item_tag": "cap_minlas"
+    },
+    {
+      "resref": "cap_pwdiv",
+      "name": "Capital Power Diverter",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/CapitalPowerDeiverterModuleDefinition.cs",
+      "target": "power_router",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 377,
+      "reclaim_fraction": 0.73968,
+      "item_tag": "cap_pwdiv"
+    },
+    {
+      "resref": "cap_quadlas1",
+      "name": "Quad Laser Cannons",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/QuadLaserCannonModuleDefinition.cs",
+      "target": "pulse_laser",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.7766400000000001,
+      "item_tag": "cap_quadlas1"
+    },
+    {
+      "resref": "cap_quadlas2",
+      "name": "Quad Laser Cannon Array",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/QuadLaserCannonModuleDefinition.cs",
+      "target": "pulse_laser",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.7766400000000001,
+      "item_tag": "cap_quadlas2"
+    },
+    {
+      "resref": "cap_quadlas3",
+      "name": "Quad Laser Cannon Battery",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/QuadLaserCannonModuleDefinition.cs",
+      "target": "pulse_laser",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.7766400000000001,
+      "item_tag": "cap_quadlas3"
+    },
+    {
+      "resref": "cap_shields1",
+      "name": "Redundant Shield Generator",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/RedundantShieldGeneratorModuleDefinition.cs",
+      "target": "shield_bank",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.76704,
+      "item_tag": "cap_shields1"
+    },
+    {
+      "resref": "cap_skirm",
+      "name": "Skirmisher Configuration",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "combat_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.7638400000000001,
+      "item_tag": "cap_skirm"
+    },
+    {
+      "resref": "cap_target1",
+      "name": "Dedicated Targeting Sensor Array",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/TargetingArrayModuleDefinition.cs",
+      "target": "precision_array",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.76704,
+      "item_tag": "cap_target1"
+    },
+    {
+      "resref": "cap_thrust1",
+      "name": "Advanced Thrusters",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/AdvancedThrustersModuleDefinition.cs",
+      "target": "advanced_thrusters",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 172,
+      "reclaim_fraction": 0.77248,
+      "item_tag": "cap_thrust1"
+    },
+    {
+      "resref": "cap_warship",
+      "name": "Warship Configuration",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "combat_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.7638400000000001,
+      "item_tag": "cap_warship"
+    },
+    {
+      "resref": "cap_wcomp1",
+      "name": "Dedicated Weapons System Computer",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/WeaponsComputerModuleDefinition.cs",
+      "target": "tracking_computer",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.7766400000000001,
+      "item_tag": "cap_wcomp1"
+    },
+    {
+      "resref": "com_laser_1",
+      "name": "Combat Laser I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/CombatLaserModuleDefinition.cs",
+      "target": "tracking_laser",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 80,
+      "new_reference_cost": 133,
+      "reclaim_fraction": 0.0,
+      "item_tag": "com_laser_1"
+    },
+    {
+      "resref": "com_laser_2",
+      "name": "Combat Laser II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/CombatLaserModuleDefinition.cs",
+      "target": "tracking_laser",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 120,
+      "new_reference_cost": 133,
+      "reclaim_fraction": 0.0,
+      "item_tag": "com_laser_2"
+    },
+    {
+      "resref": "com_laser_3",
+      "name": "Combat Laser III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/CombatLaserModuleDefinition.cs",
+      "target": "tracking_laser",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 160,
+      "new_reference_cost": 133,
+      "reclaim_fraction": 0.135,
+      "item_tag": "com_laser_3"
+    },
+    {
+      "resref": "com_laser_4",
+      "name": "Combat Laser IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/CombatLaserModuleDefinition.cs",
+      "target": "tracking_laser",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 200,
+      "new_reference_cost": 133,
+      "reclaim_fraction": 0.268,
+      "item_tag": "com_laser_4"
+    },
+    {
+      "resref": "com_laser_b",
+      "name": "Basic Combat Laser",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/CombatLaserModuleDefinition.cs",
+      "target": "tracking_laser",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 40,
+      "new_reference_cost": 133,
+      "reclaim_fraction": 0.0,
+      "item_tag": "com_laser_b"
+    },
+    {
+      "resref": "config_bmb1",
+      "name": "Basic Bomber Configuration",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "combat_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 60,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.0,
+      "item_tag": "config_bmb1"
+    },
+    {
+      "resref": "config_bmb2",
+      "name": "Bomber Configuration I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "combat_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 120,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.0,
+      "item_tag": "config_bmb2"
+    },
+    {
+      "resref": "config_bmb3",
+      "name": "Bomber Configuration II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "combat_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 180,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.0,
+      "item_tag": "config_bmb3"
+    },
+    {
+      "resref": "config_bmb4",
+      "name": "Bomber Configuration III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "combat_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 240,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.04666666666666667,
+      "item_tag": "config_bmb4"
+    },
+    {
+      "resref": "config_bmb5",
+      "name": "Bomber Configuration IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "combat_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 300,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.19733333333333333,
+      "item_tag": "config_bmb5"
+    },
+    {
+      "resref": "config_fig1",
+      "name": "Basic Fighter Configuration",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "combat_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 60,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.0,
+      "item_tag": "config_fig1"
+    },
+    {
+      "resref": "config_fig2",
+      "name": "Fighter Configuration I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "combat_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 120,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.0,
+      "item_tag": "config_fig2"
+    },
+    {
+      "resref": "config_fig3",
+      "name": "Fighter Configuration II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "combat_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 180,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.0,
+      "item_tag": "config_fig3"
+    },
+    {
+      "resref": "config_fig4",
+      "name": "Fighter Configuration III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "combat_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 240,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.04666666666666667,
+      "item_tag": "config_fig4"
+    },
+    {
+      "resref": "config_fig5",
+      "name": "Fighter Configuration IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "combat_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 300,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.19733333333333333,
+      "item_tag": "config_fig5"
+    },
+    {
+      "resref": "config_ind1",
+      "name": "Basic Logistics Configuration",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "industrial_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 60,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.0,
+      "item_tag": "config_ind1"
+    },
+    {
+      "resref": "config_ind2",
+      "name": "Logistics Configuration I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "industrial_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 120,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.0,
+      "item_tag": "config_ind2"
+    },
+    {
+      "resref": "config_ind3",
+      "name": "Logistics Configuration II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "industrial_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 180,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.0,
+      "item_tag": "config_ind3"
+    },
+    {
+      "resref": "config_ind4",
+      "name": "Logistics Configuration III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "industrial_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 240,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.04666666666666667,
+      "item_tag": "config_ind4"
+    },
+    {
+      "resref": "config_ind5",
+      "name": "Logistics Configuration IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "industrial_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 300,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.19733333333333333,
+      "item_tag": "config_ind5"
+    },
+    {
+      "resref": "config_int1",
+      "name": "Basic Interceptor Configuration",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "combat_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 60,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.0,
+      "item_tag": "config_int1"
+    },
+    {
+      "resref": "config_int2",
+      "name": "Interceptor Configuration I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "combat_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 120,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.0,
+      "item_tag": "config_int2"
+    },
+    {
+      "resref": "config_int3",
+      "name": "Interceptor Configuration II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "combat_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 180,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.0,
+      "item_tag": "config_int3"
+    },
+    {
+      "resref": "config_int4",
+      "name": "Interceptor Configuration III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "combat_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 240,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.04666666666666667,
+      "item_tag": "config_int4"
+    },
+    {
+      "resref": "config_int5",
+      "name": "Interceptor Configuration IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipConfigurationModuleDefinition.cs",
+      "target": "combat_conversion",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 300,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.19733333333333333,
+      "item_tag": "config_int5"
+    },
+    {
+      "resref": "em_amp_1",
+      "name": "EM Amplifier I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/DamageAmplifierModuleDefinition.cs",
+      "target": "output_amplifier",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 160,
+      "new_reference_cost": 232,
+      "reclaim_fraction": 0.0,
+      "item_tag": "em_amp_1"
+    },
+    {
+      "resref": "em_amp_2",
+      "name": "EM Amplifier II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/DamageAmplifierModuleDefinition.cs",
+      "target": "output_amplifier",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 240,
+      "new_reference_cost": 232,
+      "reclaim_fraction": 0.02666666666666667,
+      "item_tag": "em_amp_2"
+    },
+    {
+      "resref": "em_amp_3",
+      "name": "EM Amplifier III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/DamageAmplifierModuleDefinition.cs",
+      "target": "output_amplifier",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 320,
+      "new_reference_cost": 232,
+      "reclaim_fraction": 0.22000000000000003,
+      "item_tag": "em_amp_3"
+    },
+    {
+      "resref": "em_amp_4",
+      "name": "EM Amplifier IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/DamageAmplifierModuleDefinition.cs",
+      "target": "output_amplifier",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 400,
+      "new_reference_cost": 232,
+      "reclaim_fraction": 0.336,
+      "item_tag": "em_amp_4"
+    },
+    {
+      "resref": "em_amp_b",
+      "name": "Basic EM Amplifier",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/DamageAmplifierModuleDefinition.cs",
+      "target": "output_amplifier",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 80,
+      "new_reference_cost": 232,
+      "reclaim_fraction": 0.0,
+      "item_tag": "em_amp_b"
+    },
+    {
+      "resref": "eva_boost_1",
+      "name": "Evasion Booster I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/EvasionBoosterModuleDefinition.cs",
+      "target": "maneuver_jets",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 200,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.21600000000000003,
+      "item_tag": "eva_boost_1"
+    },
+    {
+      "resref": "eva_boost_2",
+      "name": "Evasion Booster II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/EvasionBoosterModuleDefinition.cs",
+      "target": "maneuver_jets",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 300,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.4106666666666667,
+      "item_tag": "eva_boost_2"
+    },
+    {
+      "resref": "eva_boost_3",
+      "name": "Evasion Booster III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/EvasionBoosterModuleDefinition.cs",
+      "target": "maneuver_jets",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 400,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.508,
+      "item_tag": "eva_boost_3"
+    },
+    {
+      "resref": "eva_boost_4",
+      "name": "Evasion Booster IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/EvasionBoosterModuleDefinition.cs",
+      "target": "maneuver_jets",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 500,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.5664,
+      "item_tag": "eva_boost_4"
+    },
+    {
+      "resref": "eva_boost_b",
+      "name": "Basic Evasion Booster",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/EvasionBoosterModuleDefinition.cs",
+      "target": "maneuver_jets",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 100,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.0,
+      "item_tag": "eva_boost_b"
+    },
+    {
+      "resref": "exp_amp_1",
+      "name": "Explosive Amplifier I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/DamageAmplifierModuleDefinition.cs",
+      "target": "output_amplifier",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 160,
+      "new_reference_cost": 232,
+      "reclaim_fraction": 0.0,
+      "item_tag": "exp_amp_1"
+    },
+    {
+      "resref": "exp_amp_2",
+      "name": "Explosive Amplifier II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/DamageAmplifierModuleDefinition.cs",
+      "target": "output_amplifier",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 240,
+      "new_reference_cost": 232,
+      "reclaim_fraction": 0.02666666666666667,
+      "item_tag": "exp_amp_2"
+    },
+    {
+      "resref": "exp_amp_3",
+      "name": "Explosive Amplifier III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/DamageAmplifierModuleDefinition.cs",
+      "target": "output_amplifier",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 320,
+      "new_reference_cost": 232,
+      "reclaim_fraction": 0.22000000000000003,
+      "item_tag": "exp_amp_3"
+    },
+    {
+      "resref": "exp_amp_4",
+      "name": "Explosive Amplifier IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/DamageAmplifierModuleDefinition.cs",
+      "target": "output_amplifier",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 400,
+      "new_reference_cost": 232,
+      "reclaim_fraction": 0.336,
+      "item_tag": "exp_amp_4"
+    },
+    {
+      "resref": "exp_amp_b",
+      "name": "Basic Explosive Amplifier",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/DamageAmplifierModuleDefinition.cs",
+      "target": "output_amplifier",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 80,
+      "new_reference_cost": 232,
+      "reclaim_fraction": 0.0,
+      "item_tag": "exp_amp_b"
+    },
+    {
+      "resref": "exp_armor_1",
+      "name": "Basic Reactive Armor",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 100,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "exp_armor_1"
+    },
+    {
+      "resref": "exp_armor_2",
+      "name": "Reactive Armor I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 200,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "exp_armor_2"
+    },
+    {
+      "resref": "exp_armor_3",
+      "name": "Reactive Armor II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 300,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.25066666666666665,
+      "item_tag": "exp_armor_3"
+    },
+    {
+      "resref": "exp_armor_4",
+      "name": "Reactive Armor III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 400,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.38800000000000007,
+      "item_tag": "exp_armor_4"
+    },
+    {
+      "resref": "exp_armor_5",
+      "name": "Reactive Armor IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 500,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.47040000000000004,
+      "item_tag": "exp_armor_5"
+    },
+    {
+      "resref": "hull_boost_1",
+      "name": "Hull Booster I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HullBoosterModuleDefinition.cs",
+      "target": "hull_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 120,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "hull_boost_1"
+    },
+    {
+      "resref": "hull_boost_2",
+      "name": "Hull Booster II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HullBoosterModuleDefinition.cs",
+      "target": "hull_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 180,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "hull_boost_2"
+    },
+    {
+      "resref": "hull_boost_3",
+      "name": "Hull Booster III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HullBoosterModuleDefinition.cs",
+      "target": "hull_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 240,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.11333333333333334,
+      "item_tag": "hull_boost_3"
+    },
+    {
+      "resref": "hull_boost_4",
+      "name": "Hull Booster IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HullBoosterModuleDefinition.cs",
+      "target": "hull_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 300,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.25066666666666665,
+      "item_tag": "hull_boost_4"
+    },
+    {
+      "resref": "hull_boost_b",
+      "name": "Basic Hull Booster",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HullBoosterModuleDefinition.cs",
+      "target": "hull_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 60,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "hull_boost_b"
+    },
+    {
+      "resref": "hull_rep_1",
+      "name": "Hull Repairer I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HullRepairerModuleDefinition.cs",
+      "target": "hull_repair",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 80,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "hull_rep_1"
+    },
+    {
+      "resref": "hull_rep_2",
+      "name": "Hull Repairer II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HullRepairerModuleDefinition.cs",
+      "target": "hull_repair",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 120,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "hull_rep_2"
+    },
+    {
+      "resref": "hull_rep_3",
+      "name": "Hull Repairer III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HullRepairerModuleDefinition.cs",
+      "target": "hull_repair",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 160,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "hull_rep_3"
+    },
+    {
+      "resref": "hull_rep_4",
+      "name": "Hull Repairer IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HullRepairerModuleDefinition.cs",
+      "target": "hull_repair",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 200,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "hull_rep_4"
+    },
+    {
+      "resref": "hull_rep_b",
+      "name": "Basic Hull Repairer",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/HullRepairerModuleDefinition.cs",
+      "target": "hull_repair",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 40,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "hull_rep_b"
+    },
+    {
+      "resref": "hvy_armor_1",
+      "name": "Basic Durasteel Plating",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 100,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "hvy_armor_1"
+    },
+    {
+      "resref": "hvy_armor_2",
+      "name": "Durasteel Plating I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 200,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "hvy_armor_2"
+    },
+    {
+      "resref": "hvy_armor_3",
+      "name": "Durasteel Plating II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 300,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.25066666666666665,
+      "item_tag": "hvy_armor_3"
+    },
+    {
+      "resref": "hvy_armor_4",
+      "name": "Durasteel Plating III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 400,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.38800000000000007,
+      "item_tag": "hvy_armor_4"
+    },
+    {
+      "resref": "hvy_armor_5",
+      "name": "Durasteel Plating IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 500,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.47040000000000004,
+      "item_tag": "hvy_armor_5"
+    },
+    {
+      "resref": "ion_armor_1",
+      "name": "Basic Supplemental Ion Shielding",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 100,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "ion_armor_1"
+    },
+    {
+      "resref": "ion_armor_2",
+      "name": "Supplemental Ion Shielding I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 200,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "ion_armor_2"
+    },
+    {
+      "resref": "ion_armor_3",
+      "name": "Supplemental Ion Shielding II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 300,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.25066666666666665,
+      "item_tag": "ion_armor_3"
+    },
+    {
+      "resref": "ion_armor_4",
+      "name": "Supplemental Ion Shielding III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 400,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.38800000000000007,
+      "item_tag": "ion_armor_4"
+    },
+    {
+      "resref": "ion_armor_5",
+      "name": "Supplemental Ion Shielding IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 500,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.47040000000000004,
+      "item_tag": "ion_armor_5"
+    },
+    {
+      "resref": "ion_cann_1",
+      "name": "Ion Cannon I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/IonCannonModuleDefinition.cs",
+      "target": "shield_breaker",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 80,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.0,
+      "item_tag": "ion_cann_1"
+    },
+    {
+      "resref": "ion_cann_2",
+      "name": "Ion Cannon II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/IonCannonModuleDefinition.cs",
+      "target": "shield_breaker",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 120,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.0,
+      "item_tag": "ion_cann_2"
+    },
+    {
+      "resref": "ion_cann_3",
+      "name": "Ion Cannon III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/IonCannonModuleDefinition.cs",
+      "target": "shield_breaker",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 160,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.07,
+      "item_tag": "ion_cann_3"
+    },
+    {
+      "resref": "ion_cann_4",
+      "name": "Ion Cannon IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/IonCannonModuleDefinition.cs",
+      "target": "shield_breaker",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 200,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.21600000000000003,
+      "item_tag": "ion_cann_4"
+    },
+    {
+      "resref": "ion_cann_b",
+      "name": "Basic Ion Cannon",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/IonCannonModuleDefinition.cs",
+      "target": "shield_breaker",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 40,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.0,
+      "item_tag": "ion_cann_b"
+    },
+    {
+      "resref": "las_armor_1",
+      "name": "Basic Mirrored Plating",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 100,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "las_armor_1"
+    },
+    {
+      "resref": "las_armor_2",
+      "name": "Mirrored Plating I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 200,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "las_armor_2"
+    },
+    {
+      "resref": "las_armor_3",
+      "name": "Mirrored Plating II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 300,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.25066666666666665,
+      "item_tag": "las_armor_3"
+    },
+    {
+      "resref": "las_armor_4",
+      "name": "Mirrored Plating III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 400,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.38800000000000007,
+      "item_tag": "las_armor_4"
+    },
+    {
+      "resref": "las_armor_5",
+      "name": "Mirrored Plating IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipArmorModuleDefinition.cs",
+      "target": "armor_plating",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 500,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.47040000000000004,
+      "item_tag": "las_armor_5"
+    },
+    {
+      "resref": "lasbattery1",
+      "name": "Laser Cannon Battery I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/LaserCannonBatteryModuleDefinition.cs",
+      "target": "laser_battery",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 272,
+      "reclaim_fraction": 0.75648,
+      "item_tag": "lasbattery1"
+    },
+    {
+      "resref": "min_laser_1",
+      "name": "Mining Laser I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/MiningLaserModuleDefinition.cs",
+      "target": "precision_cutter",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 40,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "min_laser_1"
+    },
+    {
+      "resref": "min_laser_2",
+      "name": "Mining Laser II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/MiningLaserModuleDefinition.cs",
+      "target": "precision_cutter",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 60,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "min_laser_2"
+    },
+    {
+      "resref": "min_laser_3",
+      "name": "Mining Laser III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/MiningLaserModuleDefinition.cs",
+      "target": "precision_cutter",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 80,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "min_laser_3"
+    },
+    {
+      "resref": "min_laser_4",
+      "name": "Mining Laser IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/MiningLaserModuleDefinition.cs",
+      "target": "precision_cutter",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 100,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "min_laser_4"
+    },
+    {
+      "resref": "min_laser_b",
+      "name": "Basic Mining Laser",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/MiningLaserModuleDefinition.cs",
+      "target": "precision_cutter",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 20,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "min_laser_b"
+    },
+    {
+      "resref": "msl_launch_1",
+      "name": "Missile Launcher I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/MissileLauncherModuleDefinition.cs",
+      "target": "rapid_missile",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 120,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.0,
+      "item_tag": "msl_launch_1"
+    },
+    {
+      "resref": "msl_launch_2",
+      "name": "Missile Launcher II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/MissileLauncherModuleDefinition.cs",
+      "target": "rapid_missile",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 180,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.15111111111111114,
+      "item_tag": "msl_launch_2"
+    },
+    {
+      "resref": "msl_launch_3",
+      "name": "Missile Launcher III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/MissileLauncherModuleDefinition.cs",
+      "target": "rapid_missile",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 240,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.31333333333333335,
+      "item_tag": "msl_launch_3"
+    },
+    {
+      "resref": "msl_launch_4",
+      "name": "Missile Launcher IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/MissileLauncherModuleDefinition.cs",
+      "target": "rapid_missile",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 300,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.4106666666666667,
+      "item_tag": "msl_launch_4"
+    },
+    {
+      "resref": "msl_launch_b",
+      "name": "Basic Missile Launcher",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/MissileLauncherModuleDefinition.cs",
+      "target": "rapid_missile",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 60,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.0,
+      "item_tag": "msl_launch_b"
+    },
+    {
+      "resref": "protbomblnch",
+      "name": "Proton Bomb Launcher",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ProtonBombModuleDefinition.cs",
+      "target": "bombardment",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 300,
+      "new_reference_cost": 510,
+      "reclaim_fraction": 0.0,
+      "item_tag": "protbomblnch"
+    },
+    {
+      "resref": "repairfield",
+      "name": "Repair Field Generator",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/RepairFieldGeneratorModuleDefinition.cs",
+      "target": "repair_field",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 457,
+      "reclaim_fraction": 0.72688,
+      "item_tag": "repairfield"
+    },
+    {
+      "resref": "shld_boost_1",
+      "name": "Shield Booster I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShieldBoosterModuleDefinition.cs",
+      "target": "shield_bank",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 80,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "shld_boost_1"
+    },
+    {
+      "resref": "shld_boost_2",
+      "name": "Shield Booster II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShieldBoosterModuleDefinition.cs",
+      "target": "shield_bank",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 120,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "shld_boost_2"
+    },
+    {
+      "resref": "shld_boost_3",
+      "name": "Shield Booster III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShieldBoosterModuleDefinition.cs",
+      "target": "shield_bank",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 160,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "shld_boost_3"
+    },
+    {
+      "resref": "shld_boost_4",
+      "name": "Shield Booster IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShieldBoosterModuleDefinition.cs",
+      "target": "shield_bank",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 200,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "shld_boost_4"
+    },
+    {
+      "resref": "shld_boost_b",
+      "name": "Basic Shield Booster",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShieldBoosterModuleDefinition.cs",
+      "target": "shield_bank",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 40,
+      "new_reference_cost": 206,
+      "reclaim_fraction": 0.0,
+      "item_tag": "shld_boost_b"
+    },
+    {
+      "resref": "shld_rep_1",
+      "name": "Shield Repairer I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShieldRepairerModuleDefinition.cs",
+      "target": "shield_repair",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 200,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.0,
+      "item_tag": "shld_rep_1"
+    },
+    {
+      "resref": "shld_rep_2",
+      "name": "Shield Repairer II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShieldRepairerModuleDefinition.cs",
+      "target": "shield_repair",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 300,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.19733333333333333,
+      "item_tag": "shld_rep_2"
+    },
+    {
+      "resref": "shld_rep_3",
+      "name": "Shield Repairer III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShieldRepairerModuleDefinition.cs",
+      "target": "shield_repair",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 400,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.34800000000000003,
+      "item_tag": "shld_rep_3"
+    },
+    {
+      "resref": "shld_rep_4",
+      "name": "Shield Repairer IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShieldRepairerModuleDefinition.cs",
+      "target": "shield_repair",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 500,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.4384,
+      "item_tag": "shld_rep_4"
+    },
+    {
+      "resref": "shld_rep_b",
+      "name": "Basic Shield Repairer",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShieldRepairerModuleDefinition.cs",
+      "target": "shield_repair",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 100,
+      "new_reference_cost": 226,
+      "reclaim_fraction": 0.0,
+      "item_tag": "shld_rep_b"
+    },
+    {
+      "resref": "storm_cann",
+      "name": "Storm Cannon",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/StormCannonModuleDefinition.cs",
+      "target": "heavy_beam",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 457,
+      "reclaim_fraction": 0.72688,
+      "item_tag": "storm_cann"
+    },
+    {
+      "resref": "tgt_sys_1",
+      "name": "Targeting System I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/TargetingSystemModuleDefinition.cs",
+      "target": "tracking_computer",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 200,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.21600000000000003,
+      "item_tag": "tgt_sys_1"
+    },
+    {
+      "resref": "tgt_sys_2",
+      "name": "Targeting System II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/TargetingSystemModuleDefinition.cs",
+      "target": "tracking_computer",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 300,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.4106666666666667,
+      "item_tag": "tgt_sys_2"
+    },
+    {
+      "resref": "tgt_sys_3",
+      "name": "Targeting System III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/TargetingSystemModuleDefinition.cs",
+      "target": "tracking_computer",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 400,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.508,
+      "item_tag": "tgt_sys_3"
+    },
+    {
+      "resref": "tgt_sys_4",
+      "name": "Targeting System IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/TargetingSystemModuleDefinition.cs",
+      "target": "tracking_computer",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 500,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.5664,
+      "item_tag": "tgt_sys_4"
+    },
+    {
+      "resref": "tgt_sys_b",
+      "name": "Basic Targeting System",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/TargetingSystemModuleDefinition.cs",
+      "target": "tracking_computer",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 100,
+      "new_reference_cost": 146,
+      "reclaim_fraction": 0.0,
+      "item_tag": "tgt_sys_b"
+    },
+    {
+      "resref": "therm_amp_1",
+      "name": "Thermal Amplifier I",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/DamageAmplifierModuleDefinition.cs",
+      "target": "output_amplifier",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 160,
+      "new_reference_cost": 232,
+      "reclaim_fraction": 0.0,
+      "item_tag": "therm_amp_1"
+    },
+    {
+      "resref": "therm_amp_2",
+      "name": "Thermal Amplifier II",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/DamageAmplifierModuleDefinition.cs",
+      "target": "output_amplifier",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 240,
+      "new_reference_cost": 232,
+      "reclaim_fraction": 0.02666666666666667,
+      "item_tag": "therm_amp_2"
+    },
+    {
+      "resref": "therm_amp_3",
+      "name": "Thermal Amplifier III",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/DamageAmplifierModuleDefinition.cs",
+      "target": "output_amplifier",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 320,
+      "new_reference_cost": 232,
+      "reclaim_fraction": 0.22000000000000003,
+      "item_tag": "therm_amp_3"
+    },
+    {
+      "resref": "therm_amp_4",
+      "name": "Thermal Amplifier IV",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/DamageAmplifierModuleDefinition.cs",
+      "target": "output_amplifier",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 400,
+      "new_reference_cost": 232,
+      "reclaim_fraction": 0.336,
+      "item_tag": "therm_amp_4"
+    },
+    {
+      "resref": "therm_amp_b",
+      "name": "Basic Thermal Amplifier",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/DamageAmplifierModuleDefinition.cs",
+      "target": "output_amplifier",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 80,
+      "new_reference_cost": 232,
+      "reclaim_fraction": 0.0,
+      "item_tag": "therm_amp_b"
+    },
+    {
+      "resref": "turbolas1",
+      "name": "Heavy Turbolaser Cannon",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/TurbolaserModuleDefinition.cs",
+      "target": "heavy_beam",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 457,
+      "reclaim_fraction": 0.72688,
+      "item_tag": "turbolas1"
+    },
+    {
+      "resref": "turbolas2",
+      "name": "Dual Turbolaser Cannon",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/TurbolaserModuleDefinition.cs",
+      "target": "heavy_beam",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 457,
+      "reclaim_fraction": 0.72688,
+      "item_tag": "turbolas2"
+    },
+    {
+      "resref": "turbolas3",
+      "name": "Quad Turbolaser Cannon",
+      "source": "SWLOR.Game.Server/Feature/ShipModuleDefinition/TurbolaserModuleDefinition.cs",
+      "target": "heavy_beam",
+      "conversion": "Preserve instance and original enhancement provenance; same sidegrade design for every old tier; bounded quality mapping; displaced fittings remain in sealed refit package.",
+      "old_reference_cost": 5000,
+      "new_reference_cost": 457,
+      "reclaim_fraction": 0.72688,
+      "item_tag": "turbolas3"
     }
   ]
 }

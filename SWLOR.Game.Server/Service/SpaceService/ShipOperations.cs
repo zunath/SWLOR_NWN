@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service.StatService;
 namespace SWLOR.Game.Server.Service.SpaceService
 {
     public sealed record ShipModuleOperation(ShipModuleProfile Profile, ShipModuleVariant Variant,
-        double Output, double Tracking, int CapacitorCost);
+        double Output, double Tracking, int CapacitorCost, double Accuracy = 0, int SupplyQuantity = 1, IReadOnlyDictionary<StatType,double> Temporary = null);
 
     public static class ShipOperations
     {
@@ -14,9 +14,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
             int perception = 10, IReadOnlyDictionary<StatType, double> temporary = null, ShipFittingCatalog catalog = null, ShipTemporarySources temporarySources = null)
         {
             catalog ??= ShipFittingCatalog.Default;
-            var profile = catalog.Modules[fitted.Design];
+            var encounter = status.EncounterProfile != null && fitted.Design == "npc_weapon";
+            var profile = encounter ? SpaceEncounterCatalog.Default.Weapon(status.EncounterProfile) : catalog.Modules[fitted.Design];
             if (fitted.Condition <= 0) throw new InvalidOperationException("That module needs servicing at a dock.");
-            var baseline = catalog.GetVariant(fitted.Design, fitted.Calibration);
+            var baseline = encounter ? SpaceEncounterCatalog.Default.Variant(status.EncounterProfile) : catalog.GetVariant(fitted.Design, fitted.Calibration);
             var variant = ShipModuleTuning.Refine(profile, baseline, fitted.QualityDimension, fitted.Quality);
             var quality = ShipModuleTuning.QualityCap * fitted.Quality / 100.0;
             double Temp(StatType stat) => temporarySources?.Net(stat) ?? temporary?.GetValueOrDefault(stat) ?? 0;
@@ -25,7 +26,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             double Bonus(StatType stat) => ShipFittedStats.Bonus(status, stat);
             double Penalty(StatType stat) => ShipFittedStats.Penalty(status, stat);
             var weapon = profile.Action == ShipModuleAction.Weapon;
-            var ordnance = weapon && profile.Mount == ShipMount.Ordnance;
+            var ordnance = weapon && profile.Family == "Ordnance";
             var external = profile.Action is ShipModuleAction.ShieldRepair or ShipModuleAction.HullRepair or ShipModuleAction.RepairField;
             var recovery = external || profile.Action is ShipModuleAction.SelfShieldRepair or ShipModuleAction.SelfHullRepair;
             var outputStat = weapon ? StatType.ShipWeaponOutput : StatType.ShipRecoveryOutput;
@@ -48,6 +49,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 temporaryOutput = Math.Max(temporaryOutput, TempPositive(StatType.ShipExternalRecoveryOutput));
                 temporaryPenalty += TempNegative(StatType.ShipExternalRecoveryOutput);
             }
+            if (recovery && !external)
+            {
+                permanent += Bonus(StatType.ShipSelfRecoveryOutput);
+                penalty += Penalty(StatType.ShipSelfRecoveryOutput);
+                temporaryOutput = Math.Max(temporaryOutput, TempPositive(StatType.ShipSelfRecoveryOutput));
+                temporaryPenalty += TempNegative(StatType.ShipSelfRecoveryOutput);
+            }
             var output = ShipModuleTuning.Output(profile.Output, baseline.Output, permanent,
                 penalty + temporaryPenalty, new[] { temporaryOutput });
             var trackingQuality = fitted.QualityDimension == ShipQualityDimension.Tracking ? quality : 0;
@@ -55,7 +63,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             var trackingBonus = Bonus(StatType.ShipTracking) + (ordnance ? Bonus(StatType.ShipOrdnanceTracking) : 0);
             var trackingPenalty = Penalty(StatType.ShipTracking) + (ordnance ? Penalty(StatType.ShipOrdnanceTracking) : 0);
             var tracking = Math.Max(0, profile.Tracking * (1 + Math.Min(.4, trackingBonus + trackingQuality + Math.Max(0, calibrationTracking))
-                - trackingPenalty - Math.Max(0, -calibrationTracking) + Math.Min(.3, TempPositive(StatType.ShipTracking)) - TempNegative(StatType.ShipTracking)));
+                - trackingPenalty - Math.Max(0, -calibrationTracking) + Math.Min(.3, Math.Max(TempPositive(StatType.ShipTracking), ordnance ? TempPositive(StatType.ShipOrdnanceTracking) : 0)) - TempNegative(StatType.ShipTracking) - (ordnance ? TempNegative(StatType.ShipOrdnanceTracking) : 0)));
             var demand = Bonus(StatType.ShipCapacitorDemand) + TempPositive(StatType.ShipCapacitorDemand) +
                 (weapon ? Bonus(StatType.ShipWeaponCapacitorDemand) + TempPositive(StatType.ShipWeaponCapacitorDemand) : 0);
             var demandDiscount = Penalty(StatType.ShipCapacitorDemand) + TempNegative(StatType.ShipCapacitorDemand) + (weapon ? Penalty(StatType.ShipWeaponCapacitorDemand) + TempNegative(StatType.ShipWeaponCapacitorDemand) : 0);
@@ -74,7 +82,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
             variant = variant with { Cycle = Math.Max(profile.Cycle * ShipModuleTuning.CycleFloor,
                 variant.Cycle + profile.Cycle * (Bonus(cycleStat) - Penalty(cycleStat) + Temp(cycleStat))) };
 
-            return new(profile, variant, output, tracking, cost);
+            var ammunition = profile.Ammunition == null ? 1 : Math.Max(1,(int)Math.Ceiling(1 + Bonus(StatType.ShipAmmunitionDemand) - Penalty(StatType.ShipAmmunitionDemand) + Temp(StatType.ShipAmmunitionDemand)));
+            return new(profile, variant, output, tracking, cost, Bonus(StatType.ShipAccuracy) - Penalty(StatType.ShipAccuracy) + Temp(StatType.ShipAccuracy), ammunition, ShipFittedStats.StatUnits.Keys.ToDictionary(x=>x,Temp));
         }
 
         public static double MovementSpeed(ShipStatus status, DateTime now)

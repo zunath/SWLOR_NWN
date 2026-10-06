@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void DefensiveModules()
         {
             _builder.Create(PerkCategoryType.Piloting, PerkType.DefensiveModules)
+                .Inactive()
                 .Name("Defensive Modules")
 
                 .AddPerkLevel()
@@ -59,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void EnergyManagement()
         {
             _builder.Create(PerkCategoryType.Piloting, PerkType.EnergyManagement)
+                .Inactive()
                 .Name("Energy Management")
 
                 .AddPerkLevel()
@@ -77,6 +79,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void IntuitivePiloting()
         {
             _builder.Create(PerkCategoryType.Piloting, PerkType.IntuitivePiloting)
+                .Inactive()
                 .Name("Intuitive Piloting")
 
                 .AddPerkLevel()
@@ -90,6 +93,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void MiningModules()
         {
             _builder.Create(PerkCategoryType.Piloting, PerkType.MiningModules)
+                .Inactive()
                 .Name("Mining Modules")
 
                 .AddPerkLevel()
@@ -122,6 +126,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void OffensiveModules()
         {
             _builder.Create(PerkCategoryType.Piloting, PerkType.OffensiveModules)
+                .Inactive()
                 .Name("Offensive Modules")
 
                 .AddPerkLevel()
@@ -154,6 +159,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void StarshipMining()
         {
             _builder.Create(PerkCategoryType.Piloting, PerkType.StarshipMining)
+                .Inactive()
                 .Name("Starship Mining")
 
                 .AddPerkLevel()
@@ -172,6 +178,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void Starships()
         {
             _builder.Create(PerkCategoryType.Piloting, PerkType.Starships)
+                .Inactive()
                 .Name("Starships")
 
                 .AddPerkLevel()

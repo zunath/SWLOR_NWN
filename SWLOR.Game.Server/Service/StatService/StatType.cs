@@ -6307,6 +6307,35 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenNegative, shipUnitsPerAmount: 10000)]
         ShipSalvageCycleDuration = 1140,
 
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipSelfRecoveryOutput = 1141,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipSalvageRecovery = 1142,
+
+        [StatType(StatTypeCategory.BeneficialWhenNegative, shipUnitsPerAmount: 10000)]
+        ShipAmmunitionDemand = 1143,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipSupportRecipients = 1144,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipSelectedRecovery = 1145,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipCommittedCycleSeconds = 1146,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipDiscoveryChance = 1147,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipExposedSystems = 1148,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipCommittedMovementLock = 1149,
+
+
+
 
     }
 

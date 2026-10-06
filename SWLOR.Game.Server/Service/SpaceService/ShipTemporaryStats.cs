@@ -5,7 +5,18 @@ using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
-    public sealed record ShipTemporaryAdjustment(StatType Stat, double Amount, DateTime ExpiresAt, string Family);
+    public sealed record ShipTemporaryAdjustment(StatType Stat, double Amount, DateTime ExpiresAt, string Family)
+    {
+        public IReadOnlyList<string> ModuleIds { get; init; }
+        public string TargetId { get; init; }
+        public string BenefactorId { get; init; }
+        public bool ConsumeOnPaidOperation { get; init; }
+        public bool SoftControl { get; init; }
+        public string Icon { get; init; }
+        public string Label { get; init; }
+        public string SelectedConstituent { get; init; }
+        public bool Matches(string moduleId, string targetId) => (ModuleIds == null || ModuleIds.Contains(moduleId)) && (TargetId == null || TargetId == targetId);
+    }
     public sealed record ShipControlWindow(DateTime StartedAt, int Applications);
     public sealed record ShipRecoveryReceipt(ShipResource Resource, double Amount, DateTime At);
 
@@ -16,11 +27,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
     public static class ShipTemporaryStats
     {
-        public static ShipTemporarySources Sources(ShipStatus status, DateTime now)
+        public static ShipTemporarySources Sources(ShipStatus status, DateTime now, string moduleId = null, string targetId = null, Func<string,bool> eligibleBenefactor = null)
         {
             status.TemporaryAdjustments.RemoveAll(x => x.ExpiresAt <= now);
             var positive = new Dictionary<StatType, double>(); var negative = new Dictionary<StatType, double>();
-            foreach (var group in status.TemporaryAdjustments.GroupBy(x => x.Stat))
+            var softImmune = status.TemporaryAdjustments.Any(x => x.Stat == StatType.ShipSoftControlImmunity && x.Amount > 0);
+            foreach (var group in status.TemporaryAdjustments.Where(x => x.Matches(moduleId, targetId) && (x.BenefactorId == null || eligibleBenefactor?.Invoke(x.BenefactorId)==true) && (!softImmune || !x.SoftControl)).GroupBy(x => x.Stat))
             {
                 if (Stat.GetStatTypeCategory(group.Key) == StatTypeCategory.BeneficialWhenNegative)
                 {
@@ -36,13 +48,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
             return new(positive, negative);
         }
 
-        public static IReadOnlyDictionary<StatType, double> Current(ShipStatus status, DateTime now)
+        public static IReadOnlyDictionary<StatType, double> Current(ShipStatus status, DateTime now, string moduleId = null, string targetId = null, Func<string,bool> eligibleBenefactor = null)
         {
-            var sources = Sources(status, now);
+            var sources = Sources(status, now, moduleId, targetId, eligibleBenefactor);
             return sources.Positive.Keys.Union(sources.Negative.Keys).ToDictionary(stat => stat, sources.Net);
         }
 
-        public static void Add(ShipStatus status, StatType stat, double amount, double seconds, string family, DateTime now)
+        public static void Add(ShipStatus status, StatType stat, double amount, double seconds, string family, DateTime now,
+            IReadOnlyList<string> moduleIds = null, string targetId = null, bool once = false, bool softControl = false,
+            string icon = null, string label = null, string selectedConstituent = null, string benefactorId = null)
         {
             if (!ShipFittedStats.StatUnits.ContainsKey(stat) || !double.IsFinite(amount) || !double.IsFinite(seconds) || seconds < 0 || string.IsNullOrEmpty(family))
                 throw new ArgumentException("Expected a finite declared ship adjustment and effect family.");
@@ -51,7 +65,14 @@ namespace SWLOR.Game.Server.Service.SpaceService
             var previous = status.TemporaryAdjustments.Where(x => x.Stat == stat && x.Family == family && x.ExpiresAt > now).ToArray();
             if (previous.Any(x => Math.Abs(x.Amount) > Math.Abs(amount))) return;
             status.TemporaryAdjustments.RemoveAll(x => x.Stat == stat && x.Family == family);
-            status.TemporaryAdjustments.Add(new(stat, amount, now.AddSeconds(seconds), family));
+            status.TemporaryAdjustments.Add(new(stat, amount, now.AddSeconds(seconds), family) { ModuleIds = moduleIds, TargetId = targetId,
+                ConsumeOnPaidOperation = once, SoftControl = softControl, BenefactorId = benefactorId, Icon = icon, Label = label, SelectedConstituent = selectedConstituent });
+        }
+
+        public static void ConsumePaidOperation(ShipStatus status, string moduleId, string targetId, DateTime now)
+        {
+            var families = status.TemporaryAdjustments.Where(x => x.ConsumeOnPaidOperation && x.ExpiresAt > now && x.Matches(moduleId,targetId)).Select(x=>x.Family).ToHashSet();
+            status.TemporaryAdjustments.RemoveAll(x=>x.ConsumeOnPaidOperation && families.Contains(x.Family));
         }
 
         public static double ControlDuration(ShipStatus target, string family, double duration, bool hard, DateTime now)

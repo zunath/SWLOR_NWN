@@ -4,6 +4,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
 {
     public class SpaceObjectDetail
     {
+        public string EncounterProfile { get; set; }
         public string ShipItemTag { get; set; }
 
         public List<string> HighPoweredModules { get; set; }

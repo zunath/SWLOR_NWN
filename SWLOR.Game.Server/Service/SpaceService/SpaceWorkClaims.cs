@@ -30,7 +30,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public bool CargoSettled { get; set; }
         public bool XPSettled { get; set; }
         public int BaseXP { get; set; }
-        public double ReservedCargo => Action == ShipModuleAction.Survey ? 0 : Action == ShipModuleAction.IntactSalvage ? 1 : Allocations.Values.Sum() * Recovery;
+        public double DiscoveryChance { get; init; }
+        public double ReservedCargo => (Action == ShipModuleAction.Survey ? 0 : Action == ShipModuleAction.IntactSalvage ? 1 : Allocations.Values.Sum() * Recovery) + (DiscoveryChance>0?1:0);
     }
 
     public static class SpaceWorkClaims
@@ -42,7 +43,19 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 Kind = profile.Hardness >= 100 ? SpaceSiteKind.Anomaly : SpaceSiteKind.Deposit, Hardness = profile.Hardness,
                 MaximumShips = profile.Ships, Stability = profile.Stability, Reserves = reserves, InitialReserves = new(reserves),
                 ExpiresAt = now.AddSeconds(profile.Lifetime), RespawnsAt = now.AddSeconds(profile.Lifetime + profile.Respawn),
-                NextHazardAt = profile.HazardSeconds > 0 ? now.AddSeconds(profile.HazardSeconds) : DateTime.MaxValue };
+                NextHazardAt = profile.HazardSeconds > 0 ? now.AddSeconds(profile.HazardSeconds) : DateTime.MaxValue,
+                HiddenResearchComponent = profile.Hardness >= 100 ? "space_precise" : null };
+        }
+
+        public static SpaceSite NewWreck(string id, string area, SpaceEncounterProfile profile, IEnumerable<string> participants, DateTime now)
+        {
+            var reserves = new Dictionary<string, double> { ["bulk"] = profile.BulkReserve, ["components"] = profile.ComponentAttempts };
+            return new() { Id = id, AreaResref = area, Generation = Guid.NewGuid().ToString(), Kind = SpaceSiteKind.Wreck,
+                Profile = profile.Name + " wreck", Blueprint = "space_wreck", MaximumShips = 4, Stability = 100,
+                Reserves = reserves, InitialReserves = new(reserves), Participants = participants.ToHashSet(),
+                ExclusiveUntil = now.AddSeconds(120), ExpiresAt = now.AddSeconds(600), RespawnsAt = DateTime.MaxValue,
+                NextHazardAt = DateTime.MaxValue, DifficultComponent = profile.Gunnery >= 35,
+                HiddenResearchComponent = profile.Gunnery >= 35 ? "space_precise" : null };
         }
 
         public static string Validate(SpaceSite site, string playerId, string shipId, ShipModuleOperation operation,
@@ -55,7 +68,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
             if (action == ShipModuleAction.Survey)
             {
                 var resolution = operation.Output + (bonuses?.GetValueOrDefault(StatType.ShipScannerResolution) ?? 0) + (temporary?.GetValueOrDefault(StatType.ShipScannerResolution) ?? 0);
-                if (site.Hardness >= 90 && resolution < (site.Hardness >= 100 ? 70 : 60)) return "The scanner cannot resolve this deep site yet.";
+                var requiredResolution=site.InitialReserves.Keys.Where(x=>SpaceIndustryCatalog.Default.Commodities.ContainsKey(x)).Select(x=>SpaceIndustryCatalog.Default.Commodities[x].Resolution).DefaultIfEmpty(0).Max();
+                if (resolution < requiredResolution) return $"This site requires scanner resolution {requiredResolution}.";
                 return site.Claims.Values.Any(x => x.PlayerId == playerId && x.Action == action && x.State == SpaceWorkState.Reserved) ? "A scan is already underway." : null;
             }
             if (action == ShipModuleAction.Extraction)
@@ -79,7 +93,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         public static double Recovery(ShipModuleOperation operation, IReadOnlyDictionary<StatType, double> bonuses, IReadOnlyDictionary<StatType, double> temporary) =>
-            Math.Clamp(operation.Variant.RecoveryFraction + (bonuses?.GetValueOrDefault(StatType.ShipResourceRecovery) ?? 0) + (temporary?.GetValueOrDefault(StatType.ShipResourceRecovery) ?? 0), 0, .95);
+            Math.Clamp(operation.Variant.RecoveryFraction + (bonuses?.GetValueOrDefault(StatType.ShipResourceRecovery) ?? 0) + (temporary?.GetValueOrDefault(StatType.ShipResourceRecovery) ?? 0)
+                + (operation.Profile.Action==ShipModuleAction.BulkSalvage ? (bonuses?.GetValueOrDefault(StatType.ShipSalvageRecovery)??0)+(temporary?.GetValueOrDefault(StatType.ShipSalvageRecovery)??0) : 0), 0, .95);
         public static double Removal(ShipModuleOperation operation, IReadOnlyDictionary<StatType, double> bonuses, IReadOnlyDictionary<StatType, double> temporary) =>
             ShipModuleTuning.Output(operation.Profile.Output, operation.Variant.Output,
                 Math.Max(0, bonuses?.GetValueOrDefault(StatType.ShipReserveRemoval) ?? 0),
@@ -90,7 +105,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         public static SpaceWorkClaim Reserve(SpaceSite site, string playerId, string shipId, string flightId, string moduleId,
             ShipModuleOperation operation, double freeCargo, DateTime now, IReadOnlyDictionary<StatType, double> bonuses = null,
-            IReadOnlyDictionary<StatType, double> temporary = null, double? channelSeconds = null)
+            IReadOnlyDictionary<StatType, double> temporary = null, double? channelSeconds = null, string selectedConstituent = null)
         {
             if (site == null) throw new InvalidOperationException("Select a finite deposit or salvage site.");
             if (site.Claims.Values.Any(x => x.State == SpaceWorkState.Reserved && x.ShipId == shipId && x.ModuleId == moduleId))
@@ -98,12 +113,27 @@ namespace SWLOR.Game.Server.Service.SpaceService
             var error = Validate(site, playerId, shipId, operation, freeCargo, now, bonuses, temporary);
             if (error != null) throw new InvalidOperationException(error);
             var action = operation.Profile.Action;
+            if (!site.DiscoveryDrawn && !string.IsNullOrWhiteSpace(site.HiddenResearchComponent) && (temporary?.GetValueOrDefault(StatType.ShipDiscoveryChance)??0)>0 && freeCargo < (action==ShipModuleAction.Survey?0:action==ShipModuleAction.IntactSalvage?1:Math.Min(AvailableReserves(site,action),Removal(operation,bonuses,temporary))*Recovery(operation,bonuses,temporary))+1-1e-9)
+                throw new InvalidOperationException("Reserve one cargo unit for possible research recovery.");
             var allocation = new Dictionary<string, double>();
             if (action != ShipModuleAction.Survey)
             {
                 var available = AvailableReserves(site, action);
                 var removed = Math.Min(available, action == ShipModuleAction.IntactSalvage ? 1 : Removal(operation, bonuses, temporary));
-                foreach (var key in site.Reserves.Keys.Where(k => action == ShipModuleAction.IntactSalvage ? k == "components" : action == ShipModuleAction.BulkSalvage ? k == "bulk" : k.StartsWith("ore_", StringComparison.Ordinal)).ToArray())
+                var selection=Math.Clamp(temporary?.GetValueOrDefault(StatType.ShipSelectedRecovery)??0,0,1);
+                if (selection>0 && action==ShipModuleAction.Extraction)
+                {
+                    if (!site.SurveyedBy.Contains(playerId) || string.IsNullOrEmpty(selectedConstituent) || !site.Reserves.ContainsKey(selectedConstituent) || !selectedConstituent.StartsWith("ore_",StringComparison.Ordinal))
+                        throw new InvalidOperationException("Select a constituent present in this surveyed site.");
+                    var selected=Math.Min(site.Reserves[selectedConstituent],removed*selection);
+                    var others=available-site.Reserves[selectedConstituent];
+                    if (removed-selected>others) selected=Math.Min(site.Reserves[selectedConstituent],removed-others);
+                    allocation[selectedConstituent]=selected;
+                    foreach (var key in site.Reserves.Keys.Where(k=>k!=selectedConstituent && k.StartsWith("ore_",StringComparison.Ordinal)).ToArray())
+                        allocation[key]=others>0?(removed-selected)*site.Reserves[key]/others:0;
+                    foreach (var (key,quantity) in allocation) site.Reserves[key]=Math.Max(0,site.Reserves[key]-quantity);
+                }
+                else foreach (var key in site.Reserves.Keys.Where(k => action == ShipModuleAction.IntactSalvage ? k == "components" : action == ShipModuleAction.BulkSalvage ? k == "bulk" : k.StartsWith("ore_", StringComparison.Ordinal)).ToArray())
                 {
                     var quantity = removed * site.Reserves[key] / available;
                     allocation[key] = quantity;
@@ -115,7 +145,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 Range = operation.Variant.Range, Allocations = allocation, Recovery = Recovery(operation, bonuses, temporary),
                 Resolution = operation.Output + (bonuses?.GetValueOrDefault(StatType.ShipScannerResolution) ?? 0) + (temporary?.GetValueOrDefault(StatType.ShipScannerResolution) ?? 0),
                 IntactChance = Math.Clamp(.35 + (bonuses?.GetValueOrDefault(StatType.ShipIntactSalvageChance) ?? 0) + (temporary?.GetValueOrDefault(StatType.ShipIntactSalvageChance) ?? 0), 0, .55),
-                StabilityCost = operation.Profile.MovementLock || operation.Profile.WorkingSpeedPenalty > 0 ? 2 : 1 };
+                StabilityCost = operation.Profile.MovementLock || operation.Profile.WorkingSpeedPenalty > 0 ? 2 : 1,
+                DiscoveryChance = !site.DiscoveryDrawn && !string.IsNullOrWhiteSpace(site.HiddenResearchComponent) ? Math.Clamp(temporary?.GetValueOrDefault(StatType.ShipDiscoveryChance)??0,0,.05) : 0 };
             site.Claims.Add(claim.Id, claim);
             return claim;
         }
@@ -130,9 +161,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
             return true;
         }
 
-        public static bool Complete(SpaceSite site, string claimId, DateTime now, double roll)
+        public static bool Complete(SpaceSite site, string claimId, DateTime now, double roll, double discoveryRoll = 1)
         {
             if (!double.IsFinite(roll) || roll < 0 || roll >= 1) throw new ArgumentOutOfRangeException(nameof(roll));
+            if (!double.IsFinite(discoveryRoll)||discoveryRoll<0||discoveryRoll>1) throw new ArgumentOutOfRangeException(nameof(discoveryRoll));
             if (!site.Claims.TryGetValue(claimId, out var claim) || claim.State != SpaceWorkState.Reserved || now < claim.CompletesAt) return false;
             if (claim.Generation != site.Generation || now >= site.ExpiresAt || now < site.VentsUntil)
             { Cancel(site, claimId); return false; }
@@ -156,6 +188,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
                     site.Stability = Math.Max(0, site.Stability - claim.StabilityCost);
                     if (site.Stability <= 20) site.VentsUntil = now.AddSeconds(10);
                 }
+            }
+            if (claim.DiscoveryChance>0 && !site.DiscoveryDrawn && !string.IsNullOrWhiteSpace(site.HiddenResearchComponent))
+            {
+                site.DiscoveryDrawn=true;
+                if (discoveryRoll<claim.DiscoveryChance) claim.Cargo[site.HiddenResearchComponent]=1;
             }
             claim.State = SpaceWorkState.Completed;
             return true;

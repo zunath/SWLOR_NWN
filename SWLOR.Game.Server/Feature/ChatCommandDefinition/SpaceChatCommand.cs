@@ -12,6 +12,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
             ExitSpaceCommand();
+            _builder.Create("cockpit").Description("Opens ship banks and prepared operating techniques.").Permissions(AuthorizationLevel.All)
+                .Action((user,target,location,args)=>
+                {
+                    if (!Space.IsPlayerInSpaceMode(user)){SendMessageToPC(user,"Use Operations in ship management while docked.");return;}
+                    var player=DB.Get<Entity.Player>(GetObjectUUID(user));
+                    Gui.TogglePlayerWindow(user,Service.GuiService.GuiWindowType.ShipCockpit,new Feature.GuiDefinition.Payload.ShipCockpitPayload(player.ActiveShipId));
+                });
 
             return _builder.Build();
         }

@@ -131,4 +131,37 @@ public class SpaceWorkClaimsTests
             new Dictionary<StatType, double> { [StatType.ShipIntactSalvageChance] = 1 });
         claim.IntactChance.Should().Be(.55);
     }
+    [Test]
+    public void SelectiveRecovery_ConsumesActualRareConstituentsAndCannotCreateAnExhaustedOne()
+    {
+        var site=Site();site.SurveyedBy.Add("operator");
+        var temporary=new Dictionary<StatType,double>{[StatType.ShipSelectedRecovery]=.8};
+        var first=SpaceWorkClaims.Reserve(site,"operator","ship","flight","one",Operation("precision_cutter"),100,Now,temporary:temporary,selectedConstituent:"ore_currian");
+        first.Allocations["ore_currian"].Should().BeApproximately(4.8,1e-9);
+        first.Allocations.Values.Sum().Should().BeApproximately(6,1e-9);
+        SpaceWorkClaims.Cancel(site,first.Id);
+        site.Reserves["ore_currian"]=2;
+        var scarce=SpaceWorkClaims.Reserve(site,"operator","ship","flight","two",Operation("precision_cutter"),100,Now,temporary:temporary,selectedConstituent:"ore_currian");
+        scarce.Allocations["ore_currian"].Should().Be(2);
+        site.Reserves["ore_currian"].Should().Be(0);
+        var exhausted=SpaceWorkClaims.Reserve(site,"operator","ship","flight","three",Operation("precision_cutter"),100,Now,temporary:temporary,selectedConstituent:"ore_currian");
+        exhausted.Allocations["ore_currian"].Should().Be(0);
+        exhausted.Allocations.Values.Sum().Should().BeApproximately(6,1e-9);
+    }
+    [Test]
+    public void AuthoredDiscovery_HasOneDrawPerObjectAcrossRepeatedScansAndRestart()
+    {
+        var site=Site(0);site.HiddenResearchComponent="authored_component";
+        var temporary=new Dictionary<StatType,double>{[StatType.ShipDiscoveryChance]=.05};
+        var first=SpaceWorkClaims.Reserve(site,"operator","ship","flight","scanner",Operation("survey_scanner"),1,Now,temporary:temporary,channelSeconds:15);
+        first.ReservedCargo.Should().Be(1);
+        SpaceWorkClaims.Complete(site,first.Id,Now.AddSeconds(14),.5,.01).Should().BeFalse();
+        SpaceWorkClaims.Complete(site,first.Id,Now.AddSeconds(15),.5,.01).Should().BeTrue();
+        first.Cargo["authored_component"].Should().Be(1);
+        site=JsonConvert.DeserializeObject<SpaceSite>(JsonConvert.SerializeObject(site))!;
+        var second=SpaceWorkClaims.Reserve(site,"operator","ship","flight","scanner",Operation("survey_scanner"),0,Now.AddSeconds(16),temporary:temporary);
+        second.ReservedCargo.Should().Be(0);
+        SpaceWorkClaims.Complete(site,second.Id,Now.AddSeconds(30),.5,.01).Should().BeTrue();
+        second.Cargo.Should().BeEmpty();second.BaseXP.Should().Be(0);
+    }
 }

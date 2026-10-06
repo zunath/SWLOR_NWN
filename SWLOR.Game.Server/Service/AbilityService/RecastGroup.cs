@@ -844,6 +844,71 @@ namespace SWLOR.Game.Server.Service.AbilityService
 
         [RecastGroup("Introduction", "Introduction", false)]
         Introduction = 521,
+        [RecastGroup("Ship Capstone", "Ship Capstone", true)]
+        ShipCapstone = 522,
+        [RecastGroup("Operating Mode", "Ship Mode", true)]
+        ShipMode = 523,
+        [RecastGroup("Intercept", "Intercept", true)]
+        ShipIntercept = 524,
+        [RecastGroup("Break Away", "Break Away", true)]
+        ShipBreakAway = 525,
+        [RecastGroup("Evasive Maneuver", "Evasive", true)]
+        ShipEvasiveManeuver = 526,
+        [RecastGroup("Efficient Transit", "Transit", true)]
+        ShipEfficientTransit = 527,
+        [RecastGroup("Hazard Run", "Hazard Run", true)]
+        ShipHazardRun = 528,
+        [RecastGroup("Emergency Escape", "Escape", true)]
+        ShipEmergencyEscape = 529,
+        [RecastGroup("Controlled Burst", "Burst", true)]
+        ShipControlledBurst = 530,
+        [RecastGroup("Tracking Solution", "Track Solution", true)]
+        ShipTrackingSolution = 531,
+        [RecastGroup("Exploit Opening", "Opening", true)]
+        ShipExploitOpening = 532,
+        [RecastGroup("Prepared Volley", "Volley", true)]
+        ShipPreparedVolley = 533,
+        [RecastGroup("Torpedo Run", "Torpedo Run", true)]
+        ShipTorpedoRun = 534,
+        [RecastGroup("Bombardment", "Bombardment", true)]
+        ShipBombardment = 535,
+        [RecastGroup("Emergency Repair", "Emergency Fix", true)]
+        ShipEmergencyRepair = 536,
+        [RecastGroup("Power Routing", "Power Routing", true)]
+        ShipPowerRouting = 537,
+        [RecastGroup("Shield Recovery", "Shield Recover", true)]
+        ShipShieldRecovery = 538,
+        [RecastGroup("Repair Link", "Repair Link", true)]
+        ShipRepairLink = 539,
+        [RecastGroup("Capacitor Transfer", "Cap Transfer", true)]
+        ShipCapacitorTransfer = 540,
+        [RecastGroup("Support Surge", "Support Surge", true)]
+        ShipSupportSurge = 541,
+        [RecastGroup("Deposit Analysis", "Deposit Scan", true)]
+        ShipDepositAnalysis = 542,
+        [RecastGroup("Anomaly Scan", "Anomaly Scan", true)]
+        ShipAnomalyScan = 543,
+        [RecastGroup("Route Survey", "Route Survey", true)]
+        ShipRouteSurvey = 544,
+        [RecastGroup("Target Analysis", "Target Analyze", true)]
+        ShipTargetAnalysis = 545,
+        [RecastGroup("Sensor Disruption", "Disruption", true)]
+        ShipSensorDisruption = 546,
+        [RecastGroup("Countermeasure Timing", "Counter Timing", true)]
+        ShipCountermeasureTiming = 547,
+        [RecastGroup("Precision Extraction", "Precision Mine", true)]
+        ShipPrecisionExtraction = 548,
+        [RecastGroup("Extraction Surge", "Mine Surge", true)]
+        ShipExtractionSurge = 549,
+        [RecastGroup("Selective Recovery", "Select Ore", true)]
+        ShipSelectiveRecovery = 550,
+        [RecastGroup("Careful Dismantling", "Dismantle", true)]
+        ShipCarefulDismantling = 551,
+        [RecastGroup("Recovery Sweep", "Sweep", true)]
+        ShipRecoverySweep = 552,
+        [RecastGroup("Cargo Handling", "Cargo Handling", true)]
+        ShipCargoHandling = 553,
+
     }
 
     public class RecastGroupAttribute : Attribute

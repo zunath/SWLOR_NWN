@@ -11,6 +11,12 @@ namespace SWLOR.Game.Server.Service.AbilityService
 {
     public class AbilityBuilder
     {
+        public AbilityBuilder ShipTechnique(SpaceService.ShipTechniqueProfile profile)
+        {
+            _activeAbility.ShipTechnique = profile ?? throw new ArgumentNullException(nameof(profile));
+            return this;
+        }
+
         private const Animation DefaultAnimationOverwriteCarrier = Animation.LoopingPause;
         private const string LoopingPauseSourceAnimationName = "pause1";
 

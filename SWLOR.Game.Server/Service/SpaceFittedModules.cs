@@ -31,17 +31,21 @@ namespace SWLOR.Game.Server.Service
             return ActivateFittedModule(activator, fitted.ItemInstanceId);
         }
 
-        public static bool ActivateFittedModule(uint activator, string moduleId)
+        public static bool ActivateFittedModule(uint activator, string moduleId) => ActivateResolvedFittedModule(activator,moduleId);
+
+        private static bool ActivateResolvedFittedModule(uint activator, string moduleId, ShipModuleOperation prepaid = null, bool sharesTechniqueCadence = false)
         {
             var status = GetShipStatus(activator);
             var fitted = status == null ? null : ShipFittedStats.Modules(status).FirstOrDefault(x => x.ItemInstanceId == moduleId);
             if (fitted == null || status.Hull <= 0) return false;
+            if(GetIsPC(activator)) RefreshOperatingBuild(activator,DB.Get<Entity.Player>(GetObjectUUID(activator)),status);
             var now = DateTime.UtcNow;
-            var temporary = ShipTemporaryStats.Current(status, now);
-            ShipModuleOperation operation;
-            try { operation = ShipOperations.Resolve(status, fitted, GetOperatingAttribute(activator, AbilityType.Perception), temporary, temporarySources: ShipTemporaryStats.Sources(status, now)); }
-            catch (InvalidOperationException ex) { SendMessageToPC(activator, ex.Message); return false; }
             var (target, targetStatus) = GetCurrentTarget(activator);
+            var targetId = GetIsObjectValid(target) ? GetObjectUUID(target) : null;
+            var temporary = ShipTemporaryStats.Current(status, now, moduleId, targetId);
+            ShipModuleOperation operation;
+            try { operation = prepaid ?? ShipOperations.Resolve(status, fitted, GetOperatingAttribute(activator, AbilityType.Perception), temporary, temporarySources: ShipTemporaryStats.Sources(status, now, moduleId, targetId)); }
+            catch (InvalidOperationException ex) { SendMessageToPC(activator, ex.Message); return false; }
             var action = operation.Profile.Action;
             if (action is ShipModuleAction.SelfShieldRepair or ShipModuleAction.SelfHullRepair or ShipModuleAction.RepairField or ShipModuleAction.FuelInjection or ShipModuleAction.Countermeasures or ShipModuleAction.Compression)
             { target = activator; targetStatus = status; }
@@ -52,11 +56,16 @@ namespace SWLOR.Game.Server.Service
                 valid && targetStatus != null && !hostile, valid && GetObjectType(target) == ObjectType.Placeable,
                 target == activator, valid ? GetDistanceBetween(activator, target) : 0,
                 GetOperatingSkills(activator).GetValueOrDefault(operation.Profile.OperatorSkill));
-            var error = ShipModuleActivationPolicy.Validate(status, fitted, operation, context, now, temporary);
+            var error = prepaid == null ? ShipModuleActivationPolicy.Validate(status, fitted, operation, context, now, temporary, sharesTechniqueCadence) : null;
             if (error != null) { SendMessageToPC(activator, error); return false; }
             if (action is ShipModuleAction.Survey or ShipModuleAction.Extraction or ShipModuleAction.BulkSalvage or ShipModuleAction.IntactSalvage or ShipModuleAction.Compression)
                 return StartIndustrialOperation(activator, target, fitted, operation, now);
-            ShipModuleActivationPolicy.Pay(status, fitted, operation, now);
+            if (prepaid == null)
+            {
+                ShipModuleActivationPolicy.Pay(status, fitted, operation, now);
+                ShipTemporaryStats.ConsumePaidOperation(status,moduleId,targetId,now);
+            }
+            if (action == ShipModuleAction.Weapon) TouchOperatingClock(activator, now, operation.Variant.Cycle);
             var activation = new ShipModuleActivation(Guid.NewGuid().ToString(), status.FlightId, GetObjectUUID(activator),
                 GetObjectUUID(target), moduleId, now, now.AddSeconds(operation.Profile.PreparationSeconds));
             status.PendingModuleActivations[activation.Id] = activation;
@@ -86,6 +95,7 @@ namespace SWLOR.Game.Server.Service
             var temporary = ShipTemporaryStats.Current(source, now);
             if (temporary.GetValueOrDefault(StatType.ShipActivationLock) > 0 ||
                 (operation.Profile.Action == ShipModuleAction.Weapon && temporary.GetValueOrDefault(StatType.ShipWeaponLock) > 0)) return;
+            temporary = operation.Temporary ?? temporary;
             var targetStatus = GetShipStatus(target);
             if (targetStatus == null || targetStatus.Hull <= 0) return;
             switch (operation.Profile.Action)
@@ -96,24 +106,25 @@ namespace SWLOR.Game.Server.Service
                 case ShipModuleAction.SelfHullRepair:
                 case ShipModuleAction.HullRepair:
                     if (target == activator || !(GetIsEnemy(target, activator) || GetIsEnemy(activator, target)))
-                        RestoreFittedResource(target, targetStatus, ShipResource.Hull, operation.Output, target != activator, now);
+                        RestoreFittedRecipients(activator,target,ShipResource.Hull,operation,temporary,now);
                     break;
                 case ShipModuleAction.SelfShieldRepair:
                 case ShipModuleAction.ShieldRepair:
                     if (target == activator || !(GetIsEnemy(target, activator) || GetIsEnemy(activator, target)))
-                        RestoreFittedResource(target, targetStatus, ShipResource.Shield, operation.Output, target != activator, now);
+                        RestoreFittedRecipients(activator,target,ShipResource.Shield,operation,temporary,now);
                     break;
                 case ShipModuleAction.RepairField:
                     var recipients = OperatingShipsInArea(activator).Where(x => GetDistanceBetween(activator, x) <= operation.Variant.Range &&
                         !(GetIsEnemy(x, activator) || GetIsEnemy(activator, x)) && GetShipStatus(x).Hull < GetShipStatus(x).MaxHull)
                         .OrderBy(x => (double)GetShipStatus(x).Hull / GetShipStatus(x).MaxHull).ThenBy(x => x).Take(3).ToArray();
-                    foreach (var recipient in recipients) RestoreFittedResource(recipient, GetShipStatus(recipient), ShipResource.Hull, operation.Output / recipients.Length, recipient != activator, now);
+                    foreach (var recipient in recipients) RestoreFittedResource(recipient, GetShipStatus(recipient), ShipResource.Hull, operation.Output / recipients.Length, recipient != activator, now, activator);
                     break;
                 case ShipModuleAction.CapacitorTransfer:
                     if (target != activator && !(GetIsEnemy(target, activator) || GetIsEnemy(activator, target)))
                     {
                         var efficiency = Math.Clamp(.8 + ShipFittedStats.Bonus(source, StatType.ShipTransferEfficiency) - ShipFittedStats.Penalty(source, StatType.ShipTransferEfficiency) + temporary.GetValueOrDefault(StatType.ShipTransferEfficiency), 0, .9);
-                        RestoreFittedResource(target, targetStatus, ShipResource.Capacitor, operation.CapacitorCost * efficiency, false, now);
+                        var received = RestoreFittedResource(target, targetStatus, ShipResource.Capacitor, operation.CapacitorCost * efficiency, false, now);
+                        RecordSpaceEnergy(activator, target, operation.CapacitorCost, received);
                     }
                     break;
                 case ShipModuleAction.FuelInjection:
@@ -137,16 +148,30 @@ namespace SWLOR.Game.Server.Service
             ExecuteScript("pc_target_upd", activator);
         }
 
+        private static void RestoreFittedRecipients(uint source,uint selected,ShipResource pool,ShipModuleOperation operation,IReadOnlyDictionary<StatType,double> effects,DateTime now)
+        {
+            var count=source==selected?1:Math.Clamp((int)effects.GetValueOrDefault(StatType.ShipSupportRecipients),1,3);
+            var recipients=count==1?new[]{selected}:OperatingShipsInArea(source).Where(x=>x!=source &&
+                !(GetIsEnemy(x,source)||GetIsEnemy(source,x)) && GetDistanceBetween(source,x)<=Math.Min(35,operation.Variant.Range) &&
+                ShipResources.Available(GetShipStatus(x),pool)<(pool==ShipResource.Hull?GetShipStatus(x).MaxHull:GetShipStatus(x).MaxShield))
+                .OrderBy(x=>x==selected?0:1).ThenBy(x=>x).Take(count).ToArray();
+            foreach(var recipient in recipients) RestoreFittedResource(recipient,GetShipStatus(recipient),pool,operation.Output/recipients.Length,recipient!=source,now,source);
+        }
+
         private static IEnumerable<uint> OperatingShipsInArea(uint source) =>
             _playersInSpace.Concat(_shipNPCs.Keys).Where(x => GetIsObjectValid(x) && GetArea(x) == GetArea(source) && GetShipStatus(x)?.Hull > 0);
 
         private static void FireFittedWeapon(uint source, uint target, ShipStatus attacker, ShipStatus defender, ShipModuleOperation operation, DateTime now)
         {
             var attackerEffects = ShipTemporaryStats.Current(attacker, now);
-            var defenderEffects = ShipTemporaryStats.Current(defender, now);
+            var defenderEffects = ShipTemporaryStats.Current(defender, now, eligibleBenefactor:id=>
+            {
+                var ally=GetObjectByUUID(id);
+                return GetIsObjectValid(ally) && !(GetIsEnemy(source,ally)||GetIsEnemy(ally,source));
+            });
             var tracking = operation.Tracking;
-            if (operation.Profile.Mount == ShipMount.Ordnance) tracking *= 1 - Math.Clamp(defenderEffects.GetValueOrDefault(StatType.ShipOrdnanceTrackingReduction), 0, .25);
-            var accuracy = ShipFittedStats.Bonus(attacker, StatType.ShipAccuracy) - ShipFittedStats.Penalty(attacker, StatType.ShipAccuracy) + attackerEffects.GetValueOrDefault(StatType.ShipAccuracy) + defenderEffects.GetValueOrDefault(StatType.ShipIncomingAccuracy);
+            if (operation.Profile.Family == "Ordnance") tracking *= 1 - Math.Clamp(defenderEffects.GetValueOrDefault(StatType.ShipOrdnanceTrackingReduction), 0, .25);
+            var accuracy = operation.Accuracy + defenderEffects.GetValueOrDefault(StatType.ShipIncomingAccuracy);
             var evasion = ShipFittedStats.Bonus(defender, StatType.ShipEvasion) - ShipFittedStats.Penalty(defender, StatType.ShipEvasion) + defenderEffects.GetValueOrDefault(StatType.ShipEvasion);
             var chance = ShipCombatMath.HitChance(GetOperatingSkills(source)[SkillType.Gunnery], GetOperatingSkills(target)[SkillType.Piloting],
                 GetOperatingAttribute(source, AbilityType.Perception), GetOperatingAttribute(target, AbilityType.Agility), accuracy, evasion, tracking,
@@ -159,7 +184,7 @@ namespace SWLOR.Game.Server.Service
             // The reference catalog specifies this red source-to-target bolt's arrival at distance / 50 seconds.
             AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2, !hit), target));
             Messaging.SendMessageNearbyToPlayers(target, receiver => Combat.BuildCombatLogMessage(receiver, source, target, hit ? 1 : 4, (int)Math.Round(chance * 100)), 60f);
-            if (!hit) return;
+            if (!hit) { RecordSpaceEvasion(source, target, attacker, operation.Output); return; }
             var sourceFlight = attacker.FlightId;
             var targetFlight = defender.FlightId;
             DelayCommand(GetDistanceBetween(source, target) / 50f, () =>
@@ -172,6 +197,11 @@ namespace SWLOR.Game.Server.Service
                 var incoming = 1 + ShipFittedStats.Bonus(current, StatType.ShipIncomingDamage) - ShipFittedStats.Penalty(current, StatType.ShipIncomingDamage) + effects.GetValueOrDefault(StatType.ShipIncomingDamage);
                 var damage = ApplyFittedShipDamage(source, target, operation.Output * Math.Max(0, incoming), operation.Profile.ShieldMultiplier, operation.Profile.HullMultiplier);
                 Enmity.ModifyEnmity(source, target, Math.Max(1, (int)Math.Ceiling(damage.Shield + damage.Hull)));
+                if (operation.Profile.OnHitWeaponLockSeconds > 0)
+                {
+                    var duration = ShipTemporaryStats.ControlDuration(current, "weapons disruption", operation.Profile.OnHitWeaponLockSeconds, true, DateTime.UtcNow);
+                    ShipTemporaryStats.Add(current, StatType.ShipWeaponLock, 1, duration, "weapons disruption", DateTime.UtcNow, label: "Weapons disrupted");
+                }
                 if (operation.Profile.OnHitCapacitorDamage > 0)
                 {
                     var mitigation = Math.Clamp(ShipFittedStats.Bonus(current, StatType.ShipCapacitorDamageMitigation) + effects.GetValueOrDefault(StatType.ShipCapacitorDamageMitigation), 0, 1);
@@ -180,7 +210,7 @@ namespace SWLOR.Game.Server.Service
                 if (operation.Profile.OnHitSpeedPenalty > 0 && effects.GetValueOrDefault(StatType.ShipSoftControlImmunity) <= 0)
                 {
                     var duration = ShipTemporaryStats.ControlDuration(current, "engine disruption", operation.Profile.OnHitControlSeconds, false, DateTime.UtcNow);
-                    ShipTemporaryStats.Add(current, StatType.ShipSpeed, -operation.Profile.OnHitSpeedPenalty, duration, "engine disruption", DateTime.UtcNow);
+                    ShipTemporaryStats.Add(current, StatType.ShipSpeed, -operation.Profile.OnHitSpeedPenalty, duration, "engine disruption", DateTime.UtcNow, softControl: true);
                     Stat.ApplyCreatureMovementRate(target);
                 }
                 PersistShipStatus(target, current);

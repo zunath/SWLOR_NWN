@@ -6,6 +6,14 @@ The numerical baseline is now specified before gameplay implementation. The Desi
 
 These are concrete design values, not a claim of completed live balance. Implementation uses this baseline; movement feel, encounter readability, real market prices, and economic demand remain release-validation work. Change a value through the same complete-fit and economy review rather than selecting unspecified numbers during implementation.
 
+## Current implementation status
+
+The feature branch implements horizontal hull fitting and conversion, calibrated and refined craft recipes, persistent equipment and cargo ownership, finite mining and survey channels, defeat recovery, all 170 operating perk ranks and native resources, banks, preparation, modes, and the cockpit. All 51 existing NPC identities now map to eight declared encounter roles; AI uses the shared hit/range/capacitor rules and finite ordnance. Independent encounter contribution has one credit/XP ledger, suppresses legacy death rewards, and creates finite participant-owned wrecks. Recovery support consumes actual hostile-damage debt; energy support receives at most 10% of the Systems pool. Channels, journal recovery, and paid activations have focused regression coverage.
+
+Temporary bonuses declare the hardware instances and, where required, the selected target they affect. Next-cycle effects are consumed only when the corresponding hardware operation is accepted and paid. A failed eligibility or supply check retains the effect. Permanent and temporary stat sources share the published caps; their negative tradeoffs remain. Break Away suppresses soft control slows while preserving hard control and preparation penalties. Fleet Stabilization divides each paid projector output among at most three eligible allies within both 35m and that projector's fitted range; it does not multiply one module's recovery budget. Deep Survey, Deep-Core Extraction and Specialist Recovery start their declared 15s, 20s and 25s finite channels directly. Both the technique cost and ordinary hardware cost are checked before the commitment, and the selected compatible tool pays its normal activation charge. Target Analysis shares its accuracy signal only with the declaring operator’s allies. Selective Recovery consumes actual selected reserves, so an exhausted constituent cannot be recreated.
+
+Finite sites, durable cargo transfers, mining and survey work, bounded operating XP, fitted weapon/support activation, dock service and safe ship defeat recovery are connected. The full contract/activity rollout, starter/vendor/research integration and the persistent migration entry point still require implementation. Live NWN boot, cockpit rendering, movement feel, native inventory/payment crash recovery and multi-actor economy checks remain release validation. Offline tests and the numerical audit do not claim those engine results.
+
 ## Numerical baseline before implementation
 
 The [Design Bible](../../design/bible/SWLOR%20Design%20Bible%20-%20Combat%20Upgrade.xlsx) carries the full specification. The principal values are:
@@ -45,7 +53,7 @@ The initial model checks representative fits, legal character budgets, role adva
 | Industrial explorer with ground defense | 360 ranks, 210/370 SP, including 80 SP of space specializations, 60 ground weapon SP, and 70 other-ground SP. |
 | Support captain and ground specialist | 330 ranks, 209/340 SP, including 49 space SP, 60 ground weapon SP, and 100 other-ground SP. |
 
-The Bible retains current implementation records and labels all replacement tables as planned. Cross-references on Piloting, Starships, and Engineering direct readers to the replacement. The conversion table maps all 26 current hulls and 143 identified legacy modules/configurations and four separately retained consumables, including obtainable recipe outputs. No gameplay implementation begins until the numerical audit, workbook parity, conversion coverage, and the existing Bible regression checks pass.
+The Bible preserves legacy records for conversion reference. Cross-references on Piloting, Starships, and Engineering direct readers to the replacement tables and their current implementation status. The conversion table maps all 26 current hulls and 143 identified legacy modules/configurations and four separately retained consumables, including obtainable recipe outputs. No gameplay implementation begins until the numerical audit, workbook parity, conversion coverage, and the existing Bible regression checks pass.
 
 ## Player-facing overview
 

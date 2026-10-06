@@ -175,6 +175,27 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("Espionage - Tradecraft", true)]
         EspionageTradecraft = 60,
+        [PerkCategory("Combat Pilot", true)]
+        ShipCombatPilot = 61,
+        [PerkCategory("Expedition Pilot", true)]
+        ShipExpeditionPilot = 62,
+        [PerkCategory("Gunnery - Precision Gunnery", true)]
+        ShipPrecisionGunnery = 63,
+        [PerkCategory("Gunnery - Heavy Ordnance", true)]
+        ShipHeavyOrdnance = 64,
+        [PerkCategory("Ship Systems - Defensive Systems", true)]
+        ShipDefensiveSystems = 65,
+        [PerkCategory("Ship Systems - Fleet Support", true)]
+        ShipFleetSupport = 66,
+        [PerkCategory("Astrometrics - Surveying", true)]
+        ShipSurveying = 67,
+        [PerkCategory("Astrometrics - Electronic Warfare", true)]
+        ShipElectronicWarfare = 68,
+        [PerkCategory("Space Industry - Extraction", true)]
+        ShipExtraction = 69,
+        [PerkCategory("Space Industry - Salvage and Logistics", true)]
+        ShipSalvageandLogistics = 70,
+
     }
 
     public class PerkCategoryAttribute : Attribute

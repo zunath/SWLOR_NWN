@@ -80,6 +80,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         [JsonProperty("working_speed_penalty")] public double WorkingSpeedPenalty { get; init; }
         [JsonProperty("on_hit_speed_penalty")] public double OnHitSpeedPenalty { get; init; }
         [JsonProperty("on_hit_control_seconds")] public double OnHitControlSeconds { get; init; }
+        [JsonProperty("on_hit_weapon_lock_seconds")] public double OnHitWeaponLockSeconds { get; init; }
         [JsonProperty("on_hit_capacitor_damage")] public double OnHitCapacitorDamage { get; init; }
         [JsonProperty("discount_stat"), JsonConverter(typeof(StringEnumConverter))] public StatType DiscountStat { get; init; }
         [JsonProperty("range_stat"), JsonConverter(typeof(StringEnumConverter))] public StatType? RangeStat { get; init; }

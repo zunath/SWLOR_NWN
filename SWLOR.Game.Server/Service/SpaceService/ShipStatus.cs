@@ -23,7 +23,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public string LastDefeatFlightId { get; set; }
         public int OutstandingRecoveryCredits { get; set; }
         public ShipDockPayment PendingDockPayment { get; set; }
+        public Dictionary<string, SpaceHostileDamageDebt> HostileDamageDebt { get; set; } = new();
+        public string EncounterProfile { get; set; }
+        public int NextEncounterWeapon { get; set; }
         public string FlightId { get; set; }
+        public string CommittedLegId { get; set; }
+        public string OperatorBuildSignature { get; set; }
         public Dictionary<string, ShipCargoTransfer> PendingCargoTransfers { get; set; } = new();
         public Dictionary<string, ShipCargoLot> Cargo { get; set; } = new();
         public HashSet<string> PaidWorkClaims { get; set; } = new();

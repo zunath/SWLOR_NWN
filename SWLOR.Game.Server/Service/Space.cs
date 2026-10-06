@@ -78,6 +78,7 @@ namespace SWLOR.Game.Server.Service
             if (!IsPlayerInSpaceMode(player))
                 return;
 
+            Gui.ClosePlayerWindow(player,GuiWindowType.ShipCockpit);
             CloneShip(player);
 
             if (_playersInSpace.Contains(player))
@@ -693,6 +694,7 @@ namespace SWLOR.Game.Server.Service
             Stat.ApplyCreatureMovementRate(player);
 
             dbPlayerShip.Status.FlightId = Guid.NewGuid().ToString();
+            dbPlayerShip.Status.HostileDamageDebt.Clear();
             dbPlayerShip.Status.PendingModuleActivations.Clear();
 
             // Set active ship Id and serialize the player's hot bar.
@@ -791,6 +793,8 @@ namespace SWLOR.Game.Server.Service
             if(!_playersInSpace.Contains(player))
                 _playersInSpace.Add(player);
 
+            Gui.ClosePlayerWindow(player,GuiWindowType.ShipCockpit);
+            Gui.TogglePlayerWindow(player,GuiWindowType.ShipCockpit,new Feature.GuiDefinition.Payload.ShipCockpitPayload(shipId));
             ExecuteScript("space_enter", player);
         }
 
@@ -1352,6 +1356,7 @@ namespace SWLOR.Game.Server.Service
                 var dbPlayer = DB.Get<Player>(playerId);
                 var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
 
+                RefreshOperatingBuild(player,dbPlayer,dbShip.Status);
                 ApplyAutoShipRecovery(player, dbShip.Status);
 
                 // Update changes
@@ -1468,6 +1473,17 @@ namespace SWLOR.Game.Server.Service
             if (!_spaceObjects.ContainsKey(creatureTag)) return;
 
             var registeredEnemyType = _spaceObjects[creatureTag];
+            if (registeredEnemyType.EncounterProfile != null)
+            {
+                var binding = SpaceEncounterCatalog.Default.Bindings[creatureTag];
+                var status = SpaceEncounterCatalog.Default.CreateStatus(binding, Guid.NewGuid().ToString());
+                _shipNPCs[creature] = status;
+                SetLocalString(creature, "SPACE_ENCOUNTER_ID", status.FlightId);
+                if (GetGold(creature) > 0) TakeGoldFromCreature(GetGold(creature), creature);
+                Stat.ApplyCreatureMovementRate(creature);
+                RegisterSpaceEncounter(creature, status);
+                return;
+            }
             var shipDetail = _shipTypes[registeredEnemyType.ShipItemTag];
 
             var shipStatus = new ShipStatus
@@ -2044,13 +2060,20 @@ namespace SWLOR.Game.Server.Service
         {
             var now = DateTime.UtcNow;
 
-            foreach (var (creature, shipStatus) in _shipNPCs)
+            foreach (var (creature, shipStatus) in _shipNPCs.ToArray())
             {
+                if (!GetIsObjectValid(creature) || GetIsDead(creature) || shipStatus.Hull <= 0) continue;
                 ApplyAutoShipRecovery(creature, shipStatus);
 
                 // Determine target
                 var target = Enmity.GetHighestEnmityTarget(creature);
                 if (!GetIsObjectValid(target)) continue;
+
+                if (shipStatus.EncounterProfile != null)
+                {
+                    ProcessEncounterAI(creature, target, shipStatus, now);
+                    continue;
+                }
 
                 // Determine which modules are available.
                 var highModules = shipStatus.HighPowerModules.Where(x =>
@@ -2143,7 +2166,7 @@ namespace SWLOR.Game.Server.Service
             var tag = GetTag(self);
 
             // Space object not registered with the system.
-            if (!_spaceObjects.ContainsKey(tag)) return;
+            if (!_spaceObjects.ContainsKey(tag) && GetIndustrySite(self) == null) return;
 
             // Register this instance into the cache.
             if (!_spaceObjectInstances.ContainsKey(self))
@@ -2200,8 +2223,8 @@ namespace SWLOR.Game.Server.Service
             {
                 dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition);
 
-                dbShip.Status.Shield = 0;
-                dbShip.Status.Hull = 1;
+                if (dbShip.Status.FittingVersion == ShipFittingConversion.CurrentVersion) ShipRecovery.Defeat(dbShip.Status);
+                else { dbShip.Status.Shield = 0; dbShip.Status.Hull = 1; }
 
                 DB.Set(dbProperty);
                 DB.Set(dbShip);

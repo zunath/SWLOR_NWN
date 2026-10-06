@@ -1492,6 +1492,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             catch (InvalidOperationException error) { SendMessageToPC(Player, error.Message); }
         }
 
+        public Action OnClickCockpit() => () =>
+        {
+            if (SelectedShipIndex<0||SelectedShipIndex>=_shipIds.Count)return;
+            Gui.TogglePlayerWindow(Player,GuiWindowType.ShipCockpit,new ShipCockpitPayload(_shipIds[SelectedShipIndex]));
+        };
+
         public Action OnClickCargo() => () =>
         {
             if (SelectedShipIndex < 0 || SelectedShipIndex >= _shipIds.Count) return;

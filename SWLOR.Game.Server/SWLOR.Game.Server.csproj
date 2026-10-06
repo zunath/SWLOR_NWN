@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -36,6 +36,8 @@
     <EmbeddedResource Include="ConversationData\**\*.conversation.json" />
     <EmbeddedResource Include="Data\ShipFitting.json" LogicalName="SWLOR.ShipFitting.json" />
     <EmbeddedResource Include="Data\SpaceIndustry.json" LogicalName="SWLOR.SpaceIndustry.json" />
+    <EmbeddedResource Include="Data\ShipTechniques.json" LogicalName="SWLOR.ShipTechniques.json" />
+    <EmbeddedResource Include="Data\SpaceEncounters.json" LogicalName="SWLOR.SpaceEncounters.json" />
   </ItemGroup>
 
   <Target Name="NWN" AfterTargets="Build">

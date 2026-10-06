@@ -422,6 +422,8 @@ def add_activities(data):
 def build_data():
     data = specifications()
     add_perks(data)
+    from ShipOperatingPerks import metadata
+    data["operating_perks"] = [metadata(row) for row in data["perks"]]
     add_industry(data)
     add_activities(data)
     data["rules"].extend([
@@ -438,9 +440,13 @@ def build_data():
     npc_parameters=[(60,1,110,40,28),(90,2,100,45,28),(120,2,65,65,32),(120,2,110,40,28),(150,2,60,100,38),(130,2,85,50,30),(260,3,35,140,40),(500,5,35,160,45)]
     for enemy,values in zip(data["encounters"],npc_parameters,strict=True):
         enemy.update(record("capacitor_pool weapons tracking resolution range",values))
+    from SpaceEncounterProfiles import expand
+    data["encounter_bindings"]=expand(data["encounters"])
     data["activity_rules"].extend([
         ("NPC fixtures", "Space Encounters lists explicit NPC-only weapon fixtures, pools, tracking and range. Use the same hit/cost/range validation; register their declared stats and flag their equipment NO_ECONOMY rather than exposing it as craftable player loot."),
         ("NPC encounter reward pool", "The listed credit reference is included inside the activity wallet. Independent uncontracted kills use that finite spawned encounter's listed reference once; NPC resource/recovery timers cannot reset by breaking combat."),
+        ("NPC execution", "Encounter profiles retain creature identities and use the declared per-weapon output without a second mastery multiplier. Hull resistance is the listed rating; shield resistance0. Interceptor Agility26, other NPC operating attributes10. Advanced bomber starts with20 heavy-missile rounds/weapon; no replenishment. Electronic raider telegraph2s; fleet3s. Their on-hit activation lock uses the listed2/3 seconds and the shared20s control window. Electronic/heavy/fleet shields depleted by hostile damage expose systems for8s. Virtual NPC fixtures have no obtainable item blueprint."),
+        ("Uncontracted contribution", "Spawn reward XP shares:25% Piloting for actual hostile evasion/received damage,65% Gunnery for actual finite hostile damage,10% Systems for recovery of recorded hostile damage. Empty shares remain unearned. Credits split by legitimate encounter participation. Killing or reopening the same encounter cannot pay twice."),
         ("NPC module mix", "Starter profiles use one bank; routine/advanced two weapons and a situational utility where indicated; elite/fleet3/5 weapons. Values are per weapon, each paying its listed capacitor. No automatic infinite ammunition or capacitor refill; authored resupply consumes encounter reserve once."),
     ])
     data["recipe_rules"].extend([
@@ -889,6 +895,12 @@ def tables(data,report):
     add("Space Skills",["Skill","Max rank","SP per specialization","Specialization A","Specialization B","Responsibility","XP contribution"],[[s["name"],50,40,s["first"],s["second"],s["responsibility"],s["xp"]] for s in data["skills"]],[20,10,12,24,24,65,65])
     add("Space Rules",["Rule","Value","Units","Description"],[[r["name"],r["value"],r["units"],r["description"]] for r in data["rules"]],[32,70,24,92])
     add("Space Perks",["Skill","Style","Perk Name","Type","Rank","Skill requirement","SP Price","Magnitude","Units","Capacitor","Cooldown seconds","Hardware and limits","Description"],[[p[k] for k in ("skill","style","name","kind","rank","skill_rank","price","magnitude","units","capacitor","cooldown","hardware","description")] for p in data["perks"]],[18,22,30,12,8,11,9,11,48,11,13,72,92])
+    operating_rows=[]
+    for p in data["operating_perks"]:
+        stats="; ".join(f"{stat}: {amount:+g}" for stat,amount in p["stats"].items())
+        effects="; ".join(f"{effect['stat']}: {effect['amount']:+g} / {effect['seconds']:g}s / {effect['scope']}"+(" / next paid cycle" if effect['once'] else "")+(" / caster allies only" if effect.get('allies_only') else "") for effect in p["effects"])
+        operating_rows.append([p["key"],p["name"],p["rank"],p["target"],p["range"] or "Fitted hardware",p["bank"]," / ".join(p["actions"])," / ".join(p["designs"]) or "Compatible action",stats,effects,p["preparation"],p["channel"],p["min_signature"],p["paid_leg"],p["discovery"]])
+    add("Space Operating Contracts",["Perk ID","Name","Rank","Target rule","Range m","Selected bank","Hardware operations","Specific designs","Permanent stats (fractions or flat)","Temporary stats, duration and scope","Telegraph seconds","Committed hardware channel seconds","Minimum target signature","Paid leg required","Authored discovery draw eligible"],operating_rows,[30,30,8,24,20,12,50,55,70,100,14,18,17,16,20])
     add("Space Hulls",["Existing ID","Hull","Role","Piloting","High slots","Low slots","Fitting power","Hull HP","Shield HP","Capacitor","Capacitor per second","Shield per second out of combat","Speed multiplier","Signature","Cargo units","Hull resistance","Reference credits","Mount compatibility"],[[h[k] for k in "id name role piloting high low power hull shield capacitor cap_regen shield_regen speed signature cargo resistance value mount".split()] for h in data["hulls"]],[26,30,24,10,9,9,12,10,10,12,13,17,12,11,12,12,14,40])
     module_rows=[]
     for m in data["modules"]:
@@ -923,6 +935,7 @@ def tables(data,report):
     add("Space Industry Rules",["Rule","Description"],[[k,v] for k,v in data["industry_rules"]],[32,112])
     add("Space Industry Benchmarks",["Activity","Complete fit","Cargo returned units","Capacity units","Work and vents seconds","Travel and other overhead seconds","Total trip budget seconds","Material reference value","Physical balance checks"],[[r[k] for k in "activity build cargo capacity working_seconds overhead_seconds trip_seconds material_reference notes".split()] for r in report["industry"]],[32,88,18,16,21,25,23,22,110])
     encounter_rows=[[e[k] for k in "name hull shield resistance speed signature gunnery piloting damage cycle capacitor regen accuracy reward_credit xp_pool control_seconds capacitor_pool weapons tracking resolution range".split()] for e in data["encounters"]]
+    add("Space Encounter Bindings",["Existing creature tag","Existing ship identity","Encounter profile","Preserved name"],[[r[k] for k in ["tag","ship","profile","name"]] for r in data["encounter_bindings"]],[24,28,32,55])
     add("Space Encounters",["Enemy profile","Hull HP","Shield HP","Hull resistance","Speed","Signature","Gunnery","Piloting","Weapon output","Cycle seconds","Weapon cost","Cap regen per second","Accuracy bonus","Included credit reference","Finite XP pool","Hard control seconds","Capacitor pool","Weapons","Tracking","Resolution","Range m"],encounter_rows,[28,11,11,14,11,12,11,11,13,13,13,16,14,17,15,15,16,12,12,12,12])
     economy_by_name={r["name"]:r for r in report["economy"]}
     activity_rows=[]
@@ -1106,11 +1119,20 @@ def write_workbook(data,report):
     changed["xl/_rels/workbook.xml.rels"]=relationships.encode("utf-8")
     changed["[Content_Types].xml"]=content_types.encode("utf-8")
     # Narrow cross-references direct readers away from obsolete planning data.
-    refs={"Piloting":("B3","Ability to pilot starships. Current legacy perks remain implemented; planned replacement: Space Skills, Space Perks, Space Rules."),"Starships":("A1","Current hulls; planned replacement in Space Hulls and Space Conversion"),"Engineering":("B3","Ability to create starships, modules, droids, and other electronic & mechanical items. Attributes do not affect crafting Control, Craftsmanship, or CP. Planned space recipes and tuning: Space Recipes and Space Craft Rules.")}
+    refs={"Piloting":("B3","Pilot ship movement and hazards. Space Skills, Space Perks and Space Operating Contracts define the replacement progression. Legacy tier unlock perks are retired through the full character rebuild."),"Starships":("A1","Current hull identities with horizontal role profiles in Space Hulls and persistent conversion in Space Conversion"),"Engineering":("B3","Ability to create starships, modules, droids, and other electronic & mechanical items. Attributes do not affect crafting Control, Craftsmanship, or CP. Ship Manufacturing licenses the implemented space recipes and bounded tuning in Space Craft Recipes and Space Craft Rules.")}
     for tab,(cell,text) in refs.items():
         path=paths[tab];xml=original[path].decode("utf-8")
         changed[path]=replace_reference_cell(xml,cell,text,styles["text"]).encode("utf-8")
     exceptions={(name,cell) for name,(cell,_) in refs.items()}
+    # Add licenses to existing blank Engineering cells without changing inherited formulas.
+    path=paths["Engineering"];xml=changed[path].decode("utf-8")
+    descriptions=["Manufacture ship equipment with Engineering requirements below 10. Operating skills are separate.","Manufacture ship equipment with Engineering requirements below 20.","Manufacture ship equipment with Engineering requirements below 35.","Manufacture ship equipment with Engineering requirements below 45.","Manufacture every ship recipe through Engineering rank 50."]
+    for rank,(gate,description) in enumerate(zip([2,10,20,35,45],descriptions),1):
+        row=15+rank
+        values={"A":"Manufacturing","B":str(rank),"C":"Ship Manufacturing "+["I","II","III","IV","V"][rank-1],"D":"Engineering "+str(gate),"E":"All","F":"Trait","G":description,"H":"None","I":"None","J":"Legacy Noncombat","K":"-","L":"-","M":"Implemented"}
+        for column,value in values.items():
+            cell=column+str(row);xml=replace_reference_cell(xml,cell,value,styles["text"]);exceptions.add(("Engineering",cell))
+    changed[path]=xml.encode("utf-8")
     inherited_paths={name:path for name,path in paths.items() if path in original and path not in existing_space_paths}
     before_cells=cell_snapshot(original,inherited_paths,exceptions)
     temporary=BIBLE.with_suffix(".space-tmp.xlsx")

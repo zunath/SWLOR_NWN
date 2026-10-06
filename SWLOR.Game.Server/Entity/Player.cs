@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Entity
     {
         public Dictionary<string, DateTime> SkillXPReceipts { get; set; } = new();
         public Service.SpaceService.SpaceExperienceLedger SpaceExperience { get; set; } = new();
+        public Service.SpaceService.ShipOperatingState ShipOperations { get; set; } = new();
         public const int DefaultOutfitSlotLimit = 25;
         public const int DefaultDisguiseSlotLimit = 1;
         public const int DefaultMarketListingLimit = 25;

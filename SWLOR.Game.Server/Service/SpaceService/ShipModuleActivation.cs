@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
     public static class ShipModuleActivationPolicy
     {
         public static string Validate(ShipStatus status, ShipStatus.ShipStatusModule fitted, ShipModuleOperation operation,
-            ShipActivationContext context, DateTime now, IReadOnlyDictionary<StatType, double> temporary = null)
+            ShipActivationContext context, DateTime now, IReadOnlyDictionary<StatType, double> temporary = null, bool sharesTechniqueCadence = false)
         {
             double Temp(StatType stat) => temporary?.GetValueOrDefault(stat) ?? 0;
             var action = operation.Profile.Action;
@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             if (context.OperatorRank < operation.Profile.OperatorRank) return $"Requires {operation.Profile.OperatorRank} {operation.Profile.OperatorSkill} ranks.";
             if (action == ShipModuleAction.Passive) return "That fitting operates automatically.";
             if (Temp(StatType.ShipActivationLock) > 0 || (action == ShipModuleAction.Weapon && Temp(StatType.ShipWeaponLock) > 0)) return "The ship cannot activate that module yet.";
-            if (status.GlobalRecast > now || fitted.RecastTime > now) return "That module is not ready.";
+            if ((!sharesTechniqueCadence && status.GlobalRecast > now) || fitted.RecastTime > now) return "That module is not ready.";
             if (ShipResources.Available(status, ShipResource.Capacitor) + 1e-9 < operation.CapacitorCost) return $"Requires {operation.CapacitorCost} capacitor.";
             var self = action is ShipModuleAction.SelfShieldRepair or ShipModuleAction.SelfHullRepair or ShipModuleAction.FuelInjection or ShipModuleAction.Countermeasures or ShipModuleAction.Compression or ShipModuleAction.RepairField;
             if (!self)
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 else if (!context.Site) return "Select a deposit, anomaly, or salvage site.";
             }
             var supply = Supply(operation.Profile);
-            if (supply != null && ShipCargo.Amount(status, supply) < 1) return $"Load {supply} into the ship's hold at a dock first.";
+            if (supply != null && ShipCargo.Amount(status, supply) < operation.SupplyQuantity) return $"Load {supply} into the ship's hold at a dock first.";
             return null;
         }
 
@@ -55,8 +55,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         {
             if (ShipResources.Available(status, ShipResource.Capacitor) + 1e-9 < operation.CapacitorCost) throw new InvalidOperationException("Insufficient capacitor.");
             var supply = Supply(operation.Profile);
-            if (supply != null && ShipCargo.Amount(status, supply) < 1) throw new InvalidOperationException("Insufficient loaded supplies.");
-            if (supply != null) ShipCargo.Consume(status, supply, 1);
+            if (supply != null && ShipCargo.Amount(status, supply) < operation.SupplyQuantity) throw new InvalidOperationException("Insufficient loaded supplies.");
+            if (supply != null) ShipCargo.Consume(status, supply, operation.SupplyQuantity);
             ShipResources.SpendPrecise(status, ShipResource.Capacitor, operation.CapacitorCost);
             fitted.RecastTime = now.AddSeconds(operation.Variant.Cycle);
             status.GlobalRecast = now.AddSeconds(1);

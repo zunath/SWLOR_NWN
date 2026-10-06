@@ -60,6 +60,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public string ImpactAnimationReplacementAnimationName { get; set; }
         public float ImpactAnimationRestoreDelaySeconds { get; set; }
         public bool CanBeUsedInSpace { get; set; }
+        public SpaceService.ShipTechniqueProfile ShipTechnique { get; set; }
         public float MaxRange { get; set; }
         public bool IsHostileAbility { get; set; }
         /// <summary>

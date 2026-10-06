@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             var price = HullRecoveryPrice(status, catalog);
             status.OutstandingRecoveryCredits = checked(status.OutstandingRecoveryCredits + price);
             status.LastDefeatFlightId = status.FlightId;
-            status.PendingModuleActivations.Clear(); status.TemporaryAdjustments.Clear();
+            status.PendingModuleActivations.Clear(); status.TemporaryAdjustments.Clear(); status.HostileDamageDebt.Clear();
             status.Hull = 1; status.Shield = 0; status.Capacitor = 0;
             status.FractionalResourceDeficits.Clear();
             status.ResourceDeficits = ShipResourceDeficits.Capture(status);
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static void CompleteDockService(ShipStatus status)
         {
             foreach (var module in ShipFittedStats.Modules(status).Concat(status.ConfigurationModules.Values)) module.Condition = 100;
-            status.OutstandingRecoveryCredits = 0;
+            status.OutstandingRecoveryCredits = 0; status.HostileDamageDebt.Clear();
             // Fitting is recalculated by the dock operator before filling its current pools.
             status.Hull = status.MaxHull; status.Shield = status.MaxShield; status.Capacitor = status.MaxCapacitor;
             status.FractionalResourceDeficits.Clear(); status.ResourceDeficits = ShipResourceDeficits.Capture(status);

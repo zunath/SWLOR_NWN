@@ -30,5 +30,7 @@ namespace SWLOR.Game.Server.Entity
         public HashSet<string> SurveyedBy { get; set; } = new();
         public Dictionary<string, SpaceWorkClaim> Claims { get; set; } = new();
         public bool DiscoveryDrawn { get; set; }
+        public bool DifficultComponent { get; set; }
+        public string HiddenResearchComponent { get; set; }
     }
 }

@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service
             DB.Set(ship);
             var property = DB.Get<WorldProperty>(ship.PropertyId);
             property.Positions.Remove(PropertyLocationType.CurrentPosition); DB.Set(property);
-            foreach (var site in DB.Search(new DBQuery<SpaceSite>()).Where(x => x.Claims.Values.Any(c => c.ShipId == ship.Id && c.State == SpaceWorkState.Reserved)).ToArray())
+            foreach (var site in FindSpaceSites().Where(x => x.Claims.Values.Any(c => c.ShipId == ship.Id && c.State == SpaceWorkState.Reserved)).ToArray())
             {
                 foreach (var claim in site.Claims.Values.Where(c => c.ShipId == ship.Id && c.State == SpaceWorkState.Reserved).Select(c => c.Id).ToArray()) SpaceWorkClaims.Cancel(site, claim);
                 DB.Set(site);

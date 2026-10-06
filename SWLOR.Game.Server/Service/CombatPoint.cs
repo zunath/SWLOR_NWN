@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            DistributeSkillXP();
+            if (string.IsNullOrEmpty(GetLocalString(OBJECT_SELF, "SPACE_ENCOUNTER_ID"))) DistributeSkillXP();
             CleanUpCombatPoints();
         }
 

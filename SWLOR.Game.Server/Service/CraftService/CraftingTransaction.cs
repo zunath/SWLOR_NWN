@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.CraftService
 {
@@ -23,10 +24,19 @@ namespace SWLOR.Game.Server.Service.CraftService
     public sealed record CraftActionRecord(int Revision, CraftActionType Action, bool Succeeded,
         CraftCondition Condition, CraftCondition NextCondition, int CPSpent, int CPRestored, int DurabilitySpent, int DurabilityRestored,
         int Progress, int Quality);
+    public sealed record CraftRecipeRewards(string Resref, int Quantity, SkillType Skill, RecipeCategoryType Category,
+        int Level, RecipeEnhancementType EnhancementType, bool IsItemIntendedForCrafting, int BaseXP)
+    {
+        public static CraftRecipeRewards Capture(RecipeDetail recipe, int rank) => new(recipe.Resref, recipe.Quantity,
+            recipe.Skill, recipe.Category, recipe.Level, recipe.EnhancementType, recipe.IsItemIntendedForCrafting, Craft.GetBaseRecipeXP(recipe, rank));
+        public RecipeDetail ToRecipe() => new() { Resref = Resref, Quantity = Quantity, Skill = Skill, Category = Category,
+            Level = Level, EnhancementType = EnhancementType, IsItemIntendedForCrafting = IsItemIntendedForCrafting };
+    }
     public sealed class CraftingTransaction
     {
         public Guid Id { get; set; }
         public RecipeType Recipe { get; set; }
+        public CraftRecipeRewards RecipeRewards { get; set; }
         public CraftSession Session { get; set; }
         public List<CraftActionRecord> Actions { get; set; } = new();
         public CraftingTransactionPhase Phase { get; set; }

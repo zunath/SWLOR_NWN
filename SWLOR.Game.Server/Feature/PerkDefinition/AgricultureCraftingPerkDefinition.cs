@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             _builder.Create(PerkCategoryType.Agriculture, PerkType.PerfectTiming)
                 .Name("Perfect Timing")
                 .Icon("icr_timing")
-                .Description("Applies to Agriculture recipes using material conditions. Rank II replaces rank I.")
+                .Description("Applies to Agriculture recipes using material conditions.")
                 .AddPerkLevel()
                 .Price(5)
                 .RequirementSkill(SkillType.Agriculture, 50)

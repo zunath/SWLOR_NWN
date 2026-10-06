@@ -2,7 +2,19 @@
 
 Keep progress, quality, durability, and crafting points (CP), and make the best next action depend on the recipe, the current workpiece, and the crafter's chosen perks. The first release combines recipe profiles, changing material conditions, distinct action roles, unique perk trees for each production skill, and clear previews of their effects. Players should learn strategies they can adapt and develop a crafting style through perk investment.
 
-This is a proposed design and implementation plan. The current behavior below comes from the repository; proposed numbers are starting points for simulation and playtesting, not approved balance values. No gameplay, recipe, or Design Bible changes accompany this document.
+The implementation on feature/crafting-upgrade now includes the complete rules engine, recipe metadata, five profession perk trees, NUI previews, and persistent transaction recovery described below. The current-behavior section records the pre-change baseline. Numerical release targets remain provisional: the checked-in simulations are evidence for the tested policies, and player testing and economy validation still gate broad deployment.
+
+## Implemented scope and validation
+
+All 3,243 active recipes have explicit Sturdy, Delicate, or Calibrated metadata. The rollout setting SWLOR_CRAFTING_ROLLOUT selects Legacy, Pilot, or Full; production defaults to the 15 authored pilot recipes, while development and test environments use Full. A committed session retains its original rules and recipe reward snapshot across toggles or definition changes.
+
+The five profession trees contain 20 distinct passive perks, three two-rank lines and one capstone per skill, costing 20 SP for a complete tree. Their effects use skill-scoped stat contributions and bounded generic rules. The Design Bible contains their prices, prerequisites, descriptions, totals, and a separately labeled material-condition calculator; historical calculator formulas remain intact. Perk artwork is delivered by the companion HAK PR.
+
+The NUI uses session/revision-specific action IDs, authoritative costs and gains, condition forecasts, finite buff charges, applicable perk effects, reward explanations, concise help, and action history. Materials, enhancements, blueprint licenses, credits, rolled rewards, first-craft credit, and XP have persisted settlement receipts. Reward replay and inventory reservations passed six native engine tests in an isolated server; actual player-vault persistence under forced process termination remains a manual release check.
+
+Validation artifacts are [the multi-rank policy matrix](../../design/testing/crafting-policy-results.json), [the 1,000-seed paired endgame comparison](../../design/testing/crafting-policy-endgame-results.json), and [the native crafting report](../../design/testing/crafting-engine-results.json). The policy runner uses the production evaluator, independent training/evaluation seeds, and bounded fixed-sequence searches. It never reads hidden conditions. Its two-action lookahead does not fully value Engineering's longer forecast. XP per action is a proxy, and does not establish vendor income, transferred-property value, or human crafting time.
+
+The implementation is ready for review and a controlled playtest. Automated success does not certify the proposed 10-point adaptation advantage or the economy/throughput targets for every profile. Live NUI interaction and resizing, human timing, reward economics, actual character-vault crash recovery, and the eight-player preference gate below must be completed before broad rollout.
 
 ## Current behavior and likely causes
 

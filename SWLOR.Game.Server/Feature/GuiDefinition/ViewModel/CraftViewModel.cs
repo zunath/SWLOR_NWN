@@ -359,30 +359,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusColor = GuiColor.Green;
             StatusText = string.Empty;
 
-            var enhancementSlots = recipe.EnhancementSlots + blueprint.EnhancementSlots;
-
-            IsEnhancement1Visible = enhancementSlots >= 1;
-            IsEnhancement2Visible = enhancementSlots >= 2;
-            IsEnhancement3Visible = enhancementSlots >= 3;
-            IsEnhancement4Visible = enhancementSlots >= 4;
-            IsEnhancement5Visible = enhancementSlots >= 5;
-            IsEnhancement6Visible = enhancementSlots >= 6;
-            IsEnhancement7Visible = enhancementSlots >= 7;
-            IsEnhancement8Visible = enhancementSlots >= 8;
-
-            CraftText = _hasBlueprint
-                ? $"Craft [{Craft.CalculateBlueprintCraftCreditCost(_blueprintItem):N0}cr]"
-                : "Craft";
-            RecipeName = $"Recipe: {recipe.Quantity}x {itemName}";
-            RecipeLevel = $"Recipe level: {recipe.Level}";
-
-            var (recipeDescription, recipeColors) = Craft.BuildRecipeDetail(Player, _recipe, blueprint);
-            RecipeDescription = recipeDescription;
-            RecipeColors = recipeColors;
-
-
-
-
+            RefreshSetupRecipe();
 
             LoadCraftingState();
             RefreshRecipeStats();
@@ -1007,6 +984,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         };
 
+        private void RefreshSetupRecipe()
+        {
+            var recipe = Craft.GetRecipe(_recipe);
+            _hasBlueprint = GetIsObjectValid(_blueprintItem) && GetItemPossessor(_blueprintItem) == Player &&
+                string.IsNullOrWhiteSpace(GetLocalString(_blueprintItem, CraftingJournal.ConsumedItemVariable)) &&
+                Craft.GetBlueprintDetails(_blueprintItem).Recipe == _recipe && Craft.GetBlueprintDetails(_blueprintItem).LicensedRuns > 0;
+            if (!_hasBlueprint) _blueprintItem = OBJECT_INVALID;
+            var blueprint = _hasBlueprint ? Craft.GetBlueprintDetails(_blueprintItem) : new BlueprintDetail();
+            var slots = recipe.EnhancementSlots + blueprint.EnhancementSlots;
+            IsEnhancement1Visible = slots >= 1; IsEnhancement2Visible = slots >= 2;
+            IsEnhancement3Visible = slots >= 3; IsEnhancement4Visible = slots >= 4;
+            IsEnhancement5Visible = slots >= 5; IsEnhancement6Visible = slots >= 6;
+            IsEnhancement7Visible = slots >= 7; IsEnhancement8Visible = slots >= 8;
+            RecipeName = $"Recipe: {recipe.Quantity}x {Cache.GetItemNameByResref(recipe.Resref)}";
+            RecipeLevel = $"Recipe level: {recipe.Level}";
+            var (description, colors) = Craft.BuildRecipeDetail(Player, _recipe, blueprint);
+            RecipeDescription = description; RecipeColors = colors;
+            CraftText = CraftingJournal.Get(Player) != null ? "Collect pending rewards" : _hasBlueprint
+                ? $"Craft [{Craft.CalculateBlueprintCraftCreditCost(_blueprintItem):N0}cr]" : "Craft";
+        }
+
         private void RefreshYourSkill(Player dbPlayer)
         {
             var detail = Craft.GetRecipe(_recipe);
@@ -1040,6 +1038,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _session = null;
             _enhancementProgressPenalty = 0;
+            RefreshSetupRecipe();
 
             Enhancement1Resref = BlankTexture;
             Enhancement2Resref = BlankTexture;
@@ -1146,9 +1145,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             int playerLevel,
             int blueprintLevel,
             bool firstTime,
-            float qualityPercent)
+            float qualityPercent, int? frozenBaseXP = null)
         {
-            var xp = Craft.GetBaseRecipeXP(recipe, playerLevel);
+            var xp = frozenBaseXP ?? Craft.GetBaseRecipeXP(recipe, playerLevel);
             // 20% bonus for the first time.
             if (firstTime)
                 xp += (int)(xp * 0.20f);
@@ -1167,7 +1166,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var recipe = Craft.GetRecipe(_recipe);
+            var recipe = transaction.RecipeRewards?.ToRecipe() ?? Craft.GetRecipe(_recipe);
             var item = CreateObject(ObjectType.Item, recipe.Resref, GetLocation(Player));
             if (!GetIsObjectValid(item)) throw new InvalidOperationException("Unable to create the crafted item.");
             SetItemStackSize(item, recipe.Quantity);
@@ -1240,10 +1239,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
                 }
 
-                ProcessBlueprintBonuses(item);
+                ProcessBlueprintBonuses(item, recipe);
 
 
-                var xp = CalculateXP(recipe, transaction.Session.SkillRank, _hasBlueprint ? _activeBlueprint.Level : 0, firstTime, qualityPercent);
+                var xp = CalculateXP(recipe, transaction.Session.SkillRank, _hasBlueprint ? _activeBlueprint.Level : 0, firstTime, qualityPercent, transaction.RecipeRewards?.BaseXP);
                 CraftingJournal.PrepareRewards(Player, transaction, new[] { ObjectPlugin.Serialize(item) }, xp, firstTime);
             }
             finally { DestroyObject(item); }
@@ -1266,13 +1265,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
 
-        private void ProcessBlueprintBonuses(uint item)
+        private void ProcessBlueprintBonuses(uint item, RecipeDetail recipe)
         {
             if (!_hasBlueprint)
                 return;
 
             // Random bonuses
-            var recipe = Craft.GetRecipe(_recipe);
             for (var currentBonus = 1; currentBonus <= _activeBlueprint.ItemBonuses; currentBonus++)
             {
                 var tier = currentBonus;
@@ -1323,8 +1321,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var surviving = transaction.Enhancements.Concat(transaction.Components)
                         .Where(data => !string.IsNullOrWhiteSpace(data)).Where(_ => Random.D100(1) > 65).ToArray();
-                    var recipe = Craft.GetRecipe(_recipe);
-                    var xp = (int)(CalculateXP(recipe, transaction.Session.SkillRank, _hasBlueprint ? _activeBlueprint.Level : 0, false, 0f) * 0.15f);
+                    var recipe = transaction.RecipeRewards?.ToRecipe() ?? Craft.GetRecipe(_recipe);
+                    var xp = (int)(CalculateXP(recipe, transaction.Session.SkillRank, _hasBlueprint ? _activeBlueprint.Level : 0, false, 0f, transaction.RecipeRewards?.BaseXP) * 0.15f);
                     CraftingJournal.PrepareRewards(Player, transaction, surviving, xp, false);
                 }
                 var delivered = CraftingJournal.DeliverRewards(Player, transaction);
@@ -1391,13 +1389,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _hasBlueprint = false; _blueprintItem = OBJECT_INVALID;
                 ClearReservedState(); RemoveImmobility();
             }
-            var recoveredRecipe = Craft.GetRecipe(_recipe);
-            var (description, colors) = Craft.BuildRecipeDetail(Player, _recipe, new BlueprintDetail());
-            RecipeDescription = description; RecipeColors = colors;
-            IsEnhancement1Visible = recoveredRecipe.EnhancementSlots >= 1; IsEnhancement2Visible = recoveredRecipe.EnhancementSlots >= 2;
-            IsEnhancement3Visible = recoveredRecipe.EnhancementSlots >= 3; IsEnhancement4Visible = recoveredRecipe.EnhancementSlots >= 4;
-            IsEnhancement5Visible = recoveredRecipe.EnhancementSlots >= 5; IsEnhancement6Visible = recoveredRecipe.EnhancementSlots >= 6;
-            IsEnhancement7Visible = recoveredRecipe.EnhancementSlots >= 7; IsEnhancement8Visible = recoveredRecipe.EnhancementSlots >= 8;
+            RefreshSetupRecipe();
             var delivered = CraftingJournal.Get(Player) == null;
             CraftText = delivered ? "Craft" : "Collect pending rewards";
             IsInSetupMode = true; IsClosable = true;

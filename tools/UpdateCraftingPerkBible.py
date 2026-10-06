@@ -116,7 +116,22 @@ def main():
             new=re.sub(r'<v>[^<]+</v>',f'<v>{cached+20}</v>',old)
             if formula:new=re.sub(r'<f[^>]*>.*?</f>',f'<f>({formula.group(1)})+B{subtotal}</f>',new,flags=re.S)
         xml=xml[:total.start()]+new+xml[total.end():]
+        # Existing profession prices were exported as numeric strings. Normalize these dependencies
+        # so the total SP formula actually includes the retained Droidcraft and research investments.
+        if skill in ('Engineering','Fabrication'):
+            first,last,old_subtotal=(9,13,14) if skill=='Engineering' else (9,17,18)
+            total_price=0
+            for row_number in range(first,last+1):
+                cell=re.search(r'<c\b[^>]*\br="B'+str(row_number)+r'"[^>]*>.*?</c>',xml,re.S);assert cell
+                parsed=ET.fromstring('<wrapper xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+cell.group()+'</wrapper>')[0];price=int(float(text(parsed)));total_price+=price
+                opening=re.sub(r' t="[^"]+"','',cell.group().split('>')[0])+'>'
+                xml=xml[:cell.start()]+opening+f'<v>{price}</v></c>'+xml[cell.end():]
+            for reference,cache in [(f'B{old_subtotal}',total_price),('D4',total_price+20)]:
+                cell=re.search(r'<c\b[^>]*\br="'+reference+r'"[^>]*>.*?</c>',xml,re.S);assert cell
+                changed=re.sub(r'<v>[^<]+</v>',f'<v>{cache}</v>',cell.group())
+                xml=xml[:cell.start()]+changed+xml[cell.end():]
         ET.fromstring(xml);replacements[member]=xml.encode('utf-8')
+
         print(skill, start, subtotal, '7 ranks, 20 SP')
     # A:L is the historical chance model. Add a separate, cached example of the manual evaluator.
     calc_member='xl/worksheets/sheet50.xml';calc=z.read(calc_member).decode('utf-8')

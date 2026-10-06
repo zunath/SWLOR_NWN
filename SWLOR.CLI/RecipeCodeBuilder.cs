@@ -96,7 +96,7 @@ namespace SWLOR.CLI
                     recipeRequirement = $"{Environment.NewLine}\t.RequirementUnlocked()";
                 }
 
-                var profile = data.Length > 28 && !string.IsNullOrWhiteSpace(data[28]) ? data[28].Trim() : metadata.TryGetValue(recipeEnumName, out var entry) ? entry[3] : "Legacy";
+                var profile = data.Length > 28 && !string.IsNullOrWhiteSpace(data[28]) ? data[28].Trim() : metadata.TryGetValue(recipeEnumName, out var entry) ? entry[3] : throw new InvalidDataException($"Recipe {recipeEnumName} needs an explicit crafting profile or an entry in the crafting profile catalog.");
                 var technique = data.Length > 29 && !string.IsNullOrWhiteSpace(data[29]) ? data[29].Trim() : metadata.TryGetValue(recipeEnumName, out var traits) ? traits[4] : "None";
                 var pilot = metadata.TryGetValue(recipeEnumName, out var rollout) ? rollout[5] : "false";
                 if (profile != "Legacy" && profile != "Sturdy" && profile != "Delicate" && profile != "Calibrated") throw new InvalidDataException($"Invalid crafting profile: {profile}");

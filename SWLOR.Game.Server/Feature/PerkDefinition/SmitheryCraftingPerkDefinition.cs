@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             _builder.Create(PerkCategoryType.Smithery, PerkType.MasterSmith)
                 .Name("Master Smith")
                 .Icon("icr_mstsmith")
-                .Description("Applies to Smithery recipes using material conditions. Rank II replaces rank I.")
+                .Description("Applies to Smithery recipes using material conditions.")
                 .AddPerkLevel()
                 .Price(5)
                 .RequirementSkill(SkillType.Smithery, 50)

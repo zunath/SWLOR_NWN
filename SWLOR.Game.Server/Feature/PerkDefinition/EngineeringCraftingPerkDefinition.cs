@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             _builder.Create(PerkCategoryType.Engineering, PerkType.MasterEngineer)
                 .Name("Master Engineer")
                 .Icon("icr_mstengineer")
-                .Description("Applies to Engineering recipes using material conditions. Rank II replaces rank I.")
+                .Description("Applies to Engineering recipes using material conditions.")
                 .AddPerkLevel()
                 .Price(5)
                 .RequirementSkill(SkillType.Engineering, 50)

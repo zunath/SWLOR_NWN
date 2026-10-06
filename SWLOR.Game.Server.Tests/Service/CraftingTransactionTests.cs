@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.StatService;
 using System.Reflection;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -49,6 +50,19 @@ public class CraftingTransactionTests
             Assert.That(restored.Deliveries[0].Data, Is.EqualTo("already-rolled-item")); Assert.That(restored.XP, Is.EqualTo(100));
         });
     }
+    [Test]
+    public void RewardSnapshot_SurvivesDefinitionChangesAndPersistence()
+    {
+        var recipe = new RecipeDetail { Resref = "original", Quantity = 5, Skill = SkillType.Espionage, Level = 3,
+            EnhancementType = RecipeEnhancementType.None, Category = RecipeCategoryType.Poison };
+        var snapshot = CraftRecipeRewards.Capture(recipe, 5);
+        recipe.Resref = "changed"; recipe.Quantity = 1; recipe.Skill = SkillType.Engineering;
+        var restored = JsonConvert.DeserializeObject<CraftRecipeRewards>(JsonConvert.SerializeObject(snapshot));
+        Assert.That(restored.ToRecipe().Resref, Is.EqualTo("original"));
+        Assert.That(restored.Quantity, Is.EqualTo(5)); Assert.That(restored.Skill, Is.EqualTo(SkillType.Espionage));
+        Assert.That(restored.BaseXP, Is.EqualTo(snapshot.BaseXP));
+    }
+
     [Test]
     public void ActualClientEventArguments_RejectAnOldRevisionBeforeEngineCalls()
     {

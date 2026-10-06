@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Service
                 throw new InvalidOperationException("The selected blueprint or its crafting payment is unavailable.");
             var transaction = new CraftingTransaction
             {
-                Id = session.Id, Recipe = recipe, Session = session,
+                Id = session.Id, Recipe = recipe, Session = session, RecipeRewards = CraftRecipeRewards.Capture(Craft.GetRecipe(recipe), session.SkillRank),
                 Components = components.ToList(), Enhancements = enhancements.ToList(),
                 Debits = reservations.GroupBy(entry => entry.Item).Select(group => new CraftingDebit(
                     GetObjectUUID(group.Key), GetResRef(group.Key), GetItemStackSize(group.Key), group.Sum(entry => entry.Quantity))).ToList(),
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Service
             if (!transaction.XPAwarded)
             {
                 var awardId = $"craft:{transaction.Id:N}";
-                if (transaction.XP > 0) Skill.GiveSkillXP(player, Craft.GetRecipe(transaction.Recipe).Skill, transaction.XP, false, false, awardId);
+                if (transaction.XP > 0) Skill.GiveSkillXP(player, (transaction.RecipeRewards?.Skill ?? Craft.GetRecipe(transaction.Recipe).Skill), transaction.XP, false, false, awardId);
                 dbPlayer = DB.Get<Player>(GetObjectUUID(player));
                 transaction.XPAwarded = transaction.XP <= 0 || dbPlayer.SkillXPAwards.Contains(awardId);
                 Save(player, transaction);

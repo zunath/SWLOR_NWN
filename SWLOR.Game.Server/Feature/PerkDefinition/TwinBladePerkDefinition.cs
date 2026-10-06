@@ -209,7 +209,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SweepingAdvanceTrait)
-                .Description("Area combat abilities restore 2 STM per target hit, up to 6 STM.")
+                .Description("Area combat abilities restore 2 STM per target hit, up to 6 STM. Combined hit refunds cannot reduce an STM-funded ability's cost below 1 STM.")
                 .IncreasesStat(StatType.AreaHitStaminaRestorePerTarget, 2)
                 .IncreasesStat(StatType.AreaHitStaminaRestoreMaximum, 6)
                 .Price(4)

@@ -230,6 +230,7 @@ public class CombatReleaseBalanceAuditTests
     {
         StatType.DefensePercentAdjustment,
         StatType.PhysicalDefensePercentAdjustment,
+        StatType.PhysicalAndForceDefenseAuraPercentAdjustment,
         StatType.ForceDefensePercentAdjustment,
         StatType.EvasionPercentAdjustment,
         StatType.RangedEvasionPercentAdjustment,
@@ -794,6 +795,7 @@ public class CombatReleaseBalanceAuditTests
     private static int ScoreDefense(IReadOnlyDictionary<StatType, int> stats)
     {
         return SumBeneficial(stats, DefenseStats) +
+               SumBeneficial(stats, StatType.PhysicalAndForceDefenseAuraPercentAdjustment) +
                SumBeneficial(stats, StatType.MeleeDeflection) * 2 +
                SumBeneficial(stats, StatType.RangedDeflection) * 2 +
                SumBeneficial(stats, StatType.ShieldDeflection) * 2 +

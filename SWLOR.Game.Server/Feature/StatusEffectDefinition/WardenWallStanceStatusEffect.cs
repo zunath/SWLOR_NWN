@@ -28,8 +28,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Apply(uint creature, int durationTicks)
         {
-            StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 20;
-            StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 20;
+            StatGroup.Stats[StatType.PhysicalAndForceDefenseAuraPercentAdjustment] = 10;
         }
 
         protected override void Tick(uint creature)

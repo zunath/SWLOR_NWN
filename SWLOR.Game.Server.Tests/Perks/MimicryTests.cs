@@ -1,6 +1,8 @@
 using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
@@ -15,6 +17,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -455,24 +458,69 @@ public class MimicryTests
             [StatType.DamageDealtShockChance] = 18,
             [StatType.DamageDealtSunderChance] = 21,
             [StatType.ForceAttackPercentAdjustment] = 14,
-            [StatType.ForceDefensePercentAdjustment] = 25,
-            [StatType.PhysicalDefensePercentAdjustment] = 25
+            [StatType.ForceDefensePercentAdjustment] = 12,
+            [StatType.PhysicalDefensePercentAdjustment] = 12
         });
         maximumByResistance.Should().BeEquivalentTo(new Dictionary<ResistanceType, int>
         {
-            [ResistanceType.Fire] = 35,
-            [ResistanceType.Poison] = 35,
-            [ResistanceType.Trauma] = 25
+            [ResistanceType.Fire] = 20,
+            [ResistanceType.Poison] = 20,
+            [ResistanceType.Trauma] = 15
         });
-        maximumCombinedDefense.Should().Be(50,
+        maximumCombinedDefense.Should().Be(24,
             "both carapace traits may stack when the loadout commits four slots to them");
-        maximumCombinedResistance.Should().Be(95,
+        maximumCombinedResistance.Should().Be(55,
             "both carapace traits may stack when the loadout commits four slots to them");
     }
 
-    // The builder is the boundary where a bad trait declaration should fail loudly. An Invalid stat
-    // or resistance would otherwise be stored and summed into the player's totals at runtime under a
-    // sentinel key that no consumer reads, silently costing the trait its bonus.
+    [Test]
+    public void ArcPulse_OffersDamageBeyondTheStarterShockTechniques()
+    {
+        int BaseDamage(string file)
+        {
+            var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName,
+                "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Mimicry", file))).GetRoot();
+            return int.Parse(syntax.DescendantNodes().OfType<InvocationExpressionSyntax>()
+                .Single(call => call.Expression.ToString() == "InnateAbility.BuildArea").ArgumentList.Arguments[9].Expression.ToString());
+        }
+        BaseDamage("ArcPulseTechniqueAbilityDefinition.cs").Should().BeGreaterThan(BaseDamage("StaticWebTechniqueAbilityDefinition.cs"),
+            "a rank-35 three-slot Shock technique must offer a payoff beyond the rank-1 two-slot alternative");
+    }
+
+    [Test]
+    public void CheapDefensiveLoadouts_RetainOffensiveStanceDefensePenalties()
+    {
+        var traits = BuildAllAbilities(MimicryTechniqueNamespace)
+            .Where(technique => technique.Detail.IsMimicryTrait)
+            .Select(technique => technique.Detail).ToArray();
+        var core = BuildPerksWithout2daLookup(new MimicryPerkDefinition(), "CombatAnalyzer", "AnalyzerMemory");
+        (core[PerkType.CombatAnalyzer].PerkLevels[1].Price + core[PerkType.AnalyzerMemory].PerkLevels[1].Price)
+            .Should().Be(4, "partial Mimicry investments must be audited at their real entry cost");
+        var apex = new ApexCollapseStanceStatusEffect();
+        apex.ApplyEffect(1, 1, -1);
+        var wall = new WardenWallStanceStatusEffect();
+        wall.ApplyEffect(1, 1, -1);
+
+        int MaximumDefense(StatType stat, int slots, int index = 0)
+        {
+            if (index == traits.Length) return 0;
+            var best = MaximumDefense(stat, slots, index + 1);
+            var trait = traits[index];
+            return trait.MimicrySlotCost > slots ? best : Math.Max(best,
+                trait.MimicryTraitStats.GetValueOrDefault(stat) + MaximumDefense(stat, slots - trait.MimicrySlotCost, index + 1));
+        }
+
+        foreach (var stat in new[] { StatType.PhysicalDefensePercentAdjustment, StatType.ForceDefensePercentAdjustment })
+        {
+            var cheapDefense = MaximumDefense(stat, 4);
+            cheapDefense.Should().BeLessThanOrEqualTo(12, "a four-SP dip must not buy a tank stance's entire defense budget");
+            (cheapDefense + apex.StatGroup.Stats[stat]).Should().BeLessThan(0,
+                "offensive stances must still sacrifice defense when paired with every legal starter trait loadout");
+            (MaximumDefense(stat, 10 - 3) + wall.StatGroup.Stats[StatType.PhysicalAndForceDefenseAuraPercentAdjustment])
+                .Should().BeLessThanOrEqualTo(22, "a Warden loadout must reserve three slots for its sole personal stance");
+        }
+    }
+
     [Test]
     public void MimicryTraitBuilder_RejectsInvalidStatsAndResistances()
     {
@@ -1040,6 +1088,21 @@ public class MimicryTests
             .Should().Contain(typeof(WardenWallStanceAuraStatusEffect),
                 "unequipping Warden Wall Stance must also remove the aura it granted to nearby allies");
 
+        foreach (var (feat, statusType) in new[]
+                 {
+                     (FeatType.FinishingDriveTechnique, typeof(FinishingDriveMomentumStatusEffect)),
+                     (FeatType.FinalMandateTechnique, typeof(FinalMandateStatusEffect)),
+                     (FeatType.StimCanisterTechnique, typeof(StimCanisterStatusEffect)),
+                     (FeatType.SnapRushTechnique, typeof(Hasten1StatusEffect)),
+                     (FeatType.WardenSweepTechnique, typeof(WardenSweepStatusEffect)),
+                     (FeatType.LastBastionTechnique, typeof(LastBastionBarrierStatusEffect)),
+                     (FeatType.LastBastionTechnique, typeof(LastBastionStatusEffect))
+                 })
+        {
+            techniques[feat].SourceOwnedStatusEffectTypesRemovedOnPerkRefund.Should().Contain(statusType,
+                "ongoing benefits must still occupy their technique slots, including benefits granted to allies");
+        }
+
         var root = FindRepositoryRoot();
         var mimicrySource = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -1054,6 +1117,22 @@ public class MimicryTests
         revokeBody.Should().Contain("StatusEffect.RemoveStatusEffect(player, statusEffectType, false);");
         revokeBody.Should().Contain("detail.SourceOwnedStatusEffectTypesRemovedOnPerkRefund");
         revokeBody.Should().Contain("StatusEffect.RemoveStatusEffectsFromAllTargetsBySource(");
+    }
+
+    [Test]
+    public void TechniqueCleanup_PreservesSharedStatusEffectsGrantedByAnotherAbility()
+    {
+        var snapRush = new SnapRushTechniqueAbilityDefinition().BuildAbilities()[FeatType.SnapRushTechnique];
+        var otherAbility = new AbilityDetail();
+        var snapHaste = new Hasten1StatusEffect { OriginatingAbility = snapRush };
+        var otherHaste = new Hasten1StatusEffect { OriginatingAbility = otherAbility };
+        var alliedHaste = new Hasten1StatusEffect { OriginatingAbility = snapRush };
+        snapHaste.ApplyEffect(1, 1, 15);
+        otherHaste.ApplyEffect(1, 1, 15);
+        alliedHaste.ApplyEffect(2, 1, 15);
+
+        StatusEffect.GetSourceOwnedStatusEffects(new[] { snapHaste, otherHaste, alliedHaste }, typeof(Hasten1StatusEffect), 1, snapRush)
+            .Should().Equal(new IStatusEffect[] { snapHaste }, "unequipping a technique must remove its own benefit without stripping a different perk's or ally's benefit");
     }
 
     [Test]

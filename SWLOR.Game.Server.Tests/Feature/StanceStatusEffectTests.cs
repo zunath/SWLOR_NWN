@@ -58,6 +58,36 @@ public class StanceStatusEffectTests
     }
 
     [Test]
+    public void ProtectiveAuras_DoNotMultiplyTheWearersPersonalDefense()
+    {
+        var stance = new WardenWallStanceStatusEffect();
+        stance.ApplyEffect(Player, Player, -1);
+        AddActiveEffect(Player, stance);
+        var firstAura = new WardenWallStanceAuraStatusEffect();
+        var secondAura = new WardenWallStanceAuraStatusEffect();
+        firstAura.StackingType.Should().Be(StatusEffectStackType.StackFromMultipleSources,
+            "each Warden owns its protection independently while the stat takes the strongest bonus");
+        AddActiveEffect(Player, firstAura);
+        AddActiveEffect(Player, secondAura);
+        firstAura.ReassignSource(Player + 1);
+        secondAura.ReassignSource(Player + 2);
+
+        Stat.GetStatAdjustmentExcludingTemporaryModifiers(Player, StatType.PhysicalAndForceDefenseAuraPercentAdjustment)
+            .Should().Be(10, "the personal wall and any number of allied walls are the same protective aura");
+
+        var tracker = StatusEffect.GetCreatureStatusEffects(Player);
+        tracker.Remove(stance);
+        tracker.StatGroup.Stats[StatType.PhysicalAndForceDefenseAuraPercentAdjustment].Should().Be(10,
+            "leaving the personal stance must retain an ally's active aura");
+        tracker.Remove(firstAura);
+        tracker.StatGroup.Stats[StatType.PhysicalAndForceDefenseAuraPercentAdjustment].Should().Be(10,
+            "one Warden leaving must retain the other Warden's protection without waiting for another pulse");
+        foreach (var effect in tracker.GetAllEffects().ToArray())
+            tracker.Remove(effect);
+        tracker.StatGroup.Stats[StatType.PhysicalAndForceDefenseAuraPercentAdjustment].Should().Be(0);
+    }
+
+    [Test]
     public void SpotterStance_AggregatesCombatStatAdjustments()
     {
         AddActiveEffect(Player, new SpotterStanceStatusEffect());

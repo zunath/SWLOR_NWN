@@ -6147,6 +6147,11 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         SingleWeaponDamagePercentAdjustment = 1087,
 
+        /// <summary>Physical and Force defense from protective auras. Only the strongest aura applies,
+        /// including the emitter's personal benefit.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        PhysicalAndForceDefenseAuraPercentAdjustment = 1088,
+
     }
 
     public class StatTypeAttribute : Attribute

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.StatusEffectService
@@ -8,6 +9,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
     {
         string Id { get; }
         uint Source { get; }
+        AbilityDetail OriginatingAbility { get; set; }
         StatusEffectActivationType ActivationType { get; }
         StatusEffectSourceType SourceType { get; }
         string Name { get; }
@@ -24,6 +26,8 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         ResistanceType AppliedResistanceType { get; }
         float Frequency { get; }
         int DurationTicks { get; }
+        DateTime LastTickTime { get; }
+        bool PreservesTickScheduleOnRefresh { get; }
         float GetRemainingDurationSeconds(DateTime currentTime);
         bool PersistsOnLogout { get; }
         StatGroup StatGroup { get; }
@@ -32,10 +36,11 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         IStatusEffect Clone();
         string CanApply(uint creature);
         void AssignResistanceType(ResistanceType type);
-        void ApplyEffect(uint source, uint creature, int durationTicks);
+        void ApplyEffect(uint source, uint creature, int durationTicks, float durationSeconds = 0f, DateTime? tickAnchor = null);
         void ReassignSource(uint source);
         void ExtendDurationTicks(int ticks);
         void SetDurationTicks(int ticks);
+        void SetDurationSeconds(float seconds);
         void ReapplyEffect(uint creature);
         void RemoveNativeEffects(uint creature);
         void RemoveEffect(uint creature, bool isReplacement = false);

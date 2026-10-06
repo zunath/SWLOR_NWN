@@ -86,10 +86,10 @@ public class StatusEffectDeliveryTests
         var calls = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
         var outgoing = calls.Single(call => call.Expression.ToString() == "ApplyOutgoingStatusDurationAdjustments");
         outgoing.ArgumentList.Arguments.Select(arg => arg.ToString()).Should()
-            .Equal("statusEffect", "source", "ticks", "false");
+            .Equal("statusEffect", "source", "durationSeconds", "false");
         var resisted = calls.Single(call => call.Expression.ToString() == "Resistance.CalculateResistedTicks");
         outgoing.Span.End.Should().BeLessThan(resisted.Span.Start);
-        calls.Should().Contain(call => call.Expression.ToString() == "statusEffect.SetDurationTicks");
+        calls.Should().Contain(call => call.Expression.ToString() == "statusEffect.SetDurationSeconds");
         calls.Should().NotContain(call => call.Expression.ToString() == "statusEffect.ApplyEffect");
     }
 

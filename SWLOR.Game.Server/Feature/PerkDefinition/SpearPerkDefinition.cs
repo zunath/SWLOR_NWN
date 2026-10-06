@@ -401,7 +401,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RestorationStrikeTrait)
-                .Description("When a hostile combat ability costing at least 8 STM hits, restore 3 STM. Combined hit refunds cannot reduce an STM-funded ability's cost below 1 STM.")
+                .Description("When a hostile combat ability costing at least 8 STM hits, restore 3 STM.")
                 .IncreasesStat(StatType.CostlyAbilityHitStaminaRestoreMinimumStaminaCost, 8)
                 .IncreasesStat(StatType.CostlyAbilityHitStaminaRestore, 3)
                 .Price(4)

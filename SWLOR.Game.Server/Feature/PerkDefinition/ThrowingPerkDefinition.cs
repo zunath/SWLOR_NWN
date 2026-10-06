@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BombardiersRhythmTrait)
-                .Description("After an ordnance ability hits 2 or more enemies, restore 4 STM. Combined hit refunds cannot reduce an STM-funded ability's cost below 1 STM.")
+                .Description("After an ordnance ability hits 2 or more enemies, restore 4 STM.")
                 .IncreasesStat(StatType.ThrowingAreaAbilityMinTargetsStaminaRestoreThreshold, 2)
                 .IncreasesStat(StatType.ThrowingAreaAbilityMinTargetsStaminaRestore, 4)
                 .Price(2)

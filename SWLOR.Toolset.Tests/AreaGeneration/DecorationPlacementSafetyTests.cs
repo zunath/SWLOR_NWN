@@ -2,10 +2,14 @@ using Nwn.Authoring.Areas.Generation;
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Toolset.Domain.AreaGeneration;
-using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
-using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
+using Nwn.Authoring.Areas.Generation.Composition;
+using Nwn.Authoring.Areas.Generation.Drafting;
+using Nwn.Authoring.Areas.Generation.Population;
+using Nwn.Authoring.Areas.Generation.Preview;
+using Nwn.Authoring.Areas.Generation.Hosting;
+using Nwn.Authoring.Areas.Generation.Decoration;
 using Nwn.Authoring.Areas.Generation.Tilesets;
+using SWLOR.Toolset.Domain.AreaGeneration.Hosting;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Tests.AreaGeneration;
@@ -219,7 +223,7 @@ public class DecorationPlacementSafetyTests
     {
         var draft = new AreaGenerationDraft(new() { ThemeKey = "test" }, new() { Content = new() }, new(),
             new() { Resolved = Room(), PlannedDecorations = [new() { Resref = "missing_prop" }] });
-        var action = () => AreaGenerationAuthoringService.ValidatePlaceableBlueprints(draft, new(CorpusLocator.ModuleDirectory));
+        var action = () => AreaGenerationAuthoringService.ValidatePlaceableBlueprints(draft, new SwlorBlueprintSource(new ModuleWorkspace(CorpusLocator.ModuleDirectory)));
         action.Should().Throw<InvalidOperationException>().WithMessage("*missing_prop.utp*");
     }
 

@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -7,7 +8,7 @@ using Dock.Model.Controls;
 using SWLOR.Toolset.AreaGeneration;
 using SWLOR.Toolset.Archives;
 using SWLOR.Toolset.Factions;
-using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
+using Nwn.Toolset.Avalonia.Areas.Generation;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Script;
@@ -281,42 +282,35 @@ namespace SWLOR.Toolset.Shell
                 return;
             }
 
+            var owner = (Avalonia.Application.Current?.ApplicationLifetime
+                as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+            if (owner == null)
+                return;
+
             IsGeneratingArea = true;
             try
             {
-                using (ModuleMutationLock.AllowModuleWrites())
-                {
-                    if (!await _editorService.Value.SaveAllAsync().ConfigureAwait(true))
+                var session = new ShellAreaGeneratorSession(
+                    () => _editorService.Value.SaveAllAsync(),
+                    ModuleMutationLock.AllowModuleWrites,
+                    createdResref =>
                     {
-                        StatusText = "Area Generator cancelled: an open editor could not be saved.";
-                        return;
-                    }
-                }
-
+                        _workspaceContext.RefreshCatalogEntry(ResourceType.Area, createdResref);
+                        _workspaceContext.InvalidatePlacementIndex();
+                        _explorer.Refresh();
+                        _editorService.Value.TryOpenEditor(ResourceType.Area, createdResref);
+                    });
+                var launcher = new AreaGeneratorLauncher(
+                    session,
+                    () => Task.FromResult(SwlorAreaGeneratorHost.Create(workspace, _tilesetCatalog!, _resourceIndex)));
                 StatusText = "Opening Area Generator...";
-                string? createdResref;
-                using (ModuleMutationLock.AllowModuleWrites())
+                var result = await launcher.LaunchAsync(owner).ConfigureAwait(true);
+                StatusText = result.Outcome switch
                 {
-                    var authoring = new AreaGenerationAuthoringService(_tilesetCatalog);
-                    var renderer = new AreaGenerationPreviewRenderer(_resourceIndex);
-                    createdResref = await AreaGeneratorWindow.ShowAsync(
-                        authoring,
-                        renderer,
-                        _tilesetCatalog,
-                        workspace).ConfigureAwait(true);
-                }
-
-                if (string.IsNullOrWhiteSpace(createdResref))
-                {
-                    StatusText = "Area Generator closed.";
-                    return;
-                }
-
-                _workspaceContext.RefreshCatalogEntry(ResourceType.Area, createdResref);
-                _workspaceContext.InvalidatePlacementIndex();
-                _explorer.Refresh();
-                _editorService.Value.TryOpenEditor(ResourceType.Area, createdResref);
-                StatusText = $"Created generated area '{createdResref}'.";
+                    AreaGeneratorOutcome.SaveFailed => "Area Generator cancelled: an open editor could not be saved.",
+                    AreaGeneratorOutcome.Created => $"Created generated area '{result.CreatedResRef}'.",
+                    _ => "Area Generator closed."
+                };
             }
             catch (Exception ex)
             {

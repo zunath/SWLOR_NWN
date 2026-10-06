@@ -1,6 +1,7 @@
 #nullable disable
 
 using System.Collections.Generic;
+using Nwn.Authoring.Areas.Generation.Composition;
 
 namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
 {

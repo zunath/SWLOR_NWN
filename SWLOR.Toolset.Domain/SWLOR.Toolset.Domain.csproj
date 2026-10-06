@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="SWLOR.Toolset.Tests" />
     <Using Include="Nwn.Formats.Exceptions.NwnFormatException" Alias="NwnFormatException" />
     <Using Include="Nwn.Authoring.Resources.TwoDaChoicePolicy" Alias="TwoDaChoicePolicy" />
     <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Authoring\Nwn.Authoring.csproj"

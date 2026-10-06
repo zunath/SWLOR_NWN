@@ -1,10 +1,14 @@
-using TileResolver = SWLOR.Toolset.Domain.AreaGeneration.TileResolver;
+using TileResolver = Nwn.Authoring.Areas.Generation.Drafting.AreaGenerationTileResolver;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Toolset.Domain.AreaGeneration;
-using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
-using SWLOR.Toolset.Domain.AreaGeneration.Atmosphere;
-using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
+using SWLOR.Toolset.Domain.AreaGeneration.Hosting;
+using Nwn.Authoring.Areas.Generation.Composition;
+using Nwn.Authoring.Areas.Generation.Drafting;
+using Nwn.Authoring.Areas.Generation.Population;
+using Nwn.Authoring.Areas.Generation.Preview;
+using Nwn.Authoring.Areas.Generation.Hosting;
+using Nwn.Authoring.Areas.Generation.Atmosphere;
+using Nwn.Authoring.Areas.Generation.Decoration;
 using SWLOR.Toolset.Domain.AreaGeneration.Definitions;
 using Nwn.Authoring.Areas.Generation.Tilesets;
 using SWLOR.Toolset.Domain.Documents;
@@ -100,7 +104,7 @@ public class AreaGenerationToolsetIntegrationTests
         second.Result.Resolved!.Tiles.Select(tile => (tile.TileId, tile.Orientation, tile.Height))
             .Should().Equal(first.Result.Resolved!.Tiles.Select(tile => (tile.TileId, tile.Orientation, tile.Height)));
 
-        var preview = new AreaGenerationPreviewRenderer(resources: null).Render(
+        var preview = new AreaGenerationPreviewRenderer(null).Render(
             first,
             AreaPreviewMode.Schematic,
             showRoomOverlay: true,
@@ -151,7 +155,7 @@ public class AreaGenerationToolsetIntegrationTests
     {
         var (service, _) = CreateAuthoringService();
         var settings = CreateSettings(service, seed: 77231);
-        var theme = service.Definitions.Themes.Single(candidate =>
+        var theme = service.Catalog.Themes.Single(candidate =>
             candidate.ThemeKey.Equals(settings.ThemeKey, StringComparison.OrdinalIgnoreCase));
         theme.Tiers[settings.Tier].BossResref = string.Empty;
 
@@ -208,7 +212,7 @@ public class AreaGenerationToolsetIntegrationTests
         var definition = SetFileParser.ParseFile(
             Path.Combine(RepoRoot, "SWLOR_Haks", "sw_t_crypt", "tdc01.set"));
         var model = TilesetSetParser.FromDefinition("tdc01", definition);
-        var catalog = new DefinitionCatalog();
+        var catalog = SwlorAreaGenerationCatalog.Create();
         var tileset = catalog.TilesetProfiles[BaseGameTilesetProfiles.CryptGrey];
         var layout = catalog.LayoutProfiles[StandardLayoutProfiles.Complex];
 
@@ -277,12 +281,17 @@ public class AreaGenerationToolsetIntegrationTests
             draft.Result.Success.Should().BeTrue(draft.Result.FailureReason);
 
             var workspace = new ModuleWorkspace(moduleRoot);
-            GeneratedAreaWriter.TryCreate(
-                    workspace,
-                    tilesets,
-                    draft,
-                    " PROCGEN_12345678 ",
-                    "Generated Test Area",
+            new SwlorGeneratedAreaWriter(workspace, tilesets).TryCreate(
+                    new GeneratedAreaRequest(
+                        draft,
+                        canonicalResref,
+                        "Generated Test Area",
+                        GeneratedAreaDocumentPopulator.CreatePopulator(
+                            draft,
+                            new SwlorBlueprintSource(workspace),
+                            new SwlorPopulationPolicy(),
+                            null,
+                            canonicalResref)),
                     out var error)
                 .Should().BeTrue(error);
 
@@ -330,7 +339,7 @@ public class AreaGenerationToolsetIntegrationTests
         var ordinaryLoot = shaman.VarTable.GetString("LOOT_TABLE_2");
         ordinaryLoot.Should().NotBeNullOrWhiteSpace();
 
-        GeneratedAreaDocumentPopulator.SanitizeCreatureVariables(shaman.Fields);
+        new SwlorPopulationPolicy().ConfigureCreature(shaman.Fields);
 
         shaman.VarTable.GetString("LOOT_TABLE_1").Should().BeNull();
         shaman.VarTable.GetString("LOOT_TABLE_2").Should().Be(ordinaryLoot);
@@ -486,7 +495,7 @@ public class AreaGenerationToolsetIntegrationTests
         using (EditScope.EnterConstruction())
         {
             AreaTemplateFactory.PopulateNewArea(are, "test", "Test", "tdt01", 2, 2, 0, 0);
-            GeneratedAreaDocumentPopulator.Populate(draft, workspace, "test", are, git, gic);
+            GeneratedAreaDocumentPopulator.Populate(draft, new SwlorBlueprintSource(workspace), new SwlorPopulationPolicy(), null, "test", are, git, gic);
         }
 
         AreaTiles.At(are, 1, 1)!.Value.TileId.Should().Be(3);
@@ -584,15 +593,15 @@ public class AreaGenerationToolsetIntegrationTests
             });
         index.EnsureInitialized();
         var tilesets = new TilesetCatalog(index);
-        return (new AreaGenerationAuthoringService(tilesets), tilesets);
+        return (new AreaGenerationAuthoringService(new SwlorTilesetSource(tilesets), SwlorAreaGenerationCatalog.Create()), tilesets);
     }
 
     private static AreaGenerationSettings CreateSettings(AreaGenerationAuthoringService service, int seed)
     {
-        var theme = service.Definitions.Themes.Single(theme =>
+        var theme = service.Catalog.Themes.Single(theme =>
             theme.ThemeKey.Equals(MineCaveDungeonDefinition.ThemeKey, StringComparison.OrdinalIgnoreCase));
-        var tileset = service.Definitions.TilesetProfiles[StandardTilesetProfiles.Cavern];
-        var layout = service.Definitions.LayoutProfiles[StandardLayoutProfiles.Organic];
+        var tileset = service.Catalog.TilesetProfiles[StandardTilesetProfiles.Cavern];
+        var layout = service.Catalog.LayoutProfiles[StandardLayoutProfiles.Organic];
         var defaults = new DungeonComposition
         {
             Content = theme,

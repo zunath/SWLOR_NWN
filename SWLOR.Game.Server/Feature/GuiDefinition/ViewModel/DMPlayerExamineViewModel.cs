@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -35,6 +36,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private string _playerId;
         private string _targetName;
+        private string _targetDescriptor;
+        private string _targetAccountName;
+        private string _targetPublicCDKey;
         private string _targetDescription;
         private string _characterType;
         private string _credits;
@@ -46,25 +50,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string PerksView = "PERKS_VIEW";
         public const string NotesView = "NOTES_VIEW";
 
-        public bool IsDetailsToggled
+        private const int DetailsTab = 0;
+        private const int SkillsTab = 1;
+        private const int PerksTab = 2;
+        private const int NotesTab = 3;
+
+        private static readonly GuiTabGroup<DMPlayerExamineViewModel, DMPlayerExaminePayload> Tabs =
+            new GuiTabGroup<DMPlayerExamineViewModel, DMPlayerExaminePayload>()
+                .AddTab(DetailsTab, DetailView)
+                .AddTab(SkillsTab, SkillsView)
+                .AddTab(PerksTab, PerksView)
+                .AddTab(NotesTab, NotesView);
+
+        private readonly GuiToggleGroupSync _tabToggles = new(DetailsTab, SkillsTab, PerksTab, NotesTab);
+        private int _selectedTabId = -1;
+
+        public int TabToggleValue
         {
-            get => Get<bool>();
-            set => Set(value);
-        }
-        public bool IsSkillsToggled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-        public bool IsPerksToggled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-        public bool IsNotesToggled
-        {
-            get => Get<bool>();
-            set => Set(value);
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                _tabToggles.HandleClientChange(value, SelectTab);
+            }
         }
 
         public bool IsNoteSelected
@@ -74,6 +82,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string Name
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Descriptor
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string AccountName
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string PublicCDKey
         {
             get => Get<string>();
             set => Set(value);
@@ -159,6 +185,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _selectedIndex = -1;
             _playerId = GetObjectUUID(initialPayload.Target);
             _targetName = GetName(initialPayload.Target);
+            _targetDescriptor = Disguise.GetDisplayDescriptor(initialPayload.Target);
+            _targetAccountName = GetPCPlayerName(initialPayload.Target);
+            _targetPublicCDKey = GetPCPublicCDKey(initialPayload.Target);
             _targetDescription = GetDescription(initialPayload.Target);
             _characterType = GetClassByPosition(1, initialPayload.Target) == ClassType.ForceSensitive
                 ? "Force Sensitive"
@@ -168,23 +197,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ActiveNoteName = string.Empty;
             ActiveNoteCreator = string.Empty;
             ActiveNoteDetail = string.Empty;
+            IsNoteSelected = false;
+            SkillNames = new GuiBindingList<string>();
+            SkillLevels = new GuiBindingList<int>();
+            PerkNames = new GuiBindingList<string>();
+            PerkLevels = new GuiBindingList<int>();
+            NoteNames = new GuiBindingList<string>();
+            NoteToggles = new GuiBindingList<bool>();
 
-            IsDetailsToggled = true;
-            IsSkillsToggled = false;
-            IsPerksToggled = false;
-            IsNotesToggled = false;
-
-            ChangePartialView(PartialView, DetailView);
             LoadTargetDetails();
+            _tabToggles.SyncTo(DetailsTab, value => TabToggleValue = value);
 
+            WatchOnClient(model => model.TabToggleValue);
             WatchOnClient(model => model.Description);
             WatchOnClient(model => model.ActiveNoteName);
             WatchOnClient(model => model.ActiveNoteDetail);
+
+            SelectTab(DetailsTab);
         }
 
         private void LoadTargetDetails()
         {
             Name = _targetName;
+            Descriptor = _targetDescriptor;
+            AccountName = _targetAccountName;
+            PublicCDKey = _targetPublicCDKey;
             Description = _targetDescription;
             CharacterType = _characterType;
             Credits = _credits;
@@ -256,49 +293,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             NoteToggles = noteToggles;
         }
 
-        public Action OnClickDetails() => () =>
+        private void SelectTab(int tabId)
         {
-            IsDetailsToggled = true;
-            IsSkillsToggled = false;
-            IsPerksToggled = false;
-            IsNotesToggled = false;
+            if (_selectedTabId == tabId)
+                return;
 
-            ChangePartialView(PartialView, DetailView);
-            LoadTargetDetails();
-        };
+            _selectedTabId = tabId;
+            _tabToggles.SyncTo(tabId, value => TabToggleValue = value);
+            switch (tabId)
+            {
+                case DetailsTab:
+                    LoadTargetDetails();
+                    break;
+                case SkillsTab:
+                    LoadTargetSkills();
+                    break;
+                case PerksTab:
+                    LoadTargetPerks();
+                    break;
+                case NotesTab:
+                    LoadTargetNotes();
+                    break;
+            }
 
-        public Action OnClickSkills() => () =>
-        {
-            IsDetailsToggled = false;
-            IsSkillsToggled = true;
-            IsPerksToggled = false;
-            IsNotesToggled = false;
+            Tabs.Select(this, PartialView, tabId);
+        }
 
-            ChangePartialView(PartialView, SkillsView);
-            LoadTargetSkills();
-        };
-
-        public Action OnClickPerks() => () =>
-        {
-            IsDetailsToggled = false;
-            IsSkillsToggled = false;
-            IsPerksToggled = true;
-            IsNotesToggled = false;
-
-            ChangePartialView(PartialView, PerksView);
-            LoadTargetPerks();
-        };
-
-        public Action OnClickNotes() => () =>
-        {
-            IsDetailsToggled = false;
-            IsSkillsToggled = false;
-            IsPerksToggled = false;
-            IsNotesToggled = true;
-
-            ChangePartialView(PartialView, NotesView);
-            LoadTargetNotes();
-        };
+        protected override void OnModalClosedRestore() => Tabs.Select(this, PartialView, _selectedTabId);
 
         public Action OnClickNote() => () =>
         {

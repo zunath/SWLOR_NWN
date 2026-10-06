@@ -1,4 +1,6 @@
 using FluentAssertions;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualBasic.FileIO;
 using NUnit.Framework;
 using System.Reflection;
@@ -55,6 +57,20 @@ public class StanceStatusEffectTests
     public void BlazingSpikes_UsesExclusiveStanceSourceType()
     {
         new BlazingSpikesStatusEffect().SourceType.Should().Be(StatusEffectSourceType.Stance);
+    }
+
+    [Test]
+    public void WardenAura_PreservesTheStancesOriginForUnequipCleanup()
+    {
+        var root = FindRepositoryRoot();
+        var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "WardenWallStanceStatusEffect.cs"))).GetRoot();
+        var aura = syntax.DescendantNodes().OfType<ObjectCreationExpressionSyntax>()
+            .Single(node => node.Type.ToString() == nameof(WardenWallStanceAuraStatusEffect));
+        aura.Initializer.Should().NotBeNull();
+        aura.Initializer!.Expressions.OfType<AssignmentExpressionSyntax>().Should()
+            .ContainSingle(node => node.Left.ToString() == "OriginatingAbility" && node.Right.ToString() == "OriginatingAbility",
+                "the periodic aura must remain owned by its stance when no ability impact is active");
     }
 
     [Test]

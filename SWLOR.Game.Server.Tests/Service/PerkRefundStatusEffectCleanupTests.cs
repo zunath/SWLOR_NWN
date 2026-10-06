@@ -1,10 +1,68 @@
 using FluentAssertions;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class PerkRefundStatusEffectCleanupTests
 {
+    [Test]
+    public void SourceOwnedRefunds_KeepEachAbilityAndPreserveUnrelatedHaste()
+    {
+        var snapRush = new SnapRushTechniqueAbilityDefinition().BuildAbilities()[FeatType.SnapRushTechnique];
+        var secondTechnique = new AbilityDetail
+        {
+            EffectiveLevelPerkType = PerkType.CombatAnalyzer,
+            SourceOwnedStatusEffectTypesRemovedOnPerkRefund = new List<Type> { typeof(Hasten1StatusEffect) }
+        };
+        var hasten = new HastenAbilityDefinition().BuildAbilities()[FeatType.Hasten1];
+        hasten.SourceOwnedStatusEffectTypesRemovedOnPerkRefund.Add(typeof(Hasten1StatusEffect));
+
+        var refunds = Perk.GetSourceOwnedStatusEffectRefunds(
+            new[] { snapRush, secondTechnique, snapRush, hasten }, PerkType.CombatAnalyzer);
+        refunds.Should().Equal(new[]
+        {
+            (snapRush, typeof(Hasten1StatusEffect)),
+            (secondTechnique, typeof(Hasten1StatusEffect))
+        }, "sharing a status class must not discard its ability ownership or include another perk");
+
+        var snapHaste = new Hasten1StatusEffect { OriginatingAbility = snapRush };
+        var secondHaste = new Hasten1StatusEffect { OriginatingAbility = secondTechnique };
+        var beastmasterHaste = new Hasten1StatusEffect { OriginatingAbility = hasten };
+        var untrackedHaste = new Hasten1StatusEffect();
+        var alliedHaste = new Hasten1StatusEffect { OriginatingAbility = snapRush };
+        foreach (var effect in new[] { snapHaste, secondHaste, beastmasterHaste, untrackedHaste })
+            effect.ApplyEffect(1, 2, 15);
+        alliedHaste.ApplyEffect(3, 2, 15);
+        var effects = new[] { snapHaste, secondHaste, beastmasterHaste, untrackedHaste, alliedHaste };
+
+        refunds.SelectMany(refund => StatusEffect.GetSourceOwnedStatusEffects(
+                effects, refund.StatusEffectType, 1, refund.Ability))
+            .Should().Equal(new IStatusEffect[] { snapHaste, secondHaste });
+    }
+
+    [Test]
+    public void SourceOwnedRefundPath_PassesTheOriginatingAbilityToCleanup()
+    {
+        var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "Perk.cs"))).GetRoot();
+        var method = syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.ValueText == "RemoveStatusEffectsOnPerkRefund");
+        var cleanup = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Single(node => node.Expression.ToString() == "StatusEffect.RemoveStatusEffectsFromAllTargetsBySource");
+        cleanup.ArgumentList.Arguments.Select(argument => argument.ToString()).Should()
+            .Equal("creature", "sourceOwnedStatusEffect.StatusEffectType", "false", "sourceOwnedStatusEffect.Ability");
+    }
+
     [Test]
     public void ConfigureToggle_MarksStatusForPerkRefundCleanup()
     {

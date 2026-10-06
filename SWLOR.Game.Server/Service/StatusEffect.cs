@@ -642,7 +642,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             statusEffect.AssignResistanceType(resistanceType);
-            statusEffect.OriginatingAbility = Ability.GetActiveAbilityImpactSummary(source)?.Ability;
+            statusEffect.OriginatingAbility ??= Ability.GetActiveAbilityImpactSummary(source)?.Ability;
             statusEffect.ApplyEffect(source, creature, durationTicks,
                 isPermanent ? 0f : Math.Min(durationSeconds, durationTicks * frequency), tickAnchor);
             if (statusEffect.IsFlaggedForRemoval)
@@ -1458,7 +1458,7 @@ namespace SWLOR.Game.Server.Service
             IEnumerable<IStatusEffect> effects, Type statusEffectType, uint source, AbilityDetail originatingAbility = null)
         {
             return effects.Where(effect => statusEffectType.IsAssignableFrom(effect.GetType()) && effect.Source == source &&
-                (originatingAbility == null || effect.OriginatingAbility == null || effect.OriginatingAbility == originatingAbility))
+                (originatingAbility == null || effect.OriginatingAbility == originatingAbility))
                 .ToArray();
         }
 

@@ -1127,12 +1127,18 @@ public class MimicryTests
         var snapHaste = new Hasten1StatusEffect { OriginatingAbility = snapRush };
         var otherHaste = new Hasten1StatusEffect { OriginatingAbility = otherAbility };
         var alliedHaste = new Hasten1StatusEffect { OriginatingAbility = snapRush };
+        var untrackedHaste = new Hasten1StatusEffect();
         snapHaste.ApplyEffect(1, 1, 15);
         otherHaste.ApplyEffect(1, 1, 15);
         alliedHaste.ApplyEffect(2, 1, 15);
+        untrackedHaste.ApplyEffect(1, 1, 15);
 
-        StatusEffect.GetSourceOwnedStatusEffects(new[] { snapHaste, otherHaste, alliedHaste }, typeof(Hasten1StatusEffect), 1, snapRush)
+        var effects = new[] { snapHaste, otherHaste, alliedHaste, untrackedHaste };
+        StatusEffect.GetSourceOwnedStatusEffects(effects, typeof(Hasten1StatusEffect), 1, snapRush)
             .Should().Equal(new IStatusEffect[] { snapHaste }, "unequipping a technique must remove its own benefit without stripping a different perk's or ally's benefit");
+        StatusEffect.GetSourceOwnedStatusEffects(effects, typeof(Hasten1StatusEffect), 1)
+            .Should().Equal(new IStatusEffect[] { snapHaste, otherHaste, untrackedHaste },
+                "source-wide cleanup must still include untracked effects when no originating ability is requested");
     }
 
     [Test]

@@ -1044,22 +1044,30 @@ namespace SWLOR.Game.Server.Service
                 StatusEffect.RemoveStatusEffect(creature, statusEffectType, false);
             }
 
-            var sourceOwnedStatusEffectTypes = Ability.GetAllAbilityDetails()
-                .Values
-                .Where(ability => ability.EffectiveLevelPerkType == perkType)
-                .SelectMany(ability => ability.SourceOwnedStatusEffectTypesRemovedOnPerkRefund)
-                .Distinct()
-                .ToList();
+            var sourceOwnedStatusEffects = GetSourceOwnedStatusEffectRefunds(
+                Ability.GetAllAbilityDetails().Values, perkType);
 
-            foreach (var statusEffectType in sourceOwnedStatusEffectTypes)
+            foreach (var sourceOwnedStatusEffect in sourceOwnedStatusEffects)
             {
                 StatusEffect.RemoveStatusEffectsFromAllTargetsBySource(
                     creature,
-                    statusEffectType,
-                    false);
+                    sourceOwnedStatusEffect.StatusEffectType,
+                    false,
+                    sourceOwnedStatusEffect.Ability);
             }
 
             Combat.RefreshStatDrivenTrackerEffects(creature);
+        }
+
+        public static IReadOnlyList<(AbilityDetail Ability, Type StatusEffectType)> GetSourceOwnedStatusEffectRefunds(
+            IEnumerable<AbilityDetail> abilities, PerkType perkType)
+        {
+            return abilities
+                .Where(ability => ability.EffectiveLevelPerkType == perkType)
+                .SelectMany(ability => ability.SourceOwnedStatusEffectTypesRemovedOnPerkRefund
+                    .Select(statusEffectType => (Ability: ability, StatusEffectType: statusEffectType)))
+                .Distinct()
+                .ToArray();
         }
 
         public static bool ShouldEnforceActiveAbilityFeatReplacement(uint creature, PerkType perkType)

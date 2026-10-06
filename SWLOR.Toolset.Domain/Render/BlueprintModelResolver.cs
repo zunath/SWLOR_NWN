@@ -1,13 +1,9 @@
-using SWLOR.Toolset.Domain.Documents;
-using Nwn.Authoring.Documents.Native;
-using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.GameData.Lookups;
+using Nwn.Authoring.Documents.Native;
 using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
-using SWLOR.Toolset.Domain.Workspace;
-using SWLOR.NWN.Formats.Plt;
-using SWLOR.NWN.API.NWScript.Enum.Item;
 using Nwn.Authoring.Appearances;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Toolset.Domain.Render
 {
@@ -101,7 +97,8 @@ namespace SWLOR.Toolset.Domain.Render
 
     /// <summary>
     /// Resolves the preview model for a blueprint document from its appearance field and the game-data
-    /// lookup services, headlessly. Creatures whose appearance is a simple model (MODELTYPE S/F/W/L: the
+    /// lookup services, headlessly, through the shared <see cref="ModelReferenceResolver"/> with SWLOR's
+    /// rules supplied by <see cref="SwlorModelResolutionHost"/>. Creatures whose appearance is a simple model (MODELTYPE S/F/W/L: the
     /// appearance.2da RACE column holds the literal model resref) resolve to a single resref; segmented
     /// player-body creatures (MODELTYPE P) resolve to a skeleton + body-part list following NWN's
     /// <c>p{gender}{race}{phenotype}</c> naming so the app can compose them at render time.
@@ -125,8 +122,6 @@ namespace SWLOR.Toolset.Domain.Render
             "forel", "forer", "handl", "handr", "shinl", "shinr",
         };
 
-
-
         /// <summary>
         /// Resolves the preview model for a blueprint. Returns a <see cref="BlueprintModelKind.None"/>
         /// reference (never throws, never null) when the type is not previewable, a needed service is
@@ -134,7 +129,7 @@ namespace SWLOR.Toolset.Domain.Render
         /// </summary>
         /// <param name="itemBlueprintLoader">
         /// Loads an item blueprint's root struct by resref (null / not found tolerated). Used to apply
-        /// the equipped chest armor's ArmorPart_* overrides to segmented creatures — without it they
+        /// the equipped chest armor's ArmorPart_* overrides to segmented creatures - without it they
         /// resolve as their naked body.
         /// </param>
         /// <param name="partModelExists">
@@ -162,391 +157,56 @@ namespace SWLOR.Toolset.Domain.Render
         {
             ArgumentNullException.ThrowIfNull(root);
 
-            return type switch
-            {
-                ResourceType.Utc => ResolveCreature(
-                    root, appearances, itemBlueprintLoader, partModelExists, baseItems, cloakModels,
-                    creatureAttachmentModels),
-                ResourceType.Utp => ResolvePlaceable(root, placeables),
-                ResourceType.Utd => ResolveDoor(root, doors),
-                ResourceType.Utw => ResolveWaypoint(root, waypoints),
-                ResourceType.Uti => ResolveItem(
-                    root, baseItems, partModelExists, armorPreviewFemale, cloakModels),
-                _ => BlueprintModelReference.NoneWith("No model preview for this blueprint type.")
-            };
+            var host = new SwlorModelResolutionHost(
+                appearances, placeables, doors, waypoints, baseItems, itemBlueprintLoader,
+                partModelExists, cloakModels, creatureAttachmentModels);
+            return ToBlueprintReference(ModelReferenceResolver.Resolve(type, root, host, armorPreviewFemale));
         }
 
         /// <summary>
-        /// Resolves an item's preview model by its base item's ModelType. A ModelType 2 (composite)
-        /// weapon resolves to its three fixed-position bottom/middle/top parts, named
-        /// <c>{ItemClass}_b_{ModelPart1:D3}</c> / <c>_m_{ModelPart2:D3}</c> / <c>_t_{ModelPart3:D3}</c> -
-        /// the same naming <see cref="Icons.ItemIconResolver"/> uses for the composite icon, minus its
-        /// leading "i" (verified against the corpus: <c>wswls_b_015.mdl</c> sits beside
-        /// <c>iwswls_b_015.tga</c> in sw_weapon). A ModelType 0/1 item resolves to a single ground
-        /// model <c>{ItemClass}_{ModelPart1:D3}</c> when <paramref name="partModelExists"/> confirms it
-        /// (also corpus-verified: <c>it_torch_015.mdl</c>, <c>helm_001.mdl</c>). ModelType 3 (armor)
-        /// is assembled on a male or female mannequin from its body-part fields. An unrecognised
-        /// ModelType degrades to the standard loot-bag model.
+        /// Adds SWLOR's per-part armor slot and per-item tint-map overrides to the shared description.
+        /// Tint maps are read once per item so the parts of one item share the same dictionary.
         /// </summary>
-        private static BlueprintModelReference ResolveItem(
-            JsonGffStruct root,
-            Func<int, BaseItemIconRow?>? baseItems,
-            Func<string, bool>? partModelExists,
-            bool armorPreviewFemale = false,
-            CloakModelService? cloakModels = null)
+        private static BlueprintModelReference ToBlueprintReference(ModelReference reference)
         {
-            if (baseItems == null)
-                return BlueprintModelReference.NoneWith("Item preview unavailable (base item data not loaded).");
-
-            var baseItem = root.GetIntOrNull("BaseItem") ?? -1;
-            var row = baseItem < 0 ? null : baseItems(baseItem);
-            if (row == null)
-                return BlueprintModelReference.NoneWith($"Unknown base item {baseItem}.");
-
-            var itemClass = row.ItemClass;
-            if (string.IsNullOrWhiteSpace(itemClass))
-                return BlueprintModelReference.NoneWith($"Base item {baseItem}: no item class in baseitems.2da.");
-
-            switch (row.ModelType)
-            {
-                case 2:
-                {
-                    var part1 = ItemAppearanceValues.Read(root, "ModelPart1") ?? 0;
-                    var part2 = ItemAppearanceValues.Read(root, "ModelPart2") ?? 0;
-                    var part3 = ItemAppearanceValues.Read(root, "ModelPart3") ?? 0;
-                    var parts = new[]
-                    {
-                        new BlueprintModelPart("bottom", $"{itemClass}_b_{part1:D3}"),
-                        new BlueprintModelPart("middle", $"{itemClass}_m_{part2:D3}"),
-                        new BlueprintModelPart("top", $"{itemClass}_t_{part3:D3}")
-                    };
-
-                    if (partModelExists != null && !parts.Any(part => partModelExists(part.ModelResRef)))
-                        return LootBagFallback(itemClass, partModelExists, "no composite part model resolves");
-
-                    return new BlueprintModelReference
-                    {
-                        Kind = BlueprintModelKind.ItemComposite,
-                        Status = $"{itemClass} (composite {part1}-{part2}-{part3})",
-                        Parts = parts
-                    };
-                }
-
-                case 0:
-                case 1:
-                {
-                    var part1 = ItemAppearanceValues.Read(root, "ModelPart1") ?? 0;
-
-                    // A cloak's own model is a skinmesh weighted to the skeleton's cloak chain - drawn
-                    // by itself it is a flat sheet in mid-air. Worn on the mannequin it hangs where it
-                    // is meant to, which is the only way to judge one.
-                    if (string.Equals(itemClass, CloakItemClass, StringComparison.OrdinalIgnoreCase))
-                    {
-                        var cloakMapping = cloakModels?.GetOrNull(part1);
-                        var cloakModel = cloakMapping?.Model ?? part1;
-                        var cloakTexture = cloakMapping?.Texture ?? part1;
-                        return ResolveCapeMannequin(
-                            root, itemClass, armorPreviewFemale, partModelExists,
-                            cloakModel, cloakTexture);
-                    }
-
-                    var modelResRef = $"{itemClass}_{part1:D3}";
-                    if (partModelExists != null && !partModelExists(modelResRef))
-                        return LootBagFallback(itemClass, partModelExists, $"no ground model '{modelResRef}'");
-
-                    return new BlueprintModelReference
-                    {
-                        Kind = BlueprintModelKind.Simple,
-                        Status = $"{modelResRef}.mdl",
-                        ModelResRef = modelResRef,
-                        RootUsesItemTintOverrides = true,
-                        LayerColorIndices = ResolveLayerColors(root, root)
-                    };
-                }
-
-                case 3:
-                    return ResolveArmorMannequin(root, itemClass, armorPreviewFemale, partModelExists);
-
-                default:
-                    return LootBagFallback(
-                        itemClass, partModelExists, $"unsupported model type {row.ModelType}");
-            }
-        }
-
-        /// <summary>
-        /// The model NWN itself drops on the ground for an item with no ground model of its own:
-        /// the loot bag (baseitems.2da's near-universal DefaultModel). Every item therefore always
-        /// has SOMETHING to show in a 3D preview; only a session that cannot resolve even the bag
-        /// (no base-game data) degrades to no model at all.
-        /// </summary>
-        private static BlueprintModelReference LootBagFallback(
-            string itemClass, Func<string, bool>? partModelExists, string why)
-        {
-            const string BagModel = "it_bag";
-            if (partModelExists != null && !partModelExists(BagModel))
-                return BlueprintModelReference.NoneWith($"{itemClass}: {why}, and no loot bag model.");
+            var tintMaps = new Dictionary<JsonGffStruct, IReadOnlyDictionary<string, int>>(
+                ReferenceEqualityComparer.Instance);
+            var parts = reference.Parts
+                .Select(part => ToBlueprintPart(part, tintMaps))
+                .ToArray();
 
             return new BlueprintModelReference
             {
-                Kind = BlueprintModelKind.Simple,
-                Status = $"{itemClass}: {why} - showing the loot bag.",
-                ModelResRef = BagModel
-            };
-        }
-
-        /// <summary>
-        /// Dresses a default human mannequin (<c>pmh0</c>/<c>pfh0</c>) with the armor blueprint's
-        /// own parts - the "worn" preview the item editor shows for a ModelType 3 base item. The
-        /// mannequin's naked baseline is part 1 for every body piece (head included) and none for
-        /// the shoulders; each ArmorPart_* the blueprint carries overrides its slot, the robe is
-        /// added when one is set, and the six dye channels come from the blueprint's color fields
-        /// through the same PLT layer mapping a dressed creature uses.
-        /// </summary>
-        private static BlueprintModelReference ResolveArmorMannequin(
-            JsonGffStruct root,
-            string itemClass,
-            bool female,
-            Func<string, bool>? partModelExists)
-        {
-            var prefix = female ? "pfh0" : "pmh0";
-            var parts = new List<BlueprintModelPart>();
-
-            var robeNumber = ItemAppearanceValues.Read(root, "ArmorPart_Robe") ?? 0;
-            if (robeNumber > 0)
-            {
-                var robeResRef = BuildPartName(prefix, "robe", robeNumber);
-                if (partModelExists?.Invoke(robeResRef) ?? true)
-                {
-                    parts.Add(new BlueprintModelPart(
-                        "robe", robeResRef, UsesItemTintOverrides: true,
-                        ArmorPart: AppearanceArmor.Robe));
-                }
-            }
-
-            parts.Add(new BlueprintModelPart("head", BuildPartName(prefix, "head", 1)));
-
-            foreach (var (_, armorKey, partType) in CreatureBodyPartFields.All)
-            {
-                var armorValue = ItemAppearanceValues.Read(root, "ArmorPart_" + armorKey) ?? 0;
-
-                // Unlike a dressed creature (where a creature part of 0 means "this body has no
-                // such part"), the mannequin exists to SHOW the armor: an armor part always wins,
-                // and only the armor-less slots fall back to the bare body (shoulders have no
-                // bare-body piece at all).
-                var number = armorValue > 0
-                    ? armorValue
-                    : partType is "shol" or "shor" ? 0 : 1;
-                if (number > 0)
-                {
-                    parts.Add(new BlueprintModelPart(
-                        partType,
-                        BuildPartName(prefix, partType, number),
-                        UsesItemTintOverrides: true,
-                        ArmorPart: GetArmorPart(partType)));
-                }
-            }
-
-            return new BlueprintModelReference
-            {
-                Kind = BlueprintModelKind.Segmented,
-                Status = $"{itemClass} on a {(female ? "female" : "male")} mannequin ({prefix})",
-                SkeletonResRef = prefix,
+                Kind = (BlueprintModelKind)(int)reference.Kind,
+                Status = reference.Status,
+                ModelResRef = reference.ModelResRef,
+                RootUsesItemTintOverrides = reference.RootUsesItemTintOverrides,
+                IsDoorTransition = reference.IsDoorTransition,
+                SkeletonResRef = reference.SkeletonResRef,
                 Parts = parts,
-                // The item struct carries no Color_* creature fields, so skin/hair fall to palette
-                // row 0; the armor dye channels come from the blueprint itself.
-                LayerColorIndices = ResolveLayerColors(root, root)
+                LayerColorIndices = reference.LayerColorIndices
             };
         }
 
-        /// <summary>baseitems.2da's ItemClass for a cloak - the same string ItemFamilyClassifier reads.</summary>
-        private const string CloakItemClass = "cloak";
-
-        /// <summary>
-        /// A cape dressed on a plain mannequin: the bare body, plus the cloak at the number the
-        /// blueprint names. Cloak part resources are spelled with an underscore before the number
-        /// (pmh0_cloak_001, seven of them), unlike every other body part.
-        /// </summary>
-        private static BlueprintModelReference ResolveCapeMannequin(
-            JsonGffStruct root,
-            string itemClass,
-            bool female,
-            Func<string, bool>? partModelExists,
-            int cloakNumber,
-            int cloakTextureNumber)
+        private static BlueprintModelPart ToBlueprintPart(
+            ModelPartReference part,
+            Dictionary<JsonGffStruct, IReadOnlyDictionary<string, int>> tintMaps)
         {
-            var prefix = female ? "pfh0" : "pmh0";
-            var cloakResRef = $"{prefix}_cloak_{cloakNumber:D3}";
-            var cloakTextureResRef = $"{prefix}_cloak_{cloakTextureNumber:D3}";
-            if (partModelExists != null && !partModelExists(cloakResRef))
-                return LootBagFallback(itemClass, partModelExists, $"no cloak model '{cloakResRef}'");
-
-            var parts = new List<BlueprintModelPart>
+            IReadOnlyDictionary<string, int>? tintMapOverrides = null;
+            if (part.TintSourceItem is { } item && !tintMaps.TryGetValue(item, out tintMapOverrides))
             {
-                new(
-                    "cloak",
-                    cloakResRef,
-                    TextureResRef: cloakTextureResRef,
-                    UsesItemTintOverrides: true)
-            };
-            parts.Add(new BlueprintModelPart("head", BuildPartName(prefix, "head", 1)));
-            foreach (var (_, _, partType) in CreatureBodyPartFields.All)
-            {
-                // The body is here to hang the cape on, so it stays plain: part 1 everywhere it
-                // exists, and shoulders (which have no bare-body piece) left off.
-                if (partType is "shol" or "shor")
-                    continue;
-
-                parts.Add(new BlueprintModelPart(partType, BuildPartName(prefix, partType, 1)));
+                tintMapOverrides = TintMapOverrides.Read(new VarTable(item));
+                tintMaps[item] = tintMapOverrides;
             }
 
-            return new BlueprintModelReference
-            {
-                Kind = BlueprintModelKind.Segmented,
-                Status = $"{itemClass} on a {(female ? "female" : "male")} mannequin ({prefix})",
-                SkeletonResRef = prefix,
-                Parts = parts,
-                LayerColorIndices = ResolveLayerColors(root, root)
-            };
-        }
-
-        private static BlueprintModelReference ResolveCreature(
-            JsonGffStruct root,
-            AppearanceService? appearances,
-            Func<string, JsonGffStruct?>? itemBlueprintLoader,
-            Func<string, bool>? partModelExists,
-            Func<int, BaseItemIconRow?>? baseItems,
-            CloakModelService? cloakModels,
-            CreatureAttachmentModelService? creatureAttachmentModels)
-        {
-            if (appearances == null)
-                return BlueprintModelReference.NoneWith("Creature preview unavailable (appearance data not loaded).");
-
-            var appearanceId = root.GetIntOrNull("Appearance_Type") ?? -1;
-            var row = appearances.GetAll().FirstOrDefault(r => r.Id == appearanceId);
-            if (row == null)
-                return BlueprintModelReference.NoneWith($"Unknown appearance id {appearanceId}.");
-
-            var equipment = CreatureEquipmentResolver.Resolve(root, itemBlueprintLoader);
-            var armor = equipment.Armor?.Item;
-
-            if (string.Equals(row.ModelType, "P", StringComparison.OrdinalIgnoreCase))
-            {
-                var prefix = SegmentedCreaturePrefix(root, row);
-                if (prefix == null)
-                    return BlueprintModelReference.NoneWith(
-                        $"{row.DisplayName}: segmented appearance has no race letter.");
-
-                var visibleEquipment = ResolveVisibleEquipment(
-                    equipment, partModelExists, baseItems, cloakModels, prefix);
-                visibleEquipment = AddCreatureAttachments(
-                    root, visibleEquipment, armor, creatureAttachmentModels, partModelExists);
-                return ResolveSegmentedCreature(
-                    root, row, prefix, partModelExists, visibleEquipment, armor);
-            }
-
-            var modelResRef = row.Race;
-            if (string.IsNullOrWhiteSpace(modelResRef))
-                return BlueprintModelReference.NoneWith($"{row.DisplayName}: no model ResRef in appearance.2da.");
-
-            var simpleParts = ResolveVisibleEquipment(
-                equipment, partModelExists, baseItems, cloakModels,
-                wearerPrefix: null);
-            simpleParts = AddCreatureAttachments(
-                root, simpleParts, armor, creatureAttachmentModels, partModelExists);
-
-            return new BlueprintModelReference
-            {
-                Kind = BlueprintModelKind.Simple,
-                Status = $"{row.DisplayName} ({modelResRef}.mdl)",
-                ModelResRef = modelResRef,
-                Parts = simpleParts.Parts,
-                LayerColorIndices = ResolveLayerColors(root, null)
-            };
-        }
-
-        private static string? SegmentedCreaturePrefix(JsonGffStruct root, AppearanceRow row)
-        {
-            if (string.IsNullOrWhiteSpace(row.Race))
-                return null;
-
-            // NWN player-body prefix: p{gender}{race}{phenotype}, e.g. "pmh0".
-            var gender = (root.GetIntOrNull("Gender") ?? 0) == 1 ? 'f' : 'm';
-            var phenotype = root.GetIntOrNull("Phenotype") ?? 0;
-            return $"p{gender}{char.ToLowerInvariant(row.Race[0])}{phenotype}";
-        }
-
-        private static BlueprintModelReference ResolveSegmentedCreature(
-            JsonGffStruct root,
-            AppearanceRow row,
-            string prefix,
-            Func<string, bool>? partModelExists,
-            VisibleEquipment visibleEquipment,
-            JsonGffStruct? armor)
-        {
-            var armorTintMapOverrides = armor == null
-                ? null
-                : TintMapOverrides.Read(new VarTable(armor));
-            var parts = new List<BlueprintModelPart>();
-
-            // Robe first (armor-only; creatures have no robe body part), when its model resolves.
-            // ALL body parts are still emitted alongside it — whether the robe replaces the parts
-            // it covers depends on its geometry (RobeCoverage.IsFullBodyRobe), which the renderer
-            // decides after loading the model; partial robes (loincloths, tabards) cover nothing.
-            var robeNumber = armor == null
-                ? 0
-                : ItemAppearanceValues.Read(armor, "ArmorPart_Robe") ?? 0;
-            if (robeNumber > 0)
-            {
-                var robeResRef = BuildPartName(prefix, "robe", robeNumber);
-                if (partModelExists?.Invoke(robeResRef) ?? true)
-                {
-                    parts.Add(new BlueprintModelPart(
-                        "robe", robeResRef, UsesItemTintOverrides: true,
-                        TintMapOverrides: armorTintMapOverrides,
-                        ArmorPart: AppearanceArmor.Robe));
-                }
-            }
-
-            var head = root.GetIntOrNull("Appearance_Head");
-            if (head is > 0)
-                parts.Add(new BlueprintModelPart("head", BuildPartName(prefix, "head", head.Value)));
-
-            foreach (var (creatureField, armorKey, partType) in CreatureBodyPartFields.All)
-            {
-                if (visibleEquipment.HiddenBodyParts.Contains(partType))
-                    continue;
-
-                var number = CreatureEquipmentResolver.ResolveBodyPartNumber(
-                    root.GetIntOrNull(creatureField) ?? 0,
-                    armor == null
-                        ? 0
-                        : ItemAppearanceValues.Read(armor, "ArmorPart_" + armorKey) ?? 0);
-                if (number > 0)
-                {
-                    parts.Add(new BlueprintModelPart(
-                        partType,
-                        BuildPartName(prefix, partType, number),
-                        UsesItemTintOverrides: armor != null,
-                        TintMapOverrides: armorTintMapOverrides,
-                        ArmorPart: armor == null
-                            ? AppearanceArmor.Invalid
-                            : GetArmorPart(partType)));
-                }
-            }
-
-            parts.AddRange(visibleEquipment.Parts);
-
-            if (parts.Count == 0)
-                return BlueprintModelReference.NoneWith($"{row.DisplayName}: segmented creature has no body parts.");
-
-            return new BlueprintModelReference
-            {
-                Kind = BlueprintModelKind.Segmented,
-                Status = $"{row.DisplayName} (segmented {prefix}, {parts.Count} parts)",
-                SkeletonResRef = prefix,
-                Parts = parts,
-                LayerColorIndices = ResolveLayerColors(root, armor)
-            };
+            return new BlueprintModelPart(
+                part.PartType,
+                part.ModelResRef,
+                part.LayerColorIndices,
+                part.TextureResRef,
+                part.UsesItemTintOverrides,
+                tintMapOverrides,
+                part.UsesItemTintOverrides ? GetArmorPart(part.PartType) : AppearanceArmor.Invalid);
         }
 
         private static AppearanceArmor GetArmorPart(string partType)
@@ -576,211 +236,6 @@ namespace SWLOR.Toolset.Domain.Render
             };
         }
 
-        private static IReadOnlyDictionary<int, int> ResolveLayerColors(
-            JsonGffStruct creature,
-            JsonGffStruct? armor)
-        {
-            var colors = Enumerable.Range(0, 10).ToDictionary(layer => layer, _ => 0);
-
-            // Absent means row 0, which is what Aurora shows: its item preview dresses a default
-            // mannequin whose unspecified layers take the palette's first row. Picking a
-            // "nicer" mid-palette row instead turned the head and hands red, because a palette row
-            // is a gradient and only its brightest column is the pale tone I had sampled.
-            colors[PltLayers.Skin] = creature.GetIntOrNull("Color_Skin") ?? 0;
-            colors[PltLayers.Hair] = creature.GetIntOrNull("Color_Hair") ?? 0;
-            colors[PltLayers.Tattoo1] = creature.GetIntOrNull("Color_Tattoo1") ?? 0;
-            colors[PltLayers.Tattoo2] = creature.GetIntOrNull("Color_Tattoo2") ?? 0;
-
-            if (armor != null)
-            {
-                colors[PltLayers.Metal1] = armor.GetIntOrNull("Metal1Color") ?? 0;
-                colors[PltLayers.Metal2] = armor.GetIntOrNull("Metal2Color") ?? 0;
-                colors[PltLayers.Cloth1] = armor.GetIntOrNull("Cloth1Color") ?? 0;
-                colors[PltLayers.Cloth2] = armor.GetIntOrNull("Cloth2Color") ?? 0;
-                colors[PltLayers.Leather1] = armor.GetIntOrNull("Leather1Color") ?? 0;
-                colors[PltLayers.Leather2] = armor.GetIntOrNull("Leather2Color") ?? 0;
-            }
-
-            return colors;
-        }
-
-
-
-        /// <summary>
-        /// Resolves the models for equipment the game draws on a creature. Ordinary right- and
-        /// left-hand items are held props; creature natural-weapon/stat slots are deliberately not.
-        /// </summary>
-        private readonly record struct VisibleEquipment(
-            IReadOnlyList<BlueprintModelPart> Parts,
-            IReadOnlySet<string> HiddenBodyParts);
-
-        private static VisibleEquipment AddCreatureAttachments(
-            JsonGffStruct creature,
-            VisibleEquipment visibleEquipment,
-            JsonGffStruct? armor,
-            CreatureAttachmentModelService? attachmentModels,
-            Func<string, bool>? partModelExists)
-        {
-            if (attachmentModels == null)
-                return visibleEquipment;
-
-            var parts = visibleEquipment.Parts.ToList();
-            var layerColorIndices = ResolveLayerColors(creature, armor);
-            var tintMapOverrides = armor == null
-                ? null
-                : TintMapOverrides.Read(new VarTable(armor));
-            AddCreatureAttachment(
-                parts,
-                "wing",
-                attachmentModels.GetWingOrNull(creature.GetIntOrNull("Wings_New") ?? 0),
-                partModelExists,
-                layerColorIndices,
-                armor != null,
-                tintMapOverrides);
-            AddCreatureAttachment(
-                parts,
-                "tail",
-                attachmentModels.GetTailOrNull(creature.GetIntOrNull("Tail_New") ?? 0),
-                partModelExists,
-                layerColorIndices,
-                armor != null,
-                tintMapOverrides);
-            return new VisibleEquipment(parts, visibleEquipment.HiddenBodyParts);
-        }
-
-        private static void AddCreatureAttachment(
-            ICollection<BlueprintModelPart> parts,
-            string partType,
-            string? modelResRef,
-            Func<string, bool>? partModelExists,
-            IReadOnlyDictionary<int, int> layerColorIndices,
-            bool usesItemTintOverrides,
-            IReadOnlyDictionary<string, int>? tintMapOverrides)
-        {
-            if (string.IsNullOrWhiteSpace(modelResRef) ||
-                partModelExists?.Invoke(modelResRef) == false)
-            {
-                return;
-            }
-
-            parts.Add(new BlueprintModelPart(
-                partType,
-                modelResRef,
-                LayerColorIndices: layerColorIndices,
-                UsesItemTintOverrides: usesItemTintOverrides,
-                TintMapOverrides: tintMapOverrides));
-        }
-
-        private static VisibleEquipment ResolveVisibleEquipment(
-            CreatureEquipmentProjection equipment,
-            Func<string, bool>? partModelExists,
-            Func<int, BaseItemIconRow?>? baseItems,
-            CloakModelService? cloakModels,
-            string? wearerPrefix)
-        {
-            if (baseItems == null)
-            {
-                return new VisibleEquipment(
-                    Array.Empty<BlueprintModelPart>(),
-                    new HashSet<string>(StringComparer.OrdinalIgnoreCase));
-            }
-
-            var parts = new List<BlueprintModelPart>();
-            AddVisibleEquipmentPart(parts, equipment.Helmet, "helmet", partModelExists, baseItems, cloakModels, wearerPrefix);
-            AddVisibleEquipmentPart(parts, equipment.Cloak, "cloak", partModelExists, baseItems, cloakModels, wearerPrefix);
-            AddVisibleEquipmentPart(parts, equipment.RightHand, "weaponr", partModelExists, baseItems, cloakModels, wearerPrefix);
-            AddVisibleEquipmentPart(parts, equipment.LeftHand, "weaponl", partModelExists, baseItems, cloakModels, wearerPrefix);
-            return new VisibleEquipment(parts, ResolveCloakHiddenBodyParts(equipment.Cloak?.Item, cloakModels));
-        }
-
-        private static IReadOnlySet<string> ResolveCloakHiddenBodyParts(
-            JsonGffStruct? cloak,
-            CloakModelService? cloakModels)
-        {
-            var hidden = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var appearance = cloak == null ? null : ItemAppearanceValues.Read(cloak, "ModelPart1");
-            var mapping = appearance is { } value ? cloakModels?.GetOrNull(value) : null;
-            if (mapping?.HideLeftShoulder == true) hidden.Add("shol");
-            if (mapping?.HideRightShoulder == true) hidden.Add("shor");
-            return hidden;
-        }
-
-        private static void AddVisibleEquipmentPart(
-            ICollection<BlueprintModelPart> destination,
-            CreatureEquipmentItem? equipped,
-            string attachmentType,
-            Func<string, bool>? partModelExists,
-            Func<int, BaseItemIconRow?> baseItems,
-            CloakModelService? cloakModels,
-            string? wearerPrefix)
-        {
-            var item = equipped?.Item;
-            if (item == null)
-                return;
-
-            if (attachmentType == "weaponl" &&
-                (BaseItem?)item.GetIntOrNull("BaseItem") is BaseItem.SmallShield or BaseItem.LargeShield or BaseItem.TowerShield)
-                attachmentType = "shield";
-
-            var tintMapOverrides = TintMapOverrides.Read(new VarTable(item));
-
-            var reference = ResolveItem(
-                item, baseItems, partModelExists, armorPreviewFemale: false,
-                cloakModels: cloakModels);
-            if (attachmentType == "cloak")
-            {
-                foreach (var part in reference.Parts.Where(
-                             part => part.PartType.Equals("cloak", StringComparison.OrdinalIgnoreCase)))
-                {
-                    var modelResRef = part.ModelResRef;
-                    var textureResRef = part.TextureResRef;
-                    if (!string.IsNullOrWhiteSpace(wearerPrefix))
-                    {
-                        var cloakSuffix = modelResRef.IndexOf("_cloak_", StringComparison.OrdinalIgnoreCase);
-                        if (cloakSuffix >= 0)
-                            modelResRef = wearerPrefix + modelResRef[cloakSuffix..];
-
-                        var textureSuffix = textureResRef?.IndexOf(
-                            "_cloak_", StringComparison.OrdinalIgnoreCase) ?? -1;
-                        if (textureSuffix >= 0)
-                            textureResRef = wearerPrefix + textureResRef![textureSuffix..];
-                    }
-
-                    if (partModelExists?.Invoke(modelResRef) ?? true)
-                    {
-                        destination.Add(new BlueprintModelPart(
-                            attachmentType, modelResRef, reference.LayerColorIndices, textureResRef,
-                            UsesItemTintOverrides: true,
-                            TintMapOverrides: tintMapOverrides));
-                    }
-                }
-
-                return;
-            }
-
-            if (reference.Kind == BlueprintModelKind.ItemComposite)
-            {
-                foreach (var part in reference.Parts)
-                {
-                    destination.Add(new BlueprintModelPart(
-                        attachmentType, part.ModelResRef, reference.LayerColorIndices,
-                        UsesItemTintOverrides: true,
-                        TintMapOverrides: tintMapOverrides));
-                }
-                return;
-            }
-
-            if (reference.Kind == BlueprintModelKind.Simple &&
-                !string.IsNullOrWhiteSpace(reference.ModelResRef) &&
-                !reference.ModelResRef.Equals("it_bag", StringComparison.OrdinalIgnoreCase))
-            {
-                destination.Add(new BlueprintModelPart(
-                    attachmentType, reference.ModelResRef, reference.LayerColorIndices,
-                    UsesItemTintOverrides: true,
-                    TintMapOverrides: tintMapOverrides));
-            }
-        }
-
         /// <summary>
         /// The item blueprint resref supplying a segmented creature's visible armor, if any. Shared
         /// with thumbnail caching so the cache observes the same dependency as model resolution.
@@ -794,96 +249,5 @@ namespace SWLOR.Toolset.Domain.Render
         /// <summary>Visible equipment references used to invalidate dependent creature previews.</summary>
         public static IReadOnlyList<string> GetVisibleEquippedItemResRefs(JsonGffStruct root) =>
             CreatureEquipmentResolver.GetVisibleBlueprintResRefs(root);
-
-        private static BlueprintModelReference ResolvePlaceable(JsonGffStruct root, PlaceableAppearanceService? placeables)
-        {
-            if (placeables == null)
-                return BlueprintModelReference.NoneWith("Placeable preview unavailable (placeable data not loaded).");
-
-            var appearanceId = root.GetIntOrNull("Appearance") ?? -1;
-            var row = placeables.GetAll().FirstOrDefault(r => r.Id == appearanceId);
-            if (row == null)
-                return BlueprintModelReference.NoneWith($"Unknown placeable appearance id {appearanceId}.");
-
-            if (string.IsNullOrWhiteSpace(row.ModelName))
-                return BlueprintModelReference.NoneWith($"{row.DisplayName}: no model in placeables.2da.");
-
-            return new BlueprintModelReference
-            {
-                Kind = BlueprintModelKind.Simple,
-                Status = $"{row.DisplayName} ({row.ModelName}.mdl)",
-                ModelResRef = row.ModelName
-            };
-        }
-
-        /// <summary>
-        /// A waypoint's marker model, from waypoint.2da.
-        /// </summary>
-        /// <remarks>
-        /// Unlike placeables.2da there is no separate model column - the row's RESREF is the model.
-        /// </remarks>
-        private static BlueprintModelReference ResolveWaypoint(
-            JsonGffStruct root, WaypointAppearanceService? waypoints)
-        {
-            if (waypoints == null)
-                return BlueprintModelReference.NoneWith("Waypoint preview unavailable (waypoint data not loaded).");
-
-            var appearanceId = root.GetIntOrNull("Appearance") ?? -1;
-            if (!waypoints.TryGet(appearanceId, out var row))
-                return BlueprintModelReference.NoneWith($"Unknown waypoint appearance {appearanceId}.");
-
-            if (string.IsNullOrWhiteSpace(row.ModelName))
-                return BlueprintModelReference.NoneWith($"{row.DisplayName}: no model in waypoint.2da.");
-
-            return new BlueprintModelReference
-            {
-                Kind = BlueprintModelKind.Simple,
-                Status = $"{row.DisplayName} ({row.ModelName}.mdl)",
-                ModelResRef = row.ModelName
-            };
-        }
-
-        private static BlueprintModelReference ResolveDoor(JsonGffStruct root, DoorTypeService? doors)
-        {
-            if (doors == null)
-                return BlueprintModelReference.NoneWith("Door preview unavailable (door-type data not loaded).");
-
-            // Appearance names a specific doortypes.2da model when non-zero. Otherwise
-            // GenericType_New (or legacy GenericType) indexes genericdoors.2da.
-            var specificId = root.GetIntOrNull("Appearance") ?? 0;
-            var specific = specificId > 0
-                ? doors.GetAll().FirstOrDefault(row => row.Id == specificId)
-                : null;
-            var genericId = root.GetIntOrNull("GenericType_New")
-                            ?? root.GetIntOrNull("GenericType")
-                            ?? 0;
-            var generic = specificId == 0
-                ? doors.GetGenericAll().FirstOrDefault(row => row.Id == genericId)
-                : null;
-            var displayName = specific?.DisplayName ?? generic?.DisplayName;
-            var model = specific?.Model ?? generic?.Model;
-            var visibleModel = specific?.VisibleModel ?? generic?.VisibleModel ?? true;
-            var table = specific != null ? "doortypes.2da" : "genericdoors.2da";
-
-            if (displayName == null)
-                return BlueprintModelReference.NoneWith(
-                    $"Unknown {(specificId > 0 ? "specific" : "generic")} door type " +
-                    $"{(specificId > 0 ? specificId : genericId)}.");
-
-            if (string.IsNullOrWhiteSpace(model))
-                return BlueprintModelReference.NoneWith($"{displayName}: no model in {table}.");
-
-            return new BlueprintModelReference
-            {
-                Kind = BlueprintModelKind.Simple,
-                Status = $"{displayName} ({model}.mdl)",
-                ModelResRef = model,
-                IsDoorTransition = !visibleModel
-            };
-        }
-
-        /// <summary>NWN body-part MDL naming: <c>{prefix}_{partType}{number:D3}</c>, e.g. <c>pmh0_chest001</c>.</summary>
-        private static string BuildPartName(string prefix, string partType, int number) =>
-            $"{prefix}_{partType}{number:D3}";
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Service.SpaceService;
 namespace SWLOR.Game.Server.Entity
 {
@@ -21,6 +22,9 @@ namespace SWLOR.Game.Server.Entity
         public bool DepositPaid { get; set; }
         public int FreightFee { get; set; }
         public Dictionary<string,string> ShipsByPlayer { get; set; }=new();
+        public Dictionary<string,string> CrewByPlayer { get; set; }=new();
+        public IEnumerable<string> Participants => ShipsByPlayer.Keys.Concat(CrewByPlayer.Keys).Distinct();
+        public string ParticipantShip(string id)=>ShipsByPlayer.GetValueOrDefault(id)??CrewByPlayer.GetValueOrDefault(id);
         public List<SpaceRoutePoint> Route { get; set; }=new();
         public int CompletedLegs { get; set; }
         public HashSet<string> Kills { get; set; }=new();

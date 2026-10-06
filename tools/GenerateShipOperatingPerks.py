@@ -99,6 +99,33 @@ def generate():
         return prefix+"\n".join("   ".join(row) for row in rows if int(row[0])>=minimum)+"\n"
     files[featpath]=native_table(featpath,2901,sorted(fr,key=lambda x:int(x[0])))
     files[spellpath]=native_table(spellpath,1723,sr)
+    # Native hotbar scans only the first1024 class-feat rows for cursor abilities.
+    classpath=ROOT/"SWLOR_Haks/sw_2da/CLS_FEAT_FIGHT.2da"
+    original=classpath.read_bytes().decode("utf-8").splitlines(keepends=True)
+    ch=original[2].split();ci=ch.index("FeatIndex")+1
+    generated={row[0]:row for row in fr if 2901<=int(row[0])<=3031}
+    occupied={};available=[];positions={}
+    for position,line in enumerate(original[3:],3):
+        row=line.split()
+        if not row or not row[0].isdigit():continue
+        index=int(row[0]);positions[index]=position
+        if row[ci] in generated:occupied[row[ci]]=index
+        elif row[ci]=="****":available.append(index)
+    target_index=fc.index("HostileFeat")+1
+    ordered=sorted(generated.values(),key=lambda row:(row[target_index]!="1",int(row[0])))
+    for feat in ordered:
+        cursor=feat[target_index]=="1"
+        existing=occupied.get(feat[0])
+        if existing is not None:
+            if cursor and existing>=1024:raise ValueError("Ship cursor outside native class-feat scan")
+            continue
+        choices=[index for index in available if (index<1024 if cursor else index>=1024)]
+        if not choices:choices=[index for index in available if not cursor or index<1024]
+        if not choices:raise ValueError("No safe native class-feat row for "+feat[1])
+        index=min(choices);available.remove(index)
+        values={column:"****" for column in ch};values.update(FeatLabel=feat[1],FeatIndex=feat[0],List="1",GrantedOnLevel="99",OnMenu="1")
+        original[positions[index]]="   ".join([str(index)]+[values[column] for column in ch])+"\n"
+    files[classpath]="".join(original)
     tlk["entries"]=sorted(entries.values(),key=lambda e:e["id"]);files[tlk_path]=json.dumps(tlk,indent=2,ensure_ascii=False)+"\n"
     output=io.StringIO(newline="");writer=csv.DictWriter(output,fieldnames=list(manifest[0]),lineterminator="\n",quoting=csv.QUOTE_ALL);writer.writeheader();writer.writerows(manifest);files[manifest_path]=output.getvalue()
     return files

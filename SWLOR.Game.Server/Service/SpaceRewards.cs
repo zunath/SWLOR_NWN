@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Service
                 var rows=DB.Search(new DBQuery<SpaceContract>().AddFieldSearch(nameof(SpaceContract.Closed),true).OrderBy(nameof(SpaceContract.Id)).AddPaging(100,offset)).ToArray();
                 foreach(var contract in rows.Where(x=>x.ExpiresAt<before).ToArray())
                 {
-                    var rewards=contract.ShipsByPlayer.Keys.Select(x=>DB.Get<SpaceReward>("space-contract/"+contract.Id+"/"+x)).Where(x=>x!=null).ToArray();
+                    var rewards=contract.Participants.Select(x=>DB.Get<SpaceReward>("space-contract/"+contract.Id+"/"+x)).Where(x=>x!=null).ToArray();
                     if(rewards.Any(x=>!x.Settled))continue;
                     foreach(var reward in rewards)DeleteSettledReward(reward);
                     DB.Delete<SpaceContract>(contract.Id);
@@ -78,14 +78,15 @@ namespace SWLOR.Game.Server.Service
             record.SpaceExperience.Touch(now, now.AddSeconds(Math.Clamp(seconds, 0, 10)));
             DB.Set(record);
         }
-        private static void RecordSpaceDamage(uint source, uint target, ShipStatus sourceStatus, ShipStatus targetStatus, double shield, double hull)
+        private static void RecordSpaceDamage(uint source, uint target, ShipStatus sourceStatus, ShipStatus targetStatus, double shield, double hull,string creditOperatorId=null)
         {
             if (source == target || !(GetIsEnemy(source, target) || GetIsEnemy(target, source))) return;
-            if (GetIsPC(source) && EncounterId(targetStatus) is string targetId)
+            if(creditOperatorId==null&&GetIsPC(source))creditOperatorId=GetObjectUUID(SkillOperator(source,SkillType.Gunnery));
+            if (creditOperatorId!=null && EncounterId(targetStatus) is string targetId)
             {
                 var encounter = DB.Get<SpaceEncounter>(targetId);
                 if (encounter != null && !encounter.Completed)
-                { encounter.Contributions.CreditDamage(GetObjectUUID(source), shield + hull); DB.Set(encounter); }
+                { encounter.Contributions.CreditDamage(creditOperatorId, shield + hull); DB.Set(encounter); }
             }
             if ((GetIsPC(target) || !string.IsNullOrEmpty(GetLocalString(target,"SPACE_PROXY_SHIP")) || !string.IsNullOrEmpty(GetLocalString(target,"SPACE_RESCUE_CONTRACT"))) && EncounterId(sourceStatus) is string sourceId)
             {
@@ -127,7 +128,7 @@ namespace SWLOR.Game.Server.Service
             if(!string.IsNullOrEmpty(rescueContract))
             {
                 var contract=DB.Get<SpaceContract>(rescueContract);
-                if(contract?.State==SpaceContractState.Active&&contract.ShipsByPlayer.ContainsKey(GetObjectUUID(source)))
+                if(contract?.State==SpaceContractState.Active&&contract.ParticipantShip(GetObjectUUID(source))!=null)
                 {contract.RescueRecovery=Math.Min(SpaceActivityCatalog.Default.Profiles[contract.Profile].Rescue,contract.RescueRecovery+actual-remaining);DB.Set(contract);}
             }
         }

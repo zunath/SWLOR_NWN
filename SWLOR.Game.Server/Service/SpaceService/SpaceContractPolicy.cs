@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
         public static bool CreditWork(SpaceContract contract,SpaceSite site,SpaceWorkClaim claim)
         {
-            if(!IsActive(contract)||!contract.ShipsByPlayer.TryGetValue(claim.PlayerId,out var shipId)||shipId!=claim.ShipId||!contract.Sites.Contains(site.Id)||claim.State!=SpaceWorkState.Completed||!contract.Receipts.Add("work/"+claim.Id))return false;
+            if(!IsActive(contract)||contract.ParticipantShip(claim.PlayerId)!=claim.ShipId||!contract.Sites.Contains(site.Id)||claim.State!=SpaceWorkState.Completed||!contract.Receipts.Add("work/"+claim.Id))return false;
             if(claim.Action==ShipModuleAction.Survey)
             { if(contract.Surveys.Add(site.Id))contract.Contributions.Credit(claim.PlayerId,SkillType.Astrometrics,1); }
             else
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         {
             if(!IsActive(contract)||!encounter.Completed||encounter.ActivityId!=contract.Id||!contract.EncounterObjectives.ContainsKey(encounter.Id)||!contract.Receipts.Add("encounter/"+encounter.Id))return false;
             contract.Kills.Add(encounter.Id);
-            foreach(var (id,points) in encounter.Contributions.Participants.Where(x=>contract.ShipsByPlayer.ContainsKey(x.Key)))
+            foreach(var (id,points) in encounter.Contributions.Participants.Where(x=>contract.ParticipantShip(x.Key)!=null))
             {
                 foreach(var (skill,amount) in points.Points)contract.Contributions.Credit(id,skill,amount);
                 if(points.EnergyPoints>0) { if(!contract.Contributions.Participants.TryGetValue(id,out var participant))contract.Contributions.Participants[id]=participant=new(); participant.EnergyPoints+=points.EnergyPoints; }
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
         public static IReadOnlyDictionary<string,Dictionary<SkillType,int>> Experience(SpaceContract contract,SpaceActivityProfile profile)
         {
-            var result=contract.ShipsByPlayer.Keys.ToDictionary(x=>x,x=>new Dictionary<SkillType,int>());
+            var result=contract.Participants.ToDictionary(x=>x,x=>new Dictionary<SkillType,int>());
             foreach(var (skill,total) in profile.SkillPools)
             {
                 var hasEnergy=skill==SkillType.ShipSystems&&contract.Contributions.Participants.Values.Any(x=>x.EnergyPoints>0);

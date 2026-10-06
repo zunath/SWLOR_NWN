@@ -161,6 +161,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
 
         private static async Task RunCaseAsync(EngineTestContext ctx, AbilityBehaviorCase behaviorCase)
         {
+            if(behaviorCase.RequiresShipOperatingFixture)
+            {
+                await ShipTechniqueEngineTests.RunCaseAsync(ctx,behaviorCase.Feat);return;
+            }
             if (behaviorCase.RequiresPlayerBeastFixture)
             {
                 await PlayerBeastAbilityEngineTests.RunCaseAsync(ctx, behaviorCase.Feat);

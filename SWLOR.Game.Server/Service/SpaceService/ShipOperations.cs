@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service.StatService;
 namespace SWLOR.Game.Server.Service.SpaceService
 {
     public sealed record ShipModuleOperation(ShipModuleProfile Profile, ShipModuleVariant Variant,
-        double Output, double Tracking, int CapacitorCost, double Accuracy = 0, int SupplyQuantity = 1, IReadOnlyDictionary<StatType,double> Temporary = null);
+        double Output, double Tracking, int CapacitorCost, double Accuracy = 0, int SupplyQuantity = 1, IReadOnlyDictionary<StatType,double> Temporary = null, string CreditOperatorId = null);
 
     public static class ShipOperations
     {

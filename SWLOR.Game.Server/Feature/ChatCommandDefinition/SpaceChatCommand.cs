@@ -13,6 +13,18 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
             ExitSpaceCommand();
+            _builder.Create("crew").Description("Takes a docked ship station: weapons, systems, survey, leave or list.").Permissions(AuthorizationLevel.All).Action((user,target,location,args)=>
+            {
+                try
+                {
+                    var choice=args.FirstOrDefault()?.ToLowerInvariant();
+                    if(choice=="leave")Space.LeaveShipStation(user);
+                    else if(choice=="weapons")Space.JoinShipStation(user,Service.SpaceService.ShipCrewStation.Weapons);
+                    else if(choice=="systems")Space.JoinShipStation(user,Service.SpaceService.ShipCrewStation.Systems);
+                    else if(choice=="survey")Space.JoinShipStation(user,Service.SpaceService.ShipCrewStation.SurveyIndustry);
+                    else SendMessageToPC(user,Space.ShipStationSummary(user,Space.GetOperatingShipId(user))+"\nUse /crew weapons|systems|survey|leave inside a docked ship.");
+                }catch(InvalidOperationException ex){SendMessageToPC(user,ex.Message);}
+            });
             _builder.Create("shipsupply").Description("Opens dock Standard fittings, starter grants and ore commissions.").Permissions(AuthorizationLevel.All).Action((user,target,location,args)=>
             {
                 try{ShipSupply.RequireServiceDock(user);Gui.TogglePlayerWindow(user,Service.GuiService.GuiWindowType.ShipSupply,new Feature.GuiDefinition.Payload.ShipSupplyPayload());}
@@ -21,9 +33,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("cockpit").Description("Opens ship banks and prepared operating techniques.").Permissions(AuthorizationLevel.All)
                 .Action((user,target,location,args)=>
                 {
-                    if (!Space.IsPlayerInSpaceMode(user)){SendMessageToPC(user,"Use Operations in ship management while docked.");return;}
+                    if (!Space.IsPlayerInSpaceMode(user)&&string.IsNullOrEmpty(DB.Get<Entity.Player>(GetObjectUUID(user)).CrewShipId)){SendMessageToPC(user,"Use Operations in ship management or take a crew station inside a docked ship.");return;}
                     var player=DB.Get<Entity.Player>(GetObjectUUID(user));
-                    Gui.TogglePlayerWindow(user,Service.GuiService.GuiWindowType.ShipCockpit,new Feature.GuiDefinition.Payload.ShipCockpitPayload(player.ActiveShipId));
+                    Gui.TogglePlayerWindow(user,Service.GuiService.GuiWindowType.ShipCockpit,new Feature.GuiDefinition.Payload.ShipCockpitPayload(Space.GetOperatingShipId(user)));
                 });
 
             _builder.Create("spacejobs").Description("Opens your ship contracts.").Permissions(AuthorizationLevel.All).Action((user,target,location,args)=>

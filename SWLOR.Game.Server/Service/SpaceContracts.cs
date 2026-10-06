@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Service
                 contract.DestinationPlanet=_dockPoints.Keys.Where(x=>x!=planet&&_dockPoints[x].Values.Any(p=>p.IsNPC)).OrderBy(x=>(int)x).Select(x=>x.ToString()).FirstOrDefault();
                 if(contract.DestinationPlanet==null)throw new InvalidOperationException("No destination dock is available.");
             }
-            DB.Set(contract);record.ActiveSpaceContractId=contract.Id;DB.Set(record);ship.Status.ActiveContractId=contract.Id;DB.Set(ship);
+            RegisterContractCrew(contract,shipId);DB.Set(contract);SetContractCrewEntitlements(contract);record.ActiveSpaceContractId=contract.Id;DB.Set(record);ship.Status.ActiveContractId=contract.Id;DB.Set(ship);
             StartSpaceContractLoading(contract);
         }
         public static void JoinSpaceContract(uint player,string shipId)
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Service
             var ship=ShipEquipmentTransfers.RequireDock(player,shipId);var profile=SpaceActivityCatalog.Default.Profiles[contract.Profile];
             if(contract.ShipsByPlayer.Count>=profile.Party||contract.ShipsByPlayer.Values.Contains(shipId)||!string.IsNullOrEmpty(ship.Status.ActiveContractId))throw new InvalidOperationException("Choose an available ship and contract station.");
             if(Planet.GetPlanetType(GetArea(player)).ToString()!=contract.OriginPlanet)throw new InvalidOperationException("Meet the contract party at its origin dock.");
-            var record=DB.Get<Player>(GetObjectUUID(player));contract.ShipsByPlayer[record.Id]=shipId;DB.Set(contract);
+            var record=DB.Get<Player>(GetObjectUUID(player));contract.ShipsByPlayer[record.Id]=shipId;RegisterContractCrew(contract,shipId);DB.Set(contract);SetContractCrewEntitlements(contract);
             record.ActiveSpaceContractId=contract.Id;DB.Set(record);ship.Status.ActiveContractId=contract.Id;DB.Set(ship);StartSpaceContractLoading(contract);
         }
         private static void StartSpaceContractLoading(SpaceContract contract)
@@ -135,6 +135,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 var record=DB.Get<Player>(id);if(record?.ActiveSpaceContractId==contract.Id){record.ActiveSpaceContractId=null;DB.Set(record);}
             }
+            foreach(var id in contract.CrewByPlayer.Keys){var record=DB.Get<Player>(id);if(record?.ActiveSpaceContractId==contract.Id){record.ActiveSpaceContractId=null;DB.Set(record);}}
             foreach(var key in _contractObjects.Keys.Where(x=>x.StartsWith(contract.Id+"/",StringComparison.Ordinal)).ToArray())
             { if(_contractObjects.Remove(key,out var obj)&&GetIsObjectValid(obj)){_shipNPCs.Remove(obj);DestroyObject(obj);} }
             foreach(var id in contract.Sites)
@@ -150,11 +151,11 @@ namespace SWLOR.Game.Server.Service
         {
             if(contract.RewardJournalComplete)return;
             var profile=SpaceActivityCatalog.Default.Profiles[contract.Profile];var credits=contract.Contributions.Allocate(profile.Credits);var experience=SpaceContractPolicy.Experience(contract,profile);
-            foreach(var id in contract.ShipsByPlayer.Keys)
+            foreach(var id in contract.Participants)
             {
                 var rewardId="space-contract/"+contract.Id+"/"+id;
                 if(DB.Get<SpaceReward>(rewardId)!=null)continue;
-                DB.Set(new SpaceReward { Id=rewardId,PlayerId=id,Credits=credits.GetValueOrDefault(id)+(id==contract.LeaderId&&contract.DepositPaid?profile.FreightDeposit:0),Experience=experience[id],Reputation=profile.Reputation });
+                DB.Set(new SpaceReward { Id=rewardId,PlayerId=id,Credits=credits.GetValueOrDefault(id)+(id==contract.LeaderId&&contract.DepositPaid?profile.FreightDeposit:0),Experience=experience[id],Reputation=contract.Contributions.Participants.ContainsKey(id)?profile.Reputation:0 });
             }
             contract.RewardJournalComplete=true;contract.State=SpaceContractState.Completed;contract.Closed=true;DB.Set(contract);
         }
@@ -244,14 +245,14 @@ namespace SWLOR.Game.Server.Service
             {
                 var id=contract.Id+"/site/"+i;if(contract.Sites.Contains(id))continue;
                 var point=contract.Route[i%contract.Route.Count];SpaceSite site;
-                if(profile.Wrecks>0)site=SpaceWorkClaims.NewWreck(id,contract.AreaResref,SpaceEncounterCatalog.Default.Profiles["advanced_interceptor"],contract.ShipsByPlayer.Keys,DateTime.UtcNow);
+                if(profile.Wrecks>0)site=SpaceWorkClaims.NewWreck(id,contract.AreaResref,SpaceEncounterCatalog.Default.Profiles["advanced_interceptor"],contract.Participants,DateTime.UtcNow);
                 else
                 {
                     var reference=SpaceIndustryCatalog.Default.Deposits[profile.Ore>0?3:5];
                     site=SpaceWorkClaims.NewDeposit(id,contract.AreaResref,i,reference,DateTime.UtcNow);
                     if(profile.Ore>0){site.Reserves=profile.Composition.ToDictionary(x=>x.Key,x=>x.Value*profile.Reserve);site.InitialReserves=new(site.Reserves);}
                 }
-                site.ActivityId=contract.Id;site.Participants=contract.ShipsByPlayer.Keys.ToHashSet();site.ExclusiveUntil=contract.ExpiresAt;site.ExpiresAt=contract.ExpiresAt;site.RespawnsAt=DateTime.MaxValue;
+                site.ActivityId=contract.Id;site.Participants=contract.Participants.ToHashSet();site.ExclusiveUntil=contract.ExpiresAt;site.ExpiresAt=contract.ExpiresAt;site.RespawnsAt=DateTime.MaxValue;
                 site.X=point.X+i*2;site.Y=point.Y;site.Z=point.Z;DB.Set(site);contract.Sites.Add(id);
                 if(!_sitePools.TryGetValue(area,out var sites))_sitePools[area]=sites=new();if(!sites.Contains(id))sites.Add(id);DB.Set(contract);
             }

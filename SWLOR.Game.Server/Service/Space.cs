@@ -388,7 +388,8 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The selected target or OBJECT_INVALID.</returns>
         public static (uint, ShipStatus) GetCurrentTarget(uint player)
         {
-            var target = GetLocalObject(player, "SPACE_TARGET");
+            var exterior=GetExteriorShip(player);
+            var target = GetLocalObject(GetIsObjectValid(exterior)?exterior:player, "SPACE_TARGET");
             return (target, GetShipStatus(target));
         }
 
@@ -1589,10 +1590,10 @@ namespace SWLOR.Game.Server.Service
                 var targetPlayerId = GetObjectUUID(creature);
                 var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
 
-                if (dbTargetPlayer.ActiveShipId == Guid.Empty.ToString())
+                if (string.IsNullOrEmpty(GetOperatingShipId(creature)) || GetOperatingShipId(creature) == Guid.Empty.ToString())
                     return null;
 
-                var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
+                var dbPlayerShip = DB.Get<PlayerShip>(GetOperatingShipId(creature));
 
                 return dbPlayerShip?.Status;
             }
@@ -1829,7 +1830,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     var targetPlayerId = GetObjectUUID(target);
                     var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
-                    var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
+                    var dbPlayerShip = DB.Get<PlayerShip>(GetOperatingShipId(target));
 
                     if (Property.TryGetLoadedInstance(dbPlayerShip.PropertyId, out var instance))
                     {
@@ -1900,7 +1901,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     var targetPlayerId = GetObjectUUID(target);
                     var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
-                    var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
+                    var dbPlayerShip = DB.Get<PlayerShip>(GetOperatingShipId(target));
 
                     if (Property.TryGetLoadedInstance(dbPlayerShip.PropertyId, out var instance))
                     {

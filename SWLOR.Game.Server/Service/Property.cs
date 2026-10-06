@@ -281,7 +281,8 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.ChangeDescription,
                 PropertyPermissionType.EditCategories,
                 PropertyPermissionType.PilotShip,
-                PropertyPermissionType.RefitShip
+                PropertyPermissionType.RefitShip,
+                PropertyPermissionType.OperateStations
             };
 
             _permissionsByPropertyType[PropertyType.City] = new List<PropertyPermissionType>

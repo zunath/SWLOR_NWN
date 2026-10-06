@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnUsePerk()=>()=>Run(()=>
         {
             var index=NuiGetEventArrayIndex();if(index<0||index>=_perks.Count)return;var p=_perks[index];
-            if (!InFlight) throw new InvalidOperationException("Pilot the ship to activate operating techniques.");
+            if (!InFlight) throw new InvalidOperationException("Launch this ship before activating station techniques.");
             Space.ActivateShipTechnique(Player,p,Perk.GetPerkLevel(Player,p.Perk),OBJECT_INVALID);
         });
         public Action OnPreparePerk()=>()=>Run(()=>
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         });
         public Action OnSelectConstituent()=>()=>Run(()=>
         {
-            if(!InFlight)throw new InvalidOperationException("Select a surveyed resource site while piloting.");
+            if(!InFlight)throw new InvalidOperationException("Launch and have the pilot select a surveyed resource site.");
             var (target,_)=Space.GetCurrentTarget(Player);var site=Space.GetIndustrySite(target);var p=DB.Get<Player>(GetObjectUUID(Player));
             if(site==null||!site.SurveyedBy.Contains(p.Id))throw new InvalidOperationException("Survey the selected site first.");
             var choices=site.Reserves.Where(x=>x.Key.StartsWith("ore_",StringComparison.Ordinal)&&x.Value>0).Select(x=>x.Key).OrderBy(x=>x).ToList();
@@ -88,7 +88,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void Update()
         {
             var player=DB.Get<Player>(GetObjectUUID(Player));var state=player.ShipOperations;var ship=DB.Get<PlayerShip>(_shipId);var now=DateTime.UtcNow;
-            InFlight=Space.IsPlayerInSpaceMode(Player)&&player.ActiveShipId==_shipId;Docked=!Space.IsPlayerInSpaceMode(Player);
+            InFlight=GetIsObjectValid(Space.GetExteriorShip(Player))&&Space.GetOperatingShipId(Player)==_shipId;
+            Docked=!InFlight && ship!=null && !DB.Get<WorldProperty>(ship.PropertyId).Positions.ContainsKey(Service.PropertyService.PropertyLocationType.CurrentPosition);
             var timers=state.ReadyAt>now||state.Cooldowns.Values.Any(x=>x>now)||ship?.Status.TemporaryAdjustments.Any(x=>x.ExpiresAt>now)==true;
             var signature=Newtonsoft.Json.JsonConvert.SerializeObject(new{player.Perks,State=state,InFlight,Clock=timers?now.Ticks/TimeSpan.TicksPerSecond:0,
                 Pools=ship==null?null:new[]{ShipResources.Available(ship.Status,ShipResource.Hull),ShipResources.Available(ship.Status,ShipResource.Shield),ShipResources.Available(ship.Status,ShipResource.Capacitor),ship.Status.CargoCapacity,ShipCargo.Occupied(ship.Status)},
@@ -98,16 +99,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var modules=new GuiBindingList<string>();var moduleDescriptions=new GuiBindingList<string>();var bank1=new GuiBindingList<string>();var bank2=new GuiBindingList<string>();
             Summary=ship==null?"Ship unavailable":$"HL {ship.Status.Hull}/{ship.Status.MaxHull}   SH {ship.Status.Shield}/{ship.Status.MaxShield}   CAP {ShipResources.Available(ship.Status,ShipResource.Capacitor):0.#}/{ship.Status.MaxCapacitor}   Cargo {ShipCargo.Occupied(ship.Status):0.#}/{ship.Status.CargoCapacity:0}";
             var mode=ShipTechniqueCatalog.Default.Profiles.FirstOrDefault(x=>x.Kind==ShipPerkKind.Mode&&x.Key==state.SelectedMode);
-            PreparedSummary=$"Prepared {state.Prepared.Count}/4 (one capstone)   Mode: {mode?.Name??"None"}";
+            PreparedSummary=Space.ShipStationSummary(Player,_shipId)+"\n"+$"Prepared {state.Prepared.Count}/4 (one capstone)   Mode: {mode?.Name??"None"}";
             Bank1Text=(state.SelectedBank==1?"Selected ":"")+"Bank 1";Bank2Text=(state.SelectedBank==2?"Selected ":"")+"Bank 2";
             ConstituentText="Select constituent: "+(state.SelectedConstituent?.Replace("ore_","")??"None");
             foreach(var group in ShipTechniqueCatalog.Default.Profiles.Where(x=>x.Kind!=ShipPerkKind.Trait).GroupBy(x=>x.Key))
             {
-                var rank=player.Perks.GetValueOrDefault(group.First().Perk);var p=group.FirstOrDefault(x=>x.Rank==rank);if(p==null)continue;
+                var rank=player.Perks.GetValueOrDefault(group.First().Perk);var p=group.FirstOrDefault(x=>x.Rank==rank);if(p==null||!Space.StationAllowsSkill(Player,p.Skill))continue;
                 var ready=state.Cooldowns.GetValueOrDefault(p.Recast.ToString());var seconds=Math.Max(0,(ready-now).TotalSeconds);
-                rows.Add(p.Name+" · "+p.Kind+" · "+p.Capacitor+" CAP");icons.Add(p.Icon);descriptions.Add(p.Description);
+                rows.Add(p.Name+" Â· "+p.Kind+" Â· "+p.Capacitor+" CAP");icons.Add(p.Icon);descriptions.Add(p.Description);
                 uses.Add(seconds>0?$"{seconds:0}s":"Activate");prepare.Add(p.Kind==ShipPerkKind.Mode?(state.SelectedMode==p.Key?"Selected":"Select"):(state.Prepared.Contains(p.Key)?"Prepared":"Prepare"));
-                canUse.Add(InFlight&&seconds<=0&&(p.Kind==ShipPerkKind.Mode||state.Prepared.Contains(p.Key))&&now>=state.ReadyAt);_perks.Add(p);
+                canUse.Add(InFlight&&Space.CanOperateSkill(Player,p.Skill)&&seconds<=0&&(p.Kind==ShipPerkKind.Mode||state.Prepared.Contains(p.Key))&&now>=state.ReadyAt);_perks.Add(p);
             }
             if(ship!=null)
             {
@@ -115,15 +116,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var profile=ShipFittingCatalog.Default.Modules[fitted.Design];if(profile.Action==ShipModuleAction.Passive)continue;
                     var operation=ShipOperations.Resolve(ship.Status,withCondition(),temporary:ShipTemporaryStats.Current(ship.Status,now,fitted.ItemInstanceId));
-                    modules.Add(profile.Name+" · "+fitted.Calibration+" · "+fitted.Condition+"%");
-                    moduleDescriptions.Add($"{operation.Output:0.##} output · {operation.CapacitorCost} CAP · {operation.Variant.Cycle:0.##}s · {operation.Variant.Range:0.#}m · quality {fitted.Quality} ({fitted.QualityDimension})");
+                    modules.Add(profile.Name+" Â· "+fitted.Calibration+" Â· "+fitted.Condition+"%");
+                    moduleDescriptions.Add($"{operation.Output:0.##} output Â· {operation.CapacitorCost} CAP Â· {operation.Variant.Cycle:0.##}s Â· {operation.Variant.Range:0.#}m Â· quality {fitted.Quality} ({fitted.QualityDimension})");
                     bank1.Add((ship.Status.BankModules.GetValueOrDefault(1)?.Contains(fitted.ItemInstanceId)==true?"In ":"Add ")+"Bank 1");bank2.Add((ship.Status.BankModules.GetValueOrDefault(2)?.Contains(fitted.ItemInstanceId)==true?"In ":"Add ")+"Bank 2");_modules.Add(fitted.ItemInstanceId);
                     ShipStatus.ShipStatusModule withCondition()=>new(){Design=fitted.Design,Calibration=fitted.Calibration,Quality=fitted.Quality,QualityDimension=fitted.QualityDimension,Condition=100};
                 }
                 EffectsText=string.Join("; ",ship.Status.TemporaryAdjustments.Where(x=>x.ExpiresAt>now&&!string.IsNullOrEmpty(x.Label)).GroupBy(x=>x.Family).Select(g=>$"{g.First().Label} {(g.Max(x=>x.ExpiresAt)-now).TotalSeconds:0}s"));
             }
             else EffectsText="";
-            StatusText=_message??(Docked?"Prepare at this ship's dock. Each change needs 5 seconds. Compatible banks hold 1–4 modules.":"Select a ship or resource target. Techniques boost fitted hardware; every operation still pays capacitor and supplies.");
+            StatusText=_message??(Docked?"Prepare at this ship's dock. Each change needs 5 seconds. Compatible banks hold 1â€“4 modules.":"The pilot selects exterior targets. Each assigned station controls its own hardware and techniques; all stations share capacitor and module cooldowns.");
             PerkRows=rows;PerkIcons=icons;PerkDescriptions=descriptions;PerkUseText=uses;PerkPrepareText=prepare;CanUsePerk=canUse;ModuleRows=modules;ModuleDescriptions=moduleDescriptions;ModuleBank1=bank1;ModuleBank2=bank2;
         }
     }

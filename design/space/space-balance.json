@@ -13234,7 +13234,7 @@
     ],
     [
       "Crew",
-      "At most4 credited stations initially:pilot,weapons,systems,survey/industry. Each station uses its own operator; never sum all passengers' skill ranks for one stat."
+      "At most4 credited stations:pilot,weapons(Gunnery),systems(Ship Systems),survey/industry(Astrometrics and Space Industry). One distinct operator per station; assigned operator ranks/traits/mode replace the pilot contribution for those skills, never add all passengers. Operate Stations permission and physical presence inside that ship are required. Join/leave and technique preparation require docking, no active contract, and5s readiness; personal cooldowns persist. One shared1s action cadence, shared capacitor and hardware cooldowns, existing output/quality/recovery caps, and one mode/up to4 techniques/one capstone per operator. The pilot selects exterior targets. Absent, dead, disconnected or unauthorized crew immediately fall back to the pilot; interrupted paid preparation or industrial claims cannot replay. Contract crew are frozen before loading, do not replace the required distinct ships, and share the same finite credit/XP pool; inactive passengers earn0."
     ],
     [
       "Reputation",

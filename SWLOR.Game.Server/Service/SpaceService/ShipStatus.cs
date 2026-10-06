@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public string FlightId { get; set; }
         public string CommittedLegId { get; set; }
         public string OperatorBuildSignature { get; set; }
+        public Dictionary<ShipCrewStation,string> Crew { get; set; } = new();
         public Dictionary<string, ShipCargoTransfer> PendingCargoTransfers { get; set; } = new();
         public Dictionary<string, ShipCargoLot> Cargo { get; set; } = new();
         public HashSet<string> PaidWorkClaims { get; set; } = new();

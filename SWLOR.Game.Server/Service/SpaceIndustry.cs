@@ -161,12 +161,14 @@ namespace SWLOR.Game.Server.Service
                     foreach (var claim in site.Claims.Values.Where(x => x.State == SpaceWorkState.Reserved).ToArray())
                     {
                         var player = GetObjectByUUID(claim.PlayerId);
+                        var exterior=GetExteriorShip(player);
+                        var skill=claim.Action==ShipModuleAction.Survey?SkillType.Astrometrics:SkillType.SpaceIndustry;
                         var ship = DB.Get<PlayerShip>(claim.ShipId);
-                        if (!GetIsObjectValid(player) || !IsPlayerInSpaceMode(player) || ship?.Status.FlightId != claim.FlightId ||
-                            !ship.Status.PaidWorkClaims.Contains(claim.Id) || GetArea(player) != area || GetDistanceBetween(player, obj) > claim.Range || ship.Status.Hull <= 0 ||
+                        if (!GetIsObjectValid(player) || !GetIsObjectValid(exterior) || !CanOperateSkill(player,skill) || GetOperatingShipId(player)!=claim.ShipId || ship?.Status.FlightId != claim.FlightId ||
+                            !ship.Status.PaidWorkClaims.Contains(claim.Id) || GetArea(exterior) != area || GetDistanceBetween(exterior, obj) > claim.Range || ship.Status.Hull <= 0 ||
                             !ShipFittedStats.Modules(ship.Status).Any(x => x.ItemInstanceId == claim.ModuleId && x.Condition > 0))
                         { SpaceWorkClaims.Cancel(site, claim.Id); DB.Set(site);
-                            if (ship!=null) { ship.Status.TemporaryAdjustments.RemoveAll(x=>x.Family==claim.Id);DB.Set(ship); }
+                            if (ship!=null) { ship.Status.TemporaryAdjustments.RemoveAll(x=>x.Family==claim.Id);ship.Status.PaidWorkClaims.Remove(claim.Id);DB.Set(ship); }
                             if (GetIsObjectValid(player)) Stat.ApplyCreatureMovementRate(player);
                             continue; }
                         if (now < claim.CompletesAt) continue;
@@ -222,7 +224,9 @@ namespace SWLOR.Game.Server.Service
         private static bool StartIndustrialOperation(uint player, uint target, ShipStatus.ShipStatusModule fitted, ShipModuleOperation operation, DateTime now)
         {
             if (!GetIsPC(player)) return false;
-            var shipId = DB.Get<Player>(GetObjectUUID(player)).ActiveShipId;
+            var exterior=GetExteriorShip(player);
+            if(!GetIsObjectValid(exterior)||!CanOperateSkill(player,operation.Profile.OperatorSkill))return false;
+            var shipId = GetOperatingShipId(player);
             var ship = DB.Get<PlayerShip>(shipId);
             if (operation.Profile.Action == ShipModuleAction.Compression)
             {
@@ -267,8 +271,8 @@ namespace SWLOR.Game.Server.Service
             DB.Set(site);
             ship.Status.PaidWorkClaims.Add(claim.Id);
             DB.Set(ship);
-            ApplyShipMovementConstraints(player, ship.Status);
-            Stat.ApplyCreatureMovementRate(player);
+            ApplyShipMovementConstraints(exterior, ship.Status);
+            Stat.ApplyCreatureMovementRate(exterior);
             SendMessageToPC(player, $"{operation.Profile.Name} working: {(claim.CompletesAt - now).TotalSeconds:0.#}s.");
             return true;
         }

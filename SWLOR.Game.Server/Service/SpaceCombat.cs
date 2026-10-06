@@ -13,18 +13,21 @@ namespace SWLOR.Game.Server.Service
     {
         public static int GetOperatingAttribute(uint creature, AbilityType attribute)
         {
+            var exterior=GetExteriorShip(creature);if(GetIsObjectValid(exterior))creature=exterior;
+            if(attribute==AbilityType.Perception)creature=SkillOperator(creature,SkillType.Gunnery);
             if(GetIsPC(creature))return GetAbilityScore(creature,attribute);
             if(!string.IsNullOrEmpty(GetLocalString(creature,"SPACE_PROXY_SHIP")))return GetLocalInt(creature,attribute==AbilityType.Agility?"SPACE_PROXY_AGI":"SPACE_PROXY_PER");
             return attribute==AbilityType.Agility&&GetShipStatus(creature)?.EncounterProfile is string profile?SpaceEncounterCatalog.Default.Profiles[profile].Agility:10;
         }
         public static IReadOnlyDictionary<SkillType,int> GetOperatingSkills(uint creature)
         {
+            var exterior=GetExteriorShip(creature);if(GetIsObjectValid(exterior))creature=exterior;
             var pilot=GetLocalString(creature,"SPACE_PROXY_PILOT");
             var record=string.IsNullOrEmpty(pilot)?null:DB.Get<Player>(pilot);
-            return new[]{SkillType.Piloting,SkillType.Gunnery,SkillType.ShipSystems,SkillType.Astrometrics,SkillType.SpaceIndustry}
+            var skills=new[]{SkillType.Piloting,SkillType.Gunnery,SkillType.ShipSystems,SkillType.Astrometrics,SkillType.SpaceIndustry}
                 .ToDictionary(skill=>skill,skill=>Math.Clamp(GetIsPC(creature)?Skill.GetCreatureSkillRank(creature,skill):record!=null?record.Skills.GetValueOrDefault(skill)?.Rank??0:GetEncounterSkill(creature,skill),0,50));
+            return ShipCrewPolicy.Skills(skills,ActiveCrew(creature).ToDictionary(x=>x.Key,x=>(IReadOnlyDictionary<SkillType,int>)skills.Keys.ToDictionary(skill=>skill,skill=>GetOwnOperatingRank(x.Value,skill))));
         }
-
         private static int GetEncounterSkill(uint creature, SkillType skill)
         {
             var id = GetShipStatus(creature)?.EncounterProfile;
@@ -32,29 +35,46 @@ namespace SWLOR.Game.Server.Service
             var profile = SpaceEncounterCatalog.Default.Profiles[id];
             return skill == SkillType.Gunnery ? profile.Gunnery : skill == SkillType.Piloting ? profile.Piloting : 0;
         }
-
+        private static IEnumerable<ShipTechniqueProfile> OperatorModifiers(Player record)=>ShipTechniqueCatalog.Default.Profiles
+            .Where(x=>record.Perks.GetValueOrDefault(x.Perk)==x.Rank&&(x.Kind==ShipPerkKind.Trait||x.Kind==ShipPerkKind.Mode&&x.Key==record.ShipOperations.SelectedMode));
         public static IReadOnlyDictionary<StatType, int> GetShipStatAdjustments(uint creature)
         {
-            var result = ShipFittedStats.StatUnits.Keys.ToDictionary(stat => stat, stat => Stat.GetStatAdjustment(creature, stat));
-            if (!GetIsPC(creature)) return result;
-            var state = DB.Get<Player>(GetObjectUUID(creature)).ShipOperations;
-            var mode = ShipTechniqueCatalog.Default.Profiles.FirstOrDefault(x=>x.Kind==ShipPerkKind.Mode && x.Key==state.SelectedMode && Perk.GetPerkLevel(creature,x.Perk)>0);
-            if (mode!=null) foreach (var (stat,amount) in mode.Stats)
-                result[stat]=checked(result[stat]+(int)Math.Round(amount*ShipFittedStats.StatUnits[stat]));
+            var exterior=GetExteriorShip(creature);if(GetIsObjectValid(exterior))creature=exterior;
+            var proxyPilot=GetLocalString(creature,"SPACE_PROXY_PILOT");
+            var pilot=GetIsPC(creature)?creature:string.IsNullOrEmpty(proxyPilot)?OBJECT_INVALID:GetObjectByUUID(proxyPilot);
+            var result = ShipFittedStats.StatUnits.Keys.ToDictionary(stat => stat, stat => Stat.GetStatAdjustment(GetIsObjectValid(pilot)?pilot:creature, stat));
+            if(!GetIsObjectValid(pilot)||!GetIsPC(pilot))return result;
+            var record=DB.Get<Player>(GetObjectUUID(pilot));var original=OperatorModifiers(record).ToArray();
+            void Apply(ShipTechniqueProfile p,int sign)
+            {foreach(var (stat,amount) in p.Stats)result[stat]=checked(result[stat]+sign*(int)Math.Round(amount*ShipFittedStats.StatUnits[stat]));}
+            foreach(var mode in original.Where(x=>x.Kind==ShipPerkKind.Mode))Apply(mode,1);
+            foreach(var (station,actor) in ActiveCrew(creature))
+            {
+                foreach(var profile in original.Where(x=>ShipCrewPolicy.Station(x.Skill)==station))Apply(profile,-1);
+                foreach(var profile in OperatorModifiers(DB.Get<Player>(GetObjectUUID(actor))).Where(x=>ShipCrewPolicy.Station(x.Skill)==station))Apply(profile,1);
+            }
             return result;
         }
-
         public static void RefreshOperatingBuild(uint pilot,Player record,ShipStatus status)
         {
+            var source=GetExteriorShip(pilot);if(GetIsObjectValid(source))pilot=source;
             if(status.FittingVersion!=ShipFittingConversion.CurrentVersion)return;
-            var skills=new[]{SkillType.Piloting,SkillType.Gunnery,SkillType.ShipSystems,SkillType.Astrometrics,SkillType.SpaceIndustry}.ToDictionary(x=>x,x=>record.Skills.GetValueOrDefault(x)?.Rank??0);
-            var signature=record.Id+"/"+record.ShipOperations.SelectedMode+"/"+string.Join("/",skills.Values)+"/"+string.Join("/",record.Perks.OrderBy(x=>(int)x.Key).Select(x=>$"{(int)x.Key}:{x.Value}"));
+            var operatorRecords=ActiveCrew(pilot).Values.Select(x=>DB.Get<Player>(GetObjectUUID(x))).ToList();
+            var pilotRecord=GetIsPC(pilot)?DB.Get<Player>(GetObjectUUID(pilot)):DB.Get<Player>(GetLocalString(pilot,"SPACE_PROXY_PILOT"));
+            if(pilotRecord==null)return;operatorRecords.Add(pilotRecord);
+            foreach(var op in operatorRecords)
+            {
+                var unowned=ShipTechniqueCatalog.Default.Profiles.Where(x=>x.Kind!=ShipPerkKind.Trait&&op.Perks.GetValueOrDefault(x.Perk)==0).Select(x=>x.Key).ToHashSet();
+                var changed=op.ShipOperations.Prepared.RemoveAll(unowned.Contains)>0;
+                if(op.ShipOperations.SelectedMode!=null&&unowned.Contains(op.ShipOperations.SelectedMode)){op.ShipOperations.SelectedMode=null;changed=true;}
+                if(changed)DB.Set(op);
+            }
+            var skills=GetOperatingSkills(pilot);
+            var signature=string.Join("/",operatorRecords.OrderBy(x=>x.Id).Select(op=>op.Id+":"+op.ShipOperations.SelectedMode+":"+string.Join(",",op.Skills.OrderBy(x=>(int)x.Key).Select(x=>$"{x.Key}:{x.Value.Rank}"))+":"+string.Join(",",op.Perks.OrderBy(x=>(int)x.Key).Select(x=>$"{x.Key}:{x.Value}"))));
             if(status.OperatorBuildSignature==signature)return;
-            var unowned=ShipTechniqueCatalog.Default.Profiles.Where(x=>x.Kind!=ShipPerkKind.Trait&&record.Perks.GetValueOrDefault(x.Perk)==0).Select(x=>x.Key).ToHashSet();
-            status.TemporaryAdjustments.RemoveAll(x=>unowned.Contains(x.Family));
-            var changed=record.ShipOperations.Prepared.RemoveAll(unowned.Contains)>0;
-            if(record.ShipOperations.SelectedMode!=null && unowned.Contains(record.ShipOperations.SelectedMode)){record.ShipOperations.SelectedMode=null;changed=true;}
-            if(changed)DB.Set(record);
+            var owned=operatorRecords.SelectMany(op=>ShipTechniqueCatalog.Default.Profiles.Where(x=>op.Perks.GetValueOrDefault(x.Perk)>0).Select(x=>x.Key)).ToHashSet();
+            var families=ShipTechniqueCatalog.Default.Profiles.Select(x=>x.Key).ToHashSet();
+            status.TemporaryAdjustments.RemoveAll(x=>families.Contains(x.Family)&&!owned.Contains(x.Family));
             ShipFittedStats.Recompute(status,skills,GetShipStatAdjustments(pilot));status.OperatorBuildSignature=signature;
             Stat.ApplyCreatureMovementRate(pilot);
         }
@@ -64,8 +84,9 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(creature))
             {
                 var player = DB.Get<Player>(GetObjectUUID(creature));
-                if (string.IsNullOrEmpty(player.ActiveShipId) || player.ActiveShipId == Guid.Empty.ToString()) return;
-                var ship = DB.Get<PlayerShip>(player.ActiveShipId);
+                var shipId=GetOperatingShipId(creature);
+                if (string.IsNullOrEmpty(shipId) || shipId == Guid.Empty.ToString()) return;
+                var ship = DB.Get<PlayerShip>(shipId);
                 if (ship == null) return;
                 ship.Status = status;
                 DB.Set(ship);
@@ -78,7 +99,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         public static (double Shield, double Hull) ApplyFittedShipDamage(uint source, uint target, double amount,
-            double shieldMultiplier = 1, double hullMultiplier = 1)
+            double shieldMultiplier = 1, double hullMultiplier = 1, string creditOperatorId = null)
         {
             var status = GetShipStatus(target);
             if (status == null) return (0, 0);
@@ -96,7 +117,7 @@ namespace SWLOR.Game.Server.Service
                     if (source != target) PersistShipStatus(source, sourceStatus);
                 }
             }
-            RecordSpaceDamage(source, target, GetShipStatus(source), status, damage.Shield, damage.Hull);
+            RecordSpaceDamage(source, target, GetShipStatus(source), status, damage.Shield, damage.Hull,creditOperatorId);
             if (status.EncounterProfile is string profileId && status.Shield <= 0 && damage.Shield + damage.Hull > 0 && source != target && (GetIsEnemy(source, target) || GetIsEnemy(target, source)))
             {
                 var exposed = SpaceEncounterCatalog.Default.Profiles[profileId].ExposedSeconds;

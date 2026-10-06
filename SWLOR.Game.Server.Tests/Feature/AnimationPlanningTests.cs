@@ -84,7 +84,7 @@ public class AnimationPlanningTests
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IAbilityListDefinition).IsAssignableFrom(type))
             .SelectMany(type => ((IAbilityListDefinition)Activator.CreateInstance(type)!).BuildAbilities()).ToDictionary(p => p.Key, p => p.Value);
         AbilityDetail[] Active(PerkDetail perk) => perk.PerkLevels.Values.SelectMany(level => level.GrantedFeats).Distinct()
-            .Where(feat => abilities.ContainsKey(feat) && !abilities[feat].IsMimicryTrait).Select(feat => abilities[feat]).ToArray();
+            .Where(feat => abilities.ContainsKey(feat) && !abilities[feat].IsMimicryTrait && abilities[feat].ShipTechnique == null).Select(feat => abilities[feat]).ToArray();
         var bible = Csv("SWLOR.Game.Server/Readmes/CombatUpgradeBiblePerkManifest.csv");
         var requirements = CurrentPerks().Where(perk => Active(perk).Length > 0 || bible.Any(row =>
             Normalize(row["Tab"]) == Normalize(Category(perk)) && Normalize(row["PerkName"]) == Normalize(perk.Name) &&
@@ -121,7 +121,7 @@ public class AnimationPlanningTests
             .ToDictionary(pair => pair.Key, pair => pair.Value);
         var perks = CurrentPerks();
         var granted = perks.SelectMany(perk => perk.PerkLevels.Values.SelectMany(level => level.GrantedFeats))
-            .Distinct().Where(feat => definitions.TryGetValue(feat, out var ability) && !ability.IsMimicryTrait);
+            .Distinct().Where(feat => definitions.TryGetValue(feat, out var ability) && !ability.IsMimicryTrait && ability.ShipTechnique == null);
         var techniques = definitions.Where(pair => pair.Value.IsMimicryTechnique && !pair.Value.IsMimicryTrait)
             .Select(pair => pair.Key);
         var expected = granted.Concat(techniques).Distinct().Select(feat => feat.ToString()).ToArray();

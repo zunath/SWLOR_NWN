@@ -4,6 +4,7 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Controls;
+using Nwn.Toolset.Avalonia.Areas;
 using SWLOR.Toolset.AreaGeneration;
 using SWLOR.Toolset.Archives;
 using SWLOR.Toolset.Factions;
@@ -40,7 +41,17 @@ namespace SWLOR.Toolset.Shell
         private readonly PaletteViewModel _palette;
 
         /// <summary>Display switches for the quick-access bar; shared by every area viewport.</summary>
-        public Viewport.ViewportDisplayOptions Display { get; }
+        public AreaViewportDisplayOptions Display { get; }
+
+        /// <summary>
+        /// Reserved for the shadow pass, which the viewport renderer does not have yet. The bar shows
+        /// the control disabled rather than omitting it, so it is clear the switch is missing rather
+        /// than hidden.
+        /// </summary>
+        public bool ShowShadows => false;
+
+        /// <summary>True once the renderer grows a shadow pass; the bar's button enables from this.</summary>
+        public bool CanShowShadows => false;
         private readonly ThumbnailService _thumbnails;
         private DispatcherTimer? _progressTimer;
 
@@ -145,7 +156,7 @@ namespace SWLOR.Toolset.Shell
             ModuleExplorerViewModel explorer,
             SearchViewModel search,
             PaletteViewModel palette,
-            Viewport.ViewportDisplayOptions display,
+            AreaViewportDisplayOptions display,
             ToolsetDockFactory factory,
             Func<Editors.EditorService> editorService,
             PackService packService,

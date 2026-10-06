@@ -52,11 +52,11 @@
     <ProjectReference Include="..\SWLOR.Toolset.Domain\SWLOR.Toolset.Domain.csproj" />
     <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Authoring\Nwn.Authoring.csproj"
                       Condition="'$(NwnToolsetSourceRoot)' != ''" />
-    <PackageReference Include="Nwn.Authoring" Version="0.1.0-dev.60"
+    <PackageReference Include="Nwn.Authoring" Version="$(NwnToolsetPackageVersion)"
                       Condition="'$(NwnToolsetSourceRoot)' == ''" />
     <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Toolset.Avalonia\Nwn.Toolset.Avalonia.csproj"
                       Condition="'$(NwnToolsetSourceRoot)' != ''" />
-    <PackageReference Include="Nwn.Toolset.Avalonia" Version="0.1.0-dev.60"
+    <PackageReference Include="Nwn.Toolset.Avalonia" Version="$(NwnToolsetPackageVersion)"
                       Condition="'$(NwnToolsetSourceRoot)' == ''" />
   </ItemGroup>
 

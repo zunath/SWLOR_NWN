@@ -14,15 +14,15 @@
     <Using Include="Nwn.Authoring.Resources.TwoDaChoicePolicy" Alias="TwoDaChoicePolicy" />
     <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Authoring\Nwn.Authoring.csproj"
                       Condition="'$(NwnToolsetSourceRoot)' != ''" />
-    <PackageReference Include="Nwn.Authoring" Version="0.1.0-dev.60"
+    <PackageReference Include="Nwn.Authoring" Version="$(NwnToolsetPackageVersion)"
                       Condition="'$(NwnToolsetSourceRoot)' == ''" />
     <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Formats\Nwn.Formats.csproj"
                       Condition="'$(NwnToolsetSourceRoot)' != ''" />
-    <PackageReference Include="Nwn.Formats" Version="0.1.0-dev.60"
+    <PackageReference Include="Nwn.Formats" Version="$(NwnToolsetPackageVersion)"
                       Condition="'$(NwnToolsetSourceRoot)' == ''" />
     <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Preview\Nwn.Preview.csproj"
                       Condition="'$(NwnToolsetSourceRoot)' != ''" />
-    <PackageReference Include="Nwn.Preview" Version="0.1.0-dev.60"
+    <PackageReference Include="Nwn.Preview" Version="$(NwnToolsetPackageVersion)"
                       Condition="'$(NwnToolsetSourceRoot)' == ''" />
     <ProjectReference Include="..\SWLOR.NWN.Formats\SWLOR.NWN.Formats.csproj" />
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj"

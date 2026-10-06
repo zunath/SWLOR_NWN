@@ -148,18 +148,18 @@
       },
       "Nwn.Authoring": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.60, )",
-        "resolved": "0.1.0-dev.60",
-        "contentHash": "N7W99tkLQ5VgIiX1VEItyMtlzVNyl3ov4JlhOkqZNV4yDznGdwxAHvktoxCyBfzvHXU+P+bhdQZiJrj7M04Fig==",
+        "requested": "[0.1.0-preview.1, )",
+        "resolved": "0.1.0-preview.1",
+        "contentHash": "U6FtmEKNoutXtXxeTowzX+WXeuZGIBthl0i+z6tGeIOwvsq9pYtu5C4K++UszaXI2JbMsaDplTicwBgRvlCRhQ==",
         "dependencies": {
-          "Nwn.Formats": "0.1.0-dev.60"
+          "Nwn.Formats": "0.1.0-preview.1"
         }
       },
       "Nwn.Toolset.Avalonia": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.60, )",
-        "resolved": "0.1.0-dev.60",
-        "contentHash": "9ce/PMlOY0qBgRyAw2RYk4PjCou3vmpLRn2o+BNLwBgAbmTtsi50t8omuazGQqfPCdV0gXzcpE0TmmOm0PvxpQ==",
+        "requested": "[0.1.0-preview.1, )",
+        "resolved": "0.1.0-preview.1",
+        "contentHash": "8pjo8I+QZMTapdjAC+DCqc/YLUKo/Gg8e4qU3S+u/AFVDSUSI3A9M3HlrT0NKFc0SZqlAVWlovfdTKJKOiLVwA==",
         "dependencies": {
           "Avalonia": "11.3.17",
           "Avalonia.Controls.DataGrid": "11.3.13",
@@ -167,8 +167,8 @@
           "Dock.Avalonia": "11.3.12.1",
           "Dock.Avalonia.Themes.Fluent": "11.3.12.1",
           "Dock.Model.Mvvm": "11.3.12.1",
-          "Nwn.Authoring": "0.1.0-dev.60",
-          "Nwn.Preview": "0.1.0-dev.60",
+          "Nwn.Authoring": "0.1.0-preview.1",
+          "Nwn.Preview": "0.1.0-preview.1",
           "Serilog": "4.4.0",
           "Silk.NET.OpenGL": "2.23.0"
         }
@@ -441,8 +441,8 @@
       },
       "Nwn.Formats": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.60",
-        "contentHash": "O3fRekWTnOVSkqSsiTunBJvQ2iL5Z52afgxEFjITLqbBUQ/SBEpawOyEEfgN68WinKetiHc1rJIWJq7FaC2g3A=="
+        "resolved": "0.1.0-preview.1",
+        "contentHash": "KMD6HoRgCPCNU/7W2/7QITQ4BSv+cZbJfC6xXcXBiEz8fxu6Q5430zOIaP5y0XCPawwOsqOKliF/ZUoBbEkuRQ=="
       },
       "NWN.Native": {
         "type": "Transitive",
@@ -454,11 +454,11 @@
       },
       "Nwn.Preview": {
         "type": "Transitive",
-        "resolved": "0.1.0-dev.60",
-        "contentHash": "9JgJS/qvzEY3+KMAcoqJ2hUIMcjhZZGBULh1b2GnG5mbQEm3pr37r+PBvM/CQ8B4s8KFXSFjDKxbNlRFDh7D2w==",
+        "resolved": "0.1.0-preview.1",
+        "contentHash": "SBW91vbW+1rw8nDDGVnPbTiyVIHIcupiO4p+jCWU2psBCIbdWXdjEa5qpIQz4+u8d94pIiM5sxi7SS7P+GJwZQ==",
         "dependencies": {
-          "Nwn.Authoring": "0.1.0-dev.60",
-          "Nwn.Formats": "0.1.0-dev.60"
+          "Nwn.Authoring": "0.1.0-preview.1",
+          "Nwn.Formats": "0.1.0-preview.1"
         }
       },
       "NWNX.NET": {
@@ -578,15 +578,15 @@
       "swlor.nwn.formats": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Formats": "[0.1.0-dev.60, )"
+          "Nwn.Formats": "[0.1.0-preview.1, )"
         }
       },
       "swlor.toolset.domain": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Authoring": "[0.1.0-dev.60, )",
-          "Nwn.Formats": "[0.1.0-dev.60, )",
-          "Nwn.Preview": "[0.1.0-dev.60, )",
+          "Nwn.Authoring": "[0.1.0-preview.1, )",
+          "Nwn.Formats": "[0.1.0-preview.1, )",
+          "Nwn.Preview": "[0.1.0-preview.1, )",
           "SWLOR.Game.Server": "[1.0.0, )",
           "SWLOR.NWN.Formats": "[1.0.0, )",
           "Serilog": "[4.4.0, )"

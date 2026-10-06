@@ -4,27 +4,27 @@
     "net10.0": {
       "Nwn.Authoring": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.60, )",
-        "resolved": "0.1.0-dev.60",
-        "contentHash": "N7W99tkLQ5VgIiX1VEItyMtlzVNyl3ov4JlhOkqZNV4yDznGdwxAHvktoxCyBfzvHXU+P+bhdQZiJrj7M04Fig==",
+        "requested": "[0.1.0-preview.1, )",
+        "resolved": "0.1.0-preview.1",
+        "contentHash": "U6FtmEKNoutXtXxeTowzX+WXeuZGIBthl0i+z6tGeIOwvsq9pYtu5C4K++UszaXI2JbMsaDplTicwBgRvlCRhQ==",
         "dependencies": {
-          "Nwn.Formats": "0.1.0-dev.60"
+          "Nwn.Formats": "0.1.0-preview.1"
         }
       },
       "Nwn.Formats": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.60, )",
-        "resolved": "0.1.0-dev.60",
-        "contentHash": "O3fRekWTnOVSkqSsiTunBJvQ2iL5Z52afgxEFjITLqbBUQ/SBEpawOyEEfgN68WinKetiHc1rJIWJq7FaC2g3A=="
+        "requested": "[0.1.0-preview.1, )",
+        "resolved": "0.1.0-preview.1",
+        "contentHash": "KMD6HoRgCPCNU/7W2/7QITQ4BSv+cZbJfC6xXcXBiEz8fxu6Q5430zOIaP5y0XCPawwOsqOKliF/ZUoBbEkuRQ=="
       },
       "Nwn.Preview": {
         "type": "Direct",
-        "requested": "[0.1.0-dev.60, )",
-        "resolved": "0.1.0-dev.60",
-        "contentHash": "9JgJS/qvzEY3+KMAcoqJ2hUIMcjhZZGBULh1b2GnG5mbQEm3pr37r+PBvM/CQ8B4s8KFXSFjDKxbNlRFDh7D2w==",
+        "requested": "[0.1.0-preview.1, )",
+        "resolved": "0.1.0-preview.1",
+        "contentHash": "SBW91vbW+1rw8nDDGVnPbTiyVIHIcupiO4p+jCWU2psBCIbdWXdjEa5qpIQz4+u8d94pIiM5sxi7SS7P+GJwZQ==",
         "dependencies": {
-          "Nwn.Authoring": "0.1.0-dev.60",
-          "Nwn.Formats": "0.1.0-dev.60"
+          "Nwn.Authoring": "0.1.0-preview.1",
+          "Nwn.Formats": "0.1.0-preview.1"
         }
       },
       "Serilog": {
@@ -148,7 +148,7 @@
       "swlor.nwn.formats": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Formats": "[0.1.0-dev.60, )"
+          "Nwn.Formats": "[0.1.0-preview.1, )"
         }
       }
     }

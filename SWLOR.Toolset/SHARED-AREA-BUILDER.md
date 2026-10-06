@@ -13,7 +13,7 @@ SWLOR's binary representation adapter connects its existing formats model to
 the shared document model; workspace conventions, catalogs and release policy
 remain here. Xenomech provides its own source representation and policies.
 
-Current SWLOR integration package pins: `Nwn.Formats 0.1.0-dev.26`, `Nwn.Authoring 0.1.0-dev.30`, `Nwn.Preview 0.1.0-dev.35` and `Nwn.Toolset.Avalonia 0.1.0-dev.33`. These versions are recorded in the package lock files and consume the recovered shared packages.
+SWLOR consumes `Nwn.Formats`, `Nwn.Authoring`, `Nwn.Preview` and `Nwn.Toolset.Avalonia` `0.1.0-preview.1` from nuget.org. The single `NwnToolsetPackageVersion` property in `Directory.Build.props` sets the version, and the resolved versions and hashes are recorded in the package lock files. To develop against the shared source instead, clone https://github.com/zunath/NWN.Toolset (for example to `C:/Projects/NWN.Toolset`) and pass `-p:NwnToolsetSourceRoot=C:/Projects/NWN.Toolset`; to test unpublished local builds, pass `-p:NwnToolsetPackageFeed=<folder of .nupkg files>` together with `-p:RestoreLockedMode=false`.
 The shared repository's `docs/area-builder-extraction.md` records provenance,
 package hashes and the source/package qualification boundary.
 

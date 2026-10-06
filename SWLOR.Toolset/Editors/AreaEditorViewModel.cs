@@ -1327,7 +1327,8 @@ namespace SWLOR.Toolset.Editors
             Func<ResourceType, string, string?>? editCopyBlueprint = null,
             ModuleMutationLock? mutationLock = null,
             AreaInstanceClipboard? instanceClipboard = null,
-            Action<uint>? openTlkRow = null)
+            Action<uint>? openTlkRow = null,
+            Triggers.TriggerEditorServices? triggerEditorServices = null)
         {
             _scriptSlotHost = scriptSlotHost;
             _resolveBlueprintModel = resolveBlueprintModel;
@@ -1393,7 +1394,8 @@ namespace SWLOR.Toolset.Editors
                     areResRef,
                     resolveSoundChoices,
                     audioResources,
-                    soundPreview);
+                    soundPreview,
+                    definition.Type == ResourceType.Utt ? triggerEditorServices : null);
                 Sections.Add(section);
                 PropertiesPage.Sections.Add(section);
             }

@@ -70,14 +70,12 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
             if (string.Equals(onEnter, QuestHandler, StringComparison.OrdinalIgnoreCase))
                 return Get(QuestId);
 
-            var type = trigger.GetIntOrNull("Type") ?? 0;
-            var trapFlag = trigger.GetIntOrNull("TrapFlag") ?? 0;
-            if (type == 2 || trapFlag == 1)
-                return Get(TrapId);
-            if (type == 1)
-                return Get(AreaTransitionId);
-
-            return Custom;
+            return TriggerKindReader.Read(trigger) switch
+            {
+                TriggerKind.Trap => Get(TrapId),
+                TriggerKind.AreaTransition => Get(AreaTransitionId),
+                _ => Custom
+            };
         }
 
         private static IReadOnlyList<TriggerBehavior> Build()

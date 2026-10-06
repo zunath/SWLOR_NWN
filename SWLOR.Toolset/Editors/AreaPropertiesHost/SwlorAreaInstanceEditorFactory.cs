@@ -1,8 +1,10 @@
 using Nwn.Authoring.Documents.Native;
 using Nwn.Authoring.Documents.NimGff;
+using Nwn.Toolset.Avalonia.Triggers;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Editors.Doors;
 using SWLOR.Toolset.Editors.Sounds;
+using SWLOR.Toolset.Editors.Triggers;
 using SWLOR.Toolset.Editors.Waypoints;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
@@ -10,8 +12,9 @@ using SWLOR.Toolset.Workspace;
 namespace SWLOR.Toolset.Editors.AreaPropertiesHost
 {
     /// <summary>
-    /// Builds SWLOR's door, waypoint and sound editors for the shared instance sections. Doors and
-    /// sounds always use their typed editor; waypoints do when the area has waypoint services.
+    /// Builds SWLOR's door, waypoint, sound and trigger editors for the shared instance sections. Doors
+    /// and sounds always use their typed editor; waypoints and triggers do when the area has their
+    /// services.
     /// </summary>
     internal sealed class SwlorAreaInstanceEditorFactory : IAreaInstanceEditorFactory
     {
@@ -19,6 +22,7 @@ namespace SWLOR.Toolset.Editors.AreaPropertiesHost
         private readonly OutputLogService _log;
         private readonly IEditorPromptService _prompts;
         private readonly DoorEditorServices? _doors;
+        private readonly TriggerEditorServices? _triggers;
         private readonly string _soundHeaderOwner;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveSoundChoices;
         private readonly IReadOnlyList<string> _audioResources;
@@ -32,7 +36,8 @@ namespace SWLOR.Toolset.Editors.AreaPropertiesHost
             string? soundHeaderOwner,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveSoundChoices,
             IReadOnlyList<string>? audioResources,
-            SoundPreviewService? soundPreview)
+            SoundPreviewService? soundPreview,
+            TriggerEditorServices? triggers = null)
         {
             _gameCodeIndex = gameCodeIndex;
             _log = log;
@@ -42,6 +47,7 @@ namespace SWLOR.Toolset.Editors.AreaPropertiesHost
             _resolveSoundChoices = resolveSoundChoices;
             _audioResources = audioResources ?? Array.Empty<string>();
             _soundPreview = soundPreview;
+            _triggers = triggers;
         }
 
         /// <summary>The waypoint services; replaced when the module's transition destinations change.</summary>
@@ -64,7 +70,8 @@ namespace SWLOR.Toolset.Editors.AreaPropertiesHost
                 _doors?.Thumbnails,
                 _doors?.ChoicePreviews,
                 _prompts,
-                log: _log);
+                log: _log,
+                resolveDestination: _doors?.ResolveDestination);
 
         public WaypointBehaviorEditorViewModel? CreateWaypoint(
             JsonGffStruct waypoint, Func<string, Action, bool> runEdit, Func<string, bool> singletonTagInUse) =>
@@ -95,6 +102,20 @@ namespace SWLOR.Toolset.Editors.AreaPropertiesHost
                 _soundPreview,
                 _prompts,
                 _log);
+
+        public TriggerBehaviorEditorViewModel? CreateTrigger(JsonGffStruct trigger, Func<string, Action, bool> runEdit) =>
+            _triggers is not { } services
+                ? null
+                : new PlacedTriggerEditorViewModel(
+                    trigger,
+                    services.HeaderOwner,
+                    runEdit,
+                    _gameCodeIndex,
+                    services.ResolveDestination,
+                    services.ResolveChoices,
+                    services.ChoicePreviews,
+                    _prompts,
+                    _log);
 
         public VarTableSectionViewModel CreateVariables(Func<string, Action, bool> runEdit, VarTable table) =>
             SwlorVarTablePolicy.Create(runEdit, table, _gameCodeIndex);

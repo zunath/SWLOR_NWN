@@ -36,7 +36,8 @@ namespace SWLOR.Toolset.Editors
             string? soundHeaderOwner = null,
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveSoundChoices = null,
             IReadOnlyList<string>? audioResources = null,
-            Services.SoundPreviewService? soundPreview = null)
+            Services.SoundPreviewService? soundPreview = null,
+            Triggers.TriggerEditorServices? triggerEditorServices = null)
             : this(
                 title,
                 listFieldName,
@@ -56,7 +57,8 @@ namespace SWLOR.Toolset.Editors
                     soundHeaderOwner,
                     resolveSoundChoices,
                     audioResources,
-                    soundPreview)
+                    soundPreview,
+                    triggerEditorServices)
                 {
                     Waypoints = waypointEditorServices,
                 })

@@ -14,12 +14,15 @@ namespace SWLOR.Toolset.Editors.Doors
             _thumbnails = thumbnails ?? throw new ArgumentNullException(nameof(thumbnails));
         }
 
-        public IAppearanceGalleryPreviewProvider? Create(
-            IReadOnlyList<DoorAppearanceChoice> choices,
-            Func<AppearanceGalleryOptionId, DoorAppearanceChoice?> resolve) =>
-            new AppearanceGalleryPreviewProvider(
+        public IAppearanceGalleryPreviewProvider? Create(IReadOnlyList<DoorAppearanceGalleryEntry> entries)
+        {
+            var choices = new Dictionary<string, DoorAppearanceChoice>(StringComparer.Ordinal);
+            foreach (var entry in entries)
+                choices.TryAdd(entry.OptionId.Value, entry.Choice);
+
+            return new AppearanceGalleryPreviewProvider(
                 _thumbnails,
-                id => resolve(id) is { } choice
+                id => choices.TryGetValue(id.Value, out var choice)
                     ? new AppearanceOption(
                         id.Value,
                         choice.Display,
@@ -27,5 +30,6 @@ namespace SWLOR.Toolset.Editors.Doors
                         ModelResRef: choice.Model,
                         IsDoorTransition: choice.IsDoorTransition)
                     : null);
+        }
     }
 }

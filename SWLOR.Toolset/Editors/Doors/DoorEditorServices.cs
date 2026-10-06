@@ -20,5 +20,6 @@ namespace SWLOR.Toolset.Editors.Doors
         Func<JsonGffStruct, BlueprintModelRenderResult>? ResolveModel,
         ThumbnailService? Thumbnails = null,
         ChoicePreviewService? ChoicePreviews = null,
-        Services.IEditorPromptService? Prompts = null);
+        Services.IEditorPromptService? Prompts = null,
+        TransitionDestinationResolver? ResolveDestination = null);
 }

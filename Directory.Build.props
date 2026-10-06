@@ -16,6 +16,7 @@
     <Using Include="Nwn.Authoring.Doors" />
     <Using Include="Nwn.Authoring.Waypoints" />
     <Using Include="Nwn.Authoring.Sounds" />
+    <Using Include="Nwn.Authoring.Triggers" />
   </ItemGroup>
   <PropertyGroup Condition="'$(MSBuildProjectName)' == 'SWLOR.Toolset' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Domain' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Tests' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.PreviewRender'">
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>

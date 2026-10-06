@@ -19,7 +19,17 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
             Tier4();
             Tier5();
 
-            return _builder.Build();
+            var ships = _builder.Build();
+            foreach (var (id, ship) in ships)
+            {
+                var profile = ShipFittingCatalog.Default.Hulls[id];
+                ship.FittingProfile = profile;
+                ship.MaxHull = profile.Hull; ship.MaxShield = profile.Shield; ship.MaxCapacitor = profile.Capacitor;
+                ship.HighPowerNodes = profile.HighSlots; ship.LowPowerNodes = profile.LowSlots; ship.ConfigurationNodes = 1;
+                ship.RequiredPerks.Clear();
+                ship.ShieldRechargeRate = profile.ShieldRecovery > 0 ? (int)System.Math.Ceiling(1 / profile.ShieldRecovery) : 0;
+            }
+            return ships;
         }
 
         private void StoreBoughtShips()

@@ -61,6 +61,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
             return this;
         }
 
+        public SpaceObjectBuilder EncounterProfile(string profile)
+        {
+            if (!SpaceEncounterCatalog.Default.Profiles.ContainsKey(profile)) throw new System.ArgumentException("Unknown encounter profile.", nameof(profile));
+            _activeSpaceObject.EncounterProfile = profile;
+            return this;
+        }
+
         public Dictionary<string, SpaceObjectDetail> Build()
         {
             return _spaceObjects;

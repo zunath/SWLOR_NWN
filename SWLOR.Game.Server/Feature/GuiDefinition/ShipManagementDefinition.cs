@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -10,73 +11,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         public GuiConstructedWindow BuildWindow()
         {
-            _builder.CreateWindow(GuiWindowType.ShipManagement)
+            var window = _builder.CreateWindow(GuiWindowType.ShipManagement)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 545f, 350f)
+                .SetInitialGeometry(0, 0, 770f, 480f)
                 .SetTitle("Ship Management")
 
-                .AddColumn(col =>
+                .DefinePartialView(ShipManagementViewModel.MainContentPartial, host =>
                 {
-                    col.AddRow(row =>
+                    host.AddColumn(root => root.AddRow(row => row.AddGroup(panel =>
                     {
-                        row.AddToggleButton()
-                            .SetText("My Ships")
-                            .SetHeight(35f)
-                            .BindOnClicked(model => model.OnClickMyShips())
-                            .BindIsToggled(model => model.IsMyShipsToggled);
-
-                        row.AddToggleButton()
-                            .SetText("Other Ships")
-                            .SetHeight(35f)
-                            .BindOnClicked(model => model.OnClickOtherShips())
-                            .BindIsToggled(model => model.IsOtherShipsToggled);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddLabel()
-                            .BindText(model => model.ShipCountRegistered)
-                            .BindIsVisible(model => model.IsMyShipsToggled)
-                            .SetHeight(20f);
-                        row.AddSpacer();
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddList(template =>
+                        panel.SetShowBorder(false).SetScrollbars(NuiScrollbars.None);
+                        panel.AddColumn(col =>
                         {
-                            template.AddCell(cell =>
-                            {
-                                cell.AddToggleButton()
-                                    .BindOnClicked(model => model.OnClickShip())
-                                    .BindText(model => model.ShipNames)
-                                    .BindTooltip(model => model.ShipNames)
-                                    .BindIsToggled(model => model.ShipToggles);
-                            });
-                        })
-                            .BindRowCount(model => model.ShipNames);
-                    });
 
-                    col.AddRow(row =>
-                    {
-                        row.AddButton()
-                            .SetText("Register Ship")
-                            .BindIsEnabled(model => model.IsRegisterEnabled)
-                            .BindOnClicked(model => model.OnClickRegisterShip())
-                            .SetHeight(35f);
-
-                        row.AddButton()
-                            .SetText("Unregister Ship")
-                            .BindIsEnabled(model => model.IsUnregisterEnabled)
-                            .BindOnClicked(model => model.OnClickUnregisterShip())
-                            .SetHeight(35f);
-                    });
-                })
-
-                .AddColumn(col =>
-                {
                     col.AddRow(row =>
                     {
                         row.AddTextEdit()
@@ -84,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetPlaceholder("Ship Name")
                             .BindIsEnabled(model => model.IsNameEnabled);
 
+                        row.AddButton().SetText("Supplies").SetWidth(90f).SetHeight(35f).BindOnClicked(model=>model.OnClickSupply());
                         row.AddButton()
                             .SetText("Save")
                             .BindOnClicked(model => model.OnClickSaveShipName())
@@ -399,10 +348,82 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindOnClicked(model => model.OnClickPermissions())
                             .SetHeight(35f);
                     });
-                })
 
-                ;
+                    col.AddRow(row => row.AddLabel().BindText(model => model.FittingSummary).SetHeight(25f));
+                    col.AddRow(row =>
+                    {
+                        row.AddButton().BindText(model => model.RecoveryText).SetWidth(205f)
+                            .BindIsEnabled(model => model.IsRefitEnabled).BindOnClicked(model => model.OnClickRecoverEquipment()).SetHeight(35f);
+                        row.AddButton().SetText("Cargo").SetWidth(90f)
+                            .BindIsEnabled(model => model.IsRefitEnabled).BindOnClicked(model => model.OnClickCargo()).SetHeight(35f);
+                        row.AddButton().SetText("Operations").SetWidth(95f).BindIsEnabled(model=>model.IsRefitEnabled).BindOnClicked(model=>model.OnClickCockpit()).SetHeight(35f);
+                        row.AddButton().SetText("Contracts").SetWidth(95f).BindIsEnabled(model=>model.IsRefitEnabled).BindOnClicked(model=>model.OnClickContracts()).SetHeight(35f);
+                    });
+                        }).SetWidth(500f);
+                    }).SetWidth(520f)));
+                });
 
+            window.AddStandardLayout(layout => layout
+                .AddLeadingColumn(col =>
+                {
+
+                    col.AddRow(row =>
+                    {
+                        row.AddToggleButton()
+                            .SetText("My Ships")
+                            .SetHeight(35f)
+                            .BindOnClicked(model => model.OnClickMyShips())
+                            .BindIsToggled(model => model.IsMyShipsToggled);
+
+                        row.AddToggleButton()
+                            .SetText("Other Ships")
+                            .SetHeight(35f)
+                            .BindOnClicked(model => model.OnClickOtherShips())
+                            .BindIsToggled(model => model.IsOtherShipsToggled);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddLabel()
+                            .BindText(model => model.ShipCountRegistered)
+                            .BindIsVisible(model => model.IsMyShipsToggled)
+                            .SetHeight(20f);
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddList(template =>
+                        {
+                            template.AddCell(cell =>
+                            {
+                                cell.AddToggleButton()
+                                    .BindOnClicked(model => model.OnClickShip())
+                                    .BindText(model => model.ShipNames)
+                                    .BindTooltip(model => model.ShipNames)
+                                    .BindIsToggled(model => model.ShipToggles);
+                            });
+                        })
+                            .BindRowCount(model => model.ShipNames).SetHeight(180f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButton()
+                            .SetText("Register Ship")
+                            .BindIsEnabled(model => model.IsRegisterEnabled)
+                            .BindOnClicked(model => model.OnClickRegisterShip())
+                            .SetHeight(35f);
+
+                        row.AddButton()
+                            .SetText("Unregister Ship")
+                            .BindIsEnabled(model => model.IsUnregisterEnabled)
+                            .BindOnClicked(model => model.OnClickUnregisterShip())
+                            .SetHeight(35f);
+                    });
+                }, 200f)
+                .SetContentPartialElement(ShipManagementViewModel.ContentElement));
             return _builder.Build();
         }
     }

@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
 {
     public class ShipDetail
     {
+        public ShipHullProfile FittingProfile { get; set; }
         public string Name { get; set; }
         public AppearanceType Appearance { get; set; }
         public PropertyLayoutType Layout { get; set; }

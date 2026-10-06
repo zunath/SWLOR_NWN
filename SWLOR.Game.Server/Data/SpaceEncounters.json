@@ -1,0 +1,568 @@
+{
+  "encounters": [
+    {
+      "name": "Starter pirate",
+      "hull": 80,
+      "shield": 60,
+      "resistance": 5,
+      "speed": 0.9,
+      "signature": 65,
+      "gunnery": 5,
+      "piloting": 5,
+      "damage": 12,
+      "cycle": 5,
+      "capacitor": 4,
+      "regen": 1,
+      "accuracy": 0.0,
+      "reward_credit": 150,
+      "xp_pool": 500,
+      "control_seconds": 0,
+      "capacitor_pool": 60,
+      "weapons": 1,
+      "tracking": 110,
+      "resolution": 40,
+      "range": 28,
+      "id": "starter_pirate",
+      "agility": 10,
+      "shield_resistance": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "ammunition_per_weapon": 0,
+      "exposed_seconds": 0,
+      "bulk_reserve": 18,
+      "component_attempts": 2
+    },
+    {
+      "name": "Routine interceptor",
+      "hull": 105,
+      "shield": 75,
+      "resistance": 10,
+      "speed": 1.12,
+      "signature": 35,
+      "gunnery": 20,
+      "piloting": 20,
+      "damage": 15,
+      "cycle": 5,
+      "capacitor": 5,
+      "regen": 1.5,
+      "accuracy": 0.0,
+      "reward_credit": 200,
+      "xp_pool": 650,
+      "control_seconds": 0,
+      "capacitor_pool": 90,
+      "weapons": 2,
+      "tracking": 100,
+      "resolution": 45,
+      "range": 28,
+      "id": "routine_interceptor",
+      "agility": 26,
+      "shield_resistance": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "ammunition_per_weapon": 0,
+      "exposed_seconds": 0,
+      "bulk_reserve": 18,
+      "component_attempts": 2
+    },
+    {
+      "name": "Routine gunship",
+      "hull": 140,
+      "shield": 100,
+      "resistance": 10,
+      "speed": 0.85,
+      "signature": 90,
+      "gunnery": 20,
+      "piloting": 15,
+      "damage": 24,
+      "cycle": 6,
+      "capacitor": 8,
+      "regen": 1.8,
+      "accuracy": 0.0,
+      "reward_credit": 250,
+      "xp_pool": 800,
+      "control_seconds": 0,
+      "capacitor_pool": 120,
+      "weapons": 2,
+      "tracking": 65,
+      "resolution": 65,
+      "range": 32,
+      "id": "routine_gunship",
+      "agility": 10,
+      "shield_resistance": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "ammunition_per_weapon": 0,
+      "exposed_seconds": 0,
+      "bulk_reserve": 18,
+      "component_attempts": 2
+    },
+    {
+      "name": "Advanced interceptor",
+      "hull": 150,
+      "shield": 100,
+      "resistance": 15,
+      "speed": 1.2,
+      "signature": 38,
+      "gunnery": 40,
+      "piloting": 40,
+      "damage": 20,
+      "cycle": 5,
+      "capacitor": 6,
+      "regen": 2,
+      "accuracy": 0.02,
+      "reward_credit": 350,
+      "xp_pool": 1000,
+      "control_seconds": 0,
+      "capacitor_pool": 120,
+      "weapons": 2,
+      "tracking": 110,
+      "resolution": 40,
+      "range": 28,
+      "id": "advanced_interceptor",
+      "agility": 26,
+      "shield_resistance": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "ammunition_per_weapon": 0,
+      "exposed_seconds": 0,
+      "bulk_reserve": 36,
+      "component_attempts": 3
+    },
+    {
+      "name": "Advanced bomber",
+      "hull": 220,
+      "shield": 150,
+      "resistance": 15,
+      "speed": 0.9,
+      "signature": 110,
+      "gunnery": 40,
+      "piloting": 25,
+      "damage": 55,
+      "cycle": 10,
+      "capacitor": 8,
+      "regen": 2,
+      "accuracy": 0.0,
+      "reward_credit": 450,
+      "xp_pool": 1200,
+      "control_seconds": 0,
+      "capacitor_pool": 150,
+      "weapons": 2,
+      "tracking": 60,
+      "resolution": 100,
+      "range": 38,
+      "id": "advanced_bomber",
+      "agility": 10,
+      "shield_resistance": 0,
+      "preparation_seconds": 2,
+      "ammunition": "heavy_missile",
+      "ammunition_per_weapon": 20,
+      "exposed_seconds": 0,
+      "bulk_reserve": 36,
+      "component_attempts": 3
+    },
+    {
+      "name": "Electronic raider",
+      "hull": 160,
+      "shield": 130,
+      "resistance": 15,
+      "speed": 1,
+      "signature": 75,
+      "gunnery": 35,
+      "piloting": 30,
+      "damage": 18,
+      "cycle": 6,
+      "capacitor": 7,
+      "regen": 2,
+      "accuracy": 0.0,
+      "reward_credit": 350,
+      "xp_pool": 1000,
+      "control_seconds": 2,
+      "capacitor_pool": 130,
+      "weapons": 2,
+      "tracking": 85,
+      "resolution": 50,
+      "range": 30,
+      "id": "electronic_raider",
+      "agility": 10,
+      "shield_resistance": 0,
+      "preparation_seconds": 2,
+      "ammunition": null,
+      "ammunition_per_weapon": 0,
+      "exposed_seconds": 8,
+      "bulk_reserve": 36,
+      "component_attempts": 3
+    },
+    {
+      "name": "Elite heavy target",
+      "hull": 450,
+      "shield": 300,
+      "resistance": 25,
+      "speed": 0.65,
+      "signature": 240,
+      "gunnery": 45,
+      "piloting": 25,
+      "damage": 45,
+      "cycle": 8,
+      "capacitor": 15,
+      "regen": 3,
+      "accuracy": 0.0,
+      "reward_credit": 700,
+      "xp_pool": 1800,
+      "control_seconds": 0,
+      "capacitor_pool": 260,
+      "weapons": 3,
+      "tracking": 35,
+      "resolution": 140,
+      "range": 40,
+      "id": "elite_heavy_target",
+      "agility": 10,
+      "shield_resistance": 0,
+      "preparation_seconds": 0,
+      "ammunition": null,
+      "ammunition_per_weapon": 0,
+      "exposed_seconds": 8,
+      "bulk_reserve": 36,
+      "component_attempts": 3
+    },
+    {
+      "name": "Fleet objective",
+      "hull": 1400,
+      "shield": 900,
+      "resistance": 30,
+      "speed": 0.4,
+      "signature": 400,
+      "gunnery": 50,
+      "piloting": 20,
+      "damage": 75,
+      "cycle": 10,
+      "capacitor": 20,
+      "regen": 4,
+      "accuracy": 0.0,
+      "reward_credit": 0,
+      "xp_pool": 6000,
+      "control_seconds": 3,
+      "capacitor_pool": 500,
+      "weapons": 5,
+      "tracking": 35,
+      "resolution": 160,
+      "range": 45,
+      "id": "fleet_objective",
+      "agility": 10,
+      "shield_resistance": 0,
+      "preparation_seconds": 3,
+      "ammunition": null,
+      "ammunition_per_weapon": 0,
+      "exposed_seconds": 8,
+      "bulk_reserve": 72,
+      "component_attempts": 6
+    }
+  ],
+  "bindings": [
+    {
+      "tag": "t1bomber",
+      "ship": "NPC_Bomber1",
+      "name": "NPC - Septra Khanate Bomber",
+      "profile": "starter_pirate"
+    },
+    {
+      "tag": "t1fighter",
+      "ship": "NPC_Fighter1",
+      "name": "NPC - Septra Khanate Fighter",
+      "profile": "starter_pirate"
+    },
+    {
+      "tag": "t1interceptor",
+      "ship": "NPC_Interceptor1",
+      "name": "NPC - Septra Khanate Interceptor",
+      "profile": "starter_pirate"
+    },
+    {
+      "tag": "t1gunship",
+      "ship": "NPC_Gunship1",
+      "name": "NPC - Septra Khanate Gunship",
+      "profile": "starter_pirate"
+    },
+    {
+      "tag": "t1platform",
+      "ship": "NPC_Platform1",
+      "name": "NPC - Septra Khanate Defense Platform",
+      "profile": "elite_heavy_target"
+    },
+    {
+      "tag": "t1cargo",
+      "ship": "NPC_Cargo1",
+      "name": "NPC - Septra Khanate Scrap Hauler",
+      "profile": "starter_pirate"
+    },
+    {
+      "tag": "t1capital",
+      "ship": "NPC_Capital1",
+      "name": "NPC - Septra Khanate Raidmaster",
+      "profile": "fleet_objective"
+    },
+    {
+      "tag": "t2bomber",
+      "ship": "NPC_Bomber2",
+      "name": "NPC - Krakenborne Bomber",
+      "profile": "routine_gunship"
+    },
+    {
+      "tag": "t2fighter",
+      "ship": "NPC_Fighter2",
+      "name": "NPC - Krakenbornee Fighter",
+      "profile": "routine_interceptor"
+    },
+    {
+      "tag": "t2interceptor",
+      "ship": "NPC_Interceptor2",
+      "name": "NPC - Krakenborne Interceptor",
+      "profile": "routine_interceptor"
+    },
+    {
+      "tag": "t2gunship",
+      "ship": "NPC_Gunship2",
+      "name": "NPC - Krakenborne Gunship",
+      "profile": "routine_gunship"
+    },
+    {
+      "tag": "t2platform",
+      "ship": "NPC_Platform2",
+      "name": "NPC - Krakenborne Defense Platform",
+      "profile": "elite_heavy_target"
+    },
+    {
+      "tag": "t2cargo",
+      "ship": "NPC_Cargo2",
+      "name": "NPC - Krakenborne Trovehauler",
+      "profile": "routine_gunship"
+    },
+    {
+      "tag": "t2capital",
+      "ship": "NPC_Capital2",
+      "name": "NPC - Krakenborne Privateer",
+      "profile": "fleet_objective"
+    },
+    {
+      "tag": "t3bomber",
+      "ship": "NPC_Bomber3",
+      "name": "NPC - Snowdrift Syndicate Bomber",
+      "profile": "advanced_bomber"
+    },
+    {
+      "tag": "t3fighter",
+      "ship": "NPC_Fighter3",
+      "name": "NPC - Snowdrift Syndicate Fighter",
+      "profile": "electronic_raider"
+    },
+    {
+      "tag": "t3interceptor",
+      "ship": "NPC_Interceptor3",
+      "name": "NPC - Snowdrift Syndicate Interceptor",
+      "profile": "advanced_interceptor"
+    },
+    {
+      "tag": "t3gunship",
+      "ship": "NPC_Gunship3",
+      "name": "NPC - Snowdrift Syndicate Gunship",
+      "profile": "elite_heavy_target"
+    },
+    {
+      "tag": "t3platform",
+      "ship": "NPC_Platform3",
+      "name": "NPC - Snowdrift Syndicate Defense Platform",
+      "profile": "elite_heavy_target"
+    },
+    {
+      "tag": "t3cargo",
+      "ship": "NPC_Cargo3",
+      "name": "NPC - Snowdrift Syndicate Frostvault",
+      "profile": "elite_heavy_target"
+    },
+    {
+      "tag": "t3capital",
+      "ship": "NPC_Capital3",
+      "name": "NPC - Snowdrift Syndicate Snowpiercer",
+      "profile": "fleet_objective"
+    },
+    {
+      "tag": "t4bomber",
+      "ship": "NPC_Bomber4",
+      "name": "NPC - Clan Zel Arun Bomber",
+      "profile": "advanced_bomber"
+    },
+    {
+      "tag": "t4fighter",
+      "ship": "NPC_Fighter4",
+      "name": "NPC - Clan Zel Arun Fighter",
+      "profile": "electronic_raider"
+    },
+    {
+      "tag": "t4interceptor",
+      "ship": "NPC_Interceptor4",
+      "name": "NPC - Clan Zel Arun Interceptor",
+      "profile": "advanced_interceptor"
+    },
+    {
+      "tag": "t4gunship",
+      "ship": "NPC_Gunship4",
+      "name": "NPC - Clan Zel Arun Gunship",
+      "profile": "elite_heavy_target"
+    },
+    {
+      "tag": "t4platform",
+      "ship": "NPC_Platform4",
+      "name": "NPC - Clan Zel Arun Defense Platform",
+      "profile": "elite_heavy_target"
+    },
+    {
+      "tag": "t4cargo",
+      "ship": "NPC_Cargo4",
+      "name": "NPC - Clan Zel Arun Treasure Barge",
+      "profile": "elite_heavy_target"
+    },
+    {
+      "tag": "t4capital",
+      "ship": "NPC_Capital4",
+      "name": "NPC - Clan Zel Arun Yacht",
+      "profile": "fleet_objective"
+    },
+    {
+      "tag": "t5bomber",
+      "ship": "NPC_Bomber5",
+      "name": "NPC - Red Hand Bomber",
+      "profile": "advanced_bomber"
+    },
+    {
+      "tag": "t5fighter",
+      "ship": "NPC_Fighter5",
+      "name": "NPC - Red Hand Fighter",
+      "profile": "electronic_raider"
+    },
+    {
+      "tag": "t5interceptor",
+      "ship": "NPC_Interceptor5",
+      "name": "NPC - Red Hand Interceptor",
+      "profile": "advanced_interceptor"
+    },
+    {
+      "tag": "t5gunship",
+      "ship": "NPC_Gunship5",
+      "name": "NPC - Red Hand Gunship",
+      "profile": "elite_heavy_target"
+    },
+    {
+      "tag": "t5platform",
+      "ship": "NPC_Platform5",
+      "name": "NPC - Red Hand Defense Platform",
+      "profile": "elite_heavy_target"
+    },
+    {
+      "tag": "t5cargo",
+      "ship": "NPC_Cargo5",
+      "name": "NPC - Red Hand Munitions Smuggler",
+      "profile": "elite_heavy_target"
+    },
+    {
+      "tag": "t5capital",
+      "ship": "NPC_Capital5",
+      "name": "NPC - Red Hand Marauder",
+      "profile": "fleet_objective"
+    },
+    {
+      "tag": "t6bomber",
+      "ship": "NPC_Bomber6",
+      "name": "NPC - Imperial Bomber",
+      "profile": "advanced_bomber"
+    },
+    {
+      "tag": "t6fighter",
+      "ship": "NPC_Fighter6",
+      "name": "NPC - Imperial Fighter",
+      "profile": "electronic_raider"
+    },
+    {
+      "tag": "t6interceptor",
+      "ship": "NPC_Interceptor6",
+      "name": "NPC - Imperial Interceptor",
+      "profile": "advanced_interceptor"
+    },
+    {
+      "tag": "t6gunship",
+      "ship": "NPC_Gunship6",
+      "name": "NPC - Imperial Gunship",
+      "profile": "elite_heavy_target"
+    },
+    {
+      "tag": "t6platform",
+      "ship": "NPC_Platform6",
+      "name": "NPC - Imperial Defense Platform",
+      "profile": "elite_heavy_target"
+    },
+    {
+      "tag": "t6cargo",
+      "ship": "NPC_Cargo6",
+      "name": "NPC - Imperial Logistics Vessel",
+      "profile": "elite_heavy_target"
+    },
+    {
+      "tag": "mandocap1",
+      "ship": "NPC_MandoCap1",
+      "name": "NPC - Jahaveyir Cruiser",
+      "profile": "fleet_objective"
+    },
+    {
+      "tag": "mandocap2",
+      "ship": "NPC_MandoCap2",
+      "name": "NPC - Kyramud Battleship",
+      "profile": "fleet_objective"
+    },
+    {
+      "tag": "mandocap3",
+      "ship": "NPC_MandoCap3",
+      "name": "NPC - Kandosii Dreadnought",
+      "profile": "fleet_objective"
+    },
+    {
+      "tag": "sithcap1",
+      "ship": "NPC_SithCap1",
+      "name": "NPC - Thranta Corvette",
+      "profile": "fleet_objective"
+    },
+    {
+      "tag": "sithcap2",
+      "ship": "NPC_SithCap2",
+      "name": "NPC - Derriphan Destroyer",
+      "profile": "fleet_objective"
+    },
+    {
+      "tag": "sithcap3",
+      "ship": "NPC_SithCap3",
+      "name": "NPC - Inquisitor Assault Cruiser",
+      "profile": "fleet_objective"
+    },
+    {
+      "tag": "sithcap4",
+      "ship": "NPC_SithCap4",
+      "name": "NPC - Interdictor Heavy Cruiser",
+      "profile": "fleet_objective"
+    },
+    {
+      "tag": "sithcap5",
+      "ship": "NPC_SithCap5",
+      "name": "NPC - Centurion Battlecruiser",
+      "profile": "fleet_objective"
+    },
+    {
+      "tag": "sithcap6",
+      "ship": "NPC_SithCap6",
+      "name": "NPC - Supremacy Battleship",
+      "profile": "fleet_objective"
+    },
+    {
+      "tag": "sithcap7",
+      "ship": "NPC_SithCap7",
+      "name": "NPC - Harrower Dreadnought",
+      "profile": "fleet_objective"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -19,6 +20,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             EnmityDebugger();
             NuiGallery();
             AnimationTester();
+            ShipCargoTester();
+            _builder.Create("shipsupplytest").Description("Opens dock supply UI for validation.").Permissions(AuthorizationLevel.Admin).AvailableToAllOnTestEnvironment().Action((user,target,location,args)=>Gui.TogglePlayerWindow(user,GuiWindowType.ShipSupply,new GuiDefinition.Payload.ShipSupplyPayload()));
+            _builder.Create("shipcontracts").Description("Opens ship contract UI for validation.").Permissions(AuthorizationLevel.Admin).AvailableToAllOnTestEnvironment().Action((user,target,location,args)=>
+            {var ship=DB.Search(new Service.DBService.DBQuery<PlayerShip>().AddFieldSearch(nameof(PlayerShip.OwnerPlayerId),GetObjectUUID(user),false)).FirstOrDefault();if(ship!=null)Gui.TogglePlayerWindow(user,GuiWindowType.ShipContracts,new GuiDefinition.Payload.ShipContractsPayload(ship.Id));});
             GetObjectId();
             ResetBeast();
 
@@ -114,6 +119,19 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     // playback to the possessed creature, as with DMTools and Dice.
                     Gui.TogglePlayerWindow(AnimationPreviewCatalog.GetController(user),
                         GuiWindowType.AnimationDebug, uiTarget: user);
+                });
+        }
+
+        private void ShipCargoTester()
+        {
+            _builder.Create("shipcargo")
+                .Description("Opens the cargo window for your first registered ship.")
+                .Permissions(AuthorizationLevel.Admin).AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    var ship = DB.Search(new Service.DBService.DBQuery<PlayerShip>().AddFieldSearch(nameof(PlayerShip.OwnerPlayerId), GetObjectUUID(user), false)).FirstOrDefault();
+                    if (ship == null) { SendMessageToPC(user, "Register a ship first."); return; }
+                    Gui.TogglePlayerWindow(user, GuiWindowType.ShipCargo, new GuiDefinition.Payload.ShipCargoPayload(ship.Id));
                 });
         }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -35,6 +36,13 @@ namespace SWLOR.Game.Server.Service.CraftService
         /// </summary>
         /// <param name="category">The category to put the recipe under.</param>
         /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder ShipEquipment(ShipQualityDimension dimensions = ShipQualityDimension.None)
+        {
+            _activeRecipe.IsShipEquipment = true;
+            _activeRecipe.ShipQualityDimensions = dimensions;
+            return this;
+        }
+
         public RecipeBuilder Category(RecipeCategoryType category)
         {
             _activeRecipe.Category = category;

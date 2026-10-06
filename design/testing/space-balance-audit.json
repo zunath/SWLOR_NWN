@@ -1,0 +1,1113 @@
+{
+  "version": "2026-10-05",
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "All current hulls mapped",
+      "passed": true,
+      "detail": "26 current persistent hull definitions have explicit values and unchanged IDs."
+    },
+    {
+      "name": "Combat Pilot progression",
+      "passed": true,
+      "detail": "17 ranks,40SP,3 ranked techniques,2 ranked traits,mode,capstone."
+    },
+    {
+      "name": "Expedition Pilot progression",
+      "passed": true,
+      "detail": "17 ranks,40SP,3 ranked techniques,2 ranked traits,mode,capstone."
+    },
+    {
+      "name": "Precision Gunnery progression",
+      "passed": true,
+      "detail": "17 ranks,40SP,3 ranked techniques,2 ranked traits,mode,capstone."
+    },
+    {
+      "name": "Heavy Ordnance progression",
+      "passed": true,
+      "detail": "17 ranks,40SP,3 ranked techniques,2 ranked traits,mode,capstone."
+    },
+    {
+      "name": "Defensive Systems progression",
+      "passed": true,
+      "detail": "17 ranks,40SP,3 ranked techniques,2 ranked traits,mode,capstone."
+    },
+    {
+      "name": "Fleet Support progression",
+      "passed": true,
+      "detail": "17 ranks,40SP,3 ranked techniques,2 ranked traits,mode,capstone."
+    },
+    {
+      "name": "Surveying progression",
+      "passed": true,
+      "detail": "17 ranks,40SP,3 ranked techniques,2 ranked traits,mode,capstone."
+    },
+    {
+      "name": "Electronic Warfare progression",
+      "passed": true,
+      "detail": "17 ranks,40SP,3 ranked techniques,2 ranked traits,mode,capstone."
+    },
+    {
+      "name": "Extraction progression",
+      "passed": true,
+      "detail": "17 ranks,40SP,3 ranked techniques,2 ranked traits,mode,capstone."
+    },
+    {
+      "name": "Salvage and Logistics progression",
+      "passed": true,
+      "detail": "17 ranks,40SP,3 ranked techniques,2 ranked traits,mode,capstone."
+    },
+    {
+      "name": "Novice escort fitting",
+      "passed": true,
+      "detail": "Power28/34; high2/3; low1/2."
+    },
+    {
+      "name": "Novice escort hull requirement",
+      "passed": true,
+      "detail": "Direct operating rank requirement; no tier perk."
+    },
+    {
+      "name": "Novice escort hardware requirements",
+      "passed": true,
+      "detail": "Every fitted module has a compatible mount and explicit operator skill requirement."
+    },
+    {
+      "name": "Novice escort crafted refinement",
+      "passed": true,
+      "detail": "One8% output refinement does not also shorten cycles or improve tracking."
+    },
+    {
+      "name": "Veteran accessible escort fitting",
+      "passed": true,
+      "detail": "Power34/34; high2/3; low1/2."
+    },
+    {
+      "name": "Veteran accessible escort hull requirement",
+      "passed": true,
+      "detail": "Direct operating rank requirement; no tier perk."
+    },
+    {
+      "name": "Veteran accessible escort hardware requirements",
+      "passed": true,
+      "detail": "Every fitted module has a compatible mount and explicit operator skill requirement."
+    },
+    {
+      "name": "Veteran accessible escort crafted refinement",
+      "passed": true,
+      "detail": "One8% output refinement does not also shorten cycles or improve tracking."
+    },
+    {
+      "name": "Veteran accessible interceptor fitting",
+      "passed": true,
+      "detail": "Power36/38; high3/3; low1/3."
+    },
+    {
+      "name": "Veteran accessible interceptor hull requirement",
+      "passed": true,
+      "detail": "Direct operating rank requirement; no tier perk."
+    },
+    {
+      "name": "Veteran accessible interceptor hardware requirements",
+      "passed": true,
+      "detail": "Every fitted module has a compatible mount and explicit operator skill requirement."
+    },
+    {
+      "name": "Veteran accessible interceptor crafted refinement",
+      "passed": true,
+      "detail": "One8% output refinement does not also shorten cycles or improve tracking."
+    },
+    {
+      "name": "Heavy objective specialist fitting",
+      "passed": true,
+      "detail": "Power98/100; high3/4; low2/4."
+    },
+    {
+      "name": "Heavy objective specialist hull requirement",
+      "passed": true,
+      "detail": "Direct operating rank requirement; no tier perk."
+    },
+    {
+      "name": "Heavy objective specialist hardware requirements",
+      "passed": true,
+      "detail": "Every fitted module has a compatible mount and explicit operator skill requirement."
+    },
+    {
+      "name": "Heavy objective specialist crafted refinement",
+      "passed": true,
+      "detail": "One8% output refinement does not also shorten cycles or improve tracking."
+    },
+    {
+      "name": "Ordnance bomber fitting",
+      "passed": true,
+      "detail": "Power58/60; high2/3; low1/3."
+    },
+    {
+      "name": "Ordnance bomber hull requirement",
+      "passed": true,
+      "detail": "Direct operating rank requirement; no tier perk."
+    },
+    {
+      "name": "Ordnance bomber hardware requirements",
+      "passed": true,
+      "detail": "Every fitted module has a compatible mount and explicit operator skill requirement."
+    },
+    {
+      "name": "Ordnance bomber crafted refinement",
+      "passed": true,
+      "detail": "One8% output refinement does not also shorten cycles or improve tracking."
+    },
+    {
+      "name": "Accessible survey prospector fitting",
+      "passed": true,
+      "detail": "Power38/40; high1/2; low2/3."
+    },
+    {
+      "name": "Accessible survey prospector hull requirement",
+      "passed": true,
+      "detail": "Direct operating rank requirement; no tier perk."
+    },
+    {
+      "name": "Accessible survey prospector hardware requirements",
+      "passed": true,
+      "detail": "Every fitted module has a compatible mount and explicit operator skill requirement."
+    },
+    {
+      "name": "Accessible survey prospector crafted refinement",
+      "passed": true,
+      "detail": "One8% output refinement does not also shorten cycles or improve tracking."
+    },
+    {
+      "name": "Scout selective recovery fitting",
+      "passed": true,
+      "detail": "Power38/40; high1/2; low2/4."
+    },
+    {
+      "name": "Scout selective recovery hull requirement",
+      "passed": true,
+      "detail": "Direct operating rank requirement; no tier perk."
+    },
+    {
+      "name": "Scout selective recovery hardware requirements",
+      "passed": true,
+      "detail": "Every fitted module has a compatible mount and explicit operator skill requirement."
+    },
+    {
+      "name": "Scout selective recovery crafted refinement",
+      "passed": true,
+      "detail": "One8% output refinement does not also shorten cycles or improve tracking."
+    },
+    {
+      "name": "Accessible deep prospector fitting",
+      "passed": true,
+      "detail": "Power54/56; high1/2; low2/4."
+    },
+    {
+      "name": "Accessible deep prospector hull requirement",
+      "passed": true,
+      "detail": "Direct operating rank requirement; no tier perk."
+    },
+    {
+      "name": "Accessible deep prospector hardware requirements",
+      "passed": true,
+      "detail": "Every fitted module has a compatible mount and explicit operator skill requirement."
+    },
+    {
+      "name": "Accessible deep prospector crafted refinement",
+      "passed": true,
+      "detail": "One8% output refinement does not also shorten cycles or improve tracking."
+    },
+    {
+      "name": "Compact deep prospecting fitting",
+      "passed": true,
+      "detail": "Power38/40; high1/2; low1/3."
+    },
+    {
+      "name": "Compact deep prospecting hull requirement",
+      "passed": true,
+      "detail": "Direct operating rank requirement; no tier perk."
+    },
+    {
+      "name": "Compact deep prospecting hardware requirements",
+      "passed": true,
+      "detail": "Every fitted module has a compatible mount and explicit operator skill requirement."
+    },
+    {
+      "name": "Compact deep prospecting crafted refinement",
+      "passed": true,
+      "detail": "One8% output refinement does not also shorten cycles or improve tracking."
+    },
+    {
+      "name": "Bulk industrial with escort fitting",
+      "passed": true,
+      "detail": "Power62/68; high2/3; low2/4."
+    },
+    {
+      "name": "Bulk industrial with escort hull requirement",
+      "passed": true,
+      "detail": "Direct operating rank requirement; no tier perk."
+    },
+    {
+      "name": "Bulk industrial with escort hardware requirements",
+      "passed": true,
+      "detail": "Every fitted module has a compatible mount and explicit operator skill requirement."
+    },
+    {
+      "name": "Bulk industrial with escort crafted refinement",
+      "passed": true,
+      "detail": "One8% output refinement does not also shorten cycles or improve tracking."
+    },
+    {
+      "name": "Fleet recovery specialist fitting",
+      "passed": true,
+      "detail": "Power58/62; high2/2; low2/4."
+    },
+    {
+      "name": "Fleet recovery specialist hull requirement",
+      "passed": true,
+      "detail": "Direct operating rank requirement; no tier perk."
+    },
+    {
+      "name": "Fleet recovery specialist hardware requirements",
+      "passed": true,
+      "detail": "Every fitted module has a compatible mount and explicit operator skill requirement."
+    },
+    {
+      "name": "Fleet recovery specialist crafted refinement",
+      "passed": true,
+      "detail": "One8% output refinement does not also shorten cycles or improve tracking."
+    },
+    {
+      "name": "Independent freight fitting",
+      "passed": true,
+      "detail": "Power52/64; high1/2; low3/5."
+    },
+    {
+      "name": "Independent freight hull requirement",
+      "passed": true,
+      "detail": "Direct operating rank requirement; no tier perk."
+    },
+    {
+      "name": "Independent freight hardware requirements",
+      "passed": true,
+      "detail": "Every fitted module has a compatible mount and explicit operator skill requirement."
+    },
+    {
+      "name": "Independent freight crafted refinement",
+      "passed": true,
+      "detail": "One8% output refinement does not also shorten cycles or improve tracking."
+    },
+    {
+      "name": "Salvage specialist fitting",
+      "passed": true,
+      "detail": "Power48/56; high2/2; low2/4."
+    },
+    {
+      "name": "Salvage specialist hull requirement",
+      "passed": true,
+      "detail": "Direct operating rank requirement; no tier perk."
+    },
+    {
+      "name": "Salvage specialist hardware requirements",
+      "passed": true,
+      "detail": "Every fitted module has a compatible mount and explicit operator skill requirement."
+    },
+    {
+      "name": "Salvage specialist crafted refinement",
+      "passed": true,
+      "detail": "One8% output refinement does not also shorten cycles or improve tracking."
+    },
+    {
+      "name": "Accessible hull advanced interception",
+      "passed": true,
+      "detail": "Accessible escort5.89DPS versus heavy fit2.67 against an advanced interceptor."
+    },
+    {
+      "name": "Heavy hull heavy-objective advantage",
+      "passed": true,
+      "detail": "Heavy fit23.70DPS versus accessible escort6.88 against a heavy target."
+    },
+    {
+      "name": "Ground fighter and pilot character budget",
+      "passed": true,
+      "detail": "350/400ranks;220/360SP;60SP ground weapon style plus explicit other-ground spending reserve."
+    },
+    {
+      "name": "Industrial explorer with ground defense character budget",
+      "passed": true,
+      "detail": "360/400ranks;210/370SP;60SP ground weapon style plus explicit other-ground spending reserve."
+    },
+    {
+      "name": "Support captain and ground specialist character budget",
+      "passed": true,
+      "detail": "330/400ranks;209/340SP;60SP ground weapon style plus explicit other-ground spending reserve."
+    },
+    {
+      "name": "Starter patrol reward budget",
+      "passed": true,
+      "detail": "Expected net7199cr/player-hour;XP14400;combined material/travel/success stress net4835."
+    },
+    {
+      "name": "Starter patrol XP shares",
+      "passed": true,
+      "detail": "Finite contribution shares sum to100%; group totals are divided, not duplicated."
+    },
+    {
+      "name": "Advanced bounty reward budget",
+      "passed": true,
+      "detail": "Expected net7599cr/player-hour;XP16200;combined material/travel/success stress net4807."
+    },
+    {
+      "name": "Advanced bounty XP shares",
+      "passed": true,
+      "detail": "Finite contribution shares sum to100%; group totals are divided, not duplicated."
+    },
+    {
+      "name": "Selective prospecting reward budget",
+      "passed": true,
+      "detail": "Expected net5692cr/player-hour;XP12600;combined material/travel/success stress net2956."
+    },
+    {
+      "name": "Selective prospecting XP shares",
+      "passed": true,
+      "detail": "Finite contribution shares sum to100%; group totals are divided, not duplicated."
+    },
+    {
+      "name": "Bulk expedition with escort reward budget",
+      "passed": true,
+      "detail": "Expected net7125cr/player-hour;XP12000;combined material/travel/success stress net3914."
+    },
+    {
+      "name": "Bulk expedition with escort XP shares",
+      "passed": true,
+      "detail": "Finite contribution shares sum to100%; group totals are divided, not duplicated."
+    },
+    {
+      "name": "Routine salvage reward budget",
+      "passed": true,
+      "detail": "Expected net6904cr/player-hour;XP13600;combined material/travel/success stress net4034."
+    },
+    {
+      "name": "Routine salvage XP shares",
+      "passed": true,
+      "detail": "Finite contribution shares sum to100%; group totals are divided, not duplicated."
+    },
+    {
+      "name": "Survey and anomaly reward budget",
+      "passed": true,
+      "detail": "Expected net6994cr/player-hour;XP12600;combined material/travel/success stress net4719."
+    },
+    {
+      "name": "Survey and anomaly XP shares",
+      "passed": true,
+      "detail": "Finite contribution shares sum to100%; group totals are divided, not duplicated."
+    },
+    {
+      "name": "Resource delivery reward budget",
+      "passed": true,
+      "detail": "Expected net6471cr/player-hour;XP11200;combined material/travel/success stress net4499."
+    },
+    {
+      "name": "Resource delivery XP shares",
+      "passed": true,
+      "detail": "Finite contribution shares sum to100%; group totals are divided, not duplicated."
+    },
+    {
+      "name": "Sealed freight reward budget",
+      "passed": true,
+      "detail": "Expected net7071cr/player-hour;XP12000;combined material/travel/success stress net4764."
+    },
+    {
+      "name": "Sealed freight XP shares",
+      "passed": true,
+      "detail": "Finite contribution shares sum to100%; group totals are divided, not duplicated."
+    },
+    {
+      "name": "Escort and rescue reward budget",
+      "passed": true,
+      "detail": "Expected net6079cr/player-hour;XP12000;combined material/travel/success stress net4038."
+    },
+    {
+      "name": "Escort and rescue XP shares",
+      "passed": true,
+      "detail": "Finite contribution shares sum to100%; group totals are divided, not duplicated."
+    },
+    {
+      "name": "Boarding operation reward budget",
+      "passed": true,
+      "detail": "Expected net6578cr/player-hour;XP12000;combined material/travel/success stress net4312."
+    },
+    {
+      "name": "Boarding operation XP shares",
+      "passed": true,
+      "detail": "Finite contribution shares sum to100%; group totals are divided, not duplicated."
+    },
+    {
+      "name": "Capital fleet objective reward budget",
+      "passed": true,
+      "detail": "Expected net6067cr/player-hour;XP12857;combined material/travel/success stress net3900."
+    },
+    {
+      "name": "Capital fleet objective XP shares",
+      "passed": true,
+      "detail": "Finite contribution shares sum to100%; group totals are divided, not duplicated."
+    },
+    {
+      "name": "Reserve conservation1/0.5",
+      "passed": true,
+      "detail": "Fractional carry; interrupted unpaid remainder is discarded, not rounded into bonus ore."
+    },
+    {
+      "name": "Reserve conservation1/0.8",
+      "passed": true,
+      "detail": "Fractional carry; interrupted unpaid remainder is discarded, not rounded into bonus ore."
+    },
+    {
+      "name": "Reserve conservation1/0.95",
+      "passed": true,
+      "detail": "Fractional carry; interrupted unpaid remainder is discarded, not rounded into bonus ore."
+    },
+    {
+      "name": "Reserve conservation5/0.5",
+      "passed": true,
+      "detail": "Fractional carry; interrupted unpaid remainder is discarded, not rounded into bonus ore."
+    },
+    {
+      "name": "Reserve conservation5/0.8",
+      "passed": true,
+      "detail": "Fractional carry; interrupted unpaid remainder is discarded, not rounded into bonus ore."
+    },
+    {
+      "name": "Reserve conservation5/0.95",
+      "passed": true,
+      "detail": "Fractional carry; interrupted unpaid remainder is discarded, not rounded into bonus ore."
+    },
+    {
+      "name": "Reserve conservation120/0.5",
+      "passed": true,
+      "detail": "Fractional carry; interrupted unpaid remainder is discarded, not rounded into bonus ore."
+    },
+    {
+      "name": "Reserve conservation120/0.8",
+      "passed": true,
+      "detail": "Fractional carry; interrupted unpaid remainder is discarded, not rounded into bonus ore."
+    },
+    {
+      "name": "Reserve conservation120/0.95",
+      "passed": true,
+      "detail": "Fractional carry; interrupted unpaid remainder is discarded, not rounded into bonus ore."
+    },
+    {
+      "name": "Reserve conservation500/0.5",
+      "passed": true,
+      "detail": "Fractional carry; interrupted unpaid remainder is discarded, not rounded into bonus ore."
+    },
+    {
+      "name": "Reserve conservation500/0.8",
+      "passed": true,
+      "detail": "Fractional carry; interrupted unpaid remainder is discarded, not rounded into bonus ore."
+    },
+    {
+      "name": "Reserve conservation500/0.95",
+      "passed": true,
+      "detail": "Fractional carry; interrupted unpaid remainder is discarded, not rounded into bonus ore."
+    },
+    {
+      "name": "Closed energy transfers",
+      "passed": true,
+      "detail": "Two best transfers retain81% before technique costs; repeated circuits strictly lose energy."
+    },
+    {
+      "name": "Output source bound",
+      "passed": true,
+      "detail": "Maximum output multiplier1.70, not independent multiplicative skill/craft/mode layers."
+    },
+    {
+      "name": "Resistance source bound",
+      "passed": true,
+      "detail": "Maximum temporary mitigation45.95%; passive37.5%; shields and hull use declared separate ratings."
+    },
+    {
+      "name": "Control termination",
+      "passed": true,
+      "detail": "One full3s hard control and one half1.5s within20s, then immunity; Signal Break immediately grants20s family immunity."
+    },
+    {
+      "name": "Recipe material identities",
+      "passed": true,
+      "detail": "Every advanced module continues to consume common Tilarium and electronics."
+    },
+    {
+      "name": "Recipe shared targets",
+      "passed": true,
+      "detail": "Every recipe and variant uses actual shared RecipeLevelChart progress,quality and durability; no space-only low target."
+    },
+    {
+      "name": "Hull production material spread",
+      "passed": true,
+      "detail": "Exact hull ingredients cost60%-67% of design hull reference, before labor and research."
+    },
+    {
+      "name": "Precision assembly material conservation",
+      "passed": true,
+      "detail": "Two26-credit recovered components plus20-credit Tilarium cost72, not an invented60-credit input."
+    },
+    {
+      "name": "NPC module production arbitrage",
+      "passed": true,
+      "detail": "Explicit resale ceiling remains below reference material spend, including optional quality and calibrated designs."
+    },
+    {
+      "name": "NPC hull production arbitrage",
+      "passed": true,
+      "detail": "Shared quality vendor bonuses cannot make repeated manufacture and NPC resale a currency source."
+    },
+    {
+      "name": "Efficient calibration has a paid benefit",
+      "passed": true,
+      "detail": "Upward integer rounding cannot turn a lower-output Efficient variant into a strict downgrade."
+    },
+    {
+      "name": "Calibration limits",
+      "passed": true,
+      "detail": "Every enumerated variant respects cycle and paid-cost floors; compact fitting power rounds upward."
+    },
+    {
+      "name": "Energy calibration restrictions",
+      "passed": true,
+      "detail": "No activation-discount or high-output calibration amplifies resource creation or makes transfers gain energy."
+    },
+    {
+      "name": "Selective prospecting physical reward budget",
+      "passed": true,
+      "detail": "Advertised material value matches deposit composition, fitted throughput, cargo and full-trip time."
+    },
+    {
+      "name": "Bulk expedition with escort physical reward budget",
+      "passed": true,
+      "detail": "Advertised material value matches deposit composition, fitted throughput, cargo and full-trip time."
+    },
+    {
+      "name": "Salvage physical reward budget",
+      "passed": true,
+      "detail": "Recovery arm and intact kit fitted; all work fits the declared900-second return trip."
+    },
+    {
+      "name": "Starting freighter advanced solo fit",
+      "passed": true,
+      "detail": "Three commissioned Compact designs fit and sustain real advanced hazards; no hull tier upgrade or mandatory Systems skill."
+    },
+    {
+      "name": "NWN module resource names",
+      "passed": true,
+      "detail": "Meaningful explicit resrefs within16 characters; domain design identifiers need not be truncated."
+    },
+    {
+      "name": "Novice escort fight duration",
+      "passed": true,
+      "detail": "Starter pirate:expected29.6s;band20-60s;no burst technique assumed."
+    },
+    {
+      "name": "Novice escort combat capacitor",
+      "passed": true,
+      "detail": "Full weapon/recovery cadence reaches benchmark completion before baseline capacitor exhaustion."
+    },
+    {
+      "name": "Veteran accessible escort fight duration",
+      "passed": true,
+      "detail": "Advanced interceptor:expected42.8s;band30-65s;no burst technique assumed."
+    },
+    {
+      "name": "Veteran accessible escort combat capacitor",
+      "passed": true,
+      "detail": "Full weapon/recovery cadence reaches benchmark completion before baseline capacitor exhaustion."
+    },
+    {
+      "name": "Heavy objective specialist fight duration",
+      "passed": true,
+      "detail": "Elite heavy target:expected35.8s;band25-65s;no burst technique assumed."
+    },
+    {
+      "name": "Heavy objective specialist combat capacitor",
+      "passed": true,
+      "detail": "Full weapon/recovery cadence reaches benchmark completion before baseline capacitor exhaustion."
+    },
+    {
+      "name": "Ordnance bomber fight duration",
+      "passed": true,
+      "detail": "Elite heavy target:expected55.5s;band30-75s;no burst technique assumed."
+    },
+    {
+      "name": "Ordnance bomber combat capacitor",
+      "passed": true,
+      "detail": "Full weapon/recovery cadence reaches benchmark completion before baseline capacitor exhaustion."
+    }
+  ],
+  "builds": [
+    {
+      "name": "Novice escort",
+      "hull": "Light Escort",
+      "power": 28,
+      "power_max": 34,
+      "high": 2,
+      "low": 1,
+      "sp": 0,
+      "small_dps": 3.5474847222222223,
+      "heavy_dps": 4.681350000000001,
+      "recovery_per_second": 2.188333333333333,
+      "cap_regen": 1.6,
+      "drain": 3.0,
+      "net_cap": -1.4,
+      "cap_duration": 50.0,
+      "speed": 1.1615,
+      "signature": 35,
+      "cargo": 30,
+      "ehp": 200.0,
+      "mining_rate": 0,
+      "reserve_rate": 0
+    },
+    {
+      "name": "Veteran accessible escort",
+      "hull": "Light Escort",
+      "power": 34,
+      "power_max": 34,
+      "high": 2,
+      "low": 1,
+      "sp": 70,
+      "small_dps": 5.890579851851853,
+      "heavy_dps": 6.8770500000000006,
+      "recovery_per_second": 2.3833333333333333,
+      "cap_regen": 1.6,
+      "drain": 3.0,
+      "net_cap": -1.4,
+      "cap_duration": 50.0,
+      "speed": 1.311,
+      "signature": 35,
+      "cargo": 25.5,
+      "ehp": 200.0,
+      "mining_rate": 0,
+      "reserve_rate": 0
+    },
+    {
+      "name": "Veteran accessible interceptor",
+      "hull": "Striker",
+      "power": 36,
+      "power_max": 38,
+      "high": 3,
+      "low": 1,
+      "sp": 80,
+      "small_dps": 8.48800088888889,
+      "heavy_dps": 9.909450000000001,
+      "recovery_per_second": 2.4050000000000002,
+      "cap_regen": 2.2,
+      "drain": 4.0,
+      "net_cap": -1.7999999999999998,
+      "cap_duration": 50.00000000000001,
+      "speed": 1.45,
+      "signature": 30,
+      "cargo": 20,
+      "ehp": 209.0,
+      "mining_rate": 0,
+      "reserve_rate": 0
+    },
+    {
+      "name": "Heavy objective specialist",
+      "hull": "Corellian Gunboat",
+      "power": 98,
+      "power_max": 100,
+      "high": 3,
+      "low": 2,
+      "sp": 68,
+      "small_dps": 2.6670000000000003,
+      "heavy_dps": 23.69937230769231,
+      "recovery_per_second": 0,
+      "cap_regen": 4.5,
+      "drain": 7.125,
+      "net_cap": -2.625,
+      "cap_duration": 134.85714285714286,
+      "speed": 0.612,
+      "signature": 240,
+      "cargo": 297.5,
+      "ehp": 1083.0,
+      "mining_rate": 0,
+      "reserve_rate": 0
+    },
+    {
+      "name": "Ordnance bomber",
+      "hull": "Saber",
+      "power": 58,
+      "power_max": 60,
+      "high": 2,
+      "low": 1,
+      "sp": 54,
+      "small_dps": 1.9050000000000002,
+      "heavy_dps": 14.812107692307693,
+      "recovery_per_second": 2.4050000000000002,
+      "cap_regen": 2.6,
+      "drain": 2.666666666666667,
+      "net_cap": -0.06666666666666665,
+      "cap_duration": 1950.0000000000005,
+      "speed": 1.0355,
+      "signature": 75,
+      "cargo": 68.0,
+      "ehp": 325.5,
+      "mining_rate": 0,
+      "reserve_rate": 0
+    },
+    {
+      "name": "Accessible survey prospector",
+      "hull": "Light Freighter",
+      "power": 38,
+      "power_max": 40,
+      "high": 1,
+      "low": 2,
+      "sp": 55,
+      "small_dps": 0,
+      "heavy_dps": 0,
+      "recovery_per_second": 0,
+      "cap_regen": 1.8,
+      "drain": 0.4166666666666667,
+      "net_cap": 1.3833333333333333,
+      "cap_duration": null,
+      "speed": 0.9309999999999999,
+      "signature": 65,
+      "cargo": 238.32000000000002,
+      "ehp": 244.0,
+      "mining_rate": 0.5225,
+      "reserve_rate": 0.55
+    },
+    {
+      "name": "Scout selective recovery",
+      "hull": "Condor",
+      "power": 38,
+      "power_max": 40,
+      "high": 1,
+      "low": 2,
+      "sp": 107,
+      "small_dps": 0,
+      "heavy_dps": 0,
+      "recovery_per_second": 0,
+      "cap_regen": 2,
+      "drain": 0.4166666666666667,
+      "net_cap": 1.5833333333333333,
+      "cap_duration": null,
+      "speed": 1.236,
+      "signature": 32,
+      "cargo": 105.92,
+      "ehp": 211.0,
+      "mining_rate": 0.475,
+      "reserve_rate": 0.5
+    },
+    {
+      "name": "Accessible deep prospector",
+      "hull": "Hound",
+      "power": 54,
+      "power_max": 56,
+      "high": 1,
+      "low": 2,
+      "sp": 80,
+      "small_dps": 0,
+      "heavy_dps": 0,
+      "recovery_per_second": 2.4050000000000002,
+      "cap_regen": 2.4,
+      "drain": 1.8666666666666667,
+      "net_cap": 0.5333333333333332,
+      "cap_duration": null,
+      "speed": 0.744,
+      "signature": 90,
+      "cargo": 420,
+      "ehp": 327.0,
+      "mining_rate": 0.6350666666666667,
+      "reserve_rate": 0.7333333333333334
+    },
+    {
+      "name": "Compact deep prospecting",
+      "hull": "Light Freighter",
+      "power": 38,
+      "power_max": 40,
+      "high": 1,
+      "low": 1,
+      "sp": 80,
+      "small_dps": 0,
+      "heavy_dps": 0,
+      "recovery_per_second": 0,
+      "cap_regen": 1.8,
+      "drain": 0.6666666666666666,
+      "net_cap": 1.1333333333333333,
+      "cap_duration": null,
+      "speed": 0.8835,
+      "signature": 65,
+      "cargo": 180,
+      "ehp": 254.0,
+      "mining_rate": 0.2786666666666667,
+      "reserve_rate": 0.29333333333333333
+    },
+    {
+      "name": "Bulk industrial with escort",
+      "hull": "Mule",
+      "power": 62,
+      "power_max": 68,
+      "high": 2,
+      "low": 2,
+      "sp": 49,
+      "small_dps": 0,
+      "heavy_dps": 0,
+      "recovery_per_second": 2.4266666666666667,
+      "cap_regen": 3,
+      "drain": 2.666666666666667,
+      "net_cap": 0.33333333333333326,
+      "cap_duration": null,
+      "speed": 0.7,
+      "signature": 120,
+      "cargo": 650,
+      "ehp": 426.0,
+      "mining_rate": 1.6676000000000002,
+      "reserve_rate": 2.2
+    },
+    {
+      "name": "Fleet recovery specialist",
+      "hull": "Falchion",
+      "power": 58,
+      "power_max": 62,
+      "high": 2,
+      "low": 2,
+      "sp": 49,
+      "small_dps": 0,
+      "heavy_dps": 0,
+      "recovery_per_second": 7.253333333333334,
+      "cap_regen": 2.8800000000000003,
+      "drain": 4.666666666666666,
+      "net_cap": -1.7866666666666662,
+      "cap_duration": 119.7761194029851,
+      "speed": 0.936,
+      "signature": 80,
+      "cargo": 100,
+      "ehp": 324.0,
+      "mining_rate": 0,
+      "reserve_rate": 0
+    },
+    {
+      "name": "Independent freight",
+      "hull": "Merchant",
+      "power": 52,
+      "power_max": 64,
+      "high": 1,
+      "low": 3,
+      "sp": 67,
+      "small_dps": 1.8705500000000002,
+      "heavy_dps": 2.4705000000000004,
+      "recovery_per_second": 2.4050000000000002,
+      "cap_regen": 2.8,
+      "drain": 2.0,
+      "net_cap": 0.7999999999999998,
+      "cap_duration": null,
+      "speed": 0.918,
+      "signature": 105,
+      "cargo": 712.0,
+      "ehp": 338.5,
+      "mining_rate": 0,
+      "reserve_rate": 0
+    },
+    {
+      "name": "Salvage specialist",
+      "hull": "Hound",
+      "power": 48,
+      "power_max": 56,
+      "high": 2,
+      "low": 2,
+      "sp": 40,
+      "small_dps": 0,
+      "heavy_dps": 0,
+      "recovery_per_second": 0,
+      "cap_regen": 2.4,
+      "drain": 0,
+      "net_cap": 2.4,
+      "cap_duration": null,
+      "speed": 0.8240000000000001,
+      "signature": 90,
+      "cargo": 556.08,
+      "ehp": 315.0,
+      "mining_rate": 0,
+      "reserve_rate": 0
+    }
+  ],
+  "economy": [
+    {
+      "name": "Starter patrol",
+      "gross": 2001.0,
+      "expense": 201.3,
+      "net_per_player_hour": 7198.8,
+      "xp_per_player_hour": 14400.0,
+      "stress_net_per_player_hour": 4834.72
+    },
+    {
+      "name": "Advanced bounty",
+      "gross": 2951.0,
+      "expense": 418.0,
+      "net_per_player_hour": 7599.0,
+      "xp_per_player_hour": 16200.0,
+      "stress_net_per_player_hour": 4807.2
+    },
+    {
+      "name": "Selective prospecting",
+      "gross": 2132.48,
+      "expense": 235.28,
+      "net_per_player_hour": 5691.6,
+      "xp_per_player_hour": 12600.0,
+      "stress_net_per_player_hour": 2956.0320000000006
+    },
+    {
+      "name": "Bulk expedition with escort",
+      "gross": 6494.400000000001,
+      "expense": 557.2,
+      "net_per_player_hour": 7124.640000000001,
+      "xp_per_player_hour": 12000.0,
+      "stress_net_per_player_hour": 3914.1120000000005
+    },
+    {
+      "name": "Routine salvage",
+      "gross": 1924.36896,
+      "expense": 198.36,
+      "net_per_player_hour": 6904.0358400000005,
+      "xp_per_player_hour": 13600.0,
+      "stress_net_per_player_hour": 4033.529344
+    },
+    {
+      "name": "Survey and anomaly",
+      "gross": 2545.2,
+      "expense": 213.7,
+      "net_per_player_hour": 6994.5,
+      "xp_per_player_hour": 12600.0,
+      "stress_net_per_player_hour": 4718.88
+    },
+    {
+      "name": "Resource delivery",
+      "gross": 1764.0,
+      "expense": 146.32,
+      "net_per_player_hour": 6470.72,
+      "xp_per_player_hour": 11200.0,
+      "stress_net_per_player_hour": 4499.456
+    },
+    {
+      "name": "Sealed freight",
+      "gross": 2632.0,
+      "expense": 275.08,
+      "net_per_player_hour": 7070.76,
+      "xp_per_player_hour": 12000.0,
+      "stress_net_per_player_hour": 4764.288
+    },
+    {
+      "name": "Escort and rescue",
+      "gross": 5545.6,
+      "expense": 480.08,
+      "net_per_player_hour": 6078.624,
+      "xp_per_player_hour": 12000.0,
+      "stress_net_per_player_hour": 4038.2591999999995
+    },
+    {
+      "name": "Boarding operation",
+      "gross": 10896.0,
+      "expense": 1029.2,
+      "net_per_player_hour": 6577.866666666666,
+      "xp_per_player_hour": 12000.0,
+      "stress_net_per_player_hour": 4312.32
+    },
+    {
+      "name": "Capital fleet objective",
+      "gross": 15890.0,
+      "expense": 1733.1,
+      "net_per_player_hour": 6067.242857142857,
+      "xp_per_player_hour": 12857.142857142857,
+      "stress_net_per_player_hour": 3899.5885714285714
+    }
+  ],
+  "industry": [
+    {
+      "activity": "Selective prospecting",
+      "build": "Accessible survey prospector",
+      "cargo": 200,
+      "capacity": 238.32000000000002,
+      "working_seconds": 384,
+      "overhead_seconds": 600,
+      "trip_seconds": 1200,
+      "material_reference": 2240.0,
+      "notes": "Cycle rounding, finite reserve and deposit composition included; one return flight."
+    },
+    {
+      "activity": "Bulk expedition with escort",
+      "build": "Bulk industrial with escort",
+      "cargo": 600,
+      "capacity": 650,
+      "working_seconds": 370,
+      "overhead_seconds": 1000,
+      "trip_seconds": 1500,
+      "material_reference": 5760.0,
+      "notes": "Cycle rounding, finite reserve and deposit composition included; one return flight."
+    },
+    {
+      "activity": "Routine salvage",
+      "build": "Salvage specialist",
+      "cargo": 136,
+      "capacity": 556.08,
+      "working_seconds": 528,
+      "overhead_seconds": 240,
+      "trip_seconds": 900,
+      "material_reference": 1118.64,
+      "notes": "Four advanced wrecks;144 bulk reserve and12 one-shot component attempts.136 cargo covers recovered bulk plus all12 possible components; no repeated roll."
+    },
+    {
+      "activity": "Advanced compact deep prospecting",
+      "build": "Light Freighter;Compact drill/scanner/repairer;Industry50,Astrometrics50,Systems0",
+      "cargo": 120,
+      "capacity": 180,
+      "working_seconds": 600,
+      "overhead_seconds": 600,
+      "trip_seconds": 1200,
+      "material_reference": 2112.0,
+      "notes": "Power37/40; high1/2,low2/3; no configuration. Scanner42.5+20+9=71.5. Recovery2.015HP/s exceeds1.05 hazard HP/s; expenditure1.66667/s below1.8 regen. Commissioned quality refines one eligible dimension on each relevant item."
+    }
+  ],
+  "limits": [
+    "This audit evaluates the declared design model, not current gameplay implementation.",
+    "Material reference values are design inputs, not observed player market prices.",
+    "Movement feel, target representation, combat readability and live supply require runtime validation before release."
+  ],
+  "fights": [
+    {
+      "build": "Novice escort",
+      "enemy": "Starter pirate",
+      "dps": 4.863150000000001,
+      "ehp": 144.0,
+      "seconds": 29.61043767928194,
+      "minimum": 20,
+      "maximum": 60
+    },
+    {
+      "build": "Veteran accessible escort",
+      "enemy": "Advanced interceptor",
+      "dps": 6.361826240000002,
+      "ehp": 272.5,
+      "seconds": 42.833612506838904,
+      "minimum": 30,
+      "maximum": 65
+    },
+    {
+      "build": "Heavy objective specialist",
+      "enemy": "Elite heavy target",
+      "dps": 24.069675000000004,
+      "ehp": 862.5,
+      "seconds": 35.83347095463482,
+      "minimum": 25,
+      "maximum": 65
+    },
+    {
+      "build": "Ordnance bomber",
+      "enemy": "Elite heavy target",
+      "dps": 15.55271307692308,
+      "ehp": 862.5,
+      "seconds": 55.45656219169674,
+      "minimum": 30,
+      "maximum": 75
+    }
+  ]
+}

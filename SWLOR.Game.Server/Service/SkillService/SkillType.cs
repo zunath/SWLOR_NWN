@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Piloting",
             50,
             true,
-            "Ability to pilot starships, follow navigation charts, and control starship systems.",
+            "Ability to maneuver starships, pursue targets, navigate expeditions, and operate ship hulls.",
             true,
             false,
             false)]
@@ -496,6 +496,46 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             false)]
         Arkanian = 50,
+
+        [Skill(SkillCategoryType.Utility,
+            "Gunnery",
+            50,
+            true,
+            "Ability to operate starship weapons, track targets, and handle ordnance.",
+            true,
+            false,
+            false)]
+        Gunnery = 51,
+
+        [Skill(SkillCategoryType.Utility,
+            "Ship Systems",
+            50,
+            true,
+            "Ability to operate starship defenses, repairs, capacitor systems, and fleet support.",
+            true,
+            false,
+            false)]
+        ShipSystems = 52,
+
+        [Skill(SkillCategoryType.Utility,
+            "Astrometrics",
+            50,
+            true,
+            "Ability to survey space, analyze targets, and operate scanners and electronic warfare systems.",
+            true,
+            false,
+            false)]
+        Astrometrics = 53,
+
+        [Skill(SkillCategoryType.Utility,
+            "Space Industry",
+            50,
+            true,
+            "Ability to extract space resources, recover salvage, and manage industrial ship operations.",
+            true,
+            false,
+            false)]
+        SpaceIndustry = 54,
     }
 
     public class SkillAttribute : Attribute

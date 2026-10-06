@@ -1344,8 +1344,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
         public void Migrate()
         {
+            ShipFittingMigration.CaptureAudit();
             StoredItemDataMigration.Migrate();
             LinkedBankStorageMigration.MigrateInventoryItemsToGlobalBank();
+            ShipFittingMigration.Migrate();
         }
     }
 }

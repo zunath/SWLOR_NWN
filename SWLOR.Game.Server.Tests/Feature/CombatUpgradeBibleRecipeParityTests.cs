@@ -22,6 +22,7 @@ public class CombatUpgradeBibleRecipeParityTests
         "Engineering Recipes",
         "Cooking Recipes",
         "Fabrication Recipes",
+        "Space Craft Recipes",
     };
 
     /// <summary>
@@ -299,7 +300,8 @@ public class CombatUpgradeBibleRecipeParityTests
             // Index every cell (address -> text) once. The worksheets are large (1500+ rows),
             // so re-scanning the document per cell would be prohibitively slow.
             var cells = BuildCellIndex(worksheet, sharedStrings);
-            var headerColumns = BuildHeaderColumnMap(cells);
+            var headerRow = worksheetName == "Space Craft Recipes" ? 3 : 1;
+            var headerColumns = BuildHeaderColumnMap(cells, headerRow);
 
             string Cell(string column, int rowNumber) =>
                 cells.TryGetValue($"{column}{rowNumber}", out var value) ? value : string.Empty;
@@ -328,7 +330,7 @@ public class CombatUpgradeBibleRecipeParityTests
 
             var dataRowNumbers = cells.Keys
                 .Select(GetRowNumber)
-                .Where(rowNumber => rowNumber > 1)
+                .Where(rowNumber => rowNumber > headerRow)
                 .Distinct()
                 .OrderBy(rowNumber => rowNumber);
 
@@ -440,13 +442,13 @@ public class CombatUpgradeBibleRecipeParityTests
         return Enum.Parse<RecipeEnhancementType>(text, true);
     }
 
-    private static Dictionary<string, string> BuildHeaderColumnMap(Dictionary<string, string> cells)
+    private static Dictionary<string, string> BuildHeaderColumnMap(Dictionary<string, string> cells, int headerRow)
     {
         var map = new Dictionary<string, string>(StringComparer.Ordinal);
 
         foreach (var (address, value) in cells)
         {
-            if (GetRowNumber(address) != 1)
+            if (GetRowNumber(address) != headerRow)
                 continue;
 
             var text = NormalizeWhitespace(value);

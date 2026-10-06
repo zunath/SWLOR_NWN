@@ -2874,6 +2874,7 @@ public class CombatUpgradeBibleSyncTests
             ("First Aid", "Combat Pharmacology") => PerkCategoryType.FirstAidCombatPharmacology,
             ("First Aid", "Trauma Medic") => PerkCategoryType.FirstAidTraumaMedic,
             ("Engineering", "Droidcraft") => PerkCategoryType.Engineering,
+            ("Engineering", "Manufacturing") => PerkCategoryType.Engineering,
             ("Espionage", "Infiltrator") => PerkCategoryType.EspionageInfiltrator,
             ("Espionage", "Saboteur") => PerkCategoryType.EspionageSaboteur,
             ("Espionage", "Tradecraft") => PerkCategoryType.EspionageTradecraft,

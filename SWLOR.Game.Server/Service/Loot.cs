@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnCreatureDeathBefore)]
         public static void SpawnLootOnCreatureDeath()
         {
-            SpawnLoot(OBJECT_SELF, OBJECT_SELF, "LOOT_TABLE_");
+            if (string.IsNullOrEmpty(GetLocalString(OBJECT_SELF, "SPACE_ENCOUNTER_ID"))) SpawnLoot(OBJECT_SELF, OBJECT_SELF, "LOOT_TABLE_");
         }
 
         /// <summary>
@@ -272,6 +272,11 @@ namespace SWLOR.Game.Server.Service
         public static void ProcessCorpse()
         {
             var self = OBJECT_SELF;
+            if (!string.IsNullOrEmpty(GetLocalString(self, "SPACE_ENCOUNTER_ID")))
+            {
+                DelayCommand(.1f, () => DestroyObject(self));
+                return;
+            }
             SetIsDestroyable(false);
 
             var area = GetArea(self);

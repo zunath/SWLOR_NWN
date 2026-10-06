@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
     public class AbilityBehaviorCase
     {
         public FeatType Feat { get; set; }
+        public bool RequiresShipOperatingFixture { get; set; }
 
         /// <summary>
         /// Who the ability is activated on. Hostile abilities need HostileCreature so

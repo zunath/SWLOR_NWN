@@ -16,7 +16,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             Tier4();
             Tier5();
 
-            return _builder.Build();
+            var recipes = _builder.Build();
+            foreach (var recipe in recipes.Values)
+                if (recipe.Category == RecipeCategoryType.ModuleEnhancement || recipe.Category == RecipeCategoryType.StarshipEnhancement) recipe.IsActive = false;
+            return recipes;
         }
 
         private void Tier1()

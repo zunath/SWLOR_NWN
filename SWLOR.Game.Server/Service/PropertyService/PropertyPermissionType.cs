@@ -68,6 +68,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
         // Labs
         [PropertyPermission("Manage Incubators", "Can manage incubators.", true)]
         ManageIncubators = 16,
+
+        [PropertyPermission("Operate Stations", "Can operate a ship weapons, systems or survey/industry station.", true)]
+        OperateStations = 17,
     }
 
     public class PropertyPermissionAttribute : Attribute

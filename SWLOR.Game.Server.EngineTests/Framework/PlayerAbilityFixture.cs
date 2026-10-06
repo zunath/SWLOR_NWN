@@ -163,6 +163,33 @@ namespace SWLOR.Game.Server.EngineTests.Framework
                 server.GetGameObject(context.Arena).AsNWSArea(), position.X, position.Y, position.Z);
         }
 
+        /// <summary>Places a headless actor in another native area without a connected-client transition handshake.</summary>
+        public unsafe void MoveToArea(uint area, System.Numerics.Vector3 position)
+        {
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            var creature = server.GetGameObject(Creature).AsNWSCreature();
+            // Placement is fixture setup, not a test of the connected-client transition.
+            // The native PC path defers area entry until a client acknowledges its load.
+            // Detach the dummy client and use native NPC placement, restoring identity
+            // and registration before any gameplay assertion or scheduled frame.
+            var playerFlag = creature.m_bPlayerCharacter;
+            var clients = server.GetPlayerList();
+            clients.Remove(_client);
+            try
+            {
+                creature.m_bPlayerCharacter = 0;
+                creature.RemoveFromArea();
+                creature.AddToArea(server.GetGameObject(area).AsNWSArea(), position.X, position.Y, position.Z, 1, 0);
+            }
+            finally
+            {
+                creature.m_bPlayerCharacter = playerFlag;
+                clients.Add(_client);
+            }
+            if (GetArea(Creature) != area)
+                throw new InvalidOperationException($"Headless area placement failed: requested {area:X8}, actual {GetArea(Creature):X8}, desired {creature.m_oidDesiredArea:X8}, load complete {creature.m_bDesiredAreaUpdateComplete}.");
+        }
+
         public void Update(Action<Player> update)
         {
             var record = DB.Get<Player>(Id);

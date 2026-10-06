@@ -17,6 +17,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ShipManagementViewModel : GuiViewModelBase<ShipManagementViewModel, ShipManagementPayload>
     {
+        public const string ContentElement = "ship-management-content";
+        public const string MainContentPartial = "ship-management-main";
+        public string FittingSummary { get => Get<string>(); set => Set(value); }
+        public string RecoveryText { get => Get<string>(); set => Set(value); }
+
+        protected override void OnModalClosedRestore() => ChangePartialView(ContentElement, MainContentPartial);
+
         private const string _blank = "Blank";
 
         private int SelectedShipIndex { get; set; }
@@ -627,30 +634,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private int CalculateRepairBill(PlayerShip ship)
         {
-            var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var shieldDiff = ship.Status.MaxShield - ship.Status.Shield;
-            var hullDiff = ship.Status.MaxHull - ship.Status.Hull;
-            var price = shieldDiff * 50 + hullDiff * 100;
-            var starportBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.StarportLevel) * 0.05f;
-            var socialBonus = (GetAbilityScore(Player, AbilityType.Social) - 10) * 0.02f;
-            if (socialBonus > 0.20f)
-                socialBonus = 0.20f;
-            else if (socialBonus < 0f)
-                socialBonus = 0f;
-
-            var bonuses = starportBonus + socialBonus;
-
-            if (bonuses > 0.90f)
-                bonuses = 0.90f;
-
-            price -= (int)(price * bonuses);
-            if (ship.Status.CapitalShip)
-            {
-                price *= 5;
-            }
-
-            return price;
+            return ShipDockService.Quote(Player,ship.Status);
         }
 
         protected override void Initialize(ShipManagementPayload initialPayload)
@@ -706,6 +690,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsOtherShipsToggled = false;
             ToggleRegisterButtons();
 
+            ChangePartialView(ContentElement, MainContentPartial);
             WatchOnClient(model => model.ShipName);
         }
 
@@ -802,6 +787,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Configuration8Resref = _blank;
 
                 IsRefitEnabled = false;
+                FittingSummary = string.Empty;
+                RecoveryText = "Recover equipment";
                 IsBoardShipEnabled = false;
                 IsPermissionsEnabled = false;
                 IsNameEnabled = false;
@@ -813,7 +800,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var shipId = _shipIds[SelectedShipIndex];
                 var ship = DB.Get<PlayerShip>(shipId);
+                ShipEquipmentTransfers.EnsureFitting(ship);
                 var shipDetail = Space.GetShipDetailByItemTag(ship.Status.ItemTag);
+                var profile = shipDetail.FittingProfile;
+                FittingSummary = $"Power {ship.Status.FittingPowerUsed}/{profile.Power} · Cargo {ShipCargo.Occupied(ship.Status):0.#}/{ship.Status.CargoCapacity:0} · {profile.Role}";
+                RecoveryText = $"Recover equipment ({ship.Status.RefitRecovery.Count})";
                 var property = DB.Get<WorldProperty>(ship.PropertyId);
 
                 var permissionQuery = new DBQuery<WorldPropertyPermission>()
@@ -838,7 +829,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Capacitor = (float)ship.Status.Capacitor / ship.Status.MaxCapacitor;
                 CapacitorTooltip = $"Capacitor: {ship.Status.Capacitor} / {ship.Status.MaxCapacitor}";
 
-                ShieldRechargeRate = $"{ship.Status.ShieldRechargeRate}s";
+                ShieldRechargeRate = $"{ship.Status.OutOfCombatShieldRecovery:0.##}/s after 10s out of combat";
 
                 HighPower1Visible = shipDetail.HighPowerNodes >= 1;
                 HighPower2Visible = shipDetail.HighPowerNodes >= 2;
@@ -1236,11 +1227,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     : isDockInstanceLoading
                         ? "Docked (loading...)"
                         : GetName(currentLocation);
-                IsRepairEnabled = (ship.Status.Shield < ship.Status.MaxShield ||
-                                  ship.Status.Hull < ship.Status.MaxHull) &&
-                                  gold >= repairPrice &&
-                                  isAtCurrentLocation;
-                RepairText = $"Repair ({repairPrice} cr)";
+                IsRepairEnabled = (ShipRecovery.DockPrice(ship.Status) > 0 || ship.Status.Shield < ship.Status.MaxShield || ship.Status.Capacitor < ship.Status.MaxCapacitor) &&
+                                  gold >= repairPrice && isAtCurrentLocation && !isInSpace && permission.Permissions.GetValueOrDefault(PropertyPermissionType.RefitShip);
+                RepairText = $"Service ({repairPrice} cr)";
             }
 
             ToggleRegisterButtons();
@@ -1381,6 +1370,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         CapitalShip = shipDetail.CapitalShip
                     }
                 };
+                ship.Status = ShipFittingConversion.Convert(ship.Status, sourceIdentity: ship.Id);
                 DB.Set(ship);
 
                 // Update the UI with the new ship details.
@@ -1408,7 +1398,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
 
                     if (dbShip.Status.HighPowerModules.Count > 0 ||
-                        dbShip.Status.LowPowerModules.Count > 0)
+                        dbShip.Status.LowPowerModules.Count > 0 || dbShip.Status.ConfigurationModules.Count > 0 ||
+                        dbShip.Status.RefitRecovery.Count > 0 || dbShip.Status.PendingInventoryTransfers.Count > 0 || dbShip.Status.PendingCargoTransfers.Count > 0 || dbShip.Status.Cargo.Count > 0 || dbShip.Status.PendingDockPayment != null)
                     {
                         FloatingTextStringOnCreature($"Please uninstall all modules before unregistering your ship.", Player, false);
                         return;
@@ -1466,278 +1457,69 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShipNames[SelectedShipIndex] = ShipName;
         };
 
-        private bool ValidateModuleEquip(PlayerShip dbShip, uint item)
+        private void ProcessHighPower(int slot) => ProcessFitting(ShipFittingBank.High, slot);
+        private void ProcessLowPower(int slot) => ProcessFitting(ShipFittingBank.Low, slot);
+        private void ProcessConfiguration(int slot) => ProcessFitting(ShipFittingBank.Configuration, slot);
+
+        private void ProcessFitting(ShipFittingBank bank, int slot)
         {
-            var itemTag = GetTag(item);
-
-            // Not a valid module type.
-            if (!Space.IsRegisteredShipModule(itemTag))
-            {
-                SendMessageToPC(Player, "Only starship modules may be installed.");
-                return false;
-            }
-
-            if (GetItemPossessor(item) != Player)
-            {
-                SendMessageToPC(Player, "Item must be in your inventory.");
-                return false;
-            }
-
-            var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
-            var shipDetails = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);
-
-            // No high power nodes available.
-            if (moduleDetails.PowerType == ShipModulePowerType.High &&
-                dbShip.Status.HighPowerModules.Count >= shipDetails.HighPowerNodes)
-            {
-                SendMessageToPC(Player, "No high power nodes are available.");
-                return false;
-            }
-
-            // No low power nodes available.
-            if (moduleDetails.PowerType == ShipModulePowerType.Low &&
-                dbShip.Status.LowPowerModules.Count >= shipDetails.LowPowerNodes)
-            {
-                SendMessageToPC(Player, "No low power nodes are available.");
-                return false;
-            }
-
-            // Doesn't meet perk requirements.
-            if (!Space.CanPlayerUseShipModule(Player, itemTag))
-            {
-                SendMessageToPC(Player, "You do not meet the perk requirements necessary to install this module.");
-                return false;
-            }
-
-            var capShip = dbShip.Status.CapitalShip;
-            var capMod = moduleDetails.CapitalClassModule;
-
-            if (!capShip && capMod)
-            {
-                SendMessageToPC(Player, "Capital class modules may only be installed to capital ships.");
-                return false;
-            }
-
-            if (capShip && !capMod)
-            {
-                SendMessageToPC(Player, "Capital ships can only equip capital class modules.");
-                return false;
-            }
-
-            return true;
-        }
-
-        private void ProcessHighPower(int slot)
-        {
+            if (SelectedShipIndex < 0 || SelectedShipIndex >= _shipIds.Count) return;
             var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
-            var module = dbShip.Status.HighPowerModules.ContainsKey(slot)
-                ? dbShip.Status.HighPowerModules[slot]
-                : null;
-
-            // No module is equipped in this slot.
-            // Put player into targeting mode to select a module.
-            if (module == null)
+            try
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship high-powered module within your inventory.",
-                    item =>
+                var ship = ShipEquipmentTransfers.RequireDock(Player, shipId);
+                if (!ShipRefitting.Bank(ship.Status, bank).TryGetValue(slot, out var module))
                 {
-                    dbShip = DB.Get<PlayerShip>(shipId);
-                    var itemTag = GetTag(item);
-                    if (!Space.IsRegisteredShipModule(itemTag))
+                    Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select ship equipment in your inventory.", item =>
                     {
-                        SendMessageToPC(Player, "Only high-powered ship modules may be installed to this slot.");
-                        return;
-                    }
-
-                    var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
-
-                    if (!ValidateModuleEquip(dbShip, item))
-                        return;
-
-                    if (moduleDetails.PowerType != ShipModulePowerType.High)
-                    {
-                        SendMessageToPC(Player, "Only high-powered ship modules may be installed to this slot.");
-                        return;
-                    }
-
-                    var moduleBonus = Space.GetModuleBonus(item);
-                    dbShip.Status.HighPowerModules[slot] = new ShipStatus.ShipStatusModule
-                    {
-                        ItemInstanceId = GetObjectUUID(item),
-                        SerializedItem = ObjectPlugin.Serialize(item),
-                        ItemTag = itemTag,
-                        RecastTime = DateTime.MinValue,
-                        ModuleBonus = moduleBonus
-                    };
-
-                    moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
-
-                    DB.Set(dbShip);
-
-                    DestroyObject(item);
-                    LoadShip();
-                });
-            }
-            // A module exists. Prompt user whether they'd like to uninstall it.
-            else
-            {
-                var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
-                ShowModal($"{moduleDetail.Name} is equipped to high slot #{slot}. Would you like to uninstall it?", () =>
-                {
-                    var item = ObjectPlugin.Deserialize(module.SerializedItem);
-                    ObjectPlugin.AcquireItem(Player, item);
-
-                    var moduleBonus = Space.GetModuleBonus(item);
-                    moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
-                    dbShip.Status.HighPowerModules.Remove(slot);
-                    DB.Set(dbShip);
-                    LoadShip();
-                });
-            }
-        }
-
-        private void ProcessLowPower(int slot)
-        {
-            var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
-            var module = dbShip.Status.LowPowerModules.ContainsKey(slot)
-                ? dbShip.Status.LowPowerModules[slot]
-                : null;
-
-            // No module is equipped in this slot.
-            // Put player into targeting mode to select a module.
-            if (module == null)
-            {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a low-powered ship module within your inventory",
-                    item =>
-                {
-                    dbShip = DB.Get<PlayerShip>(shipId);
-                    var itemTag = GetTag(item);
-                    if (!Space.IsRegisteredShipModule(itemTag))
-                    {
-                        SendMessageToPC(Player, "Only low-powered ship modules may be installed to this slot.");
-                        return;
-                    }
-
-                    var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
-                    var moduleBonus = Space.GetModuleBonus(item);
-
-                    if (!ValidateModuleEquip(dbShip, item))
-                        return;
-
-                    if (moduleDetails.PowerType != ShipModulePowerType.Low)
-                    {
-                        SendMessageToPC(Player, "Only low-powered ship modules may be installed to this slot.");
-                        return;
-                    }
-
-
-                    dbShip.Status.LowPowerModules[slot] = new ShipStatus.ShipStatusModule
-                    {
-                        ItemInstanceId = GetObjectUUID(item),
-                        SerializedItem = ObjectPlugin.Serialize(item),
-                        ItemTag = itemTag,
-                        RecastTime = DateTime.MinValue,
-                        ModuleBonus = moduleBonus
-                    };
-
-                    moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
-
-                    DB.Set(dbShip);
-
-                    DestroyObject(item);
-                    LoadShip();
-                });
-            }
-            // A module exists. Prompt user whether they'd like to uninstall it.
-            else
-            {
-                var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
-                ShowModal($"{moduleDetail.Name} is equipped to low slot #{slot}. Would you like to uninstall it?", () =>
-                {
-                    var item = ObjectPlugin.Deserialize(module.SerializedItem);
-                    var moduleBonus = Space.GetModuleBonus(item);
-                    ObjectPlugin.AcquireItem(Player, item);
-
-                    moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
-                    dbShip.Status.LowPowerModules.Remove(slot);
-                    DB.Set(dbShip);
-                    LoadShip();
-                });
-            }
-        }
-
-        private void ProcessConfiguration(int slot)
-        {
-            var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
-            var module = dbShip.Status.ConfigurationModules.ContainsKey(slot)
-                ? dbShip.Status.ConfigurationModules[slot]
-                : null;
-
-            // No module is equipped in this slot.
-            // Put player into targeting mode to select a module.
-            if (module == null)
-            {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship configuration module within your inventory",
-                    item =>
-                    {
-                        dbShip = DB.Get<PlayerShip>(shipId);
-                        var itemTag = GetTag(item);
-                        if (!Space.IsRegisteredShipModule(itemTag))
-                        {
-                            SendMessageToPC(Player, "Only ship configuration modules may be installed to this slot.");
-                            return;
-                        }
-
-                        var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
-                        var moduleBonus = Space.GetModuleBonus(item);
-
-                        if (!ValidateModuleEquip(dbShip, item))
-                            return;
-
-                        if (moduleDetails.PowerType != ShipModulePowerType.Config)
-                        {
-                            SendMessageToPC(Player, "Only ship configuration modules may be installed to this slot.");
-                            return;
-                        }
-
-                        dbShip.Status.ConfigurationModules[slot] = new ShipStatus.ShipStatusModule
-                        {
-                            ItemInstanceId = GetObjectUUID(item),
-                            SerializedItem = ObjectPlugin.Serialize(item),
-                            ItemTag = itemTag,
-                            RecastTime = DateTime.MinValue,
-                            ModuleBonus = moduleBonus
-                        };
-
-                        moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
-
-                        DB.Set(dbShip);
-
-                        DestroyObject(item);
+                        try { ShipEquipmentTransfers.Install(Player, shipId, bank, slot, item); }
+                        catch (InvalidOperationException error) { SendMessageToPC(Player, error.Message); }
+                        catch (ArgumentException error) { SendMessageToPC(Player, error.Message); }
                         LoadShip();
                     });
-            }
-            // A module exists. Prompt user whether they'd like to uninstall it.
-            else
-            {
-                var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
-                ShowModal($"{moduleDetail.Name} is equipped to ship configuration slot #{slot}. Would you like to uninstall it?", () =>
+                }
+                else
                 {
-                    var item = ObjectPlugin.Deserialize(module.SerializedItem);
-                    var moduleBonus = Space.GetModuleBonus(item);
-                    ObjectPlugin.AcquireItem(Player, item);
-
-                    moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
-                    dbShip.Status.ConfigurationModules.Remove(slot);
-                    DB.Set(dbShip);
-                    LoadShip();
-                });
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    ShowModal($"Uninstall {detail.Name} ({module.Calibration}; condition {module.Condition}%) from {bank} slot {slot}?", () =>
+                    {
+                        try { ShipEquipmentTransfers.Remove(Player, shipId, bank, slot); }
+                        catch (InvalidOperationException error) { SendMessageToPC(Player, error.Message); }
+                        LoadShip();
+                    });
+                }
             }
-
+            catch (InvalidOperationException error) { SendMessageToPC(Player, error.Message); }
         }
+
+        public Action OnClickSupply()=>()=>Gui.TogglePlayerWindow(Player,GuiWindowType.ShipSupply,new ShipSupplyPayload());
+        public Action OnClickContracts()=>()=> {if(SelectedShipIndex>=0&&SelectedShipIndex<_shipIds.Count)Gui.TogglePlayerWindow(Player,GuiWindowType.ShipContracts,new ShipContractsPayload(_shipIds[SelectedShipIndex]));};
+
+        public Action OnClickCockpit() => () =>
+        {
+            if (SelectedShipIndex<0||SelectedShipIndex>=_shipIds.Count)return;
+            Gui.TogglePlayerWindow(Player,GuiWindowType.ShipCockpit,new ShipCockpitPayload(_shipIds[SelectedShipIndex]));
+        };
+
+        public Action OnClickCargo() => () =>
+        {
+            if (SelectedShipIndex < 0 || SelectedShipIndex >= _shipIds.Count) return;
+            Gui.TogglePlayerWindow(Player, GuiWindowType.ShipCargo, new ShipCargoPayload(_shipIds[SelectedShipIndex]));
+        };
+
+        public Action OnClickRecoverEquipment() => () =>
+        {
+            if (SelectedShipIndex < 0 || SelectedShipIndex >= _shipIds.Count) return;
+            var shipId = _shipIds[SelectedShipIndex];
+            try
+            {
+                var ship = ShipEquipmentTransfers.RequireDock(Player, shipId);
+                foreach (var identity in ship.Status.RefitRecovery.Keys.ToArray())
+                    ShipEquipmentTransfers.Withdraw(Player, shipId, identity);
+            }
+            catch (InvalidOperationException error) { SendMessageToPC(Player, error.Message); }
+            LoadShip();
+        };
 
         public Action OnClickHighPower1() => () =>
         {
@@ -1923,24 +1705,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal($"Repairs will cost you {price} credits. Will you pay for repairs?", () =>
             {
-                var gold = GetGold(Player);
-
-                if (gold < price)
-                {
-                    FloatingTextStringOnCreature(ColorToken.Red("Not enough credits!"), Player, false);
-                    return;
-                }
-
-                AssignCommand(Player, () =>
-                {
-                    TakeGoldFromCreature(price, Player, true);
-                });
-
-                dbShip.Status.Shield = dbShip.Status.MaxShield;
-                dbShip.Status.Hull = dbShip.Status.MaxHull;
-                DB.Set(dbShip);
-
-                FloatingTextStringOnCreature(ColorToken.Green("Ship repaired!"), Player, false);
+                try { ShipDockService.Repair(Player, shipId, price); FloatingTextStringOnCreature(ColorToken.Green("Ship serviced!"), Player, false); }
+                catch (InvalidOperationException ex) { SendMessageToPC(Player, ex.Message); }
                 LoadShip();
             });
         };

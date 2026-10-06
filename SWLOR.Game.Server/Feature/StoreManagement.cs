@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Service;
@@ -30,8 +31,11 @@ namespace SWLOR.Game.Server.Feature
 
                     for (var item = GetFirstItemInInventory(store); GetIsObjectValid(item); item = GetNextItemInInventory(store))
                     {
+                        if(ShipFittingCatalog.Default.LegacyModules.ContainsKey(GetTag(item))){DestroyObject(item);continue;}
                         SetLocalBool(item, StoreServiceItem, true);
-                        ApplyIncreasedPriceItemProperty(item);
+                        if(SpaceEconomyCatalog.Default.Items.TryGetValue(GetResRef(item),out var shipPrice))
+                        {ItemPlugin.SetBaseGoldPieceValue(item,shipPrice.Reference);ItemPlugin.SetAddGoldPieceValue(item,0);}
+                        else ApplyIncreasedPriceItemProperty(item);
                     }
 
                     _stores.Add(store);
@@ -125,7 +129,7 @@ namespace SWLOR.Game.Server.Feature
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var isSuccessful = EventsPlugin.GetEventData("RESULT") == "1";
 
-            if (!isSuccessful)
+            if (!isSuccessful || !string.IsNullOrEmpty(GetLocalString(item,"SHIP_TRADE_RESERVED")))
                 return;
 
             DestroyObject(item);
@@ -140,6 +144,23 @@ namespace SWLOR.Game.Server.Feature
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var owner = GetItemPossessor(item);
             var master = GetMaster(owner);
+            var bound=GetLocalString(item,ShipSupply.BoundOwner);
+            if(!string.IsNullOrEmpty(bound)){EventsPlugin.SkipEvent();SendMessageToPC(owner,"Starter equipment is bound and cannot be sold.");return;}
+            var resref=GetResRef(item);
+            var design=ShipFittingCatalog.Default.DesignByItemTag(GetTag(item));
+            if(GetLocalInt(item,"SHIP_FITTING")==1&&design!=null)
+                resref=ShipFittingCatalog.Default.Modules.ContainsKey(design)?ShipFittingCatalog.Default.GetVariant(design,GetLocalString(item,"SHIP_CALIBRATION")).ItemResref:ShipFittingCatalog.Default.Configurations[design].ItemResref;
+            if(GetIsPC(owner)&&SpaceEconomyCatalog.Default.Items.TryGetValue(resref,out var profile)&&int.TryParse(EventsPlugin.GetEventData("PRICE"),out var nativePrice))
+            {
+                var ceiling=checked(profile.Resale*GetItemStackSize(item));
+                if(nativePrice>ceiling)
+                {
+                    EventsPlugin.SkipEvent();
+                    try{ShipSupply.BeginSale(owner,item,GetItemStackSize(item),ceiling);}
+                    catch(InvalidOperationException ex){SendMessageToPC(owner,ex.Message);}
+                    return;
+                }
+            }
 
             if (GetIsObjectValid(master))
             {

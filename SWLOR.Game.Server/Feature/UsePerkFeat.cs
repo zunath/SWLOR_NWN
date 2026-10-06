@@ -353,6 +353,9 @@ namespace SWLOR.Game.Server.Feature
                     ? 1 // If there's not an associated perk, default level to 1.
                     : Perk.GetPerkLevel(activator, ability.EffectiveLevelPerkType);
 
+            if (ability.ShipTechnique != null)
+                return Space.ActivateShipTechnique(activator, ability.ShipTechnique, effectivePerkLevel, target);
+
             // Weapon abilities are queued for the next time the activator's attack lands on an enemy.
             if (ability.ActivationType == AbilityActivationType.Weapon)
             {

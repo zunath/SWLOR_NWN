@@ -6147,6 +6147,196 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         SingleWeaponDamagePercentAdjustment = 1087,
 
+        // Fractional ship adjustments use basis points; flat capacities use whole units.
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipWeaponOutput = 1088,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipRecoveryOutput = 1089,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipExternalRecoveryOutput = 1090,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipTracking = 1091,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipSpeed = 1092,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipCargoCapacity = 1093,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipHullCapacity = 1094,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipShieldCapacity = 1095,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipCapacitorCapacity = 1096,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 100)]
+        ShipCapacitorRecovery = 1097,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 100)]
+        ShipShieldRecovery = 1098,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipHullResistance = 1099,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipShieldResistance = 1100,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipAccuracy = 1101,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipEvasion = 1102,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipScannerResolution = 1103,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipProtectedCargo = 1104,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipReserveRemoval = 1105,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipResourceRecovery = 1106,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipTransferEfficiency = 1107,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipIntactSalvageChance = 1108,
+
+        [StatType(StatTypeCategory.BeneficialWhenNegative, shipUnitsPerAmount: 10000)]
+        ShipWeaponCapacitorDemand = 1109,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipCapacitorDiscount = 1110,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipOrdnanceTrackingReduction = 1111,
+
+        [StatType(StatTypeCategory.BeneficialWhenNegative, shipUnitsPerAmount: 1)]
+        ShipActivationLock = 1112,
+
+        [StatType(StatTypeCategory.BeneficialWhenNegative, shipUnitsPerAmount: 1)]
+        ShipWeaponLock = 1113,
+
+        [StatType(StatTypeCategory.BeneficialWhenNegative, shipUnitsPerAmount: 1)]
+        ShipMovementLock = 1114,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipSoftControlImmunity = 1115,
+
+        [StatType(StatTypeCategory.BeneficialWhenNegative, shipUnitsPerAmount: 10000)]
+        ShipIncomingDamage = 1116,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipEnvironmentalMitigation = 1117,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipServiceDiscount = 1118,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipAmmunitionDiscount = 1119,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipCapacitorDamageMitigation = 1120,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipWeaponCapacitorDiscount = 1121,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipRepairCapacitorDiscount = 1122,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipPropulsionCapacitorDiscount = 1123,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipScannerCapacitorDiscount = 1124,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipElectronicCapacitorDiscount = 1125,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipIndustryCapacitorDiscount = 1126,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipElectronicRange = 1127,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipRepairRange = 1128,
+
+        [StatType(StatTypeCategory.BeneficialWhenNegative, shipUnitsPerAmount: 10000)]
+        ShipCycleDuration = 1129,
+
+        [StatType(StatTypeCategory.BeneficialWhenNegative, shipUnitsPerAmount: 10000)]
+        ShipSignature = 1130,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipExtractionHardness = 1131,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipLoadingSpeed = 1132,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipOrdnanceOutput = 1133,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipOrdnanceTracking = 1134,
+
+        [StatType(StatTypeCategory.BeneficialWhenNegative, shipUnitsPerAmount: 10000)]
+        ShipIncomingAccuracy = 1135,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipInterferenceStrength = 1136,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipCountermeasureStrength = 1137,
+
+        [StatType(StatTypeCategory.BeneficialWhenNegative, shipUnitsPerAmount: 10000)]
+        ShipCapacitorDemand = 1138,
+
+        [StatType(StatTypeCategory.BeneficialWhenNegative, shipUnitsPerAmount: 10000)]
+        ShipSurveyCycleDuration = 1139,
+
+        [StatType(StatTypeCategory.BeneficialWhenNegative, shipUnitsPerAmount: 10000)]
+        ShipSalvageCycleDuration = 1140,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipSelfRecoveryOutput = 1141,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipSalvageRecovery = 1142,
+
+        [StatType(StatTypeCategory.BeneficialWhenNegative, shipUnitsPerAmount: 10000)]
+        ShipAmmunitionDemand = 1143,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipSupportRecipients = 1144,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipSelectedRecovery = 1145,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipCommittedCycleSeconds = 1146,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 10000)]
+        ShipDiscoveryChance = 1147,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipExposedSystems = 1148,
+
+        [StatType(StatTypeCategory.BeneficialWhenPositive, shipUnitsPerAmount: 1)]
+        ShipCommittedMovementLock = 1149,
+
+
+
+
     }
 
     public class StatTypeAttribute : Attribute
@@ -6154,15 +6344,18 @@ namespace SWLOR.Game.Server.Service.StatService
         public StatTypeCategory Category { get; }
         public StatTypeAggregation Aggregation { get; }
         public DeflectionSource DeflectionSource { get; }
+        public int ShipUnitsPerAmount { get; }
 
         public StatTypeAttribute(
             StatTypeCategory category,
             StatTypeAggregation aggregation = StatTypeAggregation.Additive,
-            DeflectionSource deflectionSource = DeflectionSource.None)
+            DeflectionSource deflectionSource = DeflectionSource.None,
+            int shipUnitsPerAmount = 0)
         {
             Category = category;
             Aggregation = aggregation;
             DeflectionSource = deflectionSource;
+            ShipUnitsPerAmount = shipUnitsPerAmount;
         }
     }
 

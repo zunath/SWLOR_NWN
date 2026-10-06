@@ -13,7 +13,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
 {
     /// <summary>
-    /// Shared engine-side executor for AbilityBehaviorCase collections. Each case spawns a
+    /// Shared engine-side executor for AbilityBehaviorCase collections. By default each case spawns a
     /// fresh caster (and target when required), drives the real UsePerkFeat.TryUseAbility
     /// pipeline, and asserts the declared observable outcomes per activation type.
     /// Failures are collected per-case so one broken ability doesn't hide the rest of a tree.
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         /// </summary>
         private const int SystemicFailureThreshold = 25;
 
-        public static async Task RunAsync(EngineTestContext ctx, List<AbilityBehaviorCase> cases)
+        public static async Task RunAsync(EngineTestContext ctx, List<AbilityBehaviorCase> cases, Func<AbilityBehaviorCase, Task> caseExecutor = null)
         {
             var failures = new List<string>();
             var skippedFeats = new List<string>();
@@ -88,7 +88,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
 
                     try
                     {
-                        await RunCaseAsync(ctx, behaviorCase);
+                        if (caseExecutor == null) await RunCaseAsync(ctx, behaviorCase);
+                        else await caseExecutor(behaviorCase);
                         passedCount++;
                         ctx.Log($"{progress} PASS {behaviorCase.Feat} - {remaining}");
                     }
@@ -161,6 +162,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
 
         private static async Task RunCaseAsync(EngineTestContext ctx, AbilityBehaviorCase behaviorCase)
         {
+            if(behaviorCase.RequiresShipOperatingFixture)
+            {
+                await ShipTechniqueEngineTests.RunCaseAsync(ctx,behaviorCase.Feat);return;
+            }
             if (behaviorCase.RequiresPlayerBeastFixture)
             {
                 await PlayerBeastAbilityEngineTests.RunCaseAsync(ctx, behaviorCase.Feat);

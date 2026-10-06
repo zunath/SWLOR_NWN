@@ -1,0 +1,3458 @@
+{
+  "items": [
+    {
+      "resref": "trk_laser",
+      "name": "Compact Tracking Laser",
+      "reference": 240,
+      "resale": 60,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 5
+    },
+    {
+      "resref": "trk_laser_eff",
+      "name": "Compact Tracking Laser (Efficient)",
+      "reference": 240,
+      "resale": 60,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "trk_laser_ext",
+      "name": "Compact Tracking Laser (Extended)",
+      "reference": 240,
+      "resale": 60,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "trk_laser_rap",
+      "name": "Compact Tracking Laser (Rapid)",
+      "reference": 240,
+      "resale": 60,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "trk_laser_cmp",
+      "name": "Compact Tracking Laser (Compact)",
+      "reference": 240,
+      "resale": 60,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "trk_laser_out",
+      "name": "Compact Tracking Laser (High Output)",
+      "reference": 240,
+      "resale": 60,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "trk_laser_pre",
+      "name": "Compact Tracking Laser (Precision)",
+      "reference": 240,
+      "resale": 60,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "beam_emitter",
+      "name": "Sustained Beam",
+      "reference": 420,
+      "resale": 105,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "beam_emitter_eff",
+      "name": "Sustained Beam (Efficient)",
+      "reference": 420,
+      "resale": 105,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "beam_emitter_ext",
+      "name": "Sustained Beam (Extended)",
+      "reference": 420,
+      "resale": 105,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "beam_emitter_rap",
+      "name": "Sustained Beam (Rapid)",
+      "reference": 420,
+      "resale": 105,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "beam_emitter_cmp",
+      "name": "Sustained Beam (Compact)",
+      "reference": 420,
+      "resale": 105,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "beam_emitter_out",
+      "name": "Sustained Beam (High Output)",
+      "reference": 420,
+      "resale": 105,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "beam_emitter_pre",
+      "name": "Sustained Beam (Precision)",
+      "reference": 420,
+      "resale": 105,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "pulse_laser",
+      "name": "Pulse Laser",
+      "reference": 330,
+      "resale": 82,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "pulse_laser_eff",
+      "name": "Pulse Laser (Efficient)",
+      "reference": 330,
+      "resale": 82,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "pulse_laser_ext",
+      "name": "Pulse Laser (Extended)",
+      "reference": 330,
+      "resale": 82,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "pulse_laser_rap",
+      "name": "Pulse Laser (Rapid)",
+      "reference": 330,
+      "resale": 82,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "pulse_laser_cmp",
+      "name": "Pulse Laser (Compact)",
+      "reference": 330,
+      "resale": 82,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "pulse_laser_out",
+      "name": "Pulse Laser (High Output)",
+      "reference": 330,
+      "resale": 82,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "pulse_laser_pre",
+      "name": "Pulse Laser (Precision)",
+      "reference": 330,
+      "resale": 82,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "long_emitter",
+      "name": "Long-Range Emitter",
+      "reference": 520,
+      "resale": 130,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "long_emitter_eff",
+      "name": "Long-Range Emitter (Efficient)",
+      "reference": 520,
+      "resale": 130,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "long_emitter_ext",
+      "name": "Long-Range Emitter (Extended)",
+      "reference": 520,
+      "resale": 130,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "long_emitter_rap",
+      "name": "Long-Range Emitter (Rapid)",
+      "reference": 520,
+      "resale": 130,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "long_emitter_cmp",
+      "name": "Long-Range Emitter (Compact)",
+      "reference": 520,
+      "resale": 130,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "long_emitter_out",
+      "name": "Long-Range Emitter (High Output)",
+      "reference": 520,
+      "resale": 130,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "long_emitter_pre",
+      "name": "Long-Range Emitter (Precision)",
+      "reference": 520,
+      "resale": 130,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "laser_bank",
+      "name": "Laser Battery",
+      "reference": 620,
+      "resale": 155,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "laser_bank_eff",
+      "name": "Laser Battery (Efficient)",
+      "reference": 620,
+      "resale": 155,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "laser_bank_ext",
+      "name": "Laser Battery (Extended)",
+      "reference": 620,
+      "resale": 155,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "laser_bank_rap",
+      "name": "Laser Battery (Rapid)",
+      "reference": 620,
+      "resale": 155,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "laser_bank_cmp",
+      "name": "Laser Battery (Compact)",
+      "reference": 620,
+      "resale": 155,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "laser_bank_out",
+      "name": "Laser Battery (High Output)",
+      "reference": 620,
+      "resale": 155,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "laser_bank_pre",
+      "name": "Laser Battery (Precision)",
+      "reference": 620,
+      "resale": 155,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "hvy_beam",
+      "name": "Heavy Beam Cannon",
+      "reference": 1100,
+      "resale": 275,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "hvy_beam_eff",
+      "name": "Heavy Beam Cannon (Efficient)",
+      "reference": 1100,
+      "resale": 275,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "hvy_beam_ext",
+      "name": "Heavy Beam Cannon (Extended)",
+      "reference": 1100,
+      "resale": 275,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "hvy_beam_rap",
+      "name": "Heavy Beam Cannon (Rapid)",
+      "reference": 1100,
+      "resale": 275,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "hvy_beam_cmp",
+      "name": "Heavy Beam Cannon (Compact)",
+      "reference": 1100,
+      "resale": 275,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "hvy_beam_out",
+      "name": "Heavy Beam Cannon (High Output)",
+      "reference": 1100,
+      "resale": 275,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "hvy_beam_pre",
+      "name": "Heavy Beam Cannon (Precision)",
+      "reference": 1100,
+      "resale": 275,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "shield_break",
+      "name": "Ion Shield Breaker",
+      "reference": 400,
+      "resale": 100,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "shield_break_eff",
+      "name": "Ion Shield Breaker (Efficient)",
+      "reference": 400,
+      "resale": 100,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "shield_break_ext",
+      "name": "Ion Shield Breaker (Extended)",
+      "reference": 400,
+      "resale": 100,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "shield_break_rap",
+      "name": "Ion Shield Breaker (Rapid)",
+      "reference": 400,
+      "resale": 100,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "shield_break_cmp",
+      "name": "Ion Shield Breaker (Compact)",
+      "reference": 400,
+      "resale": 100,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "shield_break_out",
+      "name": "Ion Shield Breaker (High Output)",
+      "reference": 400,
+      "resale": 100,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "shield_break_pre",
+      "name": "Ion Shield Breaker (Precision)",
+      "reference": 400,
+      "resale": 100,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "eng_disrupt",
+      "name": "Ion Engine Disruptor",
+      "reference": 550,
+      "resale": 137,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "eng_disrupt_eff",
+      "name": "Ion Engine Disruptor (Efficient)",
+      "reference": 550,
+      "resale": 137,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "eng_disrupt_ext",
+      "name": "Ion Engine Disruptor (Extended)",
+      "reference": 550,
+      "resale": 137,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "eng_disrupt_rap",
+      "name": "Ion Engine Disruptor (Rapid)",
+      "reference": 550,
+      "resale": 137,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "eng_disrupt_cmp",
+      "name": "Ion Engine Disruptor (Compact)",
+      "reference": 550,
+      "resale": 137,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "eng_disrupt_out",
+      "name": "Ion Engine Disruptor (High Output)",
+      "reference": 550,
+      "resale": 137,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "eng_disrupt_pre",
+      "name": "Ion Engine Disruptor (Precision)",
+      "reference": 550,
+      "resale": 137,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "cap_disrupt",
+      "name": "Ion Capacitor Disruptor",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "cap_disrupt_eff",
+      "name": "Ion Capacitor Disruptor (Efficient)",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "cap_disrupt_ext",
+      "name": "Ion Capacitor Disruptor (Extended)",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "cap_disrupt_rap",
+      "name": "Ion Capacitor Disruptor (Rapid)",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "cap_disrupt_cmp",
+      "name": "Ion Capacitor Disruptor (Compact)",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "cap_disrupt_out",
+      "name": "Ion Capacitor Disruptor (High Output)",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "cap_disrupt_pre",
+      "name": "Ion Capacitor Disruptor (Precision)",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "light_launch",
+      "name": "Rapid Light Missile Launcher",
+      "reference": 400,
+      "resale": 100,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "light_launch_ext",
+      "name": "Rapid Light Missile Launcher (Extended)",
+      "reference": 400,
+      "resale": 100,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "light_launch_rap",
+      "name": "Rapid Light Missile Launcher (Rapid)",
+      "reference": 400,
+      "resale": 100,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "light_launch_cmp",
+      "name": "Rapid Light Missile Launcher (Compact)",
+      "reference": 400,
+      "resale": 100,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "light_launch_out",
+      "name": "Rapid Light Missile Launcher (High Output)",
+      "reference": 400,
+      "resale": 100,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "light_launch_pre",
+      "name": "Rapid Light Missile Launcher (Precision)",
+      "reference": 400,
+      "resale": 100,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "hvy_launch",
+      "name": "Assault Missile Launcher",
+      "reference": 700,
+      "resale": 175,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "hvy_launch_eff",
+      "name": "Assault Missile Launcher (Efficient)",
+      "reference": 700,
+      "resale": 175,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "hvy_launch_ext",
+      "name": "Assault Missile Launcher (Extended)",
+      "reference": 700,
+      "resale": 175,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "hvy_launch_rap",
+      "name": "Assault Missile Launcher (Rapid)",
+      "reference": 700,
+      "resale": 175,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "hvy_launch_cmp",
+      "name": "Assault Missile Launcher (Compact)",
+      "reference": 700,
+      "resale": 175,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "hvy_launch_out",
+      "name": "Assault Missile Launcher (High Output)",
+      "reference": 700,
+      "resale": 175,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "hvy_launch_pre",
+      "name": "Assault Missile Launcher (Precision)",
+      "reference": 700,
+      "resale": 175,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "torp_launch",
+      "name": "Heavy Torpedo Launcher",
+      "reference": 950,
+      "resale": 237,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "torp_launch_eff",
+      "name": "Heavy Torpedo Launcher (Efficient)",
+      "reference": 950,
+      "resale": 237,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "torp_launch_ext",
+      "name": "Heavy Torpedo Launcher (Extended)",
+      "reference": 950,
+      "resale": 237,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "torp_launch_rap",
+      "name": "Heavy Torpedo Launcher (Rapid)",
+      "reference": 950,
+      "resale": 237,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "torp_launch_cmp",
+      "name": "Heavy Torpedo Launcher (Compact)",
+      "reference": 950,
+      "resale": 237,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "torp_launch_out",
+      "name": "Heavy Torpedo Launcher (High Output)",
+      "reference": 950,
+      "resale": 237,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "torp_launch_pre",
+      "name": "Heavy Torpedo Launcher (Precision)",
+      "reference": 950,
+      "resale": 237,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "bomb_launch",
+      "name": "Bombardment Launcher",
+      "reference": 1400,
+      "resale": 350,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "bomb_launch_eff",
+      "name": "Bombardment Launcher (Efficient)",
+      "reference": 1400,
+      "resale": 350,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 50
+    },
+    {
+      "resref": "bomb_launch_ext",
+      "name": "Bombardment Launcher (Extended)",
+      "reference": 1400,
+      "resale": 350,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 50
+    },
+    {
+      "resref": "bomb_launch_rap",
+      "name": "Bombardment Launcher (Rapid)",
+      "reference": 1400,
+      "resale": 350,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 50
+    },
+    {
+      "resref": "bomb_launch_cmp",
+      "name": "Bombardment Launcher (Compact)",
+      "reference": 1400,
+      "resale": 350,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 50
+    },
+    {
+      "resref": "bomb_launch_out",
+      "name": "Bombardment Launcher (High Output)",
+      "reference": 1400,
+      "resale": 350,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 50
+    },
+    {
+      "resref": "bomb_launch_pre",
+      "name": "Bombardment Launcher (Precision)",
+      "reference": 1400,
+      "resale": 350,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 50
+    },
+    {
+      "resref": "shield_bank",
+      "name": "Shield Capacity Bank",
+      "reference": 350,
+      "resale": 87,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "shield_bank_cmp",
+      "name": "Shield Capacity Bank (Compact)",
+      "reference": 350,
+      "resale": 87,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "recharge_arr",
+      "name": "Shield Recharge Array",
+      "reference": 380,
+      "resale": 95,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "recharge_arr_cmp",
+      "name": "Shield Recharge Array (Compact)",
+      "reference": 380,
+      "resale": 95,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "shield_boost",
+      "name": "Emergency Shield Booster",
+      "reference": 500,
+      "resale": 125,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "shield_boost_eff",
+      "name": "Emergency Shield Booster (Efficient)",
+      "reference": 500,
+      "resale": 125,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "shield_boost_cmp",
+      "name": "Emergency Shield Booster (Compact)",
+      "reference": 500,
+      "resale": 125,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "shield_boost_out",
+      "name": "Emergency Shield Booster (High Output)",
+      "reference": 500,
+      "resale": 125,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "hull_repair",
+      "name": "Self Hull Repairer",
+      "reference": 350,
+      "resale": 87,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "hull_repair_eff",
+      "name": "Self Hull Repairer (Efficient)",
+      "reference": 350,
+      "resale": 87,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "hull_repair_cmp",
+      "name": "Self Hull Repairer (Compact)",
+      "reference": 350,
+      "resale": 87,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "hull_repair_out",
+      "name": "Self Hull Repairer (High Output)",
+      "reference": 350,
+      "resale": 87,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "shld_repair",
+      "name": "Focused Shield Repairer",
+      "reference": 500,
+      "resale": 125,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "shld_repair_eff",
+      "name": "Focused Shield Repairer (Efficient)",
+      "reference": 500,
+      "resale": 125,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "shld_repair_cmp",
+      "name": "Focused Shield Repairer (Compact)",
+      "reference": 500,
+      "resale": 125,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "shld_repair_out",
+      "name": "Focused Shield Repairer (High Output)",
+      "reference": 500,
+      "resale": 125,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "repair_proj",
+      "name": "Allied Hull Repair Projector",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "repair_proj_eff",
+      "name": "Allied Hull Repair Projector (Efficient)",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "repair_proj_cmp",
+      "name": "Allied Hull Repair Projector (Compact)",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "repair_proj_out",
+      "name": "Allied Hull Repair Projector (High Output)",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "repair_field",
+      "name": "Repair Field Generator",
+      "reference": 1000,
+      "resale": 250,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "repair_field_eff",
+      "name": "Repair Field Generator (Efficient)",
+      "reference": 1000,
+      "resale": 250,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "repair_field_cmp",
+      "name": "Repair Field Generator (Compact)",
+      "reference": 1000,
+      "resale": 250,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "repair_field_out",
+      "name": "Repair Field Generator (High Output)",
+      "reference": 1000,
+      "resale": 250,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "storage_bank",
+      "name": "Capacitor Storage Bank",
+      "reference": 250,
+      "resale": 62,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 5
+    },
+    {
+      "resref": "storage_bank_cmp",
+      "name": "Capacitor Storage Bank (Compact)",
+      "reference": 250,
+      "resale": 62,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "cap_recovery",
+      "name": "Capacitor Recovery Regulator",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "cap_recovery_cmp",
+      "name": "Capacitor Recovery Regulator (Compact)",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "fuel_inject",
+      "name": "Consumable Fuel Injector",
+      "reference": 350,
+      "resale": 87,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "fuel_inject_cmp",
+      "name": "Consumable Fuel Injector (Compact)",
+      "reference": 350,
+      "resale": 87,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "cap_transfer",
+      "name": "Capacitor Transfer Projector",
+      "reference": 650,
+      "resale": 162,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "cap_transfer_cmp",
+      "name": "Capacitor Transfer Projector (Compact)",
+      "reference": 650,
+      "resale": 162,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "survey_scan",
+      "name": "Deposit Survey Scanner",
+      "reference": 280,
+      "resale": 70,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 5
+    },
+    {
+      "resref": "survey_scan_eff",
+      "name": "Deposit Survey Scanner (Efficient)",
+      "reference": 280,
+      "resale": 70,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "survey_scan_ext",
+      "name": "Deposit Survey Scanner (Extended)",
+      "reference": 280,
+      "resale": 70,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "survey_scan_cmp",
+      "name": "Deposit Survey Scanner (Compact)",
+      "reference": 280,
+      "resale": 70,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "survey_scan_pre",
+      "name": "Deposit Survey Scanner (Precision)",
+      "reference": 280,
+      "resale": 70,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "deep_scan",
+      "name": "Deep Survey Scanner",
+      "reference": 650,
+      "resale": 162,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "deep_scan_eff",
+      "name": "Deep Survey Scanner (Efficient)",
+      "reference": 650,
+      "resale": 162,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "deep_scan_ext",
+      "name": "Deep Survey Scanner (Extended)",
+      "reference": 650,
+      "resale": 162,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "deep_scan_cmp",
+      "name": "Deep Survey Scanner (Compact)",
+      "reference": 650,
+      "resale": 162,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "deep_scan_pre",
+      "name": "Deep Survey Scanner (Precision)",
+      "reference": 650,
+      "resale": 162,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "track_comp",
+      "name": "Weapon Tracking Computer",
+      "reference": 380,
+      "resale": 95,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "track_comp_cmp",
+      "name": "Weapon Tracking Computer (Compact)",
+      "reference": 380,
+      "resale": 95,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "prec_array",
+      "name": "Precision Targeting Array",
+      "reference": 450,
+      "resale": 112,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "prec_array_cmp",
+      "name": "Precision Targeting Array (Compact)",
+      "reference": 450,
+      "resale": 112,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "sensor_jam",
+      "name": "Sensor Interference Suite",
+      "reference": 500,
+      "resale": 125,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "sensor_jam_eff",
+      "name": "Sensor Interference Suite (Efficient)",
+      "reference": 500,
+      "resale": 125,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "sensor_jam_ext",
+      "name": "Sensor Interference Suite (Extended)",
+      "reference": 500,
+      "resale": 125,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "sensor_jam_cmp",
+      "name": "Sensor Interference Suite (Compact)",
+      "reference": 500,
+      "resale": 125,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "decoy_suite",
+      "name": "Defensive Countermeasure Suite",
+      "reference": 450,
+      "resale": 109,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "decoy_suite_eff",
+      "name": "Defensive Countermeasure Suite (Efficient)",
+      "reference": 450,
+      "resale": 109,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "decoy_suite_ext",
+      "name": "Defensive Countermeasure Suite (Extended)",
+      "reference": 450,
+      "resale": 109,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "decoy_suite_cmp",
+      "name": "Defensive Countermeasure Suite (Compact)",
+      "reference": 450,
+      "resale": 109,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "prec_cutter",
+      "name": "Precision Mining Cutter",
+      "reference": 300,
+      "resale": 75,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 5
+    },
+    {
+      "resref": "prec_cutter_eff",
+      "name": "Precision Mining Cutter (Efficient)",
+      "reference": 300,
+      "resale": 75,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "prec_cutter_rap",
+      "name": "Precision Mining Cutter (Rapid)",
+      "reference": 300,
+      "resale": 75,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "prec_cutter_cmp",
+      "name": "Precision Mining Cutter (Compact)",
+      "reference": 300,
+      "resale": 75,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "prec_cutter_out",
+      "name": "Precision Mining Cutter (High Output)",
+      "reference": 300,
+      "resale": 75,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "prec_cutter_pre",
+      "name": "Precision Mining Cutter (Precision)",
+      "reference": 300,
+      "resale": 75,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "ore_extract",
+      "name": "Bulk Ore Extractor",
+      "reference": 600,
+      "resale": 150,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "ore_extract_eff",
+      "name": "Bulk Ore Extractor (Efficient)",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "ore_extract_rap",
+      "name": "Bulk Ore Extractor (Rapid)",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "ore_extract_cmp",
+      "name": "Bulk Ore Extractor (Compact)",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "ore_extract_out",
+      "name": "Bulk Ore Extractor (High Output)",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "ore_extract_pre",
+      "name": "Bulk Ore Extractor (Precision)",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "deep_drill",
+      "name": "Deep-Core Drill",
+      "reference": 850,
+      "resale": 212,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "deep_drill_eff",
+      "name": "Deep-Core Drill (Efficient)",
+      "reference": 850,
+      "resale": 212,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "deep_drill_rap",
+      "name": "Deep-Core Drill (Rapid)",
+      "reference": 850,
+      "resale": 212,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "deep_drill_cmp",
+      "name": "Deep-Core Drill (Compact)",
+      "reference": 850,
+      "resale": 212,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "deep_drill_out",
+      "name": "Deep-Core Drill (High Output)",
+      "reference": 850,
+      "resale": 212,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "deep_drill_pre",
+      "name": "Deep-Core Drill (Precision)",
+      "reference": 850,
+      "resale": 212,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "comp_drill",
+      "name": "Compact Deep-Core Drill",
+      "reference": 900,
+      "resale": 225,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "comp_drill_eff",
+      "name": "Compact Deep-Core Drill (Efficient)",
+      "reference": 900,
+      "resale": 225,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "comp_drill_rap",
+      "name": "Compact Deep-Core Drill (Rapid)",
+      "reference": 900,
+      "resale": 225,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "comp_drill_cmp",
+      "name": "Compact Deep-Core Drill (Compact)",
+      "reference": 900,
+      "resale": 225,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "comp_drill_out",
+      "name": "Compact Deep-Core Drill (High Output)",
+      "reference": 900,
+      "resale": 225,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "comp_drill_pre",
+      "name": "Compact Deep-Core Drill (Precision)",
+      "reference": 900,
+      "resale": 225,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "strip_miner",
+      "name": "Committed Strip Miner",
+      "reference": 1200,
+      "resale": 300,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "strip_miner_eff",
+      "name": "Committed Strip Miner (Efficient)",
+      "reference": 1200,
+      "resale": 300,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "strip_miner_rap",
+      "name": "Committed Strip Miner (Rapid)",
+      "reference": 1200,
+      "resale": 300,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "strip_miner_cmp",
+      "name": "Committed Strip Miner (Compact)",
+      "reference": 1200,
+      "resale": 300,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "strip_miner_out",
+      "name": "Committed Strip Miner (High Output)",
+      "reference": 1200,
+      "resale": 300,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "strip_miner_pre",
+      "name": "Committed Strip Miner (Precision)",
+      "reference": 1200,
+      "resale": 300,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "recovery_arm",
+      "name": "Salvage Recovery Arm",
+      "reference": 350,
+      "resale": 87,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "recovery_arm_eff",
+      "name": "Salvage Recovery Arm (Efficient)",
+      "reference": 350,
+      "resale": 87,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "recovery_arm_rap",
+      "name": "Salvage Recovery Arm (Rapid)",
+      "reference": 350,
+      "resale": 87,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "recovery_arm_cmp",
+      "name": "Salvage Recovery Arm (Compact)",
+      "reference": 350,
+      "resale": 87,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "recovery_arm_out",
+      "name": "Salvage Recovery Arm (High Output)",
+      "reference": 350,
+      "resale": 87,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "recovery_arm_pre",
+      "name": "Salvage Recovery Arm (Precision)",
+      "reference": 350,
+      "resale": 87,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "elec_kit",
+      "name": "Electronics Recovery Kit",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "elec_kit_eff",
+      "name": "Electronics Recovery Kit (Efficient)",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "elec_kit_cmp",
+      "name": "Electronics Recovery Kit (Compact)",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "salvage_cut",
+      "name": "Bulk Salvage Cutter",
+      "reference": 550,
+      "resale": 137,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "salvage_cut_eff",
+      "name": "Bulk Salvage Cutter (Efficient)",
+      "reference": 550,
+      "resale": 137,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "salvage_cut_rap",
+      "name": "Bulk Salvage Cutter (Rapid)",
+      "reference": 550,
+      "resale": 137,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "salvage_cut_cmp",
+      "name": "Bulk Salvage Cutter (Compact)",
+      "reference": 550,
+      "resale": 137,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "salvage_cut_out",
+      "name": "Bulk Salvage Cutter (High Output)",
+      "reference": 550,
+      "resale": 137,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "salvage_cut_pre",
+      "name": "Bulk Salvage Cutter (Precision)",
+      "reference": 550,
+      "resale": 137,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "cargo_hold",
+      "name": "Expanded Cargo Hold",
+      "reference": 350,
+      "resale": 87,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "cargo_hold_cmp",
+      "name": "Expanded Cargo Hold (Compact)",
+      "reference": 350,
+      "resale": 87,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "ore_compress",
+      "name": "Ore Compression Unit",
+      "reference": 650,
+      "resale": 162,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "ore_compress_cmp",
+      "name": "Ore Compression Unit (Compact)",
+      "reference": 650,
+      "resale": 162,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "secure_hold",
+      "name": "Protected Cargo Compartment",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "secure_hold_cmp",
+      "name": "Protected Cargo Compartment (Compact)",
+      "reference": 600,
+      "resale": 150,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "armor_plate",
+      "name": "Reinforced Armor Plating",
+      "reference": 400,
+      "resale": 100,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "armor_plate_cmp",
+      "name": "Reinforced Armor Plating (Compact)",
+      "reference": 400,
+      "resale": 100,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "hull_plate",
+      "name": "Hull Capacity Plating",
+      "reference": 350,
+      "resale": 87,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 10
+    },
+    {
+      "resref": "hull_plate_cmp",
+      "name": "Hull Capacity Plating (Compact)",
+      "reference": 350,
+      "resale": 87,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "output_amp",
+      "name": "Weapon Output Amplifier",
+      "reference": 500,
+      "resale": 125,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "output_amp_cmp",
+      "name": "Weapon Output Amplifier (Compact)",
+      "reference": 500,
+      "resale": 125,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "maneuver_jet",
+      "name": "Maneuvering Jets",
+      "reference": 450,
+      "resale": 109,
+      "vendor": true,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "maneuver_jet_cmp",
+      "name": "Maneuvering Jets (Compact)",
+      "reference": 450,
+      "resale": 109,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "adv_thruster",
+      "name": "Efficient Thruster Assembly",
+      "reference": 500,
+      "resale": 125,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "adv_thruster_cmp",
+      "name": "Efficient Thruster Assembly (Compact)",
+      "reference": 500,
+      "resale": 125,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "power_router",
+      "name": "Defensive Power Router",
+      "reference": 800,
+      "resale": 200,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "power_router_cmp",
+      "name": "Defensive Power Router (Compact)",
+      "reference": 800,
+      "resale": 200,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "cfg_combat",
+      "name": "Combat Conversion",
+      "reference": 350,
+      "resale": 87,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "cfg_survey",
+      "name": "Survey Conversion",
+      "reference": 350,
+      "resale": 87,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "cfg_industrial",
+      "name": "Industrial Conversion",
+      "reference": 350,
+      "resale": 87,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "cfg_cargo",
+      "name": "Cargo Conversion",
+      "reference": 350,
+      "resale": 87,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "cfg_support",
+      "name": "Support Conversion",
+      "reference": 350,
+      "resale": 87,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "sdeed_freighter",
+      "name": "Light Freighter Deed",
+      "reference": 2000,
+      "resale": 500,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 11
+    },
+    {
+      "resref": "sdeed_escort",
+      "name": "Light Escort Deed",
+      "reference": 2000,
+      "resale": 500,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 11
+    },
+    {
+      "resref": "sdeed_striker",
+      "name": "Striker Deed",
+      "reference": 4500,
+      "resale": 1125,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "sdeed_condor",
+      "name": "Condor Deed",
+      "reference": 4500,
+      "resale": 1125,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "sdeed_hound",
+      "name": "Hound Deed",
+      "reference": 8000,
+      "resale": 2000,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "sdeed_panther",
+      "name": "Panther Deed",
+      "reference": 8000,
+      "resale": 2000,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "sdeed_saber",
+      "name": "Saber Deed",
+      "reference": 12000,
+      "resale": 3000,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "sdeed_falchion",
+      "name": "Falchion Deed",
+      "reference": 12000,
+      "resale": 3000,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "sdeed_mule",
+      "name": "Mule Deed",
+      "reference": 18000,
+      "resale": 4500,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "sdeed_merchant",
+      "name": "Merchant Deed",
+      "reference": 18000,
+      "resale": 4500,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "sdeed_throne",
+      "name": "Throne Deed",
+      "reference": 24000,
+      "resale": 6000,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "sdeed_consular",
+      "name": "Consular Deed",
+      "reference": 24000,
+      "resale": 6000,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "sdeed_aurek",
+      "name": "Aurek Strikefighter Deed",
+      "reference": 10000,
+      "resale": 2500,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 20
+    },
+    {
+      "resref": "sdeed_sfight",
+      "name": "Sith Fighter Deed",
+      "reference": 12000,
+      "resale": 3000,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "sdeed_cutla",
+      "name": "Cutlass Starfighter Deed",
+      "reference": 14000,
+      "resale": 3500,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "sdeed_basi",
+      "name": "Basilisk War Droid Deed",
+      "reference": 18000,
+      "resale": 4500,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 30
+    },
+    {
+      "resref": "capdeed_rthran",
+      "name": "Republic Thranta Corvette Deed",
+      "reference": 60000,
+      "resale": 15000,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "capdeed_sthran",
+      "name": "Sith Thranta Corvette Deed",
+      "reference": 60000,
+      "resale": 15000,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "capdeed_nthran",
+      "name": "Thranta Corvette Deed",
+      "reference": 60000,
+      "resale": 15000,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "capdeed_cgunb",
+      "name": "Corellian Gunboat Deed",
+      "reference": 55000,
+      "resale": 13750,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "capdeed_chisst",
+      "name": "Chiss Trireme Deed",
+      "reference": 60000,
+      "resale": 15000,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "capdeed_hvycor",
+      "name": "CZC Armored Transport Deed",
+      "reference": 60000,
+      "resale": 15000,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "capdeed_corsa",
+      "name": "Terminus Class Corsair Deed",
+      "reference": 60000,
+      "resale": 15000,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "capdeed_huttco",
+      "name": "Hutt Corvette Deed",
+      "reference": 60000,
+      "resale": 15000,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 40
+    },
+    {
+      "resref": "capdeed_jfrigate",
+      "name": "Jehavey'ir Deed",
+      "reference": 75000,
+      "resale": 18750,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "capdeed_cruscor",
+      "name": "Crusader Corvette Deed",
+      "reference": 70000,
+      "resale": 17500,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 45
+    },
+    {
+      "resref": "light_missile",
+      "name": "Light missiles",
+      "reference": 4,
+      "resale": 1,
+      "vendor": true,
+      "ammunition": true,
+      "engineering": 5
+    },
+    {
+      "resref": "assault_missile",
+      "name": "Assault missiles",
+      "reference": 15,
+      "resale": 3,
+      "vendor": true,
+      "ammunition": true,
+      "engineering": 20
+    },
+    {
+      "resref": "ship_torpedo",
+      "name": "Torpedoes",
+      "reference": 30,
+      "resale": 7,
+      "vendor": true,
+      "ammunition": true,
+      "engineering": 30
+    },
+    {
+      "resref": "ship_bomb",
+      "name": "Bombs",
+      "reference": 70,
+      "resale": 17,
+      "vendor": true,
+      "ammunition": true,
+      "engineering": 40
+    },
+    {
+      "resref": "injector_charge",
+      "name": "Injector charges",
+      "reference": 6,
+      "resale": 1,
+      "vendor": true,
+      "ammunition": true,
+      "engineering": 15
+    },
+    {
+      "resref": "ore_pack_charge",
+      "name": "Ore packing charges",
+      "reference": 2,
+      "resale": 0,
+      "vendor": true,
+      "ammunition": true,
+      "engineering": 10
+    },
+    {
+      "resref": "prec_assembly",
+      "name": "Precision assembly",
+      "reference": 72,
+      "resale": 18,
+      "vendor": false,
+      "ammunition": true,
+      "engineering": 30
+    },
+    {
+      "resref": "tune_out25",
+      "name": "MakeShipOutputRefinement25",
+      "reference": 33,
+      "resale": 8,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 5
+    },
+    {
+      "resref": "tune_track25",
+      "name": "MakeShipTrackingRefinement25",
+      "reference": 33,
+      "resale": 8,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 5
+    },
+    {
+      "resref": "tune_range25",
+      "name": "MakeShipRangeRefinement25",
+      "reference": 33,
+      "resale": 8,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 5
+    },
+    {
+      "resref": "tune_recover25",
+      "name": "MakeShipRecoveryFractionRefinement25",
+      "reference": 33,
+      "resale": 8,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 5
+    },
+    {
+      "resref": "tune_cost25",
+      "name": "MakeShipActivationCostRefinement25",
+      "reference": 33,
+      "resale": 8,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 5
+    },
+    {
+      "resref": "tune_cycle25",
+      "name": "MakeShipCycleDurationRefinement25",
+      "reference": 33,
+      "resale": 8,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 5
+    },
+    {
+      "resref": "tune_out50",
+      "name": "MakeShipOutputRefinement50",
+      "reference": 73,
+      "resale": 18,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "tune_track50",
+      "name": "MakeShipTrackingRefinement50",
+      "reference": 73,
+      "resale": 18,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "tune_range50",
+      "name": "MakeShipRangeRefinement50",
+      "reference": 73,
+      "resale": 18,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "tune_recover50",
+      "name": "MakeShipRecoveryFractionRefinement50",
+      "reference": 73,
+      "resale": 18,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "tune_cost50",
+      "name": "MakeShipActivationCostRefinement50",
+      "reference": 73,
+      "resale": 18,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "tune_cycle50",
+      "name": "MakeShipCycleDurationRefinement50",
+      "reference": 73,
+      "resale": 18,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 15
+    },
+    {
+      "resref": "tune_out75",
+      "name": "MakeShipOutputRefinement75",
+      "reference": 106,
+      "resale": 26,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "tune_track75",
+      "name": "MakeShipTrackingRefinement75",
+      "reference": 106,
+      "resale": 26,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "tune_range75",
+      "name": "MakeShipRangeRefinement75",
+      "reference": 106,
+      "resale": 26,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "tune_recover75",
+      "name": "MakeShipRecoveryFractionRefinement75",
+      "reference": 106,
+      "resale": 26,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "tune_cost75",
+      "name": "MakeShipActivationCostRefinement75",
+      "reference": 106,
+      "resale": 26,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "tune_cycle75",
+      "name": "MakeShipCycleDurationRefinement75",
+      "reference": 106,
+      "resale": 26,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 25
+    },
+    {
+      "resref": "tune_out100",
+      "name": "MakeShipOutputRefinement100",
+      "reference": 132,
+      "resale": 33,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "tune_track100",
+      "name": "MakeShipTrackingRefinement100",
+      "reference": 132,
+      "resale": 33,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "tune_range100",
+      "name": "MakeShipRangeRefinement100",
+      "reference": 132,
+      "resale": 33,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "tune_recover100",
+      "name": "MakeShipRecoveryFractionRefinement100",
+      "reference": 132,
+      "resale": 33,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "tune_cost100",
+      "name": "MakeShipActivationCostRefinement100",
+      "reference": 132,
+      "resale": 33,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    },
+    {
+      "resref": "tune_cycle100",
+      "name": "MakeShipCycleDurationRefinement100",
+      "reference": 132,
+      "resale": 33,
+      "vendor": false,
+      "ammunition": false,
+      "engineering": 35
+    }
+  ],
+  "ore_bids": {
+    "ore_tilarium": 8,
+    "ore_currian": 12,
+    "ore_idailia": 16,
+    "ore_barinium": 24,
+    "ore_gostian": 32,
+    "ore_arda": 40
+  },
+  "legacy_refunds": [
+    {
+      "resref": "cap_boost_b",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 3
+      }
+    },
+    {
+      "resref": "com_laser_b",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 2
+      }
+    },
+    {
+      "resref": "beamcannon1",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 2
+      }
+    },
+    {
+      "resref": "em_amp_b",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 4
+      }
+    },
+    {
+      "resref": "therm_amp_b",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 4
+      }
+    },
+    {
+      "resref": "exp_amp_b",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 4
+      }
+    },
+    {
+      "resref": "eva_boost_b",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 5
+      }
+    },
+    {
+      "resref": "hull_boost_b",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 3
+      }
+    },
+    {
+      "resref": "hull_rep_b",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 2
+      }
+    },
+    {
+      "resref": "ion_cann_b",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 2
+      }
+    },
+    {
+      "resref": "min_laser_b",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 1
+      }
+    },
+    {
+      "resref": "msl_launch_b",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 3
+      }
+    },
+    {
+      "resref": "shld_boost_b",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 2
+      }
+    },
+    {
+      "resref": "shld_rep_b",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 5
+      }
+    },
+    {
+      "resref": "tgt_sys_b",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 5
+      }
+    },
+    {
+      "resref": "cap_inject1",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 5
+      }
+    },
+    {
+      "resref": "las_armor_1",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 5
+      }
+    },
+    {
+      "resref": "ion_armor_1",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 5
+      }
+    },
+    {
+      "resref": "exp_armor_1",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 5
+      }
+    },
+    {
+      "resref": "hvy_armor_1",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 5
+      }
+    },
+    {
+      "resref": "config_fig1",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 3
+      }
+    },
+    {
+      "resref": "config_bmb1",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 3
+      }
+    },
+    {
+      "resref": "config_int1",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 3
+      }
+    },
+    {
+      "resref": "config_ind1",
+      "fraction": 0.0,
+      "components": {
+        "ref_tilarium": 3
+      }
+    },
+    {
+      "resref": "cap_boost_1",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 3
+      }
+    },
+    {
+      "resref": "com_laser_1",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 2
+      }
+    },
+    {
+      "resref": "beamcannon2",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 2
+      }
+    },
+    {
+      "resref": "em_amp_1",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 4
+      }
+    },
+    {
+      "resref": "therm_amp_1",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 4
+      }
+    },
+    {
+      "resref": "exp_amp_1",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 4
+      }
+    },
+    {
+      "resref": "eva_boost_1",
+      "fraction": 0.21600000000000003,
+      "components": {
+        "ref_currian": 5
+      }
+    },
+    {
+      "resref": "hull_boost_1",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 3
+      }
+    },
+    {
+      "resref": "hull_rep_1",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 2
+      }
+    },
+    {
+      "resref": "ion_cann_1",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 2
+      }
+    },
+    {
+      "resref": "min_laser_1",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 1
+      }
+    },
+    {
+      "resref": "msl_launch_1",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 3
+      }
+    },
+    {
+      "resref": "shld_boost_1",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 2
+      }
+    },
+    {
+      "resref": "shld_rep_1",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 5
+      }
+    },
+    {
+      "resref": "tgt_sys_1",
+      "fraction": 0.21600000000000003,
+      "components": {
+        "ref_currian": 5
+      }
+    },
+    {
+      "resref": "cap_inject2",
+      "fraction": 0.268,
+      "components": {
+        "ref_currian": 5
+      }
+    },
+    {
+      "resref": "las_armor_2",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 5
+      }
+    },
+    {
+      "resref": "ion_armor_2",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 5
+      }
+    },
+    {
+      "resref": "exp_armor_2",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 5
+      }
+    },
+    {
+      "resref": "hvy_armor_2",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 5
+      }
+    },
+    {
+      "resref": "config_fig2",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 3
+      }
+    },
+    {
+      "resref": "config_bmb2",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 3
+      }
+    },
+    {
+      "resref": "config_int2",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 3
+      }
+    },
+    {
+      "resref": "config_ind2",
+      "fraction": 0.0,
+      "components": {
+        "ref_currian": 3
+      }
+    },
+    {
+      "resref": "cap_boost_2",
+      "fraction": 0.2088888888888889,
+      "components": {
+        "ref_idailia": 3
+      }
+    },
+    {
+      "resref": "com_laser_2",
+      "fraction": 0.0,
+      "components": {
+        "ref_idailia": 2
+      }
+    },
+    {
+      "resref": "beamcannon3",
+      "fraction": 0.0,
+      "components": {
+        "ref_idailia": 2
+      }
+    },
+    {
+      "resref": "em_amp_2",
+      "fraction": 0.02666666666666667,
+      "components": {
+        "ref_idailia": 4
+      }
+    },
+    {
+      "resref": "therm_amp_2",
+      "fraction": 0.02666666666666667,
+      "components": {
+        "ref_idailia": 4
+      }
+    },
+    {
+      "resref": "exp_amp_2",
+      "fraction": 0.02666666666666667,
+      "components": {
+        "ref_idailia": 4
+      }
+    },
+    {
+      "resref": "eva_boost_2",
+      "fraction": 0.4106666666666667,
+      "components": {
+        "ref_idailia": 5
+      }
+    },
+    {
+      "resref": "hull_boost_2",
+      "fraction": 0.0,
+      "components": {
+        "ref_idailia": 3
+      }
+    },
+    {
+      "resref": "hull_rep_2",
+      "fraction": 0.0,
+      "components": {
+        "ref_idailia": 2
+      }
+    },
+    {
+      "resref": "ion_cann_2",
+      "fraction": 0.0,
+      "components": {
+        "ref_idailia": 2
+      }
+    },
+    {
+      "resref": "min_laser_2",
+      "fraction": 0.0,
+      "components": {
+        "ref_idailia": 1
+      }
+    },
+    {
+      "resref": "msl_launch_2",
+      "fraction": 0.15111111111111114,
+      "components": {
+        "ref_idailia": 3
+      }
+    },
+    {
+      "resref": "shld_boost_2",
+      "fraction": 0.0,
+      "components": {
+        "ref_idailia": 2
+      }
+    },
+    {
+      "resref": "shld_rep_2",
+      "fraction": 0.19733333333333333,
+      "components": {
+        "ref_idailia": 5
+      }
+    },
+    {
+      "resref": "tgt_sys_2",
+      "fraction": 0.4106666666666667,
+      "components": {
+        "ref_idailia": 5
+      }
+    },
+    {
+      "resref": "cap_inject3",
+      "fraction": 0.4453333333333333,
+      "components": {
+        "ref_idailia": 5
+      }
+    },
+    {
+      "resref": "las_armor_3",
+      "fraction": 0.25066666666666665,
+      "components": {
+        "ref_idailia": 5
+      }
+    },
+    {
+      "resref": "ion_armor_3",
+      "fraction": 0.25066666666666665,
+      "components": {
+        "ref_idailia": 5
+      }
+    },
+    {
+      "resref": "exp_armor_3",
+      "fraction": 0.25066666666666665,
+      "components": {
+        "ref_idailia": 5
+      }
+    },
+    {
+      "resref": "hvy_armor_3",
+      "fraction": 0.25066666666666665,
+      "components": {
+        "ref_idailia": 5
+      }
+    },
+    {
+      "resref": "config_fig3",
+      "fraction": 0.0,
+      "components": {
+        "ref_idailia": 3
+      }
+    },
+    {
+      "resref": "config_bmb3",
+      "fraction": 0.0,
+      "components": {
+        "ref_idailia": 3
+      }
+    },
+    {
+      "resref": "config_int3",
+      "fraction": 0.0,
+      "components": {
+        "ref_idailia": 3
+      }
+    },
+    {
+      "resref": "config_ind3",
+      "fraction": 0.0,
+      "components": {
+        "ref_idailia": 3
+      }
+    },
+    {
+      "resref": "cap_boost_3",
+      "fraction": 0.3566666666666667,
+      "components": {
+        "ref_barinium": 3
+      }
+    },
+    {
+      "resref": "com_laser_3",
+      "fraction": 0.135,
+      "components": {
+        "ref_barinium": 2
+      }
+    },
+    {
+      "resref": "beamcannon4",
+      "fraction": 0.0,
+      "components": {
+        "ref_barinium": 2
+      }
+    },
+    {
+      "resref": "em_amp_3",
+      "fraction": 0.22000000000000003,
+      "components": {
+        "ref_barinium": 4
+      }
+    },
+    {
+      "resref": "therm_amp_3",
+      "fraction": 0.22000000000000003,
+      "components": {
+        "ref_barinium": 4
+      }
+    },
+    {
+      "resref": "exp_amp_3",
+      "fraction": 0.22000000000000003,
+      "components": {
+        "ref_barinium": 4
+      }
+    },
+    {
+      "resref": "eva_boost_3",
+      "fraction": 0.508,
+      "components": {
+        "ref_barinium": 5
+      }
+    },
+    {
+      "resref": "hull_boost_3",
+      "fraction": 0.11333333333333334,
+      "components": {
+        "ref_barinium": 3
+      }
+    },
+    {
+      "resref": "hull_rep_3",
+      "fraction": 0.0,
+      "components": {
+        "ref_barinium": 2
+      }
+    },
+    {
+      "resref": "ion_cann_3",
+      "fraction": 0.07,
+      "components": {
+        "ref_barinium": 2
+      }
+    },
+    {
+      "resref": "min_laser_3",
+      "fraction": 0.0,
+      "components": {
+        "ref_barinium": 1
+      }
+    },
+    {
+      "resref": "msl_launch_3",
+      "fraction": 0.31333333333333335,
+      "components": {
+        "ref_barinium": 3
+      }
+    },
+    {
+      "resref": "shld_boost_3",
+      "fraction": 0.0,
+      "components": {
+        "ref_barinium": 2
+      }
+    },
+    {
+      "resref": "shld_rep_3",
+      "fraction": 0.34800000000000003,
+      "components": {
+        "ref_barinium": 5
+      }
+    },
+    {
+      "resref": "tgt_sys_3",
+      "fraction": 0.508,
+      "components": {
+        "ref_barinium": 5
+      }
+    },
+    {
+      "resref": "cap_inject4",
+      "fraction": 0.534,
+      "components": {
+        "ref_barinium": 5
+      }
+    },
+    {
+      "resref": "las_armor_4",
+      "fraction": 0.38800000000000007,
+      "components": {
+        "ref_barinium": 5
+      }
+    },
+    {
+      "resref": "ion_armor_4",
+      "fraction": 0.38800000000000007,
+      "components": {
+        "ref_barinium": 5
+      }
+    },
+    {
+      "resref": "exp_armor_4",
+      "fraction": 0.38800000000000007,
+      "components": {
+        "ref_barinium": 5
+      }
+    },
+    {
+      "resref": "hvy_armor_4",
+      "fraction": 0.38800000000000007,
+      "components": {
+        "ref_barinium": 5
+      }
+    },
+    {
+      "resref": "config_fig4",
+      "fraction": 0.04666666666666667,
+      "components": {
+        "ref_barinium": 3
+      }
+    },
+    {
+      "resref": "config_bmb4",
+      "fraction": 0.04666666666666667,
+      "components": {
+        "ref_barinium": 3
+      }
+    },
+    {
+      "resref": "config_int4",
+      "fraction": 0.04666666666666667,
+      "components": {
+        "ref_barinium": 3
+      }
+    },
+    {
+      "resref": "config_ind4",
+      "fraction": 0.04666666666666667,
+      "components": {
+        "ref_barinium": 3
+      }
+    },
+    {
+      "resref": "cap_boost_4",
+      "fraction": 0.4453333333333333,
+      "components": {
+        "ref_gostian": 3
+      }
+    },
+    {
+      "resref": "com_laser_4",
+      "fraction": 0.268,
+      "components": {
+        "ref_gostian": 2
+      }
+    },
+    {
+      "resref": "beamcannon5",
+      "fraction": 0.0,
+      "components": {
+        "ref_gostian": 2
+      }
+    },
+    {
+      "resref": "em_amp_4",
+      "fraction": 0.336,
+      "components": {
+        "ref_gostian": 4
+      }
+    },
+    {
+      "resref": "therm_amp_4",
+      "fraction": 0.336,
+      "components": {
+        "ref_gostian": 4
+      }
+    },
+    {
+      "resref": "exp_amp_4",
+      "fraction": 0.336,
+      "components": {
+        "ref_gostian": 4
+      }
+    },
+    {
+      "resref": "eva_boost_4",
+      "fraction": 0.5664,
+      "components": {
+        "ref_gostian": 5
+      }
+    },
+    {
+      "resref": "hull_boost_4",
+      "fraction": 0.25066666666666665,
+      "components": {
+        "ref_gostian": 3
+      }
+    },
+    {
+      "resref": "hull_rep_4",
+      "fraction": 0.0,
+      "components": {
+        "ref_gostian": 2
+      }
+    },
+    {
+      "resref": "ion_cann_4",
+      "fraction": 0.21600000000000003,
+      "components": {
+        "ref_gostian": 2
+      }
+    },
+    {
+      "resref": "min_laser_4",
+      "fraction": 0.0,
+      "components": {
+        "ref_gostian": 1
+      }
+    },
+    {
+      "resref": "msl_launch_4",
+      "fraction": 0.4106666666666667,
+      "components": {
+        "ref_gostian": 3
+      }
+    },
+    {
+      "resref": "protbomblnch",
+      "fraction": 0.0,
+      "components": {
+        "ref_gostian": 3
+      }
+    },
+    {
+      "resref": "shld_boost_4",
+      "fraction": 0.0,
+      "components": {
+        "ref_gostian": 2
+      }
+    },
+    {
+      "resref": "shld_rep_4",
+      "fraction": 0.4384,
+      "components": {
+        "ref_gostian": 5
+      }
+    },
+    {
+      "resref": "tgt_sys_4",
+      "fraction": 0.5664,
+      "components": {
+        "ref_gostian": 5
+      }
+    },
+    {
+      "resref": "cap_inject5",
+      "fraction": 0.5872,
+      "components": {
+        "ref_gostian": 5
+      }
+    },
+    {
+      "resref": "las_armor_5",
+      "fraction": 0.47040000000000004,
+      "components": {
+        "ref_gostian": 5
+      }
+    },
+    {
+      "resref": "ion_armor_5",
+      "fraction": 0.47040000000000004,
+      "components": {
+        "ref_gostian": 5
+      }
+    },
+    {
+      "resref": "exp_armor_5",
+      "fraction": 0.47040000000000004,
+      "components": {
+        "ref_gostian": 5
+      }
+    },
+    {
+      "resref": "hvy_armor_5",
+      "fraction": 0.47040000000000004,
+      "components": {
+        "ref_gostian": 5
+      }
+    },
+    {
+      "resref": "config_fig5",
+      "fraction": 0.19733333333333333,
+      "components": {
+        "ref_gostian": 3
+      }
+    },
+    {
+      "resref": "config_bmb5",
+      "fraction": 0.19733333333333333,
+      "components": {
+        "ref_gostian": 3
+      }
+    },
+    {
+      "resref": "config_int5",
+      "fraction": 0.19733333333333333,
+      "components": {
+        "ref_gostian": 3
+      }
+    },
+    {
+      "resref": "config_ind5",
+      "fraction": 0.19733333333333333,
+      "components": {
+        "ref_gostian": 3
+      }
+    },
+    {
+      "resref": "cap_thrust1",
+      "fraction": 0.77248,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "bulwarkgen",
+      "fraction": 0.76704,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "cap_target1",
+      "fraction": 0.76704,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "turbolas1",
+      "fraction": 0.72688,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "turbolas2",
+      "fraction": 0.72688,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "turbolas3",
+      "fraction": 0.72688,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "lasbattery1",
+      "fraction": 0.75648,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "cap_quadlas1",
+      "fraction": 0.7766400000000001,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "cap_quadlas2",
+      "fraction": 0.7766400000000001,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "cap_quadlas3",
+      "fraction": 0.7766400000000001,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "cap_shields1",
+      "fraction": 0.76704,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "cap_armor1",
+      "fraction": 0.76704,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "repairfield",
+      "fraction": 0.72688,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "storm_cann",
+      "fraction": 0.72688,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "cap_indus",
+      "fraction": 0.7638400000000001,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "cap_skirm",
+      "fraction": 0.7638400000000001,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "cap_warship",
+      "fraction": 0.7638400000000001,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "cap_minlas",
+      "fraction": 0.7184,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "cap_wcomp1",
+      "fraction": 0.7766400000000001,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "cap_ewar",
+      "fraction": 0.76704,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "cap_pwdiv",
+      "fraction": 0.73968,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    },
+    {
+      "resref": "acm_launch_1",
+      "fraction": 0.75648,
+      "components": {
+        "capc_techcom": 1,
+        "capc_modcomp": 1
+      }
+    }
+  ]
+}

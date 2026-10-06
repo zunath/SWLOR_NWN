@@ -72,6 +72,10 @@ namespace SWLOR.Game.Server.Service.GuiService
         Slicing = 67,
         Conversation = 68,
         Introductions = 69,
+        ShipCargo = 70,
+        ShipCockpit = 71,
+        ShipContracts = 72,
+        ShipSupply = 73,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

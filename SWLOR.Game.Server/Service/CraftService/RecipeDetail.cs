@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.CraftService
 {
     public class RecipeDetail
     {
+        public bool IsShipEquipment { get; set; }
+        public ShipQualityDimension ShipQualityDimensions { get; set; }
         public int Quantity { get; set; }
         public string Resref { get; set; }
         public List<IRecipeRequirement> Requirements { get; set; }

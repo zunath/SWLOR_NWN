@@ -22,7 +22,7 @@ using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Space
+    public static partial class Space
     {
         public const int MaxRegisteredShips = 10;
 
@@ -78,6 +78,7 @@ namespace SWLOR.Game.Server.Service
             if (!IsPlayerInSpaceMode(player))
                 return;
 
+            Gui.ClosePlayerWindow(player,GuiWindowType.ShipCockpit);
             CloneShip(player);
 
             if (_playersInSpace.Contains(player))
@@ -387,7 +388,8 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The selected target or OBJECT_INVALID.</returns>
         public static (uint, ShipStatus) GetCurrentTarget(uint player)
         {
-            var target = GetLocalObject(player, "SPACE_TARGET");
+            var exterior=GetExteriorShip(player);
+            var target = GetLocalObject(GetIsObjectValid(exterior)?exterior:player, "SPACE_TARGET");
             return (target, GetShipStatus(target));
         }
 
@@ -528,6 +530,9 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            ShipEquipmentTransfers.EnsureFitting(dbShip);
+            ShipFittedStats.Recompute(dbShip.Status, GetOperatingSkills(player), GetShipStatAdjustments(player));
+            DB.Set(dbShip);
             if (!CanPlayerUseShip(player, dbShip.Status))
             {
                 SendMessageToPC(player, ColorToken.Red("You do not have the ability to pilot this ship."));
@@ -689,6 +694,10 @@ namespace SWLOR.Game.Server.Service
             SetCreatureAppearanceType(player, shipDetail.Appearance);
             Stat.ApplyCreatureMovementRate(player);
 
+            dbPlayerShip.Status.FlightId = Guid.NewGuid().ToString();
+            dbPlayerShip.Status.HostileDamageDebt.Clear();
+            dbPlayerShip.Status.PendingModuleActivations.Clear();
+
             // Set active ship Id and serialize the player's hot bar.
             dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
             dbPlayer.ActiveShipId = shipId;
@@ -764,6 +773,7 @@ namespace SWLOR.Game.Server.Service
 
             DB.Set(dbPlayer);
             DB.Set(dbPlayerShip);
+            Stat.ApplyCreatureMovementRate(player);
 
             // If the ship is in the "actively piloted" list, it means it's in space.
             // Destroy the NPC clone that's associated with this ship since the player is taking over the controls.
@@ -772,7 +782,7 @@ namespace SWLOR.Game.Server.Service
                 var clone = _shipClones[dbPlayerShip.Id];
                 if (GetIsObjectValid(clone))
                 {
-                    DestroyObject(clone);
+                    _shipNPCs.Remove(clone);DestroyObject(clone);
                 }
             }
             // Otherwise add the ship to the list and associate an invalid object to its clone.
@@ -784,6 +794,8 @@ namespace SWLOR.Game.Server.Service
             if(!_playersInSpace.Contains(player))
                 _playersInSpace.Add(player);
 
+            Gui.ClosePlayerWindow(player,GuiWindowType.ShipCockpit);
+            Gui.TogglePlayerWindow(player,GuiWindowType.ShipCockpit,new Feature.GuiDefinition.Payload.ShipCockpitPayload(shipId));
             ExecuteScript("space_enter", player);
         }
 
@@ -993,6 +1005,11 @@ namespace SWLOR.Game.Server.Service
                     SetName(clone, dbProperty.CustomName);
 
                     _shipClones[dbShip.Id] = clone;
+                    SetLocalString(clone,"SPACE_PROXY_SHIP",dbShip.Id);SetLocalString(clone,"SPACE_PROXY_PILOT",playerId);
+                    SetLocalInt(clone,"SPACE_PROXY_AGI",GetAbilityScore(player,AbilityType.Agility));SetLocalInt(clone,"SPACE_PROXY_PER",GetAbilityScore(player,AbilityType.Perception));
+                    SetPlotFlag(clone,false);SetImmortal(clone,true);SetLocalString(clone,"SPACE_ENCOUNTER_ID","proxy/"+dbShip.Id);_shipNPCs[clone]=dbShip.Status;
+                    foreach(var enemy in _shipNPCs.Keys.Where(x=>x!=clone&&GetIsObjectValid(x)&&GetArea(x)==GetArea(clone)).ToArray())
+                    {var threat=Enmity.GetEnmityTable(enemy).GetValueOrDefault(player);if(threat>0){SetIsTemporaryEnemy(clone,enemy);Enmity.ModifyEnmity(clone,enemy,threat);}}
                 }
             }
             // Otherwise the assumption is the ship is docked. A clone isn't needed and the ship should be removed
@@ -1025,6 +1042,14 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
+            if (ShipFittingCatalog.Default.Hulls.ContainsKey(playerShip.ItemTag))
+            {
+                if (playerShip.FittingVersion != ShipFittingConversion.CurrentVersion || playerShip.PendingInventoryTransfers.Count != 0 || playerShip.PendingCargoTransfers.Count != 0 || playerShip.PendingDockPayment != null ||
+                    playerShip.RefitReadyAt > DateTime.UtcNow) return false;
+                return ShipFittingCalculator.Calculate(playerShip.ItemTag, ShipFittedStats.Modules(playerShip)
+                    .Select(x => new ShipFittingModule(x.Design, x.Calibration, x.QualityDimension, x.Quality)),
+                    GetOperatingSkills(player), playerShip.ConfigurationDesign).IsLegal;
+            }
             var shipDetails = _shipTypes[playerShip.ItemTag];
 
             // Check ship requirements
@@ -1061,6 +1086,8 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var shipModule = _shipModules[itemTag];
+            if (shipModule.FittingProfile != null)
+                return Skill.GetCreatureSkillRank(player, shipModule.FittingProfile.OperatorSkill) >= shipModule.FittingProfile.OperatorRank;
 
             foreach (var (perkType, requiredLevel) in shipModule.RequiredPerks)
             {
@@ -1157,17 +1184,24 @@ namespace SWLOR.Game.Server.Service
             var activator = OBJECT_SELF;
             var activatorShipStatus = GetShipStatus(activator);
             var slotNumber = GetFeatSlotNumber(feat);
+            if (activatorShipStatus == null) return;
+            EventsPlugin.SkipEvent();
+            if (activatorShipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
+            {
+                ActivateFittedModuleSlot(activator, slotNumber);
+                return;
+            }
             ShipStatus.ShipStatusModule shipModule;
 
             // Slot numbers between 1-10 are high powered slots
             if (slotNumber <= 10)
             {
-                shipModule = activatorShipStatus.HighPowerModules[slotNumber];
+                if (!activatorShipStatus.HighPowerModules.TryGetValue(slotNumber, out shipModule)) return;
             }
             // Slot Numbers between 10-20 are low powered slots.
             else if (slotNumber <= 20)
             {
-                shipModule = activatorShipStatus.LowPowerModules[slotNumber-10];
+                if (!activatorShipStatus.LowPowerModules.TryGetValue(slotNumber - 10, out shipModule)) return;
             }
             else
             {
@@ -1286,6 +1320,14 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyAutoShipRecovery(uint player, ShipStatus shipStatus)
         {
+            if (shipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
+            {
+                ShipOperations.Recover(shipStatus, DateTime.UtcNow);
+                ApplyShipMovementConstraints(player, shipStatus);
+                Stat.ApplyCreatureMovementRate(player);
+                if (GetIsPC(player)) ExecuteScript("pc_target_upd", player);
+                return;
+            }
             // Shield recovery
             shipStatus.ShieldCycle++;
             var rechargeRate = shipStatus.ShieldRechargeRate;
@@ -1320,6 +1362,7 @@ namespace SWLOR.Game.Server.Service
                 var dbPlayer = DB.Get<Player>(playerId);
                 var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
 
+                RefreshOperatingBuild(player,dbPlayer,dbShip.Status);
                 ApplyAutoShipRecovery(player, dbShip.Status);
 
                 // Update changes
@@ -1329,6 +1372,12 @@ namespace SWLOR.Game.Server.Service
 
         public static void RestoreShield(uint creature, ShipStatus shipStatus, int amount)
         {
+            if (shipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
+            {
+                ShipResources.RestorePrecise(shipStatus, ShipResource.Shield, Math.Max(0, amount));
+                ExecuteScript("pc_shld_adjusted", creature);
+                return;
+            }
             shipStatus.Shield += amount;
             if (shipStatus.Shield > shipStatus.MaxShield)
                 shipStatus.Shield = shipStatus.MaxShield;
@@ -1338,6 +1387,12 @@ namespace SWLOR.Game.Server.Service
 
         public static void ReduceShield(uint creature, ShipStatus shipStatus, int amount)
         {
+            if (shipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
+            {
+                ShipResources.SpendPrecise(shipStatus, ShipResource.Shield, Math.Max(0, amount));
+                ExecuteScript("pc_shld_adjusted", creature);
+                return;
+            }
             shipStatus.Shield -= amount;
             if (shipStatus.Shield < 0)
                 shipStatus.Shield = 0;
@@ -1347,6 +1402,12 @@ namespace SWLOR.Game.Server.Service
 
         public static void RestoreHull(uint creature, ShipStatus shipStatus, int amount)
         {
+            if (shipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
+            {
+                ShipResources.RestorePrecise(shipStatus, ShipResource.Hull, Math.Max(0, amount));
+                ExecuteScript("pc_hull_adjusted", creature);
+                return;
+            }
             shipStatus.Hull += amount;
             if (shipStatus.Hull > shipStatus.MaxHull)
                 shipStatus.Hull = shipStatus.MaxHull;
@@ -1356,6 +1417,13 @@ namespace SWLOR.Game.Server.Service
 
         public static void ReduceHull(uint creature, ShipStatus shipStatus, int amount)
         {
+            if (shipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
+            {
+                ShipResources.SpendPrecise(shipStatus, ShipResource.Hull, Math.Max(0, amount));
+                ExecuteScript("pc_hull_adjusted", creature);
+                if (shipStatus.Hull <= 0) AssignCommand(OBJECT_SELF, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), creature));
+                return;
+            }
             shipStatus.Hull -= amount;
             if (shipStatus.Hull < 0)
                 shipStatus.Hull = 0;
@@ -1370,6 +1438,12 @@ namespace SWLOR.Game.Server.Service
 
         public static void RestoreCapacitor(uint creature, ShipStatus shipStatus, int amount)
         {
+            if (shipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
+            {
+                ShipResources.RestorePrecise(shipStatus, ShipResource.Capacitor, Math.Max(0, amount));
+                ExecuteScript("pc_cap_adjusted", creature);
+                return;
+            }
             shipStatus.Capacitor += amount;
             if (shipStatus.Capacitor > shipStatus.MaxCapacitor)
                 shipStatus.Capacitor = shipStatus.MaxCapacitor;
@@ -1379,6 +1453,12 @@ namespace SWLOR.Game.Server.Service
 
         public static void ReduceCapacitor(uint creature, ShipStatus shipStatus, int amount)
         {
+            if (shipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
+            {
+                ShipResources.SpendPrecise(shipStatus, ShipResource.Capacitor, Math.Max(0, amount));
+                ExecuteScript("pc_cap_adjusted", creature);
+                return;
+            }
             shipStatus.Capacitor -= amount;
             if (shipStatus.Capacitor < 0)
                 shipStatus.Capacitor = 0;
@@ -1399,6 +1479,17 @@ namespace SWLOR.Game.Server.Service
             if (!_spaceObjects.ContainsKey(creatureTag)) return;
 
             var registeredEnemyType = _spaceObjects[creatureTag];
+            if (registeredEnemyType.EncounterProfile != null)
+            {
+                var binding = SpaceEncounterCatalog.Default.Bindings[creatureTag];
+                var status = SpaceEncounterCatalog.Default.CreateStatus(binding, Guid.NewGuid().ToString());
+                _shipNPCs[creature] = status;
+                SetLocalString(creature, "SPACE_ENCOUNTER_ID", status.FlightId);
+                if (GetGold(creature) > 0) TakeGoldFromCreature(GetGold(creature), creature);
+                Stat.ApplyCreatureMovementRate(creature);
+                RegisterSpaceEncounter(creature, status);
+                return;
+            }
             var shipDetail = _shipTypes[registeredEnemyType.ShipItemTag];
 
             var shipStatus = new ShipStatus
@@ -1499,10 +1590,10 @@ namespace SWLOR.Game.Server.Service
                 var targetPlayerId = GetObjectUUID(creature);
                 var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
 
-                if (dbTargetPlayer.ActiveShipId == Guid.Empty.ToString())
+                if (string.IsNullOrEmpty(GetOperatingShipId(creature)) || GetOperatingShipId(creature) == Guid.Empty.ToString())
                     return null;
 
-                var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
+                var dbPlayerShip = DB.Get<PlayerShip>(GetOperatingShipId(creature));
 
                 return dbPlayerShip?.Status;
             }
@@ -1683,6 +1774,11 @@ namespace SWLOR.Game.Server.Service
             if (targetShipStatus == null)
                 return;
 
+            if (targetShipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
+            {
+                ApplyFittedShipDamage(attacker, target, amount);
+                return;
+            }
             var remainingDamage = amount;
             // First deal damage to target's shields.
             if (remainingDamage <= targetShipStatus.Shield)
@@ -1734,7 +1830,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     var targetPlayerId = GetObjectUUID(target);
                     var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
-                    var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
+                    var dbPlayerShip = DB.Get<PlayerShip>(GetOperatingShipId(target));
 
                     if (Property.TryGetLoadedInstance(dbPlayerShip.PropertyId, out var instance))
                     {
@@ -1805,7 +1901,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     var targetPlayerId = GetObjectUUID(target);
                     var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
-                    var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
+                    var dbPlayerShip = DB.Get<PlayerShip>(GetOperatingShipId(target));
 
                     if (Property.TryGetLoadedInstance(dbPlayerShip.PropertyId, out var instance))
                     {
@@ -1855,6 +1951,7 @@ namespace SWLOR.Game.Server.Service
 
             if (!IsPlayerInSpaceMode(creature))
                 return;
+            if (RescueFittedShipPilot(creature)) return;
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), creature);
 
@@ -1969,13 +2066,21 @@ namespace SWLOR.Game.Server.Service
         {
             var now = DateTime.UtcNow;
 
-            foreach (var (creature, shipStatus) in _shipNPCs)
+            foreach (var (creature, shipStatus) in _shipNPCs.ToArray())
             {
+                if (!GetIsObjectValid(creature) || GetIsDead(creature) || shipStatus.Hull <= 0) continue;
                 ApplyAutoShipRecovery(creature, shipStatus);
+                if (!string.IsNullOrEmpty(GetLocalString(creature,"SPACE_PROXY_SHIP"))) continue;
 
                 // Determine target
                 var target = Enmity.GetHighestEnmityTarget(creature);
                 if (!GetIsObjectValid(target)) continue;
+
+                if (shipStatus.EncounterProfile != null)
+                {
+                    ProcessEncounterAI(creature, target, shipStatus, now);
+                    continue;
+                }
 
                 // Determine which modules are available.
                 var highModules = shipStatus.HighPowerModules.Where(x =>
@@ -2068,7 +2173,7 @@ namespace SWLOR.Game.Server.Service
             var tag = GetTag(self);
 
             // Space object not registered with the system.
-            if (!_spaceObjects.ContainsKey(tag)) return;
+            if (!_spaceObjects.ContainsKey(tag) && GetIndustrySite(self) == null) return;
 
             // Register this instance into the cache.
             if (!_spaceObjectInstances.ContainsKey(self))
@@ -2125,8 +2230,8 @@ namespace SWLOR.Game.Server.Service
             {
                 dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition);
 
-                dbShip.Status.Shield = 0;
-                dbShip.Status.Hull = 1;
+                if (dbShip.Status.FittingVersion == ShipFittingConversion.CurrentVersion) ShipRecovery.Defeat(dbShip.Status);
+                else { dbShip.Status.Shield = 0; dbShip.Status.Hull = 1; }
 
                 DB.Set(dbProperty);
                 DB.Set(dbShip);

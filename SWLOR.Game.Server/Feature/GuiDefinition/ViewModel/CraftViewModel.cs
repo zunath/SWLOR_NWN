@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -11,6 +12,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -390,7 +392,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusColor = GuiColor.Green;
             StatusText = string.Empty;
 
-            var enhancementSlots = recipe.EnhancementSlots + blueprint.EnhancementSlots;
+            var enhancementSlots = recipe.IsShipEquipment ? recipe.EnhancementSlots : recipe.EnhancementSlots + blueprint.EnhancementSlots;
 
             IsEnhancement1Visible = enhancementSlots >= 1;
             IsEnhancement2Visible = enhancementSlots >= 2;
@@ -586,6 +588,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 FloatingTextStringOnCreature("Item must be in your inventory.", Player, false);
                 return false;
+            }
+
+            if (recipe.IsShipEquipment)
+            {
+                var refinements = new List<(ShipQualityDimension Dimension, int Magnitude)>();
+                for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+                {
+                    if (GetItemPropertyType(property) != ItemPropertyType.ModuleEnhancement) continue;
+                    var subtype = (EnhancementSubType)GetItemPropertySubType(property);
+                    var dimension = subtype.GetAttribute<EnhancementSubType, EnhancementSubTypeAttribute>()?.ShipQualityDimension ?? ShipQualityDimension.None;
+                    refinements.Add((dimension, GetItemPropertyCostTableValue(property)));
+                }
+                if (refinements.Count != 1)
+                {
+                    FloatingTextStringOnCreature("Choose one ship refinement property.", Player, false);
+                    return false;
+                }
+                var variant = ShipFittingCatalog.Default.Variants.Values.FirstOrDefault(v => v.ItemResref == recipe.Resref);
+                var module = variant == null ? null : ShipFittingCatalog.Default.Modules[variant.Design];
+                var error = ShipRefinement.Validate(recipe.ShipQualityDimensions, refinements[0].Dimension, refinements[0].Magnitude, module, variant);
+                if (error != null) FloatingTextStringOnCreature(error, Player, false);
+                return error == null;
             }
 
             if (recipe.EnhancementType == RecipeEnhancementType.Armor)
@@ -1039,7 +1063,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             for (var item = GetFirstItemInInventory(Player); GetIsObjectValid(item); item = GetNextItemInInventory(Player))
             {
                 var resref = GetResRef(item);
-                if(recipe.Components.ContainsKey(resref))
+                if(recipe.Components.ContainsKey(resref)&&string.IsNullOrEmpty(GetLocalString(item,"SHIP_TRADE_RESERVED")))
                     components.Add(item);
             }
 
@@ -1358,6 +1382,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(_recipe);
             var item = CreateItemOnObject(recipe.Resref, Player, recipe.Quantity);
             SetLocalBool(item, Item.PlayerProducedItemVariable, true);
+            if(recipe.IsShipEquipment)DB.Set(new ShipItemProvenance {Id="ship-provenance/"+GetObjectUUID(item),Resref=recipe.Resref,RecipeMaterials=recipe.Components.ToDictionary(x=>x.Key,x=>x.Value/Math.Max(1,recipe.Quantity))});
             var firstTime = !dbPlayer.CraftedRecipes.ContainsKey(_recipe);
             var propertyTransferChance = (int)(((float)_quality / (float)_maxQuality) * 100);
             var qualityPercent = (float)_quality / (float)_maxQuality;
@@ -1371,7 +1396,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var minimumVendorBonus = Math.Max(25, (int)Math.Round(recipe.Level * 1.6f));
             const float CraftedVendorBonusMultiplier = 1.225f;
             var addGoldPiece = (int)Math.Round(Math.Max(scaledByQuality, minimumVendorBonus) * CraftedVendorBonusMultiplier);
-            ItemPlugin.SetAddGoldPieceValue(item, addGoldPiece);
+            ItemPlugin.SetAddGoldPieceValue(item, recipe.IsShipEquipment ? 0 : addGoldPiece);
 
             // Apply item properties provided by enhancements, provided the transfer check passes.
             var allProperties = _itemPropertiesEnhancement1
@@ -1476,6 +1501,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // Random bonuses
             var recipe = Craft.GetRecipe(_recipe);
+            if (recipe.IsShipEquipment) return;
             for (var currentBonus = 1; currentBonus <= _activeBlueprint.ItemBonuses; currentBonus++)
             {
                 var tier = currentBonus;

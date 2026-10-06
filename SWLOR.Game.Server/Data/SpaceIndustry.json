@@ -1,0 +1,182 @@
+{
+  "resources": [
+    {
+      "ore": "ore_tilarium",
+      "metal": "ref_tilarium",
+      "cargo": 1,
+      "bid": 8,
+      "metal_value": 20,
+      "hardness": 30,
+      "reserve": 500,
+      "resolution": 25,
+      "stability": 100,
+      "respawn": 900,
+      "common_fraction": 0.8
+    },
+    {
+      "ore": "ore_currian",
+      "metal": "ref_currian",
+      "cargo": 1,
+      "bid": 12,
+      "metal_value": 40,
+      "hardness": 45,
+      "reserve": 350,
+      "resolution": 35,
+      "stability": 85,
+      "respawn": 1200,
+      "common_fraction": 0.7
+    },
+    {
+      "ore": "ore_idailia",
+      "metal": "ref_idailia",
+      "cargo": 1,
+      "bid": 16,
+      "metal_value": 60,
+      "hardness": 60,
+      "reserve": 300,
+      "resolution": 45,
+      "stability": 75,
+      "respawn": 1500,
+      "common_fraction": 0.6
+    },
+    {
+      "ore": "ore_barinium",
+      "metal": "ref_barinium",
+      "cargo": 1,
+      "bid": 24,
+      "metal_value": 80,
+      "hardness": 75,
+      "reserve": 240,
+      "resolution": 55,
+      "stability": 60,
+      "respawn": 1800,
+      "common_fraction": 0.5
+    },
+    {
+      "ore": "ore_gostian",
+      "metal": "ref_gostian",
+      "cargo": 1,
+      "bid": 32,
+      "metal_value": 100,
+      "hardness": 90,
+      "reserve": 180,
+      "resolution": 60,
+      "stability": 50,
+      "respawn": 2100,
+      "common_fraction": 0.4
+    },
+    {
+      "ore": "ore_arda",
+      "metal": "ref_arda",
+      "cargo": 1,
+      "bid": 40,
+      "metal_value": 120,
+      "hardness": 100,
+      "reserve": 120,
+      "resolution": 70,
+      "stability": 40,
+      "respawn": 2400,
+      "common_fraction": 0.4
+    }
+  ],
+  "deposits": [
+    {
+      "name": "Starter rubble",
+      "ships": 3,
+      "reserve": 500,
+      "composition": {
+        "ore_tilarium": 1.0
+      },
+      "hardness": 30,
+      "stability": 100,
+      "hazard_seconds": 0,
+      "hazard_damage": 0,
+      "scan_seconds": 8,
+      "lifetime": 1800,
+      "respawn": 900
+    },
+    {
+      "name": "Mixed mobile seam",
+      "ships": 3,
+      "reserve": 350,
+      "composition": {
+        "ore_tilarium": 0.7,
+        "ore_currian": 0.3
+      },
+      "hardness": 45,
+      "stability": 85,
+      "hazard_seconds": 30,
+      "hazard_damage": 8,
+      "scan_seconds": 8,
+      "lifetime": 1800,
+      "respawn": 1200
+    },
+    {
+      "name": "Surveyed selective seam",
+      "ships": 3,
+      "reserve": 300,
+      "composition": {
+        "ore_tilarium": 0.6,
+        "ore_idailia": 0.4
+      },
+      "hardness": 45,
+      "stability": 75,
+      "hazard_seconds": 30,
+      "hazard_damage": 10,
+      "scan_seconds": 10,
+      "lifetime": 1800,
+      "respawn": 1500
+    },
+    {
+      "name": "Dense bulk field",
+      "ships": 6,
+      "reserve": 1800,
+      "composition": {
+        "ore_tilarium": 0.7,
+        "ore_currian": 0.2,
+        "ore_idailia": 0.1
+      },
+      "hardness": 65,
+      "stability": 80,
+      "hazard_seconds": 30,
+      "hazard_damage": 15,
+      "scan_seconds": 10,
+      "lifetime": 2400,
+      "respawn": 1800
+    },
+    {
+      "name": "Unstable deep seam",
+      "ships": 3,
+      "reserve": 420,
+      "composition": {
+        "ore_tilarium": 0.5,
+        "ore_barinium": 0.3,
+        "ore_gostian": 0.2
+      },
+      "hardness": 90,
+      "stability": 50,
+      "hazard_seconds": 20,
+      "hazard_damage": 18,
+      "scan_seconds": 12,
+      "lifetime": 2400,
+      "respawn": 2100
+    },
+    {
+      "name": "Deep-core anomaly",
+      "ships": 3,
+      "reserve": 240,
+      "composition": {
+        "ore_tilarium": 0.4,
+        "ore_gostian": 0.4,
+        "ore_arda": 0.2
+      },
+      "hardness": 100,
+      "stability": 40,
+      "hazard_seconds": 18,
+      "hazard_damage": 20,
+      "scan_seconds": 15,
+      "lifetime": 1800,
+      "respawn": 2400
+    }
+  ]
+}

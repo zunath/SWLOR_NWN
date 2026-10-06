@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -177,7 +178,7 @@ namespace SWLOR.Game.Server.Service
 
         private static bool IsResearchableRecipe(RecipeDetail recipe)
         {
-            return recipe.EnhancementType == RecipeEnhancementType.Weapon ||
+            return recipe.IsShipEquipment || recipe.EnhancementType == RecipeEnhancementType.Weapon ||
                    recipe.EnhancementType == RecipeEnhancementType.Armor ||
                    recipe.EnhancementType == RecipeEnhancementType.Food;
         }
@@ -577,6 +578,9 @@ namespace SWLOR.Game.Server.Service
 
         public static ItemProperty BuildItemPropertyForEnhancement(EnhancementSubType subTypeId, int amount)
         {
+            var shipDimension = subTypeId.GetAttribute<EnhancementSubType, EnhancementSubTypeAttribute>()?.ShipQualityDimension ?? ShipQualityDimension.None;
+            if (shipDimension != ShipQualityDimension.None)
+                return ItemPropertyCustom(ItemPropertyType.ModuleBonus, ShipRefinement.Subtype(shipDimension), Math.Clamp(amount, 0, 100));
             switch (subTypeId)
             {
                 case EnhancementSubType.DefensePhysical: // Defense - Physical
@@ -1163,7 +1167,9 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The number of seconds to wait before the blueprint is researched to the next level.</returns>
         public static int CalculateBlueprintResearchSeconds(RecipeType recipe, int blueprintLevel, int reductionBonus)
         {
-            return CalculateResearchCost(recipe, blueprintLevel, 200, reductionBonus * 0.01f);
+            var detail = GetRecipe(recipe);
+            return detail.IsShipEquipment ? SpaceService.ShipResearchPolicy.Duration(detail.Level, reductionBonus) :
+                CalculateResearchCost(recipe, blueprintLevel, 200, reductionBonus * 0.01f);
         }
 
         /// <summary>

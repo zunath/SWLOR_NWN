@@ -457,6 +457,9 @@ namespace SWLOR.Game.Server.Service
 
         public static string GetCreatureItemUseError(uint creature, uint item)
         {
+            if(!string.IsNullOrEmpty(GetLocalString(item,"SHIP_TRADE_RESERVED")))return "This item is reserved by a pending sale.";
+            var bound=GetLocalString(item,ShipSupply.BoundOwner);
+            if(!string.IsNullOrEmpty(bound)&&bound!=GetObjectUUID(creature))return "This equipment is bound to another character.";
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
                 var type = GetItemPropertyType(ip);

@@ -20,6 +20,8 @@ namespace SWLOR.Game.Server.Entity
 {
     public class Player: EntityBase
     {
+        public Dictionary<string, DateTime> SkillXPReceipts { get; set; } = new();
+        public Service.SpaceService.SpaceExperienceLedger SpaceExperience { get; set; } = new();
         public const int DefaultOutfitSlotLimit = 25;
         public const int DefaultDisguiseSlotLimit = 1;
         public const int DefaultMarketListingLimit = 25;

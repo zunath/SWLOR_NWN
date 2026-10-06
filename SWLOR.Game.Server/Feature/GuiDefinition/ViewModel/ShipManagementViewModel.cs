@@ -634,30 +634,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private int CalculateRepairBill(PlayerShip ship)
         {
-            var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var shieldDiff = ship.Status.MaxShield - ship.Status.Shield;
-            var hullDiff = ship.Status.MaxHull - ship.Status.Hull;
-            var price = shieldDiff * 50 + hullDiff * 100;
-            var starportBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.StarportLevel) * 0.05f;
-            var socialBonus = (GetAbilityScore(Player, AbilityType.Social) - 10) * 0.02f;
-            if (socialBonus > 0.20f)
-                socialBonus = 0.20f;
-            else if (socialBonus < 0f)
-                socialBonus = 0f;
-
-            var bonuses = starportBonus + socialBonus;
-
-            if (bonuses > 0.90f)
-                bonuses = 0.90f;
-
-            price -= (int)(price * bonuses);
-            if (ship.Status.CapitalShip)
-            {
-                price *= 5;
-            }
-
-            return price;
+            return ShipRecovery.DockPrice(ship.Status);
         }
 
         protected override void Initialize(ShipManagementPayload initialPayload)
@@ -826,7 +803,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShipEquipmentTransfers.EnsureFitting(ship);
                 var shipDetail = Space.GetShipDetailByItemTag(ship.Status.ItemTag);
                 var profile = shipDetail.FittingProfile;
-                FittingSummary = $"Power {ship.Status.FittingPowerUsed}/{profile.Power} · Cargo {ship.Status.CargoCapacity:0} · {profile.Role}";
+                FittingSummary = $"Power {ship.Status.FittingPowerUsed}/{profile.Power} · Cargo {ShipCargo.Occupied(ship.Status):0.#}/{ship.Status.CargoCapacity:0} · {profile.Role}";
                 RecoveryText = $"Recover equipment ({ship.Status.RefitRecovery.Count})";
                 var property = DB.Get<WorldProperty>(ship.PropertyId);
 
@@ -1250,11 +1227,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     : isDockInstanceLoading
                         ? "Docked (loading...)"
                         : GetName(currentLocation);
-                IsRepairEnabled = (ship.Status.Shield < ship.Status.MaxShield ||
-                                  ship.Status.Hull < ship.Status.MaxHull) &&
-                                  gold >= repairPrice &&
-                                  isAtCurrentLocation;
-                RepairText = $"Repair ({repairPrice} cr)";
+                IsRepairEnabled = (repairPrice > 0 || ship.Status.Shield < ship.Status.MaxShield || ship.Status.Capacitor < ship.Status.MaxCapacitor) &&
+                                  gold >= repairPrice && isAtCurrentLocation && !isInSpace && permission.Permissions.GetValueOrDefault(PropertyPermissionType.RefitShip);
+                RepairText = $"Service ({repairPrice} cr)";
             }
 
             ToggleRegisterButtons();
@@ -1424,7 +1399,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     if (dbShip.Status.HighPowerModules.Count > 0 ||
                         dbShip.Status.LowPowerModules.Count > 0 || dbShip.Status.ConfigurationModules.Count > 0 ||
-                        dbShip.Status.RefitRecovery.Count > 0 || dbShip.Status.PendingInventoryTransfers.Count > 0)
+                        dbShip.Status.RefitRecovery.Count > 0 || dbShip.Status.PendingInventoryTransfers.Count > 0 || dbShip.Status.PendingCargoTransfers.Count > 0 || dbShip.Status.Cargo.Count > 0 || dbShip.Status.PendingDockPayment != null)
                     {
                         FloatingTextStringOnCreature($"Please uninstall all modules before unregistering your ship.", Player, false);
                         return;
@@ -1516,6 +1491,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             catch (InvalidOperationException error) { SendMessageToPC(Player, error.Message); }
         }
+
+        public Action OnClickCargo() => () =>
+        {
+            if (SelectedShipIndex < 0 || SelectedShipIndex >= _shipIds.Count) return;
+            Gui.TogglePlayerWindow(Player, GuiWindowType.ShipCargo, new ShipCargoPayload(_shipIds[SelectedShipIndex]));
+        };
 
         public Action OnClickRecoverEquipment() => () =>
         {
@@ -1715,24 +1696,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal($"Repairs will cost you {price} credits. Will you pay for repairs?", () =>
             {
-                var gold = GetGold(Player);
-
-                if (gold < price)
-                {
-                    FloatingTextStringOnCreature(ColorToken.Red("Not enough credits!"), Player, false);
-                    return;
-                }
-
-                AssignCommand(Player, () =>
-                {
-                    TakeGoldFromCreature(price, Player, true);
-                });
-
-                dbShip.Status.Shield = dbShip.Status.MaxShield;
-                dbShip.Status.Hull = dbShip.Status.MaxHull;
-                DB.Set(dbShip);
-
-                FloatingTextStringOnCreature(ColorToken.Green("Ship repaired!"), Player, false);
+                try { ShipDockService.Repair(Player, shipId, price); FloatingTextStringOnCreature(ColorToken.Green("Ship serviced!"), Player, false); }
+                catch (InvalidOperationException ex) { SendMessageToPC(Player, ex.Message); }
                 LoadShip();
             });
         };

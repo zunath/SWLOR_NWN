@@ -226,7 +226,8 @@ namespace SWLOR.Game.Server.Service
 
                 // Resource, creature, and slicing-terminal spawn tables can be placed as a local variable on the area.
                 // If one is found, it will be registered.
-                RegisterAreaSpawnTable(area, "RESOURCE_SPAWN_TABLE_ID", CalculateResourceSpawnCount(area));
+                if (!SpaceService.SpaceIndustryCatalog.IsRegionTable(GetLocalString(area, "RESOURCE_SPAWN_TABLE_ID")))
+                    RegisterAreaSpawnTable(area, "RESOURCE_SPAWN_TABLE_ID", CalculateResourceSpawnCount(area));
                 RegisterAreaSpawnTable(area, "CREATURE_SPAWN_TABLE_ID", CalculateCreatureSpawnCount(area));
                 var slicingTerminalCount = Math.Max(1, GetLocalInt(area, "SLICING_TERMINAL_SPAWN_COUNT"));
                 RegisterAreaSpawnTable(area, "SLICING_TERMINAL_SPAWN_TABLE_ID", slicingTerminalCount);

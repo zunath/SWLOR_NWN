@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Service
 {
     public static partial class Space
     {
+        public static int GetOperatingAttribute(uint creature, AbilityType attribute) => GetIsPC(creature) ? GetAbilityScore(creature, attribute) : 10;
+
         public static IReadOnlyDictionary<SkillType, int> GetOperatingSkills(uint creature) =>
             new[] { SkillType.Piloting, SkillType.Gunnery, SkillType.ShipSystems, SkillType.Astrometrics, SkillType.SpaceIndustry }
                 .ToDictionary(skill => skill, skill => Math.Clamp(GetIsPC(creature) ? Skill.GetCreatureSkillRank(creature, skill) : Stat.GetNPCStats(creature).Level, 0, 50));
@@ -57,7 +59,8 @@ namespace SWLOR.Game.Server.Service
             ExecuteScript("pc_hull_adjusted", target);
             if (status.Hull <= 0)
             {
-                DelayCommand(0f, () => AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), target)));
+                if (GetIsPC(target)) RescueFittedShipPilot(target);
+                else DelayCommand(0f, () => AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), target)));
                 ClearCurrentTarget(source);
             }
             return damage;

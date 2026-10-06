@@ -664,7 +664,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
                 return 1.0f;
 
-            if (Space.IsPlayerInSpaceMode(creature))
+            if (Space.IsOperatingShip(creature))
             {
                 var ship = Space.GetShipStatus(creature);
                 if (ship?.FittingVersion == SpaceService.ShipFittingConversion.CurrentVersion)

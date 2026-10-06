@@ -44,12 +44,16 @@ def action_metadata(module):
     mid=module["id"]
     result=dict(item_tag="fit_"+mid,short_name=SHORT_NAMES[mid],item_resref=module_resref(mid),action="Passive",
         shield_multiplier=1,hull_multiplier=1,hardness_limit=0,preparation_seconds=0,ammunition=None,
-        working_speed_penalty=0,movement_lock=False)
+        working_speed_penalty=0,movement_lock=False,on_hit_speed_penalty=0,on_hit_control_seconds=0,on_hit_capacitor_damage=0,
+        discount_stat="ShipCapacitorDiscount",range_stat=None)
     if len(result["short_name"])>14:raise ValueError("Module short name exceeds 14 characters: " + mid)
     if module["family"] in ("Thermal","Ion","Ordnance"):
         result["action"]="Weapon"
         result["ammunition"]=AMMUNITION.get(mid)
         if mid=="shield_breaker":result.update(shield_multiplier=1.3,hull_multiplier=.5)
+        result["discount_stat"]="ShipWeaponCapacitorDiscount"
+        if mid=="engine_disruptor":result.update(on_hit_speed_penalty=.15,on_hit_control_seconds=4)
+        if mid=="cap_disruptor":result["on_hit_capacitor_damage"]=6
         if mid=="torpedo":result["preparation_seconds"]=2
         if mid=="bombardment":result["preparation_seconds"]=3
     else:
@@ -61,6 +65,12 @@ def action_metadata(module):
         result["hardness_limit"]={"precision_cutter":45,"bulk_extractor":65,"deep_drill":90,"compact_drill":90,"strip_miner":75}.get(mid,0)
         result["working_speed_penalty"]=.5 if mid in ("deep_drill","compact_drill") else 0
         result["movement_lock"]=mid=="strip_miner"
+    discount_by_action={"SelfShieldRepair":"ShipRepairCapacitorDiscount","SelfHullRepair":"ShipRepairCapacitorDiscount","ShieldRepair":"ShipRepairCapacitorDiscount","HullRepair":"ShipRepairCapacitorDiscount","RepairField":"ShipRepairCapacitorDiscount",
+        "Survey":"ShipScannerCapacitorDiscount","Interference":"ShipElectronicCapacitorDiscount","Countermeasures":"ShipElectronicCapacitorDiscount",
+        "Extraction":"ShipIndustryCapacitorDiscount","BulkSalvage":"ShipIndustryCapacitorDiscount","IntactSalvage":"ShipIndustryCapacitorDiscount","Compression":"ShipIndustryCapacitorDiscount"}
+    result["discount_stat"]=discount_by_action.get(result["action"],result["discount_stat"])
+    if result["action"] in ("ShieldRepair","HullRepair","RepairField"):result["range_stat"]="ShipRepairRange"
+    if result["action"]=="Interference":result["range_stat"]="ShipElectronicRange"
     return result
 
 

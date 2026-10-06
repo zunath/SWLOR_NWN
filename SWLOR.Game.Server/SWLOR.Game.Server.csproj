@@ -35,6 +35,7 @@
   <ItemGroup>
     <EmbeddedResource Include="ConversationData\**\*.conversation.json" />
     <EmbeddedResource Include="Data\ShipFitting.json" LogicalName="SWLOR.ShipFitting.json" />
+    <EmbeddedResource Include="Data\SpaceIndustry.json" LogicalName="SWLOR.SpaceIndustry.json" />
   </ItemGroup>
 
   <Target Name="NWN" AfterTargets="Build">

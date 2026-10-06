@@ -1,12 +1,14 @@
 """Project the approved space specification into embedded fitting definitions."""
 import argparse
 import json
+import re
 from pathlib import Path
 from UpdateSpaceDesignBible import operator_requirement
 from ShipEquipmentResources import action_metadata, module_resref, quality_dimensions
 
 ROOT = Path(__file__).resolve().parents[1]
 TARGET = ROOT / "SWLOR.Game.Server/Data/ShipFitting.json"
+INDUSTRY_TARGET = ROOT / "SWLOR.Game.Server/Data/SpaceIndustry.json"
 
 
 # Gameplay metadata is authored alongside the numerical projection, never parsed from prose.
@@ -70,6 +72,14 @@ def project(source):
     return dict(hulls=source["hulls"],modules=modules,variants=variants,configurations=configurations,legacy_modules=legacy)
 
 
+def project_industry(source):
+    deposits=[]
+    for original in source["deposits"]:
+        composition={"ore_"+name.lower():int(percent)/100 for percent,name in re.findall(r"(\d+)% ([A-Za-z]+)",original["composition"])}
+        deposits.append(dict(original,composition=composition))
+    return dict(resources=source["resources"],deposits=deposits)
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check",action="store_true")
@@ -81,6 +91,10 @@ def main():
     else:
         TARGET.parent.mkdir(parents=True,exist_ok=True)
         TARGET.write_text(text,encoding="utf-8")
+    industry_text=json.dumps(project_industry(source),indent=2,ensure_ascii=False)+"\n"
+    if args.check:
+        if INDUSTRY_TARGET.read_text(encoding="utf-8")!=industry_text:raise SystemExit("Embedded industry definitions differ from the approved specification")
+    else:INDUSTRY_TARGET.write_text(industry_text,encoding="utf-8")
     print(f"Verified {len(source['hulls'])} hulls, {len(source['modules'])} module designs, {len(source['module_variants'])} calibrated variants.")
 
 

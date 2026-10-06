@@ -20,6 +20,16 @@ namespace SWLOR.Game.Server.Service.SpaceService
             public string OriginalSerializedItem { get; set; }
         }
 
+        public string LastDefeatFlightId { get; set; }
+        public int OutstandingRecoveryCredits { get; set; }
+        public ShipDockPayment PendingDockPayment { get; set; }
+        public string FlightId { get; set; }
+        public Dictionary<string, ShipCargoTransfer> PendingCargoTransfers { get; set; } = new();
+        public Dictionary<string, ShipCargoLot> Cargo { get; set; } = new();
+        public HashSet<string> PaidWorkClaims { get; set; } = new();
+        public HashSet<string> SettledSiteClaims { get; set; } = new();
+        public Dictionary<int, List<string>> BankModules { get; set; } = new();
+        public Dictionary<string, ShipModuleActivation> PendingModuleActivations { get; set; } = new();
         public Dictionary<StatType, double> FittingBonuses { get; set; } = new();
         public Dictionary<StatType, double> FittingPenalties { get; set; } = new();
         public Dictionary<ShipResource, double> FractionalResourceDeficits { get; set; } = new();

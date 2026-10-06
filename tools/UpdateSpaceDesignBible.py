@@ -77,6 +77,7 @@ def specifications():
         ("Discovery repetition", 1, "reward/object/spawn", "New reserve or anomaly identity needed; rescans only refresh information."),
         ("Experience rate ceiling", 18000, "base XP/active hour", "Total operating XP across the five skills, before existing account/server XP modifiers; finite objective contribution."),
         ("Ordinary cargo loss", 0.20, "unprotected units on defeat", "Floor per commodity, deterministic settlement; protected compartment preserves up to its stated capacity."),
+        ("Dock hull recovery", 0.03, "hull reference value per paid recovery", "Voluntary dock hull recovery uses the same 3% reference fee as defeat, minimum 60 and maximum 1800. An outstanding defeat recovery fee replaces this fee rather than adding a second hull charge. Shield/capacitor refill adds no charge; module condition is billed separately."),
         ("Defeat recovery", 0.03, "hull reference value", "Minimum 60 credits, maximum 1800; fitted equipment retained but service condition loses 20 points."),
         ("Service condition", 100, "points at manufacture", "0-100; no gradual output degradation. At 0, module disabled until serviced."),
         ("Module service", 0.01, "module reference value/condition point", "Twenty points lost on defeat =>20% of reference value, rounded up, minimum total service bill 10 credits/module."),

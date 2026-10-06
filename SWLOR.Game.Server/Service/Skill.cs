@@ -91,7 +91,9 @@ namespace SWLOR.Game.Server.Service
             SkillType skill,
             int xp,
             bool ignoreBonuses = false,
-            bool applyHenchmanPenalty = true)
+            bool applyHenchmanPenalty = true,
+            string receiptId = null,
+            Func<Player, int, int> settleBaseXP = null)
         {
             if (skill == SkillType.Invalid ||
                 xp <= 0 ||
@@ -104,6 +106,13 @@ namespace SWLOR.Game.Server.Service
             var modifiedSkills = new List<SkillType>();
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+            if (receiptId != null)
+            {
+                if (dbPlayer.SkillXPReceipts.ContainsKey(receiptId)) return;
+                dbPlayer.SkillXPReceipts.Add(receiptId, DateTime.UtcNow);
+            }
+            if (settleBaseXP != null) xp = Math.Max(0, settleBaseXP(dbPlayer, xp));
+            if (xp <= 0) { DB.Set(dbPlayer); return; }
 
             var details = GetSkillDetails(skill);
             var pcSkill = dbPlayer.Skills[skill];
@@ -191,6 +200,7 @@ namespace SWLOR.Game.Server.Service
             if (details.ContributesToSkillCap && skillsPossibleToDecay.Count <= 0 && totalRanks >= SkillCap)
             {
                 PlayerFeedback.SendWarningToPlayer(player, "SKILL_CAP", ColorToken.Red($"You cannot gain {details.Name} XP. You are at the skill cap of {SkillCap} and all of your other skills are locked from decay. Unlock a skill in the Skills menu to resume gaining {details.Name} XP."));
+                DB.Set(dbPlayer);
                 return;
             }
 

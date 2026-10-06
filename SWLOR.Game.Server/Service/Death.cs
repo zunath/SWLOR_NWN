@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Service
         public static void OnPlayerDeath()
         {
             var player = GetLastPlayerDied();
+            if (GetLocalBool(player, "SHIP_RESCUED_DEATH") || Space.RescueFittedShipPilot(player)) return;
             NamedAnimation.ClearOnDeath(player);
             Feature.UsePerkFeat.ClearQueuedAbility(player);
             var hostile = GetLastHostileActor(player);

@@ -349,8 +349,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     });
 
                     col.AddRow(row => row.AddLabel().BindText(model => model.FittingSummary).SetHeight(25f));
-                    col.AddRow(row => row.AddButton().BindText(model => model.RecoveryText)
-                        .BindIsEnabled(model => model.IsRefitEnabled).BindOnClicked(model => model.OnClickRecoverEquipment()).SetHeight(35f));
+                    col.AddRow(row =>
+                    {
+                        row.AddButton().BindText(model => model.RecoveryText).SetWidth(300f)
+                            .BindIsEnabled(model => model.IsRefitEnabled).BindOnClicked(model => model.OnClickRecoverEquipment()).SetHeight(35f);
+                        row.AddButton().SetText("Cargo").SetWidth(180f)
+                            .BindIsEnabled(model => model.IsRefitEnabled).BindOnClicked(model => model.OnClickCargo()).SetHeight(35f);
+                    });
                         }).SetWidth(500f);
                     }).SetWidth(520f)));
                 });

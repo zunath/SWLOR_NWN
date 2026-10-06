@@ -692,6 +692,9 @@ namespace SWLOR.Game.Server.Service
             SetCreatureAppearanceType(player, shipDetail.Appearance);
             Stat.ApplyCreatureMovementRate(player);
 
+            dbPlayerShip.Status.FlightId = Guid.NewGuid().ToString();
+            dbPlayerShip.Status.PendingModuleActivations.Clear();
+
             // Set active ship Id and serialize the player's hot bar.
             dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
             dbPlayer.ActiveShipId = shipId;
@@ -1031,7 +1034,7 @@ namespace SWLOR.Game.Server.Service
 
             if (ShipFittingCatalog.Default.Hulls.ContainsKey(playerShip.ItemTag))
             {
-                if (playerShip.FittingVersion != ShipFittingConversion.CurrentVersion || playerShip.PendingInventoryTransfers.Count != 0 ||
+                if (playerShip.FittingVersion != ShipFittingConversion.CurrentVersion || playerShip.PendingInventoryTransfers.Count != 0 || playerShip.PendingCargoTransfers.Count != 0 || playerShip.PendingDockPayment != null ||
                     playerShip.RefitReadyAt > DateTime.UtcNow) return false;
                 return ShipFittingCalculator.Calculate(playerShip.ItemTag, ShipFittedStats.Modules(playerShip)
                     .Select(x => new ShipFittingModule(x.Design, x.Calibration, x.QualityDimension, x.Quality)),
@@ -1171,17 +1174,24 @@ namespace SWLOR.Game.Server.Service
             var activator = OBJECT_SELF;
             var activatorShipStatus = GetShipStatus(activator);
             var slotNumber = GetFeatSlotNumber(feat);
+            if (activatorShipStatus == null) return;
+            EventsPlugin.SkipEvent();
+            if (activatorShipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
+            {
+                ActivateFittedModuleSlot(activator, slotNumber);
+                return;
+            }
             ShipStatus.ShipStatusModule shipModule;
 
             // Slot numbers between 1-10 are high powered slots
             if (slotNumber <= 10)
             {
-                shipModule = activatorShipStatus.HighPowerModules[slotNumber];
+                if (!activatorShipStatus.HighPowerModules.TryGetValue(slotNumber, out shipModule)) return;
             }
             // Slot Numbers between 10-20 are low powered slots.
             else if (slotNumber <= 20)
             {
-                shipModule = activatorShipStatus.LowPowerModules[slotNumber-10];
+                if (!activatorShipStatus.LowPowerModules.TryGetValue(slotNumber - 10, out shipModule)) return;
             }
             else
             {
@@ -1303,6 +1313,7 @@ namespace SWLOR.Game.Server.Service
             if (shipStatus.FittingVersion == ShipFittingConversion.CurrentVersion)
             {
                 ShipOperations.Recover(shipStatus, DateTime.UtcNow);
+                ApplyShipMovementConstraints(player, shipStatus);
                 Stat.ApplyCreatureMovementRate(player);
                 if (GetIsPC(player)) ExecuteScript("pc_target_upd", player);
                 return;
@@ -1918,6 +1929,7 @@ namespace SWLOR.Game.Server.Service
 
             if (!IsPlayerInSpaceMode(creature))
                 return;
+            if (RescueFittedShipPilot(creature)) return;
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), creature);
 

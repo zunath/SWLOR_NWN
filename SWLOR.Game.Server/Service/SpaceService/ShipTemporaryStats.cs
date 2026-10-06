@@ -9,15 +9,37 @@ namespace SWLOR.Game.Server.Service.SpaceService
     public sealed record ShipControlWindow(DateTime StartedAt, int Applications);
     public sealed record ShipRecoveryReceipt(ShipResource Resource, double Amount, DateTime At);
 
+    public sealed record ShipTemporarySources(IReadOnlyDictionary<StatType, double> Positive, IReadOnlyDictionary<StatType, double> Negative)
+    {
+        public double Net(StatType stat) => Positive.GetValueOrDefault(stat) - Negative.GetValueOrDefault(stat);
+    }
+
     public static class ShipTemporaryStats
     {
-        public static IReadOnlyDictionary<StatType, double> Current(ShipStatus status, DateTime now)
+        public static ShipTemporarySources Sources(ShipStatus status, DateTime now)
         {
             status.TemporaryAdjustments.RemoveAll(x => x.ExpiresAt <= now);
-            return status.TemporaryAdjustments.GroupBy(x => x.Stat).ToDictionary(g => g.Key,
-                g => Stat.GetStatTypeCategory(g.Key) == StatTypeCategory.BeneficialWhenNegative
-                    ? g.Where(x => x.Amount < 0).Select(x => x.Amount).DefaultIfEmpty(0).Min() + g.Where(x => x.Amount > 0).Sum(x => x.Amount)
-                    : g.Where(x => x.Amount > 0).Select(x => x.Amount).DefaultIfEmpty(0).Max() + g.Where(x => x.Amount < 0).Sum(x => x.Amount));
+            var positive = new Dictionary<StatType, double>(); var negative = new Dictionary<StatType, double>();
+            foreach (var group in status.TemporaryAdjustments.GroupBy(x => x.Stat))
+            {
+                if (Stat.GetStatTypeCategory(group.Key) == StatTypeCategory.BeneficialWhenNegative)
+                {
+                    positive[group.Key] = group.Where(x => x.Amount > 0).Sum(x => x.Amount);
+                    negative[group.Key] = group.Where(x => x.Amount < 0).Select(x => -x.Amount).DefaultIfEmpty(0).Max();
+                }
+                else
+                {
+                    positive[group.Key] = group.Where(x => x.Amount > 0).Select(x => x.Amount).DefaultIfEmpty(0).Max();
+                    negative[group.Key] = group.Where(x => x.Amount < 0).Sum(x => -x.Amount);
+                }
+            }
+            return new(positive, negative);
+        }
+
+        public static IReadOnlyDictionary<StatType, double> Current(ShipStatus status, DateTime now)
+        {
+            var sources = Sources(status, now);
+            return sources.Positive.Keys.Union(sources.Negative.Keys).ToDictionary(stat => stat, sources.Net);
         }
 
         public static void Add(ShipStatus status, StatType stat, double amount, double seconds, string family, DateTime now)

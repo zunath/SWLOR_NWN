@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             status.Hull = alive ? pools.Hull : 0; status.Shield = pools.Shield; status.Capacitor = pools.Capacitor;
             status.CargoCapacity = Math.Max(0, hull.Cargo * (1 + Net(StatType.ShipCargoCapacity)));
             status.Speed = Math.Max(.1, hull.Speed * (1 + Math.Min(.25, Bonus(StatType.ShipSpeed)) - Penalty(StatType.ShipSpeed)));
-            status.Signature = hull.Signature;
+            status.Signature = Math.Max(1, hull.Signature * (1 + Net(StatType.ShipSignature)));
             status.BaseSpeed = hull.Speed;
             status.HullResistance = Math.Clamp(hull.Resistance + Net(StatType.ShipHullResistance), 0, 60);
             status.ShieldResistance = Math.Clamp(Net(StatType.ShipShieldResistance), 0, 60);

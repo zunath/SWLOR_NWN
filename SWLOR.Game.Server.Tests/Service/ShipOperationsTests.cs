@@ -80,4 +80,18 @@ public class ShipOperationsTests
         var status = Status(); status.FittingBonuses[StatType.ShipRecoveryOutput] = .4;
         ShipOperations.Resolve(status, new() { Design = "fuel_injector" }).Output.Should().Be(30);
     }
+    [Test]
+    public void TemporaryOutputAndSpeedCaps_KeepAllDeclaredDrawbacksAfterCappingPositiveSources()
+    {
+        var status = Status(); status.Speed = 1; status.BaseSpeed = 1;
+        var now = new DateTime(2026, 10, 6, 0, 0, 0, DateTimeKind.Utc);
+        ShipTemporaryStats.Add(status, StatType.ShipWeaponOutput, .5, 10, "burst", now);
+        ShipTemporaryStats.Add(status, StatType.ShipWeaponOutput, -.15, 10, "evasive", now);
+        ShipTemporaryStats.Add(status, StatType.ShipSpeed, .5, 10, "escape", now);
+        ShipTemporaryStats.Add(status, StatType.ShipSpeed, -.1, 10, "engine", now);
+        var operation = ShipOperations.Resolve(status, new() { Design = "tracking_laser" }, temporarySources: ShipTemporaryStats.Sources(status, now));
+        operation.Output.Should().BeApproximately(12 * 1.15, 1e-9);
+        ShipOperations.MovementSpeed(status, now).Should().BeApproximately(1.25, 1e-9);
+    }
+
 }

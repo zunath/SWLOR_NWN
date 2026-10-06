@@ -10,11 +10,15 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Toolset.AreaGeneration;
-using SWLOR.Toolset.Domain.AreaGeneration;
-using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
-using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
+using Nwn.Toolset.Avalonia.Areas.Generation;
+using Nwn.Authoring.Areas.Generation.Composition;
+using Nwn.Authoring.Areas.Generation.Drafting;
+using Nwn.Authoring.Areas.Generation.Population;
+using Nwn.Authoring.Areas.Generation.Preview;
+using Nwn.Authoring.Areas.Generation.Hosting;
+using Nwn.Authoring.Areas.Generation.Decoration;
 using SWLOR.Toolset.Domain.AreaGeneration.Definitions;
+using SWLOR.Toolset.Domain.AreaGeneration.Hosting;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Workspace;
@@ -51,7 +55,7 @@ public sealed class AreaGeneratorWindowRenderTests
     [Test]
     public void TilesetChoices_ShowOnlyTheVisualName()
     {
-        var choice = new AreaGeneratorViewModel.TilesetChoice(new DungeonTilesetProfile
+        var choice = new AreaGeneratorTilesetChoice(new DungeonTilesetProfile
         {
             DisplayName = "City Interior",
             TilesetResref = "tin01"
@@ -481,7 +485,7 @@ public sealed class AreaGeneratorWindowRenderTests
     public void EnablingAccentTerrain_SeedsAValidNonzeroDensity()
     {
         using var viewModel = CreateViewModel();
-        var blobAccentProfile = new AreaGeneratorViewModel.TilesetChoice(new DungeonTilesetProfile
+        var blobAccentProfile = new AreaGeneratorTilesetChoice(new DungeonTilesetProfile
         {
             Key = "blob_accent",
             DisplayName = "Blob Accent",
@@ -504,7 +508,7 @@ public sealed class AreaGeneratorWindowRenderTests
         using var viewModel = CreateViewModel();
         var notifications = 0;
         viewModel.GeneratePreviewCommand.CanExecuteChanged += (_, _) => notifications++;
-        var profile = new AreaGeneratorViewModel.TilesetChoice(new DungeonTilesetProfile
+        var profile = new AreaGeneratorTilesetChoice(new DungeonTilesetProfile
         {
             Key = "command_probe",
             DisplayName = "Command Probe",
@@ -521,7 +525,7 @@ public sealed class AreaGeneratorWindowRenderTests
     public void ReliefOnlyComposition_PreservesItsDefaultInTheSharedHeightControl()
     {
         using var viewModel = CreateViewModel();
-        var reliefProfile = new AreaGeneratorViewModel.TilesetChoice(new DungeonTilesetProfile
+        var reliefProfile = new AreaGeneratorTilesetChoice(new DungeonTilesetProfile
         {
             Key = "relief_only",
             DisplayName = "Relief Only",
@@ -542,7 +546,7 @@ public sealed class AreaGeneratorWindowRenderTests
     public void ChannelOnlyComposition_EnablesAccentsWithoutInventingBlobDensity()
     {
         using var viewModel = CreateViewModel();
-        var channelProfile = new AreaGeneratorViewModel.TilesetChoice(new DungeonTilesetProfile
+        var channelProfile = new AreaGeneratorTilesetChoice(new DungeonTilesetProfile
         {
             Key = "channel_only",
             DisplayName = "Channel Only",
@@ -562,7 +566,7 @@ public sealed class AreaGeneratorWindowRenderTests
     public void ChannelLayout_OnBlobCapableTileset_PreservesZeroBlobDensityWhileLoadingDefaults()
     {
         using var viewModel = CreateViewModel();
-        var mixedProfile = new AreaGeneratorViewModel.TilesetChoice(new DungeonTilesetProfile
+        var mixedProfile = new AreaGeneratorTilesetChoice(new DungeonTilesetProfile
         {
             Key = "mixed_accents",
             DisplayName = "Mixed Accents",
@@ -646,12 +650,21 @@ public sealed class AreaGeneratorWindowRenderTests
     {
         var resources = new ResourceIndex(null, Array.Empty<ResourceIndex.HakLayer>());
         resources.EnsureInitialized();
-        var tilesets = new TilesetCatalog(resources);
-        return new AreaGeneratorViewModel(
-            new AreaGenerationAuthoringService(tilesets),
-            new AreaGenerationPreviewRenderer(resources: null),
-            tilesets,
-            new ModuleWorkspace(CorpusLocator.ModuleDirectory));
+        return new AreaGeneratorViewModel(CreateHost(new TilesetCatalog(resources), null));
+    }
+
+    private static AreaGeneratorHost CreateHost(TilesetCatalog tilesets, IAreaGeneratorBackgroundTaskRunner? backgroundTasks)
+    {
+        var workspace = new ModuleWorkspace(CorpusLocator.ModuleDirectory);
+        return new AreaGeneratorHost(
+            SwlorAreaGenerationCatalog.Create(),
+            new SwlorTilesetSource(tilesets),
+            new SwlorGeneratedAreaWriter(workspace, tilesets))
+        {
+            Blueprints = new SwlorBlueprintSource(workspace),
+            PopulationPolicy = new SwlorPopulationPolicy(),
+            BackgroundTasks = backgroundTasks
+        };
     }
 
     private static AreaGeneratorViewModel CreateGeneratableViewModel(
@@ -666,19 +679,7 @@ public sealed class AreaGeneratorWindowRenderTests
                     Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks", "sw_t_minecave"))
             });
         resources.EnsureInitialized();
-        var tilesets = new TilesetCatalog(resources);
-        return backgroundTasks == null
-            ? new AreaGeneratorViewModel(
-                new AreaGenerationAuthoringService(tilesets),
-                new AreaGenerationPreviewRenderer(resources: null),
-                tilesets,
-                new ModuleWorkspace(CorpusLocator.ModuleDirectory))
-            : new AreaGeneratorViewModel(
-                new AreaGenerationAuthoringService(tilesets),
-                new AreaGenerationPreviewRenderer(resources: null),
-                tilesets,
-                new ModuleWorkspace(CorpusLocator.ModuleDirectory),
-                backgroundTasks);
+        return new AreaGeneratorViewModel(CreateHost(new TilesetCatalog(resources), backgroundTasks));
     }
 
     private sealed class GatedBackgroundTaskRunner : IAreaGeneratorBackgroundTaskRunner

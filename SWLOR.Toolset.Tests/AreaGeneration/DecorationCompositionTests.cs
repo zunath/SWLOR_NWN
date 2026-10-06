@@ -1,8 +1,12 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Toolset.Domain.AreaGeneration;
-using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
-using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
+using SWLOR.Toolset.Domain.AreaGeneration.Hosting;
+using Nwn.Authoring.Areas.Generation.Composition;
+using Nwn.Authoring.Areas.Generation.Drafting;
+using Nwn.Authoring.Areas.Generation.Population;
+using Nwn.Authoring.Areas.Generation.Preview;
+using Nwn.Authoring.Areas.Generation.Hosting;
+using Nwn.Authoring.Areas.Generation.Decoration;
 using SWLOR.Toolset.Domain.AreaGeneration.Definitions;
 using Nwn.Authoring.Areas.Generation.Tilesets;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
@@ -24,7 +28,7 @@ public class DecorationCompositionTests
     [TestCase(BaseGameTilesetProfiles.FutCityPlaza, StandardLayoutProfiles.Packed)]
     public void Compositions_KeepDeterministicUsefulDressingWithClearance(string profileKey, string layoutKey)
     {
-        var catalog = new DefinitionCatalog();
+        var catalog = SwlorAreaGenerationCatalog.Create();
         var profile = catalog.TilesetProfiles[profileKey];
         var path = Directory.EnumerateFiles(Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks"),
             profile.TilesetResref + ".set", SearchOption.AllDirectories).First();
@@ -44,8 +48,8 @@ public class DecorationCompositionTests
             {
                 ThemeKey = composition.Content.ThemeKey, Seed = seed, Width = size, Height = size
             }, composition, tileset, result);
-            AreaGenerationAuthoringService.ValidatePlaceableBlueprints(draft, new ModuleWorkspace(CorpusLocator.ModuleDirectory));
-            GeneratedAreaDocumentPopulator.ValidateEncounterPlacement(draft, new ModuleWorkspace(CorpusLocator.ModuleDirectory));
+            AreaGenerationAuthoringService.ValidatePlaceableBlueprints(draft, new SwlorBlueprintSource(new ModuleWorkspace(CorpusLocator.ModuleDirectory)));
+            GeneratedAreaDocumentPopulator.ValidateEncounterPlacement(draft, new SwlorBlueprintSource(new ModuleWorkspace(CorpusLocator.ModuleDirectory)));
             var report = result.DecorationPlacementReport;
             report.ProposedCount.Should().Be(report.PlacedCount + report.UnsupportedCount + report.RouteConflictCount + report.OverlapCount);
 

@@ -1,7 +1,8 @@
 using Nwn.Authoring.Areas.Generation.Transitions;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Toolset.Domain.AreaGeneration;
+using Nwn.Authoring.Areas.Generation.Composition;
+using Nwn.Authoring.Areas.Generation.Drafting;
 using Nwn.Authoring.Areas.Generation.Tilesets;
 
 using Nwn.Authoring.Areas.Generation;

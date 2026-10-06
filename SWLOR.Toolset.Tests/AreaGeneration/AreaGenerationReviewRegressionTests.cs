@@ -1,12 +1,15 @@
-using TileResolver = SWLOR.Toolset.Domain.AreaGeneration.TileResolver;
+using TileResolver = Nwn.Authoring.Areas.Generation.Drafting.AreaGenerationTileResolver;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Toolset.Domain.AreaGeneration;
-using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
-using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
+using Nwn.Authoring.Areas.Generation.Composition;
+using Nwn.Authoring.Areas.Generation.Drafting;
+using Nwn.Authoring.Areas.Generation.Population;
+using Nwn.Authoring.Areas.Generation.Preview;
+using Nwn.Authoring.Areas.Generation.Hosting;
+using Nwn.Authoring.Areas.Generation.Decoration;
 using SWLOR.Toolset.Domain.AreaGeneration.Definitions;
 using Nwn.Authoring.Areas.Generation.Tilesets;
 

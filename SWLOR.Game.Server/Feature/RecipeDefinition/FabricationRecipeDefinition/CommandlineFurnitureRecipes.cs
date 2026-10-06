@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
         {
             // Commandline Field Cot
             _builder.Create(RecipeType.CommandlineFieldCot, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0421")
                 .Level(30)
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Commandline Signal Lamp
             _builder.Create(RecipeType.CommandlineSignalLamp, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0422")
                 .Level(31)
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Commandline Trophy Stand
             _builder.Create(RecipeType.CommandlineTrophyStand, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0423")
                 .Level(34)
@@ -55,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Commandline Low Table
             _builder.Create(RecipeType.CommandlineLowTable, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0424")
                 .Level(32)
@@ -67,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Commandline Wall Banner
             _builder.Create(RecipeType.CommandlineWallBanner, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0425")
                 .Level(33)
@@ -79,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Commandline Supply Locker
             _builder.Create(RecipeType.CommandlineSupplyLocker, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0426")
                 .Level(35)
@@ -91,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Commandline Floor Mat
             _builder.Create(RecipeType.CommandlineFloorMat, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Flooring)
                 .Resref("structure_0427")
                 .Level(30)
@@ -103,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Commandline Data Console
             _builder.Create(RecipeType.CommandlineDataConsole, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0428")
                 .Level(35)
@@ -115,6 +123,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Commandline Display Plinth
             _builder.Create(RecipeType.CommandlineDisplayPlinth, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0429")
                 .Level(34)
@@ -127,6 +136,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Commandline Work Stool
             _builder.Create(RecipeType.CommandlineWorkStool, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0430")
                 .Level(31)

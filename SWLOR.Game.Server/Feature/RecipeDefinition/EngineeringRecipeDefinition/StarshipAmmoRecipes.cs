@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Ship Missiles x5
             _builder.Create(RecipeType.Missile3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.StarshipAmmo)
                 .Resref("ship_missile")
                 .Level(5)
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Hypermatter Capsule x1
             _builder.Create(RecipeType.FuelCapsule1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.StarshipAmmo)
                 .Resref("ship_fuelcapsule")
                 .Level(8)
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Ship Missiles x15
             _builder.Create(RecipeType.Missile15, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.StarshipAmmo)
                 .Resref("ship_missile")
                 .Level(15)
@@ -55,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Ship Missiles x25
             _builder.Create(RecipeType.Missile10, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.StarshipAmmo)
                 .Resref("ship_missile")
                 .Level(25)
@@ -64,6 +68,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Hypermatter Capsule x3
             _builder.Create(RecipeType.FuelCapsule3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.StarshipAmmo)
                 .Resref("ship_fuelcapsule")
                 .Level(28)
@@ -76,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Ship Missiles x35
             _builder.Create(RecipeType.Missile35, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.StarshipAmmo)
                 .Resref("ship_missile")
                 .Level(25)
@@ -88,6 +94,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Ship Missiles x45
             _builder.Create(RecipeType.Missile25, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.StarshipAmmo)
                 .Resref("ship_missile")
                 .Level(45)
@@ -97,6 +104,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Proton Bomb x5
             _builder.Create(RecipeType.ProtonBomb, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.StarshipAmmo)
                 .Resref("proton_bomb")
                 .Level(45)
@@ -107,6 +115,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Hypermatter Capsule x5
             _builder.Create(RecipeType.FuelCapsule5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.StarshipAmmo)
                 .Resref("ship_fuelcapsule")
                 .Level(48)
@@ -116,6 +125,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Assault Concussion Missile
             _builder.Create(RecipeType.AssaultConcMissile, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.StarshipAmmo)
                 .Resref("acm_ammo")
                 .Level(52)

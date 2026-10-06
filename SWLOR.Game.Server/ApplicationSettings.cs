@@ -1,4 +1,5 @@
 using System.Globalization;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server
@@ -21,6 +22,7 @@ namespace SWLOR.Game.Server
         /// </summary>
         public bool ServerEnvironmentIsExplicit { get; }
 
+        public CraftRollout CraftingRollout { get; }
         public bool EngineTestsEnabled { get; }
         public string EngineTestResultsDirectory { get; }
         public string EngineTestFilter { get; }
@@ -74,6 +76,8 @@ namespace SWLOR.Game.Server
                 // (like the engine test runner) must be able to fail closed on that.
                 ServerEnvironmentIsExplicit = environment == "dev" || environment == "development";
             }
+            CraftingRollout = Enum.TryParse<CraftRollout>(Environment.GetEnvironmentVariable("SWLOR_CRAFTING_ROLLOUT"), true, out var rollout) && Enum.IsDefined(rollout)
+                ? rollout : ServerEnvironment == ServerEnvironmentType.Production ? CraftRollout.Pilot : CraftRollout.Full;
         }
 
         private static bool ParseBool(string value, bool defaultValue)

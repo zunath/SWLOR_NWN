@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
         {
             // Brineleaf Chowder
             _builder.Create(RecipeType.BrineleafChowder, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("bl_chowder")
                 .Level(27)
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Field Ration Stew
             _builder.Create(RecipeType.FieldRationStew, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("fr_stew")
                 .Level(29)
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Deepwatch Broth
             _builder.Create(RecipeType.DeepwatchBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("dw_broth")
                 .Level(34)
@@ -55,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Midnight Ink Noodles
             _builder.Create(RecipeType.MidnightInkNoodles, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("mi_noodles")
                 .Level(32)
@@ -67,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Shatterfin Curry
             _builder.Create(RecipeType.ShatterfinCurry, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("sf_curry")
                 .Level(31)

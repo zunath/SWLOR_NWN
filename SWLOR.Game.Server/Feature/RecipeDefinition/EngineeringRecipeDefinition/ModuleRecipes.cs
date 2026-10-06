@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
 			// Basic Capacitor Booster
 			_builder.Create(RecipeType.BasicCapacitorBooster, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("cap_boost_b")
 				.Level(5)
@@ -33,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Basic Combat Laser
 			_builder.Create(RecipeType.BasicCombatLaser, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("com_laser_b")
 				.Level(2)
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Basic Beam Cannon
             _builder.Create(RecipeType.BasicBeamCannon, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("beamcannon1")
                 .Level(2)
@@ -53,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Basic EM Amplifier
             _builder.Create(RecipeType.BasicEMAmplifier, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("em_amp_b")
 				.Level(7)
@@ -63,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Basic Thermal Amplifier
 			_builder.Create(RecipeType.BasicThermalAmplifier, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("therm_amp_b")
 				.Level(6)
@@ -73,6 +78,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Basic Explosive Amplifier
 			_builder.Create(RecipeType.BasicExplosiveAmplifier, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("exp_amp_b")
 				.Level(6)
@@ -83,6 +89,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Basic Evasion Booster
 			_builder.Create(RecipeType.BasicEvasionBooster, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("eva_boost_b")
 				.Level(8)
@@ -93,6 +100,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Basic Hull Booster
 			_builder.Create(RecipeType.BasicHullBooster, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hull_boost_b")
 				.Level(4)
@@ -103,6 +111,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Basic Hull Repairer
 			_builder.Create(RecipeType.BasicHullRepairer, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hull_rep_b")
 				.Level(3)
@@ -113,6 +122,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Basic Ion Cannon
 			_builder.Create(RecipeType.BasicIonCannon, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("ion_cann_b")
 				.Level(2)
@@ -123,6 +133,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Basic Mining Laser
 			_builder.Create(RecipeType.BasicMiningLaser, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: true)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("min_laser_b")
 				.Level(1)
@@ -133,6 +144,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Basic Missile Launcher
 			_builder.Create(RecipeType.BasicMissileLauncher, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("msl_launch_b")
 				.Level(4)
@@ -143,6 +155,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Basic Shield Booster
 			_builder.Create(RecipeType.BasicShieldBooster, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("shld_boost_b")
 				.Level(3)
@@ -153,6 +166,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Basic Shield Repairer
 			_builder.Create(RecipeType.BasicShieldRepairer, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("shld_rep_b")
 				.Level(8)
@@ -163,6 +177,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Basic Targeting System
 			_builder.Create(RecipeType.BasicTargetingSystem, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("tgt_sys_b")
 				.Level(9)
@@ -173,6 +188,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Basic Hypermatter Injector
 			_builder.Create(RecipeType.BasicFuelInjector, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("cap_inject1")
 				.Level(9)
@@ -183,6 +199,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Basic Mirrored Plating
 			_builder.Create(RecipeType.BasicThermalArmor, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("las_armor_1")
 				.Level(5)
@@ -193,6 +210,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Basic Supplemental Ion Shielding
             _builder.Create(RecipeType.BasicIonArmor, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("ion_armor_1")
 				.Level(5)
@@ -203,6 +221,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Basic Reactive Armor
             _builder.Create(RecipeType.BasicExplosiveArmor, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("exp_armor_1")
 				.Level(5)
@@ -213,6 +232,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Basic Durasteel Plating
             _builder.Create(RecipeType.BasicHeavyArmor, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hvy_armor_1")
 				.Level(5)
@@ -223,6 +243,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Basic Fighter Config
             _builder.Create(RecipeType.BasicFighterConfig, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_fig1")
                 .Level(5)
@@ -233,6 +254,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Basic Bomber Config
             _builder.Create(RecipeType.BasicBomberConfig, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_bmb1")
                 .Level(5)
@@ -243,6 +265,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Basic Interceptor Config
             _builder.Create(RecipeType.BasicInterceptorConfig, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_int1")
                 .Level(5)
@@ -253,6 +276,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Basic Logistics Config
             _builder.Create(RecipeType.BasicLogisticsConfig, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_ind1")
                 .Level(5)
@@ -267,6 +291,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Capacitor Booster I
 			_builder.Create(RecipeType.CapacitorBooster1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("cap_boost_1")
 				.Level(15)
@@ -277,6 +302,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Combat Laser I
 			_builder.Create(RecipeType.CombatLaser1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("com_laser_1")
 				.Level(12)
@@ -287,6 +313,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Beam Cannon I
             _builder.Create(RecipeType.BeamCannon1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("beamcannon2")
                 .Level(12)
@@ -297,6 +324,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             //  EM Amplifier I
             _builder.Create(RecipeType.EMAmplifier1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("em_amp_1")
 				.Level(17)
@@ -307,6 +335,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Thermal Amplifier I
 			_builder.Create(RecipeType.ThermalAmplifier1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("therm_amp_1")
 				.Level(16)
@@ -317,6 +346,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Explosive Amplifier I
 			_builder.Create(RecipeType.ExplosiveAmplifier1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("exp_amp_1")
 				.Level(16)
@@ -327,6 +357,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Evasion Booster I
 			_builder.Create(RecipeType.EvasionBooster1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("eva_boost_1")
 				.Level(18)
@@ -337,6 +368,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Hull Booster I
 			_builder.Create(RecipeType.HullBooster1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hull_boost_1")
 				.Level(14)
@@ -347,6 +379,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Hull Repairer I
 			_builder.Create(RecipeType.HullRepairer1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hull_rep_1")
 				.Level(13)
@@ -357,6 +390,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Ion Cannon I
 			_builder.Create(RecipeType.IonCannon1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("ion_cann_1")
 				.Level(12)
@@ -367,6 +401,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Mining Laser I
 			_builder.Create(RecipeType.MiningLaser1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("min_laser_1")
 				.Level(11)
@@ -377,6 +412,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Missile Launcher I
 			_builder.Create(RecipeType.MissileLauncher1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("msl_launch_1")
 				.Level(14)
@@ -387,6 +423,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Shield Booster I
 			_builder.Create(RecipeType.ShieldBooster1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("shld_boost_1")
 				.Level(13)
@@ -397,6 +434,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Shield Repairer I
 			_builder.Create(RecipeType.ShieldRepairer1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("shld_rep_1")
 				.Level(18)
@@ -407,6 +445,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Targeting System I
 			_builder.Create(RecipeType.TargetingSystem1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("tgt_sys_1")
 				.Level(19)
@@ -417,6 +456,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Hypermatter Injector I
 			_builder.Create(RecipeType.FuelInjector1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("cap_inject2")
 				.Level(19)
@@ -427,6 +467,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Mirror Plating I
 			_builder.Create(RecipeType.ThermalArmor1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("las_armor_2")
 				.Level(15)
@@ -437,6 +478,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Supplemental Ion Shielding I
 			_builder.Create(RecipeType.IonArmor1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("ion_armor_2")
 				.Level(15)
@@ -447,6 +489,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Reactive Armor I
 			_builder.Create(RecipeType.ExplosiveArmor1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("exp_armor_2")
 				.Level(15)
@@ -457,6 +500,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Durasteel Plating I
 			_builder.Create(RecipeType.HeavyArmor1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hvy_armor_2")
 				.Level(15)
@@ -467,6 +511,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Fighter Config I
             _builder.Create(RecipeType.FighterConfig1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_fig2")
                 .Level(15)
@@ -477,6 +522,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Bomber Config I
             _builder.Create(RecipeType.BomberConfig1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_bmb2")
                 .Level(15)
@@ -487,6 +533,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Interceptor Config I
             _builder.Create(RecipeType.InterceptorConfig1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_int2")
                 .Level(15)
@@ -497,6 +544,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Logistics Config I
             _builder.Create(RecipeType.LogisticsConfig1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_ind2")
                 .Level(15)
@@ -511,6 +559,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Capacitor Booster II
 			_builder.Create(RecipeType.CapacitorBooster2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: true)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("cap_boost_2")
 				.Level(25)
@@ -521,6 +570,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Combat Laser II
 			_builder.Create(RecipeType.CombatLaser2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("com_laser_2")
 				.Level(22)
@@ -531,6 +581,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Beam Cannon II
             _builder.Create(RecipeType.BeamCannon2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("beamcannon3")
                 .Level(22)
@@ -541,6 +592,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             //  EM Amplifier II
             _builder.Create(RecipeType.EMAmplifier2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("em_amp_2")
 				.Level(27)
@@ -551,6 +603,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Thermal Amplifier II
 			_builder.Create(RecipeType.ThermalAmplifier2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("therm_amp_2")
 				.Level(26)
@@ -561,6 +614,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Explosive Amplifier II
 			_builder.Create(RecipeType.ExplosiveAmplifier2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("exp_amp_2")
 				.Level(26)
@@ -571,6 +625,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Evasion Booster II
 			_builder.Create(RecipeType.EvasionBooster2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("eva_boost_2")
 				.Level(28)
@@ -581,6 +636,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Hull Booster II
 			_builder.Create(RecipeType.HullBooster2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hull_boost_2")
 				.Level(24)
@@ -591,6 +647,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Hull Repairer II
 			_builder.Create(RecipeType.HullRepairer2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hull_rep_2")
 				.Level(23)
@@ -601,6 +658,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Ion Cannon II
 			_builder.Create(RecipeType.IonCannon2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("ion_cann_2")
 				.Level(22)
@@ -611,6 +669,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Mining Laser II
 			_builder.Create(RecipeType.MiningLaser2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("min_laser_2")
 				.Level(21)
@@ -621,6 +680,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Missile Launcher II
 			_builder.Create(RecipeType.MissileLauncher2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("msl_launch_2")
 				.Level(24)
@@ -631,6 +691,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Shield Booster II
 			_builder.Create(RecipeType.ShieldBooster2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("shld_boost_2")
 				.Level(23)
@@ -641,6 +702,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Shield Repairer II
 			_builder.Create(RecipeType.ShieldRepairer2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("shld_rep_2")
 				.Level(28)
@@ -651,6 +713,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Targeting System II
 			_builder.Create(RecipeType.TargetingSystem2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("tgt_sys_2")
 				.Level(29)
@@ -661,6 +724,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Hypermatter Injector II
 			_builder.Create(RecipeType.FuelInjector2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("cap_inject3")
 				.Level(29)
@@ -671,6 +735,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Mirrored Plating II
 			_builder.Create(RecipeType.ThermalArmor2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("las_armor_3")
 				.Level(25)
@@ -681,6 +746,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Supplemental Ion Shielding II
 			_builder.Create(RecipeType.IonArmor2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("ion_armor_3")
 				.Level(25)
@@ -691,6 +757,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Reactive Armor II
 			_builder.Create(RecipeType.ExplosiveArmor2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("exp_armor_3")
 				.Level(25)
@@ -701,6 +768,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Durasteel Plating II
 			_builder.Create(RecipeType.HeavyArmor2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hvy_armor_3")
 				.Level(25)
@@ -711,6 +779,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Fighter Config II
             _builder.Create(RecipeType.FighterConfig2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_fig3")
                 .Level(25)
@@ -721,6 +790,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Bomber Config II
             _builder.Create(RecipeType.BomberConfig2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_bmb3")
                 .Level(25)
@@ -731,6 +801,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Interceptor Config II
             _builder.Create(RecipeType.InterceptorConfig2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_int3")
                 .Level(25)
@@ -741,6 +812,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Logistics Config II
             _builder.Create(RecipeType.LogisticsConfig2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_ind3")
                 .Level(25)
@@ -755,6 +827,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Capacitor Booster III
 			_builder.Create(RecipeType.CapacitorBooster3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("cap_boost_3")
 				.Level(35)
@@ -765,6 +838,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Combat Laser III
 			_builder.Create(RecipeType.CombatLaser3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("com_laser_3")
 				.Level(32)
@@ -775,6 +849,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             //  Beam Cannon III
             _builder.Create(RecipeType.BeamCannon3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("beamcannon4")
                 .Level(32)
@@ -785,6 +860,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             //  EM Amplifier III
             _builder.Create(RecipeType.EMAmplifier3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("em_amp_3")
 				.Level(37)
@@ -795,6 +871,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Thermal Amplifier III
 			_builder.Create(RecipeType.ThermalAmplifier3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("therm_amp_3")
 				.Level(36)
@@ -805,6 +882,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Explosive Amplifier III
 			_builder.Create(RecipeType.ExplosiveAmplifier3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("exp_amp_3")
 				.Level(36)
@@ -815,6 +893,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Evasion Booster III
 			_builder.Create(RecipeType.EvasionBooster3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("eva_boost_3")
 				.Level(38)
@@ -825,6 +904,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Hull Booster III
 			_builder.Create(RecipeType.HullBooster3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hull_boost_3")
 				.Level(34)
@@ -835,6 +915,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Hull Repairer III
 			_builder.Create(RecipeType.HullRepairer3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hull_rep_3")
 				.Level(33)
@@ -845,6 +926,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Ion Cannon III
 			_builder.Create(RecipeType.IonCannon3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("ion_cann_3")
 				.Level(32)
@@ -855,6 +937,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Mining Laser III
 			_builder.Create(RecipeType.MiningLaser3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("min_laser_3")
 				.Level(31)
@@ -865,6 +948,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Missile Launcher III
 			_builder.Create(RecipeType.MissileLauncher3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("msl_launch_3")
 				.Level(34)
@@ -875,6 +959,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Shield Booster III
 			_builder.Create(RecipeType.ShieldBooster3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("shld_boost_3")
 				.Level(33)
@@ -885,6 +970,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Shield Repairer III
 			_builder.Create(RecipeType.ShieldRepairer3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("shld_rep_3")
 				.Level(38)
@@ -895,6 +981,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Targeting System III
 			_builder.Create(RecipeType.TargetingSystem3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("tgt_sys_3")
 				.Level(39)
@@ -905,6 +992,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Hypermatter Injector III
 			_builder.Create(RecipeType.FuelInjector3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("cap_inject4")
 				.Level(39)
@@ -915,6 +1003,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Mirrored Plating III
 			_builder.Create(RecipeType.ThermalArmor3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("las_armor_4")
 				.Level(35)
@@ -925,6 +1014,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Supplemental Ion Shielding III
 			_builder.Create(RecipeType.IonArmor3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("ion_armor_4")
 				.Level(35)
@@ -935,6 +1025,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Reactive Armor III
 			_builder.Create(RecipeType.ExplosiveArmor3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("exp_armor_4")
 				.Level(35)
@@ -945,6 +1036,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Durasteel Plating III
 			_builder.Create(RecipeType.HeavyArmor3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hvy_armor_4")
 				.Level(35)
@@ -955,6 +1047,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Fighter Config III
             _builder.Create(RecipeType.FighterConfig3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_fig4")
                 .Level(35)
@@ -965,6 +1058,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Bomber Config III
             _builder.Create(RecipeType.BomberConfig3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_bmb4")
                 .Level(35)
@@ -975,6 +1069,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Interceptor Config III
             _builder.Create(RecipeType.InterceptorConfig3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_int4")
                 .Level(35)
@@ -985,6 +1080,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Logistics Config III
             _builder.Create(RecipeType.LogisticsConfig3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_ind4")
                 .Level(35)
@@ -999,6 +1095,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Capacitor Booster IV
 			_builder.Create(RecipeType.CapacitorBooster4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("cap_boost_4")
 				.Level(45)
@@ -1009,6 +1106,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Combat Laser IV
 			_builder.Create(RecipeType.CombatLaser4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("com_laser_4")
 				.Level(42)
@@ -1019,6 +1117,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             //  Beam Cannon IV
             _builder.Create(RecipeType.BeamCannon4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("beamcannon5")
                 .Level(42)
@@ -1029,6 +1128,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             //  EM Amplifier IV
             _builder.Create(RecipeType.EMAmplifier4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("em_amp_4")
 				.Level(47)
@@ -1039,6 +1139,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Thermal Amplifier IV
 			_builder.Create(RecipeType.ThermalAmplifier4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("therm_amp_4")
 				.Level(46)
@@ -1049,6 +1150,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Explosive Amplifier IV
 			_builder.Create(RecipeType.ExplosiveAmplifier4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("exp_amp_4")
 				.Level(46)
@@ -1059,6 +1161,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Evasion Booster IV
 			_builder.Create(RecipeType.EvasionBooster4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("eva_boost_4")
 				.Level(48)
@@ -1069,6 +1172,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Hull Booster IV
 			_builder.Create(RecipeType.HullBooster4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hull_boost_4")
 				.Level(44)
@@ -1079,6 +1183,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Hull Repairer IV
 			_builder.Create(RecipeType.HullRepairer4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hull_rep_4")
 				.Level(43)
@@ -1089,6 +1194,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Ion Cannon IV
 			_builder.Create(RecipeType.IonCannon4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("ion_cann_4")
 				.Level(42)
@@ -1099,6 +1205,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Mining Laser IV
 			_builder.Create(RecipeType.MiningLaser4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("min_laser_4")
 				.Level(41)
@@ -1109,6 +1216,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Missile Launcher IV
 			_builder.Create(RecipeType.MissileLauncher4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("msl_launch_4")
 				.Level(44)
@@ -1119,6 +1227,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             //  Proton Bomb Launcher
             _builder.Create(RecipeType.ProtonBombLauncher, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("protbomblnch")
                 .Level(50)
@@ -1129,6 +1238,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             //  Shield Booster IV
             _builder.Create(RecipeType.ShieldBooster4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("shld_boost_4")
 				.Level(43)
@@ -1139,6 +1249,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Shield Repairer IV
 			_builder.Create(RecipeType.ShieldRepairer4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("shld_rep_4")
 				.Level(48)
@@ -1149,6 +1260,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			//  Targeting System IV
 			_builder.Create(RecipeType.TargetingSystem4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("tgt_sys_4")
 				.Level(49)
@@ -1159,6 +1271,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Hypermatter Injector IV
 			_builder.Create(RecipeType.FuelInjector4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("cap_inject5")
 				.Level(49)
@@ -1169,6 +1282,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Mirrored Plating IV
 			_builder.Create(RecipeType.ThermalArmor4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("las_armor_5")
 				.Level(45)
@@ -1179,6 +1293,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Supplemental Ion Shielding IV
 			_builder.Create(RecipeType.IonArmor4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("ion_armor_5")
 				.Level(45)
@@ -1189,6 +1304,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Reactive Armor IV
 			_builder.Create(RecipeType.ExplosiveArmor4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("exp_armor_5")
 				.Level(45)
@@ -1199,6 +1315,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Durasteel Plating IV
 			_builder.Create(RecipeType.HeavyArmor4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hvy_armor_5")
 				.Level(45)
@@ -1209,6 +1326,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Fighter Config IV
             _builder.Create(RecipeType.FighterConfig4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_fig5")
                 .Level(45)
@@ -1219,6 +1337,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Bomber Config IV
             _builder.Create(RecipeType.BomberConfig4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_bmb5")
                 .Level(45)
@@ -1229,6 +1348,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Interceptor Config IV
             _builder.Create(RecipeType.InterceptorConfig4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_int5")
                 .Level(45)
@@ -1239,6 +1359,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Logistics Config IV
             _builder.Create(RecipeType.LogisticsConfig4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_ind5")
                 .Level(45)

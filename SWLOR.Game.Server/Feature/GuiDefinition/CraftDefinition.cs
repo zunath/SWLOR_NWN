@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             var window = _builder.CreateWindow(GuiWindowType.Craft)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 900f, 600f)
+                .SetInitialGeometry(0, 0, 900f, 700f)
                 .SetTitle("Craft Item")
                 .BindIsClosable(model => model.IsClosable)
                 .BindOnClosed(model => model.OnWindowClosed());
@@ -250,121 +250,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(row =>
                     {
-                        row.AddLabel()
-                            .SetText("Synthesis Abilities:")
-                            .SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                        row.AddGroup(group =>
+                        {
+                            group.SetId(CraftViewModel.CraftActionsElement).SetHeight(145f).SetMargin(0f);
+                            group.SetShowBorder(false);
+                        });
                     });
 
-                    col.AddRow(row =>
-                    {
-                        row.AddButton()
-                            .SetHeight(30f)
-                            .BindText(model => model.BasicSynthesisText)
-                            .BindOnClicked(model => model.OnClickBasicSynthesis())
-                            .BindTooltip(model => model.BasicSynthesisTooltip)
-                            .BindIsEnabled(model => model.IsBasicSynthesisEnabled);
-
-                        row.AddButton()
-                            .SetHeight(30f)
-                            .BindText(model => model.RapidSynthesisText)
-                            .BindOnClicked(model => model.OnClickRapidSynthesis())
-                            .BindTooltip(model => model.RapidSynthesisTooltip)
-                            .BindIsEnabled(model => model.IsRapidSynthesisEnabled);
-
-                        row.AddButton()
-                            .SetHeight(30f)
-                            .BindText(model => model.CarefulSynthesisText)
-                            .BindOnClicked(model => model.OnClickCarefulSynthesis())
-                            .BindTooltip(model => model.CarefulSynthesisTooltip)
-                            .BindIsEnabled(model => model.IsCarefulSynthesisEnabled);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Touch Abilities:")
-                            .SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddButton()
-                            .SetHeight(30f)
-                            .BindText(model => model.BasicTouchText)
-                            .BindOnClicked(model => model.OnClickBasicTouch())
-                            .BindTooltip(model => model.BasicTouchTooltip)
-                            .BindIsEnabled(model => model.IsBasicTouchEnabled);
-
-                        row.AddButton()
-                            .SetHeight(30f)
-                            .BindText(model => model.StandardTouchText)
-                            .BindOnClicked(model => model.OnClickStandardTouch())
-                            .BindTooltip(model => model.StandardTouchTooltip)
-                            .BindIsEnabled(model => model.IsStandardTouchEnabled);
-
-                        row.AddButton()
-                            .SetHeight(30f)
-                            .BindText(model => model.PreciseTouchText)
-                            .BindOnClicked(model => model.OnClickPreciseTouch())
-                            .BindTooltip(model => model.PreciseTouchTooltip)
-                            .BindIsEnabled(model => model.IsPreciseTouchEnabled);
-                    });
-
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Abilities:")
-                            .SetHeight(20f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddButton()
-                            .SetHeight(30f)
-                            .BindText(model => model.MastersMendText)
-                            .BindOnClicked(model => model.OnClickMastersMend())
-                            .BindTooltip(model => model.MastersMendTooltip)
-                            .BindIsEnabled(model => model.IsMastersMendEnabled);
-
-                        row.AddButton()
-                            .SetHeight(30f)
-                            .BindText(model => model.SteadyHandText)
-                            .BindOnClicked(model => model.OnClickSteadyHand())
-                            .BindTooltip(model => model.SteadyHandTooltip)
-                            .BindIsEnabled(model => model.IsSteadyHandEnabled);
-
-                        row.AddButton()
-                            .SetHeight(30f)
-                            .BindText(model => model.MuscleMemoryText)
-                            .BindOnClicked(model => model.OnClickMuscleMemory())
-                            .BindTooltip(model => model.MuscleMemoryTooltip)
-                            .BindIsEnabled(model => model.IsMuscleMemoryEnabled);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddButton()
-                            .SetHeight(30f)
-                            .BindText(model => model.VenerationText)
-                            .BindOnClicked(model => model.OnClickVeneration())
-                            .BindTooltip(model => model.VenerationTooltip)
-                            .BindIsEnabled(model => model.IsVenerationEnabled);
-
-                        row.AddButton()
-                            .SetHeight(30f)
-                            .BindText(model => model.WasteNotText)
-                            .BindOnClicked(model => model.OnClickWasteNot())
-                            .BindTooltip(model => model.WasteNotTooltip)
-                            .BindIsEnabled(model => model.IsWasteNotEnabled);
-                    });
-
+                    col.AddRow(row => row.AddLabel()
+                        .BindText(model => model.ConditionSummary)
+                        .BindTooltip(model => model.ConditionSummary)
+                        .SetHeight(25f));
+                    col.AddRow(row => row.AddLabel()
+                        .BindText(model => model.ProfileSummary)
+                        .BindTooltip(model => model.ProfileSummary)
+                        .SetHeight(25f));
+                    col.AddRow(row => row.AddButton().SetText("Crafting help / history")
+                        .BindOnClicked(model => model.OnToggleCraftHelp()).SetHeight(25f));
+                    col.AddRow(row => row.AddLabel().BindText(model => model.CraftHelp)
+                        .BindTooltip(model => model.CraftHelp).BindIsVisible(model => model.IsHelpVisible).SetHeight(25f));
                     col.AddRow(row => row.AddLabel()
                         .BindText(model => model.BuffSummary)
                         .BindTooltip(model => model.BuffSummary)
@@ -378,7 +282,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindTooltip(model => model.ActionHistory)
                         .SetHorizontalAlign(NuiHorizontalAlign.Left)))
                         .BindRowCount(model => model.ActionHistory)
-                        .SetHeight(110f));
+                        .BindIsVisible(model => model.IsHelpVisible)
+                        .SetHeight(100f));
                 });
             });
             return _builder.Build();

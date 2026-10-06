@@ -5,6 +5,20 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class CraftingLifecycle
     {
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void OnPlayerEnter()
+        {
+            var player = GetEnteringObject();
+            if (GetIsPC(player) && !GetIsDM(player)) DelayCommand(1f, () => CraftViewModel.RecoverForPlayer(player));
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleRespawn)]
+        public static void OnPlayerRespawn()
+        {
+            var player = GetLastRespawnButtonPresser();
+            DelayCommand(1f, () => CraftViewModel.RecoverForPlayer(player));
+        }
+
         [NWNEventHandler(ScriptName.OnModuleExit)]
         [NWNEventHandler(ScriptName.OnAreaExit)]
         public static void OnPlayerExit()

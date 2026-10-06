@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
         private void Add(RecipeType type, string resref, int level, string electronics, string polymer)
         {
             _builder.Create(type, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .RequirementUnlocked()
                 .Category(RecipeCategoryType.Electronics)
                 .Resref(resref)

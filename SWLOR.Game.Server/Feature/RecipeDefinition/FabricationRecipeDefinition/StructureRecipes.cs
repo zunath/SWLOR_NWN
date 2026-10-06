@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
         private void StructureComponents()
         {
             _builder.Create(RecipeType.PowerSupplyUnit, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("pow_supp_unit")
                 .Level(21)
@@ -27,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("elec_good", 4);
 
             _builder.Create(RecipeType.ConstructionParts, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("const_parts")
                 .Level(23)
@@ -36,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("elec_good", 3);
 
             _builder.Create(RecipeType.ReinforcedConstructionParts, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("r_const_parts")
                 .Level(31)
@@ -45,6 +48,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("elec_imperfect", 3);
 
             _builder.Create(RecipeType.ReinforcedPowerSupplyUnit, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("r_pow_supp_unit")
                 .Level(32)
@@ -58,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
         {
             // City Hall
             _builder.Create(RecipeType.CityHallStyle1, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("structure_5000")
                 .Level(25)
@@ -67,6 +72,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Small House - Style 1
             _builder.Create(RecipeType.SmallHouseStyle1, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("structure_5005")
                 .Level(26)
@@ -76,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Small House - Style 2
             _builder.Create(RecipeType.SmallHouseStyle2, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("structure_5006")
                 .Level(27)
@@ -85,6 +92,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Small House - Style 3
             _builder.Create(RecipeType.SmallHouseStyle3, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("structure_5007")
                 .Level(29)
@@ -94,6 +102,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Small House - Style 4
             _builder.Create(RecipeType.SmallHouseStyle4, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("structure_5008")
                 .Level(30)
@@ -103,6 +112,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Medium House - Style 1
             _builder.Create(RecipeType.MediumHouseStyle1, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("structure_5009")
                 .Level(33)
@@ -112,6 +122,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Medium House - Style 2
             _builder.Create(RecipeType.MediumHouseStyle2, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("structure_5010")
                 .Level(34)
@@ -121,6 +132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Medium House - Style 3
             _builder.Create(RecipeType.MediumHouseStyle3, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("structure_5011")
                 .Level(35)
@@ -130,6 +142,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Medium House - Style 4
             _builder.Create(RecipeType.MediumHouseStyle4, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("structure_5012")
                 .Level(36)
@@ -139,6 +152,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Cantina - Style 1
             _builder.Create(RecipeType.CantinaStyle1, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("structure_5004")
                 .Level(40)
@@ -148,6 +162,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bank - Style 1
             _builder.Create(RecipeType.BankStyle1, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("structure_5001")
                 .Level(41)
@@ -157,6 +172,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Medical Center - Style 1
             _builder.Create(RecipeType.MedicalCenterStyle1, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("structure_5002")
                 .Level(43)
@@ -166,6 +182,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Large House - Style 1
             _builder.Create(RecipeType.LargeHouseStyle1, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("structure_5013")
                 .Level(45)
@@ -175,6 +192,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Large House - Style 2
             _builder.Create(RecipeType.LargeHouseStyle2, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("structure_5014")
                 .Level(46)
@@ -184,6 +202,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Large House - Style 3
             _builder.Create(RecipeType.LargeHouseStyle3, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("structure_5015")
                 .Level(47)
@@ -193,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Large House - Style 4
             _builder.Create(RecipeType.LargeHouseStyle4, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("structure_5016")
                 .Level(48)
@@ -202,6 +222,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Starport - Style 1
             _builder.Create(RecipeType.StarportStyle1, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("structure_5003")
                 .Level(50)
@@ -211,6 +232,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Lab - Style 1
             _builder.Create(RecipeType.LabStyle1, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Structure)
                 .Resref("structure_5017")
                 .Level(50)

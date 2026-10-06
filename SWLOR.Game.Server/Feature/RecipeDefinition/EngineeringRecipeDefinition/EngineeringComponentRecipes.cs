@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Control Unit Alpha
             _builder.Create(RecipeType.ControlUnitAlpha, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("c_unit1")
                 .Level(5)
@@ -34,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Logic Unit Alpha
             _builder.Create(RecipeType.LogicUnitAlpha, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("l_unit1")
                 .Level(5)
@@ -45,6 +47,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Caching Unit Alpha
             _builder.Create(RecipeType.CachingUnitAlpha, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("ca_unit1")
                 .Level(5)
@@ -56,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Brain Alpha
             _builder.Create(RecipeType.DroidBrainAlpha, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("d_brain1")
                 .Level(8)
@@ -67,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Sensor Alpha
             _builder.Create(RecipeType.DroidSensorAlpha, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("d_sensor1")
                 .Level(5)
@@ -78,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Manipulator Arm Alpha
             _builder.Create(RecipeType.ManipulatorArmAlpha, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("manip_arm1")
                 .Level(5)
@@ -89,6 +95,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Discharge Unit Alpha
             _builder.Create(RecipeType.DischargeUnitAlpha, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("discharge_unit1")
                 .Level(5)
@@ -100,6 +107,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Motive System Alpha
             _builder.Create(RecipeType.DroidMotiveSystemAlpha, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("dmotive_sys1")
                 .Level(5)
@@ -111,6 +119,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Diagnostic Circuit Alpha
             _builder.Create(RecipeType.DiagnosticCircuitAlpha, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("diag_circuit1")
                 .Level(5)
@@ -122,6 +131,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Power Supply Alpha
             _builder.Create(RecipeType.DroidPowerSupplyAlpha, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("dp_supply1")
                 .Level(5)
@@ -133,6 +143,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Chassis Alpha
             _builder.Create(RecipeType.DroidChassisAlpha, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("d_chassis1")
                 .Level(5)
@@ -148,6 +159,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Control Unit Beta
             _builder.Create(RecipeType.ControlUnitBeta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("c_unit2")
                 .Level(15)
@@ -159,6 +171,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Logic Unit Beta
             _builder.Create(RecipeType.LogicUnitBeta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("l_unit2")
                 .Level(15)
@@ -170,6 +183,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Caching Unit Beta
             _builder.Create(RecipeType.CachingUnitBeta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("ca_unit2")
                 .Level(15)
@@ -181,6 +195,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Brain Beta
             _builder.Create(RecipeType.DroidBrainBeta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("d_brain2")
                 .Level(18)
@@ -192,6 +207,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Sensor Beta
             _builder.Create(RecipeType.DroidSensorBeta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("d_sensor2")
                 .Level(15)
@@ -203,6 +219,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Manipulator Arm Beta
             _builder.Create(RecipeType.ManipulatorArmBeta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("manip_arm2")
                 .Level(15)
@@ -214,6 +231,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Discharge Unit Beta
             _builder.Create(RecipeType.DischargeUnitBeta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("discharge_unit2")
                 .Level(15)
@@ -225,6 +243,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Motive System Beta
             _builder.Create(RecipeType.DroidMotiveSystemBeta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("dmotive_sys2")
                 .Level(15)
@@ -236,6 +255,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Diagnostic Circuit Beta
             _builder.Create(RecipeType.DiagnosticCircuitBeta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("diag_circuit2")
                 .Level(15)
@@ -247,6 +267,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Power Supply Beta
             _builder.Create(RecipeType.DroidPowerSupplyBeta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("dp_supply2")
                 .Level(15)
@@ -258,6 +279,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Chassis Beta
             _builder.Create(RecipeType.DroidChassisBeta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("d_chassis2")
                 .Level(15)
@@ -272,6 +294,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Control Unit Gamma
             _builder.Create(RecipeType.ControlUnitGamma, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("c_unit3")
                 .Level(25)
@@ -283,6 +306,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Logic Unit Gamma
             _builder.Create(RecipeType.LogicUnitGamma, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("l_unit3")
                 .Level(25)
@@ -294,6 +318,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Caching Unit Gamma
             _builder.Create(RecipeType.CachingUnitGamma, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("ca_unit3")
                 .Level(25)
@@ -305,6 +330,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Brain Gamma
             _builder.Create(RecipeType.DroidBrainGamma, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("d_brain3")
                 .Level(28)
@@ -316,6 +342,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Sensor Gamma
             _builder.Create(RecipeType.DroidSensorGamma, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("d_sensor3")
                 .Level(25)
@@ -327,6 +354,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Manipulator Arm Gamma
             _builder.Create(RecipeType.ManipulatorArmGamma, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("manip_arm3")
                 .Level(25)
@@ -338,6 +366,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Discharge Unit Gamma
             _builder.Create(RecipeType.DischargeUnitGamma, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("discharge_unit3")
                 .Level(25)
@@ -349,6 +378,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Motive System Gamma
             _builder.Create(RecipeType.DroidMotiveSystemGamma, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("dmotive_sys3")
                 .Level(25)
@@ -360,6 +390,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Diagnostic Circuit Gamma
             _builder.Create(RecipeType.DiagnosticCircuitGamma, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("diag_circuit3")
                 .Level(25)
@@ -371,6 +402,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Power Supply Gamma
             _builder.Create(RecipeType.DroidPowerSupplyGamma, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("dp_supply3")
                 .Level(25)
@@ -382,6 +414,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Chassis Gamma
             _builder.Create(RecipeType.DroidChassisGamma, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("d_chassis3")
                 .Level(25)
@@ -396,6 +429,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Control Unit Delta
             _builder.Create(RecipeType.ControlUnitDelta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("c_unit4")
                 .Level(35)
@@ -407,6 +441,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Logic Unit Delta
             _builder.Create(RecipeType.LogicUnitDelta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("l_unit4")
                 .Level(35)
@@ -418,6 +453,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Caching Unit Delta
             _builder.Create(RecipeType.CachingUnitDelta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("ca_unit4")
                 .Level(35)
@@ -429,6 +465,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Brain Delta
             _builder.Create(RecipeType.DroidBrainDelta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("d_brain4")
                 .Level(38)
@@ -440,6 +477,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Sensor Delta
             _builder.Create(RecipeType.DroidSensorDelta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("d_sensor4")
                 .Level(35)
@@ -451,6 +489,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Manipulator Arm Delta
             _builder.Create(RecipeType.ManipulatorArmDelta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("manip_arm4")
                 .Level(35)
@@ -462,6 +501,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Discharge Unit Delta
             _builder.Create(RecipeType.DischargeUnitDelta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("discharge_unit4")
                 .Level(35)
@@ -473,6 +513,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Motive System Delta
             _builder.Create(RecipeType.DroidMotiveSystemDelta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("dmotive_sys4")
                 .Level(35)
@@ -484,6 +525,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Diagnostic Circuit Delta
             _builder.Create(RecipeType.DiagnosticCircuitDelta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("diag_circuit4")
                 .Level(35)
@@ -495,6 +537,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Power Supply Delta
             _builder.Create(RecipeType.DroidPowerSupplyDelta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("dp_supply4")
                 .Level(35)
@@ -506,6 +549,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Chassis Delta
             _builder.Create(RecipeType.DroidChassisDelta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("d_chassis4")
                 .Level(35)
@@ -520,6 +564,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Control Unit Epsilon
             _builder.Create(RecipeType.ControlUnitEpsilon, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("c_unit5")
                 .Level(45)
@@ -531,6 +576,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Logic Unit Epsilon
             _builder.Create(RecipeType.LogicUnitEpsilon, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("l_unit5")
                 .Level(45)
@@ -542,6 +588,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Caching Unit Epsilon
             _builder.Create(RecipeType.CachingUnitEpsilon, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("ca_unit5")
                 .Level(45)
@@ -553,6 +600,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Brain Epsilon
             _builder.Create(RecipeType.DroidBrainEpsilon, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("d_brain5")
                 .Level(48)
@@ -564,6 +612,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Sensor Epsilon
             _builder.Create(RecipeType.DroidSensorEpsilon, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("d_sensor5")
                 .Level(45)
@@ -575,6 +624,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Manipulator Arm Epsilon
             _builder.Create(RecipeType.ManipulatorArmEpsilon, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("manip_arm5")
                 .Level(45)
@@ -586,6 +636,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Discharge Unit Epsilon
             _builder.Create(RecipeType.DischargeUnitEpsilon, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("discharge_unit5")
                 .Level(45)
@@ -597,6 +648,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Motive System Epsilon
             _builder.Create(RecipeType.DroidMotiveSystemEpsilon, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("dmotive_sys5")
                 .Level(45)
@@ -608,6 +660,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Diagnostic Circuit Epsilon
             _builder.Create(RecipeType.DiagnosticCircuitEpsilon, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("diag_circuit5")
                 .Level(45)
@@ -619,6 +672,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Power Supply Epsilon
             _builder.Create(RecipeType.DroidPowerSupplyEpsilon, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("dp_supply5")
                 .Level(45)
@@ -630,6 +684,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Chassis Epsilon
             _builder.Create(RecipeType.DroidChassisEpsilon, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidComponent)
                 .Resref("d_chassis5")
                 .Level(45)

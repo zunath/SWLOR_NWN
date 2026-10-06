@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
         {
             // Fieldline Field Cot
             _builder.Create(RecipeType.FieldlineFieldCot, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0411")
                 .Level(27)
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Fieldline Signal Lamp
             _builder.Create(RecipeType.FieldlineSignalLamp, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0412")
                 .Level(28)
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Fieldline Trophy Stand
             _builder.Create(RecipeType.FieldlineTrophyStand, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0413")
                 .Level(31)
@@ -55,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Fieldline Low Table
             _builder.Create(RecipeType.FieldlineLowTable, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0414")
                 .Level(29)
@@ -67,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Fieldline Wall Banner
             _builder.Create(RecipeType.FieldlineWallBanner, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0415")
                 .Level(30)
@@ -79,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Fieldline Supply Locker
             _builder.Create(RecipeType.FieldlineSupplyLocker, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0416")
                 .Level(32)
@@ -91,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Fieldline Floor Mat
             _builder.Create(RecipeType.FieldlineFloorMat, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Flooring)
                 .Resref("structure_0417")
                 .Level(27)
@@ -103,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Fieldline Data Console
             _builder.Create(RecipeType.FieldlineDataConsole, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0418")
                 .Level(32)
@@ -115,6 +123,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Fieldline Display Plinth
             _builder.Create(RecipeType.FieldlineDisplayPlinth, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0419")
                 .Level(31)
@@ -127,6 +136,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Fieldline Work Stool
             _builder.Create(RecipeType.FieldlineWorkStool, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0420")
                 .Level(28)

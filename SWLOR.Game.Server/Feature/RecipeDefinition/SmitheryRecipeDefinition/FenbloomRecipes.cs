@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Fenbloom Harness
             _builder.Create(RecipeType.FenbloomHarness, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Tunic)
                 .Resref("mv_harness")
                 .Level(25)
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Fenbloom Wraps
             _builder.Create(RecipeType.FenbloomWraps, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("mv_wraps")
                 .Level(24)
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Fenbloom Treads
             _builder.Create(RecipeType.FenbloomTreads, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Boots)
                 .Resref("mv_treads")
                 .Level(23)
@@ -55,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Fenbloom Sash
             _builder.Create(RecipeType.FenbloomSash, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("mv_sash")
                 .Level(24)
@@ -67,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Fenbloom Mantle
             _builder.Create(RecipeType.FenbloomMantle, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("mv_mantle")
                 .Level(27)
@@ -79,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Fenbloom Gorget
             _builder.Create(RecipeType.FenbloomGorget, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("mv_gorget")
                 .Level(25)
@@ -91,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Fenbloom Band
             _builder.Create(RecipeType.FenbloomBand, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("mv_band")
                 .Level(26)
@@ -103,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Fenbloom Guard
             _builder.Create(RecipeType.FenbloomGuard, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("mv_guard")
                 .Level(28)
@@ -115,6 +123,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Fenbloom Visor
             _builder.Create(RecipeType.FenbloomVisor, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("mv_visor")
                 .Level(27)
@@ -127,6 +136,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Fenbloom Charm
             _builder.Create(RecipeType.FenbloomCharm, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("mv_charm")
                 .Level(26)

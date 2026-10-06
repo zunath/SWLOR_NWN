@@ -5,6 +5,9 @@ namespace SWLOR.Game.Server.Service.CraftService
 {
     public class RecipeDetail
     {
+        public bool IsCraftingPilot { get; set; }
+        public CraftProfile CraftingProfile { get; set; }
+        public CraftTechnique CraftingTechnique { get; set; }
         public int Quantity { get; set; }
         public string Resref { get; set; }
         public List<IRecipeRequirement> Requirements { get; set; }

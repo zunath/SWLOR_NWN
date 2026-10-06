@@ -660,11 +660,13 @@ namespace SWLOR.Game.Server.Service
                 var stats = new Dictionary<StatType, int>();
                 foreach (var bonus in group.PerkDetail.StatBonuses)
                 {
+                    if (bonus.CraftingSkill != SkillType.Invalid) continue;
                     stats.TryGetValue(bonus.Stat, out var current);
                     stats[bonus.Stat] = Stat.AggregateStatAdjustment(bonus.Stat, current, bonus.Calculate(creature));
                 }
                 foreach (var bonus in perkLevel.StatBonuses)
                 {
+                    if (bonus.CraftingSkill != SkillType.Invalid) continue;
                     stats.TryGetValue(bonus.Stat, out var current);
                     stats[bonus.Stat] = Stat.AggregateStatAdjustment(bonus.Stat, current, bonus.Calculate(creature));
                 }
@@ -692,6 +694,7 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var statBonus in statBonusGroup.PerkBonuses)
                 {
+                    if (statBonus.CraftingSkill != SkillType.Invalid) continue;
                     bonus = Stat.AggregateStatAdjustment(stat, bonus, statBonus.Calculate(creature));
                 }
 
@@ -700,11 +703,27 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var statBonus in levelBonuses)
                 {
+                    if (statBonus.CraftingSkill != SkillType.Invalid) continue;
                     bonus = Stat.AggregateStatAdjustment(stat, bonus, statBonus.Calculate(creature));
                 }
             }
 
             return bonus;
+        }
+
+        public static int GetCraftingStatBonus(uint creature, SkillType skill, StatType stat)
+        {
+            if (!_statBonusGroupsByStat.TryGetValue(stat, out var groups)) return 0;
+            var total = 0;
+            foreach (var group in groups)
+            {
+                var level = GetStatBonusPerkLevel(creature, group.PerkType);
+                if (level <= 0 || !group.PerkDetail.PerkLevels.TryGetValue(level, out var detail)) continue;
+                foreach (var bonus in group.PerkBonuses.Concat(detail.StatBonuses))
+                    if (bonus.Stat == stat && bonus.CraftingSkill == skill)
+                        total = Stat.AggregateStatAdjustment(stat, total, bonus.Calculate(creature));
+            }
+            return total;
         }
 
         public static int GetTargetedStatBonus(

@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
         {
             // Gloam Skewer
             _builder.Create(RecipeType.GloamSkewer, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("ss_skewer")
                 .Level(14)
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Savory Shell Braise
             _builder.Create(RecipeType.SavoryShellBraise, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("mb_braise")
                 .Level(24)
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Stonebarb Pot Pie
             _builder.Create(RecipeType.StonebarbPotPie, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("gs_potpie")
                 .Level(26)
@@ -55,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Emberclaw Roast
             _builder.Create(RecipeType.EmberclawRoast, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("rk_roast")
                 .Level(30)
@@ -67,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Prism Consomme
             _builder.Create(RecipeType.PrismConsomme, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("se_consomme")
                 .Level(21)
@@ -79,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Marshleaf Broth
             _builder.Create(RecipeType.MarshleafBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("rc_broth")
                 .Level(25)
@@ -91,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Bitter Fen Tea
             _builder.Create(RecipeType.BitterFenTea, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("mv_tea")
                 .Level(27)
@@ -103,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Resonant Broth
             _builder.Create(RecipeType.ResonantBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("ae_broth")
                 .Level(6)

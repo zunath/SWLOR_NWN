@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Battlemaster Ring
             _builder.Create(RecipeType.BattlemasterRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("bm_ring")
                 .Level(1)
@@ -37,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Spiritmaster Ring
             _builder.Create(RecipeType.SpiritmasterRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("sm_ring")
                 .Level(1)
@@ -47,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Combat Ring
             _builder.Create(RecipeType.CombatRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("com_ring")
                 .Level(1)
@@ -57,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Advent Ring
             _builder.Create(RecipeType.AdventRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("advent_ring")
                 .Level(10)
@@ -68,6 +72,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Amateur Ring
             _builder.Create(RecipeType.AmateurRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("engi_ring_1")
                 .Level(10)
@@ -79,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Cloth Ring
             _builder.Create(RecipeType.ClothRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("fabr_ring_1")
                 .Level(10)
@@ -90,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chef Ring
             _builder.Create(RecipeType.ChefRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("chef_ring_1")
                 .Level(10)
@@ -104,6 +111,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Titan Ring
             _builder.Create(RecipeType.TitanRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("tit_ring")
                 .Level(11)
@@ -114,6 +122,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vivid Ring
             _builder.Create(RecipeType.VividRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("viv_ring")
                 .Level(11)
@@ -124,6 +133,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Valor Ring
             _builder.Create(RecipeType.ValorRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("val_ring")
                 .Level(11)
@@ -134,6 +144,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Frontier Ring
             _builder.Create(RecipeType.FrontierRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("frontier_ring")
                 .Level(20)
@@ -145,6 +156,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Worker Ring
             _builder.Create(RecipeType.WorkerRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("engi_ring_2")
                 .Level(20)
@@ -156,6 +168,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Linen Ring
             _builder.Create(RecipeType.LinenRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("fabr_ring_2")
                 .Level(20)
@@ -167,6 +180,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Velveteen Ring
             _builder.Create(RecipeType.VelveteenRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("chef_ring_2")
                 .Level(20)
@@ -181,6 +195,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Quark Ring
             _builder.Create(RecipeType.QuarkRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("qk_ring")
                 .Level(21)
@@ -191,6 +206,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Reginal Ring
             _builder.Create(RecipeType.ReginalRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("reg_ring")
                 .Level(21)
@@ -201,6 +217,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Forza Ring
             _builder.Create(RecipeType.ForzaRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("for_ring")
                 .Level(21)
@@ -211,6 +228,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Majestic Ring
             _builder.Create(RecipeType.MajesticRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("majestic_ring")
                 .Level(30)
@@ -222,6 +240,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Mechanic Ring
             _builder.Create(RecipeType.MechanicRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("engi_ring_3")
                 .Level(30)
@@ -233,6 +252,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Designer Ring
             _builder.Create(RecipeType.DesignerRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("fabr_ring_3")
                 .Level(30)
@@ -244,6 +264,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Silk Ring
             _builder.Create(RecipeType.SilkRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("chef_ring_3")
                 .Level(30)
@@ -258,6 +279,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Argos Ring
             _builder.Create(RecipeType.ArgosRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("ar_ring")
                 .Level(31)
@@ -268,6 +290,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Grenada Ring
             _builder.Create(RecipeType.GrenadaRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("gr_ring")
                 .Level(31)
@@ -278,6 +301,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Survival Ring
             _builder.Create(RecipeType.SurvivalRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("sur_ring")
                 .Level(31)
@@ -288,6 +312,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Dream Ring
             _builder.Create(RecipeType.DreamRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("majestic_ring001")
                 .Level(40)
@@ -299,6 +324,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Devotion Ring
             _builder.Create(RecipeType.DevotionRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("engi_ring_4")
                 .Level(40)
@@ -310,6 +336,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Oasis Ring
             _builder.Create(RecipeType.OasisRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("fabr_ring_4")
                 .Level(40)
@@ -321,6 +348,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vintage Ring
             _builder.Create(RecipeType.VintageRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("chef_ring_4")
                 .Level(40)
@@ -335,6 +363,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Eclipse Ring
             _builder.Create(RecipeType.EclipseRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("ec_ring")
                 .Level(41)
@@ -345,6 +374,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Transcendent Ring
             _builder.Create(RecipeType.TranscendentRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("tran_ring")
                 .Level(41)
@@ -355,6 +385,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Supreme Ring
             _builder.Create(RecipeType.SupremeRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("sup_ring")
                 .Level(41)
@@ -365,6 +396,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Eternal Ring
             _builder.Create(RecipeType.EternalRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("eterenal_ring")
                 .Level(50)
@@ -376,6 +408,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Skysteel Ring
             _builder.Create(RecipeType.SkysteelRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("engi_ring_5")
                 .Level(50)
@@ -387,6 +420,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Rose Ring
             _builder.Create(RecipeType.RoseRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("fabr_ring_5")
                 .Level(50)
@@ -398,6 +432,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Moonflame Ring
             _builder.Create(RecipeType.MoonflameRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("chef_ring_5")
                 .Level(50)
@@ -409,6 +444,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chaos Ring
             _builder.Create(RecipeType.ChaosRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("ch_ring")
                 .Level(52)
@@ -427,6 +463,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Magus Ring
             _builder.Create(RecipeType.MagusRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("mag_ring")
                 .Level(52)
@@ -445,6 +482,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Immortal Ring
             _builder.Create(RecipeType.ImmortalRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("imm_ring")
                 .Level(52)
@@ -466,6 +504,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Warden Ring
             _builder.Create(RecipeType.WardenRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("fld_bul_ring")
                 .Level(6)
@@ -476,6 +515,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Mystic Ring
             _builder.Create(RecipeType.MysticRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("fld_chn_ring")
                 .Level(6)
@@ -486,6 +526,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vanguard Ring
             _builder.Create(RecipeType.VanguardRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("fld_skm_ring")
                 .Level(6)
@@ -499,6 +540,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Bastion Ring
             _builder.Create(RecipeType.BastionRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("vet_bul_ring")
                 .Level(16)
@@ -509,6 +551,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Oracle Ring
             _builder.Create(RecipeType.OracleRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("vet_chn_ring")
                 .Level(16)
@@ -519,6 +562,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Onslaught Ring
             _builder.Create(RecipeType.OnslaughtRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("vet_skm_ring")
                 .Level(16)
@@ -532,6 +576,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Sentinel Ring
             _builder.Create(RecipeType.SentinelRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("prm_bul_ring")
                 .Level(26)
@@ -542,6 +587,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Arcanist Ring
             _builder.Create(RecipeType.ArcanistRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("prm_chn_ring")
                 .Level(26)
@@ -552,6 +598,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Maverick Ring
             _builder.Create(RecipeType.MaverickRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("prm_skm_ring")
                 .Level(26)
@@ -565,6 +612,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Aegis Ring
             _builder.Create(RecipeType.AegisRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("asc_bul_ring")
                 .Level(36)
@@ -575,6 +623,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Luminary Ring
             _builder.Create(RecipeType.LuminaryRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("asc_chn_ring")
                 .Level(36)
@@ -585,6 +634,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Apex Ring
             _builder.Create(RecipeType.ApexRing, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("asc_skm_ring")
                 .Level(36)

@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Shatterhide Harness
             _builder.Create(RecipeType.ShatterhideHarness, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Tunic)
                 .Resref("sh_harness")
                 .Level(30)
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Shatterhide Wraps
             _builder.Create(RecipeType.ShatterhideWraps, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("sh_wraps")
                 .Level(29)
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Shatterhide Treads
             _builder.Create(RecipeType.ShatterhideTreads, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Boots)
                 .Resref("sh_treads")
                 .Level(28)
@@ -55,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Shatterhide Sash
             _builder.Create(RecipeType.ShatterhideSash, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("sh_sash")
                 .Level(29)
@@ -67,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Shatterhide Mantle
             _builder.Create(RecipeType.ShatterhideMantle, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("sh_mantle")
                 .Level(32)
@@ -79,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Shatterhide Gorget
             _builder.Create(RecipeType.ShatterhideGorget, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("sh_gorget")
                 .Level(30)
@@ -91,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Shatterhide Band
             _builder.Create(RecipeType.ShatterhideBand, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("sh_band")
                 .Level(31)
@@ -103,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Shatterhide Guard
             _builder.Create(RecipeType.ShatterhideGuard, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("sh_guard")
                 .Level(33)
@@ -115,6 +123,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Shatterhide Visor
             _builder.Create(RecipeType.ShatterhideVisor, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("sh_visor")
                 .Level(32)
@@ -127,6 +136,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Shatterhide Charm
             _builder.Create(RecipeType.ShatterhideCharm, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("sh_charm")
                 .Level(31)

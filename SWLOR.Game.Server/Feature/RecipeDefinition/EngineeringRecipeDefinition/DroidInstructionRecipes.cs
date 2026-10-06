@@ -347,6 +347,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             foreach (var recipe in recipes)
             {
                 _builder.Create(recipe.Type, SkillType.Engineering)
+                    .CraftingProfile(CraftProfile.Calibrated)
                     .Category(RecipeCategoryType.DroidInstruction)
                     .Resref(recipe.Resref)
                     .Level(level)

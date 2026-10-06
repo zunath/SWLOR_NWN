@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Shellward Harness
             _builder.Create(RecipeType.ShellwardHarness, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Tunic)
                 .Resref("mb_harness")
                 .Level(23)
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Shellward Wraps
             _builder.Create(RecipeType.ShellwardWraps, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("mb_wraps")
                 .Level(22)
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Shellward Treads
             _builder.Create(RecipeType.ShellwardTreads, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Boots)
                 .Resref("mb_treads")
                 .Level(21)
@@ -55,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Shellward Sash
             _builder.Create(RecipeType.ShellwardSash, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("mb_sash")
                 .Level(22)
@@ -67,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Shellward Mantle
             _builder.Create(RecipeType.ShellwardMantle, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("mb_mantle")
                 .Level(25)
@@ -79,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Shellward Gorget
             _builder.Create(RecipeType.ShellwardGorget, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("mb_gorget")
                 .Level(23)
@@ -91,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Shellward Band
             _builder.Create(RecipeType.ShellwardBand, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("mb_band")
                 .Level(24)
@@ -103,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Shellward Guard
             _builder.Create(RecipeType.ShellwardGuard, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("mb_guard")
                 .Level(26)
@@ -115,6 +123,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Shellward Visor
             _builder.Create(RecipeType.ShellwardVisor, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("mb_visor")
                 .Level(25)
@@ -127,6 +136,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Shellward Charm
             _builder.Create(RecipeType.ShellwardCharm, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("mb_charm")
                 .Level(24)

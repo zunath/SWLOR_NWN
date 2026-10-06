@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Battlemaster Bracer
             _builder.Create(RecipeType.BattlemasterBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("bm_bracer")
                 .Level(3)
@@ -37,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Spiritmaster Gloves
             _builder.Create(RecipeType.SpiritmasterGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("sm_gloves")
                 .Level(3)
@@ -47,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Combat Gloves
             _builder.Create(RecipeType.CombatGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("com_gloves")
                 .Level(3)
@@ -57,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Advent Bracer
             _builder.Create(RecipeType.AdventBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("advent_bracer")
                 .Level(10)
@@ -68,6 +72,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Amateur Bracer
             _builder.Create(RecipeType.AmateurBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("engi_bracer_1")
                 .Level(10)
@@ -79,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Cloth Bracer
             _builder.Create(RecipeType.ClothBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("fabr_bracer_1")
                 .Level(10)
@@ -90,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chef Bracer
             _builder.Create(RecipeType.ChefBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("chef_bracer_1")
                 .Level(10)
@@ -104,6 +111,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Titan Bracer
             _builder.Create(RecipeType.TitanBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("tit_bracer")
                 .Level(13)
@@ -114,6 +122,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vivid Gloves
             _builder.Create(RecipeType.VividGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("viv_gloves")
                 .Level(13)
@@ -124,6 +133,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Valor Gloves
             _builder.Create(RecipeType.ValorGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("val_gloves")
                 .Level(13)
@@ -134,6 +144,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Frontier Bracer
             _builder.Create(RecipeType.FrontierBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("frontier_bracer")
                 .Level(20)
@@ -145,6 +156,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Worker Bracer
             _builder.Create(RecipeType.WorkerBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("engi_bracer_2")
                 .Level(20)
@@ -156,6 +168,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Linen Bracer
             _builder.Create(RecipeType.LinenBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("fabr_bracer_2")
                 .Level(20)
@@ -167,6 +180,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Velveteen Bracer
             _builder.Create(RecipeType.VelveteenBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("chef_bracer_2")
                 .Level(20)
@@ -181,6 +195,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Quark Bracer
             _builder.Create(RecipeType.QuarkBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("qk_bracer")
                 .Level(23)
@@ -191,6 +206,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Reginal Gloves
             _builder.Create(RecipeType.ReginalGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("reg_gloves")
                 .Level(23)
@@ -201,6 +217,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Forza Gloves
             _builder.Create(RecipeType.ForzaGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("for_gloves")
                 .Level(23)
@@ -211,6 +228,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Majestic Bracer
             _builder.Create(RecipeType.MajesticBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("majestic_bracer")
                 .Level(30)
@@ -222,6 +240,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Mechanic Bracer
             _builder.Create(RecipeType.MechanicBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("engi_bracer_3")
                 .Level(30)
@@ -233,6 +252,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Designer Bracer
             _builder.Create(RecipeType.DesignerBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("fabr_bracer_3")
                 .Level(30)
@@ -244,6 +264,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Silk Bracer
             _builder.Create(RecipeType.SilkBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("chef_bracer_3")
                 .Level(30)
@@ -258,6 +279,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Argos Bracer
             _builder.Create(RecipeType.ArgosBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("ar_bracer")
                 .Level(33)
@@ -268,6 +290,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Grenada Gloves
             _builder.Create(RecipeType.GrenadaGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("gr_gloves")
                 .Level(33)
@@ -278,6 +301,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Survival Gloves
             _builder.Create(RecipeType.SurvivalGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("sur_gloves")
                 .Level(33)
@@ -288,6 +312,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Dream Bracer
             _builder.Create(RecipeType.DreamBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dream_bracer")
                 .Level(40)
@@ -299,6 +324,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Devotion Bracer
             _builder.Create(RecipeType.DevotionBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("engi_bracer_4")
                 .Level(40)
@@ -310,6 +336,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Oasis Bracer
             _builder.Create(RecipeType.OasisBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("fabr_bracer_4")
                 .Level(40)
@@ -321,6 +348,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vintage Bracer
             _builder.Create(RecipeType.VintageBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("chef_bracer_4")
                 .Level(40)
@@ -335,6 +363,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Eclipse Bracer
             _builder.Create(RecipeType.EclipseBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("ec_bracer")
                 .Level(43)
@@ -345,6 +374,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Transcendent Gloves
             _builder.Create(RecipeType.TranscendentGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("tran_gloves")
                 .Level(43)
@@ -355,6 +385,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Supreme Gloves
             _builder.Create(RecipeType.SupremeGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("sup_gloves")
                 .Level(43)
@@ -365,6 +396,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Eternal Bracer
             _builder.Create(RecipeType.EternalBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("eternal_bracer")
                 .Level(50)
@@ -376,6 +408,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Skysteel Bracer
             _builder.Create(RecipeType.SkysteelBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("engi_bracer_5")
                 .Level(50)
@@ -387,6 +420,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Rose Bracer
             _builder.Create(RecipeType.RoseBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("fabr_bracer_5")
                 .Level(50)
@@ -398,6 +432,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Moonflame Bracer
             _builder.Create(RecipeType.MoonflameBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("chef_bracer_5")
                 .Level(50)
@@ -409,6 +444,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chaos Bracer
             _builder.Create(RecipeType.ChaosBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("ch_bracer")
                 .Level(52)
@@ -427,6 +463,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Magus Gloves
             _builder.Create(RecipeType.MagusGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("mag_gloves")
                 .Level(52)
@@ -445,6 +482,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Immortal Gloves
             _builder.Create(RecipeType.ImmortalGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("imm_gloves")
                 .Level(52)
@@ -465,6 +503,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Warden Bracer
             _builder.Create(RecipeType.WardenBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("fld_bul_bracer")
                 .Level(8)
@@ -475,6 +514,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Mystic Gloves
             _builder.Create(RecipeType.MysticGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("fld_chn_gloves")
                 .Level(8)
@@ -485,6 +525,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vanguard Gloves
             _builder.Create(RecipeType.VanguardGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("fld_skm_gloves")
                 .Level(8)
@@ -498,6 +539,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Bastion Bracer
             _builder.Create(RecipeType.BastionBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("vet_bul_bracer")
                 .Level(18)
@@ -508,6 +550,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Oracle Gloves
             _builder.Create(RecipeType.OracleGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("vet_chn_gloves")
                 .Level(18)
@@ -518,6 +561,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Onslaught Gloves
             _builder.Create(RecipeType.OnslaughtGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("vet_skm_gloves")
                 .Level(18)
@@ -531,6 +575,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Sentinel Bracer
             _builder.Create(RecipeType.SentinelBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("prm_bul_bracer")
                 .Level(28)
@@ -541,6 +586,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Arcanist Gloves
             _builder.Create(RecipeType.ArcanistGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("prm_chn_gloves")
                 .Level(28)
@@ -551,6 +597,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Maverick Gloves
             _builder.Create(RecipeType.MaverickGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("prm_skm_gloves")
                 .Level(28)
@@ -564,6 +611,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Aegis Bracer
             _builder.Create(RecipeType.AegisBracer, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("asc_bul_bracer")
                 .Level(38)
@@ -574,6 +622,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Luminary Gloves
             _builder.Create(RecipeType.LuminaryGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("asc_chn_gloves")
                 .Level(38)
@@ -584,6 +633,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Apex Gloves
             _builder.Create(RecipeType.ApexGloves, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Glove)
                 .Resref("asc_skm_gloves")
                 .Level(38)

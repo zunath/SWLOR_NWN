@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Faultline Capacitor
             _builder.Create(RecipeType.FaultlineCapacitor, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Tool)
                 .Resref("sr_jrcell")
                 .Level(12)
@@ -30,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Ghostkey Relay
             _builder.Create(RecipeType.GhostkeyRelay, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Tool)
                 .Resref("nv_relay")
                 .Level(14)
@@ -41,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Wayfinder Sensor
             _builder.Create(RecipeType.WayfinderSensor, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Tool)
                 .Resref("tk_sensor")
                 .Level(28)
@@ -52,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Stonewake Relay
             _builder.Create(RecipeType.StonewakeRelay, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Tool)
                 .Resref("vs_relay")
                 .Level(30)
@@ -63,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Kinetic Harness
             _builder.Create(RecipeType.KineticHarness, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Tool)
                 .Resref("hv_servo")
                 .Level(31)
@@ -74,6 +79,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Lucid Splice
             _builder.Create(RecipeType.LucidSplice, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Tool)
                 .Resref("mg_splice")
                 .Level(35)
@@ -85,6 +91,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Stormcore Matrix
             _builder.Create(RecipeType.StormcoreMatrix, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Tool)
                 .Resref("vx_matrix")
                 .Level(50)
@@ -96,6 +103,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Tidecall Beacon
             _builder.Create(RecipeType.TidecallBeacon, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Tool)
                 .Resref("tc_beacon")
                 .Level(34)
@@ -107,6 +115,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Flux Diverter
             _builder.Create(RecipeType.FluxDiverter, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Tool)
                 .Resref("fx_diverter")
                 .Level(29)

@@ -6,6 +6,8 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 
+if (args.Length > 0 && args[0] == "--simulate") { CraftingSimulation.Run(args); return; }
+
 // Export the real recipe builders without initializing NWN, Redis, or world caches.
 var assembly = typeof(IRecipeListDefinition).Assembly;
 Skill.CacheXPChartData();

@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Sun-Cured Hide Cuirass (heavy armor)
             _builder.Create(RecipeType.SunCuredHideCuirass, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("hide_cuirass")
                 .Level(42)
@@ -34,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Scopewright Cap (light armor)
             _builder.Create(RecipeType.ScopewrightCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("scopewright_cap")
                 .Level(43)
@@ -46,6 +48,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Windcaller Mantle (cloak)
             _builder.Create(RecipeType.WindcallerMantle, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("windcall_mantle")
                 .Level(44)
@@ -58,6 +61,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Warband Helm (heavy helmet)
             _builder.Create(RecipeType.WarbandHelm, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("warband_helm")
                 .Level(45)

@@ -8,6 +8,13 @@ namespace SWLOR.Game.Server.Service.CraftService
         int ProgressGain, int QualityGain, int SuccessChance,
         bool FinishesOnSuccess, bool FailsOnSuccess, bool FailsOnFailure)
     {
+        public bool FinishesOnFailure { get; init; }
+        public int CPRestored { get; init; }
+        public int ProgressOnFailure { get; init; }
+        public int DurabilityOnFailure { get; init; }
+        public bool FailureProtection { get; init; }
+        public string EffectDescription { get; init; }
+        public int RulesVersion { get; init; } = 1;
         public string ButtonText => $"{Action.Name} [{CPCost}]";
 
         public string Description
@@ -19,7 +26,13 @@ namespace SWLOR.Game.Server.Service.CraftService
                     $"CP: {CPCost}. Durability spent: {DurabilityCost}. Success: {SuccessChance}%.",
                     $"On success: +{ProgressGain} progress, +{QualityGain} quality, +{DurabilityRestored} durability."
                 };
-                switch (Action.Type)
+                if (RulesVersion == 2)
+                {
+                    lines.Add($"On success: +{CPRestored} CP. On failure: +{ProgressOnFailure} progress.");
+                    if (FailureProtection) lines.Add("Once per craft, durability exhaustion leaves 1 durability when work would otherwise fail.");
+                    if (!string.IsNullOrEmpty(EffectDescription)) lines.Add(EffectDescription);
+                }
+                if (RulesVersion == 1) switch (Action.Type)
                 {
                     case CraftActionType.SteadyHand:
                         lines.Add("Guarantees the next synthesis. Consumed on success; does not expire."); break;
@@ -32,6 +45,7 @@ namespace SWLOR.Game.Server.Service.CraftService
                 }
                 if (FinishesOnSuccess)
                     lines.Add(SuccessChance == 100 ? "Finishes the item." : "Finishes the item on success.");
+                if (FinishesOnFailure) lines.Add("Even failed work grants enough progress to finish the item.");
                 if (FailsOnSuccess)
                     lines.Add("Even on success, this action exhausts durability and fails the craft.");
                 if (FailsOnFailure)
@@ -52,6 +66,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         public static CraftActionPreview Preview(CraftSession session, CraftActionType type)
         {
             if (session == null) throw new ArgumentNullException(nameof(session));
+            if (session.RulesVersion == 2) return CraftWorkEvaluator.Preview(session, type);
             var action = CraftActionDetail.GetLegacy(type);
             var cp = action.CPCost;
             if (action.BaseProgress > 0 && cp > 0 && session.VenerationCharges > 0)
@@ -83,6 +98,7 @@ namespace SWLOR.Game.Server.Service.CraftService
             if (session == null) throw new ArgumentNullException(nameof(session));
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (rollD100 == null) throw new ArgumentNullException(nameof(rollD100));
+            if (session.RulesVersion == 2) return CraftWorkEvaluator.Resolve(session, request, rollD100);
             var preview = Preview(session, request.Action);
             if (request.SessionId != session.Id || request.ExpectedActionCount != session.ActionCount)
                 return new CraftActionOutcome(session, preview, false, false, "This action belongs to an earlier crafting state.");

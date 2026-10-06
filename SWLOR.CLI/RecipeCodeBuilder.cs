@@ -12,6 +12,29 @@ namespace SWLOR.CLI
         private const string Template = "./Templates/RecipeTemplate.txt";
         private const string OutputFolder = "./OutputRecipes/";
 
+        private static Dictionary<string, string[]> LoadCraftingMetadata()
+        {
+            var directory = new DirectoryInfo(Environment.CurrentDirectory);
+            while (directory != null)
+            {
+                var path = Path.Combine(directory.FullName, "design", "crafting", "recipe-profiles.csv");
+                if (File.Exists(path))
+                {
+                    var result = new Dictionary<string, string[]>();
+                    var lines = File.ReadAllLines(path);
+                    for (var index = 1; index < lines.Length; index++)
+                    {
+                        var fields = lines[index].Split(',');
+                        if (fields.Length != 6) throw new InvalidDataException("Invalid recipe profile catalog row.");
+                        result.Add(fields[0], fields);
+                    }
+                    return result;
+                }
+                directory = directory.Parent;
+            }
+            throw new FileNotFoundException("The checked-in crafting profile catalog is required for recipe generation.");
+        }
+
         public void Process()
         {
             ClearOutputDirectory();
@@ -22,6 +45,7 @@ namespace SWLOR.CLI
             var recipeTemplate = File.ReadAllText(Template);
             var inputLines = File.ReadAllLines(InputData);
             var recipes = new Dictionary<int, List<string>>();
+            var metadata = LoadCraftingMetadata();
 
             foreach (var line in inputLines)
             {
@@ -72,6 +96,12 @@ namespace SWLOR.CLI
                     recipeRequirement = $"{Environment.NewLine}\t.RequirementUnlocked()";
                 }
 
+                var profile = data.Length > 28 && !string.IsNullOrWhiteSpace(data[28]) ? data[28].Trim() : metadata.TryGetValue(recipeEnumName, out var entry) ? entry[3] : "Legacy";
+                var technique = data.Length > 29 && !string.IsNullOrWhiteSpace(data[29]) ? data[29].Trim() : metadata.TryGetValue(recipeEnumName, out var traits) ? traits[4] : "None";
+                var pilot = metadata.TryGetValue(recipeEnumName, out var rollout) ? rollout[5] : "false";
+                if (profile != "Legacy" && profile != "Sturdy" && profile != "Delicate" && profile != "Calibrated") throw new InvalidDataException($"Invalid crafting profile: {profile}");
+                if (technique != "None" && technique != "PoisonMixing" && technique != "TrapAssembly") throw new InvalidDataException($"Invalid crafting technique: {technique}");
+                recipeCode = recipeCode.Replace("%%CRAFTINGPROFILE%%", $".CraftingProfile(CraftProfile.{profile}, CraftTechnique.{technique}, pilot: {pilot})");
                 recipeCode = recipeCode.Replace("%%REQUIRESRECIPE%%", recipeRequirement);
 
                 var enhancements = string.Empty;

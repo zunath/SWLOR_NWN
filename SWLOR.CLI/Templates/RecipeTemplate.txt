@@ -1,5 +1,6 @@
 ﻿// %%RECIPENAME%%
 _builder.Create(RecipeType.%%RECIPEENUMNAME%%, SkillType.%%RECIPESKILL%%)
+	%%CRAFTINGPROFILE%%
 	.Category(RecipeCategoryType.%%RECIPECATEGORY%%)
 	.Resref("%%RESREF%%")
 	.Level(%%LEVEL%%)

@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Weapon Submission Token (Smithery)
             _builder.Create(RecipeType.WeaponSubmissionTokenSmithery, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.SpecialSubmissionItems)
                 .Resref("wpn_sub_token")
                 .Level(52)
@@ -29,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Armor Submission Token (Smithery)
             _builder.Create(RecipeType.ArmorSubmissionTokenSmithery, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.SpecialSubmissionItems)
                 .Resref("arm_sub_token")
                 .Level(52)

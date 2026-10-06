@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Striker
             _builder.Create(RecipeType.Striker, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("sdeed_striker")
                 .Level(5)
@@ -35,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Condor
             _builder.Create(RecipeType.Condor, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("sdeed_condor")
                 .Level(10)
@@ -50,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Hound
             _builder.Create(RecipeType.Hound, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("sdeed_hound")
                 .Level(15)
@@ -62,6 +65,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Panther
             _builder.Create(RecipeType.Panther, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("sdeed_panther")
                 .Level(20)
@@ -77,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Saber
             _builder.Create(RecipeType.Saber, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("sdeed_saber")
                 .Level(25)
@@ -89,6 +94,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Falchion
             _builder.Create(RecipeType.Falchion, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("sdeed_falchion")
                 .Level(30)
@@ -104,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Mule
             _builder.Create(RecipeType.Mule, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("sdeed_mule")
                 .Level(35)
@@ -116,6 +123,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Merchant
             _builder.Create(RecipeType.Merchant, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("sdeed_merchant")
                 .Level(40)
@@ -131,6 +139,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Throne
             _builder.Create(RecipeType.Throne, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("sdeed_throne")
                 .Level(45)
@@ -143,6 +152,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Consular
             _builder.Create(RecipeType.Consular, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: true)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("sdeed_consular")
                 .Level(50)
@@ -155,6 +165,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Cutlass
             _builder.Create(RecipeType.Cutlass, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("sdeed_cutla")
                 .Level(50)
@@ -167,6 +178,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Basilisk
             _builder.Create(RecipeType.BasiliskWarDroid, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("sdeed_basi")
                 .Level(50)
@@ -180,6 +192,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Aurek Strikefighter
             _builder.Create(RecipeType.AurekStrikefighter, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("sdeed_aurek")
                 .Level(50)
@@ -193,6 +206,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Sith Fighter
             _builder.Create(RecipeType.SithFighter, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("sdeed_sfight")
                 .Level(50)
@@ -206,6 +220,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Republic Thranta
             _builder.Create(RecipeType.CorvetteRepThranta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("capdeed_rthran")
                 .Level(53)
@@ -218,6 +233,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Sith Thranta
             _builder.Create(RecipeType.CorvetteSithThranta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("capdeed_sthran")
                 .Level(53)
@@ -230,6 +246,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Neutral Thranta
             _builder.Create(RecipeType.CorvetteNeutThranta, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("capdeed_nthran")
                 .Level(53)
@@ -242,6 +259,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Terminus Corsair
             _builder.Create(RecipeType.CorvetteTerminus, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("capdeed_corsa")
                 .Level(53)
@@ -254,6 +272,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Hutt Corvette
             _builder.Create(RecipeType.CorvetteHutt, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("capdeed_huttco")
                 .Level(53)
@@ -266,6 +285,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // CZC Armored Transport
             _builder.Create(RecipeType.CorvetteArmoredTransport, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("capdeed_hvycor")
                 .Level(53)
@@ -278,6 +298,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Chiss Trireme
             _builder.Create(RecipeType.CorvetteChissTrireme, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("capdeed_chisst")
                 .Level(53)
@@ -290,6 +311,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Corellian Gunboat
             _builder.Create(RecipeType.CorvetteCorellian, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("capdeed_cgunb")
                 .Level(53)
@@ -302,6 +324,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // JehaveyFrigate
             _builder.Create(RecipeType.CorvetteJehaveyFrigate, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("capdeed_jfrigate")
                 .Level(53)
@@ -314,6 +337,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Crusader Corvette
             _builder.Create(RecipeType.CorvetteCrusader, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("capdeed_cruscor")
                 .Level(53)

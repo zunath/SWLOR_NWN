@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Battlemaster Necklace
             _builder.Create(RecipeType.BattlemasterNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("bm_necklace")
                 .Level(2)
@@ -37,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Spiritmaster Necklace
             _builder.Create(RecipeType.SpiritmasterNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("sm_necklace")
                 .Level(2)
@@ -47,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Combat Necklace
             _builder.Create(RecipeType.CombatNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("com_necklace")
                 .Level(2)
@@ -57,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Advent Necklace
             _builder.Create(RecipeType.AdventNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("advent_necklace")
                 .Level(10)
@@ -68,6 +72,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Amateur Necklace
             _builder.Create(RecipeType.AmateurNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("engi_necklace_1")
                 .Level(10)
@@ -79,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Cloth Necklace
             _builder.Create(RecipeType.ClothNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("fabr_necklace_1")
                 .Level(10)
@@ -90,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chef Necklace
             _builder.Create(RecipeType.ChefNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("chef_necklace_1")
                 .Level(10)
@@ -104,6 +111,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Titan Necklace
             _builder.Create(RecipeType.TitanNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("tit_necklace")
                 .Level(12)
@@ -114,6 +122,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vivid Necklace
             _builder.Create(RecipeType.VividNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("viv_necklace")
                 .Level(12)
@@ -124,6 +133,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Valor Necklace
             _builder.Create(RecipeType.ValorNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("val_necklace")
                 .Level(12)
@@ -134,6 +144,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Frontier Necklace
             _builder.Create(RecipeType.FrontierNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("frontier_necklac")
                 .Level(20)
@@ -145,6 +156,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Worker Necklace
             _builder.Create(RecipeType.WorkerNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("engi_necklace_2")
                 .Level(20)
@@ -156,6 +168,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Linen Necklace
             _builder.Create(RecipeType.LinenNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("fabr_necklace_2")
                 .Level(20)
@@ -167,6 +180,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Velveteen Necklace
             _builder.Create(RecipeType.VelveteenNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("chef_necklace_2")
                 .Level(20)
@@ -181,6 +195,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Quark Necklace
             _builder.Create(RecipeType.QuarkNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("qk_necklace")
                 .Level(22)
@@ -191,6 +206,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Reginal Necklace
             _builder.Create(RecipeType.ReginalNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("reg_necklace")
                 .Level(22)
@@ -201,6 +217,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Forza Necklace
             _builder.Create(RecipeType.ForzaNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("for_necklace")
                 .Level(22)
@@ -211,6 +228,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Majestic Necklace
             _builder.Create(RecipeType.MajesticNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("majestic_necklac")
                 .Level(30)
@@ -222,6 +240,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Mechanic Necklace
             _builder.Create(RecipeType.MechanicNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("engi_necklace_3")
                 .Level(30)
@@ -233,6 +252,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Designer Necklace
             _builder.Create(RecipeType.DesignerNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("fabr_necklace_3")
                 .Level(30)
@@ -244,6 +264,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Silk Necklace
             _builder.Create(RecipeType.SilkNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("chef_necklace_3")
                 .Level(30)
@@ -258,6 +279,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Argos Necklace
             _builder.Create(RecipeType.ArgosNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("ar_necklace")
                 .Level(32)
@@ -268,6 +290,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Grenada Necklace
             _builder.Create(RecipeType.GrenadaNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("gr_necklace")
                 .Level(32)
@@ -278,6 +301,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Survival Necklace
             _builder.Create(RecipeType.SurvivalNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("sur_necklace")
                 .Level(32)
@@ -288,6 +312,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Dream Necklace
             _builder.Create(RecipeType.DreamNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dream_necklace")
                 .Level(40)
@@ -299,6 +324,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Devotion Necklace
             _builder.Create(RecipeType.DevotionNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("engi_necklace_4")
                 .Level(40)
@@ -310,6 +336,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Oasis Necklace
             _builder.Create(RecipeType.OasisNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("fabr_necklace_4")
                 .Level(40)
@@ -321,6 +348,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vintage Necklace
             _builder.Create(RecipeType.VintageNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("chef_necklace_4")
                 .Level(40)
@@ -335,6 +363,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Eclipse Necklace
             _builder.Create(RecipeType.EclipseNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("ec_necklace")
                 .Level(42)
@@ -345,6 +374,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Transcendent Necklace
             _builder.Create(RecipeType.TranscendentNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("tran_necklace")
                 .Level(42)
@@ -355,6 +385,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Supreme Necklace
             _builder.Create(RecipeType.SupremeNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("sup_necklace")
                 .Level(42)
@@ -365,6 +396,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Eternal Necklace
             _builder.Create(RecipeType.EternalNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("eternal_necklace")
                 .Level(50)
@@ -376,6 +408,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Skysteel Necklace
             _builder.Create(RecipeType.SkysteelNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("engi_necklace_5")
                 .Level(50)
@@ -387,6 +420,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Rose Necklace
             _builder.Create(RecipeType.RoseNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("fabr_necklace_5")
                 .Level(50)
@@ -398,6 +432,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Moonflame Necklace
             _builder.Create(RecipeType.MoonflameNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("chef_necklace_5")
                 .Level(50)
@@ -409,6 +444,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chaos Necklace
             _builder.Create(RecipeType.ChaosNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("ch_necklace")
                 .Level(52)
@@ -427,6 +463,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Magus Necklace
             _builder.Create(RecipeType.MagusNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("mag_necklace")
                 .Level(52)
@@ -445,6 +482,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Immortal Necklace
             _builder.Create(RecipeType.ImmortalNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("imm_necklace")
                 .Level(52)
@@ -466,6 +504,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Warden Necklace
             _builder.Create(RecipeType.WardenNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("fld_bul_neck")
                 .Level(7)
@@ -476,6 +515,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Mystic Necklace
             _builder.Create(RecipeType.MysticNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("fld_chn_neck")
                 .Level(7)
@@ -486,6 +526,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vanguard Necklace
             _builder.Create(RecipeType.VanguardNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("fld_skm_neck")
                 .Level(7)
@@ -499,6 +540,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Bastion Necklace
             _builder.Create(RecipeType.BastionNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("vet_bul_neck")
                 .Level(17)
@@ -509,6 +551,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Oracle Necklace
             _builder.Create(RecipeType.OracleNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("vet_chn_neck")
                 .Level(17)
@@ -519,6 +562,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Onslaught Necklace
             _builder.Create(RecipeType.OnslaughtNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("vet_skm_neck")
                 .Level(17)
@@ -532,6 +576,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Sentinel Necklace
             _builder.Create(RecipeType.SentinelNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("prm_bul_neck")
                 .Level(27)
@@ -542,6 +587,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Arcanist Necklace
             _builder.Create(RecipeType.ArcanistNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("prm_chn_neck")
                 .Level(27)
@@ -552,6 +598,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Maverick Necklace
             _builder.Create(RecipeType.MaverickNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("prm_skm_neck")
                 .Level(27)
@@ -565,6 +612,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Aegis Necklace
             _builder.Create(RecipeType.AegisNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("asc_bul_neck")
                 .Level(37)
@@ -575,6 +623,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Luminary Necklace
             _builder.Create(RecipeType.LuminaryNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("asc_chn_neck")
                 .Level(37)
@@ -585,6 +634,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Apex Necklace
             _builder.Create(RecipeType.ApexNecklace, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("asc_skm_neck")
                 .Level(37)

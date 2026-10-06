@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
         {
             // Bed Roll
             _builder.Create(RecipeType.BedRoll, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: true)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0085")
                 .Level(1)
@@ -33,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Easel
             _builder.Create(RecipeType.Easel, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0045")
                 .Level(1)
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bench
             _builder.Create(RecipeType.Bench, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0132")
                 .Level(1)
@@ -53,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Candle
             _builder.Create(RecipeType.Candle, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0062")
                 .Level(2)
@@ -63,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Campfire
             _builder.Create(RecipeType.Campfire, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0011")
                 .Level(1)
@@ -73,6 +78,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Carpet
             _builder.Create(RecipeType.Carpet, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Flooring)
                 .Resref("structure_0077")
                 .Level(2)
@@ -83,6 +89,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Banner, Wall, Lizard
             _builder.Create(RecipeType.BannerWallLizard, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0133")
                 .Level(2)
@@ -93,6 +100,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Weapon Rack
             _builder.Create(RecipeType.WeaponRack, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0215")
                 .Level(2)
@@ -103,6 +111,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Plastic (Large)
             _builder.Create(RecipeType.TablePlasticLarge, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0233")
                 .Level(2)
@@ -113,6 +122,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Cot
             _builder.Create(RecipeType.Cot, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0069")
                 .Level(3)
@@ -123,6 +133,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Keg
             _builder.Create(RecipeType.Keg, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0047")
                 .Level(3)
@@ -133,6 +144,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Wood, Small
             _builder.Create(RecipeType.ChairWoodSmall, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0120")
                 .Level(3)
@@ -143,6 +155,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Rope Coil
             _builder.Create(RecipeType.RopeCoil, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0023")
                 .Level(4)
@@ -153,6 +166,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Throw Rug
             _builder.Create(RecipeType.ThrowRug, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Flooring)
                 .Resref("structure_0072")
                 .Level(4)
@@ -163,6 +177,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Wood
             _builder.Create(RecipeType.ChairWood, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0119")
                 .Level(4)
@@ -173,6 +188,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Stuffed Toy, Bantha
             _builder.Create(RecipeType.StuffedToyBantha, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0201")
                 .Level(4)
@@ -183,6 +199,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Cushions
             _builder.Create(RecipeType.Cushions, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0061")
                 .Level(5)
@@ -193,6 +210,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Wood
             _builder.Create(RecipeType.TableWood, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0070")
                 .Level(5)
@@ -203,6 +221,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bench, Wood, Small
             _builder.Create(RecipeType.BenchWoodSmall, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0118")
                 .Level(5)
@@ -213,6 +232,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Darkwood
             _builder.Create(RecipeType.TableDarkwood, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0015")
                 .Level(5)
@@ -223,6 +243,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Wood, With Fish
             _builder.Create(RecipeType.TableWoodWithFish, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0057")
                 .Level(6)
@@ -233,6 +254,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Hand Chair
             _builder.Create(RecipeType.HandChair, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0059")
                 .Level(6)
@@ -243,6 +265,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Footstool
             _builder.Create(RecipeType.Footstool, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0107")
                 .Level(6)
@@ -253,6 +276,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Ornament, Solar System
             _builder.Create(RecipeType.OrnamentSolarSystem, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0176")
                 .Level(6)
@@ -263,6 +287,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bench, Elegant, Grey
             _builder.Create(RecipeType.BenchElegantGrey, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0258")
                 .Level(6)
@@ -273,6 +298,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pedestal
             _builder.Create(RecipeType.Pedestal, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0022")
                 .Level(7)
@@ -283,6 +309,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Tome
             _builder.Create(RecipeType.Tome, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0080")
                 .Level(7)
@@ -293,6 +320,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Potted Plant
             _builder.Create(RecipeType.PottedPlant, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0091")
                 .Level(7)
@@ -303,6 +331,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Fridge, Worn
             _builder.Create(RecipeType.FridgeWorn, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0216")
                 .Level(7)
@@ -313,6 +342,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Coffee, Shelf
             _builder.Create(RecipeType.TableCoffeeShelf, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0016")
                 .Level(7)
@@ -323,6 +353,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Net
             _builder.Create(RecipeType.Net, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0051")
                 .Level(8)
@@ -333,6 +364,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Gong
             _builder.Create(RecipeType.Gong, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0013")
                 .Level(8)
@@ -343,6 +375,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Open Frame (Brown)
             _builder.Create(RecipeType.ChairOpenFrameBrown, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0144")
                 .Level(8)
@@ -353,6 +386,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Toilet, White /w Cistern
             _builder.Create(RecipeType.ToiletWhiteWithCistern, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0210")
                 .Level(8)
@@ -363,6 +397,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Round, Oak
             _builder.Create(RecipeType.TableRoundOak, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0234")
                 .Level(8)
@@ -373,6 +408,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Umbrella, Blue
             _builder.Create(RecipeType.UmbrellaBlue, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0049")
                 .Level(8)
@@ -383,6 +419,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Umbrella, Red
             _builder.Create(RecipeType.UmbrellaRed, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0050")
                 .Level(8)
@@ -393,6 +430,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Trash Can
             _builder.Create(RecipeType.TrashCan, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0288")
                 .Level(8)
@@ -404,6 +442,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Doorway, Metal
             _builder.Create(RecipeType.DoorwayMetal, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Doors)
                 .Resref("structure_0019")
                 .Level(9)
@@ -414,6 +453,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bird Cage
             _builder.Create(RecipeType.BirdCage, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0081")
                 .Level(9)
@@ -424,6 +464,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Pedestal /w Arms
             _builder.Create(RecipeType.ChairPedestalWithArms, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0145")
                 .Level(9)
@@ -434,6 +475,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Cot /w Table
             _builder.Create(RecipeType.CotWithTable, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0150")
                 .Level(9)
@@ -444,6 +486,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pile of Cushions (White)
             _builder.Create(RecipeType.PileOfCushionsWhite, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0225")
                 .Level(9)
@@ -454,6 +497,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Lamp, Bars
             _builder.Create(RecipeType.LampBars, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0034")
                 .Level(9)
@@ -464,6 +508,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Screen, Closed
             _builder.Create(RecipeType.ScreenClosed, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0289")
                 .Level(9)
@@ -475,6 +520,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Screen, Open
             _builder.Create(RecipeType.ScreenOpen, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0290")
                 .Level(9)
@@ -486,6 +532,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Torch Bracket
             _builder.Create(RecipeType.TorchBracket, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0039")
                 .Level(10)
@@ -496,6 +543,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Obelisk, Small
             _builder.Create(RecipeType.ObeliskSmall, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0006")
                 .Level(10)
@@ -506,6 +554,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Wood, Large
             _builder.Create(RecipeType.TableWoodLarge, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0056")
                 .Level(10)
@@ -516,6 +565,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Space Suit (Tan)
             _builder.Create(RecipeType.SpaceSuitTan, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0192")
                 .Level(10)
@@ -526,6 +576,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Desk (Light Gray)
             _builder.Create(RecipeType.ChairDeskBlackDarkGrey, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0291")
                 .Level(10)
@@ -537,6 +588,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Lamp, Bars (Dark)
             _builder.Create(RecipeType.LampBarsDark, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0292")
                 .Level(10)
@@ -548,6 +600,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // DNA Extractor I
             _builder.Create(RecipeType.DNAExtractor1, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Tool)
                 .Resref("dna_extractor_1")
                 .Level(10)
@@ -561,6 +614,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
         {
             // Ladder, Light
             _builder.Create(RecipeType.LadderLight, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0007")
                 .Level(11)
@@ -571,6 +625,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Birdbath
             _builder.Create(RecipeType.Birdbath, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0026")
                 .Level(11)
@@ -581,6 +636,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bench, Wood
             _builder.Create(RecipeType.BenchWood, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0113")
                 .Level(11)
@@ -591,6 +647,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Shower, White
             _builder.Create(RecipeType.ShowerWhite, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0239")
                 .Level(11)
@@ -601,6 +658,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Shower, Floor Basin
             _builder.Create(RecipeType.ShowerFloorBasin, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Flooring)
                 .Resref("structure_0240")
                 .Level(11)
@@ -611,6 +669,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Ladder, Dark
             _builder.Create(RecipeType.LadderDark, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0008")
                 .Level(12)
@@ -621,6 +680,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pillar, Wood, Dark
             _builder.Create(RecipeType.PillarWoodDark, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0082")
                 .Level(12)
@@ -631,6 +691,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Statue, Twi'lek
             _builder.Create(RecipeType.StatueTwilek, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0127")
                 .Level(12)
@@ -641,6 +702,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Wooden Wall, Planks (Small)
             _builder.Create(RecipeType.MetalWallSinglePipes, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0244")
                 .Level(12)
@@ -651,6 +713,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, Low (Blue)
             _builder.Create(RecipeType.BedLowBlue, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0109")
                 .Level(12)
@@ -661,6 +724,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, Low (Red)
             _builder.Create(RecipeType.BedLowRed, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0110")
                 .Level(12)
@@ -671,6 +735,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pile Of Cushions, Square
             _builder.Create(RecipeType.PileOfCushionsSquare, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0287")
                 .Level(12)
@@ -681,6 +746,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Window
             _builder.Create(RecipeType.Window, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0060")
                 .Level(13)
@@ -691,6 +757,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pedestal, Evil
             _builder.Create(RecipeType.PedestalEvil, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0025")
                 .Level(13)
@@ -701,6 +768,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Cabinet, Curved (Grey/White)
             _builder.Create(RecipeType.CabinetCurvedGreyWhite, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0139")
                 .Level(13)
@@ -711,6 +779,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Skeleton, Medical Display
             _builder.Create(RecipeType.SkeletonMedicalDisplay, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0190")
                 .Level(13)
@@ -721,6 +790,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Oven
             _builder.Create(RecipeType.Oven, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0226")
                 .Level(13)
@@ -731,6 +801,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bunk bed (Metal) Grey
             _builder.Create(RecipeType.BunkBedMetalGrey, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0238")
                 .Level(13)
@@ -741,6 +812,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair Plinth
             _builder.Create(RecipeType.ChairPlinth, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0261")
                 .Level(13)
@@ -751,6 +823,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Brazier, Round
             _builder.Create(RecipeType.BrazierRound, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0021")
                 .Level(14)
@@ -761,6 +834,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Vase, Tall
             _builder.Create(RecipeType.VaseTall, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0084")
                 .Level(14)
@@ -771,6 +845,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, High Back (Black/Grey)
             _builder.Create(RecipeType.BedHighBackBlackGrey, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0135")
                 .Level(14)
@@ -781,6 +856,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Dining Chair - Grey
             _builder.Create(RecipeType.ChairDiningGrey, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0262")
                 .Level(14)
@@ -791,6 +867,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Dining Chair, Orange
             _builder.Create(RecipeType.ChairDiningOrange, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0264")
                 .Level(14)
@@ -801,6 +878,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Mat, Small Tatami
             _builder.Create(RecipeType.MatSmallTatami, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Flooring)
                 .Resref("structure_0046")
                 .Level(14)
@@ -811,6 +889,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Brazier, Stone
             _builder.Create(RecipeType.BrazierStone, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0017")
                 .Level(15)
@@ -821,6 +900,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Ottoman
             _builder.Create(RecipeType.Ottoman, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0086")
                 .Level(15)
@@ -831,6 +911,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, Side Table
             _builder.Create(RecipeType.BedSideTable, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0140")
                 .Level(15)
@@ -841,6 +922,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Rug, Classic (Light Brown)
             _builder.Create(RecipeType.RugClassicLightBrown, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Flooring)
                 .Resref("structure_0224")
                 .Level(15)
@@ -851,6 +933,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Wide, Pipes
             _builder.Create(RecipeType.MetalWallWidePipes, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0255")
                 .Level(15)
@@ -861,6 +944,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Wooden Padded
             _builder.Create(RecipeType.ChairWoodenPadded, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0053")
                 .Level(15)
@@ -871,6 +955,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Mat, Medium Tatami
             _builder.Create(RecipeType.MatMediumTatami, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Flooring)
                 .Resref("structure_0293")
                 .Level(15)
@@ -882,6 +967,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Statue, Guardian
             _builder.Create(RecipeType.StatueGuardian, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0018")
                 .Level(16)
@@ -892,6 +978,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Lamp Post
             _builder.Create(RecipeType.LampPost, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0038")
                 .Level(16)
@@ -902,6 +989,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, Low
             _builder.Create(RecipeType.BedLow, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0141")
                 .Level(16)
@@ -912,6 +1000,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Fridge, Dark
             _builder.Create(RecipeType.FridgeDark, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0217")
                 .Level(16)
@@ -922,6 +1011,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Couch, Leather Panels (Grey)
             _builder.Create(RecipeType.CouchLeatherPanelsGrey, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0241")
                 .Level(16)
@@ -932,6 +1022,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Flaming Statue
             _builder.Create(RecipeType.FlamingStatue, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0020")
                 .Level(17)
@@ -942,6 +1033,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pillar, Rounded
             _builder.Create(RecipeType.PillarRounded, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0088")
                 .Level(17)
@@ -952,6 +1044,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, High Back (Blue)
             _builder.Create(RecipeType.BedHighBackBlue, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0136")
                 .Level(17)
@@ -962,6 +1055,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, Medical/Exam
             _builder.Create(RecipeType.BedMedicalExam, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0137")
                 .Level(17)
@@ -972,6 +1066,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Mirror (Small)
             _builder.Create(RecipeType.MirrorSmall, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0174")
                 .Level(17)
@@ -982,6 +1077,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Wall, Oval
             _builder.Create(RecipeType.TableWallOval, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0209")
                 .Level(17)
@@ -992,6 +1088,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Door, Pipes
             _builder.Create(RecipeType.MetalWallDoorPipes, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0256")
                 .Level(17)
@@ -1002,6 +1099,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Jukebox
             _builder.Create(RecipeType.Jukebox, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0005")
                 .Level(18)
@@ -1012,6 +1110,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Painting 1
             _builder.Create(RecipeType.Painting1, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0092")
                 .Level(18)
@@ -1022,6 +1121,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Banner, Standing
             _builder.Create(RecipeType.BannerStanding, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0142")
                 .Level(18)
@@ -1032,6 +1132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Ottoman, Decorated (Black)
             _builder.Create(RecipeType.OttomanDecoratedBlack, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0177")
                 .Level(18)
@@ -1042,6 +1143,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Microwave (Black)
             _builder.Create(RecipeType.MicrowaveBlack, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0228")
                 .Level(18)
@@ -1052,6 +1154,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Curved Form
             _builder.Create(RecipeType.ChairCurvedForm, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0063")
                 .Level(18)
@@ -1062,6 +1165,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Lantern, Floor Small
             _builder.Create(RecipeType.LanternFloorSmall, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0294")
                 .Level(18)
@@ -1073,6 +1177,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Doorway, Stone
             _builder.Create(RecipeType.DoorwayStone, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Doors)
                 .Resref("structure_0030")
                 .Level(19)
@@ -1083,6 +1188,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pillar, Wood
             _builder.Create(RecipeType.PillarWood, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0040")
                 .Level(19)
@@ -1093,6 +1199,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bookshelf, Pedestal (White)
             _builder.Create(RecipeType.BookshelfPedestalWhite, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0138")
                 .Level(19)
@@ -1103,6 +1210,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pot, Urn, Grecian
             _builder.Create(RecipeType.PotUrnGrecian, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0189")
                 .Level(19)
@@ -1113,6 +1221,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Wooden Striped
             _builder.Create(RecipeType.ChairWoodenStriped, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0066")
                 .Level(19)
@@ -1123,6 +1232,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Coffee, Wood /w Glass
             _builder.Create(RecipeType.TableCoffeeWoodwGlass, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0295")
                 .Level(19)
@@ -1134,6 +1244,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, Art Deco
             _builder.Create(RecipeType.BedArtDeco, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0296")
                 .Level(19)
@@ -1145,6 +1256,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Statue, Monster
             _builder.Create(RecipeType.StatueMonster, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0014")
                 .Level(20)
@@ -1155,6 +1267,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Candelabra
             _builder.Create(RecipeType.Candelabra, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0090")
                 .Level(20)
@@ -1165,6 +1278,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Crew (Grey)
             _builder.Create(RecipeType.ChairCrewGrey, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0143")
                 .Level(20)
@@ -1175,6 +1289,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Monitor, Wall, Logo Display (Blue)
             _builder.Create(RecipeType.MonitorWallLogoDisplayBlue, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0175")
                 .Level(20)
@@ -1185,6 +1300,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bathtub
             _builder.Create(RecipeType.Bathtub, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0134")
                 .Level(20)
@@ -1195,6 +1311,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Wardrobe, Grey, Low
             _builder.Create(RecipeType.WardrobeGreyLow, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0297")
                 .Level(20)
@@ -1206,6 +1323,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // DNA Extractor II
             _builder.Create(RecipeType.DNAExtractor2, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Tool)
                 .Resref("dna_extractor_2")
                 .Level(20)
@@ -1220,6 +1338,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Obelisk, Large
             _builder.Create(RecipeType.ObeliskLarge, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0004")
                 .Level(21)
@@ -1230,6 +1349,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Gnomish Contraption
             _builder.Create(RecipeType.GnomishContraption, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0032")
                 .Level(21)
@@ -1240,6 +1360,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Pedestal, Padded (Red)
             _builder.Create(RecipeType.ChairPedestalPaddedRed, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0146")
                 .Level(21)
@@ -1250,6 +1371,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pot, Bush, Clipped
             _builder.Create(RecipeType.PotBushClipped, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0180")
                 .Level(21)
@@ -1260,6 +1382,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Coffee Maker
             _builder.Create(RecipeType.CoffeeMaker, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0227")
                 .Level(21)
@@ -1270,6 +1393,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Single, Ribbed
             _builder.Create(RecipeType.MetalWallSingleRibbed, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0252")
                 .Level(21)
@@ -1280,6 +1404,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Female Statue
             _builder.Create(RecipeType.FemaleStatue, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0031")
                 .Level(22)
@@ -1290,6 +1415,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Vase, Rounded
             _builder.Create(RecipeType.VaseRounded, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0076")
                 .Level(22)
@@ -1300,6 +1426,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Pedestal, Panel
             _builder.Create(RecipeType.ChairPedestalPanel, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0147")
                 .Level(22)
@@ -1310,6 +1437,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pot, Bush, Flowers
             _builder.Create(RecipeType.PotBushFlowers, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0181")
                 .Level(22)
@@ -1320,6 +1448,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Footlocker, Black
             _builder.Create(RecipeType.FootlockerBlack, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0071")
                 .Level(22)
@@ -1330,6 +1459,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pedestal, Sword
             _builder.Create(RecipeType.PedestalSword, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0029")
                 .Level(23)
@@ -1340,6 +1470,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, Wood, Yellow
             _builder.Create(RecipeType.BedWoodYellow, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0078")
                 .Level(23)
@@ -1350,6 +1481,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Console, Floor Mounted (Blue Screens)
             _builder.Create(RecipeType.ConsoleFloorMountedBlueScreens, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0148")
                 .Level(23)
@@ -1360,6 +1492,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pot, Bush, Tall
             _builder.Create(RecipeType.PotBushTall, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0182")
                 .Level(23)
@@ -1370,6 +1503,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Store Counter (Stained)
             _builder.Create(RecipeType.StoreCounterStained, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0236")
                 .Level(23)
@@ -1380,6 +1514,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Wide, Ribbed
             _builder.Create(RecipeType.MetalWallWideRibbed, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0253")
                 .Level(23)
@@ -1390,6 +1525,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Steel, Stained
             _builder.Create(RecipeType.TableSteelStained, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0087")
                 .Level(23)
@@ -1400,6 +1536,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Urn
             _builder.Create(RecipeType.Urn, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0067")
                 .Level(24)
@@ -1410,6 +1547,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pillar, Stone
             _builder.Create(RecipeType.PillarStone, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0033")
                 .Level(24)
@@ -1420,6 +1558,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Console, Floor Mounted (Green Screens)
             _builder.Create(RecipeType.ConsoleFloorMountedGreenScreens, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0149")
                 .Level(24)
@@ -1430,6 +1569,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pipes, Conduit (with Power Controls)
             _builder.Create(RecipeType.PipesConduitWithPowerControls, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0178")
                 .Level(24)
@@ -1440,6 +1580,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Door, Ribbed
             _builder.Create(RecipeType.MetalWallDoorRibbed, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0254")
                 .Level(24)
@@ -1450,6 +1591,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Couch, Cushion, Grey/Red
             _builder.Create(RecipeType.CouchCushionGreyRed, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0257")
                 .Level(24)
@@ -1460,6 +1602,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Monitor, Overhead
             _builder.Create(RecipeType.MonitorOverhead, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0094")
                 .Level(24)
@@ -1470,6 +1613,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Cage
             _builder.Create(RecipeType.Cage, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: true)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0037")
                 .Level(25)
@@ -1480,6 +1624,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Overgrown Pillar
             _builder.Create(RecipeType.OvergrownPillar, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0079")
                 .Level(25)
@@ -1490,6 +1635,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Floor-anchored shackles
             _builder.Create(RecipeType.FloorAnchoredShackles, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0100")
                 .Level(25)
@@ -1500,6 +1646,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pot, Clay Urn
             _builder.Create(RecipeType.PotClayUrn, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0183")
                 .Level(25)
@@ -1510,6 +1657,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Cookpot
             _builder.Create(RecipeType.Cookpot, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Crafting)
                 .Resref("structure_0219")
                 .Level(25)
@@ -1519,6 +1667,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bar White
             _builder.Create(RecipeType.BarWhite, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0229")
                 .Level(25)
@@ -1529,6 +1678,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Polygon Design
             _builder.Create(RecipeType.TablePolygonDesign, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0265")
                 .Level(25)
@@ -1539,6 +1689,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Round, Glass
             _builder.Create(RecipeType.TableRoundGlass, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0266")
                 .Level(25)
@@ -1549,6 +1700,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pillar, Power Control
             _builder.Create(RecipeType.PillarPowerControl, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0231")
                 .Level(25)
@@ -1559,6 +1711,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Statue, Wyvern
             _builder.Create(RecipeType.StatueWyvern, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0024")
                 .Level(26)
@@ -1569,6 +1722,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bunk Bed
             _builder.Create(RecipeType.BunkBed, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0083")
                 .Level(26)
@@ -1579,6 +1733,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Chancellor
             _builder.Create(RecipeType.ChairChancellor, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0128")
                 .Level(26)
@@ -1589,6 +1744,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pot, Flower, Daisy
             _builder.Create(RecipeType.PotFlowerDaisy, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0184")
                 .Level(26)
@@ -1599,6 +1755,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Engineering Terminal
             _builder.Create(RecipeType.EngineeringTerminal, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Crafting)
                 .Resref("structure_0220")
                 .Level(26)
@@ -1608,6 +1765,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Fountain, Dark Grey
             _builder.Create(RecipeType.FountainDarkGrey, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0298")
                 .Level(26)
@@ -1619,6 +1777,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Canopy, Leather
             _builder.Create(RecipeType.CanopyLeather, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0299")
                 .Level(26)
@@ -1630,6 +1789,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Fountain
             _builder.Create(RecipeType.Fountain, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0043")
                 .Level(27)
@@ -1640,6 +1800,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Round Wooden Table
             _builder.Create(RecipeType.RoundWoodenTable, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0101")
                 .Level(27)
@@ -1650,6 +1811,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Desk, Control Board Inlay
             _builder.Create(RecipeType.DeskControlBoardInlay, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0151")
                 .Level(27)
@@ -1660,6 +1822,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Cylinder, Cross Top
             _builder.Create(RecipeType.CylinderCrossTop, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0179")
                 .Level(27)
@@ -1670,6 +1833,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Fabrication Terminal
             _builder.Create(RecipeType.FabricationTerminal, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Crafting)
                 .Resref("structure_0221")
                 .Level(27)
@@ -1679,6 +1843,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Dining, Gothic
             _builder.Create(RecipeType.ChairDiningGothic, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0105")
                 .Level(27)
@@ -1689,6 +1854,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Console, Floor Mounted, Dark
             _builder.Create(RecipeType.ConsoleFloorMountedDark, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0300")
                 .Level(27)
@@ -1700,6 +1866,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Altar, Stone
             _builder.Create(RecipeType.AltarStone, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0068")
                 .Level(28)
@@ -1710,6 +1877,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Statue of Lathander
             _builder.Create(RecipeType.StatueOfLathander, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0035")
                 .Level(28)
@@ -1720,6 +1888,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Statue, Robed Woman
             _builder.Create(RecipeType.StatueRobedWoman, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0129")
                 .Level(28)
@@ -1730,6 +1899,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pot, Flower, Yellow
             _builder.Create(RecipeType.PotFlowerYellow, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0185")
                 .Level(28)
@@ -1740,6 +1910,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Refinery
             _builder.Create(RecipeType.Refinery, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Crafting)
                 .Resref("structure_0222")
                 .Level(28)
@@ -1749,6 +1920,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Television, Old Model
             _builder.Create(RecipeType.TelevisionOldModel, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0268")
                 .Level(28)
@@ -1759,6 +1931,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Carpet, Medallion
             _builder.Create(RecipeType.CarpetMedallion, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Flooring)
                 .Resref("structure_0232")
                 .Level(28)
@@ -1768,6 +1941,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bear Skin Rug
             _builder.Create(RecipeType.BearSkinRug, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Flooring)
                 .Resref("structure_0064")
                 .Level(29)
@@ -1778,6 +1952,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Carpet, Fancy
             _builder.Create(RecipeType.CarpetFancy, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Flooring)
                 .Resref("structure_0093")
                 .Level(29)
@@ -1788,6 +1963,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Desk, Control Center, Large Screen
             _builder.Create(RecipeType.DeskControlCenterLargeScreen, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0153")
                 .Level(29)
@@ -1798,6 +1974,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pot, Long Leaf 1
             _builder.Create(RecipeType.PotLongLeaf1, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0186")
                 .Level(29)
@@ -1808,6 +1985,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Smithery Bench
             _builder.Create(RecipeType.SmitheryBench, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Crafting)
                 .Resref("structure_0223")
                 .Level(29)
@@ -1817,6 +1995,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Pilot
             _builder.Create(RecipeType.ChairPilot, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0301")
                 .Level(29)
@@ -1828,6 +2007,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Altar, Evil
             _builder.Create(RecipeType.AltarEvil, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0055")
                 .Level(30)
@@ -1838,6 +2018,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Illithid Table
             _builder.Create(RecipeType.IllithidTable, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0095")
                 .Level(30)
@@ -1848,6 +2029,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Desk, Control Center, Wide
             _builder.Create(RecipeType.DeskControlCenterWide, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0154")
                 .Level(30)
@@ -1858,6 +2040,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pot, Plant, Aloa
             _builder.Create(RecipeType.PotPlantAloa, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0187")
                 .Level(30)
@@ -1868,6 +2051,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Fountain, Stone, 4 Spouts
             _builder.Create(RecipeType.FountainStone4Spouts, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0246")
                 .Level(30)
@@ -1878,6 +2062,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Carpet, Twisted Pattern
             _builder.Create(RecipeType.CarpetTwistedPattern, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Flooring)
                 .Resref("structure_0302")
                 .Level(30)
@@ -1889,6 +2074,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // DNA Extractor III
             _builder.Create(RecipeType.DNAExtractor3, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Tool)
                 .Resref("dna_extractor_3")
                 .Level(30)
@@ -1902,6 +2088,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
         {
             // Table, Stone, Small
             _builder.Create(RecipeType.TableStoneSmall, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0058")
                 .Level(31)
@@ -1912,6 +2099,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, Large
             _builder.Create(RecipeType.BedLarge, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0075")
                 .Level(31)
@@ -1922,6 +2110,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Desk, Corner /w Terminal
             _builder.Create(RecipeType.DeskCornerWithTerminal, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0155")
                 .Level(31)
@@ -1932,6 +2121,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Specimen Tube (Alien)
             _builder.Create(RecipeType.SpecimenTubeAlien, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0193")
                 .Level(31)
@@ -1942,6 +2132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Speaker, Standing
             _builder.Create(RecipeType.SpeakerStanding, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0330")
                 .Level(31)
@@ -1952,6 +2143,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Statue, Wizard
             _builder.Create(RecipeType.StatueWizard, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0012")
                 .Level(32)
@@ -1962,6 +2154,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bench, Large
             _builder.Create(RecipeType.BenchLarge, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0115")
                 .Level(32)
@@ -1972,6 +2165,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Armchair, High Back (Orange)
             _builder.Create(RecipeType.ArmchairHighBackOrange, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0130")
                 .Level(32)
@@ -1982,6 +2176,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Specimen Tube, Empty
             _builder.Create(RecipeType.SpecimenTubeEmpty, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0194")
                 .Level(32)
@@ -1992,6 +2187,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Locker, Open Shelves
             _builder.Create(RecipeType.LockerOpenShelves, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0273")
                 .Level(32)
@@ -2002,6 +2198,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Stone, Large
             _builder.Create(RecipeType.TableStoneLarge, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0073")
                 .Level(33)
@@ -2012,6 +2209,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Carpet, Round, Blue
             _builder.Create(RecipeType.CarpetRoundBlue, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Flooring)
                 .Resref("structure_0054")
                 .Level(33)
@@ -2022,6 +2220,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Desk, Information/Control Center
             _builder.Create(RecipeType.DeskInformationControlCenter, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0156")
                 .Level(33)
@@ -2032,6 +2231,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Specimen Tube, Tall
             _builder.Create(RecipeType.SpecimenTubeTall, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0195")
                 .Level(33)
@@ -2042,6 +2242,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table Dark Glass
             _builder.Create(RecipeType.TableDarkGlass, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0267")
                 .Level(33)
@@ -2052,6 +2253,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chandelier
             _builder.Create(RecipeType.Chandelier, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0065")
                 .Level(34)
@@ -2062,6 +2264,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Foyer, Chandelier
             _builder.Create(RecipeType.FoyerChandelier, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0247")
                 .Level(34)
@@ -2073,6 +2276,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Wood, Medium
             _builder.Create(RecipeType.ChairWoodMedium, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0114")
                 .Level(34)
@@ -2083,6 +2287,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Armchair, High Back (Blue)
             _builder.Create(RecipeType.ArmchairHighBackBlue, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0131")
                 .Level(34)
@@ -2093,6 +2298,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Coffee, Elegant (White)
             _builder.Create(RecipeType.TableCoffeeElegantWhite, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0202")
                 .Level(34)
@@ -2103,6 +2309,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Large (Grey/Red)
             _builder.Create(RecipeType.ChairLargeGreyRed, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0237")
                 .Level(34)
@@ -2113,6 +2320,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Statue, Huge
             _builder.Create(RecipeType.StatueHuge, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0009")
                 .Level(35)
@@ -2123,6 +2331,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bench, Stone, Dwarven
             _builder.Create(RecipeType.BenchStoneDwarven, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0111")
                 .Level(35)
@@ -2133,6 +2342,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Desk, Wall /w Terminal
             _builder.Create(RecipeType.DeskWallTerminal, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0157")
                 .Level(35)
@@ -2143,6 +2353,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Conference, Centre Cloth
             _builder.Create(RecipeType.TableConferenceCentreCloth, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0203")
                 .Level(35)
@@ -2153,6 +2364,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Armchair, Low, Wood Trim (Blue)
             _builder.Create(RecipeType.CouchLeatherBlue, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0230")
                 .Level(35)
@@ -2163,6 +2375,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Cabinet, Liquor (Mixed)
             _builder.Create(RecipeType.CabinetLiquorMixed, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0274")
                 .Level(35)
@@ -2173,6 +2386,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Console, Tall w/ Screen (Orange)
             _builder.Create(RecipeType.ConsoleTallwScreenOrange, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0303")
                 .Level(35)
@@ -2184,6 +2398,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pillar, Flame
             _builder.Create(RecipeType.PillarFlame, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0036")
                 .Level(36)
@@ -2194,6 +2409,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Drow Table
             _builder.Create(RecipeType.DrowTable, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0108")
                 .Level(36)
@@ -2204,6 +2420,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Desk, Wall /w Terminal, Wide
             _builder.Create(RecipeType.DeskWallTerminalWide, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0158")
                 .Level(36)
@@ -2214,6 +2431,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Oval, Centre Leg (Dark)
             _builder.Create(RecipeType.TableOvalCentreLegDark, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0204")
                 .Level(36)
@@ -2224,6 +2442,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chaise Lounge - Orange
             _builder.Create(RecipeType.ChaiseLoungeOrange, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0259")
                 .Level(36)
@@ -2234,6 +2453,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chaise Lounge - Red
             _builder.Create(RecipeType.ChaiseLoungeRed, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0263")
                 .Level(36)
@@ -2244,6 +2464,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Holo Projector, Standing
             _builder.Create(RecipeType.HoloProjectorStanding, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0304")
                 .Level(36)
@@ -2255,6 +2476,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Single, Panels
             _builder.Create(RecipeType.MetalWallSinglePanels, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0325")
                 .Level(37)
@@ -2265,6 +2487,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Mining Well Platform
             _builder.Create(RecipeType.MiningWellPlatform, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0028")
                 .Level(37)
@@ -2275,6 +2498,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Weapon Rack, Wall Mounted
             _builder.Create(RecipeType.WeaponRackWallMounted, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0126")
                 .Level(37)
@@ -2285,6 +2509,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Work Station, Droid Repair
             _builder.Create(RecipeType.WorkStationDroidRepair, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0159")
                 .Level(37)
@@ -2295,6 +2520,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Oval, Low (Blue)
             _builder.Create(RecipeType.TableOvalLowBlue, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0205")
                 .Level(37)
@@ -2305,6 +2531,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Wall Light, Curved
             _builder.Create(RecipeType.WallLightCurved, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0211")
                 .Level(37)
@@ -2315,6 +2542,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Wide, Panels
             _builder.Create(RecipeType.MetalWallWidePanels, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0249")
                 .Level(37)
@@ -2325,6 +2553,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Counter, Lab (Straight)
             _builder.Create(RecipeType.CounterLabStraight, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0275")
                 .Level(37)
@@ -2335,6 +2564,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Counter, Lab (Sink)
             _builder.Create(RecipeType.CounterLabSink, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0276")
                 .Level(37)
@@ -2345,6 +2575,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Mining Well
             _builder.Create(RecipeType.MiningWell, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0010")
                 .Level(38)
@@ -2355,6 +2586,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, Stone, Yellow
             _builder.Create(RecipeType.BedStoneYellow, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0074")
                 .Level(38)
@@ -2365,6 +2597,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Footlocker, Modern (Keyed Entry)
             _builder.Create(RecipeType.FootlockerModernKeyedEntry, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0160")
                 .Level(38)
@@ -2375,6 +2608,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Round, Low (Blue)
             _builder.Create(RecipeType.TableRoundLowBlue, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0206")
                 .Level(38)
@@ -2385,6 +2619,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Wall Light, Octagon
             _builder.Create(RecipeType.WallLightOctagon, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0212")
                 .Level(38)
@@ -2395,6 +2630,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Door, Panels
             _builder.Create(RecipeType.MetalWallDoorPanels, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0250")
                 .Level(38)
@@ -2405,6 +2641,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Single, Indent
             _builder.Create(RecipeType.MetalWallSingleIndent, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0305")
                 .Level(38)
@@ -2416,6 +2653,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Mirror
             _builder.Create(RecipeType.Mirror, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0106")
                 .Level(39)
@@ -2426,6 +2664,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bed, Extra Large
             _builder.Create(RecipeType.BedExtraLarge, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0052")
                 .Level(39)
@@ -2436,6 +2675,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Fountain, Oval
             _builder.Create(RecipeType.FountainOval, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0161")
                 .Level(39)
@@ -2446,6 +2686,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Stone (Blue)
             _builder.Create(RecipeType.TableStoneBlue, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0207")
                 .Level(39)
@@ -2456,6 +2697,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Wardrobe, Curved (White)
             _builder.Create(RecipeType.WardrobeCurvedWhite, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0213")
                 .Level(39)
@@ -2466,6 +2708,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Brown Wingback
             _builder.Create(RecipeType.ChairBrownWingback, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0277")
                 .Level(39)
@@ -2476,6 +2719,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Wide, Indent
             _builder.Create(RecipeType.MetalWallWideIndent, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0306")
                 .Level(39)
@@ -2487,6 +2731,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Rune Pillar
             _builder.Create(RecipeType.RunePillar, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0104")
                 .Level(40)
@@ -2497,6 +2742,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Statue, Cyric
             _builder.Create(RecipeType.StatueCyric, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0041")
                 .Level(40)
@@ -2507,6 +2753,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Holo Display
             _builder.Create(RecipeType.HoloDisplay, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0162")
                 .Level(40)
@@ -2517,6 +2764,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Table, Stone (Brown)
             _builder.Create(RecipeType.TableStoneBrown, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0208")
                 .Level(40)
@@ -2527,6 +2775,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Washbasin
             _builder.Create(RecipeType.WashbasinLeverFaucet, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0214")
                 .Level(40)
@@ -2537,6 +2786,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Door, Indent
             _builder.Create(RecipeType.MetalWallDoorIndent, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0307")
                 .Level(40)
@@ -2548,6 +2798,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Pillar, Dish Tower
             _builder.Create(RecipeType.PillarDishTower, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0278")
                 .Level(40)
@@ -2558,6 +2809,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // DNA Extractor IV
             _builder.Create(RecipeType.DNAExtractor4, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Tool)
                 .Resref("dna_extractor_4")
                 .Level(40)
@@ -2572,6 +2824,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Sphinx Statue
             _builder.Create(RecipeType.SphinxStatue, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0027")
                 .Level(41)
@@ -2582,6 +2835,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Dartboard
             _builder.Create(RecipeType.Dartboard, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0098")
                 .Level(41)
@@ -2592,6 +2846,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Holo Display 2
             _builder.Create(RecipeType.HoloDisplay2, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0163")
                 .Level(41)
@@ -2602,6 +2857,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Statue, Bust on Column
             _builder.Create(RecipeType.StatueBustOnColumn, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0196")
                 .Level(41)
@@ -2612,6 +2868,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Fridge, Stainless
             _builder.Create(RecipeType.FridgeStainless, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0218")
                 .Level(41)
@@ -2622,6 +2879,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Single - Light, White
             _builder.Create(RecipeType.MetalWallSingleLight, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0251")
                 .Level(41)
@@ -2632,6 +2890,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Holo Display 1
             _builder.Create(RecipeType.HoloDisplay1, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0308")
                 .Level(41)
@@ -2643,6 +2902,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Dran Statue
             _builder.Create(RecipeType.DranStatue, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0048")
                 .Level(42)
@@ -2653,6 +2913,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Map
             _builder.Create(RecipeType.Map, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0099")
                 .Level(42)
@@ -2663,6 +2924,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Holo Display 4
             _builder.Create(RecipeType.HoloDisplay4, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0164")
                 .Level(42)
@@ -2673,6 +2935,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Statue, Kneeling Man
             _builder.Create(RecipeType.StatueKneelingMan, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0197")
                 .Level(42)
@@ -2683,6 +2946,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Shelves, Warehouse, Full
             _builder.Create(RecipeType.ShelvesWarehouseFull, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0242")
                 .Level(42)
@@ -2693,6 +2957,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Sea Idol
             _builder.Create(RecipeType.SeaIdol, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0042")
                 .Level(43)
@@ -2703,6 +2968,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Painting 2
             _builder.Create(RecipeType.Painting2, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0089")
                 .Level(43)
@@ -2713,6 +2979,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Holo Display 5
             _builder.Create(RecipeType.HoloDisplay5, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0165")
                 .Level(43)
@@ -2723,6 +2990,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Statue, Robed Figure /w Staff
             _builder.Create(RecipeType.StatueRobedFigureWithStaff, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0198")
                 .Level(43)
@@ -2733,6 +3001,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bookshelf, Jedi
             _builder.Create(RecipeType.BookshelfJedi, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0243")
                 .Level(43)
@@ -2743,6 +3012,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Wide - Light, White
             _builder.Create(RecipeType.MetalWallWideLight, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0235")
                 .Level(43)
@@ -2753,6 +3023,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Stone
             _builder.Create(RecipeType.ChairStone, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0122")
                 .Level(44)
@@ -2763,6 +3034,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Drow Altar
             _builder.Create(RecipeType.DrowAltar, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0097")
                 .Level(44)
@@ -2773,6 +3045,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Holo Projector 1
             _builder.Create(RecipeType.HoloProjector1, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0166")
                 .Level(44)
@@ -2783,6 +3056,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Statue, Senator
             _builder.Create(RecipeType.StatueSenator, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0199")
                 .Level(44)
@@ -2793,6 +3067,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Banner, Jedi Order
             _builder.Create(RecipeType.BannerJediOrder, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0317")
                 .Level(44)
@@ -2805,6 +3080,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Banner, Empire
             _builder.Create(RecipeType.BannerEmpire, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0318")
                 .Level(44)
@@ -2817,6 +3093,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Banner, Mandalorian
             _builder.Create(RecipeType.BannerMandalorian, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0319")
                 .Level(44)
@@ -2829,6 +3106,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Banner, Republic
             _builder.Create(RecipeType.BannerRepublic, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0320")
                 .Level(44)
@@ -2841,6 +3119,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Banner, Cartel
             _builder.Create(RecipeType.BannerCartel, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0321")
                 .Level(44)
@@ -2853,6 +3132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Throne, Wood
             _builder.Create(RecipeType.ThroneWood, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0121")
                 .Level(45)
@@ -2863,6 +3143,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Illithid Chair
             _builder.Create(RecipeType.IllithidChair, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0112")
                 .Level(45)
@@ -2873,6 +3154,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Holo Projector 2
             _builder.Create(RecipeType.HoloProjector2, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0167")
                 .Level(45)
@@ -2883,6 +3165,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Storage Tank, Hemisphere /w Monitor
             _builder.Create(RecipeType.StorageTankHemisphereWithMonitor, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0200")
                 .Level(45)
@@ -2893,6 +3176,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Wall Metal, Door Light
             _builder.Create(RecipeType.MetalWallDoorLight, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0248")
                 .Level(45)
@@ -2903,6 +3187,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Console, Tall w/ Screen (Spiral)
             _builder.Create(RecipeType.ConsoleTwScreenSpiral, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0279")
                 .Level(45)
@@ -2913,6 +3198,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Single, Grating
             _builder.Create(RecipeType.MetalWallSingleGrating, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0309")
                 .Level(45)
@@ -2924,6 +3210,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Dance Floor
             _builder.Create(RecipeType.DanceFloor, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Flooring)
                 .Resref("structure_0314")
                 .Level(45)
@@ -2936,6 +3223,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Monster Statue
             _builder.Create(RecipeType.MonsterStatue, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0044")
                 .Level(46)
@@ -2946,6 +3234,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Shrine of Umberlee
             _builder.Create(RecipeType.ShrineOfUmberlee, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0103")
                 .Level(46)
@@ -2956,6 +3245,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Instrument Panel, Large Monitor (Technical Data)
             _builder.Create(RecipeType.InstrumentPanelLargeMonitorTechnicalData, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0168")
                 .Level(46)
@@ -2966,6 +3256,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Storage Tank, Cylinder
             _builder.Create(RecipeType.StorageTankCylinder, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0280")
                 .Level(46)
@@ -2976,6 +3267,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // WorkStationMonitors
             _builder.Create(RecipeType.WorkStationMonitors, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0281")
                 .Level(46)
@@ -2986,6 +3278,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Wide, Grating
             _builder.Create(RecipeType.MetalWallWideGrating, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0310")
                 .Level(46)
@@ -2997,6 +3290,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Carpet, Fancy, Smaller
             _builder.Create(RecipeType.CarpetFancySmaller, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Flooring)
                 .Resref("structure_0096")
                 .Level(47)
@@ -3007,6 +3301,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Drow Chair
             _builder.Create(RecipeType.DrowChair, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0116")
                 .Level(47)
@@ -3017,6 +3312,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Kolto Tank (Empty)
             _builder.Create(RecipeType.KoltoTankEmpty, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0169")
                 .Level(47)
@@ -3027,6 +3323,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chest, Lengthwise
             _builder.Create(RecipeType.ChestLengthwise, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0282")
                 .Level(47)
@@ -3037,6 +3334,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Door, Grating
             _builder.Create(RecipeType.MetalWallDoorGrating, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0311")
                 .Level(47)
@@ -3048,6 +3346,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Single, Hazard
             _builder.Create(RecipeType.MetalWallSingleHazard, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0322")
                 .Level(47)
@@ -3060,6 +3359,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bench, Wood, Small 2
             _builder.Create(RecipeType.BenchWoodSmall2, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0123")
                 .Level(48)
@@ -3070,6 +3370,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Drow Bar
             _builder.Create(RecipeType.DrowBar, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0102")
                 .Level(48)
@@ -3080,6 +3381,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Lamp, Eggs (Pink)
             _builder.Create(RecipeType.LampEggsPink, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0170")
                 .Level(48)
@@ -3090,6 +3392,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Television, Big Screen
             _builder.Create(RecipeType.TelevisionBigScreen, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0245")
                 .Level(48)
@@ -3100,6 +3403,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Console, Central Control
             _builder.Create(RecipeType.ConsoleCentralControl, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0283")
                 .Level(48)
@@ -3110,6 +3414,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Medical, Monitoring Unit
             _builder.Create(RecipeType.MedicalMonitoringUnit, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0313")
                 .Level(48)
@@ -3122,6 +3427,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Wide, Hazard
             _builder.Create(RecipeType.MetalWallWideHazard, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0323")
                 .Level(48)
@@ -3134,6 +3440,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Chair, Shell
             _builder.Create(RecipeType.ChairShell, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0124")
                 .Level(49)
@@ -3144,6 +3451,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Bench, Wood, Large
             _builder.Create(RecipeType.BenchWoodLarge, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0117")
                 .Level(49)
@@ -3154,6 +3462,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Lamp, On Poles
             _builder.Create(RecipeType.LampOnPoles, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0171")
                 .Level(49)
@@ -3164,6 +3473,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Couch, Blanket Cover, Red
             _builder.Create(RecipeType.CouchBlanketCoverRed, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0260")
                 .Level(49)
@@ -3174,6 +3484,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Console, Circular Command
             _builder.Create(RecipeType.ConsoleCircularCommand, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0284")
                 .Level(49)
@@ -3184,6 +3495,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Holo Projector, Hover
             _builder.Create(RecipeType.HoloProjectorHover, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0315")
                 .Level(49)
@@ -3196,6 +3508,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Metal Wall, Door, Hazard
             _builder.Create(RecipeType.MetalWallDoorHazard, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0324")
                 .Level(49)
@@ -3208,6 +3521,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Storage, Warehouse, Industry
             _builder.Create(RecipeType.StorageWarehouseIndustry, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0316")
                 .Level(50)
@@ -3220,6 +3534,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Couch, Wood, Yellow
             _builder.Create(RecipeType.CouchWoodYellow, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: true)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0125")
                 .Level(50)
@@ -3230,6 +3545,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Lantern, Post, Marble
             _builder.Create(RecipeType.LanternPostMarble, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0172")
                 .Level(50)
@@ -3240,6 +3556,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Locker, Metal Trapezoid
             _builder.Create(RecipeType.LockerMetalTrapezoid, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0173")
                 .Level(50)
@@ -3250,6 +3567,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Storage, Cargo Container
             _builder.Create(RecipeType.StorageCargoContainer, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0285")
                 .Level(50)
@@ -3260,6 +3578,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Console, Corner, Large
             _builder.Create(RecipeType.ConsoleCornerLarge, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0286")
                 .Level(50)
@@ -3270,6 +3589,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Holo Projector, Small Tree
             _builder.Create(RecipeType.HoloProjectorSmallTree, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0312")
                 .Level(50)
@@ -3281,6 +3601,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Droid Assembly Terminal
             _builder.Create(RecipeType.DroidAssemblyTerminal, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Crafting)
                 .Resref("structure_0269")
                 .Level(50)
@@ -3290,6 +3611,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Beast Stables Terminal
             _builder.Create(RecipeType.BeastStablesTerminal, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Crafting)
                 .Resref("structure_0270")
                 .Level(50)
@@ -3299,6 +3621,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Incubator
             _builder.Create(RecipeType.Incubator, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Crafting)
                 .Resref("structure_0271")
                 .Level(50)
@@ -3309,6 +3632,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // DNA Extractor V
             _builder.Create(RecipeType.DNAExtractor5, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Tool)
                 .Resref("dna_extractor_5")
                 .Level(50)
@@ -3319,6 +3643,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Research Terminal
             _builder.Create(RecipeType.ResearchTerminal, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Crafting)
                 .Resref("structure_0272")
                 .Level(50)
@@ -3329,6 +3654,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Swoop Bike, Black
             _builder.Create(RecipeType.SwoopBikeBlack, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0326")
                 .Level(52)
@@ -3346,6 +3672,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Swoop Bike, Grey
             _builder.Create(RecipeType.SwoopBikeGrey, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0327")
                 .Level(52)
@@ -3363,6 +3690,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Swoop Bike, Red
             _builder.Create(RecipeType.SwoopBikeRed, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0328")
                 .Level(52)
@@ -3380,6 +3708,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Swoop Bike, Yellow
             _builder.Create(RecipeType.SwoopBikeYellow, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0329")
                 .Level(52)

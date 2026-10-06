@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Sturdiness I
             _builder.Create(RecipeType.Sturdiness1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_sturdiness1")
                 .Level(21)
@@ -33,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Ocular Filter I
             _builder.Create(RecipeType.OcularFilter1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_ocfilt1")
                 .Level(22)
@@ -44,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Verve I
             _builder.Create(RecipeType.Verve1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_verve1")
                 .Level(23)
@@ -55,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Neural Boost I
             _builder.Create(RecipeType.NeuralBoost1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_neuboost1")
                 .Level(24)
@@ -66,6 +70,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Mobility Boost I
             _builder.Create(RecipeType.MobilityBoost1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_mobboost1")
                 .Level(25)
@@ -77,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Social Adaption I
             _builder.Create(RecipeType.SocialAdaption1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_socadapt1")
                 .Level(26)
@@ -88,6 +94,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Sturdiness II
             _builder.Create(RecipeType.Sturdiness2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_sturdiness2")
                 .Level(41)
@@ -99,6 +106,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Ocular Filter II
             _builder.Create(RecipeType.OcularFilter2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_ocfilt2")
                 .Level(42)
@@ -110,6 +118,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Verve II
             _builder.Create(RecipeType.Verve2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_verve2")
                 .Level(43)
@@ -121,6 +130,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Neural Boost II
             _builder.Create(RecipeType.NeuralBoost2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_neuboost2")
                 .Level(44)
@@ -132,6 +142,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Mobility Boost II
             _builder.Create(RecipeType.MobilityBoost2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_mobboost2")
                 .Level(45)
@@ -143,6 +154,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Social Adaption II
             _builder.Create(RecipeType.SocialAdaption2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_socadapt2")
                 .Level(46)
@@ -158,6 +170,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Memory Augmentation I
             _builder.Create(RecipeType.MemoryAugmentation1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_memaug1")
                 .Level(6)
@@ -168,6 +181,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Memory Augmentation II
             _builder.Create(RecipeType.MemoryAugmentation2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_memaug2")
                 .Level(16)
@@ -178,6 +192,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Memory Augmentation III
             _builder.Create(RecipeType.MemoryAugmentation3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_memaug3")
                 .Level(26)
@@ -188,6 +203,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Memory Augmentation IV
             _builder.Create(RecipeType.MemoryAugmentation4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_memaug4")
                 .Level(36)
@@ -198,6 +214,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Memory Augmentation V
             _builder.Create(RecipeType.MemoryAugmentation5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_memaug5")
                 .Level(46)
@@ -236,6 +253,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             string component2)
         {
             _builder.Create(recipeType, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref(resref)
                 .Level(level)
@@ -249,6 +267,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Droid Vibroblade Boost I
             _builder.Create(RecipeType.DroidVibrobladeBoost1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_vblade_b1")
                 .Level(27)
@@ -259,6 +278,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Vibroknife Boost I
             _builder.Create(RecipeType.DroidVibroknifeBoost1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_vknife_b1")
                 .Level(27)
@@ -269,6 +289,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Lightsaber Boost I
             _builder.Create(RecipeType.DroidLightsaberBoost1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_lsab_b1")
                 .Level(27)
@@ -279,6 +300,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Heavy Vibroblade Boost I
             _builder.Create(RecipeType.DroidHeavyVibrobladeBoost1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_hvblade_b1")
                 .Level(28)
@@ -289,6 +311,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Spear Boost I
             _builder.Create(RecipeType.DroidSpearBoost1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_spear_b1")
                 .Level(28)
@@ -299,6 +322,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Twin Blade Boost I
             _builder.Create(RecipeType.DroidTwinBladeBoost1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_tblade_b1")
                 .Level(28)
@@ -309,6 +333,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Saberstaff Boost I
             _builder.Create(RecipeType.DroidSaberstaffBoost1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_sabst_b1")
                 .Level(28)
@@ -319,6 +344,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Katar Boost I
             _builder.Create(RecipeType.DroidKatarBoost1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_katar_b1")
                 .Level(29)
@@ -329,6 +355,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Staff Boost I
             _builder.Create(RecipeType.DroidStaffBoost1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_staff_b1")
                 .Level(29)
@@ -339,6 +366,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Pistol Boost I
             _builder.Create(RecipeType.DroidPistolBoost1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_pistol_b1")
                 .Level(30)
@@ -349,6 +377,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Rifle Boost I
             _builder.Create(RecipeType.DroidRifleBoost1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_rifle_b1")
                 .Level(30)
@@ -359,6 +388,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Throwing Boost I
             _builder.Create(RecipeType.DroidThrowingBoost1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_throw_b1")
                 .Level(30)
@@ -369,6 +399,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Vibroblade Boost II
             _builder.Create(RecipeType.DroidVibrobladeBoost2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_vblade_b2")
                 .Level(47)
@@ -379,6 +410,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Vibroknife Boost II
             _builder.Create(RecipeType.DroidVibroknifeBoost2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_vknife_b2")
                 .Level(47)
@@ -389,6 +421,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Lightsaber Boost II
             _builder.Create(RecipeType.DroidLightsaberBoost2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_lsab_b2")
                 .Level(47)
@@ -399,6 +432,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Heavy Vibroblade Boost II
             _builder.Create(RecipeType.DroidHeavyVibrobladeBoost2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_hvblade_b2")
                 .Level(48)
@@ -409,6 +443,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Spear Boost II
             _builder.Create(RecipeType.DroidSpearBoost2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_spear_b2")
                 .Level(48)
@@ -419,6 +454,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Twin Blade Boost II
             _builder.Create(RecipeType.DroidTwinBladeBoost2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_tblade_b2")
                 .Level(48)
@@ -429,6 +465,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Saberstaff Boost II
             _builder.Create(RecipeType.DroidSaberstaffBoost2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_sabst_b2")
                 .Level(48)
@@ -439,6 +476,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Katar Boost II
             _builder.Create(RecipeType.DroidKatarBoost2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_katar_b2")
                 .Level(49)
@@ -449,6 +487,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Staff Boost II
             _builder.Create(RecipeType.DroidStaffBoost2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_staff_b2")
                 .Level(49)
@@ -459,6 +498,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Pistol Boost II
             _builder.Create(RecipeType.DroidPistolBoost2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_pistol_b2")
                 .Level(50)
@@ -469,6 +509,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Rifle Boost II
             _builder.Create(RecipeType.DroidRifleBoost2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_rifle_b2")
                 .Level(50)
@@ -479,6 +520,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Throwing Boost II
             _builder.Create(RecipeType.DroidThrowingBoost2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidEnhancement)
                 .Resref("de_throw_b2")
                 .Level(50)

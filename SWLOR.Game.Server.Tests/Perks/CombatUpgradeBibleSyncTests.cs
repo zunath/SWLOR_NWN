@@ -425,7 +425,8 @@ public class CombatUpgradeBibleSyncTests
                     StringComparison.OrdinalIgnoreCase))
                 .Select(File.ReadAllText));
         var missingConsumers = grantedStats
-            .Where(stat => !consumerCorpus.Contains($"StatType.{stat}", StringComparison.Ordinal))
+            .Where(stat => stat.GetType().GetField(stat.ToString())!.GetCustomAttribute<CraftRuleAttribute>() == null &&
+                !consumerCorpus.Contains($"StatType.{stat}", StringComparison.Ordinal))
             .Select(stat => stat.ToString())
             .ToArray();
 
@@ -2367,6 +2368,7 @@ public class CombatUpgradeBibleSyncTests
         return requirement switch
         {
             PerkRequirementSkill skill => $"{skill.Type} {skill.RequiredRank}",
+            PerkRequirementAnyCompletedLine line => $"Complete any one at rank II: {string.Join(", ", line.Lines)}",
             PerkRequirementQuest quest => $"Quest {quest.QuestId}",
             PerkRequirementBeastLevel => $"Beast Level {typeof(PerkRequirementBeastLevel).GetField("_requiredLevel", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(requirement)}",
             PerkRequirementBeastRole => $"Beast Role {typeof(PerkRequirementBeastRole).GetField("_requiredRole", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(requirement)}",
@@ -2668,7 +2670,7 @@ public class CombatUpgradeBibleSyncTests
     private static bool IsScopedImplementedRow(BiblePerkRow row)
     {
         // Mimicry techniques use their own in-scope ability review rather than the perk-level path.
-        return !OutOfScopeTabs.Contains(row.Tab) &&
+        return (!OutOfScopeTabs.Contains(row.Tab) || row.Style == "Crafting") &&
                !IsMimicryTechniqueRow(row) &&
                ScopedTypes.Contains(row.Type) &&
                (ImplementedStatuses.Contains(row.DevStatus) ||
@@ -2873,6 +2875,10 @@ public class CombatUpgradeBibleSyncTests
             ("Devices", "Grenadier") => PerkCategoryType.DevicesGrenadier,
             ("First Aid", "Combat Pharmacology") => PerkCategoryType.FirstAidCombatPharmacology,
             ("First Aid", "Trauma Medic") => PerkCategoryType.FirstAidTraumaMedic,
+            ("Smithery", "Crafting") => PerkCategoryType.Smithery,
+            ("Agriculture", "Crafting") => PerkCategoryType.Agriculture,
+            ("Engineering", "Crafting") => PerkCategoryType.Engineering,
+            ("Fabrication", "Crafting") => PerkCategoryType.Fabrication,
             ("Engineering", "Droidcraft") => PerkCategoryType.Engineering,
             ("Espionage", "Infiltrator") => PerkCategoryType.EspionageInfiltrator,
             ("Espionage", "Saboteur") => PerkCategoryType.EspionageSaboteur,

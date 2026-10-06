@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // DHCL-001
             _builder.Create(RecipeType.DHCL001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dhcl001")
                 .Level(8)
@@ -37,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHBE-001
             _builder.Create(RecipeType.DHBE001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dhbe001")
                 .Level(9)
@@ -47,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHRG-001
             _builder.Create(RecipeType.DHRG001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dhrg001")
                 .Level(1)
@@ -57,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHNK-001
             _builder.Create(RecipeType.DHNK001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dhnk001")
                 .Level(2)
@@ -67,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHAR-001
             _builder.Create(RecipeType.DHAR001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dhar001")
                 .Level(7)
@@ -77,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHHL-001
             _builder.Create(RecipeType.DHHL001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dhhl001")
                 .Level(4)
@@ -87,6 +93,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHBR-001
             _builder.Create(RecipeType.DHBR001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dhbr001")
                 .Level(3)
@@ -97,6 +104,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHLG-001
             _builder.Create(RecipeType.DHLG001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dhlg001")
                 .Level(5)
@@ -107,6 +115,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLCL-001
             _builder.Create(RecipeType.DLCL001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dlcl001")
                 .Level(8)
@@ -117,6 +126,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBE-001
             _builder.Create(RecipeType.DLBE001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dlbe001")
                 .Level(9)
@@ -127,6 +137,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLRG-001
             _builder.Create(RecipeType.DLRG001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dlrg001")
                 .Level(1)
@@ -137,6 +148,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLNK-001
             _builder.Create(RecipeType.DLNK001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dlnk001")
                 .Level(2)
@@ -147,6 +159,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLAR-001
             _builder.Create(RecipeType.DLAR001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dlar001")
                 .Level(7)
@@ -157,6 +170,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLHL-001
             _builder.Create(RecipeType.DLHL001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dlhl001")
                 .Level(4)
@@ -167,6 +181,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBR-001
             _builder.Create(RecipeType.DLBR001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dlbr001")
                 .Level(3)
@@ -177,6 +192,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLLG-001
             _builder.Create(RecipeType.DLLG001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dllg001")
                 .Level(5)
@@ -187,6 +203,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSCL-001
             _builder.Create(RecipeType.DSCL001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dscl001")
                 .Level(10)
@@ -198,6 +215,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DECL-001
             _builder.Create(RecipeType.DECL001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("decl001")
                 .Level(10)
@@ -209,6 +227,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DACL-001
             _builder.Create(RecipeType.DACL001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dacl001")
                 .Level(10)
@@ -220,6 +239,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFCL-001
             _builder.Create(RecipeType.DFCL001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dfcl001")
                 .Level(10)
@@ -231,6 +251,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSBE-001
             _builder.Create(RecipeType.DSBE001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dsbe001")
                 .Level(10)
@@ -242,6 +263,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEBE-001
             _builder.Create(RecipeType.DEBE001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("debe001")
                 .Level(10)
@@ -253,6 +275,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DABE-001
             _builder.Create(RecipeType.DABE001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dabe001")
                 .Level(10)
@@ -264,6 +287,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFBE-001
             _builder.Create(RecipeType.DFBE001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dfbe001")
                 .Level(10)
@@ -275,6 +299,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSRG-001
             _builder.Create(RecipeType.DSRG001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dsrg001")
                 .Level(10)
@@ -286,6 +311,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DERG-001
             _builder.Create(RecipeType.DERG001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("derg001")
                 .Level(10)
@@ -297,6 +323,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DARG-001
             _builder.Create(RecipeType.DARG001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("darg001")
                 .Level(10)
@@ -308,6 +335,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFRG-001
             _builder.Create(RecipeType.DFRG001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dfrg001")
                 .Level(10)
@@ -319,6 +347,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSNK-001
             _builder.Create(RecipeType.DSNK001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dsnk001")
                 .Level(10)
@@ -330,6 +359,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DENK-001
             _builder.Create(RecipeType.DENK001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("denk001")
                 .Level(10)
@@ -341,6 +371,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DANK-001
             _builder.Create(RecipeType.DANK001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dank001")
                 .Level(10)
@@ -352,6 +383,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFNK-001
             _builder.Create(RecipeType.DFNK001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dfnk001")
                 .Level(10)
@@ -363,6 +395,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSAR-001
             _builder.Create(RecipeType.DSAR001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dsar001")
                 .Level(10)
@@ -374,6 +407,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEAR-001
             _builder.Create(RecipeType.DEAR001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dear001")
                 .Level(10)
@@ -385,6 +419,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DAAR-001
             _builder.Create(RecipeType.DAAR001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("daar001")
                 .Level(10)
@@ -396,6 +431,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFAR-001
             _builder.Create(RecipeType.DFAR001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dfar001")
                 .Level(10)
@@ -407,6 +443,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSHL-001
             _builder.Create(RecipeType.DSHL001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dshl001")
                 .Level(10)
@@ -418,6 +455,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEHL-001
             _builder.Create(RecipeType.DEHL001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dehl001")
                 .Level(10)
@@ -429,6 +467,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DAHL-001
             _builder.Create(RecipeType.DAHL001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dahl001")
                 .Level(10)
@@ -440,6 +479,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFHL-001
             _builder.Create(RecipeType.DFHL001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dfhl001")
                 .Level(10)
@@ -451,6 +491,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSBR-001
             _builder.Create(RecipeType.DSBR001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dsbr001")
                 .Level(10)
@@ -462,6 +503,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEBR-001
             _builder.Create(RecipeType.DEBR001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("debr001")
                 .Level(10)
@@ -473,6 +515,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DABR-001
             _builder.Create(RecipeType.DABR001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dabr001")
                 .Level(10)
@@ -484,6 +527,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFBR-001
             _builder.Create(RecipeType.DFBR001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dfbr001")
                 .Level(10)
@@ -495,6 +539,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSLG-001
             _builder.Create(RecipeType.DSLG001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dslg001")
                 .Level(10)
@@ -506,6 +551,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DELG-001
             _builder.Create(RecipeType.DELG001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("delg001")
                 .Level(10)
@@ -517,6 +563,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DALG-001
             _builder.Create(RecipeType.DALG001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dalg001")
                 .Level(10)
@@ -528,6 +575,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFLG-001
             _builder.Create(RecipeType.DFLG001, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dflg001")
                 .Level(10)
@@ -542,6 +590,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // DHCL-002
             _builder.Create(RecipeType.DHCL002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dhcl002")
                 .Level(18)
@@ -552,6 +601,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHBE-002
             _builder.Create(RecipeType.DHBE002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dhbe002")
                 .Level(19)
@@ -562,6 +612,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHRG-002
             _builder.Create(RecipeType.DHRG002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dhrg002")
                 .Level(11)
@@ -572,6 +623,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHNK-002
             _builder.Create(RecipeType.DHNK002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dhnk002")
                 .Level(12)
@@ -582,6 +634,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHAR-002
             _builder.Create(RecipeType.DHAR002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dhar002")
                 .Level(17)
@@ -592,6 +645,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHHL-002
             _builder.Create(RecipeType.DHHL002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dhhl002")
                 .Level(14)
@@ -602,6 +656,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHBR-002
             _builder.Create(RecipeType.DHBR002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dhbr002")
                 .Level(13)
@@ -612,6 +667,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHLG-002
             _builder.Create(RecipeType.DHLG002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dhlg002")
                 .Level(15)
@@ -622,6 +678,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLCL-002
             _builder.Create(RecipeType.DLCL002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dlcl002")
                 .Level(18)
@@ -632,6 +689,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBE-002
             _builder.Create(RecipeType.DLBE002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dlbe002")
                 .Level(19)
@@ -642,6 +700,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLRG-002
             _builder.Create(RecipeType.DLRG002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dlrg002")
                 .Level(11)
@@ -652,6 +711,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLNK-002
             _builder.Create(RecipeType.DLNK002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dlnk002")
                 .Level(12)
@@ -662,6 +722,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLAR-002
             _builder.Create(RecipeType.DLAR002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dlar002")
                 .Level(17)
@@ -672,6 +733,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLHL-002
             _builder.Create(RecipeType.DLHL002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dlhl002")
                 .Level(14)
@@ -682,6 +744,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBR-002
             _builder.Create(RecipeType.DLBR002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dlbr002")
                 .Level(13)
@@ -692,6 +755,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLLG-002
             _builder.Create(RecipeType.DLLG002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dllg002")
                 .Level(15)
@@ -702,6 +766,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSCL-002
             _builder.Create(RecipeType.DSCL002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dscl002")
                 .Level(20)
@@ -713,6 +778,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DECL-002
             _builder.Create(RecipeType.DECL002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("decl002")
                 .Level(20)
@@ -724,6 +790,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DACL-002
             _builder.Create(RecipeType.DACL002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dacl002")
                 .Level(20)
@@ -735,6 +802,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFCL-002
             _builder.Create(RecipeType.DFCL002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dfcl002")
                 .Level(20)
@@ -746,6 +814,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSBE-002
             _builder.Create(RecipeType.DSBE002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dsbe002")
                 .Level(20)
@@ -757,6 +826,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEBE-002
             _builder.Create(RecipeType.DEBE002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("debe002")
                 .Level(20)
@@ -768,6 +838,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DABE-002
             _builder.Create(RecipeType.DABE002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dabe002")
                 .Level(20)
@@ -779,6 +850,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFBE-002
             _builder.Create(RecipeType.DFBE002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dfbe002")
                 .Level(20)
@@ -790,6 +862,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSRG-002
             _builder.Create(RecipeType.DSRG002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dsrg002")
                 .Level(20)
@@ -801,6 +874,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DERG-002
             _builder.Create(RecipeType.DERG002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("derg002")
                 .Level(20)
@@ -812,6 +886,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DARG-002
             _builder.Create(RecipeType.DARG002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("darg002")
                 .Level(20)
@@ -823,6 +898,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFRG-002
             _builder.Create(RecipeType.DFRG002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dfrg002")
                 .Level(20)
@@ -834,6 +910,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSNK-002
             _builder.Create(RecipeType.DSNK002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dsnk002")
                 .Level(20)
@@ -845,6 +922,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DENK-002
             _builder.Create(RecipeType.DENK002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("denk002")
                 .Level(20)
@@ -856,6 +934,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DANK-002
             _builder.Create(RecipeType.DANK002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dank002")
                 .Level(20)
@@ -867,6 +946,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFNK-002
             _builder.Create(RecipeType.DFNK002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dfnk002")
                 .Level(20)
@@ -878,6 +958,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSAR-002
             _builder.Create(RecipeType.DSAR002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dsar002")
                 .Level(20)
@@ -889,6 +970,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEAR-002
             _builder.Create(RecipeType.DEAR002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dear002")
                 .Level(20)
@@ -900,6 +982,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DAAR-002
             _builder.Create(RecipeType.DAAR002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("daar002")
                 .Level(20)
@@ -911,6 +994,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFAR-002
             _builder.Create(RecipeType.DFAR002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dfar002")
                 .Level(20)
@@ -922,6 +1006,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSHL-002
             _builder.Create(RecipeType.DSHL002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dshl002")
                 .Level(20)
@@ -933,6 +1018,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEHL-002
             _builder.Create(RecipeType.DEHL002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dehl002")
                 .Level(20)
@@ -944,6 +1030,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DAHL-002
             _builder.Create(RecipeType.DAHL002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dahl002")
                 .Level(20)
@@ -955,6 +1042,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFHL-002
             _builder.Create(RecipeType.DFHL002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dfhl002")
                 .Level(20)
@@ -966,6 +1054,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSBR-002
             _builder.Create(RecipeType.DSBR002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dsbr002")
                 .Level(20)
@@ -977,6 +1066,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEBR-002
             _builder.Create(RecipeType.DEBR002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("debr002")
                 .Level(20)
@@ -988,6 +1078,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DABR-002
             _builder.Create(RecipeType.DABR002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dabr002")
                 .Level(20)
@@ -999,6 +1090,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFBR-002
             _builder.Create(RecipeType.DFBR002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dfbr002")
                 .Level(20)
@@ -1010,6 +1102,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSLG-002
             _builder.Create(RecipeType.DSLG002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dslg002")
                 .Level(20)
@@ -1021,6 +1114,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DELG-002
             _builder.Create(RecipeType.DELG002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("delg002")
                 .Level(20)
@@ -1032,6 +1126,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DALG-002
             _builder.Create(RecipeType.DALG002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dalg002")
                 .Level(20)
@@ -1043,6 +1138,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFLG-002
             _builder.Create(RecipeType.DFLG002, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dflg002")
                 .Level(20)
@@ -1057,6 +1153,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // DHCL-003
             _builder.Create(RecipeType.DHCL003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dhcl003")
                 .Level(28)
@@ -1067,6 +1164,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHBE-003
             _builder.Create(RecipeType.DHBE003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dhbe003")
                 .Level(29)
@@ -1077,6 +1175,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHRG-003
             _builder.Create(RecipeType.DHRG003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dhrg003")
                 .Level(21)
@@ -1087,6 +1186,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHNK-003
             _builder.Create(RecipeType.DHNK003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dhnk003")
                 .Level(22)
@@ -1097,6 +1197,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHAR-003
             _builder.Create(RecipeType.DHAR003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dhar003")
                 .Level(27)
@@ -1107,6 +1208,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHHL-003
             _builder.Create(RecipeType.DHHL003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dhhl003")
                 .Level(24)
@@ -1117,6 +1219,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHBR-003
             _builder.Create(RecipeType.DHBR003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dhbr003")
                 .Level(23)
@@ -1127,6 +1230,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHLG-003
             _builder.Create(RecipeType.DHLG003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dhlg003")
                 .Level(25)
@@ -1137,6 +1241,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLCL-003
             _builder.Create(RecipeType.DLCL003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dlcl003")
                 .Level(28)
@@ -1147,6 +1252,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBE-003
             _builder.Create(RecipeType.DLBE003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dlbe003")
                 .Level(29)
@@ -1157,6 +1263,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLRG-003
             _builder.Create(RecipeType.DLRG003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dlrg003")
                 .Level(21)
@@ -1167,6 +1274,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLNK-003
             _builder.Create(RecipeType.DLNK003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dlnk003")
                 .Level(22)
@@ -1177,6 +1285,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLAR-003
             _builder.Create(RecipeType.DLAR003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dlar003")
                 .Level(27)
@@ -1187,6 +1296,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLHL-003
             _builder.Create(RecipeType.DLHL003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dlhl003")
                 .Level(24)
@@ -1197,6 +1307,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBR-003
             _builder.Create(RecipeType.DLBR003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dlbr003")
                 .Level(23)
@@ -1207,6 +1318,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLLG-003
             _builder.Create(RecipeType.DLLG003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dllg003")
                 .Level(25)
@@ -1217,6 +1329,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSCL-003
             _builder.Create(RecipeType.DSCL003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dscl003")
                 .Level(30)
@@ -1228,6 +1341,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DECL-003
             _builder.Create(RecipeType.DECL003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("decl003")
                 .Level(30)
@@ -1239,6 +1353,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DACL-003
             _builder.Create(RecipeType.DACL003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dacl003")
                 .Level(30)
@@ -1250,6 +1365,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFCL-003
             _builder.Create(RecipeType.DFCL003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dfcl003")
                 .Level(30)
@@ -1261,6 +1377,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSBE-003
             _builder.Create(RecipeType.DSBE003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dsbe003")
                 .Level(30)
@@ -1272,6 +1389,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEBE-003
             _builder.Create(RecipeType.DEBE003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("debe003")
                 .Level(30)
@@ -1283,6 +1401,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DABE-003
             _builder.Create(RecipeType.DABE003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dabe003")
                 .Level(30)
@@ -1294,6 +1413,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFBE-003
             _builder.Create(RecipeType.DFBE003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dfbe003")
                 .Level(30)
@@ -1305,6 +1425,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSRG-003
             _builder.Create(RecipeType.DSRG003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dsrg003")
                 .Level(30)
@@ -1316,6 +1437,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DERG-003
             _builder.Create(RecipeType.DERG003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("derg003")
                 .Level(30)
@@ -1327,6 +1449,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DARG-003
             _builder.Create(RecipeType.DARG003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("darg003")
                 .Level(30)
@@ -1338,6 +1461,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFRG-003
             _builder.Create(RecipeType.DFRG003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dfrg003")
                 .Level(30)
@@ -1349,6 +1473,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSNK-003
             _builder.Create(RecipeType.DSNK003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dsnk003")
                 .Level(30)
@@ -1360,6 +1485,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DENK-003
             _builder.Create(RecipeType.DENK003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("denk003")
                 .Level(30)
@@ -1371,6 +1497,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DANK-003
             _builder.Create(RecipeType.DANK003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dank003")
                 .Level(30)
@@ -1382,6 +1509,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFNK-003
             _builder.Create(RecipeType.DFNK003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dfnk003")
                 .Level(30)
@@ -1393,6 +1521,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSAR-003
             _builder.Create(RecipeType.DSAR003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dsar003")
                 .Level(30)
@@ -1404,6 +1533,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEAR-003
             _builder.Create(RecipeType.DEAR003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dear003")
                 .Level(30)
@@ -1415,6 +1545,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DAAR-003
             _builder.Create(RecipeType.DAAR003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("daar003")
                 .Level(30)
@@ -1426,6 +1557,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFAR-003
             _builder.Create(RecipeType.DFAR003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dfar003")
                 .Level(30)
@@ -1437,6 +1569,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSHL-003
             _builder.Create(RecipeType.DSHL003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dshl003")
                 .Level(30)
@@ -1448,6 +1581,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEHL-003
             _builder.Create(RecipeType.DEHL003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dehl003")
                 .Level(30)
@@ -1459,6 +1593,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DAHL-003
             _builder.Create(RecipeType.DAHL003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dahl003")
                 .Level(30)
@@ -1470,6 +1605,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFHL-003
             _builder.Create(RecipeType.DFHL003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dfhl003")
                 .Level(30)
@@ -1481,6 +1617,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSBR-003
             _builder.Create(RecipeType.DSBR003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dsbr003")
                 .Level(30)
@@ -1492,6 +1629,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEBR-003
             _builder.Create(RecipeType.DEBR003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("debr003")
                 .Level(30)
@@ -1503,6 +1641,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DABR-003
             _builder.Create(RecipeType.DABR003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dabr003")
                 .Level(30)
@@ -1514,6 +1653,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFBR-003
             _builder.Create(RecipeType.DFBR003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dfbr003")
                 .Level(30)
@@ -1525,6 +1665,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSLG-003
             _builder.Create(RecipeType.DSLG003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dslg003")
                 .Level(30)
@@ -1536,6 +1677,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DELG-003
             _builder.Create(RecipeType.DELG003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("delg003")
                 .Level(30)
@@ -1547,6 +1689,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DALG-003
             _builder.Create(RecipeType.DALG003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dalg003")
                 .Level(30)
@@ -1558,6 +1701,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFLG-003
             _builder.Create(RecipeType.DFLG003, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dflg003")
                 .Level(30)
@@ -1572,6 +1716,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // DHCL-004
             _builder.Create(RecipeType.DHCL004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dhcl004")
                 .Level(38)
@@ -1582,6 +1727,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHBE-004
             _builder.Create(RecipeType.DHBE004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dhbe004")
                 .Level(39)
@@ -1592,6 +1738,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHRG-004
             _builder.Create(RecipeType.DHRG004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dhrg004")
                 .Level(31)
@@ -1602,6 +1749,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHNK-004
             _builder.Create(RecipeType.DHNK004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dhnk004")
                 .Level(32)
@@ -1612,6 +1760,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHAR-004
             _builder.Create(RecipeType.DHAR004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dhar004")
                 .Level(37)
@@ -1622,6 +1771,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHHL-004
             _builder.Create(RecipeType.DHHL004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dhhl004")
                 .Level(34)
@@ -1632,6 +1782,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHBR-004
             _builder.Create(RecipeType.DHBR004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dhbr004")
                 .Level(33)
@@ -1642,6 +1793,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHLG-004
             _builder.Create(RecipeType.DHLG004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dhlg004")
                 .Level(35)
@@ -1652,6 +1804,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLCL-004
             _builder.Create(RecipeType.DLCL004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dlcl004")
                 .Level(38)
@@ -1662,6 +1815,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBE-004
             _builder.Create(RecipeType.DLBE004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dlbe004")
                 .Level(39)
@@ -1672,6 +1826,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLRG-004
             _builder.Create(RecipeType.DLRG004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dlrg004")
                 .Level(31)
@@ -1682,6 +1837,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLNK-004
             _builder.Create(RecipeType.DLNK004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dlnk004")
                 .Level(32)
@@ -1692,6 +1848,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLAR-004
             _builder.Create(RecipeType.DLAR004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dlar004")
                 .Level(37)
@@ -1702,6 +1859,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLHL-004
             _builder.Create(RecipeType.DLHL004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dlhl004")
                 .Level(34)
@@ -1712,6 +1870,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBR-004
             _builder.Create(RecipeType.DLBR004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dlbr004")
                 .Level(33)
@@ -1722,6 +1881,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLLG-004
             _builder.Create(RecipeType.DLLG004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dllg004")
                 .Level(35)
@@ -1732,6 +1892,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSCL-004
             _builder.Create(RecipeType.DSCL004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dscl004")
                 .Level(40)
@@ -1743,6 +1904,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DECL-004
             _builder.Create(RecipeType.DECL004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("decl004")
                 .Level(40)
@@ -1754,6 +1916,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DACL-004
             _builder.Create(RecipeType.DACL004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dacl004")
                 .Level(40)
@@ -1765,6 +1928,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFCL-004
             _builder.Create(RecipeType.DFCL004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dfcl004")
                 .Level(40)
@@ -1776,6 +1940,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSBE-004
             _builder.Create(RecipeType.DSBE004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dsbe004")
                 .Level(40)
@@ -1787,6 +1952,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEBE-004
             _builder.Create(RecipeType.DEBE004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("debe004")
                 .Level(40)
@@ -1798,6 +1964,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DABE-004
             _builder.Create(RecipeType.DABE004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dabe004")
                 .Level(40)
@@ -1809,6 +1976,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFBE-004
             _builder.Create(RecipeType.DFBE004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dfbe004")
                 .Level(40)
@@ -1820,6 +1988,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSRG-004
             _builder.Create(RecipeType.DSRG004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dsrg004")
                 .Level(40)
@@ -1831,6 +2000,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DERG-004
             _builder.Create(RecipeType.DERG004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("derg004")
                 .Level(40)
@@ -1842,6 +2012,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DARG-004
             _builder.Create(RecipeType.DARG004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("darg004")
                 .Level(40)
@@ -1853,6 +2024,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFRG-004
             _builder.Create(RecipeType.DFRG004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dfrg004")
                 .Level(40)
@@ -1864,6 +2036,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSNK-004
             _builder.Create(RecipeType.DSNK004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dsnk004")
                 .Level(40)
@@ -1875,6 +2048,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DENK-004
             _builder.Create(RecipeType.DENK004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("denk004")
                 .Level(40)
@@ -1886,6 +2060,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DANK-004
             _builder.Create(RecipeType.DANK004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dank004")
                 .Level(40)
@@ -1897,6 +2072,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFNK-004
             _builder.Create(RecipeType.DFNK004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dfnk004")
                 .Level(40)
@@ -1908,6 +2084,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSAR-004
             _builder.Create(RecipeType.DSAR004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dsar004")
                 .Level(40)
@@ -1919,6 +2096,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEAR-004
             _builder.Create(RecipeType.DEAR004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dear004")
                 .Level(40)
@@ -1930,6 +2108,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DAAR-004
             _builder.Create(RecipeType.DAAR004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("daar004")
                 .Level(40)
@@ -1941,6 +2120,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFAR-004
             _builder.Create(RecipeType.DFAR004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dfar004")
                 .Level(40)
@@ -1952,6 +2132,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSHL-004
             _builder.Create(RecipeType.DSHL004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dshl004")
                 .Level(40)
@@ -1963,6 +2144,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEHL-004
             _builder.Create(RecipeType.DEHL004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dehl004")
                 .Level(40)
@@ -1974,6 +2156,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DAHL-004
             _builder.Create(RecipeType.DAHL004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dahl004")
                 .Level(40)
@@ -1985,6 +2168,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFHL-004
             _builder.Create(RecipeType.DFHL004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dfhl004")
                 .Level(40)
@@ -1996,6 +2180,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSBR-004
             _builder.Create(RecipeType.DSBR004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dsbr004")
                 .Level(40)
@@ -2007,6 +2192,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEBR-004
             _builder.Create(RecipeType.DEBR004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("debr004")
                 .Level(40)
@@ -2018,6 +2204,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DABR-004
             _builder.Create(RecipeType.DABR004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dabr004")
                 .Level(40)
@@ -2029,6 +2216,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFBR-004
             _builder.Create(RecipeType.DFBR004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dfbr004")
                 .Level(40)
@@ -2040,6 +2228,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSLG-004
             _builder.Create(RecipeType.DSLG004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dslg004")
                 .Level(40)
@@ -2051,6 +2240,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DELG-004
             _builder.Create(RecipeType.DELG004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("delg004")
                 .Level(40)
@@ -2062,6 +2252,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DALG-004
             _builder.Create(RecipeType.DALG004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dalg004")
                 .Level(40)
@@ -2073,6 +2264,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFLG-004
             _builder.Create(RecipeType.DFLG004, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dflg004")
                 .Level(40)
@@ -2087,6 +2279,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // DHCL-005
             _builder.Create(RecipeType.DHCL005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dhcl005")
                 .Level(48)
@@ -2097,6 +2290,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHBE-005
             _builder.Create(RecipeType.DHBE005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dhbe005")
                 .Level(49)
@@ -2107,6 +2301,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHRG-005
             _builder.Create(RecipeType.DHRG005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dhrg005")
                 .Level(41)
@@ -2117,6 +2312,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHNK-005
             _builder.Create(RecipeType.DHNK005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dhnk005")
                 .Level(42)
@@ -2127,6 +2323,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHAR-005
             _builder.Create(RecipeType.DHAR005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dhar005")
                 .Level(47)
@@ -2137,6 +2334,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHHL-005
             _builder.Create(RecipeType.DHHL005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dhhl005")
                 .Level(44)
@@ -2147,6 +2345,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHBR-005
             _builder.Create(RecipeType.DHBR005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dhbr005")
                 .Level(43)
@@ -2157,6 +2356,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHLG-005
             _builder.Create(RecipeType.DHLG005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dhlg005")
                 .Level(45)
@@ -2167,6 +2367,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLCL-005
             _builder.Create(RecipeType.DLCL005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dlcl005")
                 .Level(48)
@@ -2177,6 +2378,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBE-005
             _builder.Create(RecipeType.DLBE005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dlbe005")
                 .Level(49)
@@ -2187,6 +2389,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLRG-005
             _builder.Create(RecipeType.DLRG005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dlrg005")
                 .Level(41)
@@ -2197,6 +2400,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLNK-005
             _builder.Create(RecipeType.DLNK005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dlnk005")
                 .Level(42)
@@ -2207,6 +2411,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLAR-005
             _builder.Create(RecipeType.DLAR005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dlar005")
                 .Level(47)
@@ -2217,6 +2422,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLHL-005
             _builder.Create(RecipeType.DLHL005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dlhl005")
                 .Level(44)
@@ -2227,6 +2433,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBR-005
             _builder.Create(RecipeType.DLBR005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dlbr005")
                 .Level(43)
@@ -2237,6 +2444,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLLG-005
             _builder.Create(RecipeType.DLLG005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dllg005")
                 .Level(45)
@@ -2247,6 +2455,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 // DSCL-005
             _builder.Create(RecipeType.DSCL005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dscl005")
                 .Level(50)
@@ -2258,6 +2467,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DECL-005
             _builder.Create(RecipeType.DECL005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("decl005")
                 .Level(50)
@@ -2269,6 +2479,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DACL-005
             _builder.Create(RecipeType.DACL005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dacl005")
                 .Level(50)
@@ -2280,6 +2491,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFCL-005
             _builder.Create(RecipeType.DFCL005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dfcl005")
                 .Level(50)
@@ -2291,6 +2503,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSBE-005
             _builder.Create(RecipeType.DSBE005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dsbe005")
                 .Level(50)
@@ -2302,6 +2515,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEBE-005
             _builder.Create(RecipeType.DEBE005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("debe005")
                 .Level(50)
@@ -2313,6 +2527,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DABE-005
             _builder.Create(RecipeType.DABE005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dabe005")
                 .Level(50)
@@ -2324,6 +2539,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFBE-005
             _builder.Create(RecipeType.DFBE005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dfbe005")
                 .Level(50)
@@ -2335,6 +2551,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSRG-005
             _builder.Create(RecipeType.DSRG005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dsrg005")
                 .Level(50)
@@ -2346,6 +2563,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DERG-005
             _builder.Create(RecipeType.DERG005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("derg005")
                 .Level(50)
@@ -2357,6 +2575,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DARG-005
             _builder.Create(RecipeType.DARG005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("darg005")
                 .Level(50)
@@ -2368,6 +2587,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFRG-005
             _builder.Create(RecipeType.DFRG005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dfrg005")
                 .Level(50)
@@ -2379,6 +2599,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSNK-005
             _builder.Create(RecipeType.DSNK005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dsnk005")
                 .Level(50)
@@ -2390,6 +2611,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DENK-005
             _builder.Create(RecipeType.DENK005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("denk005")
                 .Level(50)
@@ -2401,6 +2623,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DANK-005
             _builder.Create(RecipeType.DANK005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dank005")
                 .Level(50)
@@ -2412,6 +2635,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFNK-005
             _builder.Create(RecipeType.DFNK005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dfnk005")
                 .Level(50)
@@ -2423,6 +2647,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSAR-005
             _builder.Create(RecipeType.DSAR005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dsar005")
                 .Level(50)
@@ -2434,6 +2659,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEAR-005
             _builder.Create(RecipeType.DEAR005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dear005")
                 .Level(50)
@@ -2445,6 +2671,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DAAR-005
             _builder.Create(RecipeType.DAAR005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("daar005")
                 .Level(50)
@@ -2456,6 +2683,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFAR-005
             _builder.Create(RecipeType.DFAR005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dfar005")
                 .Level(50)
@@ -2467,6 +2695,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSHL-005
             _builder.Create(RecipeType.DSHL005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dshl005")
                 .Level(50)
@@ -2478,6 +2707,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEHL-005
             _builder.Create(RecipeType.DEHL005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dehl005")
                 .Level(50)
@@ -2489,6 +2719,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DAHL-005
             _builder.Create(RecipeType.DAHL005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dahl005")
                 .Level(50)
@@ -2500,6 +2731,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFHL-005
             _builder.Create(RecipeType.DFHL005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dfhl005")
                 .Level(50)
@@ -2511,6 +2743,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSBR-005
             _builder.Create(RecipeType.DSBR005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dsbr005")
                 .Level(50)
@@ -2522,6 +2755,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DEBR-005
             _builder.Create(RecipeType.DEBR005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("debr005")
                 .Level(50)
@@ -2533,6 +2767,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DABR-005
             _builder.Create(RecipeType.DABR005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dabr005")
                 .Level(50)
@@ -2544,6 +2779,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFBR-005
             _builder.Create(RecipeType.DFBR005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dfbr005")
                 .Level(50)
@@ -2555,6 +2791,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DSLG-005
             _builder.Create(RecipeType.DSLG005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dslg005")
                 .Level(50)
@@ -2566,6 +2803,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DELG-005
             _builder.Create(RecipeType.DELG005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("delg005")
                 .Level(50)
@@ -2577,6 +2815,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DALG-005
             _builder.Create(RecipeType.DALG005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dalg005")
                 .Level(50)
@@ -2588,6 +2827,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DFLG-005
             _builder.Create(RecipeType.DFLG005, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dflg005")
                 .Level(40)
@@ -2602,6 +2842,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // DHCL-001 A
             _builder.Create(RecipeType.DHCL001A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dhcl001a")
                 .Level(13)
@@ -2612,6 +2853,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHBE-001 A
             _builder.Create(RecipeType.DHBE001A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dhbe001a")
                 .Level(14)
@@ -2622,6 +2864,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHRG-001 A
             _builder.Create(RecipeType.DHRG001A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dhrg001a")
                 .Level(6)
@@ -2632,6 +2875,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHNK-001 A
             _builder.Create(RecipeType.DHNK001A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dhnk001a")
                 .Level(7)
@@ -2642,6 +2886,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHAR-001 A
             _builder.Create(RecipeType.DHAR001A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dhar001a")
                 .Level(12)
@@ -2652,6 +2897,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHHL-001 A
             _builder.Create(RecipeType.DHHL001A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dhhl001a")
                 .Level(9)
@@ -2662,6 +2908,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHBR-001 A
             _builder.Create(RecipeType.DHBR001A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dhbr001a")
                 .Level(8)
@@ -2672,6 +2919,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHLG-001 A
             _builder.Create(RecipeType.DHLG001A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dhlg001a")
                 .Level(10)
@@ -2682,6 +2930,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLCL-001 A
             _builder.Create(RecipeType.DLCL001A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dlcl001a")
                 .Level(13)
@@ -2692,6 +2941,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBE-001 A
             _builder.Create(RecipeType.DLBE001A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dlbe001a")
                 .Level(14)
@@ -2702,6 +2952,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLRG-001 A
             _builder.Create(RecipeType.DLRG001A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dlrg001a")
                 .Level(6)
@@ -2712,6 +2963,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLNK-001 A
             _builder.Create(RecipeType.DLNK001A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dlnk001a")
                 .Level(7)
@@ -2722,6 +2974,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLAR-001 A
             _builder.Create(RecipeType.DLAR001A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dlar001a")
                 .Level(12)
@@ -2732,6 +2985,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLHL-001 A
             _builder.Create(RecipeType.DLHL001A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dlhl001a")
                 .Level(9)
@@ -2742,6 +2996,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBR-001 A
             _builder.Create(RecipeType.DLBR001A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dlbr001a")
                 .Level(8)
@@ -2752,6 +3007,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLLG-001 A
             _builder.Create(RecipeType.DLLG001A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dllg001a")
                 .Level(10)
@@ -2765,6 +3021,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // DHCL-002 A
             _builder.Create(RecipeType.DHCL002A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dhcl002a")
                 .Level(23)
@@ -2775,6 +3032,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHBE-002 A
             _builder.Create(RecipeType.DHBE002A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dhbe002a")
                 .Level(24)
@@ -2785,6 +3043,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHRG-002 A
             _builder.Create(RecipeType.DHRG002A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dhrg002a")
                 .Level(16)
@@ -2795,6 +3054,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHNK-002 A
             _builder.Create(RecipeType.DHNK002A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dhnk002a")
                 .Level(17)
@@ -2805,6 +3065,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHAR-002 A
             _builder.Create(RecipeType.DHAR002A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dhar002a")
                 .Level(22)
@@ -2815,6 +3076,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHHL-002 A
             _builder.Create(RecipeType.DHHL002A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dhhl002a")
                 .Level(19)
@@ -2825,6 +3087,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHBR-002 A
             _builder.Create(RecipeType.DHBR002A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dhbr002a")
                 .Level(18)
@@ -2835,6 +3098,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHLG-002 A
             _builder.Create(RecipeType.DHLG002A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dhlg002a")
                 .Level(20)
@@ -2845,6 +3109,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLCL-002 A
             _builder.Create(RecipeType.DLCL002A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dlcl002a")
                 .Level(23)
@@ -2855,6 +3120,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBE-002 A
             _builder.Create(RecipeType.DLBE002A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dlbe002a")
                 .Level(24)
@@ -2865,6 +3131,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLRG-002 A
             _builder.Create(RecipeType.DLRG002A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dlrg002a")
                 .Level(16)
@@ -2875,6 +3142,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLNK-002 A
             _builder.Create(RecipeType.DLNK002A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dlnk002a")
                 .Level(17)
@@ -2885,6 +3153,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLAR-002 A
             _builder.Create(RecipeType.DLAR002A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dlar002a")
                 .Level(22)
@@ -2895,6 +3164,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLHL-002 A
             _builder.Create(RecipeType.DLHL002A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dlhl002a")
                 .Level(19)
@@ -2905,6 +3175,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBR-002 A
             _builder.Create(RecipeType.DLBR002A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dlbr002a")
                 .Level(18)
@@ -2915,6 +3186,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLLG-002 A
             _builder.Create(RecipeType.DLLG002A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dllg002a")
                 .Level(20)
@@ -2928,6 +3200,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // DHCL-003 A
             _builder.Create(RecipeType.DHCL003A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dhcl003a")
                 .Level(33)
@@ -2938,6 +3211,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHBE-003 A
             _builder.Create(RecipeType.DHBE003A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dhbe003a")
                 .Level(34)
@@ -2948,6 +3222,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHRG-003 A
             _builder.Create(RecipeType.DHRG003A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dhrg003a")
                 .Level(26)
@@ -2958,6 +3233,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHNK-003 A
             _builder.Create(RecipeType.DHNK003A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dhnk003a")
                 .Level(27)
@@ -2968,6 +3244,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHAR-003 A
             _builder.Create(RecipeType.DHAR003A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dhar003a")
                 .Level(32)
@@ -2978,6 +3255,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHHL-003 A
             _builder.Create(RecipeType.DHHL003A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dhhl003a")
                 .Level(29)
@@ -2988,6 +3266,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHBR-003 A
             _builder.Create(RecipeType.DHBR003A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dhbr003a")
                 .Level(28)
@@ -2998,6 +3277,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHLG-003 A
             _builder.Create(RecipeType.DHLG003A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dhlg003a")
                 .Level(30)
@@ -3008,6 +3288,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLCL-003 A
             _builder.Create(RecipeType.DLCL003A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dlcl003a")
                 .Level(33)
@@ -3018,6 +3299,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBE-003 A
             _builder.Create(RecipeType.DLBE003A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dlbe003a")
                 .Level(34)
@@ -3028,6 +3310,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLRG-003 A
             _builder.Create(RecipeType.DLRG003A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dlrg003a")
                 .Level(26)
@@ -3038,6 +3321,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLNK-003 A
             _builder.Create(RecipeType.DLNK003A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dlnk003a")
                 .Level(27)
@@ -3048,6 +3332,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLAR-003 A
             _builder.Create(RecipeType.DLAR003A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dlar003a")
                 .Level(32)
@@ -3058,6 +3343,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLHL-003 A
             _builder.Create(RecipeType.DLHL003A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dlhl003a")
                 .Level(29)
@@ -3068,6 +3354,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBR-003 A
             _builder.Create(RecipeType.DLBR003A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dlbr003a")
                 .Level(28)
@@ -3078,6 +3365,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLLG-003 A
             _builder.Create(RecipeType.DLLG003A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dllg003a")
                 .Level(30)
@@ -3091,6 +3379,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // DHCL-004 A
             _builder.Create(RecipeType.DHCL004A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dhcl004a")
                 .Level(43)
@@ -3101,6 +3390,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHBE-004 A
             _builder.Create(RecipeType.DHBE004A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dhbe004a")
                 .Level(44)
@@ -3111,6 +3401,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHRG-004 A
             _builder.Create(RecipeType.DHRG004A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dhrg004a")
                 .Level(36)
@@ -3121,6 +3412,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHNK-004 A
             _builder.Create(RecipeType.DHNK004A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dhnk004a")
                 .Level(37)
@@ -3131,6 +3423,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHAR-004 A
             _builder.Create(RecipeType.DHAR004A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dhar004a")
                 .Level(42)
@@ -3141,6 +3434,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHHL-004 A
             _builder.Create(RecipeType.DHHL004A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dhhl004a")
                 .Level(39)
@@ -3151,6 +3445,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHBR-004 A
             _builder.Create(RecipeType.DHBR004A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dhbr004a")
                 .Level(38)
@@ -3161,6 +3456,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DHLG-004 A
             _builder.Create(RecipeType.DHLG004A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dhlg004a")
                 .Level(40)
@@ -3171,6 +3467,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLCL-004 A
             _builder.Create(RecipeType.DLCL004A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("dlcl004a")
                 .Level(43)
@@ -3181,6 +3478,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBE-004 A
             _builder.Create(RecipeType.DLBE004A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dlbe004a")
                 .Level(44)
@@ -3191,6 +3489,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLRG-004 A
             _builder.Create(RecipeType.DLRG004A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Ring)
                 .Resref("dlrg004a")
                 .Level(36)
@@ -3201,6 +3500,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLNK-004 A
             _builder.Create(RecipeType.DLNK004A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Necklace)
                 .Resref("dlnk004a")
                 .Level(37)
@@ -3211,6 +3511,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLAR-004 A
             _builder.Create(RecipeType.DLAR004A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Breastplate)
                 .Resref("dlar004a")
                 .Level(42)
@@ -3221,6 +3522,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLHL-004 A
             _builder.Create(RecipeType.DLHL004A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dlhl004a")
                 .Level(39)
@@ -3231,6 +3533,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBR-004 A
             _builder.Create(RecipeType.DLBR004A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bracer)
                 .Resref("dlbr004a")
                 .Level(38)
@@ -3241,6 +3544,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLLG-004 A
             _builder.Create(RecipeType.DLLG004A, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Legging)
                 .Resref("dllg004a")
                 .Level(40)

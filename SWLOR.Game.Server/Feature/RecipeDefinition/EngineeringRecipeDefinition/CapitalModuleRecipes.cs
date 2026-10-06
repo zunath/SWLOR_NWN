@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Advanced Thrusters
             _builder.Create(RecipeType.AdvancedThrusters, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("cap_thrust1")
                 .Level(52)
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Bulwark Shield Generator
             _builder.Create(RecipeType.BulwarkShieldGenerator, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("bulwarkgen")
                 .Level(52)
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Dedicated Targeting Sensor Array
             _builder.Create(RecipeType.TargetingArray, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("cap_target1")
                 .Level(52)
@@ -55,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Heavy Turbolaser Cannon
             _builder.Create(RecipeType.Turbolaser1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("turbolas1")
                 .Level(52)
@@ -67,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Dual Turbolaser Cannon
             _builder.Create(RecipeType.Turbolaser2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("turbolas2")
                 .Level(52)
@@ -79,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Quad Turbolaser Cannon
             _builder.Create(RecipeType.Turbolaser3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("turbolas3")
                 .Level(52)
@@ -91,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Laser Cannon Battery I
             _builder.Create(RecipeType.LaserCannonBattery1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("lasbattery1")
                 .Level(52)
@@ -103,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Quad Laser Cannons
             _builder.Create(RecipeType.QuadLaserCannon1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("cap_quadlas1")
                 .Level(52)
@@ -115,6 +123,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Quad Laser Cannon Array
             _builder.Create(RecipeType.QuadLaserCannon2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("cap_quadlas2")
                 .Level(52)
@@ -127,6 +136,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Quad Laser Cannon Battery
             _builder.Create(RecipeType.QuadLaserCannon3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("cap_quadlas3")
                 .Level(52)
@@ -139,6 +149,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Redundant Shield Generator
             _builder.Create(RecipeType.RedundantShieldGenerator, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("cap_shields1")
                 .Level(52)
@@ -151,6 +162,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Reinforced Plating
             _builder.Create(RecipeType.ReinforcedPlating, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("cap_armor1")
                 .Level(52)
@@ -163,6 +175,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Repair Field Generator
             _builder.Create(RecipeType.RepairFieldGenerator, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("repairfield")
                 .Level(52)
@@ -175,6 +188,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Storm Cannon
             _builder.Create(RecipeType.StormCannon, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("storm_cann")
                 .Level(52)
@@ -187,6 +201,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Logistics Nexus Configuration
             _builder.Create(RecipeType.LogisticsNexusConfig, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("cap_indus")
                 .Level(52)
@@ -199,6 +214,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Skirmisher Configuration
             _builder.Create(RecipeType.SkirmisherConfig, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("cap_skirm")
                 .Level(52)
@@ -211,6 +227,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Warship Configuration
             _builder.Create(RecipeType.WarshipConfig1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("cap_warship")
                 .Level(52)
@@ -223,6 +240,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Strip Miner Configuration
             _builder.Create(RecipeType.StripMiner, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("cap_minlas")
                 .Level(52)
@@ -235,6 +253,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Weapons Computer
             _builder.Create(RecipeType.WeaponsComputer, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("cap_wcomp1")
                 .Level(52)
@@ -247,6 +266,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital E-War Module
             _builder.Create(RecipeType.CapitalEWar, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("cap_ewar")
                 .Level(52)
@@ -259,6 +279,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital E-War Module
             _builder.Create(RecipeType.CapitalPowerDiverter, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalShipModule)
                 .Resref("cap_pwdiv")
                 .Level(52)
@@ -271,6 +292,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Assault Concussion Missile Launcher I
             _builder.Create(RecipeType.AssaultConcMissileLauncher, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("acm_launch_1")
                 .Level(52)

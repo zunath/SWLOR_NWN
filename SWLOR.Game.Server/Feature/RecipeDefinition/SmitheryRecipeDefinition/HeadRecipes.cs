@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Battlemaster Helmet
             _builder.Create(RecipeType.BattlemasterHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("bm_helmet")
                 .Level(4)
@@ -37,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Spiritmaster Cap
             _builder.Create(RecipeType.SpiritmasterCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("sm_cap")
                 .Level(4)
@@ -47,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Combat Cap
             _builder.Create(RecipeType.CombatCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("com_cap")
                 .Level(4)
@@ -57,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Advent Helmet
             _builder.Create(RecipeType.AdventHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("advent_helmet")
                 .Level(10)
@@ -69,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Amateur Helmet
             _builder.Create(RecipeType.AmateurHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("engi_helmet_1")
                 .Level(10)
@@ -80,6 +85,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Cloth Helmet
             _builder.Create(RecipeType.ClothHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("fabr_helmet_1")
                 .Level(10)
@@ -91,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chef Helmet
             _builder.Create(RecipeType.ChefHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("chef_helmet_1")
                 .Level(10)
@@ -105,6 +112,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Titan Helmet
             _builder.Create(RecipeType.TitanHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("tit_helmet")
                 .Level(14)
@@ -115,6 +123,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vivid Cap
             _builder.Create(RecipeType.VividCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("viv_cap")
                 .Level(14)
@@ -125,6 +134,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Valor Cap
             _builder.Create(RecipeType.ValorCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("val_cap")
                 .Level(14)
@@ -135,6 +145,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Frontier Helmet
             _builder.Create(RecipeType.FrontierHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("frontier_helmet")
                 .Level(20)
@@ -146,6 +157,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Worker Helmet
             _builder.Create(RecipeType.WorkerHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("engi_helmet_2")
                 .Level(20)
@@ -157,6 +169,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Linen Helmet
             _builder.Create(RecipeType.LinenHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("fabr_helmet_2")
                 .Level(20)
@@ -168,6 +181,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Velveteen Helmet
             _builder.Create(RecipeType.VelveteenHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("chef_helmet_2")
                 .Level(20)
@@ -182,6 +196,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Quark Helmet
             _builder.Create(RecipeType.QuarkHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("qk_helmet")
                 .Level(24)
@@ -192,6 +207,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Reginal Cap
             _builder.Create(RecipeType.ReginalCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("reg_cap")
                 .Level(24)
@@ -202,6 +218,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Forza Cap
             _builder.Create(RecipeType.ForzaCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("for_cap")
                 .Level(24)
@@ -212,6 +229,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Majestic Helmet
             _builder.Create(RecipeType.MajesticHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("majestic_helmet")
                 .Level(30)
@@ -223,6 +241,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Mechanic Helmet
             _builder.Create(RecipeType.MechanicHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("engi_helmet_3")
                 .Level(30)
@@ -234,6 +253,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Designer Helmet
             _builder.Create(RecipeType.DesignerHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("fabr_helmet_3")
                 .Level(30)
@@ -245,6 +265,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Silk Helmet
             _builder.Create(RecipeType.SilkHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("chef_helmet_3")
                 .Level(30)
@@ -259,6 +280,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Argos Helmet
             _builder.Create(RecipeType.ArgosHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("ar_helmet")
                 .Level(34)
@@ -269,6 +291,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Grenada Cap
             _builder.Create(RecipeType.GrenadaCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("gr_cap")
                 .Level(34)
@@ -279,6 +302,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Survival Cap
             _builder.Create(RecipeType.SurvivalCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("sur_cap")
                 .Level(34)
@@ -289,6 +313,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Dream Helmet
             _builder.Create(RecipeType.DreamHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("dream_helmet")
                 .Level(40)
@@ -300,6 +325,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Devotion Helmet
             _builder.Create(RecipeType.DevotionHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("engi_helmet_4")
                 .Level(40)
@@ -311,6 +337,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Oasis Helmet
             _builder.Create(RecipeType.OasisHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("fabr_helmet_4")
                 .Level(40)
@@ -322,6 +349,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vintage Helmet
             _builder.Create(RecipeType.VintageHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("chef_helmet_4")
                 .Level(40)
@@ -336,6 +364,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Eclipse Helmet
             _builder.Create(RecipeType.EclipseHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("ec_helmet")
                 .Level(44)
@@ -346,6 +375,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Transcendent Cap
             _builder.Create(RecipeType.TranscendentCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("tran_cap")
                 .Level(44)
@@ -356,6 +386,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Supreme Cap
             _builder.Create(RecipeType.SupremeCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("sup_cap")
                 .Level(44)
@@ -366,6 +397,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Eternal Helmet
             _builder.Create(RecipeType.EternalHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("eternal_helmet")
                 .Level(50)
@@ -377,6 +409,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Skysteel Helmet
             _builder.Create(RecipeType.SkysteelHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("engi_helmet_5")
                 .Level(50)
@@ -388,6 +421,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Rose Helmet
             _builder.Create(RecipeType.RoseHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("fabr_helmet_5")
                 .Level(50)
@@ -399,6 +433,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Moonflame Helmet
             _builder.Create(RecipeType.MoonflameHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("chef_helmet_5")
                 .Level(50)
@@ -410,6 +445,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chaos Helmet
             _builder.Create(RecipeType.ChaosHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("ch_helmet")
                 .Level(52)
@@ -428,6 +464,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Magus Cap
             _builder.Create(RecipeType.MagusCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("mag_cap")
                 .Level(52)
@@ -446,6 +483,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Immortal Cap
             _builder.Create(RecipeType.ImmortalCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("imm_cap")
                 .Level(52)
@@ -466,6 +504,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Warden Helmet
             _builder.Create(RecipeType.WardenHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("fld_bul_helm")
                 .Level(9)
@@ -476,6 +515,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Mystic Cap
             _builder.Create(RecipeType.MysticCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("fld_chn_cap")
                 .Level(9)
@@ -486,6 +526,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vanguard Cap
             _builder.Create(RecipeType.VanguardCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("fld_skm_cap")
                 .Level(9)
@@ -499,6 +540,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Bastion Helmet
             _builder.Create(RecipeType.BastionHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("vet_bul_helm")
                 .Level(19)
@@ -509,6 +551,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Oracle Cap
             _builder.Create(RecipeType.OracleCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("vet_chn_cap")
                 .Level(19)
@@ -519,6 +562,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Onslaught Cap
             _builder.Create(RecipeType.OnslaughtCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("vet_skm_cap")
                 .Level(19)
@@ -532,6 +576,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Sentinel Helmet
             _builder.Create(RecipeType.SentinelHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("prm_bul_helm")
                 .Level(29)
@@ -542,6 +587,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Arcanist Cap
             _builder.Create(RecipeType.ArcanistCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("prm_chn_cap")
                 .Level(29)
@@ -552,6 +598,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Maverick Cap
             _builder.Create(RecipeType.MaverickCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("prm_skm_cap")
                 .Level(29)
@@ -565,6 +612,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Aegis Helmet
             _builder.Create(RecipeType.AegisHelmet, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Helmet)
                 .Resref("asc_bul_helm")
                 .Level(39)
@@ -575,6 +623,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Luminary Cap
             _builder.Create(RecipeType.LuminaryCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("asc_chn_cap")
                 .Level(39)
@@ -585,6 +634,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Apex Cap
             _builder.Create(RecipeType.ApexCap, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Cap)
                 .Resref("asc_skm_cap")
                 .Level(39)

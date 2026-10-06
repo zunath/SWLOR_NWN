@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Battlemaster Belt
             _builder.Create(RecipeType.BattlemasterBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("bm_belt")
                 .Level(9)
@@ -37,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Spiritmaster Belt
             _builder.Create(RecipeType.SpiritmasterBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("sm_belt")
                 .Level(9)
@@ -47,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Combat Belt
             _builder.Create(RecipeType.CombatBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("com_belt")
                 .Level(9)
@@ -57,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Advent Belt
             _builder.Create(RecipeType.AdventBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("advent_belt")
                 .Level(10)
@@ -68,6 +72,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Amateur Belt
             _builder.Create(RecipeType.AmateurBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("engi_belt_1")
                 .Level(10)
@@ -79,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Cloth Belt
             _builder.Create(RecipeType.ClothBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("fabr_cloak_1")
                 .Level(10)
@@ -90,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chef Belt
             _builder.Create(RecipeType.ChefBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("chef_belt_1")
                 .Level(10)
@@ -105,6 +112,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Titan Belt
             _builder.Create(RecipeType.TitanBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("tit_belt")
                 .Level(19)
@@ -115,6 +123,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vivid Belt
             _builder.Create(RecipeType.VividBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("viv_belt")
                 .Level(19)
@@ -125,6 +134,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Valor Belt
             _builder.Create(RecipeType.ValorBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("val_belt")
                 .Level(19)
@@ -135,6 +145,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Frontier Belt
             _builder.Create(RecipeType.FrontierBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("frontier_belt")
                 .Level(20)
@@ -146,6 +157,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Worker Belt
             _builder.Create(RecipeType.WorkerBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("engi_belt_2")
                 .Level(20)
@@ -157,6 +169,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Linen Belt
             _builder.Create(RecipeType.LinenBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("fabr_belt_2")
                 .Level(20)
@@ -168,6 +181,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Velveteen Belt
             _builder.Create(RecipeType.VelveteenBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("chef_belt_2")
                 .Level(20)
@@ -182,6 +196,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Quark Belt
             _builder.Create(RecipeType.QuarkBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("qk_belt")
                 .Level(29)
@@ -192,6 +207,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Reginal Belt
             _builder.Create(RecipeType.ReginalBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("reg_belt")
                 .Level(29)
@@ -202,6 +218,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Forza Belt
             _builder.Create(RecipeType.ForzaBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("for_belt")
                 .Level(29)
@@ -212,6 +229,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Majestic Belt
             _builder.Create(RecipeType.MajesticBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("majestic_belt")
                 .Level(30)
@@ -223,6 +241,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Mechanic Belt
             _builder.Create(RecipeType.MechanicBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("engi_belt_3")
                 .Level(30)
@@ -234,6 +253,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Designer Belt
             _builder.Create(RecipeType.DesignerBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("fabr_belt_3")
                 .Level(30)
@@ -245,6 +265,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Silk Belt
             _builder.Create(RecipeType.SilkBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("chef_belt_3")
                 .Level(30)
@@ -259,6 +280,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Argos Belt
             _builder.Create(RecipeType.ArgosBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("ar_belt")
                 .Level(39)
@@ -269,6 +291,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Grenada Belt
             _builder.Create(RecipeType.GrenadaBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("gre_belt")
                 .Level(39)
@@ -279,6 +302,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Survival Belt
             _builder.Create(RecipeType.SurvivalBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("sur_belt")
                 .Level(39)
@@ -289,6 +313,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Dream Belt
             _builder.Create(RecipeType.DreamBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("dream_belt")
                 .Level(40)
@@ -300,6 +325,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Devotion Belt
             _builder.Create(RecipeType.DevotionBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("engi_belt_4")
                 .Level(40)
@@ -311,6 +337,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Oasis Belt
             _builder.Create(RecipeType.OasisBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("fabr_belt_4")
                 .Level(40)
@@ -322,6 +349,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vintage Belt
             _builder.Create(RecipeType.VintageBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("chef_belt_4")
                 .Level(40)
@@ -336,6 +364,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Eclipse Belt
             _builder.Create(RecipeType.EclipseBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("ec_belt")
                 .Level(49)
@@ -346,6 +375,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Transcendent Belt
             _builder.Create(RecipeType.TranscendentBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("tran_belt")
                 .Level(49)
@@ -356,6 +386,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Supreme Belt
             _builder.Create(RecipeType.SupremeBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("sup_belt")
                 .Level(49)
@@ -366,6 +397,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Eternal Belt
             _builder.Create(RecipeType.EternalBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("eternal_belt")
                 .Level(50)
@@ -377,6 +409,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Skysteel Belt
             _builder.Create(RecipeType.SkysteelBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("engi_belt_5")
                 .Level(50)
@@ -388,6 +421,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Rose Belt
             _builder.Create(RecipeType.RoseBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("fabr_belt_5")
                 .Level(50)
@@ -399,6 +433,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Moonflame Belt
             _builder.Create(RecipeType.MoonflameBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("chef_belt_5")
                 .Level(50)
@@ -410,6 +445,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chaos Belt
             _builder.Create(RecipeType.ChaosBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("ch_belt")
                 .Level(52)
@@ -428,6 +464,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Magus Belt
             _builder.Create(RecipeType.MagusBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("mag_belt")
                 .Level(52)
@@ -446,6 +483,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Immortal Belt
             _builder.Create(RecipeType.ImmortalBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("imm_belt")
                 .Level(52)
@@ -466,6 +504,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Warden Belt
             _builder.Create(RecipeType.WardenBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("fld_bul_belt")
                 .Level(14)
@@ -476,6 +515,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Mystic Belt
             _builder.Create(RecipeType.MysticBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("fld_chn_belt")
                 .Level(14)
@@ -486,6 +526,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vanguard Belt
             _builder.Create(RecipeType.VanguardBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("fld_skm_belt")
                 .Level(14)
@@ -499,6 +540,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Bastion Belt
             _builder.Create(RecipeType.BastionBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("vet_bul_belt")
                 .Level(24)
@@ -509,6 +551,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Oracle Belt
             _builder.Create(RecipeType.OracleBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("vet_chn_belt")
                 .Level(24)
@@ -519,6 +562,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Onslaught Belt
             _builder.Create(RecipeType.OnslaughtBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("vet_skm_belt")
                 .Level(24)
@@ -532,6 +576,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Sentinel Belt
             _builder.Create(RecipeType.SentinelBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("prm_bul_belt")
                 .Level(34)
@@ -542,6 +587,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Arcanist Belt
             _builder.Create(RecipeType.ArcanistBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("prm_chn_belt")
                 .Level(34)
@@ -552,6 +598,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Maverick Belt
             _builder.Create(RecipeType.MaverickBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("prm_skm_belt")
                 .Level(34)
@@ -565,6 +612,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Aegis Belt
             _builder.Create(RecipeType.AegisBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("asc_bul_belt")
                 .Level(44)
@@ -575,6 +623,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Luminary Belt
             _builder.Create(RecipeType.LuminaryBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("asc_chn_belt")
                 .Level(44)
@@ -585,6 +634,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Apex Belt
             _builder.Create(RecipeType.ApexBelt, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("asc_skm_belt")
                 .Level(44)

@@ -1,0 +1,52 @@
+{
+  "StartedUtc": "2026-10-06T04:10:29.9444602Z",
+  "FinishedUtc": "2026-10-06T04:10:37.4368244Z",
+  "Total": 6,
+  "Passed": 6,
+  "Failed": 0,
+  "Skipped": 0,
+  "Results": [
+    {
+      "Name": "Crafting journal replays partial stack debits and persisted reward deliveries exactly once",
+      "Category": "Crafting",
+      "Outcome": 0,
+      "Message": "",
+      "DurationMilliseconds": 1085
+    },
+    {
+      "Name": "Crafting profession stats cannot leak into other skills or global combat stats",
+      "Category": "Crafting",
+      "Outcome": 0,
+      "Message": "",
+      "DurationMilliseconds": 488
+    },
+    {
+      "Name": "Crafting receipt replays blueprint fees and the final licensed run without a second charge",
+      "Category": "Crafting",
+      "Outcome": 0,
+      "Message": "",
+      "DurationMilliseconds": 1061
+    },
+    {
+      "Name": "Crafting reserves exact serialized quantities and leaves the remaining stack intact",
+      "Category": "Crafting",
+      "Outcome": 0,
+      "Message": "",
+      "DurationMilliseconds": 1072
+    },
+    {
+      "Name": "Crafting reserves no inventory when a required material is missing",
+      "Category": "Crafting",
+      "Outcome": 0,
+      "Message": "",
+      "DurationMilliseconds": 821
+    },
+    {
+      "Name": "Crafting serialization leaves selected enhancement stacks untouched before commitment",
+      "Category": "Crafting",
+      "Outcome": 0,
+      "Message": "",
+      "DurationMilliseconds": 513
+    }
+  ]
+}

@@ -11,6 +11,8 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -36,6 +38,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool _hasBlueprint;
         private static readonly BlueprintBonuses _blueprintBonuses = new();
 
+        public const string CraftActionsElement = "CraftActions";
+        private readonly List<string> _actionEventKeys = new();
         public const string CraftContentElement = "CraftContent";
         public const string CraftContentPartial = "CraftContentPartial";
         private static readonly Dictionary<uint, CraftViewModel> OpenCraftViews = new();
@@ -44,6 +48,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private CraftSessionSettlement _settlement = new();
         private bool _isSettling;
         private int _enhancementProgressPenalty;
+        private readonly Dictionary<int, uint> _selectedEnhancementItems = new();
         private readonly List<string> _actionHistory = new();
 
         public bool IsClosable
@@ -279,57 +284,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public bool IsRapidSynthesisEnabled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-        public bool IsCarefulSynthesisEnabled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-        public bool IsBasicTouchEnabled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-        public bool IsStandardTouchEnabled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-        public bool IsPreciseTouchEnabled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-        public bool IsMastersMendEnabled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-        public bool IsSteadyHandEnabled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-        public bool IsMuscleMemoryEnabled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-        public bool IsVenerationEnabled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-        public bool IsWasteNotEnabled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
         public string StatusText
         {
             get => Get<string>();
@@ -342,32 +296,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public bool IsBasicSynthesisEnabled { get => Get<bool>(); set => Set(value); }
+        public string ConditionSummary { get => Get<string>(); set => Set(value); }
+        public string ProfileSummary { get => Get<string>(); set => Set(value); }
+        public string CraftHelp { get => Get<string>(); set => Set(value); }
+        public bool IsHelpVisible { get => Get<bool>(); set => Set(value); }
+        public Action OnToggleCraftHelp() => () => IsHelpVisible = !IsHelpVisible;
         public string BuffSummary { get => Get<string>(); set => Set(value); }
         public string QualityRewards { get => Get<string>(); set => Set(value); }
         public GuiBindingList<string> ActionHistory { get => Get<GuiBindingList<string>>(); set => Set(value); }
-        public string BasicSynthesisText { get => Get<string>(); set => Set(value); }
-        public string BasicSynthesisTooltip { get => Get<string>(); set => Set(value); }
-        public string RapidSynthesisText { get => Get<string>(); set => Set(value); }
-        public string RapidSynthesisTooltip { get => Get<string>(); set => Set(value); }
-        public string CarefulSynthesisText { get => Get<string>(); set => Set(value); }
-        public string CarefulSynthesisTooltip { get => Get<string>(); set => Set(value); }
-        public string BasicTouchText { get => Get<string>(); set => Set(value); }
-        public string BasicTouchTooltip { get => Get<string>(); set => Set(value); }
-        public string StandardTouchText { get => Get<string>(); set => Set(value); }
-        public string StandardTouchTooltip { get => Get<string>(); set => Set(value); }
-        public string PreciseTouchText { get => Get<string>(); set => Set(value); }
-        public string PreciseTouchTooltip { get => Get<string>(); set => Set(value); }
-        public string MastersMendText { get => Get<string>(); set => Set(value); }
-        public string MastersMendTooltip { get => Get<string>(); set => Set(value); }
-        public string SteadyHandText { get => Get<string>(); set => Set(value); }
-        public string SteadyHandTooltip { get => Get<string>(); set => Set(value); }
-        public string MuscleMemoryText { get => Get<string>(); set => Set(value); }
-        public string MuscleMemoryTooltip { get => Get<string>(); set => Set(value); }
-        public string VenerationText { get => Get<string>(); set => Set(value); }
-        public string VenerationTooltip { get => Get<string>(); set => Set(value); }
-        public string WasteNotText { get => Get<string>(); set => Set(value); }
-        public string WasteNotTooltip { get => Get<string>(); set => Set(value); }
 
         private readonly List<string> _components = new();
         private readonly List<ItemProperty> _itemPropertiesEnhancement1 = new();
@@ -401,9 +337,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 previous.OnCloseWindow().Invoke();
             OpenCraftViews[Player] = this;
             _components.Clear();
+            IsHelpVisible = false;
+            CraftHelp = "Fill progress to finish immediately. Quality improves rewards. Hover over each action for exact costs, gains and risks. Conditions apply to this turn; every accepted action advances the forecast. No timer.";
             _actionHistory.Clear();
             _enhancementProgressPenalty = 0;
 
+            if (CraftingJournal.Get(Player) is { } pending)
+            {
+                RestoreTransaction(pending);
+                return;
+            }
             _recipe = initialPayload.Recipe;
             _blueprintItem = initialPayload.BlueprintItem;
             var recipe = Craft.GetRecipe(_recipe);
@@ -437,95 +380,63 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RecipeDescription = recipeDescription;
             RecipeColors = recipeColors;
 
-            IsRapidSynthesisEnabled = false;
-            IsCarefulSynthesisEnabled = false;
 
-            IsBasicTouchEnabled = false;
-            IsStandardTouchEnabled = false;
-            IsPreciseTouchEnabled = false;
 
-            IsMastersMendEnabled = false;
-            IsSteadyHandEnabled = false;
-            IsMuscleMemoryEnabled = false;
 
-            IsVenerationEnabled = false;
-            IsWasteNotEnabled = false;
 
             LoadCraftingState();
             RefreshRecipeStats();
-            ChangePartialView(CraftContentElement, CraftContentPartial);
+            RestoreCraftContent();
         }
 
-        protected override void OnModalClosedRestore() => ChangePartialView(CraftContentElement, CraftContentPartial);
+        private void RestoreCraftContent() => SwapNestedPartialView(CraftContentElement, CraftContentPartial, onAfterApply: RefreshActionLayout);
+        protected override void OnModalClosedRestore() => RestoreCraftContent();
 
-        private CraftSession CreateSessionSnapshot()
+        private CraftSession CreateSessionSnapshot(bool commit = true)
         {
             var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
             var recipe = Craft.GetRecipe(_recipe);
             var equipmentCP = dbPlayer.CPBonus.TryGetValue(recipe.Skill, out var cp) ? cp : 0;
-            return CraftSession.CreateLegacy(dbPlayer.Skills[recipe.Skill].Rank, recipe.Level,
+            var stats = CraftRuleAttribute.All.ToDictionary(entry => entry.Stat,
+                entry => Stat.GetCraftingStatAdjustment(Player, recipe.Skill, entry.Stat));
+            var profile = CraftRolloutPolicy.UseConditions(ApplicationSettings.Get().CraftingRollout, recipe) ? recipe.CraftingProfile : CraftProfile.Legacy;
+            return CraftSession.Create(dbPlayer.Skills[recipe.Skill].Rank, recipe.Level,
                 Craft.GetRecipeLevelDetail(recipe.Level), Stat.CalculateCraftsmanship(Player, recipe.Skill),
-                Stat.CalculateControl(Player, recipe.Skill), equipmentCP, _enhancementProgressPenalty);
+                Stat.CalculateControl(Player, recipe.Skill), equipmentCP, profile, recipe.CraftingTechnique, stats,
+                count => commit ? System.Random.Shared.Next(count) : 0, _enhancementProgressPenalty);
         }
 
-        private void LoadCraftingState() => _setupSession = CreateSessionSnapshot();
+        private void LoadCraftingState() => _setupSession = CreateSessionSnapshot(false);
 
         private void RefreshActionPreviews()
         {
             var state = _session ?? _setupSession;
             if (state == null) return;
-            var basicSynthesis = CraftActionEvaluator.Preview(state, CraftActionType.BasicSynthesis);
-            BasicSynthesisText = basicSynthesis.ButtonText;
-            BasicSynthesisTooltip = basicSynthesis.Description;
-            IsBasicSynthesisEnabled = IsInCraftMode && basicSynthesis.IsAvailable;
-            var rapidSynthesis = CraftActionEvaluator.Preview(state, CraftActionType.RapidSynthesis);
-            RapidSynthesisText = rapidSynthesis.ButtonText;
-            RapidSynthesisTooltip = rapidSynthesis.Description;
-            IsRapidSynthesisEnabled = IsInCraftMode && rapidSynthesis.IsAvailable;
-            var carefulSynthesis = CraftActionEvaluator.Preview(state, CraftActionType.CarefulSynthesis);
-            CarefulSynthesisText = carefulSynthesis.ButtonText;
-            CarefulSynthesisTooltip = carefulSynthesis.Description;
-            IsCarefulSynthesisEnabled = IsInCraftMode && carefulSynthesis.IsAvailable;
-            var basicTouch = CraftActionEvaluator.Preview(state, CraftActionType.BasicTouch);
-            BasicTouchText = basicTouch.ButtonText;
-            BasicTouchTooltip = basicTouch.Description;
-            IsBasicTouchEnabled = IsInCraftMode && basicTouch.IsAvailable;
-            var standardTouch = CraftActionEvaluator.Preview(state, CraftActionType.StandardTouch);
-            StandardTouchText = standardTouch.ButtonText;
-            StandardTouchTooltip = standardTouch.Description;
-            IsStandardTouchEnabled = IsInCraftMode && standardTouch.IsAvailable;
-            var preciseTouch = CraftActionEvaluator.Preview(state, CraftActionType.PreciseTouch);
-            PreciseTouchText = preciseTouch.ButtonText;
-            PreciseTouchTooltip = preciseTouch.Description;
-            IsPreciseTouchEnabled = IsInCraftMode && preciseTouch.IsAvailable;
-            var mastersMend = CraftActionEvaluator.Preview(state, CraftActionType.MastersMend);
-            MastersMendText = mastersMend.ButtonText;
-            MastersMendTooltip = mastersMend.Description;
-            IsMastersMendEnabled = IsInCraftMode && mastersMend.IsAvailable;
-            var steadyHand = CraftActionEvaluator.Preview(state, CraftActionType.SteadyHand);
-            SteadyHandText = steadyHand.ButtonText;
-            SteadyHandTooltip = steadyHand.Description;
-            IsSteadyHandEnabled = IsInCraftMode && steadyHand.IsAvailable;
-            var muscleMemory = CraftActionEvaluator.Preview(state, CraftActionType.MuscleMemory);
-            MuscleMemoryText = muscleMemory.ButtonText;
-            MuscleMemoryTooltip = muscleMemory.Description;
-            IsMuscleMemoryEnabled = IsInCraftMode && muscleMemory.IsAvailable;
-            var veneration = CraftActionEvaluator.Preview(state, CraftActionType.Veneration);
-            VenerationText = veneration.ButtonText;
-            VenerationTooltip = veneration.Description;
-            IsVenerationEnabled = IsInCraftMode && veneration.IsAvailable;
-            var wasteNot = CraftActionEvaluator.Preview(state, CraftActionType.WasteNot);
-            WasteNotText = wasteNot.ButtonText;
-            WasteNotTooltip = wasteNot.Description;
-            IsWasteNotEnabled = IsInCraftMode && wasteNot.IsAvailable;
             var buffs = new List<string>();
             if (state.SteadyHandActive) buffs.Add("Steady Hand: next synthesis");
             if (state.MuscleMemoryActive) buffs.Add("Muscle Memory: next touch");
             if (state.VenerationCharges > 0) buffs.Add($"Veneration: {state.VenerationCharges} paid syntheses");
             if (state.WasteNotCharges > 0) buffs.Add($"Waste Not: {state.WasteNotCharges} durability-spending actions");
+            if (state.RulesVersion == 2)
+            {
+                foreach (var (type, buff) in state.Buffs) buffs.Add($"{CraftRolloutPolicy.BuffName(type)}: {buff.Charges} charge(s), {buff.ActionsRemaining} actions left");
+                foreach (var buff in new[] { CraftBuffType.SteadyHand, CraftBuffType.MuscleMemory, CraftBuffType.Veneration, CraftBuffType.WasteNot })
+                    buffs.Add($"{CraftRolloutPolicy.BuffName(buff)} uses left: {(buff == CraftBuffType.SteadyHand || buff == CraftBuffType.MuscleMemory ? 2 : 1) - state.Used(buff)}");
+            }
+            ConditionSummary = state.RulesVersion == 2
+                ? IsInCraftMode ? $"Now: {state.CurrentCondition}. Next: {state.Forecast}" : "Starts at Normal. Forecast is revealed when materials are committed."
+                : "Classic crafting rules.";
+            var recipe = Craft.GetRecipe(_recipe);
+            ProfileSummary = state.RulesVersion == 2 ? $"{state.Profile}: {CraftRolloutPolicy.ProfileDescription(state.Profile)}" : "Classic workpiece.";
+            var investment = state.CraftingStats.Where(entry => entry.Value > 0).Select(entry =>
+                $"{CraftRolloutPolicy.StatName(entry.Key)}: {entry.Value}, triggered {state.TriggerCount(entry.Key)} time(s)");
+            CraftHelp = "Progress finishes immediately; quality improves rewards. Hover actions for costs, gains and risks. " +
+                (state.RulesVersion == 2 ? "Accepted actions advance preparations; some perks preserve a condition. No timer.\n" : "") +
+                string.Join("\n", investment);
             BuffSummary = buffs.Count == 0 ? "Active preparations: none" : string.Join(" | ", buffs);
             var qualityChance = (int)((float)state.Quality / state.MaxQuality * 100);
             QualityRewards = $"Quality: {qualityChance}% transfer chance per enhancement property group; " +
+                (recipe.Category == RecipeCategoryType.Food ? "food duration gains its quality bonus at 100%; " : "") +
                 "also improves crafting XP and vendor value.";
             var history = new GuiBindingList<string>();
             foreach (var entry in _actionHistory) history.Add(entry);
@@ -547,6 +458,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             QualityPercentage = (float)_quality / (float)_maxQuality;
             QualityText = $"Quality ({_quality}/{_maxQuality})";
+            RefreshActionLayout();
         }
 
         public override Action OnWindowClosed() => OnCloseWindow();
@@ -566,6 +478,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_isSettling)
                 return;
             OpenCraftViews.Remove(Player);
+            ClearActionEvents();
             if (_session != null && _settlement.IsClaimed)
             {
                 RemoveImmobility();
@@ -576,82 +489,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (IsInCraftMode && _session != null)
             {
                 _session = _session with { Status = CraftSessionStatus.Aborted };
+                CraftingJournal.SaveSession(Player, _session);
                 ProcessFailure();
             }
-            // Closing the window before entering craft mode returns the items to the player.
             else
             {
-                if (!string.IsNullOrWhiteSpace(_enhancement1))
-                {
-                    var item = ObjectPlugin.Deserialize(_enhancement1);
-                    ObjectPlugin.AcquireItem(Player, item);
-                    _enhancement1 = string.Empty;
-                }
-
-                if (!string.IsNullOrWhiteSpace(_enhancement2))
-                {
-                    var item = ObjectPlugin.Deserialize(_enhancement2);
-                    ObjectPlugin.AcquireItem(Player, item);
-                    _enhancement2 = string.Empty;
-                }
-
-                if (!string.IsNullOrWhiteSpace(_enhancement3))
-                {
-                    var item = ObjectPlugin.Deserialize(_enhancement3);
-                    ObjectPlugin.AcquireItem(Player, item);
-                    _enhancement3 = string.Empty;
-                }
-
-                if (!string.IsNullOrWhiteSpace(_enhancement4))
-                {
-                    var item = ObjectPlugin.Deserialize(_enhancement4);
-                    ObjectPlugin.AcquireItem(Player, item);
-                    _enhancement4 = string.Empty;
-                }
-
-                if (!string.IsNullOrWhiteSpace(_enhancement5))
-                {
-                    var item = ObjectPlugin.Deserialize(_enhancement5);
-                    ObjectPlugin.AcquireItem(Player, item);
-                    _enhancement5 = string.Empty;
-                }
-
-                if (!string.IsNullOrWhiteSpace(_enhancement6))
-                {
-                    var item = ObjectPlugin.Deserialize(_enhancement6);
-                    ObjectPlugin.AcquireItem(Player, item);
-                    _enhancement6 = string.Empty;
-                }
-
-                if (!string.IsNullOrWhiteSpace(_enhancement7))
-                {
-                    var item = ObjectPlugin.Deserialize(_enhancement7);
-                    ObjectPlugin.AcquireItem(Player, item);
-                    _enhancement7 = string.Empty;
-                }
-
-                if (!string.IsNullOrWhiteSpace(_enhancement8))
-                {
-                    var item = ObjectPlugin.Deserialize(_enhancement8);
-                    ObjectPlugin.AcquireItem(Player, item);
-                    _enhancement8 = string.Empty;
-                }
-
-                foreach (var serialized in _components)
-                {
-                    var item = ObjectPlugin.Deserialize(serialized);
-                    ObjectPlugin.AcquireItem(Player, item);
-                }
-
-                _itemPropertiesEnhancement1.Clear();
-                _itemPropertiesEnhancement2.Clear();
-                _itemPropertiesEnhancement3.Clear();
-                _itemPropertiesEnhancement4.Clear();
-                _itemPropertiesEnhancement5.Clear();
-                _itemPropertiesEnhancement6.Clear();
-                _itemPropertiesEnhancement7.Clear();
-                _itemPropertiesEnhancement8.Clear();
-                _components.Clear();
+                ClearReservedState();
             }
             IsInSetupMode = false;
             IsInCraftMode = false;
@@ -664,6 +507,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var typeIP = ItemPropertyType.Invalid;
 
             if (!IsInSetupMode || !Gui.IsWindowOpen(Player, GuiWindowType.Craft))
+                return false;
+            if (!GetIsObjectValid(item) || _selectedEnhancementItems.Values.Count(selected => selected == item) >= GetItemStackSize(item))
                 return false;
             if (GetItemPossessor(item) != Player)
             {
@@ -823,12 +668,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
 
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement1);
-                    _enhancement1 = ObjectPlugin.Serialize(item);
+                    _enhancement1 = CraftingJournal.SerializeQuantity(item, 1);
+                    _selectedEnhancementItems[1] = item;
                     Enhancement1Tooltip = GetName(item);
                     Enhancement1Resref = Item.GetIconResref(item);
                     _enhancementProgressPenalty += progressPenalty;
 
-                    DestroyObject(item);
                     RefreshRecipeStats();
                 });
             }
@@ -839,8 +684,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (!IsInSetupMode || string.IsNullOrWhiteSpace(_enhancement1))
                         return;
                     var item = ObjectPlugin.Deserialize(_enhancement1);
-                    ObjectPlugin.AcquireItem(Player, item);
+
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement1);
+                    DestroyObject(item);
+                    _selectedEnhancementItems.Remove(1);
                     _enhancement1 = string.Empty;
                     Enhancement1Resref = BlankTexture;
                     Enhancement1Tooltip = "Select Enhancement #1";
@@ -865,12 +712,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
 
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement2);
-                    _enhancement2 = ObjectPlugin.Serialize(item);
+                    _enhancement2 = CraftingJournal.SerializeQuantity(item, 1);
+                    _selectedEnhancementItems[2] = item;
                     Enhancement2Tooltip = GetName(item);
                     Enhancement2Resref = Item.GetIconResref(item);
                     _enhancementProgressPenalty += progressPenalty;
 
-                    DestroyObject(item);
                     RefreshRecipeStats();
                 });
             }
@@ -881,8 +728,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (!IsInSetupMode || string.IsNullOrWhiteSpace(_enhancement2))
                         return;
                     var item = ObjectPlugin.Deserialize(_enhancement2);
-                    ObjectPlugin.AcquireItem(Player, item);
+
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement2);
+                    DestroyObject(item);
+                    _selectedEnhancementItems.Remove(2);
                     _enhancement2 = string.Empty;
                     Enhancement2Resref = BlankTexture;
                     Enhancement2Tooltip = "Select Enhancement #2";
@@ -907,12 +756,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             return;
 
                         var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement3);
-                        _enhancement3 = ObjectPlugin.Serialize(item);
+                        _enhancement3 = CraftingJournal.SerializeQuantity(item, 1);
+                    _selectedEnhancementItems[3] = item;
                         Enhancement3Tooltip = GetName(item);
                         Enhancement3Resref = Item.GetIconResref(item);
                         _enhancementProgressPenalty += progressPenalty;
 
-                        DestroyObject(item);
                         RefreshRecipeStats();
                     });
             }
@@ -923,8 +772,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (!IsInSetupMode || string.IsNullOrWhiteSpace(_enhancement3))
                         return;
                     var item = ObjectPlugin.Deserialize(_enhancement3);
-                    ObjectPlugin.AcquireItem(Player, item);
+
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement3);
+                    DestroyObject(item);
+                    _selectedEnhancementItems.Remove(3);
                     _enhancement3 = string.Empty;
                     Enhancement3Resref = BlankTexture;
                     Enhancement3Tooltip = "Select Enhancement #3";
@@ -949,12 +800,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             return;
 
                         var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement4);
-                        _enhancement4 = ObjectPlugin.Serialize(item);
+                        _enhancement4 = CraftingJournal.SerializeQuantity(item, 1);
+                    _selectedEnhancementItems[4] = item;
                         Enhancement4Tooltip = GetName(item);
                         Enhancement4Resref = Item.GetIconResref(item);
                         _enhancementProgressPenalty += progressPenalty;
 
-                        DestroyObject(item);
                         RefreshRecipeStats();
                     });
             }
@@ -965,8 +816,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (!IsInSetupMode || string.IsNullOrWhiteSpace(_enhancement4))
                         return;
                     var item = ObjectPlugin.Deserialize(_enhancement4);
-                    ObjectPlugin.AcquireItem(Player, item);
+
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement4);
+                    DestroyObject(item);
+                    _selectedEnhancementItems.Remove(4);
                     _enhancement4 = string.Empty;
                     Enhancement4Resref = BlankTexture;
                     Enhancement4Tooltip = "Select Enhancement #4";
@@ -991,12 +844,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             return;
 
                         var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement5);
-                        _enhancement5 = ObjectPlugin.Serialize(item);
+                        _enhancement5 = CraftingJournal.SerializeQuantity(item, 1);
+                    _selectedEnhancementItems[5] = item;
                         Enhancement5Tooltip = GetName(item);
                         Enhancement5Resref = Item.GetIconResref(item);
                         _enhancementProgressPenalty += progressPenalty;
 
-                        DestroyObject(item);
                         RefreshRecipeStats();
                     });
             }
@@ -1007,8 +860,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (!IsInSetupMode || string.IsNullOrWhiteSpace(_enhancement5))
                         return;
                     var item = ObjectPlugin.Deserialize(_enhancement5);
-                    ObjectPlugin.AcquireItem(Player, item);
+
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement5);
+                    DestroyObject(item);
+                    _selectedEnhancementItems.Remove(5);
                     _enhancement5 = string.Empty;
                     Enhancement5Resref = BlankTexture;
                     Enhancement5Tooltip = "Select Enhancement #5";
@@ -1033,12 +888,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             return;
 
                         var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement6);
-                        _enhancement6 = ObjectPlugin.Serialize(item);
+                        _enhancement6 = CraftingJournal.SerializeQuantity(item, 1);
+                    _selectedEnhancementItems[6] = item;
                         Enhancement6Tooltip = GetName(item);
                         Enhancement6Resref = Item.GetIconResref(item);
                         _enhancementProgressPenalty += progressPenalty;
 
-                        DestroyObject(item);
                         RefreshRecipeStats();
                     });
             }
@@ -1049,8 +904,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (!IsInSetupMode || string.IsNullOrWhiteSpace(_enhancement6))
                         return;
                     var item = ObjectPlugin.Deserialize(_enhancement6);
-                    ObjectPlugin.AcquireItem(Player, item);
+
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement6);
+                    DestroyObject(item);
+                    _selectedEnhancementItems.Remove(6);
                     _enhancement6 = string.Empty;
                     Enhancement6Resref = BlankTexture;
                     Enhancement6Tooltip = "Select Enhancement #6";
@@ -1075,12 +932,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             return;
 
                         var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement7);
-                        _enhancement7 = ObjectPlugin.Serialize(item);
+                        _enhancement7 = CraftingJournal.SerializeQuantity(item, 1);
+                    _selectedEnhancementItems[7] = item;
                         Enhancement7Tooltip = GetName(item);
                         Enhancement7Resref = Item.GetIconResref(item);
                         _enhancementProgressPenalty += progressPenalty;
 
-                        DestroyObject(item);
                         RefreshRecipeStats();
                     });
             }
@@ -1091,8 +948,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (!IsInSetupMode || string.IsNullOrWhiteSpace(_enhancement7))
                         return;
                     var item = ObjectPlugin.Deserialize(_enhancement7);
-                    ObjectPlugin.AcquireItem(Player, item);
+
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement7);
+                    DestroyObject(item);
+                    _selectedEnhancementItems.Remove(7);
                     _enhancement7 = string.Empty;
                     Enhancement7Resref = BlankTexture;
                     Enhancement7Tooltip = "Select Enhancement #7";
@@ -1117,12 +976,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             return;
 
                         var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement8);
-                        _enhancement8 = ObjectPlugin.Serialize(item);
+                        _enhancement8 = CraftingJournal.SerializeQuantity(item, 1);
+                    _selectedEnhancementItems[8] = item;
                         Enhancement8Tooltip = GetName(item);
                         Enhancement8Resref = Item.GetIconResref(item);
                         _enhancementProgressPenalty += progressPenalty;
 
-                        DestroyObject(item);
                         RefreshRecipeStats();
                     });
             }
@@ -1133,8 +992,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (!IsInSetupMode || string.IsNullOrWhiteSpace(_enhancement8))
                         return;
                     var item = ObjectPlugin.Deserialize(_enhancement8);
-                    ObjectPlugin.AcquireItem(Player, item);
+
                     var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement8);
+                    DestroyObject(item);
+                    _selectedEnhancementItems.Remove(8);
                     _enhancement8 = string.Empty;
                     Enhancement8Resref = BlankTexture;
                     Enhancement8Tooltip = "Select Enhancement #8";
@@ -1145,46 +1006,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 });
             }
         };
-
-        private List<uint> GetComponents()
-        {
-            var components = new List<uint>();
-            var recipe = Craft.GetRecipe(_recipe);
-
-            for (var item = GetFirstItemInInventory(Player); GetIsObjectValid(item); item = GetNextItemInInventory(Player))
-            {
-                var resref = GetResRef(item);
-                if(recipe.Components.ContainsKey(resref))
-                    components.Add(item);
-            }
-
-            return components;
-        }
-
-        /// <summary>
-        /// Determines if the player has all of the necessary components for this recipe
-        /// and aggregates them into a new list.
-        /// </summary>
-        /// <returns>A list of components which will be used, an empty list if not all components are found.</returns>
-        private List<uint> AggregateComponents(List<uint> components)
-        {
-            var recipe = Craft.GetRecipe(_recipe);
-            var inventory = components.Select(item => new CraftComponentStack(item, GetResRef(item), GetItemStackSize(item))).ToList();
-            var reservations = CraftComponentBudget.Plan(recipe.Components, inventory);
-            var result = new List<uint>();
-            foreach (var reservation in reservations)
-            {
-                var originalQuantity = GetItemStackSize(reservation.Item);
-                SetItemStackSize(reservation.Item, reservation.Quantity);
-                _components.Add(ObjectPlugin.Serialize(reservation.Item));
-                if (reservation.Quantity < originalQuantity)
-                    SetItemStackSize(reservation.Item, originalQuantity - reservation.Quantity);
-                else
-                    DestroyObject(reservation.Item);
-                result.Add(reservation.Item);
-            }
-            return result;
-        }
 
         private void RefreshYourSkill(Player dbPlayer)
         {
@@ -1213,19 +1034,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsClosable = true;
             RefreshYourSkill(dbPlayer);
 
-            IsRapidSynthesisEnabled = false;
-            IsCarefulSynthesisEnabled = false;
 
-            IsBasicTouchEnabled = false;
-            IsStandardTouchEnabled = false;
-            IsPreciseTouchEnabled = false;
 
-            IsMastersMendEnabled = false;
-            IsSteadyHandEnabled = false;
-            IsMuscleMemoryEnabled = false;
 
-            IsVenerationEnabled = false;
-            IsWasteNotEnabled = false;
 
             _session = null;
             _enhancementProgressPenalty = 0;
@@ -1250,51 +1061,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RemoveImmobility();
         }
 
-        private void SwitchToCraftMode()
+        private void SwitchToCraftMode(CraftSession session)
         {
-            _session = CreateSessionSnapshot();
+            _session = session;
             _settlement = new CraftSessionSettlement();
             _actionHistory.Clear();
             if (_hasBlueprint)
-            {
-                _activeBlueprint = Craft.GetBlueprintDetails(_blueprintItem);
-                var cost = Craft.CalculateBlueprintCraftCreditCost(_blueprintItem);
-                AssignCommand(Player, () => TakeGoldFromCreature(cost, Player, true));
-
-                _activeBlueprint.LicensedRuns--;
-                Craft.SetBlueprintDetails(_blueprintItem, _activeBlueprint);
-
-                SendMessageToPC(Player, $"Remaining licensed runs: {_activeBlueprint.LicensedRuns}");
-
-                var (recipeDescription, recipeColors) = Craft.BuildRecipeDetail(Player, _recipe, _activeBlueprint);
-                RecipeDescription = recipeDescription;
-                RecipeColors = recipeColors;
-            }
-
+                SendMessageToPC(Player, $"Remaining licensed runs: {_activeBlueprint.LicensedRuns - 1}");
             StatusText = string.Empty;
             StatusColor = GuiColor.Green;
-
             IsInCraftMode = true;
             IsInSetupMode = false;
             IsClosable = false;
-
             RefreshRecipeStats();
             ApplyImmobility();
-        }
-
-        private bool ProcessComponents()
-        {
-            var components = GetComponents();
-            var aggregateList = AggregateComponents(components);
-            if (aggregateList.Count <= 0)
-            {
-                StatusText = $"Missing components!";
-                StatusColor = GuiColor.Red;
-
-                return false;
-            }
-
-            return true;
         }
 
         private bool ProcessBlueprintRequirements()
@@ -1302,6 +1082,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!_hasBlueprint)
                 return true;
 
+            if (!GetIsObjectValid(_blueprintItem) || GetItemPossessor(_blueprintItem) != Player)
+            { StatusText = "The selected blueprint is no longer in your inventory."; StatusColor = GuiColor.Red; return false; }
             var blueprintDetails = Craft.GetBlueprintDetails(_blueprintItem);
 
             if (blueprintDetails.LicensedRuns <= 0)
@@ -1328,6 +1110,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (!IsInSetupMode || _isSettling || _session != null)
                 return;
+            if (CraftingJournal.Get(Player) != null)
+            {
+                RestoreTransaction(CraftingJournal.Get(Player));
+                return;
+            }
             if (!Craft.CanPlayerCraftRecipe(Player, _recipe))
             {
                 StatusText = "Recipe requirements not met!";
@@ -1335,10 +1122,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            if (ProcessBlueprintRequirements() && ProcessComponents())
-            {
-                SwitchToCraftMode();
-            }
+            if (!ProcessBlueprintRequirements()) return;
+            var selected = _selectedEnhancementItems.Values.GroupBy(item => item).ToDictionary(group => group.Key, group => group.Count());
+            if (selected.Any(entry => !GetIsObjectValid(entry.Key) || GetItemPossessor(entry.Key) != Player || GetItemStackSize(entry.Key) < entry.Value))
+            { StatusText = "A selected enhancement is no longer available. Select it again."; StatusColor = GuiColor.Red; return; }
+            var recipe = Craft.GetRecipe(_recipe);
+            var inventory = CraftingJournal.Inventory(Player).Select(item => new CraftComponentStack(item, GetResRef(item),
+                GetItemStackSize(item) - (selected.TryGetValue(item, out var reserved) ? reserved : 0))).ToArray();
+            var components = CraftComponentBudget.Plan(recipe.Components, inventory);
+            if (components.Count == 0 && recipe.Components.Count > 0)
+            { StatusText = "Required components are missing."; StatusColor = GuiColor.Red; return; }
+            _components.Clear();
+            _components.AddRange(components.Select(entry => CraftingJournal.SerializeQuantity(entry.Item, entry.Quantity)));
+            var reservations = components.Concat(selected.Select(entry => new CraftComponentReservation(entry.Key, entry.Value))).ToArray();
+            _activeBlueprint = _hasBlueprint ? Craft.GetBlueprintDetails(_blueprintItem) : null;
+            var session = CreateSessionSnapshot();
+            CraftingJournal.Begin(Player, _recipe, session, reservations, _components, EnhancementData(), _blueprintItem);
+            SwitchToCraftMode(session);
         };
 
         private int CalculateXP(
@@ -1363,22 +1163,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Craft.ApplyCraftedItemProperty(item, ip);
         }
 
-        private void ProcessSuccess()
+        private void PrepareSuccessRewards(CraftingTransaction transaction)
         {
-            if (_session == null ||
-                _session.Status != CraftSessionStatus.Succeeded ||
-                !_settlement.TryClaim(_session))
-                return;
-            _isSettling = true;
-            IsInCraftMode = false;
-            IsInSetupMode = false;
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var recipe = Craft.GetRecipe(_recipe);
+            var item = CreateObject(ObjectType.Item, recipe.Resref, GetLocation(Player));
+            if (!GetIsObjectValid(item)) throw new InvalidOperationException("Unable to create the crafted item.");
+            SetItemStackSize(item, recipe.Quantity);
+            SetLocalBool(item, Item.PlayerProducedItemVariable, true);
             try
             {
-                var playerId = GetObjectUUID(Player);
-                var dbPlayer = DB.Get<Player>(playerId);
-                var recipe = Craft.GetRecipe(_recipe);
-                var item = CreateItemOnObject(recipe.Resref, Player, recipe.Quantity);
-                SetLocalBool(item, Item.PlayerProducedItemVariable, true);
                 var firstTime = !dbPlayer.CraftedRecipes.ContainsKey(_recipe);
                 var propertyTransferChance = (int)(((float)_quality / (float)_maxQuality) * 100);
                 var qualityPercent = (float)_quality / (float)_maxQuality;
@@ -1447,53 +1242,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 ProcessBlueprintBonuses(item);
 
-                // Add the recipe to the completed list (unlocks auto-crafting)
-                if (firstTime)
-                {
-                    dbPlayer.CraftedRecipes[_recipe] = DateTime.UtcNow;
-                    DB.Set(dbPlayer);
-                }
 
-                // Give XP plus a percent bonus based on the quality achieved.
-                var xp = CalculateXP(
-                    recipe,
-                    dbPlayer.Skills[recipe.Skill].Rank,
-                    _hasBlueprint ? _activeBlueprint.Level : 0,
-                    firstTime,
-                    qualityPercent);
-                Skill.GiveSkillXP(Player, recipe.Skill, xp, false, false);
-
-                // Clean up and return to the Set Up mode.
-                _itemPropertiesEnhancement1.Clear();
-                _itemPropertiesEnhancement2.Clear();
-                _itemPropertiesEnhancement3.Clear();
-                _itemPropertiesEnhancement4.Clear();
-                _itemPropertiesEnhancement5.Clear();
-                _itemPropertiesEnhancement6.Clear();
-                _itemPropertiesEnhancement7.Clear();
-                _itemPropertiesEnhancement8.Clear();
-                _enhancement1 = string.Empty;
-                _enhancement2 = string.Empty;
-                _enhancement3 = string.Empty;
-                _enhancement4 = string.Empty;
-                _enhancement5 = string.Empty;
-                _enhancement6 = string.Empty;
-                _enhancement7 = string.Empty;
-                _enhancement8 = string.Empty;
-                _components.Clear();
-                SwitchToSetUpMode();
-                LoadCraftingState();
-                RefreshRecipeStats();
-                StatusText = "Successfully created the item!";
-                StatusColor = GuiColor.Green;
-
-                Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) successfully crafted '{GetName(item)}'.");
+                var xp = CalculateXP(recipe, transaction.Session.SkillRank, _hasBlueprint ? _activeBlueprint.Level : 0, firstTime, qualityPercent);
+                CraftingJournal.PrepareRewards(Player, transaction, new[] { ObjectPlugin.Serialize(item) }, xp, firstTime);
             }
-            finally
+            finally { DestroyObject(item); }
+        }
+
+        private void ProcessSuccess()
+        {
+            if (_session == null || _session.Status != CraftSessionStatus.Succeeded || !_settlement.TryClaim(_session)) return;
+            _isSettling = true; IsInCraftMode = false; IsInSetupMode = false;
+            try
             {
-                _isSettling = false;
-                RemoveImmobility();
+                var transaction = CraftingJournal.Get(Player);
+                if (transaction.Phase != CraftingTransactionPhase.RewardsReady) PrepareSuccessRewards(transaction);
+                var delivered = CraftingJournal.DeliverRewards(Player, transaction);
+                ClearReservedState(); SwitchToSetUpMode(); LoadCraftingState(); RefreshRecipeStats();
+                StatusText = delivered ? "Successfully created the item!" : "Crafting rewards are saved. Reopen crafting to collect pending rewards.";
+                StatusColor = delivered ? GuiColor.Green : GuiColor.Red;
             }
+            finally { _isSettling = false; RemoveImmobility(); }
         }
 
 
@@ -1545,130 +1314,152 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ProcessFailure()
         {
-            if (_session == null ||
-                _session.Status is not (CraftSessionStatus.Failed or CraftSessionStatus.Aborted) ||
-                !_settlement.TryClaim(_session))
-                return;
-            _isSettling = true;
-            IsInCraftMode = false;
-            IsInSetupMode = false;
+            if (_session == null || _session.Status is not (CraftSessionStatus.Failed or CraftSessionStatus.Aborted) || !_settlement.TryClaim(_session)) return;
+            _isSettling = true; IsInCraftMode = false; IsInSetupMode = false;
             try
             {
-                var recipe = Craft.GetRecipe(_recipe);
-                var playerId = GetObjectUUID(Player);
-                var dbPlayer = DB.Get<Player>(playerId);
-                const int ChanceToLoseItem = 65;
-
-                // Process enhancements
-                if (!string.IsNullOrWhiteSpace(_enhancement1) && Random.D100(1) > ChanceToLoseItem)
+                var transaction = CraftingJournal.Get(Player);
+                if (transaction.Phase != CraftingTransactionPhase.RewardsReady)
                 {
-                    var item = ObjectPlugin.Deserialize(_enhancement1);
-                    ObjectPlugin.AcquireItem(Player, item);
+                    var surviving = transaction.Enhancements.Concat(transaction.Components)
+                        .Where(data => !string.IsNullOrWhiteSpace(data)).Where(_ => Random.D100(1) > 65).ToArray();
+                    var recipe = Craft.GetRecipe(_recipe);
+                    var xp = (int)(CalculateXP(recipe, transaction.Session.SkillRank, _hasBlueprint ? _activeBlueprint.Level : 0, false, 0f) * 0.15f);
+                    CraftingJournal.PrepareRewards(Player, transaction, surviving, xp, false);
                 }
-                _enhancement1 = string.Empty;
-
-                if (!string.IsNullOrWhiteSpace(_enhancement2) && Random.D100(1) > ChanceToLoseItem)
-                {
-                    var item = ObjectPlugin.Deserialize(_enhancement2);
-                    ObjectPlugin.AcquireItem(Player, item);
-                }
-                _enhancement2 = string.Empty;
-
-                if (!string.IsNullOrWhiteSpace(_enhancement3) && Random.D100(1) > ChanceToLoseItem)
-                {
-                    var item = ObjectPlugin.Deserialize(_enhancement3);
-                    ObjectPlugin.AcquireItem(Player, item);
-                }
-                _enhancement3 = string.Empty;
-
-                if (!string.IsNullOrWhiteSpace(_enhancement4) && Random.D100(1) > ChanceToLoseItem)
-                {
-                    var item = ObjectPlugin.Deserialize(_enhancement4);
-                    ObjectPlugin.AcquireItem(Player, item);
-                }
-                _enhancement4 = string.Empty;
-
-                if (!string.IsNullOrWhiteSpace(_enhancement5) && Random.D100(1) > ChanceToLoseItem)
-                {
-                    var item = ObjectPlugin.Deserialize(_enhancement5);
-                    ObjectPlugin.AcquireItem(Player, item);
-                }
-                _enhancement5 = string.Empty;
-
-                if (!string.IsNullOrWhiteSpace(_enhancement6) && Random.D100(1) > ChanceToLoseItem)
-                {
-                    var item = ObjectPlugin.Deserialize(_enhancement6);
-                    ObjectPlugin.AcquireItem(Player, item);
-                }
-                _enhancement6 = string.Empty;
-
-                if (!string.IsNullOrWhiteSpace(_enhancement7) && Random.D100(1) > ChanceToLoseItem)
-                {
-                    var item = ObjectPlugin.Deserialize(_enhancement7);
-                    ObjectPlugin.AcquireItem(Player, item);
-                }
-                _enhancement7 = string.Empty;
-
-                if (!string.IsNullOrWhiteSpace(_enhancement8) && Random.D100(1) > ChanceToLoseItem)
-                {
-                    var item = ObjectPlugin.Deserialize(_enhancement8);
-                    ObjectPlugin.AcquireItem(Player, item);
-                }
-                _enhancement8 = string.Empty;
-
-                // Process components
-                foreach (var serialized in _components)
-                {
-                    if (Random.D100(1) > ChanceToLoseItem)
-                    {
-                        var item = ObjectPlugin.Deserialize(serialized);
-                        ObjectPlugin.AcquireItem(Player, item);
-                    }
-                }
-
-                _itemPropertiesEnhancement1.Clear();
-                _itemPropertiesEnhancement2.Clear();
-                _itemPropertiesEnhancement3.Clear();
-                _itemPropertiesEnhancement4.Clear();
-                _itemPropertiesEnhancement5.Clear();
-                _itemPropertiesEnhancement6.Clear();
-                _itemPropertiesEnhancement7.Clear();
-                _itemPropertiesEnhancement8.Clear();
-                _components.Clear();
-
-                SwitchToSetUpMode();
-                LoadCraftingState();
-                RefreshRecipeStats();
-                StatusText = "Failed to craft the item...";
+                var delivered = CraftingJournal.DeliverRewards(Player, transaction);
+                ClearReservedState(); SwitchToSetUpMode(); LoadCraftingState(); RefreshRecipeStats();
+                StatusText = delivered ? "Crafting failed. Surviving materials were returned." : "Surviving materials are saved. Reopen crafting to collect pending rewards.";
                 StatusColor = GuiColor.Red;
-
-                // 15% of XP is gained for failures.
-                var xp = CalculateXP(
-                    recipe,
-                    dbPlayer.Skills[recipe.Skill].Rank,
-                    _hasBlueprint ? _activeBlueprint.Level : 0,
-                    false,
-                    0f);
-                xp = (int)(xp * 0.15f);
-                Skill.GiveSkillXP(Player, recipe.Skill, xp, false, false);
-
-                Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) failed to craft '{_recipe}'.");
             }
-            finally
-            {
-                _isSettling = false;
-                RemoveImmobility();
-            }
+            finally { _isSettling = false; RemoveImmobility(); }
         }
 
 
-        private Action CraftAction(CraftActionType type)
+        private string[] EnhancementData() => new[] { _enhancement1, _enhancement2, _enhancement3, _enhancement4, _enhancement5, _enhancement6, _enhancement7, _enhancement8 };
+
+        private void ClearReservedState()
         {
-            var request = _session == null ? null : new CraftActionRequest(_session.Id, _session.ActionCount, type);
+            _enhancement1 = _enhancement2 = _enhancement3 = _enhancement4 = _enhancement5 = _enhancement6 = _enhancement7 = _enhancement8 = string.Empty;
+            foreach (var properties in new[] { _itemPropertiesEnhancement1, _itemPropertiesEnhancement2, _itemPropertiesEnhancement3, _itemPropertiesEnhancement4,
+                _itemPropertiesEnhancement5, _itemPropertiesEnhancement6, _itemPropertiesEnhancement7, _itemPropertiesEnhancement8 }) properties.Clear();
+            _selectedEnhancementItems.Clear(); _components.Clear();
+        }
+
+        public static void RecoverForPlayer(uint player)
+        {
+            if (!GetIsObjectValid(player)) return;
+            if (OpenCraftViews.TryGetValue(player, out var view))
+            {
+                var receipt = CraftingJournal.Get(player);
+                if (receipt != null && !view.IsInCraftMode && !view._isSettling) view.RestoreTransaction(receipt);
+                return;
+            }
+            var pending = CraftingJournal.Get(player);
+            if (pending == null) { CraftingJournal.RemoveConsumedItems(player); return; }
+            if (!Gui.IsWindowOpen(player, GuiWindowType.Craft))
+                Gui.TogglePlayerWindow(player, GuiWindowType.Craft, new CraftPayload(pending.Recipe, OBJECT_INVALID));
+        }
+
+        private void RestoreTransaction(CraftingTransaction transaction)
+        {
+            CraftingJournal.CompletePreparation(Player, transaction);
+            _recipe = transaction.Recipe; _session = transaction.Session; _settlement = new CraftSessionSettlement();
+            RecipeName = $"Recipe: {Cache.GetItemNameByResref(Craft.GetRecipe(_recipe).Resref)}";
+            RecipeLevel = $"Recipe level: {Craft.GetRecipe(_recipe).Level}";
+            _hasBlueprint = !string.IsNullOrWhiteSpace(transaction.BlueprintData);
+            var blueprint = _hasBlueprint ? ObjectPlugin.Deserialize(transaction.BlueprintData) : OBJECT_INVALID;
+            try
+            {
+                if (_hasBlueprint) _activeBlueprint = Craft.GetBlueprintDetails(blueprint);
+                var propertyLists = new[] { _itemPropertiesEnhancement1, _itemPropertiesEnhancement2, _itemPropertiesEnhancement3, _itemPropertiesEnhancement4,
+                    _itemPropertiesEnhancement5, _itemPropertiesEnhancement6, _itemPropertiesEnhancement7, _itemPropertiesEnhancement8 };
+                for (var index = 0; index < transaction.Enhancements.Count && index < propertyLists.Length; index++)
+                {
+                    if (string.IsNullOrWhiteSpace(transaction.Enhancements[index])) continue;
+                    var item = ObjectPlugin.Deserialize(transaction.Enhancements[index]);
+                    try { CalculateProgressPenaltyAndProcessItemProperties(item, propertyLists[index]); }
+                    finally { DestroyObject(item); }
+                }
+                if (_session.Status == CraftSessionStatus.Active)
+                { _session = _session with { Status = CraftSessionStatus.Aborted }; CraftingJournal.SaveSession(Player, _session); }
+                if (_session.Status == CraftSessionStatus.Succeeded) ProcessSuccess(); else ProcessFailure();
+            }
+            finally
+            {
+                if (GetIsObjectValid(blueprint)) DestroyObject(blueprint);
+                _hasBlueprint = false; _blueprintItem = OBJECT_INVALID;
+                ClearReservedState(); RemoveImmobility();
+            }
+            var recoveredRecipe = Craft.GetRecipe(_recipe);
+            var (description, colors) = Craft.BuildRecipeDetail(Player, _recipe, new BlueprintDetail());
+            RecipeDescription = description; RecipeColors = colors;
+            IsEnhancement1Visible = recoveredRecipe.EnhancementSlots >= 1; IsEnhancement2Visible = recoveredRecipe.EnhancementSlots >= 2;
+            IsEnhancement3Visible = recoveredRecipe.EnhancementSlots >= 3; IsEnhancement4Visible = recoveredRecipe.EnhancementSlots >= 4;
+            IsEnhancement5Visible = recoveredRecipe.EnhancementSlots >= 5; IsEnhancement6Visible = recoveredRecipe.EnhancementSlots >= 6;
+            IsEnhancement7Visible = recoveredRecipe.EnhancementSlots >= 7; IsEnhancement8Visible = recoveredRecipe.EnhancementSlots >= 8;
+            var delivered = CraftingJournal.Get(Player) == null;
+            CraftText = delivered ? "Craft" : "Collect pending rewards";
+            IsInSetupMode = true; IsClosable = true;
+            SendMessageToPC(Player, delivered ? "Your interrupted crafting session has been settled." : "Your crafting rewards remain saved until they can be collected.");
+            RefreshRecipeStats(); RestoreCraftContent();
+        }
+
+        private void ClearActionEvents()
+        {
+            foreach (var key in _actionEventKeys) Gui.UnregisterElementEvents(key);
+            _actionEventKeys.Clear();
+        }
+
+        private void RefreshActionLayout()
+        {
+            if (WindowToken <= 0) return;
+            ClearActionEvents();
+            var state = _session ?? _setupSession;
+            if (state == null) return;
+            var group = new GuiGroup<CraftViewModel>();
+            group.SetShowBorder(false).SetScrollbars(NuiScrollbars.None);
+            group.SetMargin(0f);
+            group.AddColumn(column =>
+            {
+                var actions = state.RulesVersion == 2 ? CraftActionDetail.Actions : CraftActionDetail.LegacyActions;
+                for (var offset = 0; offset < actions.Count; offset += 3)
+                {
+                    var start = offset;
+                    column.AddRow(row =>
+                    {
+                        foreach (var action in actions.Skip(start).Take(3))
+                        {
+                            var preview = CraftActionEvaluator.Preview(state, action.Type);
+                            var sessionId = state.Id.ToString("N");
+                            var revision = state.ActionCount;
+                            var type = (int)action.Type;
+                            var button = row.AddButton().SetId($"craft_{sessionId}_{revision}_{type}")
+                                .SetText(preview.ButtonText).SetTooltip(preview.Description)
+                                .SetIsEnabled(IsInCraftMode && preview.IsAvailable).SetHeight(30f).SetMargin(0f)
+                                .BindOnClicked(model => model.OnCraftAction(sessionId, revision, type));
+                            var key = Gui.BuildEventKey(Gui.BuildWindowId(GuiWindowType.Craft), button.Id);
+                            Gui.RegisterElementEvent(key, "click", button.Events["click"]);
+                            _actionEventKeys.Add(key);
+                        }
+                    });
+                }
+            });
+            SetGroupLayout(CraftActionsElement, group.ToJson());
+        }
+
+        public Action OnCraftAction(string sessionId, int revision, int type) =>
+            Guid.TryParseExact(sessionId, "N", out var id) && Enum.IsDefined(typeof(CraftActionType), type)
+                ? CraftAction(new CraftActionRequest(id, revision, (CraftActionType)type)) : () => { };
+
+        private Action CraftAction(CraftActionRequest request)
+        {
             return () =>
             {
                 if (!IsInCraftMode || _isSettling || _session == null || request == null)
                     return;
+                if (request.SessionId != _session.Id || request.ExpectedActionCount != _session.ActionCount)
+                { StatusText = "This action belongs to an earlier crafting state."; StatusColor = GuiColor.Red; return; }
                 if (GetIsDead(Player) || TetherObject != OBJECT_INVALID &&
                     (!GetIsObjectValid(TetherObject) || GetDistanceBetween(Player, TetherObject) > 5f))
                 {
@@ -1682,32 +1473,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     StatusColor = GuiColor.Red;
                     return;
                 }
+                var previous = _session;
+                var gains = new CraftActionRecord(outcome.Session.ActionCount, request.Action, outcome.Succeeded,
+                    previous.CurrentCondition, outcome.Session.CurrentCondition, outcome.Preview.CPCost,
+                    outcome.Session.CP - previous.CP + outcome.Preview.CPCost, outcome.Preview.DurabilityCost,
+                    outcome.Session.Durability - Math.Max(0, previous.Durability - outcome.Preview.DurabilityCost),
+                    outcome.Session.Progress - previous.Progress, outcome.Session.Quality - previous.Quality);
+                CraftingJournal.SaveSession(Player, outcome.Session, gains);
                 _session = outcome.Session;
                 var preview = outcome.Preview;
                 StatusText = $"{preview.Action.Name}: {(outcome.Succeeded ? "Success!" : "FAILURE")}";
                 StatusColor = outcome.Succeeded ? GuiColor.Green : GuiColor.Red;
                 _actionHistory.Add($"{_session.ActionCount}. {preview.Action.Name}: {(outcome.Succeeded ? "success" : "failure")}; " +
                     $"-{preview.CPCost} CP, -{preview.DurabilityCost} durability; " +
-                    $"+{(outcome.Succeeded ? preview.ProgressGain : 0)} progress, +{(outcome.Succeeded ? preview.QualityGain : 0)} quality, " +
-                    $"+{(outcome.Succeeded ? preview.DurabilityRestored : 0)} durability.");
-                if (_actionHistory.Count > 6) _actionHistory.RemoveAt(0);
+                    $"+{gains.Progress} progress, +{gains.Quality} quality, +{gains.DurabilityRestored} durability, +{gains.CPRestored} CP; " +
+                    $"{gains.Condition} > {gains.NextCondition}.");
+
                 if (_session.Status == CraftSessionStatus.Succeeded) ProcessSuccess();
                 else if (_session.Status == CraftSessionStatus.Failed) ProcessFailure();
                 RefreshRecipeStats();
             };
         }
 
-        public Action OnClickBasicSynthesis() => CraftAction(CraftActionType.BasicSynthesis);
-        public Action OnClickRapidSynthesis() => CraftAction(CraftActionType.RapidSynthesis);
-        public Action OnClickCarefulSynthesis() => CraftAction(CraftActionType.CarefulSynthesis);
-        public Action OnClickBasicTouch() => CraftAction(CraftActionType.BasicTouch);
-        public Action OnClickStandardTouch() => CraftAction(CraftActionType.StandardTouch);
-        public Action OnClickPreciseTouch() => CraftAction(CraftActionType.PreciseTouch);
-        public Action OnClickMastersMend() => CraftAction(CraftActionType.MastersMend);
-        public Action OnClickSteadyHand() => CraftAction(CraftActionType.SteadyHand);
-        public Action OnClickMuscleMemory() => CraftAction(CraftActionType.MuscleMemory);
-        public Action OnClickVeneration() => CraftAction(CraftActionType.Veneration);
-        public Action OnClickWasteNot() => CraftAction(CraftActionType.WasteNot);
 
         public void Refresh(SkillXPRefreshEvent payload)
         {

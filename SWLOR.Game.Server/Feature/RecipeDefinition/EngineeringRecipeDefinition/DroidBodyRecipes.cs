@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Droid Body MP I
             _builder.Create(RecipeType.DroidBodyMP1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_mp1")
                 .Level(10)
@@ -33,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MV I
             _builder.Create(RecipeType.DroidBodyMV1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_mv1")
                 .Level(8)
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MW I
             _builder.Create(RecipeType.DroidBodyMW1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_mw1")
                 .Level(6)
@@ -53,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MA I
             _builder.Create(RecipeType.DroidBodyMA1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ma1")
                 .Level(7)
@@ -63,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MS I
             _builder.Create(RecipeType.DroidBodyMS1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ms1")
                 .Level(5)
@@ -73,6 +78,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PV I
             _builder.Create(RecipeType.DroidBodyPV1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_pv1")
                 .Level(9)
@@ -83,6 +89,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PW I
             _builder.Create(RecipeType.DroidBodyPW1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_pw1")
                 .Level(9)
@@ -93,6 +100,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PA I
             _builder.Create(RecipeType.DroidBodyPA1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_pa1")
                 .Level(10)
@@ -103,6 +111,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PS I
             _builder.Create(RecipeType.DroidBodyPS1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ps1")
                 .Level(8)
@@ -113,6 +122,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body VW I
             _builder.Create(RecipeType.DroidBodyVW1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_vw1")
                 .Level(6)
@@ -123,6 +133,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body VA I
             _builder.Create(RecipeType.DroidBodyVA1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_va1")
                 .Level(7)
@@ -133,6 +144,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body VS I
             _builder.Create(RecipeType.DroidBodyVS1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_vs1")
                 .Level(6)
@@ -143,6 +155,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body WA I
             _builder.Create(RecipeType.DroidBodyWA1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_wa1")
                 .Level(9)
@@ -153,6 +166,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body WS I
             _builder.Create(RecipeType.DroidBodyWS1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ws1")
                 .Level(10)
@@ -163,6 +177,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body AS I
             _builder.Create(RecipeType.DroidBodyAS1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_as1")
                 .Level(5)
@@ -178,6 +193,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Droid Body MP II
             _builder.Create(RecipeType.DroidBodyMP2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_mp2")
                 .Level(20)
@@ -188,6 +204,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MV II
             _builder.Create(RecipeType.DroidBodyMV2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_mv2")
                 .Level(18)
@@ -198,6 +215,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MW II
             _builder.Create(RecipeType.DroidBodyMW2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_mw2")
                 .Level(16)
@@ -208,6 +226,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MA II
             _builder.Create(RecipeType.DroidBodyMA2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ma2")
                 .Level(17)
@@ -218,6 +237,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MS II
             _builder.Create(RecipeType.DroidBodyMS2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ms2")
                 .Level(15)
@@ -228,6 +248,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PV II
             _builder.Create(RecipeType.DroidBodyPV2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_pv2")
                 .Level(19)
@@ -238,6 +259,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PW II
             _builder.Create(RecipeType.DroidBodyPW2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_pw2")
                 .Level(19)
@@ -248,6 +270,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PA II
             _builder.Create(RecipeType.DroidBodyPA2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_pa2")
                 .Level(20)
@@ -258,6 +281,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PS II
             _builder.Create(RecipeType.DroidBodyPS2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ps2")
                 .Level(18)
@@ -268,6 +292,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body VW II
             _builder.Create(RecipeType.DroidBodyVW2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_vw2")
                 .Level(16)
@@ -278,6 +303,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body VA II
             _builder.Create(RecipeType.DroidBodyVA2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_va2")
                 .Level(17)
@@ -288,6 +314,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body VS II
             _builder.Create(RecipeType.DroidBodyVS2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_vs2")
                 .Level(16)
@@ -298,6 +325,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body WA II
             _builder.Create(RecipeType.DroidBodyWA2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_wa2")
                 .Level(19)
@@ -308,6 +336,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body WS II
             _builder.Create(RecipeType.DroidBodyWS2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ws2")
                 .Level(20)
@@ -318,6 +347,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body AS II
             _builder.Create(RecipeType.DroidBodyAS2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_as2")
                 .Level(15)
@@ -332,6 +362,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Droid Body MP III
             _builder.Create(RecipeType.DroidBodyMP3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_mp3")
                 .Level(30)
@@ -343,6 +374,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MV III
             _builder.Create(RecipeType.DroidBodyMV3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_mv3")
                 .Level(28)
@@ -354,6 +386,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MW III
             _builder.Create(RecipeType.DroidBodyMW3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_mw3")
                 .Level(26)
@@ -365,6 +398,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MA III
             _builder.Create(RecipeType.DroidBodyMA3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ma3")
                 .Level(27)
@@ -376,6 +410,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MS III
             _builder.Create(RecipeType.DroidBodyMS3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ms3")
                 .Level(25)
@@ -387,6 +422,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PV III
             _builder.Create(RecipeType.DroidBodyPV3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_pv3")
                 .Level(29)
@@ -398,6 +434,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PW III
             _builder.Create(RecipeType.DroidBodyPW3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_pw3")
                 .Level(29)
@@ -409,6 +446,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PA III
             _builder.Create(RecipeType.DroidBodyPA3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_pa3")
                 .Level(30)
@@ -420,6 +458,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PS III
             _builder.Create(RecipeType.DroidBodyPS3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ps3")
                 .Level(28)
@@ -431,6 +470,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body VW III
             _builder.Create(RecipeType.DroidBodyVW3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_vw3")
                 .Level(26)
@@ -442,6 +482,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body VA III
             _builder.Create(RecipeType.DroidBodyVA3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_va3")
                 .Level(27)
@@ -453,6 +494,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body VS III
             _builder.Create(RecipeType.DroidBodyVS3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_vs3")
                 .Level(26)
@@ -464,6 +506,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body WA III
             _builder.Create(RecipeType.DroidBodyWA3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_wa3")
                 .Level(29)
@@ -475,6 +518,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body WS III
             _builder.Create(RecipeType.DroidBodyWS3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ws3")
                 .Level(30)
@@ -486,6 +530,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body AS III
             _builder.Create(RecipeType.DroidBodyAS3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_as3")
                 .Level(25)
@@ -501,6 +546,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Droid Body MP IV
             _builder.Create(RecipeType.DroidBodyMP4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_mp4")
                 .Level(40)
@@ -512,6 +558,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MV IV
             _builder.Create(RecipeType.DroidBodyMV4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_mv4")
                 .Level(38)
@@ -523,6 +570,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MW IV
             _builder.Create(RecipeType.DroidBodyMW4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_mw4")
                 .Level(36)
@@ -534,6 +582,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MA IV
             _builder.Create(RecipeType.DroidBodyMA4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ma4")
                 .Level(37)
@@ -545,6 +594,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MS IV
             _builder.Create(RecipeType.DroidBodyMS4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ms4")
                 .Level(35)
@@ -556,6 +606,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PV IV
             _builder.Create(RecipeType.DroidBodyPV4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_pv4")
                 .Level(39)
@@ -567,6 +618,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PW IV
             _builder.Create(RecipeType.DroidBodyPW4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_pw4")
                 .Level(39)
@@ -578,6 +630,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PA IV
             _builder.Create(RecipeType.DroidBodyPA4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_pa4")
                 .Level(40)
@@ -589,6 +642,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PS IV
             _builder.Create(RecipeType.DroidBodyPS4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ps4")
                 .Level(38)
@@ -600,6 +654,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body VW IV
             _builder.Create(RecipeType.DroidBodyVW4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_vw4")
                 .Level(36)
@@ -611,6 +666,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body VA IV
             _builder.Create(RecipeType.DroidBodyVA4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_va4")
                 .Level(37)
@@ -622,6 +678,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body VS IV
             _builder.Create(RecipeType.DroidBodyVS4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_vs4")
                 .Level(36)
@@ -633,6 +690,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body WA IV
             _builder.Create(RecipeType.DroidBodyWA4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_wa4")
                 .Level(39)
@@ -644,6 +702,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body WS IV
             _builder.Create(RecipeType.DroidBodyWS4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ws4")
                 .Level(40)
@@ -655,6 +714,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body AS IV
             _builder.Create(RecipeType.DroidBodyAS4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_as4")
                 .Level(35)
@@ -670,6 +730,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Droid Body MP V
             _builder.Create(RecipeType.DroidBodyMP5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_mp5")
                 .Level(50)
@@ -681,6 +742,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MV V
             _builder.Create(RecipeType.DroidBodyMV5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_mv5")
                 .Level(48)
@@ -692,6 +754,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MW V
             _builder.Create(RecipeType.DroidBodyMW5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_mw5")
                 .Level(46)
@@ -703,6 +766,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MA V
             _builder.Create(RecipeType.DroidBodyMA5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ma5")
                 .Level(47)
@@ -714,6 +778,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body MS V
             _builder.Create(RecipeType.DroidBodyMS5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ms5")
                 .Level(45)
@@ -725,6 +790,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PV V
             _builder.Create(RecipeType.DroidBodyPV5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_pv5")
                 .Level(49)
@@ -736,6 +802,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PW V
             _builder.Create(RecipeType.DroidBodyPW5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_pw5")
                 .Level(49)
@@ -747,6 +814,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PA V
             _builder.Create(RecipeType.DroidBodyPA5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_pa5")
                 .Level(50)
@@ -758,6 +826,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body PS V
             _builder.Create(RecipeType.DroidBodyPS5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ps5")
                 .Level(48)
@@ -769,6 +838,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body VW V
             _builder.Create(RecipeType.DroidBodyVW5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_vw5")
                 .Level(46)
@@ -780,6 +850,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body VA V
             _builder.Create(RecipeType.DroidBodyVA5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_va5")
                 .Level(47)
@@ -791,6 +862,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body VS V
             _builder.Create(RecipeType.DroidBodyVS5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_vs5")
                 .Level(46)
@@ -802,6 +874,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body WA V
             _builder.Create(RecipeType.DroidBodyWA5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_wa5")
                 .Level(49)
@@ -813,6 +886,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body WS V
             _builder.Create(RecipeType.DroidBodyWS5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_ws5")
                 .Level(50)
@@ -824,6 +898,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Body AS V
             _builder.Create(RecipeType.DroidBodyAS5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidBody)
                 .Resref("d_bd_as5")
                 .Level(45)

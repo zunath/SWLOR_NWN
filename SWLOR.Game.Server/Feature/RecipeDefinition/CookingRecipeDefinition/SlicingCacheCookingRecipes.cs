@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
         private void Add(RecipeType type, string resref, int level, string herb, string huntedIngredient)
         {
             _builder.Create(type, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .RequirementUnlocked()
                 .Category(RecipeCategoryType.Food)
                 .Resref(resref)

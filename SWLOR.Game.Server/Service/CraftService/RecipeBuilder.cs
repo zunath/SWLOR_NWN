@@ -35,6 +35,14 @@ namespace SWLOR.Game.Server.Service.CraftService
         /// </summary>
         /// <param name="category">The category to put the recipe under.</param>
         /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder CraftingProfile(CraftProfile profile, CraftTechnique technique = CraftTechnique.None, bool pilot = false)
+        {
+            _activeRecipe.CraftingProfile = profile;
+            _activeRecipe.IsCraftingPilot = pilot;
+            _activeRecipe.CraftingTechnique = technique;
+            return this;
+        }
+
         public RecipeBuilder Category(RecipeCategoryType category)
         {
             _activeRecipe.Category = category;

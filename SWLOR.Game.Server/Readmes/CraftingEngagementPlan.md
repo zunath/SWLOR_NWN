@@ -64,7 +64,7 @@ Use five easily explained conditions. Their exact multipliers must be visible be
 | --- | --- | --- |
 | Normal | No adjustment. | Spend resources according to the recipe and remaining budget. |
 | Workable | 25 percent more progress from synthesis. | Use the opportunity for completion, or preserve room for quality first. |
-| Fine | 25 percent more quality from touch. | Improve the finish now, or keep enough durability and CP to complete the item. |
+| Fine | 50 percent more quality from touch. | Improve the finish now, or keep enough durability and CP to complete the item. |
 | Economical | Paid actions cost 25 percent less CP, rounded up. | Buy useful preparation, repair, or expensive work at a discount. |
 | Reinforced | Work actions spend 50 percent less durability, rounded up. | Take a large action safely, or pursue quality while preserving a finishing action. |
 

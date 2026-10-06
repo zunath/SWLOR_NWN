@@ -18,13 +18,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             ctx.Log("Loading the cliff collision mesh.");
             using var mesh = new global::NWN.Native.API.CNWPlaceableSurfaceMesh();
-            using var model = new global::NWN.Native.API.CResRef("dag_tnocliff2");
+            using var model = new global::NWN.Native.API.CResRef("sw_cliff_end2");
             ctx.Assert(mesh.LoadWalkMesh(model) != 0, "The cliff collision mesh loads.");
             ctx.AssertEqual(74, mesh.m_nVertices, "The solid cliff collision vertex count.");
             ctx.AssertEqual(144, mesh.m_nTriangles, "The solid cliff collision triangle count.");
 
-            var outside = new Vector3(13f, 300f, 2f);
-            var inside = new Vector3(3f, 300f, 2f);
+            // Keep the crossing inside the tile rows instead of exactly on their Y=300 seam.
+            var outside = new Vector3(13f, 301f, 2.366707f);
+            var inside = new Vector3(3f, 301f, 2.241563f);
             var south = new Vector3(13f, 298f, 1.725255f);
             var north = new Vector3(13f, 304f, 3.385944f);
             var mover = CreateObject(ObjectType.Creature, "civilian", Location(areaId, outside, 0f));
@@ -75,7 +76,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             for (var obj = GetFirstObjectInArea(areaId); GetIsObjectValid(obj); obj = GetNextObjectInArea(areaId))
             {
-                if (GetObjectType(obj) != ObjectType.Placeable || ObjectPlugin.GetAppearance(obj) != 3994)
+                if (GetObjectType(obj) != ObjectType.Placeable || ObjectPlugin.GetAppearance(obj) != 32090)
                     continue;
                 var position = GetPosition(obj);
                 if (System.Math.Abs(position.X - 2.79f) < 0.01f && System.Math.Abs(position.Y - 311.38f) < 0.01f)

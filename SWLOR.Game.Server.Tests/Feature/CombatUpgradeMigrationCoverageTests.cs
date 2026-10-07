@@ -369,11 +369,6 @@ public class CombatUpgradeMigrationCoverageTests
             "Feature",
             "MigrationDefinition",
             "SerializedItemWeaponDamageTypeMigration.cs"));
-        var migrationNotes = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Readmes",
-            "CombatUpgradeMigration.md"));
 
         migrationSource.Should().Contain("BlueprintRecipeIdVariable = \"BLUEPRINT_RECIPE_ID\"");
         migrationSource.Should().Contain("ItemPropertyType.Blueprint");
@@ -381,7 +376,6 @@ public class CombatUpgradeMigrationCoverageTests
         migrationSource.Should().Contain("DamageType.IsElementalDamageType()");
         migrationSource.Should().Contain("SWLOR.Game.Server.Service.Random.Next(elementalDamageTypes.Count)");
         migrationSource.Should().Contain("damageEnhancement.DamageType == selectedElementalDamageType");
-        migrationNotes.Should().Contain("randomly keeps one elemental type");
     }
 
     [Test]

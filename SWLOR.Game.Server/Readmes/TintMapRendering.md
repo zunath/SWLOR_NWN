@@ -167,9 +167,13 @@ checks the running module's native HAK list to catch that deployment failure.
 
 ## Exact RGB on robes
 
-`RobeModelRenderer` uses `roberender.2da` to select a generated body root when
-the worn robe has an effective RGB override. The body root contains the robe's
-geometry and therefore receives the same material scalars as other body parts.
+`RobeModelRenderer` uses `roberender.2da` to select a generated body root for
+every worn robe the catalog supports, whether or not it has an RGB override.
+Palette-only robes receive their palette rows through the same material
+scalars. The body root contains the robe's geometry and therefore receives the
+same material scalars as other body parts. The separate native robe attachment
+animates its own skeleton and can drift from the body, so it is used only for
+robes without a generated root (large and mounted bodies).
 Robe choices must have an actual MDL for the wearer's gender, race and original
 body phenotype. `RobeAppearance` checks the module's resource search space, which
 includes native models without RGB materials. The shared style list alone is not
@@ -203,6 +207,36 @@ receives its own private animation path. This avoids inheriting a body's missing
 hands through an incomplete robe skeleton or replacing body bind transforms
 with the robe's transforms. It applies across the catalog, with no robe-number
 exceptions or opt-in conversion list.
+
+A garment's copies of the wearer's skeleton joints (`rootdummy`, `torso_g`,
+`pelvis_g`, neck, head, arms, hands, legs and feet) are bound as static children
+of the matching body bone. Their local transform is computed from both bind
+poses, so each joint keeps the garment's authored world bind and its native
+inverse skin binds unchanged. They carry no animation tracks of their own.
+Independent cloth helpers stay beneath them and keep their authored curves.
+
+Do not copy body tracks onto garment joints instead. The engine keeps channels
+that a clip omits from the previous clip: `custom1start`/`custom1lp` (Point
+and the carrier for every authored ability animation), the talk clips that
+holocom holograms play, greeting, salute, read and drink all rotate `rootdummy`
+without positioning it. A mirrored garment root that reset itself to bind while
+the body kept a seated, kneeling or knocked-down root offset left the whole robe
+standing 0.7m-1m away from its wearer. Layered overlays and runtime animation
+replacements likewise drive only the body's own subtree. Binding to the real
+bone makes that separation impossible. `validate_garment_body_motion` fails a
+build in which any garment wearer joint is not a child of its body bone or has
+its own controllers, and `TestSharedRobeFamilies` replays sitting then pointing
+with latched channels against compiled models.
+
+`tools/AlignRobeAnimations.py --game-data "<NWN data>" --apply` repairs the
+ordinary robe parents before RGB generation. It aligns common clips to the
+current body chain, preserves cloth helper motion and geometry, and rebuilds
+descendants against their updated parent part IDs. Unchanged binary descendants
+receive only ID remapping, including private ID collisions and local tracks;
+their geometry, controllers, pointers, and inverse bindings remain unchanged.
+Missing legacy robe parents
+fall back to the canonical body. Every output must pass mesh, hierarchy, and
+skin-binding checks before the batch replaces HAK sources.
 
 The compiler matches part IDs against its immediate parent. The generator
 checks the compiled IDs, not only ASCII joint names. Native inherited tracks
@@ -247,6 +281,14 @@ requires exact generated source, compiler, immediate compiled parent, validation
 code, original inverse-bind source, canonical body, and owned output hashes. An
 edited source, output, compiler, or validator invalidates the corresponding proof.
 Whole-chain body-pose checks still run during generation even when models are reused.
+Staging `compilations.json` records compilation-only checkpoints for interrupted
+builds. They require matching source, compiler, parent, original binding data,
+canonical body, postprocessors, and output bytes. Resumed compilations still run
+every current validation and receive no validated cache record until those pass.
+Large dummy banks are exported in bounded, independent validation chunks. Their
+joined compiled bytes must match the complete bank, and their native exports
+must preserve the full ordered animation inventory and common geometry. This
+avoids the legacy exporter's poor performance on very large unsplit banks.
 Each shared bridge source is generated once, then its model-name token is replaced
 for the allocated resource; controller curves are not regenerated a second time.
 The September 2026 corpus measured 4.3 seconds for an unchanged `--apply`, compared

@@ -194,7 +194,7 @@
         "__struct_id": 32,
         "EquippedRes": {
           "type": "resref",
-          "value": "s_app_electro"
+          "value": "s_app_electro_of"
         }
       },
       {

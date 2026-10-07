@@ -79,6 +79,12 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().Contain("RangedRepeatedTargetDamageBonusMax");
         combat.Should().Contain("RangedRepeatedTargetDamageDurationSeconds");
         combat.Should().Contain("private static void ClearRangedRepeatedTargetDamageTracker(uint creature)");
+        var rangedRepeatedStart = combat.IndexOf("private static int ApplyRangedRepeatedTargetDamageModifier(", StringComparison.Ordinal);
+        var rangedRepeatedBody = combat
+            .Substring(rangedRepeatedStart, combat.IndexOf("private static void ClearRangedRepeatedTargetDamageTracker(", rangedRepeatedStart, StringComparison.Ordinal) - rangedRepeatedStart)
+            .Replace("\r\n", "\n");
+        rangedRepeatedBody.Should().Contain("if (!IsWeaponSkillType(skillType))\n                return damage;",
+            "device and Force damage must not reset Sustained Fire stacks");
         combat.Should().Contain("TrackSuppressionAbilityUse(activator, now);");
         combat.Should().Contain("if (!ability.IsHostileAbility)");
         combat.Should().Contain("_lastCombatAbilityUse[activator] = now;");

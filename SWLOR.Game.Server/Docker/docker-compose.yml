@@ -2,6 +2,8 @@ version: "3.7"
 services:
     redis:
         hostname: redis
+        # Existing RDBs contain RedisGears 1 (GEARS_DT0) data. Redis Stack 7.2
+        # loads RedisGears 2 and cannot open them without a data migration.
         image: redislabs/redismod:latest
         volumes:
           - ./redis:/data

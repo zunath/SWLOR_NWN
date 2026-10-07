@@ -1,4 +1,6 @@
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Entity;
+using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -29,6 +31,30 @@ namespace SWLOR.Game.Server.Service
         {
             if (DiagnosticsEnabled)
                 FloatingTextStringOnCreature(message, creature, displayToFaction);
+        }
+
+        /// <summary>
+        /// Optional, private cooldown feedback shares one throttle across every ability.
+        /// The normal denial stays in chat; this notification never adds another chat entry.
+        /// </summary>
+        public static bool ShowCooldownFloatingText(uint player, string abilityName, string timeToWait)
+        {
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return false;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer?.Settings?.DisplayCooldownFloatingText != true)
+                return false;
+
+            const string lastSentVariable = "FEEDBACK_COOLDOWN_FLOATING_LAST_SENT";
+            var now = DateTime.UtcNow.Ticks;
+            long.TryParse(GetLocalString(player, lastSentVariable), out var lastSent);
+            if (!IsWarningDue(now, lastSent, 2))
+                return false;
+
+            SetLocalString(player, lastSentVariable, now.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            PlayerPlugin.FloatingTextStringOnCreature(player, player, ColorToken.Yellow($"{abilityName}: {timeToWait}"), false);
+            return true;
         }
 
         /// <summary>

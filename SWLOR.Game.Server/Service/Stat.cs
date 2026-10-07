@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Service
         private const int MaximumNPCHitPoints = 30000;
         private const int MaximumNPCHitPointAlignmentPasses = 4;
         public const float BeastNaturalStaminaRegenDelaySeconds = 6f;
+        public const int BeastNaturalRegenStatDivisor = 10;
         private const string BeastNaturalStaminaRegenAvailableAtVariable = "BEAST_STAMINA_REGEN_AVAILABLE_AT";
         public const int DefaultMeleeDeflectionChanceCap = 50;
         public const int DefaultRangedDeflectionChanceCap = 50;
@@ -745,6 +746,50 @@ namespace SWLOR.Game.Server.Service
             }
 
             return Math.Clamp(combatReadiness, 0, MaximumCombatReadinessPercent);
+        }
+
+        /// <summary>
+        /// Reconciles the equipment cache after login or a completed equipment change.
+        /// Keep this outside ability calculations: one scan can serve every target.
+        /// </summary>
+        public static void RefreshCombatReadinessEquipment(uint creature)
+        {
+            if (!GetIsObjectValid(creature) || !GetIsPC(creature) ||
+                GetIsDM(creature) || GetIsDMPossessed(creature))
+                return;
+
+            var playerId = GetObjectUUID(creature);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
+            var amount = GetEquippedCombatReadiness(creature);
+            if (dbPlayer.CombatReadiness == amount)
+                return;
+
+            // Store the uncapped equipment contribution. Perks and food are stat
+            // adjustments, and the combined cap belongs to the read calculation.
+            dbPlayer.CombatReadiness = amount;
+            DB.Set(dbPlayer);
+        }
+
+        public static int GetEquippedCombatReadiness(uint creature)
+        {
+            var amount = 0;
+            for (var index = 0; index < NumberOfInventorySlots; index++)
+            {
+                var item = GetItemInSlot((InventorySlot)index, creature);
+                if (!GetIsObjectValid(item))
+                    continue;
+
+                for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                {
+                    if (GetItemPropertyType(ip) == ItemPropertyType.CombatReadiness)
+                        amount += GetItemPropertyCostTableValue(ip);
+                }
+            }
+
+            return amount;
         }
 
         /// <summary>
@@ -1482,6 +1527,7 @@ namespace SWLOR.Game.Server.Service
             var stat = GetAbilityScore(creature, AbilityType.Agility);
             int skillLevel;
             int evasionBonus;
+            var hasNpcStatBudget = false;
 
             // Base NWN applies an AC bonus based on the DEX stat. The Perception stat is based upon this.
             // Perception should not increase AC in SWLOR, so this is subtracted from the AC.
@@ -1504,13 +1550,14 @@ namespace SWLOR.Game.Server.Service
                 var npcStats = GetNPCStats(creature);
                 skillLevel = npcStats.Level;
                 evasionBonus = npcStats.Evasion;
+                hasNpcStatBudget = npcStats.Level > 0;
             }
 
             evasionBonus += CalculateEffectEvasion(creature);
 
             Log.Write(LogGroup.Attack, $"Effect Evasion: {evasionBonus}");
 
-            var evasion = GetEvasion(skillLevel, stat, ac * 5 + evasionBonus);
+            var evasion = GetEvasion(skillLevel, stat, evasionBonus, ac, hasNpcStatBudget);
             return ApplyPostEvasionStatusModifiers(creature, evasion, incomingSkillType);
         }
 
@@ -1613,6 +1660,7 @@ namespace SWLOR.Game.Server.Service
             var stat = GetStatValueNative(creature, AbilityType.Agility);
             var skillLevel = 0;
             var evasionBonus = 0;
+            var hasNpcStatBudget = false;
 
             // Note: The DEX offset is unnecessary for the native call.
             var ac = creature.m_pStats.m_nACArmorBase +
@@ -1646,11 +1694,12 @@ namespace SWLOR.Game.Server.Service
                 var npcStats = GetNPCStatsNative(creature);
                 skillLevel = npcStats.Level;
                 evasionBonus = npcStats.Evasion;
+                hasNpcStatBudget = npcStats.Level > 0;
             }
 
             evasionBonus += CalculateEffectEvasion(creature.m_idSelf);
 
-            var evasion = GetEvasion(skillLevel, stat, ac * 5 + evasionBonus);
+            var evasion = GetEvasion(skillLevel, stat, evasionBonus, ac, hasNpcStatBudget);
             return ApplyPostEvasionStatusModifiers(creature.m_idSelf, evasion, incomingSkillType);
         }
 
@@ -2086,8 +2135,10 @@ namespace SWLOR.Game.Server.Service
             return GetStatAdjustment(creature, StatType.DefensePercentAdjustment) + (type switch
             {
                 CombatDamageType.Physical => GetStatAdjustment(creature, StatType.PhysicalDefensePercentAdjustment) +
+                                             GetStatAdjustment(creature, StatType.PhysicalAndForceDefenseAuraPercentAdjustment) +
                                              GetShieldEquippedPhysicalDefensePercentAdjustment(creature),
-                CombatDamageType.Force => GetStatAdjustment(creature, StatType.ForceDefensePercentAdjustment),
+                CombatDamageType.Force => GetStatAdjustment(creature, StatType.ForceDefensePercentAdjustment) +
+                                          GetStatAdjustment(creature, StatType.PhysicalAndForceDefenseAuraPercentAdjustment),
                 _ => 0
             });
         }
@@ -2279,6 +2330,16 @@ namespace SWLOR.Game.Server.Service
         public static int GetEvasion(int level, int stat, int bonus)
         {
             return 8 + (2 * level) + stat + bonus;
+        }
+
+        /// <summary>
+        /// NPC stat skins carry the complete Evasion budget. Native armor must
+        /// not add another budget through inherited equipment, feats or effects.
+        /// Stat-based Evasion adjustments remain part of bonus for all creatures.
+        /// </summary>
+        public static int GetEvasion(int level, int stat, int bonus, int nativeArmorClass, bool hasNpcStatBudget)
+        {
+            return GetEvasion(level, stat, bonus + (hasNpcStatBudget ? 0 : nativeArmorClass * 5));
         }
 
         /// <summary>
@@ -2613,8 +2674,9 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Restores a beast's FP and STM. STM regeneration remains active in and out of combat,
-        /// but cannot begin until six seconds after the beast last spent STM.
+        /// Restores a beast's FP and STM. Each heartbeat restores 1 + WIL/10 FP and 1 + MGT/10 STM.
+        /// STM regeneration remains active in and out of combat, but cannot begin until six seconds
+        /// after the beast last spent STM.
         /// </summary>
         public static void RestoreBeastStats()
         {
@@ -2626,7 +2688,16 @@ namespace SWLOR.Game.Server.Service
             return availableAtTicks <= 0 || currentTicks >= availableAtTicks;
         }
 
-        private static void RestoreNPCStats(bool outOfCombatRegen, bool respectsStaminaRegenDelay)
+        /// <summary>
+        /// Amount of FP or STM a beast restores per heartbeat, scaled by the governing attribute
+        /// (WIL for FP, MGT for STM).
+        /// </summary>
+        public static int GetBeastNaturalRegenAmount(int attribute)
+        {
+            return 1 + Math.Max(0, attribute) / BeastNaturalRegenStatDivisor;
+        }
+
+        private static void RestoreNPCStats(bool outOfCombatRegen, bool isBeast)
         {
             var self = OBJECT_SELF;
             if (GetLocalInt(self, SuppressNaturalRegenVariable) != 0)
@@ -2636,11 +2707,17 @@ namespace SWLOR.Game.Server.Service
             var maxSTM = GetMaxStamina(self);
             var previousFP = GetLocalInt(self, "FP");
             var previousSTM = GetLocalInt(self, "STAMINA");
-            var fp = previousFP + 1;
+            var fpRegen = isBeast
+                ? GetBeastNaturalRegenAmount(GetAbilityScore(self, AbilityType.Willpower))
+                : 1;
+            var stmRegen = isBeast
+                ? GetBeastNaturalRegenAmount(GetAbilityScore(self, AbilityType.Might))
+                : 1;
+            var fp = previousFP + fpRegen;
             var stm = previousSTM;
-            var canRestoreStamina = !respectsStaminaRegenDelay || CanRestoreBeastStamina(self);
+            var canRestoreStamina = !isBeast || CanRestoreBeastStamina(self);
             if (canRestoreStamina)
-                stm++;
+                stm += stmRegen;
 
             if (fp > maxFP)
                 fp = maxFP;

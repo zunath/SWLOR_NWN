@@ -149,6 +149,13 @@ public class PistolAnimationRemapTests
             "BroadcastSafeProjectileType.WeaponVfxSonic");
         registrationSource.Should().Contain(
             "EventsPlugin.ToggleIDWhitelist(\"NWNX_ON_BROADCAST_SAFE_PROJECTILE_TYPE\", true);");
+        registrationSource.IndexOf(
+                "EventsPlugin.ToggleIDWhitelist(\"NWNX_ON_BROADCAST_SAFE_PROJECTILE_TYPE\", true);",
+                StringComparison.Ordinal)
+            .Should().BeLessThan(registrationSource.IndexOf(
+                "EventsPlugin.AddIDToWhitelist(\n                    \"NWNX_ON_BROADCAST_SAFE_PROJECTILE_TYPE\",",
+                StringComparison.Ordinal),
+                "NWNX ignores whitelist additions before the whitelist is enabled");
     }
 
     /// <summary>
@@ -219,6 +226,14 @@ public class PistolAnimationRemapTests
         impactSource.Should().Contain(
             "PistolAnimationRemap.PlayAnimationPreservingExplicitThrow",
             "fallback impact animations must bypass the persistent pistol remap for explicit throws");
+        var previewSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "NamedAnimation.cs"));
+        previewSource.Should().Contain(
+            "creature, animation, speed, 0f, immediate: true, releaseAuthoredPose: false",
+            "native throw previews must suspend the pistol remap without releasing their new playback token");
         System.Text.RegularExpressions.Regex.IsMatch(
             impactSource,
             @"PlayAnimationWithTemporaryReplacementPreservingExplicitThrow\s*\(\s*activator,\s*animation,\s*1\.0f,\s*restoreDelaySeconds,\s*sourceAnimationName,\s*replacementAnimationName,\s*restoreDelaySeconds\s*\)")

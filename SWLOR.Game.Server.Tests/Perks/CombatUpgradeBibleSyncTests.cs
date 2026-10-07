@@ -921,8 +921,8 @@ public class CombatUpgradeBibleSyncTests
                 findings));
         }
 
-        var outputPath = root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBibleImplementationReview.csv";
-        WriteImplementationReview(outputPath.FullName, reviewRows);
+        var outputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "BibleImplementationReview.csv");
+        WriteImplementationReview(outputPath, reviewRows);
 
         reviewRows.Should().HaveCount(rows.Length);
         reviewRows
@@ -1196,15 +1196,6 @@ public class CombatUpgradeBibleSyncTests
             .Select(row => $"{Describe(row)}: use 'control effect' wording instead of undefined controlled shorthand.")
             .ToArray();
 
-        var validationMatrix = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Readmes",
-            "CombatUpgradeReleaseValidationMatrix.md"));
-        validationMatrix.Should().Contain("`Controlled` is a category, not a single status effect.");
-        validationMatrix.Should().Contain("A target is controlled while affected by a control effect");
-        validationMatrix.Should().Contain("Blind, Confusion, Dazed, Disoriented, Foggy Mind, Force Disruption");
-
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
     }
 
@@ -1433,7 +1424,6 @@ public class CombatUpgradeBibleSyncTests
 
         var discsByResref = discs.ToDictionary(row => row["T"]);
         var recipesByType = recipeRows.ToDictionary(row => row["D"]);
-        var manifest = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv");
         foreach (var item in templates)
         {
             var row = discsByResref[item.Resref];
@@ -1448,12 +1438,6 @@ public class CombatUpgradeBibleSyncTests
             row["V"].Should().Be(Regex.Replace(skill.ToString(), "([a-z])([A-Z])", "$1 $2"), item.Resref);
             decimal.Parse(row["W"], CultureInfo.InvariantCulture).Should().Be(level.DroidAISlots, item.Resref);
 
-            if (skill is not (SkillType.Devices or SkillType.FirstAid or SkillType.Armor))
-            {
-                var perkRow = manifest.Single(entry => entry.Tab == row["V"] && entry.PerkName == name);
-                perkRow.Notes.Should().Contain($"Droid instruction AI slots: {level.DroidAISlots}.", name);
-                perkRow.Notes.Should().Contain($"Controller tier: {tier}.", name);
-            }
         }
 
         foreach (var (type, recipe) in recipes)

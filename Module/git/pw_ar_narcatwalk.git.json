@@ -66847,11 +66847,11 @@
         },
         "X": {
           "type": "float",
-          "value": 106.7898559570313
+          "value": 108.0
         },
         "Y": {
           "type": "float",
-          "value": 33.32816696166992
+          "value": 30.3
         },
         "Z": {
           "type": "float",
@@ -112738,6 +112738,21 @@
   "VarTable": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "WEATHER_HAZARD_SAFE"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      },
       {
         "__struct_id": 0,
         "Name": {

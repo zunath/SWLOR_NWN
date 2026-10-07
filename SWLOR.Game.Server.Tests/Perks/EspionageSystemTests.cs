@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.SlicingService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -222,7 +223,9 @@ public class EspionageSystemTests
         var resolveDetection = stealthSource[resolveStart..resolveEnd];
 
         var exitIndex = resolveDetection.IndexOf("ExitDetectedPlayerStealth(observer, target);", StringComparison.Ordinal);
-        var acquireGuardIndex = resolveDetection.IndexOf("if (acquireAggroOnDetection)", StringComparison.Ordinal);
+        resolveDetection.Should().Contain("GetIsEnemy(target, observer)");
+        resolveDetection.Should().Contain("ShouldBreakStealthOnDetection(true, hostile)");
+        var acquireGuardIndex = resolveDetection.IndexOf("if (acquireAggroOnDetection && hostile)", StringComparison.Ordinal);
         var acquireIndex = resolveDetection.IndexOf(
             "AI.TryAcquireAggroAfterDetection(observer, target);",
             StringComparison.Ordinal);
@@ -252,6 +255,30 @@ public class EspionageSystemTests
         successfulAggroIndex.Should().BeGreaterThanOrEqualTo(0);
         successfulAggroLogIndex.Should().BeGreaterThan(successfulAggroIndex,
             "the handoff log must describe a completed acquisition, not a rejected attempt");
+    }
+
+    [TestCase(true, true, true, TestName = "Hostile observer success breaks stealth")]
+    [TestCase(true, false, false, TestName = "Friendly or neutral observer success does not break stealth")]
+    [TestCase(false, true, false, TestName = "Hostile observer failure does not break stealth")]
+    [TestCase(false, false, false, TestName = "Friendly observer failure does not break stealth")]
+    public void StealthBreaksOnlyOnHostileSuccessfulDetection(bool detected, bool hostile, bool expectedBreak)
+    {
+        Stealth.ShouldBreakStealthOnDetection(detected, hostile).Should().Be(expectedBreak);
+    }
+
+    [Test]
+    public void ResolveDetection_KeepsFriendlySuccessAsDetectedWithoutBreakingStealth()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Stealth.cs"));
+        var start = source.IndexOf("private static bool ResolveDetection(", StringComparison.Ordinal);
+        var end = source.IndexOf("public static bool ShouldBreakStealthOnDetection", start, StringComparison.Ordinal);
+        var body = source[start..end];
+
+        body.Should().Contain("return detected;", "friendly success must still reach the native event and cache");
+        body.Should().Contain("EspionageInfiltration.RecordDetection(observer, target, detected);");
+        body.IndexOf("GetIsEnemy(target, observer)", StringComparison.Ordinal)
+            .Should().BeGreaterThan(body.IndexOf("if (detected)", StringComparison.Ordinal));
     }
 
     [Test]
@@ -380,6 +407,17 @@ public class EspionageSystemTests
     }
 
     [Test]
+    public void VenomCoatings_AcceptEveryWeaponFamilyAndRejectEquipmentThatCannotAttack()
+    {
+        foreach (var weapon in Item.WeaponBaseItemTypes)
+            VenomCoatingItemDefinition.CanCoatWeapon(weapon).Should().BeTrue();
+        foreach (var weapon in new[] { BaseItem.Pistol, BaseItem.Rifle, BaseItem.Lightsaber, BaseItem.Saberstaff, BaseItem.Dart })
+            VenomCoatingItemDefinition.CanCoatWeapon(weapon).Should().BeTrue();
+        VenomCoatingItemDefinition.CanCoatWeapon(BaseItem.Armor).Should().BeFalse();
+        VenomCoatingItemDefinition.CanCoatWeapon(BaseItem.SmallShield).Should().BeFalse();
+    }
+
+    [Test]
     public void LastingCoatingsRaisesChargesFromTwentyToThirty()
     {
         VenomCoatingItemDefinition.CalculateCharges(0).Should().Be(20);
@@ -398,6 +436,39 @@ public class EspionageSystemTests
         Poisons.GetVenomDurationSeconds(1).Should().BeApproximately(12f, 0.001f);
         Poisons.GetVenomDurationSeconds(3).Should().BeApproximately(24f, 0.001f);
         Poisons.GetVenomDurationSeconds(5).Should().BeApproximately(36f, 0.001f);
+    }
+
+    [Test]
+    public void CoatingHits_RefreshSourceOwnedVenomAndCreditEspionageOnlyOnSuccess()
+    {
+        var source = File.ReadAllText(Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Poisons.cs"));
+        var syntax = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree.ParseText(source).GetRoot();
+        var calls = syntax.DescendantNodes()
+            .OfType<Microsoft.CodeAnalysis.CSharp.Syntax.InvocationExpressionSyntax>().ToArray();
+        calls.Should().Contain(call => call.ToString() ==
+            "StatusEffect.GetStatusEffect(defender, typeof(VenomStatusEffect), attacker)");
+        calls.Should().Contain(call => call.ToString() ==
+            "StatusEffect.RefreshStatusEffectDuration(defender, typeof(VenomStatusEffect), attacker, durationSeconds)");
+        var credit = calls.Single(call => call.Expression.ToString() == "CombatPoint.AddCombatPoint");
+        credit.ArgumentList.Arguments.Select(arg => arg.ToString()).Should()
+            .Equal("attacker", "defender", "SkillType.Espionage");
+        credit.Ancestors().OfType<Microsoft.CodeAnalysis.CSharp.Syntax.IfStatementSyntax>()
+            .Should().Contain(statement => statement.Condition.ToString() == "applied");
+        source.Should().Contain("venom != null && !venom.IsFlaggedForRemoval");
+    }
+
+    [Test]
+    public void RefreshedVenom_UsesTheLatestCoatingPotencyWhenCloned()
+    {
+        var venom = new VenomStatusEffect(0);
+        venom.UpdateDamageBonusPercent(30);
+        var clone = (VenomStatusEffect)venom.Clone();
+        var potency = typeof(VenomStatusEffect).GetField("_damageBonusPercent",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
+        VenomStatusEffect.CalculateBaseDamagePerTick((int)potency.GetValue(clone)!).Should().Be(11);
+        venom.UpdateDamageBonusPercent(-10);
+        potency.GetValue(venom).Should().Be(0);
+        potency.GetValue(clone).Should().Be(30);
     }
 
     [Test]

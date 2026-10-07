@@ -139301,7 +139301,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This deed can be used to register a starship in your name at any starport."
                       }
                     },
                     "Identified": {
@@ -139442,7 +139442,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This deed can be used to register a starship in your name at any starport."
                       }
                     },
                     "Identified": {

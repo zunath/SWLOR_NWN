@@ -16,6 +16,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public sealed class CryoSprayerAbilityDefinition : IAbilityListDefinition
     {
+        private const int BaseDamage = 10;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -59,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 SkillType.Devices,
-                6,
+                BaseDamage,
                 30,
                 typeof(HobbleStatusEffect),
                 CombatImpactAreaShape.Cone,

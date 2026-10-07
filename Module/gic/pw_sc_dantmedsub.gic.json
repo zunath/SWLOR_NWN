@@ -2817,7 +2817,141 @@
   },
   "TriggerList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Prevents random spawns from landing inside wall placeables."
+        }
+      }
+    ]
   },
   "WaypointList": {
     "type": "list",

@@ -4,7 +4,6 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
-using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -14,20 +13,133 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class DevicesFieldSupportAndAssaultGadgetsTests
 {
-    [Test]
-    public void AssaultGadgetTwins_MatchForceBaseDamage()
+    private static readonly string[] RankConstants = { "Rank1BaseDamage", "Rank2BaseDamage", "Rank3BaseDamage" };
+
+    // Assault Gadgets add Gadget DMG the way weapon abilities add weapon DMG, so each ability's
+    // base damage is the "+X" of a weapon-style rank ladder rather than a Force-style full base.
+    private static readonly (PerkType Perk, Type Definition, string[] Constants, int[] Expected)[] AssaultGadgetDamageLadders =
     {
-        foreach (var fieldName in new[] { "Rank1BaseDamage", "Rank2BaseDamage", "Rank3BaseDamage" })
+        (PerkType.Flamethrower, typeof(FlamethrowerAbilityDefinition), RankConstants, new[] { 6, 12, 18 }),
+        (PerkType.WristRocket, typeof(WristRocketAbilityDefinition), RankConstants, new[] { 10, 20, 32 }),
+        (PerkType.SonicBurst, typeof(SonicBurstAbilityDefinition), RankConstants, new[] { 10, 14, 18 }),
+        (PerkType.ArcProjector, typeof(ArcProjectorAbilityDefinition), RankConstants, new[] { 12, 24, 36 }),
+        (PerkType.IonLance, typeof(IonLanceAbilityDefinition), RankConstants, new[] { 10, 20, 30 }),
+        (PerkType.RailDart, typeof(RailDartAbilityDefinition), RankConstants, new[] { 10, 20, 30 }),
+        (PerkType.CryoSprayer, typeof(CryoSprayerAbilityDefinition), new[] { "BaseDamage" }, new[] { 10 }),
+        // One rank with three attacks, listed in description order: fire burst, fire strike, sonic burst.
+        (PerkType.OverloadBarrage, typeof(OverloadBarrageAbilityDefinition), new[] { "BurstBaseDamage", "StrikeBaseDamage", "SonicBaseDamage" }, new[] { 22, 32, 18 }),
+    };
+
+    [Test]
+    public void AssaultGadgetBaseDamage_FollowsTheGadgetDMGLadder()
+    {
+        foreach (var (_, definition, constants, expected) in AssaultGadgetDamageLadders)
         {
-            GetAbilityConstant<int>(typeof(ArcProjectorAbilityDefinition), fieldName)
-                .Should().Be(GetAbilityConstant<int>(typeof(ThrowRockAbilityDefinition), fieldName));
-            GetAbilityConstant<int>(typeof(IonLanceAbilityDefinition), fieldName)
-                .Should().Be(GetAbilityConstant<int>(typeof(RadiantLanceAbilityDefinition), fieldName));
+            constants.Select(name => GetAbilityConstant<int>(definition, name))
+                .Should().Equal(expected, definition.Name);
+        }
+    }
+
+    [Test]
+    public void AssaultGadgetDescriptions_StateTheBaseDamageTheCodeApplies()
+    {
+        var perks = BuildDevicesAssaultGadgetsPerksWithout2daLookup();
+
+        foreach (var (perkType, definition, constants, _) in AssaultGadgetDamageLadders)
+        {
+            var codeDamage = constants.Select(name => GetAbilityConstant<int>(definition, name)).ToArray();
+            var describedDamage = perks[perkType].PerkLevels
+                .OrderBy(level => level.Key)
+                .SelectMany(level => System.Text.RegularExpressions.Regex
+                    .Matches(level.Value.Description, @"gadget DMG \+ (\d+)")
+                    .Select(match => int.Parse(match.Groups[1].Value)))
+                .ToArray();
+
+            describedDamage.Should().Equal(codeDamage, $"{perkType} descriptions must state the base damage its ranks apply");
+        }
+    }
+
+    [Test]
+    public void AssaultGadgetImpacts_AllAddGadgetDMG()
+    {
+        var root = FindRepositoryRoot();
+
+        foreach (var (_, definition, _, _) in AssaultGadgetDamageLadders)
+        {
+            var source = File.ReadAllText(
+                (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / $"{definition.Name}.cs").FullName);
+            var deviceImpacts = System.Text.RegularExpressions.Regex.Matches(source, @"SkillType\.Devices,\s*\r?\n").Count;
+            var gadgetDMGAdjustments = System.Text.RegularExpressions.Regex.Matches(source, @"baseDamageAdjustment: ").Count;
+
+            deviceImpacts.Should().BePositive(definition.Name);
+            gadgetDMGAdjustments.Should().Be(deviceImpacts, $"every {definition.Name} impact must add Gadget DMG");
+        }
+    }
+
+    [TestCase(true, 0, null, 45, 0)]
+    [TestCase(true, 50, null, 0, 50)]
+    [TestCase(false, 0, null, 45, 45)]
+    [TestCase(false, 0, 30, 45, 30)]
+    [TestCase(false, 0, null, 0, 0)]
+    public void AssaultGadgetDevicesRank_FallsBackToLevelForDroidsAndNPCs(
+        bool isPlayer, int playerDevicesRank, int? npcDevicesRank, int npcLevel, int expected)
+    {
+        DeviceAbilityEffects.ResolveAssaultGadgetDevicesRank(isPlayer, playerDevicesRank, npcDevicesRank, npcLevel)
+            .Should().Be(expected);
+    }
+
+    [Test]
+    public void DroidTiers_ScaleGadgetDMGWithTheirLevel()
+    {
+        // Droid controllers cannot carry a Devices skill, so droid Gadget DMG comes from the
+        // tier level written to the droid's skin. Without that fallback every droid would be
+        // stuck at the minimum Gadget DMG.
+        Enum.GetNames(typeof(DroidStatSubType)).Should().NotContain("Devices");
+
+        var cacheDroidLevels = typeof(Droid).GetMethod("CacheDroidLevels", BindingFlags.NonPublic | BindingFlags.Static);
+        cacheDroidLevels.Should().NotBeNull();
+        cacheDroidLevels!.Invoke(null, null);
+        var levelsByTier = (Dictionary<int, int>)typeof(Droid)
+            .GetField("_levelsByTier", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetValue(null)!;
+
+        var gadgetDMGByTier = levelsByTier.OrderBy(tier => tier.Key).ToDictionary(
+            tier => tier.Key,
+            tier => DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(
+                DeviceAbilityEffects.ResolveAssaultGadgetDevicesRank(false, 0, null, tier.Value)));
+
+        gadgetDMGByTier.Should().Equal(new Dictionary<int, int>
+        {
+            [1] = 6,
+            [2] = 10,
+            [3] = 15,
+            [4] = 19,
+            [5] = 24,
+        });
+    }
+
+    [Test]
+    public void AssaultGadgetDescriptions_StateDamageAsGadgetDMGPlusBonus()
+    {
+        var perks = BuildDevicesAssaultGadgetsPerksWithout2daLookup();
+        var damageDescriptions = perks.Values
+            .SelectMany(perk => perk.PerkLevels.Values)
+            .Select(level => level.Description)
+            .Where(description => description.Contains(" DMG", StringComparison.Ordinal))
+            .ToList();
+
+        damageDescriptions.Should().NotBeEmpty();
+        foreach (var description in damageDescriptions)
+        {
+            var damageMentions = System.Text.RegularExpressions.Regex.Matches(description, @"\bDMG\b").Count;
+            var gadgetMentions = System.Text.RegularExpressions.Regex.Matches(description, @"gadget DMG \+ \d+ \w+ DMG").Count;
+            (gadgetMentions * 2).Should().Be(damageMentions, description);
         }
     }
 

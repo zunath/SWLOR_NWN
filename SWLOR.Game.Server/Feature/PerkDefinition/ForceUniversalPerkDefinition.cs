@@ -83,14 +83,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Leap")
 
                 .AddPerkLevel()
-                .Description("Leap to a hostile target up to 15m away, dealing 10 force DMG plus WIL scaling and interrupting activation.")
+                .Description("Leap to a hostile target up to 15m away, dealing 10 force DMG plus WIL scaling, interrupting activation, and inflicting Stunned for 2 seconds on arrival.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceLeap1)
 
                 .AddPerkLevel()
-                .Description("Leap to a hostile target up to 18m away, dealing 18 force DMG plus WIL scaling and interrupting activation.")
+                .Description("Leap to a hostile target up to 18m away, dealing 18 force DMG plus WIL scaling, interrupting activation, and inflicting Stunned for 2 seconds on arrival.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

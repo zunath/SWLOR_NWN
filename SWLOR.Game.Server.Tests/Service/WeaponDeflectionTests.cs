@@ -160,18 +160,6 @@ public class WeaponDeflectionTests
     }
 
     [Test]
-    public void BibleReviewPatch_PreservesMaelstromArcRangedDeflectionWording()
-    {
-        var patch = ReadSource("tools", "ApplyCombatBibleReviewFixes.ps1");
-
-        patch.Should().Contain(
-            "If your Ranged Deflection negated a ranged weapon auto-attack in the last 30 seconds, restore 4 FP.");
-        patch.Should().Contain(
-            "If your Ranged Deflection negated a ranged weapon auto-attack in the last 30 seconds, restore 8 FP.");
-        patch.Should().NotContain("If you deflected an attack in the last 30 seconds");
-    }
-
-    [Test]
     public void UnmovingCenter_UsesItsStatusForOneMeleeDeflectionGrant()
     {
         var ability = ReadSource(

@@ -20,6 +20,7 @@ public static partial class MigrationEngineTests
         var item = await CreateItemAsync(ctx, owner, "com_laser_1", owner);
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
+            ctx.AssertEqual(ShipItemAppearance.GetUpdatedModel("com_laser_1", (int)GetBaseItemType(item), 4), GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0), "Newly created modules use the reviewed appearance");
             SetName(item, "Custom crafted laser");
             SetLocalInt(item, "CRAFTED_QUALITY", 27);
             SetItemCharges(item, 7);

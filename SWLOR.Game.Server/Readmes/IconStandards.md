@@ -189,7 +189,13 @@ Generated status-effect labels in `effecticons.2da` must use compact PascalCase 
 
 Ship equipment artwork uses `ShipItemIconManifest.csv` for its semantic action images and `ShipItemIconBindings.csv` for reviewed native inventory appearances. The bindings record each blueprint's original appearance, replacement appearance, role, gameplay source references, and availability restriction. `ShipModuleIconAudit.csv` records actual registered module descriptions, fitting slots, perk requirements, and activation behavior, including NPC configurations.
 
-Original ship artwork and its generation prompts live in `SWLOR_Haks/sw_item_source/`. Use meaningful `iit_sm` action resrefs, 32x32 semantic frames, and the regular green cooldown variants. Native inventory aliases retain the engine-required `i<ItemClass>_<model>` names and 64x64 size for the existing two-cell item types; these aliases are reserved exclusively for the reviewed ship blueprints. Do not overwrite a borrowed texture still used by unrelated items. Update recognized legacy ship appearances in place, preserving crafted properties, stack state, identity, and customized appearances.
+Original ship artwork and its generation prompts live in `SWLOR_Haks/sw_item_source/`. Use meaningful `iit_sm` action resrefs, 32x32 semantic frames, and the regular green cooldown variants. Native inventory aliases retain the engine-required `i<ItemClass>_<model>` names and 64x64 size for the existing two-cell item types; ship aliases are reserved exclusively for the reviewed ship blueprints. Update recognized legacy appearances in place, preserving crafted properties, stack state, identity, and customized appearances.
+
+The remaining original inventory artwork uses `ItemIconManifest.csv` and `ItemIconBindings.csv`, with sources and exact prompts in `SWLOR_Haks/sw_item_source/general/`. Different ranks of the same item function share artwork; unrelated functions must have distinct artwork. Keep recognizable ingredients and refined materials separate from generic enhancement cartridges, even when their crafting bonus is similar. Internal legacy reagents with no player source may share a clearly labeled reagent family.
+
+Use `tools/UpdateItemIconBindings.py --apply` to apply stable published model mappings. Import selected source images with Windows PowerShell and `tools/ImportItemIconArtwork.ps1 -Key <key> -SourcePath <generated PNG> -MagickPath <ImageMagick executable>`. This uses ImageMagick and the shared semantic stamper for both game sizes. Both inventory manifests participate in the global gameplay icon audit, and each manifest generator must preserve the other catalogue's rows.
+
+For a complete texture-bank replacement, review every blueprint, embedded inventory, and literal resource reference. Retain numeric resource slots for saved custom appearances, replacing unused artwork with original library aliases and regenerating legacy recharge variants. Never leave a referenced inventory model without its reviewed original replacement.
 
 Run `tools/UpdateShipItemIcons.py --apply`, `tools/GenerateShipItemIcons.ps1`, and the regular gameplay icon audit when updating this set. `tools/ExportShipModuleIconAudit.ps1` refreshes the usage audit from the built server assembly. Module ranks share function artwork without numeric badges; different functions require different silhouettes.
 
@@ -254,3 +260,5 @@ Use audit mode to verify checked-in data without regenerating art:
 ```powershell
 powershell -ExecutionPolicy Bypass -File tools/UpdateGameplayIconStandards.ps1 -AuditOnly
 ```
+
+All numeric ESS inventory resource slots are retained for saved custom appearances. `tools/UpdateNativeItemIconLibrary.py --apply` replaces unused slots with original library aliases and regenerates legacy recharge frames through the established ImageMagick cooldown generator. `sw_item_source/general/native-library.csv` records each slot, original source, gameplay or compatibility usage, and before/after hashes. Audit without `--apply` verifies reference coverage and every retained resource. These compatibility aliases are not additional gameplay families.

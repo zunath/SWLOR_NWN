@@ -138,6 +138,8 @@ def apply_bindings(bindings):
         text, count = re.subn(r'("ModelPart1"\s*:\s*\{\s*"type"\s*:\s*"byte",\s*"value"\s*:\s*)\d+',
                              lambda m: m[1] + str(row['NewModel']), text)
         assert count == 1, path
+        text = re.sub(r'("xModelPart1"\s*:\s*\{\s*"type"\s*:\s*"word",\s*"value"\s*:\s*)\d+',
+                      lambda m: m[1] + str(row['NewModel']), text)
         path.write_bytes(text.encode(encoding))
 
 
@@ -164,14 +166,20 @@ def generate_manifest(spec):
     rows = [dict(Type='Item', Key=a['key'], DisplayName=a['name'], SemanticCategory=a['category'],
                  Rank='', IconResRef=a['icon'], SourcePath=f'SWLOR_Haks/sw_item_source/{a["source"]}', Alignment='')
             for a in spec['assets']]
-    write_csv(DATA / 'ShipItemIconManifest.csv', rows)
+    ship_manifest = DATA / 'ShipItemIconManifest.csv'
+    owned = {row['IconResRef'] for row in rows}
+    if ship_manifest.exists():
+        with ship_manifest.open(encoding='utf-8-sig', newline='') as stream:
+            owned.update(row['IconResRef'] for row in csv.DictReader(stream))
+    write_csv(ship_manifest, rows)
     # Preserve the existing gameplay manifest byte layout and unrelated entries.
     # In particular, a ship-artwork update must not enroll unfinished status effects.
     main = DATA / 'GameplayIconManifest.csv'
     raw = main.read_bytes()
     original = raw.decode('utf-8-sig')
     lines = [line for line in original.splitlines(keepends=True)
-             if not line.startswith(('"Item",', 'Item,'))]
+             if not (line.startswith(('"Item",', 'Item,')) and
+                     any(f'"{icon}"' in line or f',{icon},' in line for icon in owned))]
     output = io.StringIO(newline='')
     writer = csv.writer(output, quoting=csv.QUOTE_ALL, lineterminator='\r\n')
     writer.writerows([list(row.values()) for row in sorted(rows, key=lambda r: r['Key'])])

@@ -10,7 +10,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
-/// <summary>Updates legacy ship inventory artwork in place, including saved nested inventories.</summary>
+/// <summary>Updates reviewed inventory artwork in place, including saved nested inventories.</summary>
 public static class ShipItemIconMigration
 {
     public static bool MigrateObject(uint obj)
@@ -24,6 +24,7 @@ public static class ShipItemIconMigration
             {
                 var oldModel = GetItemAppearance(current, ItemAppearanceType.SimpleModel, 0);
                 var newModel = ShipItemAppearance.GetUpdatedModel(GetResRef(current), (int)GetBaseItemType(current), oldModel);
+                newModel = ItemIconAppearance.GetUpdatedModel(GetResRef(current), (int)GetBaseItemType(current), newModel);
                 if (oldModel != newModel)
                 {
                     ItemPlugin.SetItemAppearance(current, ItemAppearanceType.SimpleModel, 0, newModel);

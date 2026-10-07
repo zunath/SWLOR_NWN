@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Feature.MigrationDefinition;
 
 namespace SWLOR.Game.Server.Feature;
 
-/// <summary>Refreshes artwork when legacy world copies reach a player's inventory.</summary>
+/// <summary>Refreshes reviewed item artwork when legacy world copies reach a player's inventory.</summary>
 public static class ShipItemIconCompatibility
 {
     [NWNEventHandler(ScriptName.OnModuleEnter)]

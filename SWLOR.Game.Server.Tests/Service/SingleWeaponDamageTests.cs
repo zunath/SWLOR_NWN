@@ -42,7 +42,8 @@ public class SingleWeaponDamageTests
     [TestCase(BaseItem.GreatSword, false)]
     [TestCase(BaseItem.Saberstaff, false)]
     [TestCase(BaseItem.TwinElectroBlade, false)]
-    [TestCase(BaseItem.Pistol, false)]
+    [TestCase(BaseItem.Pistol, true)]
+    [TestCase(BaseItem.LegacyPistol, true)]
     [TestCase(BaseItem.Rifle, false)]
     [TestCase(BaseItem.CreatureSlashWeapon, false)]
     public void Eligibility_UsesPhysicalEquipmentCategories(BaseItem type, bool expected)

@@ -58,13 +58,14 @@ Keep the attack data alive until the native damage/animation phase finishes; do 
 `RecomputeRound` or clear attacks between the two hands.
 
 Single weapons, shields, ranged attacks, and natural weapons keep their existing scheduling paths.
-Players and their combat droids with one eligible one-handed melee or throwing weapon
+Players and their combat droids with one eligible one-handed melee, pistol, or throwing weapon
 and an empty off hand receive +20% item weapon DMG. Doublehand I/II/III adds 10/25/40%
 to that percentage. The combined adjustment rounds up once, before the damage formula
 and flat bonuses. Weapon ability impacts capture the effective rating so equipment changes
 between targets or repeated impacts cannot change a cast's damage. Fixed DoT ticks and
 unrelated Force/Devices damage keep their own budgets. Any off-hand item disables this
-bonus; pistols, two-handed/double weapons, unarmed and natural attacks do not qualify.
+bonus, including a shield; rifles, two-handed/double weapons, unarmed and natural attacks do
+not qualify.
 Authored NPCs retain their explicit item ratings unless given a Single Weapon stat adjustment.
 Twinblades and saberstaves use the main-hand item for both native weapon selections, so
 both ends receive its properties and skill. Dual Wield reduces only the second end's delay.

@@ -2112,14 +2112,7 @@ if ($RefreshManifest -or !(Test-Path -LiteralPath $manifestResolved)) {
     Write-Host "Wrote gameplay icon manifest with $($rows.Count) entries."
 }
 
-# Read-only audits validate the checked-in manifest. Enrolling unmanifested source
-# definitions belongs to explicit refresh/generation, not the preliminary TLK lookup.
-$rows = if ($RefreshManifest -or $GenerateIcons -or $UpdateStatusEffectCode) {
-    @(Build-ManifestRows $existingManifest)
-}
-else {
-    @(Import-Csv -LiteralPath $manifestResolved)
-}
+$rows = @(Build-ManifestRows $existingManifest)
 $script:RankBadgeByResRef = Get-RankBadgeMap $rows
 $statusRows = @($rows | Where-Object { $_.Type -eq "StatusEffect" } | Sort-Object Key)
 

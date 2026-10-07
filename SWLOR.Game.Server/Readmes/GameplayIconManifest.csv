@@ -1672,7 +1672,6 @@
 "StatusEffect","KnockdownStatusEffect","Knockdown","Harmful","","ief_knock","SWLOR.Game.Server\Feature\StatusEffectDefinition\KnockdownStatusEffect.cs",""
 "StatusEffect","KoltoMistHealingStatusEffect","Kolto Mist","Beneficial","","ief_koltomisthea","SWLOR.Game.Server\Feature\StatusEffectDefinition\KoltoMistHealingStatusEffect.cs",""
 "StatusEffect","LaceratorStanceStatusEffect","Lacerator Stance","Beneficial","","ief_lcrtrstnc","SWLOR.Game.Server\Feature\StatusEffectDefinition\LaceratorStanceStatusEffect.cs",""
-"StatusEffect","LastBastionBarrierStatusEffect","Last Bastion Barrier","Beneficial","","ief_lastbastbar","SWLOR.Game.Server\Feature\StatusEffectDefinition\LastBastionBarrierStatusEffect.cs",""
 "StatusEffect","LastBastionStatusEffect","Last Bastion","Harmful","","ief_lastbast","SWLOR.Game.Server\Feature\StatusEffectDefinition\LastBastionStatusEffect.cs",""
 "StatusEffect","LastStandOfTheLight1StatusEffect","Last Stand of the Light","Beneficial","1","ief_laststandlg1","SWLOR.Game.Server\Feature\StatusEffectDefinition\LastStandOfTheLight1StatusEffect.cs",""
 "StatusEffect","LastWordStatusEffect","Last Word","Harmful","","ief_lastwrd","SWLOR.Game.Server\Feature\StatusEffectDefinition\LastWordStatusEffect.cs",""

@@ -77,7 +77,7 @@ Before writing code in an unfamiliar area, find two or three existing examples o
 - **Player identity:** player-facing surfaces never show raw character names, account names, or CD keys; they go through the `PlayerName` service. Read `SWLOR.Game.Server/Readmes/PlayerIdentity.md` before touching any surface that displays a player.
 - **Economy-restricted items:** NPC-only and unobtainable items must stay out of player search and economy surfaces. `Item.IsEconomyRestricted` is the only classifier; never hardcode resref lists. Read `SWLOR.Game.Server/Readmes/EconomyRestrictedItems.md` before adding item blueprints or item pickers.
 - **NPC hit points:** a stat skin's `NPCHP` is the final maximum HP. Never write it to UTC `HitPoints` or pass it to `ObjectPlugin.SetMaxHitPoints`; NWN adds Vitality, Toughness, and Epic Toughness on top. Set `CurrentHitPoints`/`MaxHitPoints` to `NPCHP` and `HitPoints` to `NPCHP` minus those bonuses, apply runtime budgets only through `Stat.SetNPCMaxHitPoints` after Vitality is final, and run `powershell -ExecutionPolicy Bypass -File tools/NormalizeNpcHitPoints.ps1` after adding or restatting creatures.
-- **Rebuild-era changes:** do not write one-off migrations just to remove or refund deleted perks, blueprints, or skills; the planned full character rebuild handles character-build data. Until the combat-upgrade migration set ships, fold combat-upgrade migration work into the existing in-flight migrations instead of adding new numbered files.
+- **Rebuild-era changes:** do not write one-off migrations just to remove or refund deleted perks, blueprints, or skills; the planned full character rebuild handles character-build data.
 
 ## Design Bible
 

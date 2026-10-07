@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 .HasRecastDelay(RecastGroup.ShadowStep, 24f)
                 .SkillType(SkillType.Espionage)
                 .IsSingleTargetAbility()
-                .HasMaxRange(5f)
+                .HasMaxRange(10f)
                 .RequiresTarget()
                 .HasImpactAction((activator, target, _, targetLocation) =>
                     ApplyShadowStep(activator, target, evasionPercent, cleansesMovementImpairing))

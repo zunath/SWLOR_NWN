@@ -41,6 +41,9 @@ namespace SWLOR.Game.Server.Feature
         }
 
         // Variable names for queued abilities.
+        /// <summary>Local string on the activator holding the last ability sound resref played.</summary>
+        public const string LastAbilitySoundName = "LAST_ABILITY_SOUND";
+
         private const string ActiveAbilityIdName = "ACTIVE_ABILITY_ID";
         private const string ActiveAbilityFeatIdName = "ACTIVE_ABILITY_FEAT_ID";
         private const string ActiveAbilityEffectivePerkLevelName = "ACTIVE_ABILITY_EFFECTIVE_PERK_LEVEL";
@@ -432,6 +435,7 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
+            SetLocalString(activator, LastAbilitySoundName, soundResref);
             AssignCommand(activator, () => PlaySound(soundResref));
         }
 

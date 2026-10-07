@@ -11,7 +11,8 @@ namespace SWLOR.Game.Server.Service.CombatService
         public const int NaturalSingleWeaponPercent = 20;
 
         public static bool IsSingleWeaponType(BaseItem type) =>
-            Item.OneHandedMeleeItemTypes.Contains(type) || Item.ThrowingWeaponBaseItemTypes.Contains(type);
+            Item.OneHandedMeleeItemTypes.Contains(type) || Item.PistolBaseItemTypes.Contains(type) ||
+            Item.ThrowingWeaponBaseItemTypes.Contains(type);
 
         public static bool ReceivesNaturalSingleWeaponBonus(uint creature) =>
             GetIsPC(creature) && !GetIsDM(creature) ||

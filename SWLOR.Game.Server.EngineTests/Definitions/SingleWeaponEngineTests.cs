@@ -62,6 +62,27 @@ public static class SingleWeaponEngineTests
         ctx.AssertEqual(0, Combat.GetCombatImpactWeaponDamage(player.Creature, SkillType.Devices), "Devices damage has no weapon component");
     }
 
+    [EngineTest("Pistols receive Single Weapon and Doublehand only without a shield", Category = "SingleWeapon", TimeoutSeconds = 60f)]
+    public static async Task PistolShield(EngineTestContext ctx)
+    {
+        using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+        player.Update(record => record.Skills[SkillType.Armor].Rank = 40);
+        var pistol = await ctx.EquipItemAsync(player.Creature, "b_pistol", InventorySlot.RightHand);
+        await SetDamage(ctx, player.Creature, pistol, 23);
+        foreach (var (rank, damage) in new[] { (0, 28), (3, 37) })
+        {
+            player.Update(record => record.Perks[PerkType.Doublehand] = rank);
+            ctx.Assert(EquipmentPredicates.HasSingleWeapon(player.Creature), "A pistol with an empty off hand qualifies");
+            ctx.AssertEqual(damage, WeaponDamage.GetEffectiveDMG(player.Creature, pistol), $"Pistol Doublehand rank {rank} combines with natural 20% once");
+        }
+        var shield = await ctx.EquipItemAsync(player.Creature, "ec_shield", InventorySlot.LeftHand);
+        ctx.Assert(!EquipmentPredicates.HasSingleWeapon(player.Creature), "A shield disables pistol single-weapon eligibility");
+        ctx.AssertEqual(23, WeaponDamage.GetEffectiveDMG(player.Creature, pistol), "A shield disables both pistol damage percentages");
+        DestroyObject(shield);
+        await ctx.WaitFrameAsync();
+        ctx.AssertEqual(37, WeaponDamage.GetEffectiveDMG(player.Creature, pistol), "Removing the shield restores the pistol bonus");
+    }
+
     [EngineTest("Single Weapon natural bonus belongs to player-owned combat droids", Category = "SingleWeapon", TimeoutSeconds = 60f)]
     public static async Task DroidOwnership(EngineTestContext ctx)
     {

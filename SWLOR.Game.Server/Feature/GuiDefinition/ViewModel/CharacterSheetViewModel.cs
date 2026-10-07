@@ -976,7 +976,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Haste", FormatPercent(Combat.CalculateAttackDelayReduction(_target)), "Increases attack speed. Negative values slow attacks.");
             AddStat("Off-Hand Haste", FormatPercent(Combat.CalculateOffhandAttackDelayReduction(_target)), "Increases off-hand attack speed. Only applies while dual wielding.");
             AddStat("Single Weapon DMG", FormatPercent(EquipmentPredicates.HasSingleWeapon(_target) ? WeaponDamage.GetSingleWeaponPercent(_target) : 0),
-                "Bonus to the item's weapon DMG with one eligible one-handed melee or throwing weapon and an empty off hand. Includes the natural bonus and Doublehand; already included in equipped DMG.");
+                "Bonus to the item's weapon DMG with one eligible one-handed melee, pistol, or throwing weapon and an empty off hand. Includes the natural bonus and Doublehand; already included in equipped DMG.");
             AddStat("Ranged Evasion", FormatPercent(Stat.GetStatAdjustment(_target, StatType.RangedEvasionPercentAdjustment)), "Evasion adjustment against ranged attacks.");
             AddStat("Slow", GetEffectStateLabel(EffectTypeScript.Slow), "Reduces attack speed.");
             AddStat("Paralysis", GetEffectStateLabel(EffectTypeScript.Paralyze), "Prevents auto attacks and other actions.");

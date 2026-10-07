@@ -54,10 +54,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         mainCol.AddRow(row =>
                         {
+                            row.AddLabel()
+                                .BindText(model => model.Descriptor)
+                                .SetHeight(20f);
+                            row.AddLabel()
+                                .BindText(model => model.TrueName)
+                                .SetHeight(20f);
+                        });
+
+                        mainCol.AddRow(row =>
+                        {
+                            row.AddLabel()
+                                .BindText(model => model.AccountName)
+                                .SetHeight(20f);
+                            row.AddLabel()
+                                .BindText(model => model.PublicCDKey)
+                                .SetHeight(20f);
+                        });
+
+                        mainCol.AddRow(row =>
+                        {
                             row.AddTextEdit()
                                 .BindValue(model => model.Description)
                                 .SetIsMultiline(true)
-                                .SetHeight(350f)
                                 .SetMaxLength(5000);
                         });
                     });
@@ -160,7 +179,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     row.AddTextEdit()
                                         .SetIsMultiline(true)
                                         .BindValue(model => model.ActiveNoteDetail)
-                                        .SetHeight(350f)
                                         .SetMaxLength(3000)
                                         .BindIsEnabled(model => model.IsNoteSelected);
                                 });

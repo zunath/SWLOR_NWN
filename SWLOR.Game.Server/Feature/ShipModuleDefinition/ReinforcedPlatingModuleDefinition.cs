@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(shortName)
-                .Texture("iit_ess2_114")
+                .Texture("iit_smreinplate")
                 .Description($"Improves a ship's defenses to Thermal, EM and Explosive by {boostAmount * 3} at the cost of 50 shields.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, 5)

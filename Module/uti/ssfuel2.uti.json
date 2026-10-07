@@ -48,7 +48,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 3
+    "value": 193
   },
   "PaletteID": {
     "type": "byte",

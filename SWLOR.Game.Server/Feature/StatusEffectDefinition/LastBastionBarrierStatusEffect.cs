@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public const string TemporaryHitPointEffectKey = "LAST_BASTION";
 
         public override string Name => "Last Bastion Barrier";
-        public override EffectIconType Icon => EffectIconType.Invalid;
+        public override EffectIconType Icon => EffectIconType.LastBastionBarrierStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
 

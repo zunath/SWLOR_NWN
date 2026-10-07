@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(shortName)
-                .Texture("iit_ess_020")
+                .Texture("iit_smhullrepair")
                 .Type(ShipModuleType.HullRepairer)
                 .ValidTargetType(ObjectType.Creature)
                 .CanTargetSelf()

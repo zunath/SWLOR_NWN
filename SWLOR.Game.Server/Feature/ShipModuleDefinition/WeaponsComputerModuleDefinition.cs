@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(shortName)
-                .Texture("iit_ess_252")
+                .Texture("iit_smwpncomp")
                 .Description("This weapons computer increases all Attack by 20 but reduces Accuracy by 10.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, 5)

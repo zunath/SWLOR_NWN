@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(shortName)
-                .Texture("iit_ess_096")
+                .Texture("iit_smbomblaunch")
                 .Type(ShipModuleType.ProtonBomb)
                 .MaxDistance(10f)
                 .Description(description)

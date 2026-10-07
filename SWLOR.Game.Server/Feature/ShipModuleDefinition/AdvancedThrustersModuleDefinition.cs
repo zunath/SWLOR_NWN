@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(shortName)
-                .Texture("iit_ess_098")
+                .Texture("iit_smadvthrust")
                 .Description($"Improves a ship's evasion by {boostAmount} at the cost of 30 max capacitor.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, 5)

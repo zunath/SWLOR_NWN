@@ -883,6 +883,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             migrated |= CombatReadinessMigration.MigrateObject(obj);
             migrated |= PistolBaseItemMigration.MigrateStoredObject(obj);
             migrated |= AccuracyItemPropertyMigration.MigrateObject(obj);
+            migrated |= ShipItemIconMigration.MigrateObject(obj);
             migrated |= ObsoleteItemMigration.RemoveObsoleteItemsInPass(
                 obj,
                 disposal,

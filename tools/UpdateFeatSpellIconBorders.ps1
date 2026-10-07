@@ -458,7 +458,7 @@ foreach ($iconValue in $IconResRefs) {
 $rows = @(
     Import-Csv -Path $manifestResolved |
         Where-Object {
-            $_.Type -in @("Ability", "Feat", "Spell", "StatusEffect") -and
+            $_.Type -in @("Ability", "Feat", "Spell", "StatusEffect", "Item") -and
             ![string]::IsNullOrWhiteSpace($_.IconResRef) -and
             !(Test-DynamicShipModulePlaceholderIcon $_.IconResRef) -and
             ($requested.Count -eq 0 -or $requested.Contains($_.IconResRef))

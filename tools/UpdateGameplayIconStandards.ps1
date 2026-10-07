@@ -1,5 +1,6 @@
 param(
     [string]$ManifestPath = "SWLOR.Game.Server\Readmes\GameplayIconManifest.csv",
+    [string]$ShipItemManifestPath = "SWLOR.Game.Server\Readmes\ShipItemIconManifest.csv",
     [string]$Feat2daPath = "SWLOR_Haks\sw_2da\feat.2da",
     [string]$Spells2daPath = "SWLOR_Haks\sw_2da\spells.2da",
     [string]$IconPath = "SWLOR_Haks\sw_ability",
@@ -502,6 +503,10 @@ function Get-CustomFeatSpellRows([object[]]$abilityRows, [hashtable]$existing) {
         }
     }
 
+    $shipManifest = Resolve-RepoPath $ShipItemManifestPath
+    if (Test-Path -LiteralPath $shipManifest) {
+        $rows += @(Import-Csv -LiteralPath $shipManifest)
+    }
     return $rows | Sort-Object Type, Key
 }
 
@@ -1986,11 +1991,11 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
         }
         else {
             Add-TgaValidationErrors $errors $iconFile "$($entry.Type) '$($entry.Key)'"
-            if ($entry.Type -eq "Ability" -or $entry.Type -eq "Feat" -or $entry.Type -eq "Spell") {
+            if ($entry.Type -eq "Ability" -or $entry.Type -eq "Feat" -or $entry.Type -eq "Spell" -or $entry.Type -eq "Item") {
                 Add-SemanticFrameValidationErrors $errors $iconFile "$($entry.Type) '$($entry.Key)'" $entry.SemanticCategory
             }
 
-            if ($entry.Type -eq "Ability" -or $entry.Type -eq "StatusEffect") {
+            if ($entry.Type -eq "Ability" -or $entry.Type -eq "StatusEffect" -or $entry.Type -eq "Item") {
                 $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $iconFile).Hash
                 if ($iconHashes.ContainsKey($hash)) {
                     $other = $iconHashes[$hash]
@@ -2110,7 +2115,14 @@ if ($RefreshManifest -or !(Test-Path -LiteralPath $manifestResolved)) {
     Write-Host "Wrote gameplay icon manifest with $($rows.Count) entries."
 }
 
-$rows = @(Build-ManifestRows $existingManifest)
+# Read-only audits validate the checked-in manifest. Enrolling unmanifested source
+# definitions belongs to explicit refresh/generation, not the preliminary TLK lookup.
+$rows = if ($RefreshManifest -or $GenerateIcons -or $UpdateStatusEffectCode) {
+    @(Build-ManifestRows $existingManifest)
+}
+else {
+    @(Import-Csv -LiteralPath $manifestResolved)
+}
 $script:RankBadgeByResRef = Get-RankBadgeMap $rows
 $statusRows = @($rows | Where-Object { $_.Type -eq "StatusEffect" } | Sort-Object Key)
 

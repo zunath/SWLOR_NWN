@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(shortName)
                 .Type(ShipModuleType.CapitalEwar)
-                .Texture("iit_ess_253")
+                .Texture("iit_smewar")
                 .Description(description)
                 .PowerType(ShipModulePowerType.High)
                 .Capacitor(25)

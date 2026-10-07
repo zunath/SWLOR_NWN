@@ -175,7 +175,7 @@ The gameplay icon manifest is:
 
 Required fields:
 
-- `Type`: `Ability`, `Feat`, `Spell`, or `StatusEffect`.
+- `Type`: `Ability`, `Feat`, `Spell`, `StatusEffect`, or `Item`.
 - `Key`: stable identifier, such as a feat label or status-effect class name.
 - `DisplayName`: player-facing name when available.
 - `SemanticCategory`: one of the approved semantic categories.
@@ -186,6 +186,12 @@ Required fields:
 Generated status-effect labels in `effecticons.2da` must use compact PascalCase without underscores, such as `AilmentResistance3`. Icon file resrefs should be short, meaningful abbreviations that stay within NWN's 16-character resource limit. Do not append opaque hash, collision, or generator suffixes such as random-looking letters or digits after the meaningful abbreviation.
 
 ## Enforcement
+
+Ship equipment artwork uses `ShipItemIconManifest.csv` for its semantic action images and `ShipItemIconBindings.csv` for reviewed native inventory appearances. The bindings record each blueprint's original appearance, replacement appearance, role, gameplay source references, and availability restriction. `ShipModuleIconAudit.csv` records actual registered module descriptions, fitting slots, perk requirements, and activation behavior, including NPC configurations.
+
+Original ship artwork and its generation prompts live in `SWLOR_Haks/sw_item_source/`. Use meaningful `iit_sm` action resrefs, 32x32 semantic frames, and the regular green cooldown variants. Native inventory aliases retain the engine-required `i<ItemClass>_<model>` names and 64x64 size for the existing two-cell item types; these aliases are reserved exclusively for the reviewed ship blueprints. Do not overwrite a borrowed texture still used by unrelated items. Update recognized legacy ship appearances in place, preserving crafted properties, stack state, identity, and customized appearances.
+
+Run `tools/UpdateShipItemIcons.py --apply`, `tools/GenerateShipItemIcons.ps1`, and the regular gameplay icon audit when updating this set. `tools/ExportShipModuleIconAudit.ps1` refreshes the usage audit from the built server assembly. Module ranks share function artwork without numeric badges; different functions require different silhouettes.
 
 Icon tools and audits must fail when a gameplay icon violates these standards:
 

@@ -266,6 +266,7 @@ __pycache__/
 .vscode/settings.json
 
 # SWLOR
+/SWLOR.Game.Server/Readmes/CombatUpgradePerkAudit.csv
 .dotnet_home/
 SWLOR.Game.Server/nwnpath.config
 debugserver

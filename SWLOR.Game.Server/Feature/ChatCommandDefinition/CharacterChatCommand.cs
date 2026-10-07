@@ -17,6 +17,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using HoloCom = SWLOR.Game.Server.Service.HoloCom;
 using Player = SWLOR.Game.Server.Entity.Player;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -461,8 +462,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     dbPlayer.HeadAppearanceScale = newScale;
                     DB.Set(dbPlayer);
 
-                    SetObjectVisualTransform(user, ObjectVisualTransform.Scale, newScale,
-                        nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+                    HelmetModelRenderer.SetHeadScale(user, newScale);
 
                     SendMessageToPC(user, $"Head Size: {newScale:0.##}");
                 });

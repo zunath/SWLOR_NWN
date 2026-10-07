@@ -71,7 +71,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(originalArmorColors.SequenceEqual(ReadArmorColors(armor)), "Untinted armor palette fields remain authored.");
 
             var selection = TintMapModelResolver.GetCurrentSelections(pilot).Single(s => s.Material.Resref == "helm_114");
-            ctx.Assert(RobeModelRenderer.SupportsRgb(selection), "Helmet RGB editing must remain available.");
+            ctx.Assert(RobeModelRenderer.SupportsRgb(selection) && HelmetModelRenderer.SupportsRgb(selection),
+                "Helmet RGB editing must remain available for a human wearer.");
             var color = new TintMapColor(17, 83, 209);
             var layer = TintMapLayerType.Cloth1;
             var channel = (int)AppearanceArmorColor.Cloth1;
@@ -121,6 +122,28 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     TintMapService.RefreshAfterColorChange(pilot);
                 }
                 ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation, "Show helmet restores the render head.");
+
+                // Head models never fall back across race: a wearer without a generated head for
+                // its race keeps the native helmet (presets only) instead of rendering headless.
+                var originalAppearance = GetAppearanceType(pilot);
+                try
+                {
+                    SetCreatureAppearanceType(pilot, AppearanceType.Wookiee);
+                    TintMapService.RefreshAfterColorChange(pilot);
+                    ctx.AssertEqual(nativePilot.m_pStats.m_nHeadVariation, nativePilot.m_cAppearance.m_nHeadVariation,
+                        "A race without generated helmet heads keeps its canonical head.");
+                    ctx.AssertEqual(helmet, nativePilot.m_cAppearance.m_oidHeadItem,
+                        "A race without generated helmet heads keeps the native helmet attachment.");
+                    ctx.Assert(!HelmetModelRenderer.SupportsRgb(TintMapModelResolver.GetCurrentSelections(pilot)
+                            .Single(s => s.Material.Resref == "helm_114")),
+                        "RGB is unavailable where the helmet cannot render through the head.");
+                }
+                finally
+                {
+                    SetCreatureAppearanceType(pilot, originalAppearance);
+                    TintMapService.RefreshAfterColorChange(pilot);
+                }
+                ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation, "Restoring the race restores the render head.");
             });
             await ctx.DelaySecondsAsync(0.5f);
             ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation, "Appearance projection survives native server updates.");

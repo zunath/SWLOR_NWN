@@ -2,48 +2,68 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NWN.Native.API;
-using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 {
-    public sealed class HelmetModelCatalog
-    {
-        private readonly Dictionary<string, ushort> _heads = new(StringComparer.OrdinalIgnoreCase);
-        private readonly HashSet<int> _renderedHeads = new();
-
-        public HelmetModelCatalog(IEnumerable<(string Model, int Head)> definitions)
-        {
-            foreach (var (model, head) in definitions)
-            {
-                if (string.IsNullOrWhiteSpace(model) || !model.StartsWith("helm_", StringComparison.OrdinalIgnoreCase) ||
-                    head is < 1000 or > ushort.MaxValue || !_renderedHeads.Add(head) || !_heads.TryAdd(model, (ushort)head))
-                    throw new ArgumentException("Invalid helmet rendering definition.");
-            }
-        }
-
-        public ushort ResolveHead(string model, ushort originalHead, bool visible, bool partsAppearance) =>
-            visible && partsAppearance && model != null && _heads.TryGetValue(model, out var head)
-                ? head : originalHead;
-
-        public bool IsRenderedHead(ushort head) => _renderedHeads.Contains(head);
-    }
-
     public static class HelmetModelRenderer
     {
-        private static HelmetModelCatalog _catalog = new(Array.Empty<(string, int)>());
+        /// <summary>
+        /// Each tintable helmet helm_NNN is also published as head (HeadBase + NNN).
+        /// The range is reserved: authored heads stay below it.
+        /// </summary>
+        public const ushort HeadBase = 1000;
+        private const string HelmetPrefix = "helm_";
 
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
-        public static void Load()
+        /// <summary>
+        /// Returns the render head for a worn, visible helmet on a parts-based body, or the
+        /// canonical head otherwise. Only tintable helmets reach this as worn-helmet selections,
+        /// so every helmet that resolves here has generated head geometry.
+        /// </summary>
+        public static ushort ResolveHead(string model, ushort originalHead, bool visible, bool partsAppearance)
         {
-            var definitions = new List<(string Model, int Head)>();
-            for (var row = 0; row < Get2DARowCount("helmrgb"); row++)
-            {
-                if (!int.TryParse(Get2DAString("helmrgb", "HEAD", row), out var head))
-                    throw new InvalidOperationException($"Invalid helmet rendering row {row}.");
-                definitions.Add((Get2DAString("helmrgb", "MODEL", row), head));
-            }
-            _catalog = new HelmetModelCatalog(definitions);
+            if (!visible || !partsAppearance || model == null ||
+                model.Length != HelmetPrefix.Length + 3 ||
+                !model.StartsWith(HelmetPrefix, StringComparison.OrdinalIgnoreCase) ||
+                !int.TryParse(model.AsSpan(HelmetPrefix.Length), out var id) || id < 1)
+                return originalHead;
+
+            return (ushort)(HeadBase + id);
+        }
+
+        public static bool IsRenderedHead(ushort head) => head > HeadBase && head < HeadBase + 1000;
+
+        /// <summary>
+        /// The phenotype-0 head resource the client loads for a render head. Missing phenotypes
+        /// fall back to 0 (phenotype.2da DefaultPhenoType), but head models never fall back across
+        /// race or gender, so a missing resource would render the wearer headless.
+        /// </summary>
+        public static string GetHeadModel(char gender, string race, ushort head) =>
+            $"p{gender}{race.ToLowerInvariant()}0_head{head}";
+
+        /// <summary>
+        /// Exact RGB on a worn helmet needs its generated head for the wearer's race and gender.
+        /// Other wearers keep the native helmet attachment, which supports preset colors only.
+        /// </summary>
+        public static bool SupportsRgb(TintMapMaterialSelection selection) =>
+            !selection.IsWornHelmet || HasRenderHead(selection.CreaturePaletteSource, selection.ModelResref);
+
+        private static bool HasRenderHead(uint creature, string helmetModel)
+        {
+            var head = ResolveHead(helmetModel, 0, true, true);
+            if (head == 0)
+                return false;
+
+            var appearance = (int)GetAppearanceType(creature);
+            if (!Get2DAString("appearance", "MODELTYPE", appearance).StartsWith("P", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            var race = Get2DAString("appearance", "RACE", appearance);
+            if (string.IsNullOrWhiteSpace(race) || race.Length != 1)
+                return false;
+
+            var gender = GetGender(creature) == Gender.Female ? 'f' : 'm';
+            return !string.IsNullOrEmpty(ResManGetAliasFor(GetHeadModel(gender, race, head), ResType.MDL));
         }
 
         public static void Apply(uint creature, IReadOnlyList<TintMapMaterialSelection> selections)
@@ -54,17 +74,18 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 return;
 
             var helmet = selections.FirstOrDefault(selection => selection.IsWornHelmet);
-            var visible = helmet != null && GetHiddenWhenEquipped(helmet.PaletteSource) == 0;
+            var visible = helmet != null && GetHiddenWhenEquipped(helmet.PaletteSource) == 0 &&
+                          HasRenderHead(creature, helmet.ModelResref);
             var parts = Get2DAString("appearance", "MODELTYPE", (int)GetAppearanceType(creature))
                 .StartsWith("P", StringComparison.OrdinalIgnoreCase);
             var originalHead = nativeCreature.m_pStats.m_nHeadVariation;
-            var head = _catalog.ResolveHead(helmet?.ModelResref, originalHead, visible, parts);
+            var head = ResolveHead(helmet?.ModelResref, originalHead, visible, parts);
             var appearance = nativeCreature.m_cAppearance;
             if (head == originalHead)
             {
                 // Leave unsupported appearances entirely native. Restore only an appearance
                 // that we previously projected; this also honors the native hidden-item flag.
-                if (!_catalog.IsRenderedHead(appearance.m_nHeadVariation))
+                if (!IsRenderedHead(appearance.m_nHeadVariation))
                     return;
                 nativeCreature.UpdateAppearanceForEquippedItems();
                 appearance.m_nHeadVariation = originalHead;

@@ -994,11 +994,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             IsCustomTintAvailable = true;
             IsCustomTintEditable = selections.Count > 0 &&
-                                   selections.All(RobeModelRenderer.SupportsRgb);
+                                   selections.All(SupportsRgb);
             CustomTintTooltip = IsCustomTintEditable ? "Apply an RGB color."
                 : selections.Any(selection => selection.ArmorPart == AppearanceArmor.Robe)
                     ? "This body and robe combination supports preset colors only. Select a color from the palette above."
-                    : "This part has no visible material for this color.";
+                    : selections.Any(selection => selection.IsWornHelmet)
+                        ? "This helmet supports preset colors only on this species. Select a color from the palette above."
+                        : "This part has no visible material for this color.";
             if (TryGetSelectedCustomColor(selections, layerType, out var customColor))
             {
                 SetSelectedTintColor(new GuiColor(customColor.Red, customColor.Green, customColor.Blue));
@@ -1053,6 +1055,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             SetSelectedTintColor(new GuiColor(color.Red, color.Green, color.Blue));
         }
+
+        private static bool SupportsRgb(TintMapMaterialSelection selection) =>
+            RobeModelRenderer.SupportsRgb(selection) && HelmetModelRenderer.SupportsRgb(selection);
 
         private bool TryGetSelectedCustomColor(IReadOnlyList<TintMapMaterialSelection> selections,
             TintMapLayerType layer, out TintMapColor color)
@@ -1136,7 +1141,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private Action<TintMapColor> CaptureTintColorEdit()
         {
             if (!TryGetEditableTintSelections(out var selections, out var layerType, out _) ||
-                selections.Count == 0 || !selections.All(RobeModelRenderer.SupportsRgb))
+                selections.Count == 0 || !selections.All(SupportsRgb))
                 return null;
 
             // NUI hydrates selection binds before their setters run. A pending text edit

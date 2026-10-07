@@ -59,6 +59,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(OBJECT_INVALID, nativePilot.m_cAppearance.m_oidHeadItem,
                 "The separate native helmet is suppressed only in the replicated appearance.");
             ctx.AssertEqual(originalHead, nativePilot.m_pStats.m_nHeadVariation, "Canonical head remains unchanged.");
+            ctx.AssertEqual((int)originalHead, GetCreatureBodyPart(CreaturePart.Head, pilot),
+                "Appearance editing and persistence still read the canonical head through NWScript.");
             ctx.AssertEqual(helmet, GetItemInSlot(InventorySlot.Head, pilot), "Helmet remains equipped.");
             AssertNoResetRecords(ctx, rows);
             AssertNativeRow(ctx, rows, "helm_114", "rowcloth1", (704f + 135f + 0.5f) / 2048f);

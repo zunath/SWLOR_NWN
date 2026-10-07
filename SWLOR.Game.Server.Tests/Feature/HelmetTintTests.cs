@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -41,9 +42,22 @@ public class HelmetTintTests
     }
 
     [Test]
-    public void EveryTintableHelmetShipsBothHumanRenderHeads()
+    public void EveryTintableHelmetShipsRenderHeadsForEveryPlayableSpecies()
     {
         var root = FindRepositoryRoot();
+        var appearanceRows = File.ReadAllLines(Path.Combine(root, "SWLOR_Haks", "sw_2da", "appearance.2da"))
+            .Select(line => Regex.Matches(line, "\"[^\"]*\"|\\S+").Select(match => match.Value).ToArray())
+            .ToList();
+        var header = appearanceRows[2];
+        var raceColumn = Array.IndexOf(header, "RACE") + 1;
+        var rows = appearanceRows.Skip(3).Where(columns => columns.Length > raceColumn && int.TryParse(columns[0], out _))
+            .ToDictionary(columns => int.Parse(columns[0]), columns => columns[raceColumn].ToLowerInvariant());
+        var races = RacialAppearanceRegistry.GetAppearanceTypes()
+            .Select(type => rows[(int)type])
+            .Distinct()
+            .ToList();
+        Assert.That(races, Does.Contain("h"));
+
         var helmets = File.ReadAllLines(Path.Combine(root, "SWLOR_Haks", "sw_2da", "tintmap.2da"))
             .Select(line => Regex.Split(line.Trim(), @"\s+"))
             .Where(columns => columns.Length == 4 && Regex.IsMatch(columns[1], @"^helm_\d{3}$"))
@@ -56,10 +70,12 @@ public class HelmetTintTests
         foreach (var helmet in helmets)
         {
             var head = HelmetModelRenderer.ResolveHead(helmet, 0, true, true);
+            foreach (var race in races)
             foreach (var gender in new[] { 'm', 'f' })
             {
-                var model = HelmetModelRenderer.GetHeadModel(gender, "h", head);
-                Assert.That(File.Exists(Path.Combine(heads, model + ".mdl")), Is.True, $"{helmet} needs {model}.mdl");
+                var model = HelmetModelRenderer.GetHeadModel(gender, race, head);
+                Assert.That(File.Exists(Path.Combine(heads, model + ".mdl")), Is.True,
+                    $"{helmet} needs {model}.mdl; add race '{race}' to BODY_RACES in GenerateHelmetRgbModels.py");
             }
         }
     }

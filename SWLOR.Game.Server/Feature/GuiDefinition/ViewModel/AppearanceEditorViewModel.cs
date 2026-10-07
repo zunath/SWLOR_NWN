@@ -2005,8 +2005,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale,
-                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+            var scale = HelmetModelRenderer.GetHeadScale(_target);
             if (scale <= 0f)
                 scale = 1.0f;
 
@@ -2018,9 +2017,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, scale - Increment,
-                    nScope: ObjectVisualTransformDataScopeType.CreatureHead);
-                SendMessageToPC(_target, $"Head Size: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale, nScope: ObjectVisualTransformDataScopeType.CreatureHead)}");
+                HelmetModelRenderer.SetHeadScale(_target, scale - Increment);
+                SendMessageToPC(_target, $"Head Size: {HelmetModelRenderer.GetHeadScale(_target)}");
             }
         };
 
@@ -2033,8 +2031,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale,
-                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+            var scale = HelmetModelRenderer.GetHeadScale(_target);
             if (scale <= 0f)
                 scale = 1.0f;
 
@@ -2046,9 +2043,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, scale + Increment,
-                    nScope: ObjectVisualTransformDataScopeType.CreatureHead);
-                SendMessageToPC(_target, $"Head Size: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale, nScope: ObjectVisualTransformDataScopeType.CreatureHead)}");
+                HelmetModelRenderer.SetHeadScale(_target, scale + Increment);
+                SendMessageToPC(_target, $"Head Size: {HelmetModelRenderer.GetHeadScale(_target)}");
             }
         };
 
@@ -2545,8 +2541,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var headScale = dbPlayer.HeadAppearanceScale <= 0f ? 1.0f : dbPlayer.HeadAppearanceScale;
 
             SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
-            SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, headScale,
-                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+            HelmetModelRenderer.SetHeadScale(_target, headScale);
         };
 
         public Action OnClickSaveSettings() => () =>
@@ -2560,8 +2555,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var newHeight = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale);
             dbPlayer.AppearanceScale = newHeight;
 
-            var newHeadScale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale,
-                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+            var newHeadScale = HelmetModelRenderer.GetHeadScale(_target);
             if (newHeadScale <= 0f)
                 newHeadScale = 1.0f;
             dbPlayer.HeadAppearanceScale = newHeadScale;

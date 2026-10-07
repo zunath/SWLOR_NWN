@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using AppearanceType = SWLOR.NWN.API.NWScript.Enum.AppearanceType;
+using ObjectVisualTransform = SWLOR.NWN.API.NWScript.Enum.ObjectVisualTransform;
 using CreaturePart = SWLOR.NWN.API.NWScript.Enum.Creature.CreaturePart;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using ItemAppearanceType = SWLOR.NWN.API.NWScript.Enum.Item.ItemAppearanceType;
@@ -123,12 +125,33 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation, "Show helmet restores the render head.");
 
+                // The head path carries the native per-species helmet scale on top of the
+                // creature's own head size, and restores that head size when the helmet hides.
+                const float pilotHelmetScale = 0.85f; // appearance.2da HELMET_SCALE_F, human
+                ctx.Assert(Math.Abs(GetObjectVisualTransform(pilot, ObjectVisualTransform.Scale,
+                        nScope: ObjectVisualTransformDataScopeType.CreatureHead) - pilotHelmetScale) < 0.001f,
+                    "The render head carries the female human helmet scale.");
+                HelmetModelRenderer.SetHeadScale(pilot, 1.1f);
+                ctx.Assert(Math.Abs(HelmetModelRenderer.GetHeadScale(pilot) - 1.1f) < 0.001f,
+                    "Head size reads back as the creature's own value while projected.");
+                ctx.Assert(Math.Abs(GetObjectVisualTransform(pilot, ObjectVisualTransform.Scale,
+                        nScope: ObjectVisualTransformDataScopeType.CreatureHead) - 1.1f * pilotHelmetScale) < 0.001f,
+                    "A head size change while projected keeps the helmet scale.");
+                SetHiddenWhenEquipped(helmet, true);
+                TintMapService.RefreshAfterColorChange(pilot);
+                ctx.Assert(Math.Abs(GetObjectVisualTransform(pilot, ObjectVisualTransform.Scale,
+                        nScope: ObjectVisualTransformDataScopeType.CreatureHead) - 1.1f) < 0.001f,
+                    "Hiding the helmet restores the creature's own head size.");
+                SetHiddenWhenEquipped(helmet, false);
+                HelmetModelRenderer.SetHeadScale(pilot, 1f);
+                TintMapService.RefreshAfterColorChange(pilot);
+
                 // Head models never fall back across race: a wearer without a generated head for
                 // its race keeps the native helmet (presets only) instead of rendering headless.
                 var originalAppearance = GetAppearanceType(pilot);
                 try
                 {
-                    SetCreatureAppearanceType(pilot, AppearanceType.Wookiee);
+                    SetCreatureAppearanceType(pilot, AppearanceType.Gnome);
                     TintMapService.RefreshAfterColorChange(pilot);
                     ctx.AssertEqual(nativePilot.m_pStats.m_nHeadVariation, nativePilot.m_cAppearance.m_nHeadVariation,
                         "A race without generated helmet heads keeps its canonical head.");

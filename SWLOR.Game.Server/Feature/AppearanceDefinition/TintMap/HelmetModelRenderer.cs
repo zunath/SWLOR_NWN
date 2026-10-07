@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using NWN.Native.API;
 using SWLOR.NWN.API.NWScript.Enum;
+using ObjectVisualTransform = SWLOR.NWN.API.NWScript.Enum.ObjectVisualTransform;
 
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 {
@@ -83,6 +85,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var appearance = nativeCreature.m_cAppearance;
             if (head == originalHead)
             {
+                RestoreHeadScale(creature);
                 // Leave unsupported appearances entirely native. Restore only an appearance
                 // that we previously projected; this also honors the native hidden-item flag.
                 if (!IsRenderedHead(appearance.m_nHeadVariation))
@@ -92,6 +95,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 server.SetForceUpdate();
                 return;
             }
+
+            // The native helmet slot scales the helmet per species and gender; a head does not.
+            ProjectHeadScale(creature);
             if (appearance.m_nHeadVariation == head && appearance.m_oidHeadItem == OBJECT_INVALID)
                 return;
 
@@ -101,6 +107,79 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             appearance.m_nHeadVariation = head;
             appearance.m_oidHeadItem = OBJECT_INVALID;
             server.SetForceUpdate();
+        }
+
+        /// <summary>
+        /// The creature's own head scale (for example a player's chosen head size). While a
+        /// helmet renders through the head, the applied head transform also carries the
+        /// helmet scale, so callers must read and write head size through these methods.
+        /// </summary>
+        public static float GetHeadScale(uint creature)
+        {
+            if (BaseHeadScales.TryGetValue(creature, out var baseScale))
+                return baseScale;
+
+            var scale = GetObjectVisualTransform(creature, ObjectVisualTransform.Scale,
+                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+            return scale <= 0f ? 1f : scale;
+        }
+
+        public static void SetHeadScale(uint creature, float scale)
+        {
+            if (BaseHeadScales.ContainsKey(creature))
+            {
+                BaseHeadScales[creature] = scale;
+                ProjectHeadScale(creature);
+                return;
+            }
+
+            SetObjectVisualTransform(creature, ObjectVisualTransform.Scale, scale,
+                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+        }
+
+        // Creature head scales captured while a helmet renders through the head. Runtime only:
+        // a fresh login or spawn starts unprojected, so a persisted value is never compounded.
+        private static readonly Dictionary<uint, float> BaseHeadScales = new();
+        private const int BaseHeadScalePruneThreshold = 1024;
+
+        private static void ProjectHeadScale(uint creature)
+        {
+            if (!BaseHeadScales.ContainsKey(creature))
+            {
+                if (BaseHeadScales.Count >= BaseHeadScalePruneThreshold)
+                {
+                    foreach (var stale in BaseHeadScales.Keys.Where(key => !GetIsObjectValid(key)).ToList())
+                        BaseHeadScales.Remove(stale);
+                }
+
+                BaseHeadScales[creature] = GetHeadScale(creature);
+            }
+
+            var rendered = BaseHeadScales[creature] * GetHelmetScale(creature);
+            var current = GetObjectVisualTransform(creature, ObjectVisualTransform.Scale,
+                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+            if (Math.Abs(current - rendered) > 0.0001f)
+                SetObjectVisualTransform(creature, ObjectVisualTransform.Scale, rendered,
+                    nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+        }
+
+        private static void RestoreHeadScale(uint creature)
+        {
+            if (!BaseHeadScales.Remove(creature, out var baseScale))
+                return;
+
+            SetObjectVisualTransform(creature, ObjectVisualTransform.Scale, baseScale,
+                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+        }
+
+        /// <summary>appearance.2da HELMET_SCALE_M/F: the native helmet slot's per-species scale.</summary>
+        private static float GetHelmetScale(uint creature)
+        {
+            var column = GetGender(creature) == Gender.Female ? "HELMET_SCALE_F" : "HELMET_SCALE_M";
+            var value = Get2DAString("appearance", column, (int)GetAppearanceType(creature));
+            return float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var scale) && scale > 0f
+                ? scale
+                : 1f;
         }
     }
 }

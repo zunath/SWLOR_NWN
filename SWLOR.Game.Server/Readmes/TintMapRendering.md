@@ -151,17 +151,28 @@ then writes every effective layer, including the wearer's skin and hair colors.
 The generator applies the native fallback across the helmet catalog, proving
 each native named subtree and isolating shared materials used by ordinary heads.
 `GenerateHelmetRgbModels.py --apply` copies every helmet registered in `tintmap.2da`
-into compiled `pmh0_head1NNN` and `pfh0_head1NNN` resources: head 1000 + NNN for
-`helm_NNN`. The rule is the mapping; no table records it. Only fixed-size model/root
-name fields change; geometry, controllers, skin bindings, materials and raw vertex
-data stay exact. The tint generator excludes these derived heads from
-material-scope inference and audits their exact source bytes.
+into compiled `p<gender><race>0_head1NNN` resources: head 1000 + NNN for `helm_NNN`,
+for both genders of every playable body race (`BODY_RACES`: `h`, `e`, `o`, `d`, `z`).
+The rule is the mapping; no table records it. Only fixed-size model/root name fields
+change; geometry, controllers, skin bindings, materials and raw vertex data stay
+exact. The tint generator excludes these derived heads from material-scope inference
+and audits their exact source bytes.
 
 The 89.8193.37-17 client resolves a head as `p<gender><race>0_head<id>` for any
 phenotype (phenotype.2da `DefaultPhenoType` is 0), but never falls back across race
-or gender: a female or non-human wearer without a matching resource renders headless.
-Both human genders are therefore required. Bothan, Rodian, Wookiee (`e`), Cathar
-(`o`), Ewok, Ugnaught (`d`) and Droid (`z`) bodies have no generated heads.
+or gender: a wearer without a matching resource renders headless. Each playable
+species' appearance.2da `RACE` letter therefore needs both genders; most species use
+`h`, Bothan/Rodian/Wookiee use `e`, Cathar `o`, Ewok/Ugnaught `d`, Droid `z`.
+`HelmetTintTests` fails when a species in `RacialAppearanceRegistry` uses a letter
+the generator does not cover.
+
+The native helmet slot scales the helmet by appearance.2da `HELMET_SCALE_M/F`; a head
+does not. While projected, `HelmetModelRenderer` sets the creature-head visual transform
+to the creature's own head size times that helmet scale, and restores the head size
+when the helmet hides or is removed. The captured head size is runtime state. All head
+size reads and writes (appearance editor, `/headscale`, login, space exit) go through
+`HelmetModelRenderer.GetHeadScale`/`SetHeadScale` so the saved head size never includes
+the helmet scale.
 
 For parts appearances, `HelmetModelRenderer` selects this head in the replicated
 creature appearance and suppresses the separate helmet there, but only when the
@@ -169,10 +180,10 @@ wearer's head resource exists. The native stats head, equipped item, item visibi
 and palette fields remain unchanged. The existing creature material publication
 now reaches the visible helmet geometry through the client's head replay path.
 Hiding or unequipping the helmet restores the canonical head; non-parts appearances
-and races without generated heads keep the native helmet. The editor offers RGB only
-where the head path renders; other wearers keep preset colors. Presets and RGB publish
-the effective rows, and reset restores the authored dye without a nearest-palette
-approximation.
+and any body race without generated heads keep the native helmet. The editor offers
+RGB only where the head path renders; other wearers keep preset colors. Presets and RGB
+publish the effective rows, and reset restores the authored dye without a
+nearest-palette approximation.
 
 Run `GenerateHelmetRgbModels.py --check` and `TestHelmetRgbModels.py` after
 changing helmet geometry or registration. Rebuild `sw_pt_head.hak`, deploy it with

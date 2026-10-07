@@ -31,6 +31,9 @@ namespace SWLOR.Game.Server.Service
         // window never has to read the 2da per-row on open (mirrors how perks cache detail.IconResref).
         private static readonly Dictionary<FeatType, string> _techniqueIcons = new();
 
+        // Retain authored text before hotbar TLK overrides add resource and recast headers.
+        private static readonly Dictionary<FeatType, string> _techniqueDescriptions = new();
+
         // Source NPC feat -> the technique feat it teaches.
         private static readonly Dictionary<FeatType, FeatType> _techniqueByNpcFeat = new();
 
@@ -232,6 +235,20 @@ namespace SWLOR.Game.Server.Service
         public static string GetTechniqueIcon(FeatType feat)
         {
             return _techniqueIcons.TryGetValue(feat, out var icon) ? icon : string.Empty;
+        }
+
+        public static string GetTechniqueDescription(FeatType feat)
+        {
+            if (!_techniques.ContainsKey(feat))
+                return string.Empty;
+            if (_techniqueDescriptions.TryGetValue(feat, out var description))
+                return description;
+            if (!int.TryParse(Get2DAString("feat", "DESCRIPTION", (int)feat), out var strRef) || strRef <= 0)
+                return string.Empty;
+
+            description = GetStringByStrRef(strRef);
+            _techniqueDescriptions[feat] = description;
+            return description;
         }
 
         /// <summary>

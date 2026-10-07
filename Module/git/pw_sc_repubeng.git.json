@@ -94,7 +94,7 @@
         },
         "GenericType_New": {
           "type": "dword",
-          "value": 146
+          "value": 4
         },
         "Hardness": {
           "type": "byte",
@@ -311,7 +311,7 @@
         },
         "GenericType_New": {
           "type": "dword",
-          "value": 146
+          "value": 4
         },
         "Hardness": {
           "type": "byte",

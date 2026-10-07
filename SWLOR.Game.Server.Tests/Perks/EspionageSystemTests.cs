@@ -510,9 +510,10 @@ public class EspionageSystemTests
         shadowStep.Should().Contain("private const float EvasionDurationSeconds = 30f;");
         shadowStep.Should().Contain("ShadowStep(builder, FeatType.ShadowStep1, \"Shadow Step I\", 1, 10, 10, false);");
         shadowStep.Should().Contain("ShadowStep(builder, FeatType.ShadowStep2, \"Shadow Step II\", 2, 14, 15, true);");
-        shadowStep.Should().Contain(".HasMaxRange(5f)");
         shadowStep.Should().Contain("targetPosition.X - (float)Math.Cos(facingRadians) * ArrivalDistanceMeters");
         var shadowStepAbilities = new ShadowStepAbilityDefinition().BuildAbilities();
+        shadowStepAbilities[FeatType.ShadowStep1].MaxRange.Should().Be(10f);
+        shadowStepAbilities[FeatType.ShadowStep2].MaxRange.Should().Be(10f);
         shadowStepAbilities[FeatType.ShadowStep1].AnimationType.Should().Be(Animation.CastOutAnimation);
         shadowStepAbilities[FeatType.ShadowStep2].AnimationType.Should().Be(Animation.CastOutAnimation);
 

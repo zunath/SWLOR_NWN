@@ -28,9 +28,9 @@ public class ForceUniversalTests
             "Deals 18 force DMG to up to 3 targets in a 10m x 5m cone, knocks them down for 6 seconds, and slows their movement for 12 seconds.");
 
         AssertPerkLevel(perks[PerkType.ForceLeap], "Force Leap", 1, 3, 10, FeatType.ForceLeap1,
-            "Leap to a hostile target up to 15m away, dealing 10 force DMG plus WIL scaling and interrupting activation.");
+            "Leap to a hostile target up to 15m away, dealing 10 force DMG plus WIL scaling, interrupting activation, and inflicting Stunned for 2 seconds on arrival.");
         AssertPerkLevel(perks[PerkType.ForceLeap], "Force Leap", 2, 4, 30, FeatType.ForceLeap2,
-            "Leap to a hostile target up to 18m away, dealing 18 force DMG plus WIL scaling and interrupting activation.");
+            "Leap to a hostile target up to 18m away, dealing 18 force DMG plus WIL scaling, interrupting activation, and inflicting Stunned for 2 seconds on arrival.");
 
         AssertUniversalForcePower(perks[PerkType.ForcePush]);
         AssertUniversalForcePower(perks[PerkType.ForceLeap]);

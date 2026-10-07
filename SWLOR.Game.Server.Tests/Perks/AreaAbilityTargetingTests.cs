@@ -13,7 +13,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Tests.Perks;
 
 /// <summary>
-/// Enforces the aimed-vs-self-centered area targeting rule from AGENTS.md by reflecting over every
+/// Enforces the aimed-vs-self-centered area targeting rule from Readmes/AbilityTargeting.md by reflecting over every
 /// ability definition and cross-checking feat.2da. Deliberately has no hand-maintained ability list:
 /// a new area ability is covered the moment it is defined.
 ///

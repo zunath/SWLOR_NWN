@@ -463,7 +463,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual("E", Get2DAString("appearance", "RACE", (int)GetAppearanceType(hunter)),
                         "Placed bounty hunter model race");
                     ctx.AssertEqual(0, (int)GetGender(hunter), "Placed bounty hunter model gender");
-                    ctx.AssertEqual(0, (int)GetPhenoType(hunter), "Placed bounty hunter model phenotype");
+                    // The authored robe renders through its generated root; materials resolve against the base body.
+                    ctx.AssertEqual(0, RobeModelRenderer.GetBasePhenotype(hunter), "Placed bounty hunter base phenotype");
                     var outfit = GetItemInSlot(InventorySlot.Chest, hunter);
                     ctx.AssertEqual("bountyhuntdred", GetResRef(outfit), "Bounty hunter outfit blueprint");
                     ctx.AssertEqual(23,
@@ -503,7 +504,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 });
             }
 
-            ctx.SetResultDetail("Race E male phenotype 0 resolved both feet 247 and shins 249 to canonical human materials; two refreshes installed all four leather2=23 rows without reset records. Server state only; no client renderer is attached.");
+            ctx.SetResultDetail("Race E male base phenotype 0 (robe on its generated root) resolved both feet 247 and shins 249 to canonical human materials; two refreshes installed all four leather2=23 rows without reset records. Server state only; no client renderer is attached.");
         }
 
         [EngineTest("Tint native robe palette preserves authored colors and restores custom edits", Category = "Tint", TimeoutSeconds = 30f)]

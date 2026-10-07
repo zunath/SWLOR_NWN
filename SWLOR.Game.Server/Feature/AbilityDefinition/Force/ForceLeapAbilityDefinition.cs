@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private const float LeapAnimationSpeed = 2.0f;
         private const float LeapAnimationDurationSeconds = 1.0f;
         private const float ArrivalDistanceMeters = 1.5f;
+        private const float StunDurationSeconds = 2f;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -123,12 +124,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 ActionPlayAnimation(Animation.ForceLeap, LeapAnimationSpeed, LeapAnimationDurationSeconds);
                 ActionDoCommand(() =>
                 {
-                    if (!GetIsObjectValid(target))
+                    if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) ||
+                        GetIsDead(activator) || GetIsDead(target) || GetArea(activator) != GetArea(target))
                         return;
 
                     var destination = GetLeapDestination(activator, target);
                     JumpToLocation(destination);
                     SetFacingPoint(GetPosition(target));
+                    if (GetArea(activator) == GetAreaFromLocation(destination) &&
+                        GetDistanceBetweenLocations(GetLocation(activator), destination) < 2f &&
+                        GetIsReactionTypeHostile(target, activator))
+                        StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect),
+                            StunDurationSeconds, CombatDamageType.Force);
                 });
             });
         }

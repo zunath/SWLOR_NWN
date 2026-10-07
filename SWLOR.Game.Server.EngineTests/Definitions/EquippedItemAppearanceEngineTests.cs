@@ -412,7 +412,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, channel)();
                     editor.OnClickColorPalette(77)();
                 }
-                ctx.AssertEqual(0, (int)GetPhenoType(creature), "Removing the final RGB override restores the native robe path.");
+                // Catalogued robes render through their generated root with or without RGB.
+                ctx.AssertEqual(generatedPhenotype, (int)GetPhenoType(creature),
+                    "Removing the final RGB override keeps the robe on its generated root.");
+                ctx.AssertEqual(0, RobeModelRenderer.GetBasePhenotype(creature), "Logical body type stays normal after preset reset.");
             });
             await AssertSettledAsync(ctx, before, observation, "return to native presets");
             ctx.SetResultDetail($"{(male ? "Male" : "Female")} body: four exact robe RGB channels; repeated swaps through {string.Join(", ", robeIds)}; global/per-part inheritance; and preset reset preserved item identity, gameplay sentinels, and zero equipment events. Genuine equip/unequip events were observed before the test. Client walking/sitting is verified separately.");

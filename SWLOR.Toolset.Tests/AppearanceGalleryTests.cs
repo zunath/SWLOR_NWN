@@ -480,7 +480,7 @@ namespace SWLOR.Toolset.Tests
                 Path.GetTempPath(), "swlor-appearance-cold-" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(Path.Combine(coldModuleRoot, "are"));
             Directory.CreateDirectory(Path.Combine(coldModuleRoot, "utc"));
-            context.Open(coldModuleRoot);
+            context.OpenAndSettle(coldModuleRoot);
             var thumbnails = new ThumbnailService(
                 context,
                 new BlueprintPreviewRenderer(
@@ -542,7 +542,7 @@ namespace SWLOR.Toolset.Tests
             {
                 window.Close();
                 thumbnails.ClearCache();
-                Directory.Delete(coldModuleRoot, recursive: true);
+                ScratchDirectory.Delete(coldModuleRoot);
             }
         }
 

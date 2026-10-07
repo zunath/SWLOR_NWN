@@ -46,7 +46,7 @@ namespace SWLOR.Toolset.Tests
         public void TearDown()
         {
             if (Directory.Exists(_root))
-                Directory.Delete(_root, recursive: true);
+                ScratchDirectory.Delete(_root);
         }
 
         [AvaloniaTest]
@@ -503,7 +503,7 @@ namespace SWLOR.Toolset.Tests
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
 
-            workspace.Open(_module);
+            workspace.OpenAndSettle(_module);
 
             File.ReadAllText(interrupted.Source).Should().Be("void main() { // original\n}");
             File.ReadAllBytes(interrupted.Compiled).Should().Equal(1, 2, 3);
@@ -523,7 +523,7 @@ namespace SWLOR.Toolset.Tests
                 source,
                 original);
 
-            new WorkspaceContext(root => new ModuleWorkspace(root), new OutputLogService()).Open(_module);
+            new WorkspaceContext(root => new ModuleWorkspace(root), new OutputLogService()).OpenAndSettle(_module);
 
             File.ReadAllBytes(source).Should().Equal(original);
             File.Exists(backup).Should().BeFalse();
@@ -549,7 +549,7 @@ namespace SWLOR.Toolset.Tests
                 graph,
                 original);
 
-            new WorkspaceContext(root => new ModuleWorkspace(root), new OutputLogService()).Open(_module);
+            new WorkspaceContext(root => new ModuleWorkspace(root), new OutputLogService()).OpenAndSettle(_module);
 
             File.ReadAllBytes(graph).Should().Equal(original);
             File.ReadAllText(legacy).Should().Be("legacy companion");
@@ -603,7 +603,7 @@ namespace SWLOR.Toolset.Tests
 
             File.WriteAllBytes(ifoPath, updatedIfo);
             File.Move(entries[0].SourcePath, entries[0].BackupPath);
-            new WorkspaceContext(root => new ModuleWorkspace(root), new OutputLogService()).Open(_module);
+            new WorkspaceContext(root => new ModuleWorkspace(root), new OutputLogService()).OpenAndSettle(_module);
 
             paths.Should().OnlyContain(path => File.Exists(path));
             entries.Select(entry => entry.BackupPath).Should().OnlyContain(path => !File.Exists(path));
@@ -787,7 +787,7 @@ namespace SWLOR.Toolset.Tests
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_module);
+            workspace.OpenAndSettle(_module);
             var categories = new CategoryService(workspace, log);
             categories.Section(type)!.IsSeeded = true;
             categories.SaveChanges().Saved.Should().BeTrue();

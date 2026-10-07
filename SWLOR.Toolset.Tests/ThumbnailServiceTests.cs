@@ -232,7 +232,7 @@ namespace SWLOR.Toolset.Tests
 
                 var context = new WorkspaceContext(
                     path => new ModuleWorkspace(path), new OutputLogService());
-                context.Open(moduleRoot);
+                context.OpenAndSettle(moduleRoot);
                 await context.Catalog!.BuildTask;
                 var service = new ThumbnailService(context, new CountingSource());
                 var invalidated = new List<(ResourceType Type, string ResRef)>();
@@ -251,7 +251,7 @@ namespace SWLOR.Toolset.Tests
             finally
             {
                 if (Directory.Exists(moduleRoot))
-                    Directory.Delete(moduleRoot, recursive: true);
+                    ScratchDirectory.Delete(moduleRoot);
             }
         }
 
@@ -277,7 +277,7 @@ namespace SWLOR.Toolset.Tests
 
                 var context = new WorkspaceContext(
                     path => new ModuleWorkspace(path), new OutputLogService());
-                context.Open(moduleRoot);
+                context.OpenAndSettle(moduleRoot);
                 await context.Catalog!.BuildTask;
                 var service = new ThumbnailService(context, new CountingSource());
                 var method = typeof(ThumbnailService).GetMethod(
@@ -296,7 +296,7 @@ namespace SWLOR.Toolset.Tests
             finally
             {
                 if (Directory.Exists(moduleRoot))
-                    Directory.Delete(moduleRoot, recursive: true);
+                    ScratchDirectory.Delete(moduleRoot);
             }
         }
 

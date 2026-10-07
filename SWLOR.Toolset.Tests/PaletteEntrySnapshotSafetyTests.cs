@@ -38,7 +38,7 @@ namespace SWLOR.Toolset.Tests
             {
                 var log = new OutputLogService();
                 var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-                workspace.Open(moduleRoot);
+                workspace.OpenAndSettle(moduleRoot);
                 var prompts = new CountingPrompts();
                 var editorFactoryCalls = 0;
                 var placementTargetCalls = 0;
@@ -94,7 +94,7 @@ namespace SWLOR.Toolset.Tests
             finally
             {
                 if (Directory.Exists(ownedRoot))
-                    Directory.Delete(ownedRoot, recursive: true);
+                    ScratchDirectory.Delete(ownedRoot);
             }
         }
 
@@ -119,7 +119,7 @@ namespace SWLOR.Toolset.Tests
             {
                 var log = new OutputLogService();
                 var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-                workspace.Open(moduleRoot);
+                workspace.OpenAndSettle(moduleRoot);
                 var mutationLock = new ModuleMutationLock();
                 var palette = new PaletteViewModel(
                     workspace,
@@ -162,7 +162,7 @@ namespace SWLOR.Toolset.Tests
             finally
             {
                 if (Directory.Exists(ownedRoot))
-                    Directory.Delete(ownedRoot, recursive: true);
+                    ScratchDirectory.Delete(ownedRoot);
             }
         }
 

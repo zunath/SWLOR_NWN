@@ -45,7 +45,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             _workspace = new WorkspaceContext(path => new ModuleWorkspace(path), log);
-            _workspace.Open(_firstModule);
+            _workspace.OpenAndSettle(_firstModule);
 
             var tools = FindToolsDirectory();
             _service = new ErfArchiveService(
@@ -77,7 +77,7 @@ namespace SWLOR.Toolset.Tests
             try
             {
                 if (Directory.Exists(_root))
-                    Directory.Delete(_root, recursive: true);
+                    ScratchDirectory.Delete(_root);
             }
             catch (IOException)
             {
@@ -116,7 +116,7 @@ namespace SWLOR.Toolset.Tests
             archive.Assets.Select(asset => asset.FileName)
                 .Should().BeEquivalentTo("entry.nss", "entry.ncs", "shared_inc.nss");
 
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             var prepared = await _service.PrepareImportAsync(
                 archive,
                 archive.Assets.Select(asset => asset.FileName).ToList());
@@ -174,7 +174,7 @@ namespace SWLOR.Toolset.Tests
             var archivePath = Path.Combine(_root, "back-from-import.erf");
             await _service.ExportAsync(new[] { "entry.nss", "shared_inc.nss" }, archivePath);
 
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             using var viewModel = new ErfArchiveViewModel(
                 _service,
                 ToolsetSettings.Load(Path.Combine(_root, "back-from-import-settings.json")));
@@ -402,7 +402,7 @@ namespace SWLOR.Toolset.Tests
             (await exportViewModel.ExportAsync(archivePath)).Should().BeTrue();
 
             EnsureModuleIfo(_secondModule);
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             var importSettings = ToolsetSettings.Load(
                 Path.Combine(_root, "import-settings.json"));
             using var importViewModel = new ErfArchiveViewModel(_service, importSettings);
@@ -597,7 +597,7 @@ namespace SWLOR.Toolset.Tests
             var archivePath = Path.Combine(_root, "read-only-scan.erf");
             await _service.ExportAsync(new[] { "only.nss" }, archivePath);
 
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             using var archive = await _service.OpenArchiveAsync(archivePath);
 
             Directory.EnumerateFiles(_secondModule, "*", SearchOption.AllDirectories)
@@ -621,7 +621,7 @@ namespace SWLOR.Toolset.Tests
             archive.Assets.Should().ContainSingle(asset =>
                 asset.FileName == "export_item.uti" && asset.IsSupported);
 
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             var prepared = await _service.PrepareImportAsync(
                 archive,
                 new[] { "export_item.uti" });
@@ -643,7 +643,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public async Task ReplacedItemsHaveEconomyRestrictionsReapplied()
         {
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             const string resRef = "replaced_item";
             var sourcePath = Path.Combine(_root, resRef + ".uti.json");
             var source = JsonGffDocument.Parse(
@@ -692,7 +692,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public async Task StagedStoresCountAsPlayerSourcesBeforeNoEconomyIsApplied()
         {
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             const string itemResRef = "staged_item";
             const string storeResRef = "staged_store";
             var itemSource = Path.Combine(_root, itemResRef + ".uti.json");
@@ -973,7 +973,7 @@ namespace SWLOR.Toolset.Tests
                 scripts.Keys.SelectMany(script =>
                     new[] { $"{script}.nss", $"{script}.ncs" }));
 
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             var prepared = await _service.PrepareImportAsync(
                 archive,
                 archive.Assets.Select(asset => asset.FileName).ToList());
@@ -1067,7 +1067,7 @@ namespace SWLOR.Toolset.Tests
             dependencies.Should().ContainSingle(dependency =>
                 dependency.FileName == $"{scriptResRef}.ncs");
 
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             var prepared = await _service.PrepareImportAsync(
                 archive,
                 archive.Assets.Select(asset => asset.FileName).ToList());
@@ -1114,7 +1114,7 @@ namespace SWLOR.Toolset.Tests
             dependencies.Should().ContainSingle(dependency =>
                 dependency.FileName == $"{calleeResRef}.ncs");
 
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             var prepared = await _service.PrepareImportAsync(
                 archive,
                 archive.Assets.Select(asset => asset.FileName).ToList());
@@ -1173,7 +1173,7 @@ namespace SWLOR.Toolset.Tests
             dependencies.Should().ContainSingle(dependency =>
                 dependency.FileName == $"{itemResRef}.uti");
 
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             var prepared = await _service.PrepareImportAsync(
                 archive,
                 archive.Assets.Select(asset => asset.FileName).ToList());
@@ -1195,7 +1195,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public async Task ImportingScriptSourceReplacesAStaleCompiledCompanion()
         {
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             var sourceNss = Path.Combine(_root, "compiled_pair.nss");
             var sourceNcs = Path.Combine(_root, "compiled_pair.ncs");
             File.WriteAllText(sourceNss, "void main() {}\n");
@@ -1250,7 +1250,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public async Task ImportRefusesCompiledBytecodeWhenRenamesRewriteItsSource()
         {
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             var itemSource = Path.Combine(_root, "old_item.uti.json");
             var scriptSource = Path.Combine(_root, "runtime_ref.nss");
             var compiledSource = Path.Combine(_root, "runtime_ref.ncs");
@@ -1326,7 +1326,7 @@ namespace SWLOR.Toolset.Tests
         public async Task ImportRefusesEntryPointScriptWithoutCompiledCompanion(
             ErfConflictAction action)
         {
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             const string resRef = "source_only";
             const string renamedResRef = "renamed_source";
             var source = Path.Combine(_root, $"{resRef}.nss");
@@ -1384,7 +1384,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public async Task ImportRefusesCompiledOnlyReplacementBesideExistingSource()
         {
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             const string resRef = "compiled_only";
             File.WriteAllText(
                 Path.Combine(_secondModule, "nss", $"{resRef}.nss"),
@@ -1412,7 +1412,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public async Task RenameWritesANewResourceAndRewritesImportedResRefs()
         {
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             var sourcePath = Path.Combine(_root, "rename_source.uti.json");
             File.WriteAllBytes(
                 sourcePath,
@@ -1449,7 +1449,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public async Task RenamingOneResourceTypeDoesNotRenameAnotherTypesIdentity()
         {
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             var itemSource = Path.Combine(_root, "shared.uti.json");
             File.WriteAllBytes(
                 itemSource,
@@ -1504,7 +1504,7 @@ namespace SWLOR.Toolset.Tests
         public async Task RenamingResourcesRewritesOnlyMatchingTypedReferences()
         {
             EnsureModuleIfo(_secondModule);
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
 
             var creatureSource = Path.Combine(_root, "shared.utc.json");
             var itemSource = Path.Combine(_root, "shared.uti.json");
@@ -1616,7 +1616,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public async Task RenamingAScriptIncludeUpdatesIncludeDirectives()
         {
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             var entrySource = Path.Combine(_root, "entry.nss");
             var includeSource = Path.Combine(_root, "old_inc.nss");
             File.WriteAllText(
@@ -1663,7 +1663,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public async Task StagedScriptsCountAsPlayerSourcesBeforeNoEconomyIsApplied()
         {
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             const string itemResRef = "scripted_item";
             var itemSource = Path.Combine(_root, $"{itemResRef}.uti.json");
             var item = JsonGffDocument.Parse(
@@ -1698,7 +1698,7 @@ namespace SWLOR.Toolset.Tests
         public async Task FixedNameModuleResourcesCannotBeRenamed()
         {
             EnsureModuleIfo(_secondModule);
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             var source = Path.Combine(_root, "module.ifo.json");
             File.Copy(
                 Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json"),
@@ -1741,7 +1741,7 @@ namespace SWLOR.Toolset.Tests
         public async Task AreaRegistrationMergesIntoTheSelectedModuleIfo()
         {
             EnsureModuleIfo(_secondModule);
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             const string areaResRef = "merged_ifo_area";
             var importedIfo = Path.Combine(_root, "selected_module.ifo.json");
             File.Copy(
@@ -1782,7 +1782,7 @@ namespace SWLOR.Toolset.Tests
         public async Task ReplacingModuleIfoReloadsTheInstalledCustomContentAssignments()
         {
             EnsureModuleIfo(_secondModule);
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             var source = Path.Combine(_root, "replacement_module.ifo.json");
             var importedIfo = IfoDocument.Load(
                 Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json"));
@@ -1809,7 +1809,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public async Task IncludeOnlyReplacementRefusesToLeaveStaleBytecode()
         {
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             const string resRef = "changed_include";
             var source = Path.Combine(_root, $"{resRef}.nss");
             var destinationSource = Path.Combine(_secondModule, "nss", $"{resRef}.nss");
@@ -1837,7 +1837,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public async Task ImportRefusesToReplaceAResourceChangedAfterPreparation()
         {
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             var source = Path.Combine(_root, "replacement.nss");
             var destination = Path.Combine(_secondModule, "nss", "replacement.nss");
             File.WriteAllText(source, "int ImportedValue() { return 1; }\n");
@@ -2016,7 +2016,7 @@ namespace SWLOR.Toolset.Tests
         public async Task RenamingAnAreaKeepsAllThreeCompanionsOnTheSameResRef()
         {
             EnsureModuleIfo(_secondModule);
-            _workspace.Open(_secondModule);
+            _workspace.OpenAndSettle(_secondModule);
             var choices = new List<ErfImportChoice>();
             foreach (var extension in new[] { "are", "git", "gic" })
             {

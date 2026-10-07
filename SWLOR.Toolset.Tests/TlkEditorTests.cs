@@ -865,7 +865,7 @@ public class TlkEditorTests
                 path => new SWLOR.Toolset.Domain.Workspace.ModuleWorkspace(path),
                 log,
                 tlk);
-            workspace.Open(root);
+            workspace.OpenAndSettle(root);
             await workspace.Catalog!.BuildTask;
             workspace.Catalog.TryGetEntry(ResourceType.Uti, "test_item", out var entry).Should().BeTrue();
             entry.Name.Should().Be("Old Label");
@@ -898,7 +898,7 @@ public class TlkEditorTests
         }
         finally
         {
-            Directory.Delete(root, recursive: true);
+            ScratchDirectory.Delete(root);
         }
     }
 

@@ -41,7 +41,7 @@ namespace SWLOR.Toolset.Tests
         public void TearDown()
         {
             if (Directory.Exists(_root))
-                Directory.Delete(_root, recursive: true);
+                ScratchDirectory.Delete(_root);
         }
 
         [Test]
@@ -79,7 +79,7 @@ namespace SWLOR.Toolset.Tests
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_module);
+            workspace.OpenAndSettle(_module);
             var palette = new PaletteViewModel(workspace, new CategoryService(workspace, log), log, prompts: prompts)
             {
                 SelectedType = ResourceType.Utp

@@ -66,7 +66,7 @@ namespace SWLOR.Toolset.Tests
                 var context = new WorkspaceContext(
                     path => new ModuleWorkspace(path, index),
                     new OutputLogService());
-                context.Open(moduleRoot);
+                context.OpenAndSettle(moduleRoot);
                 context.Catalog!.BuildTask.GetAwaiter().GetResult();
 
                 var creature = context.Workspace!
@@ -108,7 +108,7 @@ namespace SWLOR.Toolset.Tests
             }
             finally
             {
-                Directory.Delete(moduleRoot, recursive: true);
+                ScratchDirectory.Delete(moduleRoot);
             }
         }
     }

@@ -28,7 +28,7 @@ namespace SWLOR.Toolset.Tests
         public void TearDown()
         {
             if (Directory.Exists(_root))
-                Directory.Delete(_root, recursive: true);
+                ScratchDirectory.Delete(_root);
         }
 
         [Test]
@@ -306,7 +306,7 @@ namespace SWLOR.Toolset.Tests
         {
             var log = new OutputLogService();
             var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
-            context.Open(_module);
+            context.OpenAndSettle(_module);
             return new CategoryService(context, log, tlk);
         }
     }

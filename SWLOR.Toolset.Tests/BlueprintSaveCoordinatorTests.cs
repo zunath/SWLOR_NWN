@@ -39,7 +39,7 @@ namespace SWLOR.Toolset.Tests
         public void TearDown()
         {
             if (Directory.Exists(_testRoot))
-                Directory.Delete(_testRoot, recursive: true);
+                ScratchDirectory.Delete(_testRoot);
         }
 
         [TestCaseSource(nameof(BlueprintTypes))]
@@ -138,7 +138,7 @@ namespace SWLOR.Toolset.Tests
                     type, currentResRef, "Czerka Soda"));
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(path => new ModuleWorkspace(path), log);
-            workspace.Open(_moduleRoot);
+            workspace.OpenAndSettle(_moduleRoot);
             var categories = new CategoryService(workspace, log);
             var category = categories.Section(type)!.AddFolder("Consumables");
             category.AddMember(currentResRef);

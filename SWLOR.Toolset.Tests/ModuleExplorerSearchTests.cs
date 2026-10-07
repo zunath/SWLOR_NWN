@@ -47,7 +47,7 @@ namespace SWLOR.Toolset.Tests
         public void TearDown()
         {
             if (Directory.Exists(_ownedRoot))
-                Directory.Delete(_ownedRoot, recursive: true);
+                ScratchDirectory.Delete(_ownedRoot);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            workspace.OpenAndSettle(_root);
 
             var explorer = new ModuleExplorerViewModel(
                 workspace,
@@ -124,7 +124,7 @@ namespace SWLOR.Toolset.Tests
             WriteConversation("mining", "The Veldite seam runs deep.");
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            workspace.OpenAndSettle(_root);
             var explorer = new ModuleExplorerViewModel(
                 workspace,
                 new PropertiesViewModel(workspace, log),
@@ -152,7 +152,7 @@ namespace SWLOR.Toolset.Tests
             WriteConversation("ordinary", "Hand-authored dialogue.");
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            workspace.OpenAndSettle(_root);
             var explorer = new ModuleExplorerViewModel(
                 workspace,
                 new PropertiesViewModel(workspace, log),
@@ -176,7 +176,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            workspace.OpenAndSettle(_root);
             var categories = new CategoryService(workspace, log);
             var section = categories.Section(ResourceType.Area)!;
             section.IsSeeded = true;
@@ -229,7 +229,7 @@ namespace SWLOR.Toolset.Tests
             WriteConversation("mining", "The Veldite seam runs deep.");
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            workspace.OpenAndSettle(_root);
             var explorer = new ModuleExplorerViewModel(
                 workspace,
                 new PropertiesViewModel(workspace, log),
@@ -288,7 +288,7 @@ namespace SWLOR.Toolset.Tests
             WriteConversation("greeting", "Nothing to see here.");
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            workspace.OpenAndSettle(_root);
             var explorer = new ModuleExplorerViewModel(
                 workspace,
                 new PropertiesViewModel(workspace, log),

@@ -39,7 +39,7 @@ namespace SWLOR.Toolset.Tests
         public void TearDown()
         {
             if (Directory.Exists(_ownedRoot))
-                Directory.Delete(_ownedRoot, recursive: true);
+                ScratchDirectory.Delete(_ownedRoot);
         }
 
         [Test]
@@ -47,7 +47,7 @@ namespace SWLOR.Toolset.Tests
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            workspace.OpenAndSettle(_root);
             var categories = new CategoryService(workspace, log);
 
             var areaFolder = categories.Section(ResourceType.Area)!.Find("Tatooine") ?? categories.Section(ResourceType.Area)!.AddFolder("Tatooine");
@@ -87,7 +87,7 @@ namespace SWLOR.Toolset.Tests
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            workspace.OpenAndSettle(_root);
             var categories = new CategoryService(workspace, log);
             var scriptsFolder = categories.Section(ResourceType.Nss)!.Find("Utility") ?? categories.Section(ResourceType.Nss)!.AddFolder("Utility");
 

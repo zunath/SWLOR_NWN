@@ -263,7 +263,7 @@ namespace SWLOR.Toolset.Tests
             {
                 var log = new OutputLogService();
                 var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-                workspace.Open(moduleRoot);
+                workspace.OpenAndSettle(moduleRoot);
                 var mutationLock = new ModuleMutationLock();
 
                 // Stands in for a pack, validation, or Build All starting while the builder is still
@@ -289,7 +289,7 @@ namespace SWLOR.Toolset.Tests
             }
             finally
             {
-                Directory.Delete(moduleRoot, recursive: true);
+                ScratchDirectory.Delete(moduleRoot);
             }
         }
 
@@ -309,7 +309,7 @@ namespace SWLOR.Toolset.Tests
             {
                 var log = new OutputLogService();
                 var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-                workspace.Open(moduleRoot);
+                workspace.OpenAndSettle(moduleRoot);
                 var mutationLock = new ModuleMutationLock();
                 const string externalGeneration = "{\"generation\":\"external\"}";
                 var prompts = new ReplaceDuringConfirmationPrompts(
@@ -344,7 +344,7 @@ namespace SWLOR.Toolset.Tests
             finally
             {
                 if (Directory.Exists(moduleRoot))
-                    Directory.Delete(moduleRoot, recursive: true);
+                    ScratchDirectory.Delete(moduleRoot);
             }
         }
 
@@ -370,7 +370,7 @@ namespace SWLOR.Toolset.Tests
             {
                 var log = new OutputLogService();
                 var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-                workspace.Open(moduleRoot);
+                workspace.OpenAndSettle(moduleRoot);
                 var mutationLock = new ModuleMutationLock();
                 var prompts = new AlwaysConfirmPrompts();
 
@@ -404,7 +404,7 @@ namespace SWLOR.Toolset.Tests
             finally
             {
                 if (Directory.Exists(moduleRoot))
-                    Directory.Delete(moduleRoot, recursive: true);
+                    ScratchDirectory.Delete(moduleRoot);
             }
         }
 

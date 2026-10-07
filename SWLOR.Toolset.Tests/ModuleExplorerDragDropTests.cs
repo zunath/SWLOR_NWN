@@ -28,7 +28,7 @@ namespace SWLOR.Toolset.Tests
         public void TearDown()
         {
             if (Directory.Exists(_root))
-                Directory.Delete(_root, recursive: true);
+                ScratchDirectory.Delete(_root);
         }
 
         [TestCase(ResourceType.Area, "are.json")]
@@ -47,7 +47,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_module);
+            workspace.OpenAndSettle(_module);
             var categories = new CategoryService(workspace, log);
             var section = categories.Section(type)!;
             section.IsSeeded = true;
@@ -119,7 +119,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_module);
+            workspace.OpenAndSettle(_module);
             var categories = new CategoryService(workspace, log);
             var section = categories.Section(ResourceType.Nss)!;
             section.IsSeeded = true;
@@ -159,7 +159,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_module);
+            workspace.OpenAndSettle(_module);
             var categories = new CategoryService(workspace, log);
             var section = categories.Section(ResourceType.Nss)!;
             section.IsSeeded = true;
@@ -207,7 +207,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_module);
+            workspace.OpenAndSettle(_module);
             var categories = new CategoryService(workspace, log);
             var section = categories.Section(ResourceType.Nss)!;
             section.IsSeeded = true;
@@ -251,7 +251,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_module);
+            workspace.OpenAndSettle(_module);
             var categories = new CategoryService(workspace, log);
             var section = categories.Section(ResourceType.Nss)!;
             section.IsSeeded = true;

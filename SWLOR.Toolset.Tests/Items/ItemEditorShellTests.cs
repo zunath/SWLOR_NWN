@@ -261,7 +261,7 @@ namespace SWLOR.Toolset.Tests.Items
         public void DeleteScratchModule()
         {
             if (Directory.Exists(_testRoot))
-                Directory.Delete(_testRoot, recursive: true);
+                ScratchDirectory.Delete(_testRoot);
         }
 
         private string Scratch(string resRef) => Path.Combine(_root, "uti", $"{resRef}.uti.json");

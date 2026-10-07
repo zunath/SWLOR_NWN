@@ -34,7 +34,7 @@ namespace SWLOR.Toolset.Tests
         public void TearDown()
         {
             if (Directory.Exists(_testRoot))
-                Directory.Delete(_testRoot, recursive: true);
+                ScratchDirectory.Delete(_testRoot);
         }
 
         [AvaloniaTest]
@@ -78,7 +78,7 @@ namespace SWLOR.Toolset.Tests
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_moduleRoot);
+            workspace.OpenAndSettle(_moduleRoot);
             var source = new CountingRenderSource();
             var thumbnails = new ThumbnailService(workspace, source);
             var palette = new PaletteViewModel(

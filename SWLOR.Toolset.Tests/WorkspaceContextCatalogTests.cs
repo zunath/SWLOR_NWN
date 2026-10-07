@@ -48,7 +48,7 @@ namespace SWLOR.Toolset.Tests
             finally
             {
                 if (Directory.Exists(_root))
-                    Directory.Delete(_root, recursive: true);
+                    ScratchDirectory.Delete(_root);
             }
         }
 

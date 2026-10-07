@@ -35,7 +35,7 @@ namespace SWLOR.Toolset.Tests
         public void TearDown()
         {
             if (Directory.Exists(_testRoot))
-                Directory.Delete(_testRoot, recursive: true);
+                ScratchDirectory.Delete(_testRoot);
         }
 
         [Test]
@@ -55,7 +55,7 @@ namespace SWLOR.Toolset.Tests
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
             var catalogCompleted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
             workspace.CatalogBuildCompleted += () => catalogCompleted.TrySetResult();
-            workspace.Open(_moduleRoot);
+            workspace.OpenAndSettle(_moduleRoot);
             await catalogCompleted.Task.WaitAsync(TimeSpan.FromSeconds(10));
             var categories = new CategoryService(workspace, log);
             var furniture = categories.Section(ResourceType.Utp)!.AddFolder("Furniture");
@@ -110,7 +110,7 @@ namespace SWLOR.Toolset.Tests
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_moduleRoot);
+            workspace.OpenAndSettle(_moduleRoot);
             var mutationLock = new ModuleMutationLock();
             var palette = new PaletteViewModel(
                 workspace,
@@ -144,7 +144,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_moduleRoot);
+            workspace.OpenAndSettle(_moduleRoot);
             var categories = new CategoryService(workspace, log);
             var palette = new PaletteViewModel(workspace, categories, log)
             {

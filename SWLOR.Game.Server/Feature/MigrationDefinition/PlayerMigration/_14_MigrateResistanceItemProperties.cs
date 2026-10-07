@@ -11,7 +11,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             CombatReadinessMigration.MigratePlayer(player);
             PistolBaseItemMigration.MigratePlayer(player);
             AccuracyItemPropertyMigration.MigratePlayer(player);
-            ShipItemIconMigration.MigrateObject(player);
         }
     }
 }

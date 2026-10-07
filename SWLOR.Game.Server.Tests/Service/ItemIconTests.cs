@@ -4,7 +4,10 @@ using System.Text.RegularExpressions;
 using FluentAssertions;
 using Microsoft.VisualBasic.FileIO;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
+using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
+using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
+using SWLOR.Game.Server.Service.MigrationService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -45,12 +48,12 @@ public class ItemIconTests
             var oldModel = int.Parse(row["OldModel"]);
             var newModel = int.Parse(row["NewModel"]);
             var resref = row["ResRef"];
-            ItemIconAppearance.GetUpdatedModel(resref.ToUpperInvariant(), baseItem, oldModel).Should().Be(newModel);
-            ItemIconAppearance.GetUpdatedModel(resref, baseItem, newModel).Should().Be(newModel);
-            ItemIconAppearance.GetUpdatedModel(resref, baseItem, 255).Should().Be(255);
-            ItemIconAppearance.GetUpdatedModel(resref, -1, oldModel).Should().Be(oldModel);
-            ItemIconAppearance.GetUpdatedModel("unrelated_item", baseItem, oldModel).Should().Be(oldModel);
-            ItemIconAppearance.GetUpdatedModel(null!, baseItem, oldModel).Should().Be(oldModel);
+            ItemIconMigration.GetUpdatedModel(resref.ToUpperInvariant(), baseItem, oldModel).Should().Be(newModel);
+            ItemIconMigration.GetUpdatedModel(resref, baseItem, newModel).Should().Be(newModel);
+            ItemIconMigration.GetUpdatedModel(resref, baseItem, 255).Should().Be(255);
+            ItemIconMigration.GetUpdatedModel(resref, -1, oldModel).Should().Be(oldModel);
+            ItemIconMigration.GetUpdatedModel("unrelated_item", baseItem, oldModel).Should().Be(oldModel);
+            ItemIconMigration.GetUpdatedModel(null!, baseItem, oldModel).Should().Be(oldModel);
         }
     }
 
@@ -88,6 +91,44 @@ public class ItemIconTests
         foreach (var path in Directory.EnumerateFiles(Path.Combine(Root(), "SWLOR_Haks", folder), folder == "sw_item" ? "iit_ess*.tga" : "pr?_ess*.tga"))
             if (Regex.IsMatch(Path.GetFileNameWithoutExtension(path), @"^(iit_|pr[0-5]_)ess[2-9]?_\d{3}$"))
                 library.Should().ContainKey(folder + "/" + Path.GetFileName(path), "every retained resource must use original art");
+    }
+
+    [Test]
+    public void AppearanceConversion_IsOwnedAndInvokedOnlyByMigrations()
+    {
+        var server = Path.Combine(Root(), "SWLOR.Game.Server");
+        var migrations = Path.Combine(server, "Feature", "MigrationDefinition");
+        foreach (var path in Directory.EnumerateFiles(server, "*.cs", System.IO.SearchOption.AllDirectories)
+                     .Where(path => !path.StartsWith(migrations + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)))
+            File.ReadAllText(path).Should().NotContain("ItemIconMigration", "runtime services and event hooks must not perform one-off icon conversion");
+        File.Exists(Path.Combine(server, "Service", "ShipItemAppearance.cs")).Should().BeFalse();
+        File.Exists(Path.Combine(server, "Service", "ItemIconAppearance.cs")).Should().BeFalse();
+        File.Exists(Path.Combine(server, "Feature", "ShipItemIconCompatibility.cs")).Should().BeFalse();
+        new _16_UpdateItemIcons().Version.Should().Be(16);
+        new _23_UpdateItemIcons().Version.Should().Be(23);
+        new _23_UpdateItemIcons().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
+        File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_16_UpdateItemIcons.cs"))
+            .Should().Contain("ItemIconMigration.MigrateObject(player)");
+        File.ReadAllText(Path.Combine(migrations, "ServerMigration", "_23_UpdateItemIcons.cs"))
+            .Should().Contain("ItemIconMigration.MigrateSerializedObject").And.NotContain("StoredItemDataMigration.Migrate()");
+        File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_14_MigrateResistanceItemProperties.cs"))
+            .Should().NotContain("ItemIconMigration");
+        File.ReadAllText(Path.Combine(migrations, "ServerMigration", "StoredItemDataMigration.cs"))
+            .Should().NotContain("ItemIconMigration");
+    }
+
+    [Test]
+    public void StoredIconMetadata_OnlyUpdatesRecognizedOriginalIcons()
+    {
+        foreach (var row in ReadCsv("ItemIconBindings.csv").Concat(ReadCsv("ShipItemIconBindings.csv")))
+        {
+            var resref = row["ResRef"];
+            ItemIconMigration.GetUpdatedIcon(resref.ToUpperInvariant(), row["OldIcon"].ToUpperInvariant()).Should().Be(row["InventoryIcon"]);
+            ItemIconMigration.GetUpdatedIcon(resref, row["InventoryIcon"]).Should().Be(row["InventoryIcon"]);
+            ItemIconMigration.GetUpdatedIcon(resref, "custom_icon").Should().Be("custom_icon");
+            ItemIconMigration.GetUpdatedIcon("unrelated_item", row["OldIcon"]).Should().Be(row["OldIcon"]);
+            ItemIconMigration.GetUpdatedIcon(null!, row["OldIcon"]).Should().Be(row["OldIcon"]);
+        }
     }
 
     private static void AssertTga(string path, int size)

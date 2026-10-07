@@ -126,18 +126,8 @@ def apply(rows):
         text, encoding = read_text(path)
         updated, changed = update(text)
         if changed: path.write_bytes(updated.encode(encoding))
-    lines = ['// Generated from Readmes/ItemIconBindings.csv by tools/UpdateItemIconBindings.py.',
-        'using System;', 'using System.Collections.Generic;', '',
-        'namespace SWLOR.Game.Server.Service;', '', 'public static class ItemIconAppearance', '{',
-        '    private static readonly Dictionary<string, (int BaseItem, int OldModel, int NewModel)> Models =',
-        '        new(StringComparer.OrdinalIgnoreCase)', '        {']
-    for row in sorted(rows, key=lambda row: row['ResRef']):
-        lines.append(f'            ["{row["ResRef"]}"] = ({row["BaseItem"]}, {row["OldModel"]}, {row["NewModel"]}),')
-    lines += ['        };', '', '    public static int GetUpdatedModel(string resref, int baseItem, int currentModel)',
-        '    {', '        return resref != null && Models.TryGetValue(resref, out var model) &&',
-        '               model.BaseItem == baseItem && model.OldModel == currentModel',
-        '            ? model.NewModel : currentModel;', '    }', '}', '']
-    (ROOT / 'SWLOR.Game.Server/Service/ItemIconAppearance.cs').write_text('\n'.join(lines), encoding='utf-8')
+    from GenerateItemIconMigration import generate_migration
+    generate_migration()
 
 
 def manifest(assets):

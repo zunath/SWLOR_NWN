@@ -143,25 +143,6 @@ def apply_bindings(bindings):
         path.write_bytes(text.encode(encoding))
 
 
-def generate_catalogue(bindings):
-    lines = ['// Generated from Readmes/ShipItemIconBindings.csv by tools/UpdateShipItemIcons.py.',
-        'using System;', 'using System.Collections.Generic;', '',
-        'namespace SWLOR.Game.Server.Service', '{',
-        '    public static class ShipItemAppearance', '    {',
-        '        private static readonly Dictionary<string, (int BaseItem, int OldModel, int NewModel)> Models =',
-        '            new(StringComparer.OrdinalIgnoreCase)', '            {']
-    for row in bindings:
-        lines.append(f'                ["{row["ResRef"]}"] = ({row["BaseItem"]}, {row["OldModel"]}, {row["NewModel"]}),')
-    lines += ['            };', '',
-        '        public static int GetUpdatedModel(string resref, int baseItem, int currentModel)',
-        '        {',
-        '            return resref != null && Models.TryGetValue(resref, out var model) &&',
-        '                   model.BaseItem == baseItem && model.OldModel == currentModel',
-        '                ? model.NewModel : currentModel;',
-        '        }', '    }', '}', '']
-    (ROOT / 'SWLOR.Game.Server/Service/ShipItemAppearance.cs').write_text('\n'.join(lines), encoding='utf-8')
-
-
 def generate_manifest(spec):
     rows = [dict(Type='Item', Key=a['key'], DisplayName=a['name'], SemanticCategory=a['category'],
                  Rank='', IconResRef=a['icon'], SourcePath=f'SWLOR_Haks/sw_item_source/{a["source"]}', Alignment='')
@@ -192,7 +173,7 @@ def generate_manifest(spec):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--allocate', action='store_true', help='Initial allocation only; never rerun after deployment.')
-    parser.add_argument('--apply', action='store_true', help='Update blueprints and generated catalogue from existing bindings.')
+    parser.add_argument('--apply', action='store_true', help='Update blueprints and one-off migration from existing bindings.')
     args = parser.parse_args()
     if args.allocate:
         if AUDIT.exists():
@@ -205,7 +186,8 @@ def main():
     generate_manifest(spec)
     if args.apply:
         apply_bindings(bindings)
-        generate_catalogue(bindings)
+        from GenerateItemIconMigration import generate_migration
+        generate_migration()
     print(f'{len(bindings)} ship blueprints; {len(spec["assets"])} original artwork roles; '
           f'{len(set(r["InventoryIcon"] for r in bindings))} native inventory resources.')
 

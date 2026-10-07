@@ -4,7 +4,7 @@ using System.Text.Json;
 using FluentAssertions;
 using Microsoft.VisualBasic.FileIO;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -24,11 +24,11 @@ public class ShipItemIconTests
             blueprint.RootElement.GetProperty("ModelPart1").GetProperty("value").GetInt32().Should().Be(newModel, resref);
             blueprint.RootElement.GetProperty("BaseItem").GetProperty("value").GetInt32().Should().Be(baseItem, resref);
             newModel.Should().BeInRange(1, 254).And.NotBe(oldModel);
-            ShipItemAppearance.GetUpdatedModel(resref.ToUpperInvariant(), baseItem, oldModel).Should().Be(newModel);
-            ShipItemAppearance.GetUpdatedModel(resref, baseItem, newModel).Should().Be(newModel, "updates are idempotent");
-            ShipItemAppearance.GetUpdatedModel(resref, baseItem, 0).Should().Be(0, "custom appearances must survive");
-            ShipItemAppearance.GetUpdatedModel(resref, -1, oldModel).Should().Be(oldModel, "a changed base item is not an original module");
-            ShipItemAppearance.GetUpdatedModel("unrelated_item", baseItem, oldModel).Should().Be(oldModel);
+            ItemIconMigration.GetUpdatedModel(resref.ToUpperInvariant(), baseItem, oldModel).Should().Be(newModel);
+            ItemIconMigration.GetUpdatedModel(resref, baseItem, newModel).Should().Be(newModel, "updates are idempotent");
+            ItemIconMigration.GetUpdatedModel(resref, baseItem, 0).Should().Be(0, "custom appearances must survive");
+            ItemIconMigration.GetUpdatedModel(resref, -1, oldModel).Should().Be(oldModel, "a changed base item is not an original module");
+            ItemIconMigration.GetUpdatedModel("unrelated_item", baseItem, oldModel).Should().Be(oldModel);
             AssertTga(Path.Combine(Root(), "SWLOR_Haks", "sw_item", row["InventoryIcon"] + ".tga"), 64);
         }
     }

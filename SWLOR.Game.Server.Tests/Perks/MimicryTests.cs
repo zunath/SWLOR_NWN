@@ -877,7 +877,7 @@ public class MimicryTests
     }
 
     // feat.2da targeting metadata must match each technique's shape so the client presents the
-    // correct activation UX. Mirrors the AGENTS.md area-targeting convention:
+    // correct activation UX. Mirrors the Readmes/AbilityTargeting.md convention:
     //   - single-target hostile cast  -> HostileFeat=1, TARGETSELF blank (shows a hostile cursor)
     //   - aimed area (line/cone, or a sphere placed at a chosen location) -> HostileFeat=1,
     //     TARGETSELF blank: the player picks the direction or ground point with a cursor, exactly

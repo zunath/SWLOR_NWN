@@ -1,3 +1,4 @@
+using Avalonia.Headless.NUnit;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
@@ -616,7 +617,7 @@ namespace SWLOR.Toolset.Tests
                 "the picker draws each marker, so every row must carry waypoint.2da's RESREF");
         }
 
-        [Test]
+        [AvaloniaTest]
         public async Task AnAppearanceRowIsPickedFromPicturesOnThePage()
         {
             var appearances = Enumerable.Range(1, 76)

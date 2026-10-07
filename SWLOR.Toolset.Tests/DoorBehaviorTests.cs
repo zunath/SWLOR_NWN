@@ -1,3 +1,4 @@
+using Avalonia.Headless.NUnit;
 using System.Text;
 using System.Text.Json;
 using FluentAssertions;
@@ -495,7 +496,7 @@ namespace SWLOR.Toolset.Tests
                 .Should().Be("First paragraph.\n\nSecond paragraph.");
         }
 
-        [Test]
+        [AvaloniaTest]
         public async Task ASmallPictureSetIsShownOnThePageAndPaged()
         {
             using var row = PictureRow(60);
@@ -512,7 +513,7 @@ namespace SWLOR.Toolset.Tests
             row.GalleryChoices.Should().HaveCount(60);
         }
 
-        [Test]
+        [AvaloniaTest]
         public async Task ALargePictureSetStaysBehindItsPreviewUntilOpened()
         {
             using var row = PictureRow(400);

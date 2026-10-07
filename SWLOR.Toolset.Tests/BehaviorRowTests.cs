@@ -1,3 +1,4 @@
+using Avalonia.Headless.NUnit;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
@@ -257,7 +258,7 @@ namespace SWLOR.Toolset.Tests
             row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
         }
 
-        [Test]
+        [AvaloniaTest]
         public async Task AnExplicitInlineGalleryNeverFallsBackToAChooseButtonWhileItLoads()
         {
             using var row = new BehaviorRowViewModel(
@@ -290,7 +291,7 @@ namespace SWLOR.Toolset.Tests
             row.GalleryChoices.Should().HaveCount(BehaviorRowViewModel.GalleryPageSize);
         }
 
-        [Test]
+        [AvaloniaTest]
         public async Task AVisualCatalogGetsSharedFacetFiltersAndSortsWithoutEditorSpecificCode()
         {
             // Female (even-index) names run Zulu-block first, Alpha-block second, so the filtered

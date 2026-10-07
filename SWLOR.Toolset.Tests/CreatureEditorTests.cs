@@ -1974,7 +1974,7 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
-        [Test]
+        [AvaloniaTest]
         public void EquipmentSlots_UseBaseItemMasksAndLoadOneProgressivePickerAtATime()
         {
             var catalogLoads = 0;
@@ -2110,7 +2110,7 @@ namespace SWLOR.Toolset.Tests
                 .Which.Entries.Should().ContainSingle(entry => entry.Label == "DMG" && entry.Value == "8");
         }
 
-        [Test]
+        [AvaloniaTest]
         public async Task EquipmentPicker_AwaitsTheCatalogWithoutBlockingItsOpenCommand()
         {
             var started = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -2150,7 +2150,7 @@ namespace SWLOR.Toolset.Tests
                 .Which.StringValue.Should().Be("armor_async");
         }
 
-        [Test]
+        [AvaloniaTest]
         public async Task EquipmentPicker_AwaitsOnePagedSearchWithoutShowingAChooseControl()
         {
             var started = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);

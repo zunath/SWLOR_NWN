@@ -418,7 +418,9 @@ namespace SWLOR.Toolset.Tests.Items
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(path => new ModuleWorkspace(path), log);
-            workspace.Open(_root);
+            // Open starts background catalog/index scans that read the scratch files; let them
+            // finish before the assertions and before TearDown deletes the module.
+            workspace.OpenAndSettle(_root);
 
             File.ReadAllBytes(oldPath).Should().Equal(oldBytes);
             File.Exists(newPath).Should().BeFalse();

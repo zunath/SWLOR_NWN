@@ -24,8 +24,7 @@ namespace SWLOR.Toolset.Tests
         {
             foreach (var root in _roots)
             {
-                if (Directory.Exists(root))
-                    Directory.Delete(root, recursive: true);
+                ScratchDirectory.Delete(root);
             }
         }
 

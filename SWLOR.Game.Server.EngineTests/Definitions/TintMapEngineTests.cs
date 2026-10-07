@@ -48,10 +48,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(249, GetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso), "Pilot chest model");
             var originalHelmetColors = ReadArmorColors(helmet);
             var originalArmorColors = ReadArmorColors(armor);
+            var nativePilot = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(pilot);
+            var originalHead = nativePilot.m_pStats.m_nHeadVariation;
             await RunAssignedAsync(ctx, GetArea(pilot), () => TintMapService.QueueRefresh(pilot));
             await ctx.WaitUntilAsync(() => ReadNativeRows(ctx, pilot).Any(row => row.Material == "helm_114"),
                 5f, "the queued pilot tint refresh");
             var rows = ReadNativeRows(ctx, pilot);
+            ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation,
+                "Helmet114 geometry must render through the head which receives creature material rows.");
+            ctx.AssertEqual(OBJECT_INVALID, nativePilot.m_cAppearance.m_oidHeadItem,
+                "The separate native helmet is suppressed only in the replicated appearance.");
+            ctx.AssertEqual(originalHead, nativePilot.m_pStats.m_nHeadVariation, "Canonical head remains unchanged.");
+            ctx.AssertEqual(helmet, GetItemInSlot(InventorySlot.Head, pilot), "Helmet remains equipped.");
             AssertNoResetRecords(ctx, rows);
             AssertNativeRow(ctx, rows, "helm_114", "rowcloth1", (704f + 135f + 0.5f) / 2048f);
             AssertNativeRow(ctx, rows, "helm_114", "rowleath1", (880f + 23f + 0.5f) / 2048f);
@@ -80,8 +88,42 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AssertNativeRow(ctx, ReadNativeRows(ctx, helmet), "helm_114", "rowcloth1", (704f + 135f + 0.5f) / 2048f);
                 AssertProjectionCleared(ctx, helmet, channel);
             });
+            await RunAssignedAsync(ctx, pilot, () =>
+            {
+                foreach (var dyeLayer in selection.Material.Layers)
+                {
+                    var rgb = new TintMapColor(17, 27, 203);
+                    try
+                    {
+                        TintMapService.SetGlobalItemCustomColor(pilot, new[] { selection }, dyeLayer, rgb, helmet);
+                        AssertNativeRgb(ctx, pilot, "helm_114", dyeLayer, rgb);
+                        AssertNativeRgb(ctx, helmet, "helm_114", dyeLayer, rgb);
+                        ctx.Assert(originalHelmetColors.SequenceEqual(ReadArmorColors(helmet)), "RGB never approximates native dyes.");
+                        ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation, "Picker retains the tintable render path.");
+                    }
+                    finally
+                    {
+                        TintMapService.ResetGlobalItemCustomColor(pilot, new[] { selection }, dyeLayer);
+                    }
+                }
+                try
+                {
+                    SetHiddenWhenEquipped(helmet, true);
+                    TintMapService.RefreshAfterColorChange(pilot);
+                    ctx.AssertEqual(originalHead, nativePilot.m_cAppearance.m_nHeadVariation, "Hide helmet restores the canonical head.");
+                    ctx.AssertEqual(1, GetHiddenWhenEquipped(helmet), "Rendering honors the user's hidden flag.");
+                }
+                finally
+                {
+                    SetHiddenWhenEquipped(helmet, false);
+                    TintMapService.RefreshAfterColorChange(pilot);
+                }
+                ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation, "Show helmet restores the render head.");
+            });
+            await ctx.DelaySecondsAsync(0.5f);
+            ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation, "Appearance projection survives native server updates.");
             ctx.Assert(originalArmorColors.SequenceEqual(ReadArmorColors(armor)), "Helmet RGB never changes armor dyes.");
-            ctx.SetResultDetail("Placed pilot retains authored helmet114 and chest249 dyes after a queued refresh. Server state only; client rendering is not attached.");
+            ctx.SetResultDetail("Helmet114 renders through replicated head1114, keeping its canonical head, equipped item and native dyes; exact picker RGB reaches every used layer and visibility restores the original head. Server state only; client rendering is not attached.");
         }
 
         [EngineTest("Tint NPC spawn installs authored hair and clothing rows", Category = "Tint", TimeoutSeconds = 30f)]

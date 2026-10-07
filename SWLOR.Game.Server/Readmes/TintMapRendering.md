@@ -85,8 +85,9 @@ and custom-mode publications after an RGB edit.
 
 The 89.8193.37-17 client does not replay creature material overrides onto the
 separate robe and worn helmet attachments. Its ordinary body and head receive
-those records. Worn helmets receive exact RGB when the effective material rows
-are also published on the equipped helmet item. Robes use the body-root path
+those records. Publishing rows on the equipped helmet item alone does not
+update its worn attachment. Tintable helmets use the head path described below,
+and robes use the body-root path
 described below. A successful server-side creature-row test alone therefore
 does not establish that an attachment received its colors.
 
@@ -114,7 +115,7 @@ the original palette resources themselves. The GPU regression checks every
 color and shade against the original palette RGBA, including this distinction.
 
 The native scheme carries palette IDs; explicit material rows carry exact RGB.
-Worn helmets support both without changing their native dye fields. Unsupported
+Helmet render heads receive those rows without changing native dye fields. Unsupported
 robe/body combinations retain the nearest-preset compatibility projection for
 persisted RGB, with RGB editing disabled and presets available. Preserve those
 robes' authored palette values separately from projected values so reset restores
@@ -143,18 +144,36 @@ The server can correctly publish `helm_114` rows while the helmet still uses its
 positive row-zero MTR defaults, producing the reported tan crest. The generated
 `helm_114.plt` control restores its native scheme; negative MTR defaults select
 that scheme. The normal/specular textures and full-resolution BC5 mask remain
-unchanged. Explicit item material rows support exact RGB on both worn and
-dropped helmets. A complete helmet refresh resets the item's old rows once,
+unchanged. Explicit item material rows support exact RGB on dropped helmets.
+A complete helmet refresh resets the item's old rows once,
 then writes every effective layer, including the wearer's skin and hair colors.
 
 The generator applies the native fallback across the helmet catalog, proving
 each native named subtree and isolating shared materials used by ordinary heads.
-The editor keeps RGB enabled for worn helmets. Both preset and RGB edits publish
-the item's effective rows; reset clears the stored custom color and publishes
-the authored dye. The native palette fields are never replaced by an approximation.
+`GenerateHelmetRgbModels.py --apply` copies all registered tintable helmets into
+compiled male and female human head fallback resources. The reserved head ID is
+1000 plus the helmet model ID. Only fixed-size model/root name fields change;
+geometry, controllers, skin bindings, materials and raw vertex data stay exact.
+`helmrgb.2da` records the mapping. The tint generator excludes these derived
+heads from material-scope inference and audits their exact source bytes.
+
+For parts appearances, `HelmetModelRenderer` selects this head in the replicated
+creature appearance and suppresses the separate helmet there. The native stats
+head, equipped item, item visibility and palette fields remain unchanged.
+The existing creature material publication now reaches the visible helmet
+geometry through the client's head replay path. Hiding or unequipping the helmet
+restores the canonical head; non-parts appearances retain their native rendering.
+The editor keeps RGB enabled. Presets and RGB publish the effective rows, and
+reset restores the authored dye without a nearest-palette approximation.
+
+Run `GenerateHelmetRgbModels.py --check` and `TestHelmetRgbModels.py` after
+changing helmet geometry or registration. Rebuild `sw_pt_head.hak` and
+`sw_2da.hak`, deploy them with the server assembly, and restart the client to
+reload its cached models. The existing module HAK list already includes both.
 
 `TintMapEngineTests.ShuttlePilotRefreshInstallsAuthoredRows` checks the placed
-NPC's helmet/chest rows and exact equipped-item RGB/reset behavior in NWN. The GPU harness
+NPC's replicated render head, canonical head, equipped-item identity,
+visibility restoration, unchanged native dyes and exact RGB/reset rows in NWN. The GPU harness
 compares the actual helmet BC5 material with native versus scripted dyes and
 requires the old row-zero defaults to produce a different result. These checks
 do not attach a game client to the test server; verify the pilot in a fresh

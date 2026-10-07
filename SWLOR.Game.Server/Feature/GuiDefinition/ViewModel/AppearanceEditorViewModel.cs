@@ -3270,6 +3270,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 SetHiddenWhenEquipped(cloak, !ShowCloak);
             }
+            TintMapService.RefreshAfterColorChange(_target);
         }
 
         public void Refresh(EquipItemRefreshEvent payload)

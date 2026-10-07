@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -11,6 +12,19 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class AbilityDescriptionTests
 {
+    [Test]
+    public void TechniqueDescriptionCacheMissDoesNotReadFromTheEngine()
+    {
+        Ability.CacheData();
+        Mimicry.CacheData();
+
+        // A registered technique with no engine-backed boot data must remain a cache miss.
+        // Reading feat/TLK data here would throw because this harness has no live engine.
+        Mimicry.IsTechnique(FeatType.DreadWaveTechnique).Should().BeTrue();
+        Mimicry.GetTechniqueDescription(FeatType.DreadWaveTechnique).Should().BeEmpty();
+        Mimicry.GetTechniqueDescription(FeatType.Invalid).Should().BeEmpty();
+    }
+
     [TestCase(FeatType.DreadWaveTechnique, "Dread Wave", 8, 24)]
     [TestCase(FeatType.InnerVoidTechnique, "Inner Void", 9, 24)]
     public void ReportedTechniquesUseTheSameHotbarDescriptionFormatAsPerkAbilities(

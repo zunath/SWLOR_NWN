@@ -13,8 +13,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 /// <summary>Updates reviewed inventory artwork in place, including saved nested inventories.</summary>
 public static class ItemIconMigration
 {
-    // BEGIN GENERATED APPEARANCE MIGRATION
-    // Generated from the reviewed ship/general icon bindings by tools/GenerateItemIconMigration.py.
+    // Fixed legacy appearances for player migration 16 and server migration 23.
     private static readonly Dictionary<string, (int BaseItem, int OldModel, int NewModel, string OldIcon, string NewIcon)> Models =
         new(StringComparer.OrdinalIgnoreCase)
         {
@@ -1376,7 +1375,6 @@ public static class ItemIconMigration
             ["wyneevixna"] = (518, 54, 8, "iit_ess4_054", "iit_ess4_008"),
             ["yuusntan"] = (516, 5, 127, "iit_ess2_005", "iit_ess2_127"),
         };
-    // END GENERATED APPEARANCE MIGRATION
 
     /// <summary>Converts recognized pre-update appearances; leaves customized models intact.</summary>
     public static int GetUpdatedModel(string resref, int baseItem, int currentModel)

@@ -60,7 +60,8 @@ public class ItemIconTests
     [Test]
     public void OriginalItemArtwork_IsCompleteUniqueAndUsesGameTgaLayout()
     {
-        var icons = ReadCsv("ItemIconManifest.csv");
+        var itemIcons = ReadCsv("ItemIconBindings.csv").Select(row => row["ActionIcon"]).ToHashSet();
+        var icons = ReadCsv("GameplayIconManifest.csv").Where(row => row["Type"] == "Item" && itemIcons.Contains(row["IconResRef"]));
         var resources = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var hashes = new HashSet<string>();
         foreach (var icon in icons)
@@ -146,7 +147,10 @@ public class ItemIconTests
 
     private static List<Dictionary<string, string>> ReadCsv(string name)
     {
-        using var parser = new TextFieldParser(Path.Combine(Root(), "SWLOR.Game.Server", "Readmes", name));
+        var folder = name.EndsWith("Bindings.csv", StringComparison.Ordinal)
+            ? Path.Combine(Root(), "SWLOR.Game.Server.Tests", "Fixtures", "ItemIcons")
+            : Path.Combine(Root(), "SWLOR.Game.Server", "Readmes");
+        using var parser = new TextFieldParser(Path.Combine(folder, name));
         parser.SetDelimiters(",");
         parser.HasFieldsEnclosedInQuotes = true;
         var header = parser.ReadFields()!;

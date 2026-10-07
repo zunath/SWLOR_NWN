@@ -1,7 +1,5 @@
 param(
     [string]$ManifestPath = "SWLOR.Game.Server\Readmes\GameplayIconManifest.csv",
-    [string]$ShipItemManifestPath = "SWLOR.Game.Server\Readmes\ShipItemIconManifest.csv",
-    [string]$ItemManifestPath = "SWLOR.Game.Server\Readmes\ItemIconManifest.csv",
     [string]$Feat2daPath = "SWLOR_Haks\sw_2da\feat.2da",
     [string]$Spells2daPath = "SWLOR_Haks\sw_2da\spells.2da",
     [string]$IconPath = "SWLOR_Haks\sw_ability",
@@ -504,14 +502,8 @@ function Get-CustomFeatSpellRows([object[]]$abilityRows, [hashtable]$existing) {
         }
     }
 
-    $shipManifest = Resolve-RepoPath $ShipItemManifestPath
-    if (Test-Path -LiteralPath $shipManifest) {
-        $rows += @(Import-Csv -LiteralPath $shipManifest)
-    }
-    $itemManifest = Resolve-RepoPath $ItemManifestPath
-    if (Test-Path -LiteralPath $itemManifest) {
-        $rows += @(Import-Csv -LiteralPath $itemManifest)
-    }
+    # Item artwork is authored in the existing gameplay manifest, rather than 2DA rows.
+    $rows += @($existing.Values | Where-Object { $_.Type -eq "Item" })
     return $rows | Sort-Object Type, Key
 }
 

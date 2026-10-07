@@ -61,7 +61,7 @@ public class ShipItemIconTests
             .Where(x => !x.IsAbstract && typeof(IShipModuleListDefinition).IsAssignableFrom(x))
             .SelectMany(x => ((IShipModuleListDefinition)Activator.CreateInstance(x)!).BuildShipModules())
             .ToDictionary(x => x.Key, x => x.Value);
-        var artwork = ReadCsv("ShipItemIconManifest.csv").ToDictionary(x => x["IconResRef"]);
+        var artwork = ReadCsv("GameplayIconManifest.csv").Where(row => row["Type"] == "Item").ToDictionary(x => x["IconResRef"]);
         var bindings = ReadCsv("ShipItemIconBindings.csv");
         var reviewed = bindings.Select(x => x["ResRef"]).ToHashSet(StringComparer.OrdinalIgnoreCase);
         foreach (var module in modules)
@@ -113,7 +113,10 @@ public class ShipItemIconTests
 
     private static List<Dictionary<string, string>> ReadCsv(string name)
     {
-        using var parser = new TextFieldParser(Path.Combine(Root(), "SWLOR.Game.Server", "Readmes", name));
+        var folder = name.EndsWith("Bindings.csv", StringComparison.Ordinal)
+            ? Path.Combine(Root(), "SWLOR.Game.Server.Tests", "Fixtures", "ItemIcons")
+            : Path.Combine(Root(), "SWLOR.Game.Server", "Readmes");
+        using var parser = new TextFieldParser(Path.Combine(folder, name));
         parser.SetDelimiters(",");
         parser.HasFieldsEnclosedInQuotes = true;
         var header = parser.ReadFields()!;

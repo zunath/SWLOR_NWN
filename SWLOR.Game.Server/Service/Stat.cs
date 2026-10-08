@@ -2135,8 +2135,10 @@ namespace SWLOR.Game.Server.Service
             return GetStatAdjustment(creature, StatType.DefensePercentAdjustment) + (type switch
             {
                 CombatDamageType.Physical => GetStatAdjustment(creature, StatType.PhysicalDefensePercentAdjustment) +
+                                             GetStatAdjustment(creature, StatType.PhysicalAndForceDefenseAuraPercentAdjustment) +
                                              GetShieldEquippedPhysicalDefensePercentAdjustment(creature),
-                CombatDamageType.Force => GetStatAdjustment(creature, StatType.ForceDefensePercentAdjustment),
+                CombatDamageType.Force => GetStatAdjustment(creature, StatType.ForceDefensePercentAdjustment) +
+                                          GetStatAdjustment(creature, StatType.PhysicalAndForceDefenseAuraPercentAdjustment),
                 _ => 0
             });
         }

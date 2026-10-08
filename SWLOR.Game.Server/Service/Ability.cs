@@ -3589,6 +3589,7 @@ namespace SWLOR.Game.Server.Service
                 ActivationAreaTelegraphs = activationAreaTelegraphs;
                 Summary = new AbilityImpactSummary
                 {
+                    Ability = ability,
                     SkillType = ability.SkillType,
                     IsAreaAbility = ability.IsAreaAbility,
                     IsSingleTargetAbility = ability.IsSingleTargetAbility

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -19,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
         private const string EvasionModifierGroup = "SHADOW_STEP_EVASION";
         private const float EvasionDurationSeconds = 30f;
         private const float ArrivalDistanceMeters = 1.5f;
+        private const float StunDurationSeconds = 2f;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -48,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 .HasRecastDelay(RecastGroup.ShadowStep, 24f)
                 .SkillType(SkillType.Espionage)
                 .IsSingleTargetAbility()
-                .HasMaxRange(5f)
+                .HasMaxRange(10f)
                 .RequiresTarget()
                 .HasImpactAction((activator, target, _, targetLocation) =>
                     ApplyShadowStep(activator, target, evasionPercent, cleansesMovementImpairing))
@@ -82,10 +84,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 ActionJumpToLocation(destination);
                 ActionDoCommand(() =>
                 {
+                    if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) ||
+                        GetIsDead(activator) || GetIsDead(target) || GetArea(activator) != GetArea(target))
+                        return;
+
                     AssignCommand(activator, () => SetFacingPoint(GetPosition(target)));
-                    if (GetIsObjectValid(activator) && GetArea(activator) == GetAreaFromLocation(destination) &&
+                    if (GetArea(activator) == GetAreaFromLocation(destination) &&
                         GetDistanceBetweenLocations(GetLocation(activator), destination) < 2f)
+                    {
                         playArrivalVisual(activator);
+                        if (GetIsReactionTypeHostile(target, activator))
+                            StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect),
+                                StunDurationSeconds, CombatDamageType.Physical);
+                    }
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Unsummon), activator);
                 });
             });

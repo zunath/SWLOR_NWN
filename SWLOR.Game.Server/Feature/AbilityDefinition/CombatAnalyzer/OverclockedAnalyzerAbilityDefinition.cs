@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.CombatAnalyzer
                 .UsesImmediateAuthoredAnimation()
                 .IsCastedAbility()
                 .RequirementStamina(10)
+                .RemoveSourceOwnedStatusEffectOnPerkRefund(typeof(OverloadStatusEffect))
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     if (StatusEffect.ApplyStatusEffect(activator, activator, new OverloadStatusEffect(), 12f))

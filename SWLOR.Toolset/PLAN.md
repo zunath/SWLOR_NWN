@@ -202,7 +202,7 @@ Deliverables: `AreaInstancesView` (per-list grids: add-from-palette via `Instanc
 Acceptance: place a creature instance from palette into a git.json entirely in-tool; diff shape matches a hand-authored placement from the skills docs; suite green.
 
 **WP3.4 — Validation rules.** Tier: **Low** (rules are enumerated; fixtures mechanical).
-Inputs: `.codex\skills\swlor-quest-generation\references\implementation-checklist.md`, `Readmes\CapstoneQuestLinePlan.md`, `StoreInstanceSync.cs`.
+Inputs: `.codex\skills\swlor-quest-generation\references\implementation-checklist.md`, `StoreInstanceSync.cs`.
 Deliverables in `Domain\Validation\`: `IValidationRule` + `ValidationIssue`; rules: `ResRefExistsRule` (TemplateResRef → blueprint file exists), `ResRefLengthRule` (≤16, lowercase), `VarTableEnumRule` (known keys have valid IGameCodeIndex values), `QuestActivatorNotInPaletteRule` (OnUsed=quest_enc placeables are world-instance-only), `SpawnWaypointPaletteRule` (spawn waypoint blueprint Tag == spawn table ID and palette entry exists), `DanglingInstanceTemplateRule`, `PaletteOrphanRule`; `ValidationPanelViewModel` in the app.
 Acceptance: fixture tests per rule (seeded-error JSON + known-good corpus files as negative controls).
 
@@ -252,4 +252,4 @@ Read Quartermaster/Reliquary source: which Avalonia GL control, shader setup, MD
 
 ## Critical files
 
-- `SWLOR.Game.Server.sln`, `SWLOR.CLI\Program.cs`, `SWLOR.CLI\ModulePacker.cs` (ReadKey ~:111/:200; `GetModuleFolders()`), `SWLOR.CLI\StoreInstanceSync.cs`, `Build\hakbuilder.json`, `SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj`, `.codex\skills\swlor-quest-generation\` (conventions; edit skills only in `.codex\skills\` then `powershell -ExecutionPolicy Bypass -File tools/SyncAgentSkills.ps1`), `Readmes\CapstoneQuestLinePlan.md`.
+- `SWLOR.Game.Server.sln`, `SWLOR.CLI\Program.cs`, `SWLOR.CLI\ModulePacker.cs` (ReadKey ~:111/:200; `GetModuleFolders()`), `SWLOR.CLI\StoreInstanceSync.cs`, `Build\hakbuilder.json`, `SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj`, `.codex\skills\swlor-quest-generation\` (conventions; edit skills only in `.codex\skills\` then `powershell -ExecutionPolicy Bypass -File tools/SyncAgentSkills.ps1`).

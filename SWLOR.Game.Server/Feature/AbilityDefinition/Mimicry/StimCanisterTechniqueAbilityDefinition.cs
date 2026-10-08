@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.StimCanister, 43, 3)
                 .MimicryUtility()
+                .RemoveSourceOwnedStatusEffectOnPerkRefund(typeof(StimCanisterStatusEffect))
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 4.0f))

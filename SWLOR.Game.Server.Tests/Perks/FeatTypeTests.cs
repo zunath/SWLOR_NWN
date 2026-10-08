@@ -12,8 +12,7 @@ public class FeatTypeTests
         // (int)FeatType.X must equal the feat.2da row number, so two members sharing a
         // value collapse onto a single row: one of them renders the other's icon, name
         // and description. It also makes Enum.GetName non-deterministic for that value,
-        // which churns generated artifacts such as
-        // Readmes/CombatUpgradeBibleImplementationReview.csv.
+        // which makes generated implementation reports unstable.
         //
         // Enum.GetName is unusable here for the same reason it is the symptom: it returns
         // an arbitrary one of the colliding names. Map each declared name back to its

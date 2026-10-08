@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override ResistanceType ResistanceType => ResistanceType.Ice;
         public override float Frequency => 6f;
+        public override bool PreservesTickScheduleOnRefresh => true;
 
         public FreezingStatusEffect()
             : this(1)

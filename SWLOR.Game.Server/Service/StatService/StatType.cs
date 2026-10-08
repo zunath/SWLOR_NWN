@@ -6148,85 +6148,90 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         SingleWeaponDamagePercentAdjustment = 1087,
 
+        /// <summary>Physical and Force defense from protective auras. Only the strongest aura applies,
+        /// including the emitter's personal benefit.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        PhysicalAndForceDefenseAuraPercentAdjustment = 1088,
+
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.RestoreWorkDurability, 3, Work = CraftWorkKind.Synthesis, Condition = CraftCondition.Workable)]
-        CraftingWorkDurabilityRestore = 1088,
+        CraftingWorkDurabilityRestore = 1089,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.FailedProgressPercent, 1, Action = CraftActionType.RapidSynthesis, Failure = true)]
-        CraftingFailedSynthesisProgressPercent = 1089,
+        CraftingFailedSynthesisProgressPercent = 1090,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.QualityPercent, 3, Work = CraftWorkKind.Touch, PreviousWork = CraftWorkKind.Synthesis, Condition = CraftCondition.Reinforced)]
-        CraftingChainedTouchQualityPercent = 1090,
+        CraftingChainedTouchQualityPercent = 1091,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.NextTouchQualityPercent, 1, Work = CraftWorkKind.Synthesis, Condition = CraftCondition.Workable)]
-        CraftingWorkTouchOpportunityPercent = 1091,
+        CraftingWorkTouchOpportunityPercent = 1092,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.RestoreSwitchCP, 3, CategorySwitch = true)]
-        CraftingSwitchCPRestore = 1092,
+        CraftingSwitchCPRestore = 1093,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.QualityPercent, Action = CraftActionType.PreciseTouch, Condition = CraftCondition.Fine)]
-        CraftingFinePreciseQualityPercent = 1093,
+        CraftingFinePreciseQualityPercent = 1094,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.ForecastLength)]
-        CraftingForecastLength = 1094,
+        CraftingForecastLength = 1095,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.RefundCPPercent, 1, Paid = true, Condition = CraftCondition.Economical)]
-        CraftingEconomicalCPRefundPercent = 1095,
+        CraftingEconomicalCPRefundPercent = 1096,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.MendDurability, 2, Action = CraftActionType.MastersMend)]
-        CraftingMendDurabilityBonus = 1096,
+        CraftingMendDurabilityBonus = 1097,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.WasteNotWindow)]
-        CraftingWasteNotWindowBonus = 1097,
+        CraftingWasteNotWindowBonus = 1098,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.ReduceSynthesisCP, 3, Action = CraftActionType.CarefulSynthesis)]
-        CraftingCarefulCPReduction = 1098,
+        CraftingCarefulCPReduction = 1099,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.PreventDurabilityFailure, 1)]
-        CraftingDurabilityFailureProtection = 1099,
+        CraftingDurabilityFailureProtection = 1100,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.TouchProgressPercent, 3, Work = CraftWorkKind.Touch, Condition = CraftCondition.Fine)]
-        CraftingFineTouchProgressPercent = 1100,
+        CraftingFineTouchProgressPercent = 1101,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.PreserveMendCondition, Action = CraftActionType.MastersMend, Condition = CraftCondition.Fine)]
-        CraftingFineMendPreservationUses = 1101,
+        CraftingFineMendPreservationUses = 1102,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.NextBasicTouchDiscount, 2, Action = CraftActionType.CarefulSynthesis)]
-        CraftingPreparedTouchCPReduction = 1102,
+        CraftingPreparedTouchCPReduction = 1103,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.MaximumQualityProgress, 1, Work = CraftWorkKind.Touch, Condition = CraftCondition.Fine)]
-        CraftingMaximumQualityProgress = 1103,
+        CraftingMaximumQualityProgress = 1104,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.RestoreWorkDurability, 3, Work = CraftWorkKind.Touch, Condition = CraftCondition.Fine, Technique = CraftTechnique.PoisonMixing)]
-        CraftingPoisonTouchDurabilityRestore = 1104,
+        CraftingPoisonTouchDurabilityRestore = 1105,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.NextRapidDurabilityDiscount, 2, Action = CraftActionType.CarefulSynthesis, Technique = CraftTechnique.TrapAssembly)]
-        CraftingPreparedRapidDurabilityReduction = 1105,
+        CraftingPreparedRapidDurabilityReduction = 1106,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.SynthesisQualityPercent, 3, Work = CraftWorkKind.Synthesis, Paid = true, Condition = CraftCondition.Economical)]
-        CraftingEconomicalSynthesisQualityPercent = 1106,
+        CraftingEconomicalSynthesisQualityPercent = 1107,
 
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         [CraftRule(CraftRuleEffect.ReplaceFailedConditions, 1, Action = CraftActionType.RapidSynthesis, Failure = true)]
-        CraftingFailedSynthesisConditionRecovery = 1107,
+        CraftingFailedSynthesisConditionRecovery = 1108,
 
 
     }

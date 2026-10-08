@@ -1,9 +1,11 @@
+using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -80,6 +82,21 @@ namespace SWLOR.Game.Server.Feature
         {
             var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
             Gui.PublishRefreshEvent(target, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
+        }
+
+        [NWNEventHandler(ScriptName.OnEffectAppliedAfter)]
+        [NWNEventHandler(ScriptName.OnEffectRemovedAfter)]
+        public static void PlayerTemporaryHitPointsChanged()
+        {
+            var player = OBJECT_SELF;
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
+                return;
+
+            if (Convert.ToInt32(EventsPlugin.GetEventData("TYPE")) != (int)EffectTypeEngine.TemporaryHitpoints)
+                return;
+
+            // The engine updates its effect list after these events, so read the pool on the next tick.
+            DelayCommand(0f, () => Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP)));
         }
 
         [NWNEventHandler(ScriptName.OnPlayerShieldAdjusted)]

@@ -475,8 +475,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// Swaps a partial view on a group that sits directly in the main view.
         /// NUI can silently drop a nested partial layout while its parent is
         /// being redrawn. This forces a root redraw first, applies the target
-        /// partial, then reapplies it once more on the next tick to guarantee
-        /// it survives the parent's redraw pass. <see cref="ChangePartialView"/>
+        /// partial, then reapplies it on the next tick and once more after a short
+        /// settle delay so it survives the parent's redraw pass. <see cref="ChangePartialView"/>
         /// routes such groups here automatically; call this directly only to
         /// pass callbacks.
         /// </summary>
@@ -484,12 +484,12 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <param name="partialName">The partial view to apply.</param>
         /// <param name="onBeforeApply">
         /// Optional callback run immediately before each apply (e.g. to refresh
-        /// the data the partial will display). Runs twice - once per apply -
-        /// matching the existing RestoreSelectedTabPartial behavior.
+        /// the data the partial will display). Runs once per apply (up to three
+        /// times: immediate, next tick, and after the settle delay).
         /// </param>
         /// <param name="onAfterApply">
         /// Optional callback run after each replacement layout is applied, including the
-        /// deferred apply. Use this to restore child partials and publish their bindings.
+        /// deferred applies. Use this to restore child partials and publish their bindings.
         /// </param>
         /// <remarks>
         /// Public rather than protected: orchestrator helpers like GuiTabGroup
@@ -522,13 +522,23 @@ namespace SWLOR.Game.Server.Service.GuiService
             // rapidly toggled) the window, or after a modal replaced the main view;
             // NuiSetGroupLayout against a missing element raises a client-side
             // "element id not found" error. Only re-apply while the main view is showing.
-            DelayCommand(0.0f, () =>
+            void ApplyIfMainViewShowing()
             {
                 if (Gui.IsWindowOpen(Player, WindowType) &&
                     _rootPartial == GuiPartialViewRouting.MainViewPartial)
                     Apply();
-            });
+            }
+
+            DelayCommand(0.0f, ApplyIfMainViewShowing);
+
+            // The next-tick apply can reach the client in the same frame as the root
+            // redraw (most often while the window is first opening), so it is dropped
+            // too and the content area stays blank. A final apply a few frames later
+            // lands after the redraw has settled.
+            DelayCommand(NestedPartialSettleDelaySeconds, ApplyIfMainViewShowing);
         }
+
+        private const float NestedPartialSettleDelaySeconds = 0.2f;
 
 
         public string ModalPromptText

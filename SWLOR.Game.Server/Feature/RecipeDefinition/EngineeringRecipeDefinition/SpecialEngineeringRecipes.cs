@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Weapon Submission Token (Engineering)
             _builder.Create(RecipeType.WeaponSubmissionTokenEngineering, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.SpecialSubmissionItems)
                 .Resref("wpn_sub_token")
                 .Level(52)
@@ -29,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Armor Submission Token (Engineering)
             _builder.Create(RecipeType.ArmorSubmissionTokenEngineering, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.SpecialSubmissionItems)
                 .Resref("arm_sub_token")
                 .Level(52)

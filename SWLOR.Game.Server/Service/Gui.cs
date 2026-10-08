@@ -182,6 +182,8 @@ namespace SWLOR.Game.Server.Service
             _elementEvents[elementId][eventName] = eventAction;
         }
 
+        public static void UnregisterElementEvents(string eventKey) => _elementEvents.Remove(eventKey);
+
         private static void SaveWindowGeometry(string playerId, GuiWindowType windowType, GuiRectangle geometry)
         {
             var dbPlayer = DB.Get<Player>(playerId);

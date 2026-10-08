@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
         {
             // Stonewake Field Cot
             _builder.Create(RecipeType.StonewakeFieldCot, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0361")
                 .Level(26)
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Stonewake Signal Lamp
             _builder.Create(RecipeType.StonewakeSignalLamp, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0362")
                 .Level(27)
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Stonewake Trophy Stand
             _builder.Create(RecipeType.StonewakeTrophyStand, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0363")
                 .Level(30)
@@ -55,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Stonewake Low Table
             _builder.Create(RecipeType.StonewakeLowTable, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0364")
                 .Level(28)
@@ -67,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Stonewake Wall Banner
             _builder.Create(RecipeType.StonewakeWallBanner, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0365")
                 .Level(29)
@@ -79,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Stonewake Supply Locker
             _builder.Create(RecipeType.StonewakeSupplyLocker, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0366")
                 .Level(31)
@@ -91,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Stonewake Floor Mat
             _builder.Create(RecipeType.StonewakeFloorMat, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Flooring)
                 .Resref("structure_0367")
                 .Level(26)
@@ -103,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Stonewake Data Console
             _builder.Create(RecipeType.StonewakeDataConsole, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0368")
                 .Level(31)
@@ -115,6 +123,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Stonewake Display Plinth
             _builder.Create(RecipeType.StonewakeDisplayPlinth, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0369")
                 .Level(30)
@@ -127,6 +136,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Stonewake Work Stool
             _builder.Create(RecipeType.StonewakeWorkStool, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0370")
                 .Level(27)

@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
         {
             // Surgewake Field Cot
             _builder.Create(RecipeType.SurgewakeFieldCot, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Bed)
                 .Resref("structure_0391")
                 .Level(46)
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Surgewake Signal Lamp
             _builder.Create(RecipeType.SurgewakeSignalLamp, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lighting)
                 .Resref("structure_0392")
                 .Level(47)
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Surgewake Trophy Stand
             _builder.Create(RecipeType.SurgewakeTrophyStand, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Fixtures)
                 .Resref("structure_0393")
                 .Level(50)
@@ -55,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Surgewake Low Table
             _builder.Create(RecipeType.SurgewakeLowTable, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Surfaces)
                 .Resref("structure_0394")
                 .Level(48)
@@ -67,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Surgewake Wall Banner
             _builder.Create(RecipeType.SurgewakeWallBanner, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0395")
                 .Level(49)
@@ -79,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Surgewake Supply Locker
             _builder.Create(RecipeType.SurgewakeSupplyLocker, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
                 .Resref("structure_0396")
                 .Level(51)
@@ -91,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Surgewake Floor Mat
             _builder.Create(RecipeType.SurgewakeFloorMat, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Flooring)
                 .Resref("structure_0397")
                 .Level(46)
@@ -103,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Surgewake Data Console
             _builder.Create(RecipeType.SurgewakeDataConsole, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Electronics)
                 .Resref("structure_0398")
                 .Level(51)
@@ -115,6 +123,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Surgewake Display Plinth
             _builder.Create(RecipeType.SurgewakeDisplayPlinth, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0399")
                 .Level(50)
@@ -127,6 +136,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 
             // Surgewake Work Stool
             _builder.Create(RecipeType.SurgewakeWorkStool, SkillType.Fabrication)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Seating)
                 .Resref("structure_0400")
                 .Level(47)

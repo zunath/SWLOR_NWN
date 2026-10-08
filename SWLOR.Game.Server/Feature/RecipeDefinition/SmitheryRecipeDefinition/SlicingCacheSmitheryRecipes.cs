@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         private void Add(RecipeType type, RecipeCategoryType category, string resref, int level, string fiber, string leather)
         {
             _builder.Create(type, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .RequirementUnlocked()
                 .Category(category)
                 .Resref(resref)

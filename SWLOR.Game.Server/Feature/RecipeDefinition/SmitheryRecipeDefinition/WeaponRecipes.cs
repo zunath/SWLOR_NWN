@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Basic Knife
             _builder.Create(RecipeType.BasicKnife, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: true)
                 .Category(RecipeCategoryType.Knife)
                 .Resref("b_knife")
                 .Level(1)
@@ -52,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Titan Knife
             _builder.Create(RecipeType.TitanKnife, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Knife)
                 .Resref("tit_knife")
                 .Level(11)
@@ -62,6 +64,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Sith Knife
             _builder.Create(RecipeType.SithKnife, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Knife)
                 .Resref("sith_knife")
                 .Level(17)
@@ -72,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Delta Knife
             _builder.Create(RecipeType.DeltaKnife, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Knife)
                 .Resref("del_knife")
                 .Level(21)
@@ -82,6 +86,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Proto Knife
             _builder.Create(RecipeType.ProtoKnife, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Knife)
                 .Resref("proto_knife")
                 .Level(31)
@@ -92,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ophidian Knife
             _builder.Create(RecipeType.OphidianKnife, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Knife)
                 .Resref("oph_knife")
                 .Level(41)
@@ -102,6 +108,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chiro Knife
             _builder.Create(RecipeType.ChiroKnife, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Knife)
                 .Resref("chi_knife")
                 .Level(52)
@@ -123,6 +130,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Basic Vibroblade LS
             _builder.Create(RecipeType.BasicLongsword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Longsword)
                 .Resref("b_longsword")
                 .Level(4)
@@ -133,6 +141,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Titan Longsword
             _builder.Create(RecipeType.TitanLongsword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Longsword)
                 .Resref("tit_longsword")
                 .Level(14)
@@ -143,6 +152,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Sith Longsword
             _builder.Create(RecipeType.SithLongsword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Longsword)
                 .Resref("sith_longsword")
                 .Level(18)
@@ -153,6 +163,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Delta Longsword
             _builder.Create(RecipeType.DeltaLongsword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Longsword)
                 .Resref("del_longsword")
                 .Level(24)
@@ -163,6 +174,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Proto Longsword
             _builder.Create(RecipeType.ProtoLongsword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Longsword)
                 .Resref("pro_longsword")
                 .Level(34)
@@ -173,6 +185,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ophidian Longsword
             _builder.Create(RecipeType.OphidianLongsword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Longsword)
                 .Resref("oph_longsword")
                 .Level(44)
@@ -183,6 +196,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chiro Longsword
             _builder.Create(RecipeType.ChiroLongsword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Longsword)
                 .Resref("chi_longsword")
                 .Level(52)
@@ -204,6 +218,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Electroblade I
             _builder.Create(RecipeType.Electroblade1, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("electroblade_1")
                 .Level(6)
@@ -214,6 +229,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Electroblade II
             _builder.Create(RecipeType.Electroblade2, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("electroblade_2")
                 .Level(16)
@@ -224,6 +240,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Sith Electroblade
             _builder.Create(RecipeType.SithElectroblade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("sith_electro")
                 .Level(19)
@@ -234,6 +251,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Electroblade III
             _builder.Create(RecipeType.Electroblade3, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("electroblade_3")
                 .Level(26)
@@ -244,6 +262,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Electroblade IV
             _builder.Create(RecipeType.Electroblade4, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("electroblade_4")
                 .Level(36)
@@ -254,6 +273,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Electroblade V
             _builder.Create(RecipeType.Electroblade5, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("electroblade_5")
                 .Level(46)
@@ -264,6 +284,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chiro Electroblade
             _builder.Create(RecipeType.ChiroElectroblade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("chi_electroblade")
                 .Level(52)
@@ -282,6 +303,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Training Saber I
             _builder.Create(RecipeType.TrainingSaber1, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("saber_train_1")
                 .Level(8)
@@ -294,6 +316,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Training Saber II
             _builder.Create(RecipeType.TrainingSaber2, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("saber_train_2")
                 .Level(18)
@@ -306,6 +329,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Training Saber III
             _builder.Create(RecipeType.TrainingSaber3, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("saber_train_3")
                 .Level(28)
@@ -318,6 +342,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Training Saber IV
             _builder.Create(RecipeType.TrainingSaber4, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("saber_train_4")
                 .Level(38)
@@ -330,6 +355,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Training Saber V
             _builder.Create(RecipeType.TrainingSaber5, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("saber_train_5")
                 .Level(48)
@@ -346,6 +372,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Basic Great Sword
             _builder.Create(RecipeType.BasicGreatSword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.GreatSword)
                 .Resref("b_greatsword")
                 .Level(8)
@@ -356,6 +383,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Titan Great Sword
             _builder.Create(RecipeType.TitanGreatSword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.GreatSword)
                 .Resref("tit_greatsword")
                 .Level(18)
@@ -366,6 +394,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Sith Great Sword
             _builder.Create(RecipeType.SithGreatSword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.GreatSword)
                 .Resref("sith_gswd")
                 .Level(14)
@@ -376,6 +405,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Delta Great Sword
             _builder.Create(RecipeType.DeltaGreatSword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.GreatSword)
                 .Resref("del_greatsword")
                 .Level(28)
@@ -386,6 +416,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Proto Great Sword
             _builder.Create(RecipeType.ProtoGreatSword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.GreatSword)
                 .Resref("proto_greatsword")
                 .Level(38)
@@ -396,6 +427,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ophidian Great Sword
             _builder.Create(RecipeType.OphidianGreatSword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.GreatSword)
                 .Resref("oph_greatsword")
                 .Level(48)
@@ -406,6 +438,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chiro Great Sword
             _builder.Create(RecipeType.ChiroGreatSword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.GreatSword)
                 .Resref("chi_greatsword")
                 .Level(52)
@@ -427,6 +460,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Basic Spear
             _builder.Create(RecipeType.BasicSpear, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Spear)
                 .Resref("b_spear")
                 .Level(7)
@@ -437,6 +471,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Titan Spear
             _builder.Create(RecipeType.TitanSpear, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Spear)
                 .Resref("tit_spear")
                 .Level(17)
@@ -447,6 +482,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Sith Spear
             _builder.Create(RecipeType.SithSpear, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Spear)
                 .Resref("sith_spear")
                 .Level(13)
@@ -457,6 +493,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Delta Spear
             _builder.Create(RecipeType.DeltaSpear, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Spear)
                 .Resref("del_spear")
                 .Level(27)
@@ -467,6 +504,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Proto Spear
             _builder.Create(RecipeType.ProtoSpear, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Spear)
                 .Resref("proto_spear")
                 .Level(37)
@@ -477,6 +515,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ophidian Spear
             _builder.Create(RecipeType.OphidianSpear, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Spear)
                 .Resref("oph_spear")
                 .Level(47)
@@ -487,6 +526,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chiro Spear
             _builder.Create(RecipeType.ChiroSpear, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Spear)
                 .Resref("chi_spear")
                 .Level(52)
@@ -505,6 +545,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Alchemized Spear
             _builder.Create(RecipeType.AlchemizedSpear, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Spear)
                 .Resref("alc_spear")
                 .Level(52)
@@ -526,6 +567,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Basic Twin Blade
             _builder.Create(RecipeType.BasicTwinBlade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.TwinBlade)
                 .Resref("b_twinblade")
                 .Level(8)
@@ -536,6 +578,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Titan Twin Blade
             _builder.Create(RecipeType.TitanTwinBlade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.TwinBlade)
                 .Resref("tit_twinblade")
                 .Level(18)
@@ -546,6 +589,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Sith Twin Blade
             _builder.Create(RecipeType.SithTwinBlade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.TwinBlade)
                 .Resref("sith_twinblade")
                 .Level(16)
@@ -556,6 +600,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Delta Twin Blade
             _builder.Create(RecipeType.DeltaTwinBlade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.TwinBlade)
                 .Resref("del_twinblade")
                 .Level(28)
@@ -566,6 +611,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Proto Twin Blade
             _builder.Create(RecipeType.ProtoTwinBlade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.TwinBlade)
                 .Resref("proto_twinblade")
                 .Level(38)
@@ -576,6 +622,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ophidian Twin Blade
             _builder.Create(RecipeType.OphidianTwinBlade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.TwinBlade)
                 .Resref("oph_twinblade")
                 .Level(48)
@@ -586,6 +633,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chiro Twin Blade
             _builder.Create(RecipeType.ChiroTwinBlade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.TwinBlade)
                 .Resref("chi_twinblade")
                 .Level(52)
@@ -607,6 +655,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Twin Electroblade I
             _builder.Create(RecipeType.TwinElectroblade1, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("twin_elec_1")
                 .Level(7)
@@ -617,6 +666,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Twin Electroblade II
             _builder.Create(RecipeType.TwinElectroblade2, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("twin_elec_2")
                 .Level(17)
@@ -627,6 +677,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Twin Electroblade III
             _builder.Create(RecipeType.TwinElectroblade3, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("twin_elec_3")
                 .Level(27)
@@ -637,6 +688,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Twin Electroblade IV
             _builder.Create(RecipeType.TwinElectroblade4, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("twin_elec_4")
                 .Level(37)
@@ -647,6 +699,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Twin Electroblade V
             _builder.Create(RecipeType.TwinElectroblade5, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("twin_elec_5")
                 .Level(47)
@@ -657,6 +710,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chiro Twin Electroblade
             _builder.Create(RecipeType.ChiroTwinElectroblade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("chi_twinelec")
                 .Level(52)
@@ -675,6 +729,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Training Saberstaff I
             _builder.Create(RecipeType.TrainingSaberstaff1, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("trn_saberstaff_1")
                 .Level(9)
@@ -687,6 +742,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Training Saberstaff II
             _builder.Create(RecipeType.TrainingSaberstaff2, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("trn_saberstaff_2")
                 .Level(19)
@@ -699,6 +755,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Training Saberstaff III
             _builder.Create(RecipeType.TrainingSaberstaff3, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("trn_saberstaff_3")
                 .Level(29)
@@ -711,6 +768,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Training Saberstaff IV
             _builder.Create(RecipeType.TrainingSaberstaff4, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("trn_saberstaff_4")
                 .Level(39)
@@ -723,6 +781,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Training Saberstaff V
             _builder.Create(RecipeType.TrainingSaberstaff5, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("trn_saberstaff_5")
                 .Level(49)
@@ -739,6 +798,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Basic Katar
             _builder.Create(RecipeType.BasicKatar, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Katar)
                 .Resref("b_katar")
                 .Level(3)
@@ -749,6 +809,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Titan Katar
             _builder.Create(RecipeType.TitanKatar, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Katar)
                 .Resref("tit_katar")
                 .Level(13)
@@ -759,6 +820,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Sith Katar
             _builder.Create(RecipeType.SithKatar, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Katar)
                 .Resref("sith_katar")
                 .Level(18)
@@ -769,6 +831,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Delta Katar
             _builder.Create(RecipeType.DeltaKatar, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Katar)
                 .Resref("del_katar")
                 .Level(23)
@@ -779,6 +842,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Proto Katar
             _builder.Create(RecipeType.ProtoKatar, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Katar)
                 .Resref("proto_katar")
                 .Level(33)
@@ -789,6 +853,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ophidian Katar
             _builder.Create(RecipeType.OphidianKatar, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Katar)
                 .Resref("oph_katar")
                 .Level(43)
@@ -799,6 +864,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chiro Katar
             _builder.Create(RecipeType.ChiroKatar, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Katar)
                 .Resref("chi_katar")
                 .Level(52)
@@ -820,6 +886,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Basic Staff
             _builder.Create(RecipeType.BasicStaff, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Staff)
                 .Resref("b_staff")
                 .Level(5)
@@ -830,6 +897,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Titan Staff
             _builder.Create(RecipeType.TitanStaff, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Staff)
                 .Resref("tit_staff")
                 .Level(15)
@@ -840,6 +908,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Sith Staff
             _builder.Create(RecipeType.SithStaff, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Staff)
                 .Resref("sith_staff")
                 .Level(12)
@@ -850,6 +919,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Delta Staff
             _builder.Create(RecipeType.DeltaStaff, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: true)
                 .Category(RecipeCategoryType.Staff)
                 .Resref("del_staff")
                 .Level(25)
@@ -860,6 +930,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Proto Staff
             _builder.Create(RecipeType.ProtoStaff, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Staff)
                 .Resref("proto_staff")
                 .Level(35)
@@ -870,6 +941,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ophidian Staff
             _builder.Create(RecipeType.OphidianStaff, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Staff)
                 .Resref("oph_staff")
                 .Level(45)
@@ -880,6 +952,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chiro Staff
             _builder.Create(RecipeType.ChiroStaff, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Staff)
                 .Resref("chi_staff")
                 .Level(52)
@@ -902,6 +975,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Basic Pistol
             _builder.Create(RecipeType.BasicPistol, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Pistol)
                 .Resref("b_pistol")
                 .Level(6)
@@ -912,6 +986,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Titan Pistol
             _builder.Create(RecipeType.TitanPistol, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Pistol)
                 .Resref("tit_pistol")
                 .Level(16)
@@ -922,6 +997,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Sith Pistol
             _builder.Create(RecipeType.SithPistol, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Pistol)
                 .Resref("sith_pistol")
                 .Level(19)
@@ -932,6 +1008,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Delta Pistol
             _builder.Create(RecipeType.DeltaPistol, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Pistol)
                 .Resref("del_pistol")
                 .Level(26)
@@ -942,6 +1019,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Proto Pistol
             _builder.Create(RecipeType.ProtoPistol, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Pistol)
                 .Resref("proto_pistol")
                 .Level(36)
@@ -952,6 +1030,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ophidian Pistol
             _builder.Create(RecipeType.OphidianPistol, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Pistol)
                 .Resref("oph_pistol")
                 .Level(46)
@@ -962,6 +1041,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chiro Pistol
             _builder.Create(RecipeType.ChiroPistol, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Pistol)
                 .Resref("chi_pistol")
                 .Level(52)
@@ -983,6 +1063,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Basic Shuriken
             _builder.Create(RecipeType.BasicShuriken, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shuriken)
                 .Resref("b_shuriken")
                 .Level(2)
@@ -993,6 +1074,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Titan Shuriken
             _builder.Create(RecipeType.TitanShuriken, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shuriken)
                 .Resref("tit_shuriken")
                 .Level(12)
@@ -1003,6 +1085,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Sith Shuriken
             _builder.Create(RecipeType.SithShuriken, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shuriken)
                 .Resref("sith_shuriken")
                 .Level(18)
@@ -1013,6 +1096,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Delta Shuriken
             _builder.Create(RecipeType.DeltaShuriken, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shuriken)
                 .Resref("del_shuriken")
                 .Level(22)
@@ -1023,6 +1107,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Proto Shuriken
             _builder.Create(RecipeType.ProtoShuriken, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shuriken)
                 .Resref("proto_shuriken")
                 .Level(32)
@@ -1033,6 +1118,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ophidian Shuriken
             _builder.Create(RecipeType.OphidianShuriken, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shuriken)
                 .Resref("oph_shuriken")
                 .Level(42)
@@ -1043,6 +1129,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chiro Shuriken
             _builder.Create(RecipeType.ChiroShuriken, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shuriken)
                 .Resref("chi_shuriken")
                 .Level(52)
@@ -1064,6 +1151,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Basic Rifle
             _builder.Create(RecipeType.BasicRifle, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Rifle)
                 .Resref("b_rifle")
                 .Level(9)
@@ -1074,6 +1162,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Titan Rifle
             _builder.Create(RecipeType.TitanRifle, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Rifle)
                 .Resref("tit_rifle")
                 .Level(19)
@@ -1084,6 +1173,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Sith Rifle
             _builder.Create(RecipeType.SithRifle, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Rifle)
                 .Resref("sith_rifle")
                 .Level(15)
@@ -1094,6 +1184,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Delta Rifle
             _builder.Create(RecipeType.DeltaRifle, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Rifle)
                 .Resref("del_rifle")
                 .Level(29)
@@ -1104,6 +1195,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Proto Rifle
             _builder.Create(RecipeType.ProtoRifle, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Rifle)
                 .Resref("proto_rifle")
                 .Level(39)
@@ -1114,6 +1206,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ophidian Rifle
             _builder.Create(RecipeType.OphidianRifle, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Rifle)
                 .Resref("oph_rifle")
                 .Level(49)
@@ -1124,6 +1217,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chiro Rifle
             _builder.Create(RecipeType.ChiroRifle, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Rifle)
                 .Resref("chi_rifle")
                 .Level(52)
@@ -1142,6 +1236,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Bol Rifle
             _builder.Create(RecipeType.BolRifle, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Rifle)
                 .Resref("bol_rifle")
                 .Level(52)
@@ -1162,6 +1257,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Field Knife
             _builder.Create(RecipeType.FieldKnife, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Knife)
                 .Resref("fld_knife")
                 .Level(6)
@@ -1172,6 +1268,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Veteran Knife
             _builder.Create(RecipeType.VeteranKnife, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Knife)
                 .Resref("vet_knife")
                 .Level(16)
@@ -1182,6 +1279,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Prime Knife
             _builder.Create(RecipeType.PrimeKnife, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Knife)
                 .Resref("prm_knife")
                 .Level(26)
@@ -1192,6 +1290,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ascendant Knife
             _builder.Create(RecipeType.AscendantKnife, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Knife)
                 .Resref("asc_knife")
                 .Level(36)
@@ -1206,6 +1305,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Field Longsword
             _builder.Create(RecipeType.FieldLongsword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Longsword)
                 .Resref("fld_longsword")
                 .Level(9)
@@ -1216,6 +1316,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Veteran Longsword
             _builder.Create(RecipeType.VeteranLongsword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Longsword)
                 .Resref("vet_longsword")
                 .Level(19)
@@ -1226,6 +1327,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Prime Longsword
             _builder.Create(RecipeType.PrimeLongsword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Longsword)
                 .Resref("prm_longsword")
                 .Level(29)
@@ -1236,6 +1338,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ascendant Longsword
             _builder.Create(RecipeType.AscendantLongsword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Longsword)
                 .Resref("asc_longsword")
                 .Level(39)
@@ -1250,6 +1353,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Field Electroblade
             _builder.Create(RecipeType.FieldElectroblade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("fld_electroblade")
                 .Level(11)
@@ -1260,6 +1364,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Veteran Electroblade
             _builder.Create(RecipeType.VeteranElectroblade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("vet_electroblade")
                 .Level(21)
@@ -1270,6 +1375,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Prime Electroblade
             _builder.Create(RecipeType.PrimeElectroblade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("prm_electroblade")
                 .Level(31)
@@ -1280,6 +1386,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ascendant Electroblade
             _builder.Create(RecipeType.AscendantElectroblade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("asc_electroblade")
                 .Level(41)
@@ -1290,6 +1397,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
 // Field Training Saber
             _builder.Create(RecipeType.FieldTrainingSaber, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("fld_trnsaber")
                 .Level(13)
@@ -1302,6 +1410,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Veteran Training Saber
             _builder.Create(RecipeType.VeteranTrainingSaber, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("vet_trnsaber")
                 .Level(23)
@@ -1314,6 +1423,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Prime Training Saber
             _builder.Create(RecipeType.PrimeTrainingSaber, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("prm_trnsaber")
                 .Level(33)
@@ -1326,6 +1436,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ascendant Training Saber
             _builder.Create(RecipeType.AscendantTrainingSaber, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("asc_trnsaber")
                 .Level(43)
@@ -1342,6 +1453,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Field Great Sword
             _builder.Create(RecipeType.FieldGreatSword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.GreatSword)
                 .Resref("fld_greatsword")
                 .Level(13)
@@ -1352,6 +1464,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Veteran Great Sword
             _builder.Create(RecipeType.VeteranGreatSword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.GreatSword)
                 .Resref("vet_greatsword")
                 .Level(23)
@@ -1362,6 +1475,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Prime Great Sword
             _builder.Create(RecipeType.PrimeGreatSword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.GreatSword)
                 .Resref("prm_greatsword")
                 .Level(33)
@@ -1372,6 +1486,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ascendant Great Sword
             _builder.Create(RecipeType.AscendantGreatSword, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.GreatSword)
                 .Resref("asc_greatsword")
                 .Level(43)
@@ -1386,6 +1501,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Field Spear
             _builder.Create(RecipeType.FieldSpear, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Spear)
                 .Resref("fld_spear")
                 .Level(12)
@@ -1396,6 +1512,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Veteran Spear
             _builder.Create(RecipeType.VeteranSpear, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Spear)
                 .Resref("vet_spear")
                 .Level(22)
@@ -1406,6 +1523,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Prime Spear
             _builder.Create(RecipeType.PrimeSpear, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Spear)
                 .Resref("prm_spear")
                 .Level(32)
@@ -1416,6 +1534,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ascendant Spear
             _builder.Create(RecipeType.AscendantSpear, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Spear)
                 .Resref("asc_spear")
                 .Level(42)
@@ -1430,6 +1549,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Field Twin Blade
             _builder.Create(RecipeType.FieldTwinBlade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.TwinBlade)
                 .Resref("fld_twinblade")
                 .Level(13)
@@ -1440,6 +1560,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Veteran Twin Blade
             _builder.Create(RecipeType.VeteranTwinBlade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.TwinBlade)
                 .Resref("vet_twinblade")
                 .Level(23)
@@ -1450,6 +1571,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Prime Twin Blade
             _builder.Create(RecipeType.PrimeTwinBlade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.TwinBlade)
                 .Resref("prm_twinblade")
                 .Level(33)
@@ -1460,6 +1582,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ascendant Twin Blade
             _builder.Create(RecipeType.AscendantTwinBlade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.TwinBlade)
                 .Resref("asc_twinblade")
                 .Level(43)
@@ -1474,6 +1597,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Field Twin Electroblade
             _builder.Create(RecipeType.FieldTwinElectroblade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("fld_twinelec")
                 .Level(12)
@@ -1484,6 +1608,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Veteran Twin Electroblade
             _builder.Create(RecipeType.VeteranTwinElectroblade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("vet_twinelec")
                 .Level(22)
@@ -1494,6 +1619,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Prime Twin Electroblade
             _builder.Create(RecipeType.PrimeTwinElectroblade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("prm_twinelec")
                 .Level(32)
@@ -1504,6 +1630,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ascendant Twin Electroblade
             _builder.Create(RecipeType.AscendantTwinElectroblade, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("asc_twinelec")
                 .Level(42)
@@ -1514,6 +1641,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
 // Field Training Saberstaff
             _builder.Create(RecipeType.FieldTrainingSaberstaff, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("fld_trnsabstaff")
                 .Level(14)
@@ -1526,6 +1654,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Veteran Training Saberstaff
             _builder.Create(RecipeType.VeteranTrainingSaberstaff, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("vet_trnsabstaff")
                 .Level(24)
@@ -1538,6 +1667,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Prime Training Saberstaff
             _builder.Create(RecipeType.PrimeTrainingSaberstaff, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("prm_trnsabstaff")
                 .Level(34)
@@ -1550,6 +1680,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ascendant Training Saberstaff
             _builder.Create(RecipeType.AscendantTrainingSaberstaff, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("asc_trnsabstaff")
                 .Level(44)
@@ -1566,6 +1697,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Field Katar
             _builder.Create(RecipeType.FieldKatar, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Katar)
                 .Resref("fld_katar")
                 .Level(8)
@@ -1576,6 +1708,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Veteran Katar
             _builder.Create(RecipeType.VeteranKatar, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Katar)
                 .Resref("vet_katar")
                 .Level(18)
@@ -1586,6 +1719,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Prime Katar
             _builder.Create(RecipeType.PrimeKatar, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Katar)
                 .Resref("prm_katar")
                 .Level(28)
@@ -1596,6 +1730,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ascendant Katar
             _builder.Create(RecipeType.AscendantKatar, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Katar)
                 .Resref("asc_katar")
                 .Level(38)
@@ -1610,6 +1745,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Field Staff
             _builder.Create(RecipeType.FieldStaff, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Staff)
                 .Resref("fld_staff")
                 .Level(10)
@@ -1620,6 +1756,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Veteran Staff
             _builder.Create(RecipeType.VeteranStaff, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Staff)
                 .Resref("vet_staff")
                 .Level(20)
@@ -1630,6 +1767,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Prime Staff
             _builder.Create(RecipeType.PrimeStaff, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Staff)
                 .Resref("prm_staff")
                 .Level(30)
@@ -1640,6 +1778,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ascendant Staff
             _builder.Create(RecipeType.AscendantStaff, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Staff)
                 .Resref("asc_staff")
                 .Level(40)
@@ -1654,6 +1793,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Field Pistol
             _builder.Create(RecipeType.FieldPistol, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Pistol)
                 .Resref("fld_pistol")
                 .Level(11)
@@ -1664,6 +1804,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Veteran Pistol
             _builder.Create(RecipeType.VeteranPistol, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Pistol)
                 .Resref("vet_pistol")
                 .Level(21)
@@ -1674,6 +1815,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Prime Pistol
             _builder.Create(RecipeType.PrimePistol, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Pistol)
                 .Resref("prm_pistol")
                 .Level(31)
@@ -1684,6 +1826,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ascendant Pistol
             _builder.Create(RecipeType.AscendantPistol, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Pistol)
                 .Resref("asc_pistol")
                 .Level(41)
@@ -1698,6 +1841,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Field Shuriken
             _builder.Create(RecipeType.FieldShuriken, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shuriken)
                 .Resref("fld_shuriken")
                 .Level(7)
@@ -1708,6 +1852,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Veteran Shuriken
             _builder.Create(RecipeType.VeteranShuriken, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shuriken)
                 .Resref("vet_shuriken")
                 .Level(17)
@@ -1718,6 +1863,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Prime Shuriken
             _builder.Create(RecipeType.PrimeShuriken, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shuriken)
                 .Resref("prm_shuriken")
                 .Level(27)
@@ -1728,6 +1874,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ascendant Shuriken
             _builder.Create(RecipeType.AscendantShuriken, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shuriken)
                 .Resref("asc_shuriken")
                 .Level(37)
@@ -1742,6 +1889,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Field Rifle
             _builder.Create(RecipeType.FieldRifle, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Rifle)
                 .Resref("fld_rifle")
                 .Level(14)
@@ -1752,6 +1900,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Veteran Rifle
             _builder.Create(RecipeType.VeteranRifle, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Rifle)
                 .Resref("vet_rifle")
                 .Level(24)
@@ -1762,6 +1911,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Prime Rifle
             _builder.Create(RecipeType.PrimeRifle, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Rifle)
                 .Resref("prm_rifle")
                 .Level(34)
@@ -1772,6 +1922,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Ascendant Rifle
             _builder.Create(RecipeType.AscendantRifle, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Rifle)
                 .Resref("asc_rifle")
                 .Level(44)

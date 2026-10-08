@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Capital Class Hull: Corvette
             _builder.Create(RecipeType.CorvetteHull, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_corhull")
                 .Level(52)
@@ -29,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class Structural Components
             _builder.Create(RecipeType.CapitalConstruction, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_struc")
                 .Level(52)
@@ -42,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class Power Relay
             _builder.Create(RecipeType.CapitalPowerRelay, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_power")
                 .Level(52)
@@ -53,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class Power System: Corvette
             _builder.Create(RecipeType.CorvettePowerSystem, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_powsys")
                 .Level(52)
@@ -64,6 +68,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class Reactor Bay: Corvette
             _builder.Create(RecipeType.CorvetteReactorBay, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_rebay")
                 .Level(52)
@@ -76,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class Reactor
             _builder.Create(RecipeType.CapitalReactor, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_react")
                 .Level(52)
@@ -88,6 +94,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class Engines: Corvette
             _builder.Create(RecipeType.CorvetteEngines, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_eng")
                 .Level(52)
@@ -97,6 +104,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class Thrusters
             _builder.Create(RecipeType.CapitalThruster, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_thrust")
                 .Level(52)
@@ -108,6 +116,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class System Dedicated Computer
             _builder.Create(RecipeType.CapitalModuleComputer, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_modcomp")
                 .Level(52)
@@ -118,6 +127,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class Tech Components
             _builder.Create(RecipeType.CapitalTechComponents, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_techcom")
                 .Level(52)
@@ -128,6 +138,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class Shield Generator
             _builder.Create(RecipeType.CapitalShieldGenerator, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_shgen")
                 .Level(52)

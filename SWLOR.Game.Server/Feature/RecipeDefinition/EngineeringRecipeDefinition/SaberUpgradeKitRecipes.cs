@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Lightsaber Upgrade Kit II
             _builder.Create(RecipeType.LightsaberUpgradeKit2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("saber_upg2")
                 .Level(18)
@@ -30,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Lightsaber Upgrade Kit III
             _builder.Create(RecipeType.LightsaberUpgradeKit3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("saber_upg3")
                 .Level(28)
@@ -40,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Lightsaber Upgrade Kit IV
             _builder.Create(RecipeType.LightsaberUpgradeKit4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("saber_upg4")
                 .Level(38)
@@ -50,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Lightsaber Upgrade Kit V
             _builder.Create(RecipeType.LightsaberUpgradeKit5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("saber_upg5")
                 .Level(48)
@@ -60,6 +64,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Chiro Lightsaber Upgrade Kit
             _builder.Create(RecipeType.ChiroLightsaberUpgradeKit, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("saber_upgchi")
                 .Level(52)
@@ -81,6 +86,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Saberstaff Upgrade Kit II
             _builder.Create(RecipeType.SaberstaffUpgradeKit2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("staff_upg2")
                 .Level(19)
@@ -91,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Saberstaff Upgrade Kit III
             _builder.Create(RecipeType.SaberstaffUpgradeKit3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("staff_upg3")
                 .Level(29)
@@ -101,6 +108,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Saberstaff Upgrade Kit IV
             _builder.Create(RecipeType.SaberstaffUpgradeKit4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("staff_upg4")
                 .Level(39)
@@ -111,6 +119,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Saberstaff Upgrade Kit V
             _builder.Create(RecipeType.SaberstaffUpgradeKit5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("staff_upg5")
                 .Level(49)
@@ -121,6 +130,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Chiro Saberstaff Upgrade Kit
             _builder.Create(RecipeType.ChiroSaberstaffUpgradeKit, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("staff_upgchi")
                 .Level(52)

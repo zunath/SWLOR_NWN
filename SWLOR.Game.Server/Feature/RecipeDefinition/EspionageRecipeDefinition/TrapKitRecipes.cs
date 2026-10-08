@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
         {
             // Trap Kit I
             _builder.Create(RecipeType.TrapKit1, SkillType.Espionage)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.TrapAssembly, pilot: false)
                 .RequirementPerk(PerkType.Trapcraft, 1, "Trapcraft")
                 .Category(RecipeCategoryType.Tool)
                 .Resref("trap_kit_1")
@@ -25,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
 
             // Trap Kit II
             _builder.Create(RecipeType.TrapKit2, SkillType.Espionage)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.TrapAssembly, pilot: false)
                 .RequirementPerk(PerkType.Trapcraft, 2, "Trapcraft")
                 .Category(RecipeCategoryType.Tool)
                 .Resref("trap_kit_2")
@@ -36,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
 
             // Trap Kit III
             _builder.Create(RecipeType.TrapKit3, SkillType.Espionage)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.TrapAssembly, pilot: false)
                 .RequirementPerk(PerkType.Trapcraft, 3, "Trapcraft")
                 .Category(RecipeCategoryType.Tool)
                 .Resref("trap_kit_3")
@@ -47,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
 
             // Trap Kit IV
             _builder.Create(RecipeType.TrapKit4, SkillType.Espionage)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.TrapAssembly, pilot: false)
                 .RequirementPerk(PerkType.Trapcraft, 4, "Trapcraft")
                 .Category(RecipeCategoryType.Tool)
                 .Resref("trap_kit_4")
@@ -58,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
 
             // Trap Kit V (Master Saboteur capstone - Trapcraft has no fifth level)
             _builder.Create(RecipeType.TrapKit5, SkillType.Espionage)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.TrapAssembly, pilot: true)
                 .RequirementPerk(PerkType.MasterSaboteur, 1, "Master Saboteur")
                 .Category(RecipeCategoryType.Tool)
                 .Resref("trap_kit_5")

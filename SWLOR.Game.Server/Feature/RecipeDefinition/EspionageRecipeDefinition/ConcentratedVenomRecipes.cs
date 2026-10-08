@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
         private void Add(RecipeType type, string resref, int tier, int level, string creatureMaterial, string herb)
         {
             _builder.Create(type, SkillType.Espionage)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.PoisonMixing, pilot: false)
                 .RequirementUnlocked()
                 .RequirementPerk(PerkType.Poisoncraft, tier, "Poisoncraft")
                 .Category(RecipeCategoryType.Poison)

@@ -1386,6 +1386,27 @@ function New-StatusIcon([pscustomobject]$entry, [string]$outputPath) {
     $large.Dispose()
 }
 
+function Get-CraftingPerkRows([hashtable]$existing) {
+    $pattern = '(?s)\.Create\(PerkCategoryType\.\w+,\s*PerkType\.(?<Key>\w+)\)(?<Body>.*?)(?=\s*(?:_?builder)\.Create\(|return\s+\w+\.Build\(\)|\s*\r?\n        \})'
+    foreach ($file in Get-ChildItem -LiteralPath (Resolve-RepoPath "SWLOR.Game.Server\Feature\PerkDefinition") -Filter '*.cs') {
+        $source = Get-Content -LiteralPath $file.FullName -Raw
+        foreach ($match in [regex]::Matches($source, $pattern)) {
+            $body = $match.Groups['Body'].Value
+            if ($body -notmatch '\.IncreasesCraftingStat\(') { continue }
+            $iconMatch = [regex]::Match($body, '\.Icon\("(?<Icon>[^"\r\n]+)"\)')
+            $nameMatch = [regex]::Match($body, '\.Name\("(?<Name>[^"\r\n]+)"\)')
+            if (!$iconMatch.Success) { throw "Crafting perk '$($match.Groups['Key'].Value)' must declare an icon." }
+            $key = $match.Groups['Key'].Value
+            [pscustomobject]@{
+                Type = 'Perk'; Key = $key; DisplayName = $nameMatch.Groups['Name'].Value
+                SemanticCategory = Get-PreservedCategory $existing 'Perk' $key 'Passive'
+                Rank = ''; IconResRef = $iconMatch.Groups['Icon'].Value
+                SourcePath = $file.FullName.Substring((Get-Location).Path.Length + 1); Alignment = ''
+            }
+        }
+    }
+}
+
 function Build-ManifestRows([hashtable]$existing) {
     $statusIconSeen = @{}
     $rows = @()
@@ -1405,6 +1426,7 @@ function Build-ManifestRows([hashtable]$existing) {
     }
 
     $rows += @(Get-CustomFeatSpellRows $abilityRows $existing)
+    $rows += @(Get-CraftingPerkRows $existing)
 
     foreach ($status in Get-StatusEffectClasses (Resolve-RepoPath $StatusEffectPath)) {
         $resref = Get-PreservedStatusIconResRef $existing $status $statusIconSeen
@@ -1962,6 +1984,11 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
             }
         }
 
+        if ($entry.Type -eq "Perk") {
+            $declared = @(Get-CraftingPerkRows @{} | Where-Object { $_.Key -eq $entry.Key -and $_.IconResRef -eq $entry.IconResRef })
+            if ($declared.Count -ne 1) { $errors.Add("Perk '$($entry.Key)' does not match a unique declared crafting perk icon.") | Out-Null }
+        }
+
         if ($entry.Type -eq "Spell") {
             if (!$spellIconsByLabel.ContainsKey($entry.Key)) {
                 $errors.Add("Spell '$($entry.Key)' is missing from $Spells2daPath.") | Out-Null
@@ -1986,11 +2013,11 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
         }
         else {
             Add-TgaValidationErrors $errors $iconFile "$($entry.Type) '$($entry.Key)'"
-            if ($entry.Type -eq "Ability" -or $entry.Type -eq "Feat" -or $entry.Type -eq "Spell") {
+            if ($entry.Type -eq "Ability" -or $entry.Type -eq "Feat" -or $entry.Type -eq "Spell" -or $entry.Type -eq "Perk") {
                 Add-SemanticFrameValidationErrors $errors $iconFile "$($entry.Type) '$($entry.Key)'" $entry.SemanticCategory
             }
 
-            if ($entry.Type -eq "Ability" -or $entry.Type -eq "StatusEffect") {
+            if ($entry.Type -eq "Ability" -or $entry.Type -eq "StatusEffect" -or $entry.Type -eq "Perk") {
                 $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $iconFile).Hash
                 if ($iconHashes.ContainsKey($hash)) {
                     $other = $iconHashes[$hash]
@@ -2065,6 +2092,12 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
                     }
                 }
             }
+        }
+    }
+
+    foreach ($perk in Get-CraftingPerkRows @{}) {
+        if (@($rows | Where-Object { $_.Type -eq 'Perk' -and $_.Key -eq $perk.Key }).Count -ne 1) {
+            $errors.Add("Crafting perk '$($perk.Key)' must have exactly one gameplay icon manifest entry.") | Out-Null
         }
     }
 

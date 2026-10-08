@@ -2187,6 +2187,11 @@ namespace SWLOR.Game.Server.Service
                 destination[offset + index] = source[index];
         }
 
+        public static int GetCraftingStatAdjustment(uint creature, SkillType skill, StatType stat)
+        {
+            return AggregateStatAdjustment(stat, GetStatAdjustment(creature, stat), Perk.GetCraftingStatBonus(creature, skill, stat));
+        }
+
         public static int GetStatAdjustment(uint creature, StatType stat)
         {
             var persistentAdjustment = GetStatAdjustmentExcludingTemporaryModifiers(creature, stat);

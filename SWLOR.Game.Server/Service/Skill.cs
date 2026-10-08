@@ -91,7 +91,8 @@ namespace SWLOR.Game.Server.Service
             SkillType skill,
             int xp,
             bool ignoreBonuses = false,
-            bool applyHenchmanPenalty = true)
+            bool applyHenchmanPenalty = true,
+            string awardId = null)
         {
             if (skill == SkillType.Invalid ||
                 xp <= 0 ||
@@ -104,6 +105,13 @@ namespace SWLOR.Game.Server.Service
             var modifiedSkills = new List<SkillType>();
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+            if (awardId != null && dbPlayer.SkillXPAwards.Contains(awardId)) return;
+            void RecordAward()
+            {
+                if (awardId == null) return;
+                dbPlayer.SkillXPAwards.Add(awardId);
+                if (dbPlayer.SkillXPAwards.Count > 1000) dbPlayer.SkillXPAwards.RemoveAt(0);
+            }
 
             var details = GetSkillDetails(skill);
             var pcSkill = dbPlayer.Skills[skill];
@@ -163,6 +171,7 @@ namespace SWLOR.Game.Server.Service
 
             if (xp <= 0)
             {
+                RecordAward();
                 DB.Set(dbPlayer);
                 return;
             }
@@ -190,6 +199,8 @@ namespace SWLOR.Game.Server.Service
             // but they are blocked by the same total-rank cap and require the same unlock action.
             if (details.ContributesToSkillCap && skillsPossibleToDecay.Count <= 0 && totalRanks >= SkillCap)
             {
+                RecordAward();
+                DB.Set(dbPlayer);
                 PlayerFeedback.SendWarningToPlayer(player, "SKILL_CAP", ColorToken.Red($"You cannot gain {details.Name} XP. You are at the skill cap of {SkillCap} and all of your other skills are locked from decay. Unlock a skill in the Skills menu to resume gaining {details.Name} XP."));
                 return;
             }
@@ -277,6 +288,7 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.Skills[skill].XP = 0;
             }
 
+            RecordAward();
             DB.Set(dbPlayer);
 
             modifiedSkills.Add(skill);

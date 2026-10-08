@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
         {
             // Venom Coating I
             _builder.Create(RecipeType.VenomCoating1, SkillType.Espionage)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.PoisonMixing, pilot: true)
                 .RequirementPerk(PerkType.Poisoncraft, 1, "Poisoncraft")
                 .Category(RecipeCategoryType.Poison)
                 .Resref("poison_vial_1")
@@ -25,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
 
             // Venom Coating II
             _builder.Create(RecipeType.VenomCoating2, SkillType.Espionage)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.PoisonMixing, pilot: false)
                 .RequirementPerk(PerkType.Poisoncraft, 2, "Poisoncraft")
                 .Category(RecipeCategoryType.Poison)
                 .Resref("poison_vial_2")
@@ -36,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
 
             // Venom Coating III
             _builder.Create(RecipeType.VenomCoating3, SkillType.Espionage)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.PoisonMixing, pilot: true)
                 .RequirementPerk(PerkType.Poisoncraft, 3, "Poisoncraft")
                 .Category(RecipeCategoryType.Poison)
                 .Resref("poison_vial_3")
@@ -47,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
 
             // Venom Coating IV
             _builder.Create(RecipeType.VenomCoating4, SkillType.Espionage)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.PoisonMixing, pilot: false)
                 .RequirementPerk(PerkType.Poisoncraft, 4, "Poisoncraft")
                 .Category(RecipeCategoryType.Poison)
                 .Resref("poison_vial_4")
@@ -58,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition
 
             // Venom Coating V
             _builder.Create(RecipeType.VenomCoating5, SkillType.Espionage)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.PoisonMixing, pilot: false)
                 .RequirementPerk(PerkType.Poisoncraft, 5, "Poisoncraft")
                 .Category(RecipeCategoryType.Poison)
                 .Resref("poison_vial_5")

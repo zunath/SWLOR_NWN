@@ -739,6 +739,27 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         Doublehand = 803,
 
-        // IDs 650 and 804+ are free.
+        TemperedStrikes = 804,
+        ResilientWork = 805,
+        FinishingWork = 806,
+        MasterSmith = 807,
+        CircuitEconomy = 808,
+        PreciseCalibration = 809,
+        DiagnosticPlanning = 810,
+        MasterEngineer = 811,
+        StructuralBracing = 812,
+        ReinforcedAssembly = 813,
+        MeasuredConstruction = 814,
+        MasterBuilder = 815,
+        FlavorLayering = 816,
+        PatientPreparation = 817,
+        EfficientPreparation = 818,
+        PerfectTiming = 819,
+        ControlledMixing = 820,
+        TriggerTuning = 821,
+        CleanAssembly = 822,
+        ContingencyPlanning = 823,
+
+        // IDs 650 and 824+ are free.
     }
 }

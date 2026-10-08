@@ -20,6 +20,9 @@ namespace SWLOR.Game.Server.Entity
 {
     public class Player: EntityBase
     {
+        public CraftingTransaction PendingCraft { get; set; }
+        public List<string> SkillXPAwards { get; set; } = new();
+
         public const int DefaultOutfitSlotLimit = 25;
         public const int DefaultDisguiseSlotLimit = 1;
         public const int DefaultMarketListingLimit = 25;

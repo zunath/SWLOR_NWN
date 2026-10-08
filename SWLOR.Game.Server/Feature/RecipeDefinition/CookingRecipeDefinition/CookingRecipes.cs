@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
         private void Tier1()
         {
             _builder.Create(RecipeType.MynockMeatBall, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: true)
                 .Category(RecipeCategoryType.Food)
                 .Resref("mynock_mball")
                 .Level(1)
@@ -32,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.WarocasPotPie, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("waro_potpie")
                 .Level(1)
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Roast Carp
             _builder.Create(RecipeType.RoastCarp, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("roast_carp")
                 .Level(1)
@@ -52,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.SugarCookies, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("sugar_cookies")
                 .Level(2)
@@ -63,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Marimo Stew
             _builder.Create(RecipeType.MarimoStew, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("marimo_stew")
                 .Level(2)
@@ -72,6 +77,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.OrangeJuice, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("orange_juice")
                 .Level(3)
@@ -81,6 +87,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.PebbleSoup, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("pebble_soup")
                 .Level(3)
@@ -90,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.MynockBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("mynock_broth")
                 .Level(3)
@@ -100,6 +108,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Urchin Sushi
             _builder.Create(RecipeType.UrchinSushi, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("urchin_sushi")
                 .Level(3)
@@ -109,6 +118,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.Noodles, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("noodles")
                 .Level(4)
@@ -119,6 +129,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.KathSandwich, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("kath_sandwich")
                 .Level(4)
@@ -129,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Blackened Newt
             _builder.Create(RecipeType.BlackenedNewt, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("blackened_newt")
                 .Level(4)
@@ -138,6 +150,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.KinrathMeatBall, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("kinrath_mball")
                 .Level(5)
@@ -149,6 +162,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooked Jellyfish
             _builder.Create(RecipeType.CookedJellyfish, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("cooked_jellyfish")
                 .Level(5)
@@ -158,6 +172,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.LemonCookies, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("lemon_cookies")
                 .Level(6)
@@ -168,6 +183,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("v_lemon", 3);
 
             _builder.Create(RecipeType.ViscaranHerbSoup, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("v_herb_soup")
                 .Level(6)
@@ -178,6 +194,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("sugar", 2);
 
             _builder.Create(RecipeType.OrangeCurry, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("orange_curry")
                 .Level(6)
@@ -188,6 +205,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Denzi Treat
             _builder.Create(RecipeType.DenziTreat, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("denzi_treat")
                 .Level(6)
@@ -197,6 +215,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.OrangeAuLait, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("o_aulait")
                 .Level(7)
@@ -208,6 +227,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Peeled Crayfish
             _builder.Create(RecipeType.PeeledCrayfish, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("peeled_crayfish")
                 .Level(7)
@@ -217,6 +237,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.KathBloodBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("k_blood_broth")
                 .Level(8)
@@ -228,6 +249,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Peeled Lobster
             _builder.Create(RecipeType.PeeledLobster, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("peeled_lobster")
                 .Level(8)
@@ -237,6 +259,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.GimpassaSandwich, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("g_sandwich")
                 .Level(9)
@@ -249,6 +272,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooked Bibikibo
             _builder.Create(RecipeType.CookedBibikibo, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("cooked_bibikibo")
                 .Level(9)
@@ -258,6 +282,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.GimpassaStew, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("g_stew")
                 .Level(10)
@@ -268,6 +293,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Sliced Sardine
             _builder.Create(RecipeType.SlicedSardine, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("sliced_sardine")
                 .Level(10)
@@ -278,6 +304,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - Duration I
             _builder.Create(RecipeType.CookingEnhancementDuration1, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_dur1")
                 .Level(1)
@@ -287,6 +314,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - FP I
             _builder.Create(RecipeType.CookingEnhancementFP1, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_fp1")
                 .Level(3)
@@ -296,6 +324,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - FP Regen I
             _builder.Create(RecipeType.CookingEnhancementFPRegen1, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_fpr1")
                 .Level(8)
@@ -305,6 +334,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - HP I
             _builder.Create(RecipeType.CookingEnhancementHP1, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_hp1")
                 .Level(4)
@@ -314,6 +344,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - HP Regen I
             _builder.Create(RecipeType.CookingEnhancementHPRegen1, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_hpr1")
                 .Level(6)
@@ -323,6 +354,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - Combat Readiness I
             _builder.Create(RecipeType.CookingEnhancementCombatReadiness1, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast1")
                 .Level(8)
@@ -332,6 +364,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - Rest Regen I
             _builder.Create(RecipeType.CookingEnhancementRestRegen1, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_rest1")
                 .Level(2)
@@ -341,6 +374,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - STM I
             _builder.Create(RecipeType.CookingEnhancementSTM1, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_stm1")
                 .Level(4)
@@ -350,6 +384,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - STM Regen I
             _builder.Create(RecipeType.CookingEnhancementSTMRegen1, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_stmr1")
                 .Level(7)
@@ -359,6 +394,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - XP Bonus I
             _builder.Create(RecipeType.CookingEnhancementXPBonus1, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_xp1")
                 .Level(6)
@@ -379,6 +415,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
         private void Tier2()
         {
             _builder.Create(RecipeType.RaivorMeatBall, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("raivor_mball")
                 .Level(11)
@@ -389,6 +426,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.CairnmogPotPie, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("cairn_potpie")
                 .Level(11)
@@ -400,6 +438,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Fish Broth
             _builder.Create(RecipeType.FishBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("fish_broth")
                 .Level(11)
@@ -409,6 +448,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.ChocolateCookies, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("choco_cookies")
                 .Level(12)
@@ -419,6 +459,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.KlorslugSurprise, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("slug_surprise")
                 .Level(12)
@@ -430,6 +471,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooked Sardine
             _builder.Create(RecipeType.CookedSardine, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("cooked_sardine")
                 .Level(12)
@@ -439,6 +481,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.AppleJuice, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("apple_juice")
                 .Level(13)
@@ -449,6 +492,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Ra'Kaznar Special
             _builder.Create(RecipeType.RaKaznarSpecial, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("rakaz_special")
                 .Level(13)
@@ -458,6 +502,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.PeaSoup, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("pea_soup")
                 .Level(13)
@@ -467,6 +512,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.RaivorBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("raivor_broth")
                 .Level(13)
@@ -476,6 +522,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.SobaNoodles, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("soba_noodles")
                 .Level(14)
@@ -486,6 +533,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.CairnmogSandwich, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("cairn_sandwich")
                 .Level(14)
@@ -496,6 +544,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Maringna
             _builder.Create(RecipeType.Maringna, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("maringna")
                 .Level(14)
@@ -505,6 +554,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.NashtahMeatBall, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("nash_mball")
                 .Level(15)
@@ -516,6 +566,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooked Mackerel
             _builder.Create(RecipeType.CookedMackerel, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("cooked_mackerel")
                 .Level(15)
@@ -525,6 +576,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.MysteryCookies, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("mystery_cookies")
                 .Level(16)
@@ -535,6 +587,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("passion_fruit", 3);
 
             _builder.Create(RecipeType.MandoHerbSoup, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("mando_herbsoup")
                 .Level(16)
@@ -545,6 +598,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("sugar", 2);
 
             _builder.Create(RecipeType.GreenCurry, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("green_curry")
                 .Level(16)
@@ -555,6 +609,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Greedie Stew
             _builder.Create(RecipeType.GreedieStew, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("greedie_stew")
                 .Level(16)
@@ -564,6 +619,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.AppleAuLait, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("apple_aulait")
                 .Level(17)
@@ -575,6 +631,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Blackened Frog
             _builder.Create(RecipeType.BlackenedFrog, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("blackened_frog")
                 .Level(17)
@@ -584,6 +641,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.RaivorBloodBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("raiv_bloodbroth")
                 .Level(18)
@@ -595,6 +653,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Brain Stew
             _builder.Create(RecipeType.BrainStew, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("brain_stew")
                 .Level(18)
@@ -604,6 +663,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.NashtahSandwich, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("nash_sandwich")
                 .Level(19)
@@ -615,6 +675,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooked Siredon
             _builder.Create(RecipeType.CookedSiredon, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("cooked_siredon")
                 .Level(19)
@@ -624,6 +685,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.NashtahStew, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("nash_stew")
                 .Level(20)
@@ -634,6 +696,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooked Istavrit
             _builder.Create(RecipeType.CookedIstavrit, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("cooked_istavrit")
                 .Level(20)
@@ -644,6 +707,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - Duration II
             _builder.Create(RecipeType.CookingEnhancementDuration2, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_dur2")
                 .Level(11)
@@ -653,6 +717,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - FP II
             _builder.Create(RecipeType.CookingEnhancementFP2, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_fp2")
                 .Level(13)
@@ -662,6 +727,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - FP Regen II
             _builder.Create(RecipeType.CookingEnhancementFPRegen2, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_fpr2")
                 .Level(18)
@@ -671,6 +737,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - HP II
             _builder.Create(RecipeType.CookingEnhancementHP2, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_hp2")
                 .Level(14)
@@ -680,6 +747,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - HP Regen II
             _builder.Create(RecipeType.CookingEnhancementHPRegen2, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_hpr2")
                 .Level(16)
@@ -689,6 +757,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - Combat Readiness II
             _builder.Create(RecipeType.CookingEnhancementCombatReadiness2, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast2")
                 .Level(18)
@@ -698,6 +767,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - Rest Regen II
             _builder.Create(RecipeType.CookingEnhancementRestRegen2, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_rest2")
                 .Level(12)
@@ -707,6 +777,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - STM II
             _builder.Create(RecipeType.CookingEnhancementSTM2, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_stm2")
                 .Level(14)
@@ -716,6 +787,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - STM Regen II
             _builder.Create(RecipeType.CookingEnhancementSTMRegen2, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_stmr2")
                 .Level(17)
@@ -725,6 +797,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - XP Bonus II
             _builder.Create(RecipeType.CookingEnhancementXPBonus2, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_xp2")
                 .Level(16)
@@ -745,6 +818,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
         private void Tier3()
         {
             _builder.Create(RecipeType.AradileMeatBall, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("aradile_mball")
                 .Level(21)
@@ -755,6 +829,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.TigerPotPie, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("tiger_potpie")
                 .Level(21)
@@ -766,6 +841,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooked Salpa
             _builder.Create(RecipeType.CookedSalpa, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("cooked_salpa")
                 .Level(21)
@@ -775,6 +851,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.AcornCookies, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("acorn_cookies")
                 .Level(22)
@@ -786,6 +863,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Herb Quus
             _builder.Create(RecipeType.HerbQuus, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("herb_quus")
                 .Level(22)
@@ -795,6 +873,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.PineappleJuice, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("pine_juice")
                 .Level(23)
@@ -805,6 +884,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
 
             _builder.Create(RecipeType.VegetableSoup, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("veg_soup")
                 .Level(23)
@@ -814,6 +894,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.AradileBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("ara_broth")
                 .Level(23)
@@ -824,6 +905,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Carp Sushi
             _builder.Create(RecipeType.CarpSushi, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("carp_sushi")
                 .Level(23)
@@ -833,6 +915,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.RamenNoodles, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("ramen_noodles")
                 .Level(24)
@@ -843,6 +926,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.AradileSandwich, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("ara_sandwich")
                 .Level(24)
@@ -853,6 +937,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Goldfish Bowl
             _builder.Create(RecipeType.GoldfishBowl, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("goldfish_bowl")
                 .Level(24)
@@ -862,6 +947,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.ByyskMeatBall, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: true)
                 .Category(RecipeCategoryType.Food)
                 .Resref("byysk_mball")
                 .Level(25)
@@ -873,6 +959,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Blackened Hoptoad
             _builder.Create(RecipeType.BlackenedHoptoad, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("b_hoptoad")
                 .Level(25)
@@ -882,6 +969,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.CinnaCookies, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("cinna_cookies")
                 .Level(26)
@@ -892,6 +980,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("h_acorn", 3);
 
             _builder.Create(RecipeType.MonCalaHerbSoup, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("moncal_hsoup")
                 .Level(26)
@@ -902,6 +991,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("sugar", 2);
 
             _builder.Create(RecipeType.RedCurry, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("red_curry")
                 .Level(26)
@@ -913,6 +1003,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Smoked Salmon
             _builder.Create(RecipeType.SmokedSalmon, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("smoked_salmon")
                 .Level(26)
@@ -922,6 +1013,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.PineappleAuLait, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("pine_aulait")
                 .Level(27)
@@ -933,6 +1025,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Deepwater Broth
             _builder.Create(RecipeType.DeepwaterBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("deep_broth")
                 .Level(27)
@@ -942,6 +1035,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.AmphiHydrusBloodBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("amphi_bbroth")
                 .Level(28)
@@ -953,6 +1047,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // White Peeled Lobster
             _builder.Create(RecipeType.WhitePeeledLobster, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("white_p_lobster")
                 .Level(28)
@@ -962,6 +1057,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.SnakeSandwich, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("snake_sandwich")
                 .Level(29)
@@ -973,6 +1069,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Fat Greedie Stew
             _builder.Create(RecipeType.FatGreedieStew, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("fat_greedie_stew")
                 .Level(29)
@@ -982,6 +1079,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.SnakeStew, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("snake_stew")
                 .Level(30)
@@ -992,6 +1090,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Idol Sushi
             _builder.Create(RecipeType.IdolSushi, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("idol_sushi")
                 .Level(30)
@@ -1002,6 +1101,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - Duration III
             _builder.Create(RecipeType.CookingEnhancementDuration3, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_dur3")
                 .Level(21)
@@ -1011,6 +1111,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - FP III
             _builder.Create(RecipeType.CookingEnhancementFP3, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_fp3")
                 .Level(23)
@@ -1020,6 +1121,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - FP Regen III
             _builder.Create(RecipeType.CookingEnhancementFPRegen3, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_fpr3")
                 .Level(28)
@@ -1029,6 +1131,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - HP III
             _builder.Create(RecipeType.CookingEnhancementHP3, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_hp3")
                 .Level(24)
@@ -1038,6 +1141,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - HP Regen III
             _builder.Create(RecipeType.CookingEnhancementHPRegen3, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_hpr3")
                 .Level(26)
@@ -1047,6 +1151,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - Combat Readiness III
             _builder.Create(RecipeType.CookingEnhancementCombatReadiness3, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast3")
                 .Level(28)
@@ -1056,6 +1161,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - Rest Regen III
             _builder.Create(RecipeType.CookingEnhancementRestRegen3, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_rest3")
                 .Level(22)
@@ -1065,6 +1171,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - STM III
             _builder.Create(RecipeType.CookingEnhancementSTM3, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_stm3")
                 .Level(24)
@@ -1074,6 +1181,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - STM Regen III
             _builder.Create(RecipeType.CookingEnhancementSTMRegen3, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_stmr3")
                 .Level(27)
@@ -1083,6 +1191,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - XP Bonus III
             _builder.Create(RecipeType.CookingEnhancementXPBonus3, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_xp3")
                 .Level(26)
@@ -1103,6 +1212,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
         private void Tier4()
         {
             _builder.Create(RecipeType.WompRatMeatBall, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("womp_mball")
                 .Level(31)
@@ -1113,6 +1223,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.SandDemonPotPie, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("sanddem_potpie")
                 .Level(31)
@@ -1124,6 +1235,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Gurnard Stew
             _builder.Create(RecipeType.GurnardStew, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("gurnard_stew")
                 .Level(31)
@@ -1133,6 +1245,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.GingerCookies, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("ging_cookies")
                 .Level(32)
@@ -1144,6 +1257,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Baked Nebimonite
             _builder.Create(RecipeType.BakedNebimonite, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("baked_nebimon")
                 .Level(32)
@@ -1153,6 +1267,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.MelonJuice, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("melon_juice")
                 .Level(33)
@@ -1163,6 +1278,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
 
             _builder.Create(RecipeType.MushroomSoup, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("mush_soup")
                 .Level(33)
@@ -1172,6 +1288,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.WompRatBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("womp_broth")
                 .Level(33)
@@ -1182,6 +1299,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Tricolored Sushi
             _builder.Create(RecipeType.TricoloredSushi, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("tricolored_sushi")
                 .Level(33)
@@ -1191,6 +1309,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.SoyRamen, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("soy_ramen")
                 .Level(34)
@@ -1201,6 +1320,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.SurpriseSandwich, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("surprise_sandwic")
                 .Level(34)
@@ -1210,6 +1330,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("r_flour", 2);
 
             _builder.Create(RecipeType.DathomirPie, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("dathomir_pie")
                 .Level(34)
@@ -1222,6 +1343,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Fish & Chips
             _builder.Create(RecipeType.FishChips, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("fish_n_chips")
                 .Level(34)
@@ -1231,6 +1353,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.TuskenMeatBall, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("tusken_mball")
                 .Level(35)
@@ -1242,6 +1365,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Roast Pipira
             _builder.Create(RecipeType.RoastPipira, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("roast_pipira")
                 .Level(35)
@@ -1251,6 +1375,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.WalnutCookies, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("walnut_cookies")
                 .Level(36)
@@ -1261,6 +1386,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("walnut", 3);
 
             _builder.Create(RecipeType.DesertHerbSoup, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("des_herbsoup")
                 .Level(36)
@@ -1271,6 +1397,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("sugar", 2);
 
             _builder.Create(RecipeType.YellowCurry, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("yellow_curry")
                 .Level(36)
@@ -1282,6 +1409,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Sliced Cod
             _builder.Create(RecipeType.SlicedCod, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("sliced_cod")
                 .Level(36)
@@ -1291,6 +1419,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.MelonAuLait, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("melon_aulait")
                 .Level(37)
@@ -1302,6 +1431,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Bonefish Broth
             _builder.Create(RecipeType.BonefishBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("bonefish_broth")
                 .Level(37)
@@ -1311,6 +1441,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.TuskenBloodBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("tusk_b_broth")
                 .Level(38)
@@ -1322,6 +1453,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Steamed Catfish
             _builder.Create(RecipeType.SteamedCatfish, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("steamed_catfish")
                 .Level(38)
@@ -1331,6 +1463,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.SandDemonSandwich, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("dem_sandwich")
                 .Level(39)
@@ -1342,6 +1475,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooked Yayinbaligi
             _builder.Create(RecipeType.CookedYayinbaligi, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("cooked_yayin")
                 .Level(39)
@@ -1351,6 +1485,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.SandDemonStew, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("demon_stew")
                 .Level(40)
@@ -1361,6 +1496,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Dead Stew
             _builder.Create(RecipeType.DeadStew, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("dead_stew")
                 .Level(40)
@@ -1371,6 +1507,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - Duration IV
             _builder.Create(RecipeType.CookingEnhancementDuration4, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_dur4")
                 .Level(31)
@@ -1380,6 +1517,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - FP IV
             _builder.Create(RecipeType.CookingEnhancementFP4, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_fp4")
                 .Level(33)
@@ -1389,6 +1527,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - FP Regen IV
             _builder.Create(RecipeType.CookingEnhancementFPRegen4, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_fpr4")
                 .Level(38)
@@ -1398,6 +1537,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - HP IV
             _builder.Create(RecipeType.CookingEnhancementHP4, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_hp4")
                 .Level(34)
@@ -1407,6 +1547,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - HP Regen IV
             _builder.Create(RecipeType.CookingEnhancementHPRegen4, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_hpr4")
                 .Level(36)
@@ -1416,6 +1557,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - Combat Readiness IV
             _builder.Create(RecipeType.CookingEnhancementCombatReadiness4, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast4")
                 .Level(38)
@@ -1425,6 +1567,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - Rest Regen IV
             _builder.Create(RecipeType.CookingEnhancementRestRegen4, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_rest4")
                 .Level(32)
@@ -1434,6 +1577,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - STM IV
             _builder.Create(RecipeType.CookingEnhancementSTM4, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_stm4")
                 .Level(34)
@@ -1443,6 +1587,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - STM Regen IV
             _builder.Create(RecipeType.CookingEnhancementSTMRegen4, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_stmr4")
                 .Level(37)
@@ -1452,6 +1597,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - XP Bonus IV
             _builder.Create(RecipeType.CookingEnhancementXPBonus4, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_xp4")
                 .Level(36)
@@ -1472,6 +1618,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
         private void Tier5()
         {
             _builder.Create(RecipeType.WildMeatBall, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("wild_mball")
                 .Level(41)
@@ -1482,6 +1629,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.WildPotPie, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("wild_potpie")
                 .Level(41)
@@ -1493,6 +1641,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Long Ling Lung
             _builder.Create(RecipeType.LongLingLung, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("long_ling_lung")
                 .Level(41)
@@ -1502,6 +1651,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.WildCookies, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("wild_cookies")
                 .Level(42)
@@ -1513,6 +1663,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Bass Meuniere
             _builder.Create(RecipeType.BassMeuniere, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("bass_meuniere")
                 .Level(42)
@@ -1523,6 +1674,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Munch Fungus Bread
             _builder.Create(RecipeType.MunchFungusBread, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("munch_fungusb")
                 .Level(42)
@@ -1533,6 +1685,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.TomatoJuice, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("tomato_juice")
                 .Level(43)
@@ -1542,6 +1695,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.MisoSoup, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("miso_soup")
                 .Level(43)
@@ -1551,6 +1705,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.WildBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("wild_broth")
                 .Level(43)
@@ -1561,6 +1716,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Crystal Sushi
             _builder.Create(RecipeType.CrystalSushi, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("crystal_sushi")
                 .Level(43)
@@ -1570,6 +1726,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.MisoRamen, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("miso_ramen")
                 .Level(44)
@@ -1580,6 +1737,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.WildSandwich, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("wild_sandwich")
                 .Level(44)
@@ -1590,6 +1748,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Eelectric Soup
             _builder.Create(RecipeType.EelectricSoup, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("eelectric_soup")
                 .Level(44)
@@ -1599,6 +1758,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.GrandioseMeatBall, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("grand_mball")
                 .Level(45)
@@ -1610,6 +1770,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Shining Stew
             _builder.Create(RecipeType.ShiningStew, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("shining_stew")
                 .Level(45)
@@ -1619,6 +1780,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.WizardCookies, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("wizard_cookies")
                 .Level(46)
@@ -1629,6 +1791,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("tomato", 3);
 
             _builder.Create(RecipeType.DathHerbSoup, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("dath_hsoup")
                 .Level(46)
@@ -1639,6 +1802,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("sugar", 2);
 
             _builder.Create(RecipeType.WildCurry, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("wild_curry")
                 .Level(46)
@@ -1650,6 +1814,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Popper Bowl
             _builder.Create(RecipeType.PopperBowl, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("popper_bowl")
                 .Level(46)
@@ -1659,6 +1824,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.TomatoAuLait, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("tomato_aulait")
                 .Level(47)
@@ -1670,6 +1836,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Pickled Herring
             _builder.Create(RecipeType.PickledHerring, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("pickled_herring")
                 .Level(47)
@@ -1679,6 +1846,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.WildBloodBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("wild_bbroth")
                 .Level(48)
@@ -1690,6 +1858,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Zoni Broth
             _builder.Create(RecipeType.ZoniBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("zoni_broth")
                 .Level(48)
@@ -1699,6 +1868,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.GrandioseSandwich, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("grand_sandwich")
                 .Level(49)
@@ -1710,6 +1880,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Sea Bass Croute
             _builder.Create(RecipeType.SeaBassCroute, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("sea_bass_croute")
                 .Level(49)
@@ -1719,6 +1890,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("distilled_water", 1);
 
             _builder.Create(RecipeType.WildStew, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: true)
                 .Category(RecipeCategoryType.Food)
                 .Resref("wild_stew")
                 .Level(50)
@@ -1729,6 +1901,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Shimmering Broth
             _builder.Create(RecipeType.ShimmeringBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("shimm_broth")
                 .Level(50)
@@ -1739,6 +1912,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Rancid Broth
             _builder.Create(RecipeType.RancidBroth, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("rancid_broth")
                 .Level(50)
@@ -1749,6 +1923,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Bream Sushi
             _builder.Create(RecipeType.BreamSushi, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("bream_sushi")
                 .Level(52)
@@ -1761,6 +1936,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Octopus Sushi
             _builder.Create(RecipeType.OctopusSushi, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("octo_sushi")
                 .Level(52)
@@ -1773,6 +1949,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Ikran Sushi
             _builder.Create(RecipeType.IkranSushi, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("ikran_sushi")
                 .Level(52)
@@ -1785,6 +1962,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Wild Sushi
             _builder.Create(RecipeType.WildSushi, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("wild_sushi")
                 .Level(52)
@@ -1797,6 +1975,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Tentacle Sushi
             _builder.Create(RecipeType.TentacleSushi, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("tent_sushi")
                 .Level(52)
@@ -1809,6 +1988,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Dorado Sushi
             _builder.Create(RecipeType.DoradoSushi, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("dorado_sushi")
                 .Level(52)
@@ -1821,6 +2001,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Dantooine Flapjacks
             _builder.Create(RecipeType.DantooineFlapJack, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("dan_flapjack")
                 .Level(52)
@@ -1834,6 +2015,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Dantooine Carrotcake
             _builder.Create(RecipeType.DantooineCarrotCake, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("dan_carrotcake")
                 .Level(52)
@@ -1846,6 +2028,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Krafter's Kebab
             _builder.Create(RecipeType.KraftersKebab, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("krafters_kebab")
                 .Level(52)
@@ -1860,6 +2043,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Forbidden Gymbo
             _builder.Create(RecipeType.ForbiddenGumbo, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("forbid_gumbo")
                 .Level(52)
@@ -1874,6 +2058,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Nal Hutta Fizz
             _builder.Create(RecipeType.NalHuttaFizz, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("nalhutta_fizz")
                 .Level(52)
@@ -1887,6 +2072,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Boga Noga
             _builder.Create(RecipeType.BogaNoga, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("boga_noga")
                 .Level(52)
@@ -1900,6 +2086,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Gardula
             _builder.Create(RecipeType.Gardula, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("gardula_drink")
                 .Level(52)
@@ -1913,6 +2100,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Keebadas Binggona
             _builder.Create(RecipeType.KeebadasBinggona, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("keeb_binggona")
                 .Level(52)
@@ -1926,6 +2114,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Sando g'dizzards
             _builder.Create(RecipeType.SandoGDizzards, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("sando_gdizz")
                 .Level(52)
@@ -1939,6 +2128,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cartel Cakes
             _builder.Create(RecipeType.CartelCakes, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Food)
                 .Resref("cartel_cakes")
                 .Level(52)
@@ -1953,6 +2143,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - Duration V
             _builder.Create(RecipeType.CookingEnhancementDuration5, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_dur5")
                 .Level(41)
@@ -1962,6 +2153,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - FP V
             _builder.Create(RecipeType.CookingEnhancementFP5, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_fp5")
                 .Level(43)
@@ -1971,6 +2163,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - FP Regen V
             _builder.Create(RecipeType.CookingEnhancementFPRegen5, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_fpr5")
                 .Level(48)
@@ -1980,6 +2173,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - HP V
             _builder.Create(RecipeType.CookingEnhancementHP5, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_hp5")
                 .Level(44)
@@ -1989,6 +2183,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - HP Regen V
             _builder.Create(RecipeType.CookingEnhancementHPRegen5, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_hpr5")
                 .Level(46)
@@ -1998,6 +2193,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - Combat Readiness V
             _builder.Create(RecipeType.CookingEnhancementCombatReadiness5, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast5")
                 .Level(48)
@@ -2007,6 +2203,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - Rest Regen V
             _builder.Create(RecipeType.CookingEnhancementRestRegen5, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_rest5")
                 .Level(42)
@@ -2016,6 +2213,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - STM V
             _builder.Create(RecipeType.CookingEnhancementSTM5, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_stm5")
                 .Level(44)
@@ -2025,6 +2223,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - STM Regen V
             _builder.Create(RecipeType.CookingEnhancementSTMRegen5, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_stmr5")
                 .Level(47)
@@ -2034,6 +2233,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             // Cooking Enhancement - XP Bonus V
             _builder.Create(RecipeType.CookingEnhancementXPBonus5, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_xp5")
                 .Level(46)
@@ -2061,6 +2261,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
             int component2Quantity)
         {
             _builder.Create(recipe, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Delicate, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref(resref)
                 .Level(level)

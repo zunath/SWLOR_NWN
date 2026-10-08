@@ -1,0 +1,937 @@
+[
+  {
+    "Label": "Starter crafting set",
+    "Rank": 0,
+    "RecipeLevel": 1,
+    "Craftsmanship": 4,
+    "Control": 4,
+    "CP": 8,
+    "Durability": 60,
+    "Progress": 23,
+    "Quality": 312,
+    "Synthesis": [
+      [
+        "Basic Synthesis",
+        11,
+        0,
+        0.9
+      ]
+    ],
+    "Touch": [],
+    "BasicSynthesisCompletionChance": 0.9987300000000002,
+    "RequiredSuccesses": 3,
+    "MaximumAttempts": 6
+  },
+  {
+    "Label": "Bare endgame set",
+    "Rank": 50,
+    "RecipeLevel": 50,
+    "Craftsmanship": 30,
+    "Control": 29,
+    "CP": 105,
+    "Durability": 80,
+    "Progress": 186,
+    "Quality": 2641,
+    "Synthesis": [
+      [
+        "Basic Synthesis",
+        50,
+        0,
+        0.9
+      ],
+      [
+        "Rapid Synthesis",
+        70,
+        6,
+        0.75
+      ],
+      [
+        "Careful Synthesis",
+        120,
+        10,
+        0.5
+      ]
+    ],
+    "Touch": [
+      [
+        "Basic Touch",
+        146,
+        3,
+        0.9
+      ],
+      [
+        "Standard Touch",
+        166,
+        6,
+        0.75
+      ],
+      [
+        "Precise Touch",
+        216,
+        10,
+        0.5
+      ]
+    ],
+    "Objective": "quality",
+    "PropertyGroups": 1,
+    "Value": 0.6965543306076969,
+    "ExpectedClicks": 22.0,
+    "SuccessfulTouchBranch": [
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Master's Mend",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Steady Hand",
+      "Rapid Synthesis",
+      "Steady Hand",
+      "Careful Synthesis"
+    ],
+    "States": 160201,
+    "FinishStates": 54637,
+    "HasGuaranteedFinish": true,
+    "ExpectedQuality": 0.6965543306076969,
+    "FullQualityChance": 0.0,
+    "AllTransferChance1": 0.6906099511627777,
+    "AllTransferChance2": 0.4807979406336983,
+    "AllTransferChance3": 0.3372085588385883,
+    "GuaranteedQuality": {
+      "AchievedQuality": 604,
+      "QualityPercent": 0.22870124952669443,
+      "Clicks": 12,
+      "Rotation": [
+        "Steady Hand",
+        "Rapid Synthesis",
+        "Muscle Memory",
+        "Basic Touch",
+        "Muscle Memory",
+        "Basic Touch",
+        "Muscle Memory",
+        "Basic Touch",
+        "Muscle Memory",
+        "Standard Touch",
+        "Steady Hand",
+        "Careful Synthesis"
+      ],
+      "States": 10185
+    }
+  },
+  {
+    "Label": "Bare set, one V enhancement",
+    "Rank": 50,
+    "RecipeLevel": 50,
+    "Craftsmanship": 30,
+    "Control": 29,
+    "CP": 105,
+    "Durability": 80,
+    "Progress": 236,
+    "Quality": 2641,
+    "Synthesis": [
+      [
+        "Basic Synthesis",
+        50,
+        0,
+        0.9
+      ],
+      [
+        "Rapid Synthesis",
+        70,
+        6,
+        0.75
+      ],
+      [
+        "Careful Synthesis",
+        120,
+        10,
+        0.5
+      ]
+    ],
+    "Touch": [
+      [
+        "Basic Touch",
+        146,
+        3,
+        0.9
+      ],
+      [
+        "Standard Touch",
+        166,
+        6,
+        0.75
+      ],
+      [
+        "Precise Touch",
+        216,
+        10,
+        0.5
+      ]
+    ],
+    "Objective": "quality",
+    "PropertyGroups": 1,
+    "Value": 0.6965543306076969,
+    "ExpectedClicks": 22.0,
+    "SuccessfulTouchBranch": [
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Steady Hand",
+      "Careful Synthesis",
+      "Steady Hand",
+      "Careful Synthesis"
+    ],
+    "States": 142336,
+    "FinishStates": 73457,
+    "HasGuaranteedFinish": true,
+    "ExpectedQuality": 0.6965543306076969,
+    "FullQualityChance": 0.0,
+    "AllTransferChance1": 0.6906099511627777,
+    "AllTransferChance2": 0.4807979406336983,
+    "AllTransferChance3": 0.3372085588385883,
+    "GuaranteedQuality": {
+      "AchievedQuality": 604,
+      "QualityPercent": 0.22870124952669443,
+      "Clicks": 13,
+      "Rotation": [
+        "Muscle Memory",
+        "Basic Touch",
+        "Muscle Memory",
+        "Basic Touch",
+        "Muscle Memory",
+        "Basic Touch",
+        "Muscle Memory",
+        "Standard Touch",
+        "Veneration",
+        "Steady Hand",
+        "Careful Synthesis",
+        "Steady Hand",
+        "Careful Synthesis"
+      ],
+      "States": 13429
+    }
+  },
+  {
+    "Label": "Bare set, two V enhancements",
+    "Rank": 50,
+    "RecipeLevel": 50,
+    "Craftsmanship": 30,
+    "Control": 29,
+    "CP": 105,
+    "Durability": 80,
+    "Progress": 286,
+    "Quality": 2641,
+    "Synthesis": [
+      [
+        "Basic Synthesis",
+        50,
+        0,
+        0.9
+      ],
+      [
+        "Rapid Synthesis",
+        70,
+        6,
+        0.75
+      ],
+      [
+        "Careful Synthesis",
+        120,
+        10,
+        0.5
+      ]
+    ],
+    "Touch": [
+      [
+        "Basic Touch",
+        146,
+        3,
+        0.9
+      ],
+      [
+        "Standard Touch",
+        166,
+        6,
+        0.75
+      ],
+      [
+        "Precise Touch",
+        216,
+        10,
+        0.5
+      ]
+    ],
+    "Objective": "quality",
+    "PropertyGroups": 1,
+    "Value": 0.5472926939587243,
+    "ExpectedClicks": 20.0,
+    "SuccessfulTouchBranch": [
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Steady Hand",
+      "Basic Synthesis",
+      "Steady Hand",
+      "Careful Synthesis",
+      "Steady Hand",
+      "Careful Synthesis"
+    ],
+    "States": 66980,
+    "FinishStates": 89662,
+    "HasGuaranteedFinish": true,
+    "ExpectedQuality": 0.5472926939587243,
+    "FullQualityChance": 0.0,
+    "AllTransferChance1": 0.5417852516352002,
+    "AllTransferChance2": 0.29647374753024003,
+    "AllTransferChance3": 0.1636746999002957,
+    "GuaranteedQuality": {
+      "AchievedQuality": 478,
+      "QualityPercent": 0.18099204846648997,
+      "Clicks": 13,
+      "Rotation": [
+        "Steady Hand",
+        "Basic Synthesis",
+        "Muscle Memory",
+        "Basic Touch",
+        "Muscle Memory",
+        "Standard Touch",
+        "Muscle Memory",
+        "Standard Touch",
+        "Veneration",
+        "Steady Hand",
+        "Careful Synthesis",
+        "Steady Hand",
+        "Careful Synthesis"
+      ],
+      "States": 16800
+    }
+  },
+  {
+    "Label": "Bare set, three V enhancements",
+    "Rank": 50,
+    "RecipeLevel": 50,
+    "Craftsmanship": 30,
+    "Control": 29,
+    "CP": 105,
+    "Durability": 80,
+    "Progress": 336,
+    "Quality": 2641,
+    "Synthesis": [
+      [
+        "Basic Synthesis",
+        50,
+        0,
+        0.9
+      ],
+      [
+        "Rapid Synthesis",
+        70,
+        6,
+        0.75
+      ],
+      [
+        "Careful Synthesis",
+        120,
+        10,
+        0.5
+      ]
+    ],
+    "Touch": [
+      [
+        "Basic Touch",
+        146,
+        3,
+        0.9
+      ],
+      [
+        "Standard Touch",
+        166,
+        6,
+        0.75
+      ],
+      [
+        "Precise Touch",
+        216,
+        10,
+        0.5
+      ]
+    ],
+    "Objective": "quality",
+    "PropertyGroups": 1,
+    "Value": 0.4975388153971699,
+    "ExpectedClicks": 20.0,
+    "SuccessfulTouchBranch": [
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Veneration",
+      "Steady Hand",
+      "Careful Synthesis",
+      "Steady Hand",
+      "Careful Synthesis",
+      "Steady Hand",
+      "Careful Synthesis"
+    ],
+    "States": 45420,
+    "FinishStates": 101362,
+    "HasGuaranteedFinish": true,
+    "ExpectedQuality": 0.4975388153971699,
+    "FullQualityChance": 0.0,
+    "AllTransferChance1": 0.4927684354560001,
+    "AllTransferChance2": 0.24561584669952005,
+    "AllTransferChance3": 0.12367329364779842,
+    "GuaranteedQuality": {
+      "AchievedQuality": 438,
+      "QualityPercent": 0.16584627035213934,
+      "Clicks": 13,
+      "Rotation": [
+        "Muscle Memory",
+        "Basic Touch",
+        "Muscle Memory",
+        "Basic Touch",
+        "Muscle Memory",
+        "Basic Touch",
+        "Veneration",
+        "Steady Hand",
+        "Careful Synthesis",
+        "Steady Hand",
+        "Careful Synthesis",
+        "Steady Hand",
+        "Careful Synthesis"
+      ],
+      "States": 19273
+    }
+  },
+  {
+    "Label": "Rank 20 Smithery set",
+    "Rank": 20,
+    "RecipeLevel": 20,
+    "Craftsmanship": 12,
+    "Control": 13,
+    "CP": 38,
+    "Durability": 70,
+    "Progress": 74,
+    "Quality": 1053,
+    "Synthesis": [
+      [
+        "Basic Synthesis",
+        38,
+        0,
+        0.9
+      ],
+      [
+        "Rapid Synthesis",
+        58,
+        6,
+        0.75
+      ]
+    ],
+    "Touch": [
+      [
+        "Basic Touch",
+        19,
+        3,
+        0.9
+      ],
+      [
+        "Standard Touch",
+        39,
+        6,
+        0.75
+      ]
+    ],
+    "Objective": "quality",
+    "PropertyGroups": 1,
+    "Value": 0.06495726237371563,
+    "ExpectedClicks": 8.0,
+    "SuccessfulTouchBranch": [
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Steady Hand",
+      "Basic Synthesis",
+      "Steady Hand",
+      "Basic Synthesis"
+    ],
+    "States": 246,
+    "FinishStates": 285,
+    "HasGuaranteedFinish": true,
+    "ExpectedQuality": 0.06495726237371563,
+    "FullQualityChance": 0.0,
+    "AllTransferChance1": 0.062001000000000014,
+    "AllTransferChance2": 0.00398799,
+    "AllTransferChance3": 0.00026280810000000004
+  },
+  {
+    "Label": "Rank 25 Smithery set",
+    "Rank": 25,
+    "RecipeLevel": 25,
+    "Craftsmanship": 12,
+    "Control": 13,
+    "CP": 72,
+    "Durability": 70,
+    "Progress": 89,
+    "Quality": 1296,
+    "Synthesis": [
+      [
+        "Basic Synthesis",
+        38,
+        0,
+        0.9
+      ],
+      [
+        "Rapid Synthesis",
+        58,
+        6,
+        0.75
+      ]
+    ],
+    "Touch": [
+      [
+        "Basic Touch",
+        19,
+        3,
+        0.9
+      ],
+      [
+        "Standard Touch",
+        39,
+        6,
+        0.75
+      ]
+    ],
+    "Objective": "quality",
+    "PropertyGroups": 1,
+    "Value": 0.13923611291902488,
+    "ExpectedClicks": 12.0,
+    "SuccessfulTouchBranch": [
+      "Basic Touch",
+      "Basic Touch",
+      "Standard Touch",
+      "Standard Touch",
+      "Standard Touch",
+      "Waste Not",
+      "Standard Touch",
+      "Standard Touch",
+      "Steady Hand",
+      "Basic Synthesis",
+      "Steady Hand",
+      "Rapid Synthesis"
+    ],
+    "States": 7918,
+    "FinishStates": 6854,
+    "HasGuaranteedFinish": true,
+    "ExpectedQuality": 0.13923611291902488,
+    "FullQualityChance": 0.0,
+    "AllTransferChance1": 0.1305,
+    "AllTransferChance2": 0.017892,
+    "AllTransferChance3": 0.0025470225
+  },
+  {
+    "Label": "Rank 30 Engineering set",
+    "Rank": 30,
+    "RecipeLevel": 30,
+    "Craftsmanship": 18,
+    "Control": 18,
+    "CP": 79,
+    "Durability": 70,
+    "Progress": 102,
+    "Quality": 1584,
+    "Synthesis": [
+      [
+        "Basic Synthesis",
+        42,
+        0,
+        0.9
+      ],
+      [
+        "Rapid Synthesis",
+        62,
+        6,
+        0.75
+      ],
+      [
+        "Careful Synthesis",
+        112,
+        10,
+        0.5
+      ]
+    ],
+    "Touch": [
+      [
+        "Basic Touch",
+        23,
+        3,
+        0.9
+      ],
+      [
+        "Standard Touch",
+        43,
+        6,
+        0.75
+      ]
+    ],
+    "Objective": "quality",
+    "PropertyGroups": 1,
+    "Value": 0.17869318265327794,
+    "ExpectedClicks": 17.0,
+    "SuccessfulTouchBranch": [
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Standard Touch",
+      "Standard Touch",
+      "Standard Touch",
+      "Steady Hand",
+      "Careful Synthesis"
+    ],
+    "States": 20768,
+    "FinishStates": 10643,
+    "HasGuaranteedFinish": true,
+    "ExpectedQuality": 0.17869318265327794,
+    "FullQualityChance": 0.0,
+    "AllTransferChance1": 0.17442690549328121,
+    "AllTransferChance2": 0.031028058825904693,
+    "AllTransferChance3": 0.005614673606868515
+  },
+  {
+    "Label": "Rank 35 Engineering set",
+    "Rank": 35,
+    "RecipeLevel": 35,
+    "Craftsmanship": 18,
+    "Control": 18,
+    "CP": 83,
+    "Durability": 80,
+    "Progress": 123,
+    "Quality": 1853,
+    "Synthesis": [
+      [
+        "Basic Synthesis",
+        42,
+        0,
+        0.9
+      ],
+      [
+        "Rapid Synthesis",
+        62,
+        6,
+        0.75
+      ],
+      [
+        "Careful Synthesis",
+        112,
+        10,
+        0.5
+      ]
+    ],
+    "Touch": [
+      [
+        "Basic Touch",
+        23,
+        3,
+        0.9
+      ],
+      [
+        "Standard Touch",
+        43,
+        6,
+        0.75
+      ],
+      [
+        "Precise Touch",
+        93,
+        10,
+        0.5
+      ]
+    ],
+    "Objective": "quality",
+    "PropertyGroups": 1,
+    "Value": 0.1340528879818713,
+    "ExpectedClicks": 19.0,
+    "SuccessfulTouchBranch": [
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Steady Hand",
+      "Basic Synthesis",
+      "Steady Hand",
+      "Careful Synthesis"
+    ],
+    "States": 40474,
+    "FinishStates": 24576,
+    "HasGuaranteedFinish": true,
+    "ExpectedQuality": 0.1340528879818713,
+    "FullQualityChance": 0.0,
+    "AllTransferChance1": 0.12774359116305004,
+    "AllTransferChance2": 0.016444270636861498,
+    "AllTransferChance3": 0.0021310740406727557
+  },
+  {
+    "Label": "Rank 40 endgame set",
+    "Rank": 40,
+    "RecipeLevel": 40,
+    "Craftsmanship": 30,
+    "Control": 29,
+    "CP": 98,
+    "Durability": 80,
+    "Progress": 138,
+    "Quality": 2050,
+    "Synthesis": [
+      [
+        "Basic Synthesis",
+        50,
+        0,
+        0.9
+      ],
+      [
+        "Rapid Synthesis",
+        70,
+        6,
+        0.75
+      ],
+      [
+        "Careful Synthesis",
+        120,
+        10,
+        0.5
+      ]
+    ],
+    "Touch": [
+      [
+        "Basic Touch",
+        146,
+        3,
+        0.9
+      ],
+      [
+        "Standard Touch",
+        166,
+        6,
+        0.75
+      ],
+      [
+        "Precise Touch",
+        216,
+        10,
+        0.5
+      ]
+    ],
+    "Objective": "quality",
+    "PropertyGroups": 1,
+    "Value": 0.8973658654610188,
+    "ExpectedClicks": 22.0,
+    "SuccessfulTouchBranch": [
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Master's Mend",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Steady Hand",
+      "Basic Synthesis",
+      "Steady Hand",
+      "Careful Synthesis"
+    ],
+    "States": 152909,
+    "FinishStates": 33315,
+    "HasGuaranteedFinish": true,
+    "ExpectedQuality": 0.8973658654610188,
+    "FullQualityChance": 0.0,
+    "AllTransferChance1": 0.8919852594573392,
+    "AllTransferChance2": 0.8018216230366392,
+    "AllTransferChance3": 0.7258944900848994,
+    "GuaranteedQuality": {
+      "AchievedQuality": 604,
+      "QualityPercent": 0.2946341463414634,
+      "Clicks": 12,
+      "Rotation": [
+        "Steady Hand",
+        "Basic Synthesis",
+        "Muscle Memory",
+        "Basic Touch",
+        "Muscle Memory",
+        "Basic Touch",
+        "Muscle Memory",
+        "Basic Touch",
+        "Muscle Memory",
+        "Standard Touch",
+        "Steady Hand",
+        "Careful Synthesis"
+      ],
+      "States": 5555
+    }
+  },
+  {
+    "Label": "Rank 50 Espionage",
+    "Rank": 50,
+    "RecipeLevel": 50,
+    "Craftsmanship": 0,
+    "Control": 0,
+    "CP": 68,
+    "Durability": 80,
+    "Progress": 186,
+    "Quality": 2641,
+    "Synthesis": [
+      [
+        "Basic Synthesis",
+        31,
+        0,
+        0.9
+      ],
+      [
+        "Rapid Synthesis",
+        51,
+        6,
+        0.75
+      ],
+      [
+        "Careful Synthesis",
+        101,
+        10,
+        0.5
+      ]
+    ],
+    "Touch": [
+      [
+        "Basic Touch",
+        125,
+        3,
+        0.9
+      ],
+      [
+        "Standard Touch",
+        145,
+        6,
+        0.75
+      ],
+      [
+        "Precise Touch",
+        195,
+        10,
+        0.5
+      ]
+    ],
+    "Objective": "quality",
+    "PropertyGroups": 1,
+    "Value": 0.2981825154423282,
+    "ExpectedClicks": 13.0,
+    "SuccessfulTouchBranch": [
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Basic Touch",
+      "Waste Not",
+      "Basic Touch",
+      "Veneration",
+      "Steady Hand",
+      "Careful Synthesis",
+      "Steady Hand",
+      "Careful Synthesis"
+    ],
+    "States": 6548,
+    "FinishStates": 19617,
+    "HasGuaranteedFinish": true,
+    "ExpectedQuality": 0.2981825154423282,
+    "FullQualityChance": 0.0,
+    "AllTransferChance1": 0.2950272810000001,
+    "AllTransferChance2": 0.08860718259000001,
+    "AllTransferChance3": 0.027004682816100006,
+    "GuaranteedQuality": {
+      "AchievedQuality": 195,
+      "QualityPercent": 0.0738356683074593,
+      "Clicks": 6,
+      "Rotation": [
+        "Steady Hand",
+        "Careful Synthesis",
+        "Muscle Memory",
+        "Precise Touch",
+        "Steady Hand",
+        "Careful Synthesis"
+      ],
+      "States": 1732
+    }
+  }
+]

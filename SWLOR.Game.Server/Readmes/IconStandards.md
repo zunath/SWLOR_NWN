@@ -175,7 +175,7 @@ The gameplay icon manifest is:
 
 Required fields:
 
-- `Type`: `Ability`, `Feat`, `Spell`, or `StatusEffect`.
+- `Type`: `Ability`, `Feat`, `Spell`, `StatusEffect`, or `Perk`.
 - `Key`: stable identifier, such as a feat label or status-effect class name.
 - `DisplayName`: player-facing name when available.
 - `SemanticCategory`: one of the approved semantic categories.

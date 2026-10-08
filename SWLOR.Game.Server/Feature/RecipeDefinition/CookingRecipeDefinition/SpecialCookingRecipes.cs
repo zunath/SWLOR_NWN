@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
         {
             // Food Submission Token (Agriculture)
             _builder.Create(RecipeType.FoodSubmissionTokenAgriculture, SkillType.Agriculture)
+                .CraftingProfile(CraftProfile.Calibrated, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.SpecialSubmissionItems)
                 .Resref("food_sub_token")
                 .Level(52)

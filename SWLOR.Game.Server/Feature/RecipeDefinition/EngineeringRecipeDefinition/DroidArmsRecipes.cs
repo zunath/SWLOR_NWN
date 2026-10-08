@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Droid Arms MPV I
             _builder.Create(RecipeType.DroidArmsMPV1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mpv1")
                 .Level(5)
@@ -32,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MPW I
             _builder.Create(RecipeType.DroidArmsMPW1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mpw1")
                 .Level(8)
@@ -41,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MPA I
             _builder.Create(RecipeType.DroidArmsMPA1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mpa1")
                 .Level(9)
@@ -50,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MPS I
             _builder.Create(RecipeType.DroidArmsMPS1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mps1")
                 .Level(10)
@@ -59,6 +63,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MVW I
             _builder.Create(RecipeType.DroidArmsMVW1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mvw1")
                 .Level(7)
@@ -68,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MVA I
             _builder.Create(RecipeType.DroidArmsMVA1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mva1")
                 .Level(6)
@@ -77,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MVS I
             _builder.Create(RecipeType.DroidArmsMVS1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mvs1")
                 .Level(9)
@@ -86,6 +93,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MWA I
             _builder.Create(RecipeType.DroidArmsMWA1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mwa1")
                 .Level(5)
@@ -95,6 +103,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MWS I
             _builder.Create(RecipeType.DroidArmsMWS1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mws1")
                 .Level(8)
@@ -104,6 +113,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MAS I
             _builder.Create(RecipeType.DroidArmsMAS1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mas1")
                 .Level(10)
@@ -113,6 +123,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms PVW I
             _builder.Create(RecipeType.DroidArmsPVW1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_pvw1")
                 .Level(7)
@@ -122,6 +133,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms PVA I
             _builder.Create(RecipeType.DroidArmsPVA1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_pva1")
                 .Level(6)
@@ -131,6 +143,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms PVS I
             _builder.Create(RecipeType.DroidArmsPVS1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_pvs1")
                 .Level(9)
@@ -140,6 +153,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms VWA I
             _builder.Create(RecipeType.DroidArmsVWA1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_vwa1")
                 .Level(5)
@@ -149,6 +163,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms VWS I
             _builder.Create(RecipeType.DroidArmsVWS1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_vws1")
                 .Level(8)
@@ -158,6 +173,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms VAS I
             _builder.Create(RecipeType.DroidArmsVAS1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_vas1")
                 .Level(10)
@@ -167,6 +183,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms WAS I
             _builder.Create(RecipeType.DroidArmsWAS1, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_was1")
                 .Level(7)
@@ -181,6 +198,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Droid Arms MPV II
             _builder.Create(RecipeType.DroidArmsMPV2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mpv2")
                 .Level(15)
@@ -190,6 +208,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MPW II
             _builder.Create(RecipeType.DroidArmsMPW2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mpw2")
                 .Level(18)
@@ -199,6 +218,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MPA II
             _builder.Create(RecipeType.DroidArmsMPA2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mpa2")
                 .Level(19)
@@ -208,6 +228,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MPS II
             _builder.Create(RecipeType.DroidArmsMPS2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mps2")
                 .Level(20)
@@ -217,6 +238,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MVW II
             _builder.Create(RecipeType.DroidArmsMVW2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mvw2")
                 .Level(17)
@@ -226,6 +248,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MVA II
             _builder.Create(RecipeType.DroidArmsMVA2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mva2")
                 .Level(16)
@@ -235,6 +258,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MVS II
             _builder.Create(RecipeType.DroidArmsMVS2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mvs2")
                 .Level(19)
@@ -244,6 +268,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MWA II
             _builder.Create(RecipeType.DroidArmsMWA2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mwa2")
                 .Level(15)
@@ -253,6 +278,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MWS II
             _builder.Create(RecipeType.DroidArmsMWS2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mws2")
                 .Level(18)
@@ -262,6 +288,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MAS II
             _builder.Create(RecipeType.DroidArmsMAS2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mas2")
                 .Level(20)
@@ -271,6 +298,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms PVW II
             _builder.Create(RecipeType.DroidArmsPVW2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_pvw2")
                 .Level(17)
@@ -280,6 +308,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms PVA II
             _builder.Create(RecipeType.DroidArmsPVA2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_pva2")
                 .Level(16)
@@ -289,6 +318,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms PVS II
             _builder.Create(RecipeType.DroidArmsPVS2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_pvs2")
                 .Level(19)
@@ -298,6 +328,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms VWA II
             _builder.Create(RecipeType.DroidArmsVWA2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_vwa2")
                 .Level(15)
@@ -307,6 +338,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms VWS II
             _builder.Create(RecipeType.DroidArmsVWS2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_vws2")
                 .Level(18)
@@ -316,6 +348,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms VAS II
             _builder.Create(RecipeType.DroidArmsVAS2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_vas2")
                 .Level(20)
@@ -325,6 +358,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms WAS II
             _builder.Create(RecipeType.DroidArmsWAS2, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_was2")
                 .Level(17)
@@ -338,6 +372,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Droid Arms MPV III
             _builder.Create(RecipeType.DroidArmsMPV3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mpv3")
                 .Level(25)
@@ -348,6 +383,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MPW III
             _builder.Create(RecipeType.DroidArmsMPW3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mpw3")
                 .Level(28)
@@ -358,6 +394,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MPA III
             _builder.Create(RecipeType.DroidArmsMPA3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mpa3")
                 .Level(29)
@@ -368,6 +405,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MPS III
             _builder.Create(RecipeType.DroidArmsMPS3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mps3")
                 .Level(30)
@@ -378,6 +416,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MVW III
             _builder.Create(RecipeType.DroidArmsMVW3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mvw3")
                 .Level(27)
@@ -388,6 +427,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MVA III
             _builder.Create(RecipeType.DroidArmsMVA3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mva3")
                 .Level(26)
@@ -398,6 +438,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MVS III
             _builder.Create(RecipeType.DroidArmsMVS3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mvs3")
                 .Level(29)
@@ -408,6 +449,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MWA III
             _builder.Create(RecipeType.DroidArmsMWA3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mwa3")
                 .Level(25)
@@ -418,6 +460,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MWS III
             _builder.Create(RecipeType.DroidArmsMWS3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mws3")
                 .Level(28)
@@ -428,6 +471,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MAS III
             _builder.Create(RecipeType.DroidArmsMAS3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mas3")
                 .Level(30)
@@ -438,6 +482,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms PVW III
             _builder.Create(RecipeType.DroidArmsPVW3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_pvw3")
                 .Level(27)
@@ -448,6 +493,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms PVA III
             _builder.Create(RecipeType.DroidArmsPVA3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_pva3")
                 .Level(26)
@@ -458,6 +504,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms PVS III
             _builder.Create(RecipeType.DroidArmsPVS3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_pvs3")
                 .Level(29)
@@ -468,6 +515,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms VWA III
             _builder.Create(RecipeType.DroidArmsVWA3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_vwa3")
                 .Level(25)
@@ -478,6 +526,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms VWS III
             _builder.Create(RecipeType.DroidArmsVWS3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_vws3")
                 .Level(28)
@@ -488,6 +537,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms VAS III
             _builder.Create(RecipeType.DroidArmsVAS3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_vas3")
                 .Level(30)
@@ -498,6 +548,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms WAS III
             _builder.Create(RecipeType.DroidArmsWAS3, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_was3")
                 .Level(27)
@@ -512,6 +563,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Droid Arms MPV IV
             _builder.Create(RecipeType.DroidArmsMPV4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mpv4")
                 .Level(35)
@@ -522,6 +574,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MPW IV
             _builder.Create(RecipeType.DroidArmsMPW4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mpw4")
                 .Level(38)
@@ -532,6 +585,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MPA IV
             _builder.Create(RecipeType.DroidArmsMPA4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mpa4")
                 .Level(39)
@@ -542,6 +596,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MPS IV
             _builder.Create(RecipeType.DroidArmsMPS4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mps4")
                 .Level(40)
@@ -552,6 +607,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MVW IV
             _builder.Create(RecipeType.DroidArmsMVW4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mvw4")
                 .Level(37)
@@ -562,6 +618,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MVA IV
             _builder.Create(RecipeType.DroidArmsMVA4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mva4")
                 .Level(36)
@@ -572,6 +629,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MVS IV
             _builder.Create(RecipeType.DroidArmsMVS4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mvs4")
                 .Level(39)
@@ -582,6 +640,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MWA IV
             _builder.Create(RecipeType.DroidArmsMWA4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mwa4")
                 .Level(35)
@@ -592,6 +651,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MWS IV
             _builder.Create(RecipeType.DroidArmsMWS4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mws4")
                 .Level(38)
@@ -602,6 +662,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MAS IV
             _builder.Create(RecipeType.DroidArmsMAS4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mas4")
                 .Level(40)
@@ -612,6 +673,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms PVW IV
             _builder.Create(RecipeType.DroidArmsPVW4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_pvw4")
                 .Level(37)
@@ -622,6 +684,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms PVA IV
             _builder.Create(RecipeType.DroidArmsPVA4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_pva4")
                 .Level(36)
@@ -632,6 +695,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms PVS IV
             _builder.Create(RecipeType.DroidArmsPVS4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_pvs4")
                 .Level(39)
@@ -642,6 +706,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms VWA IV
             _builder.Create(RecipeType.DroidArmsVWA4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_vwa4")
                 .Level(35)
@@ -652,6 +717,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms VWS IV
             _builder.Create(RecipeType.DroidArmsVWS4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_vws4")
                 .Level(38)
@@ -662,6 +728,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms VAS IV
             _builder.Create(RecipeType.DroidArmsVAS4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_vas4")
                 .Level(40)
@@ -672,6 +739,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms WAS IV
             _builder.Create(RecipeType.DroidArmsWAS4, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_was4")
                 .Level(37)
@@ -686,6 +754,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Droid Arms MPV V
             _builder.Create(RecipeType.DroidArmsMPV5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mpv5")
                 .Level(45)
@@ -696,6 +765,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MPW V
             _builder.Create(RecipeType.DroidArmsMPW5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mpw5")
                 .Level(48)
@@ -706,6 +776,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MPA V
             _builder.Create(RecipeType.DroidArmsMPA5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mpa5")
                 .Level(49)
@@ -716,6 +787,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MPS V
             _builder.Create(RecipeType.DroidArmsMPS5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mps5")
                 .Level(50)
@@ -726,6 +798,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MVW V
             _builder.Create(RecipeType.DroidArmsMVW5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mvw5")
                 .Level(47)
@@ -736,6 +809,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MVA V
             _builder.Create(RecipeType.DroidArmsMVA5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mva5")
                 .Level(46)
@@ -746,6 +820,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MVS V
             _builder.Create(RecipeType.DroidArmsMVS5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mvs5")
                 .Level(49)
@@ -756,6 +831,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MWA V
             _builder.Create(RecipeType.DroidArmsMWA5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mwa5")
                 .Level(45)
@@ -766,6 +842,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MWS V
             _builder.Create(RecipeType.DroidArmsMWS5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mws5")
                 .Level(48)
@@ -776,6 +853,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms MAS V
             _builder.Create(RecipeType.DroidArmsMAS5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_mas5")
                 .Level(50)
@@ -786,6 +864,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms PVW V
             _builder.Create(RecipeType.DroidArmsPVW5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_pvw5")
                 .Level(47)
@@ -796,6 +875,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms PVA V
             _builder.Create(RecipeType.DroidArmsPVA5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_pva5")
                 .Level(46)
@@ -806,6 +886,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms PVS V
             _builder.Create(RecipeType.DroidArmsPVS5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_pvs5")
                 .Level(49)
@@ -816,6 +897,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms VWA V
             _builder.Create(RecipeType.DroidArmsVWA5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_vwa5")
                 .Level(45)
@@ -826,6 +908,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms VWS V
             _builder.Create(RecipeType.DroidArmsVWS5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_vws5")
                 .Level(48)
@@ -836,6 +919,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms VAS V
             _builder.Create(RecipeType.DroidArmsVAS5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_vas5")
                 .Level(50)
@@ -846,6 +930,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Droid Arms WAS V
             _builder.Create(RecipeType.DroidArmsWAS5, SkillType.Engineering)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.DroidArms)
                 .Resref("d_ar_was5")
                 .Level(47)

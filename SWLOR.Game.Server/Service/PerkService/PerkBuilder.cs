@@ -239,6 +239,19 @@ namespace SWLOR.Game.Server.Service.PerkService
         /// <param name="mustHavePerkType">The type of perk the player must have.</param>
         /// <param name="mustHavePerkLevel">Optionally, the level of the perk required.</param>
         /// <returns>A perk builder with the configured options.</returns>
+        public PerkBuilder IncreasesCraftingStat(SkillType skill, StatType stat, int amount)
+        {
+            if (skill == SkillType.Invalid) throw new ArgumentOutOfRangeException(nameof(skill));
+            _activeLevel.StatBonuses.Add(new PerkStatBonus(stat, amount, skill));
+            return this;
+        }
+
+        public PerkBuilder RequirementAnyCompletedLine(params PerkType[] lines)
+        {
+            _activeLevel.Requirements.Add(new PerkRequirementAnyCompletedLine(lines));
+            return this;
+        }
+
         public PerkBuilder RequirementMustHavePerk(PerkType mustHavePerkType, int mustHavePerkLevel = 1)
         {
             var requirement = new PerkRequirementMustHavePerk(mustHavePerkType, mustHavePerkLevel);

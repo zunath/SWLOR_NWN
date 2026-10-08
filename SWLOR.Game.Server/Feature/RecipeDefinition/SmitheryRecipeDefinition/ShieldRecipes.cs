@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Battlemaster Shield
             _builder.Create(RecipeType.BattlemasterShield, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shield)
                 .Resref("bm_shield")
                 .Level(6)
@@ -30,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Titan Shield
             _builder.Create(RecipeType.TitanShield, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shield)
                 .Resref("tit_shield")
                 .Level(16)
@@ -40,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Quark Shield
             _builder.Create(RecipeType.QuarkShield, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shield)
                 .Resref("qk_shield")
                 .Level(26)
@@ -50,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Argos Shield
             _builder.Create(RecipeType.ArgosShield, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shield)
                 .Resref("ar_shield")
                 .Level(36)
@@ -60,6 +64,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Eclipse Shield
             _builder.Create(RecipeType.EclipseShield, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shield)
                 .Resref("ec_shield")
                 .Level(46)
@@ -70,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chaos Shield
             _builder.Create(RecipeType.ChaosShield, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shield)
                 .Resref("ch_shield")
                 .Level(52)
@@ -91,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             // Warden Shield
             _builder.Create(RecipeType.WardenShield, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shield)
                 .Resref("fld_bul_shield")
                 .Level(11)
@@ -101,6 +108,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Bastion Shield
             _builder.Create(RecipeType.BastionShield, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shield)
                 .Resref("vet_bul_shield")
                 .Level(21)
@@ -111,6 +119,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Sentinel Shield
             _builder.Create(RecipeType.SentinelShield, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shield)
                 .Resref("prm_bul_shield")
                 .Level(31)
@@ -121,6 +130,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Aegis Shield
             _builder.Create(RecipeType.AegisShield, SkillType.Smithery)
+                .CraftingProfile(CraftProfile.Sturdy, CraftTechnique.None, pilot: false)
                 .Category(RecipeCategoryType.Shield)
                 .Resref("asc_bul_shield")
                 .Level(41)

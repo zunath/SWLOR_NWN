@@ -1,7 +1,9 @@
+using Avalonia.Headless.NUnit;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Creatures;
 using SWLOR.Toolset.Domain.Editors.Doors;
@@ -10,6 +12,7 @@ using SWLOR.Toolset.Domain.Editors.Merchants;
 using SWLOR.Toolset.Domain.Editors.Sounds;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.Editors.Waypoints;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Waypoints;
@@ -255,7 +258,7 @@ namespace SWLOR.Toolset.Tests
             row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.SearchPageSize);
         }
 
-        [Test]
+        [AvaloniaTest]
         public async Task AnExplicitInlineGalleryNeverFallsBackToAChooseButtonWhileItLoads()
         {
             using var row = new BehaviorRowViewModel(
@@ -288,7 +291,7 @@ namespace SWLOR.Toolset.Tests
             row.GalleryChoices.Should().HaveCount(BehaviorRowViewModel.GalleryPageSize);
         }
 
-        [Test]
+        [AvaloniaTest]
         public async Task AVisualCatalogGetsSharedFacetFiltersAndSortsWithoutEditorSpecificCode()
         {
             // Female (even-index) names run Zulu-block first, Alpha-block second, so the filtered
@@ -368,21 +371,6 @@ namespace SWLOR.Toolset.Tests
             while (row.CanLoadMoreSearchResults)
                 row.LoadMoreSearchResultsCommand.Execute(null);
             row.FilteredChoices.Should().HaveCount(BehaviorRowViewModel.MaxSearchResults);
-        }
-
-        [Test]
-        public void SearchableChoicePicker_LoadsMoreChoicesAsTheUserScrolls()
-        {
-            var picker = File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot,
-                "SWLOR.Toolset", "Editors", "Behaviors", "SearchableChoicePickerView.axaml"));
-            var codeBehind = File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot,
-                "SWLOR.Toolset", "Editors", "Behaviors", "SearchableChoicePickerView.axaml.cs"));
-
-            picker.Should().Contain("ScrollViewer.ScrollChanged=\"OnSearchResultsScrollChanged\"");
-            picker.Should().NotContain("Content=\"Load more\"");
-            codeBehind.Should().Contain("row.LoadMoreSearchResultsCommand.Execute(null)");
         }
 
         [Test]
@@ -499,9 +487,9 @@ namespace SWLOR.Toolset.Tests
             typeof(WaypointRowViewModel).Should().BeAssignableTo<BehaviorRowViewModel>();
             typeof(Toolset.Editors.Triggers.TriggerRowViewModel)
                 .Should().BeAssignableTo<BehaviorRowViewModel>();
-            typeof(Toolset.Editors.Doors.DoorRowViewModel)
+            typeof(DoorRowViewModel)
                 .Should().BeAssignableTo<BehaviorRowViewModel>();
-            typeof(Toolset.Editors.Sounds.SoundRowViewModel)
+            typeof(SoundRowViewModel)
                 .Should().BeAssignableTo<BehaviorRowViewModel>();
         }
 

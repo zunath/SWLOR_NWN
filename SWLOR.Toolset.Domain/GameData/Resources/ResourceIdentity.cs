@@ -1,4 +1,5 @@
 using SWLOR.NWN.Formats.Common;
+using SharedResourceTypes = Nwn.Formats.Resources.ResourceTypes;
 
 namespace SWLOR.Toolset.Domain.GameData.Resources
 {
@@ -42,6 +43,10 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         /// </summary>
         public static ushort TypeFromExtension(string extension)
         {
+            var normalized = extension?.Trim().TrimStart('.');
+            if (normalized is not null && SharedResourceTypes.TryGetByExtension(normalized, out var sharedType))
+                return (ushort)sharedType;
+
             return ResourceTypes.FromExtension(extension);
         }
 
@@ -50,7 +55,13 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
         /// </summary>
         public static string ExtensionFromType(ushort resourceType)
         {
-            return ResourceTypes.GetExtension(resourceType).TrimStart('.');
+            var swlorExtension = ResourceTypes.GetExtension(resourceType).TrimStart('.');
+            if (!string.IsNullOrEmpty(swlorExtension))
+                return swlorExtension;
+
+            return SharedResourceTypes.TryGetByCode(resourceType, out var sharedType)
+                ? SharedResourceTypes.GetExtension(sharedType)
+                : string.Empty;
         }
 
         public string Extension => ExtensionFromType(ResourceType);

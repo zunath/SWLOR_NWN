@@ -6,16 +6,12 @@ using System.Text;
 namespace SWLOR.Toolset.Tests
 {
     /// <summary>
-    /// Coverage for the WP2.3 resource layer: <see cref="ResourceIdentity"/>,
-    /// <see cref="NwnInstallLocator"/>, <see cref="KeyBifCatalog"/>, <see cref="HakDirectoryCatalog"/>,
-    /// and the layered <see cref="ResourceIndex"/> resolver.
+    /// Coverage for SWLOR's host resource configuration and the shared layered resolver adapter.
     /// </summary>
     public class ResourceIndexTests
     {
         /// <summary>
-        /// Locates the repository root from the test execution context by walking up from the
-        /// test assembly location until both "Build\hakbuilder.json" and "SWLOR_Haks" are found.
-        /// Deliberately independent from <see cref="CorpusLocator"/> per WP2.3 scope rules.
+        /// Locates the test repository root containing the HAK configuration.
         /// </summary>
         private static string RepoRoot
         {
@@ -39,7 +35,32 @@ namespace SWLOR.Toolset.Tests
 
         private static string HakBuilderConfigPath => Path.Combine(RepoRoot, "Build", "hakbuilder.json");
 
-        private static string HaksDirectory => Path.Combine(RepoRoot, "SWLOR_Haks");
+        private static string HaksDirectory => Environment.GetEnvironmentVariable("SWLOR_TEST_HAKS_ROOT")
+            ?? Path.Combine(RepoRoot, "SWLOR_Haks");
+
+        [Test]
+        public void TgaLookup_UsesSharedResourceTypeMappingForLooseHakLayer()
+        {
+            var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempRoot);
+            try
+            {
+                var texturePath = Path.Combine(tempRoot, "tint_mask.tga");
+                File.WriteAllBytes(texturePath, [1, 2, 3]);
+                var index = new ResourceIndex(null, [new ResourceIndex.HakLayer("fixture", tempRoot)]);
+                var identity = ResourceIdentity.FromFileName("TINT_MASK.tga");
+
+                ResourceIdentity.TypeFromExtension(".tga").Should().Be((ushort)Nwn.Formats.Resources.ResourceType.Tga);
+                identity.Extension.Should().Be("tga");
+                index.TryLookup(identity, out var handle).Should().BeTrue();
+                handle.Provenance.SourcePath.Should().Be(texturePath);
+                handle.GetBytes().Should().Equal(1, 2, 3);
+            }
+            finally
+            {
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
 
         [Test]
         public void TryLookup_WhenSameResourceExistsInTwoHakLayers_FirstLayerWinsAndProvenanceReflectsIt()
@@ -143,7 +164,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void HakArchiveCatalog_ReadsAnIndexedResourceFromPackedHak()
+        public async Task ResourceIndex_ReadsAnIndexedResourceFromPackedHak()
         {
             var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(tempRoot);
@@ -154,11 +175,11 @@ namespace SWLOR.Toolset.Tests
             {
                 WriteSingleResourceHak(hakPath, "packed", "uti", expected);
 
-                var catalog = HakArchiveCatalog.Open(hakPath);
                 var identity = ResourceIdentity.FromFileName("packed.uti");
-
-                catalog.ResourceCount.Should().Be(1);
-                catalog.TryGetBytes(identity, out var bytes).Should().BeTrue();
+                var index = new ResourceIndex(null, [new ResourceIndex.HakLayer("fixture", hakPath)]);
+                await index.InitializationTask;
+                index.TryLookup(identity, out var handle).Should().BeTrue();
+                var bytes = handle.GetBytes();
                 bytes.Should().Equal(expected);
             }
             finally

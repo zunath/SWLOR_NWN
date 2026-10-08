@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using SWLOR.NWN.Formats;
-using SWLOR.NWN.Formats.TwoDA;
+using Nwn.Formats.TwoDa;
 using SWLOR.Toolset.Domain.GameData.Resources;
 
 namespace SWLOR.Toolset.Domain.GameData.TwoDa
@@ -10,9 +10,8 @@ namespace SWLOR.Toolset.Domain.GameData.TwoDa
     /// (cheap directory listing) but table contents are parsed lazily on first request and cached
     /// for the lifetime of the service.
     ///
-    /// Wraps SWLOR.NWN.Formats' <see cref="TwoDAReader"/>, which handles the sw_2da corpus's standard
-    /// "2DA V2.0" text format directly (quoted fields, **** empty cells, optional UTF-8 BOM) - no
-    /// custom parser was needed. One corpus file, "iprp_spells past.2da", is not a real 2DA file:
+    /// Uses the shared parser's engine-compatible profile for both text and binary resources. One
+    /// corpus file, "iprp_spells past.2da", is not a real 2DA file:
     /// it has no "2DA V2.0" signature line at all and looks like leftover scratch data pasted
     /// without a header, so no reader could recover a table from it. Rather than writing a parser
     /// for content that isn't structured 2DA data, <see cref="TryGetTable"/> reports it (and any
@@ -105,11 +104,9 @@ namespace SWLOR.Toolset.Domain.GameData.TwoDa
             }
 
             var lazy = _cache.GetOrAdd(name, key => new Lazy<TwoDaTable>(
-                () => new TwoDaTable(
-                    key,
-                    _resourceIndex == null
-                        ? TwoDAReader.Read(path!)
-                        : ReadIndexed(key)),
+                () => _resourceIndex == null
+                    ? TwoDaTable.Parse(key, File.ReadAllBytes(path!))
+                    : ReadIndexed(key),
                 LazyThreadSafetyMode.ExecutionAndPublication));
 
             try
@@ -117,7 +114,7 @@ namespace SWLOR.Toolset.Domain.GameData.TwoDa
                 table = lazy.Value;
                 return true;
             }
-            catch (NwnFormatException)
+            catch (FormatException)
             {
                 // Malformed/non-2DA content (see class remarks) - tolerated rather than thrown.
                 table = null;
@@ -125,13 +122,13 @@ namespace SWLOR.Toolset.Domain.GameData.TwoDa
             }
         }
 
-        private TwoDAFile ReadIndexed(string name)
+        private TwoDaTable ReadIndexed(string name)
         {
             var identity = new ResourceIdentity(name, ResourceType);
             if (_resourceIndex?.TryLookup(identity, out var handle) != true)
                 throw new NwnFormatException($"2DA table '{name}' was not found in the active resource stack.");
 
-            return TwoDAReader.Read(handle.GetBytes());
+            return TwoDaTable.Parse(name, handle.GetBytes());
         }
 
         private void OnResourcesReloaded()

@@ -5,10 +5,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Creatures;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Editors.Appearance;
@@ -25,12 +26,14 @@ namespace SWLOR.Toolset.Editors.Creatures
     {
         private readonly CreatureValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
+        private readonly Func<string, Action, DocumentSession, bool>? _runRelatedEdit;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly Func<JsonGffStruct, RenderModel?>? _resolveModel;
         private readonly ChoicePreviewService? _choicePreviews;
         private readonly Func<BehaviorChoice, string?>? _previewAudio;
         private readonly Func<IReadOnlyList<AppearanceOption>>? _appearanceOptionsLoader;
+        private IReadOnlyList<AppearanceOption> _activeAppearanceOptions = Array.Empty<AppearanceOption>();
         private readonly OutputLogService? _log;
         private readonly Dictionary<string, IReadOnlyList<BehaviorRowViewModel>> _roleRowCache =
             new(StringComparer.Ordinal);
@@ -69,7 +72,7 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         public bool HasTintMapEditor => TintMapEditor != null;
         public VarTableSectionViewModel Variables { get; }
-        public AppearanceGallerySectionViewModel? AppearanceGallery { get; }
+        public Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryViewModel? AppearanceGallery { get; }
         public bool HasAppearanceGallery => AppearanceGallery != null;
         public bool ShowsVariablesTab => SelectedRole.AllowsVariables;
 
@@ -181,10 +184,12 @@ namespace SWLOR.Toolset.Editors.Creatures
             OutputLogService? log = null,
             TintMapCatalog? tintMapCatalog = null,
             Func<IDocumentEdit?>? captureCoalesceOrigin = null,
-            Func<IDocumentEdit, string, Action, bool>? runCoalescedEdit = null)
+            Func<IDocumentEdit, string, Action, bool>? runCoalescedEdit = null,
+            Func<string, Action, DocumentSession, bool>? runRelatedEdit = null)
         {
             _store = new CreatureValueStore(creature);
             _runEdit = runEdit;
+            _runRelatedEdit = runRelatedEdit;
             _gameCodeIndex = gameCodeIndex;
             _resolveChoices = resolveChoices;
             _resolveModel = resolveModel;
@@ -196,7 +201,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             ResourceIndex = resourceIndex;
 
             Equipment = new CreatureEquipmentSet(_store, filePath);
-            Stats = new CreatureStatsViewModel(_store, Equipment, RunEdit);
+            Stats = new CreatureStatsViewModel(_store, Equipment, RunEdit, RunEquipmentEdit);
             Abilities = new CreatureAbilitiesViewModel(
                 _store,
                 RunEdit,
@@ -227,20 +232,31 @@ namespace SWLOR.Toolset.Editors.Creatures
                 _store,
                 Equipment,
                 RunEdit,
+                RunEquipmentEdit,
                 equipmentChoices ?? (() => Task.FromResult<IReadOnlyList<CreatureEquipmentChoice>>(
                     Array.Empty<CreatureEquipmentChoice>())),
                 equipmentDetails ?? (_ => null),
                 OnEquipmentChanged,
                 _choicePreviews,
                 equipmentSearch);
-            Variables = new VarTableSectionViewModel(RunEdit, _store.Locals, gameCodeIndex, IsCustomVariable);
+            Variables = SwlorVarTablePolicy.Create(RunEdit, _store.Locals, gameCodeIndex, IsCustomVariable);
             if (appearanceOptions != null || appearanceOptionsLoader != null)
             {
-                AppearanceGallery = new AppearanceGallerySectionViewModel(
-                    appearanceOptions ?? Array.Empty<AppearanceOption>(),
-                    appearanceThumbnails,
-                    CurrentAppearanceKey,
-                    ApplyAppearance,
+                _activeAppearanceOptions = appearanceOptions ?? Array.Empty<AppearanceOption>();
+                var previewProvider = appearanceThumbnails == null
+                    ? null
+                    : new AppearanceGalleryPreviewProvider(
+                        appearanceThumbnails,
+                        id => _activeAppearanceOptions.FirstOrDefault(option => option.Key == id.Value));
+                AppearanceGallery = new Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryViewModel(
+                    AppearanceGalleryOptionAdapter.ToShared(_activeAppearanceOptions),
+                    previewProvider,
+                    () => new Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryOptionId(CurrentAppearanceKey()),
+                    option =>
+                    {
+                        var hostOption = _activeAppearanceOptions.FirstOrDefault(candidate => candidate.Key == option.Id.Value);
+                        return hostOption != null && ApplyAppearance(hostOption);
+                    },
                     noun: "appearance");
                 _appearanceCatalogLoaded = appearanceOptions != null;
             }
@@ -353,6 +369,32 @@ namespace SWLOR.Toolset.Editors.Creatures
             if (applied)
                 IsDirty = true;
             return applied;
+        }
+
+        private bool RunEquipmentEdit(
+            string description,
+            CreatureEquipmentDocument document,
+            Action mutation)
+        {
+            bool applied;
+            try
+            {
+                applied = _runRelatedEdit?.Invoke(description, mutation, document.Session) ?? false;
+            }
+            catch
+            {
+                Equipment.DiscardUnreferencedNew(document);
+                throw;
+            }
+
+            if (applied)
+            {
+                IsDirty = true;
+                return true;
+            }
+
+            Equipment.DiscardUnreferencedNew(document);
+            return false;
         }
 
         private void BuildRows(
@@ -967,7 +1009,8 @@ namespace SWLOR.Toolset.Editors.Creatures
                 if (_disposed)
                     return;
 
-                AppearanceGallery?.SetOptions(options);
+                _activeAppearanceOptions = options;
+                AppearanceGallery?.SetOptions(AppearanceGalleryOptionAdapter.ToShared(options));
                 _appearanceCatalogLoaded = true;
                 AppearanceCatalogLoadError = string.Empty;
             }

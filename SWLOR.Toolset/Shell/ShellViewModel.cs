@@ -1,13 +1,15 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Controls;
+using Nwn.Toolset.Avalonia.Areas;
 using SWLOR.Toolset.AreaGeneration;
 using SWLOR.Toolset.Archives;
 using SWLOR.Toolset.Factions;
-using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
+using Nwn.Toolset.Avalonia.Areas.Generation;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Script;
@@ -40,7 +42,17 @@ namespace SWLOR.Toolset.Shell
         private readonly PaletteViewModel _palette;
 
         /// <summary>Display switches for the quick-access bar; shared by every area viewport.</summary>
-        public Viewport.ViewportDisplayOptions Display { get; }
+        public AreaViewportDisplayOptions Display { get; }
+
+        /// <summary>
+        /// Reserved for the shadow pass, which the viewport renderer does not have yet. The bar shows
+        /// the control disabled rather than omitting it, so it is clear the switch is missing rather
+        /// than hidden.
+        /// </summary>
+        public bool ShowShadows => false;
+
+        /// <summary>True once the renderer grows a shadow pass; the bar's button enables from this.</summary>
+        public bool CanShowShadows => false;
         private readonly ThumbnailService _thumbnails;
         private DispatcherTimer? _progressTimer;
 
@@ -117,6 +129,26 @@ namespace SWLOR.Toolset.Shell
         private bool _isRescanningAfterWatcherOverflow;
         private bool _rescanRequestedWhileRunning;
 
+        /// <summary>Opens the native rigid-model inspection window over the active game resource layers.</summary>
+        [RelayCommand]
+        private async Task NativeModelPreview()
+        {
+            if (_resourceIndex is null)
+            {
+                StatusText = "Native Model Preview needs an initialized resource index.";
+                return;
+            }
+
+            try
+            {
+                await Viewport.NativeModelPreviewWindow.ShowAsync(_resourceIndex).ConfigureAwait(true);
+            }
+            catch (Exception exception) when (exception is InvalidOperationException or IOException)
+            {
+                StatusText = $"Native Model Preview could not open: {exception.Message}";
+            }
+        }
+
         public ShellViewModel(
             ToolsetSettings settings,
             WorkspaceContext workspaceContext,
@@ -125,7 +157,7 @@ namespace SWLOR.Toolset.Shell
             ModuleExplorerViewModel explorer,
             SearchViewModel search,
             PaletteViewModel palette,
-            Viewport.ViewportDisplayOptions display,
+            AreaViewportDisplayOptions display,
             ToolsetDockFactory factory,
             Func<Editors.EditorService> editorService,
             PackService packService,
@@ -261,42 +293,35 @@ namespace SWLOR.Toolset.Shell
                 return;
             }
 
+            var owner = (Avalonia.Application.Current?.ApplicationLifetime
+                as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+            if (owner == null)
+                return;
+
             IsGeneratingArea = true;
             try
             {
-                using (ModuleMutationLock.AllowModuleWrites())
-                {
-                    if (!await _editorService.Value.SaveAllAsync().ConfigureAwait(true))
+                var session = new ShellAreaGeneratorSession(
+                    () => _editorService.Value.SaveAllAsync(),
+                    ModuleMutationLock.AllowModuleWrites,
+                    createdResref =>
                     {
-                        StatusText = "Area Generator cancelled: an open editor could not be saved.";
-                        return;
-                    }
-                }
-
+                        _workspaceContext.RefreshCatalogEntry(ResourceType.Area, createdResref);
+                        _workspaceContext.InvalidatePlacementIndex();
+                        _explorer.Refresh();
+                        _editorService.Value.TryOpenEditor(ResourceType.Area, createdResref);
+                    });
+                var launcher = new AreaGeneratorLauncher(
+                    session,
+                    () => Task.FromResult(SwlorAreaGeneratorHost.Create(workspace, _tilesetCatalog!, _resourceIndex)));
                 StatusText = "Opening Area Generator...";
-                string? createdResref;
-                using (ModuleMutationLock.AllowModuleWrites())
+                var result = await launcher.LaunchAsync(owner).ConfigureAwait(true);
+                StatusText = result.Outcome switch
                 {
-                    var authoring = new AreaGenerationAuthoringService(_tilesetCatalog);
-                    var renderer = new AreaGenerationPreviewRenderer(_resourceIndex);
-                    createdResref = await AreaGeneratorWindow.ShowAsync(
-                        authoring,
-                        renderer,
-                        _tilesetCatalog,
-                        workspace).ConfigureAwait(true);
-                }
-
-                if (string.IsNullOrWhiteSpace(createdResref))
-                {
-                    StatusText = "Area Generator closed.";
-                    return;
-                }
-
-                _workspaceContext.RefreshCatalogEntry(ResourceType.Area, createdResref);
-                _workspaceContext.InvalidatePlacementIndex();
-                _explorer.Refresh();
-                _editorService.Value.TryOpenEditor(ResourceType.Area, createdResref);
-                StatusText = $"Created generated area '{createdResref}'.";
+                    AreaGeneratorOutcome.SaveFailed => "Area Generator cancelled: an open editor could not be saved.",
+                    AreaGeneratorOutcome.Created => $"Created generated area '{result.CreatedResRef}'.",
+                    _ => "Area Generator closed."
+                };
             }
             catch (Exception ex)
             {

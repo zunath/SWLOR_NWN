@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Tests
@@ -27,7 +28,7 @@ namespace SWLOR.Toolset.Tests
         /// <summary>A one-field schema so each test states exactly what it exercises.</summary>
         private static EditorSchema SchemaWithDropdown(string fieldName, string lookupKey) => new()
         {
-            ResourceType = Domain.Workspace.ResourceType.Utp,
+            ResourceType = Nwn.Authoring.Resources.ModuleResourceType.Utp,
             Groups = new[]
             {
                 new FieldGroup
@@ -104,7 +105,7 @@ namespace SWLOR.Toolset.Tests
         {
             var schema = new EditorSchema
             {
-                ResourceType = Domain.Workspace.ResourceType.Utp,
+                ResourceType = Nwn.Authoring.Resources.ModuleResourceType.Utp,
                 Groups = new[]
                 {
                     new FieldGroup
@@ -130,7 +131,7 @@ namespace SWLOR.Toolset.Tests
         {
             var schema = new EditorSchema
             {
-                ResourceType = Domain.Workspace.ResourceType.Utc,
+                ResourceType = Nwn.Authoring.Resources.ModuleResourceType.Utc,
                 Groups = new[]
                 {
                     new FieldGroup
@@ -161,7 +162,7 @@ namespace SWLOR.Toolset.Tests
             // Refusing to open those would be a defect in this guard, not in the data.
             var schema = new EditorSchema
             {
-                ResourceType = Domain.Workspace.ResourceType.Utc,
+                ResourceType = Nwn.Authoring.Resources.ModuleResourceType.Utc,
                 Groups = new[]
                 {
                     new FieldGroup

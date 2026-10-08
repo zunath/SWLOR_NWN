@@ -263,7 +263,7 @@ namespace SWLOR.Toolset.Tests
             {
                 var log = new OutputLogService();
                 var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-                workspace.Open(moduleRoot);
+                workspace.OpenAndSettle(moduleRoot);
                 var mutationLock = new ModuleMutationLock();
 
                 // Stands in for a pack, validation, or Build All starting while the builder is still
@@ -281,9 +281,7 @@ namespace SWLOR.Toolset.Tests
                     SelectedType = ResourceType.Utp
                 };
 
-                var tile = new PaletteTileViewModel("testplc", "Test Placeable", categoryPath: null);
-
-                await palette.DeleteTileCommand.ExecuteAsync(tile);
+                await palette.DeleteAsync(FindPlaceableEntry(palette), CancellationToken.None);
 
                 File.Exists(blueprintPath).Should().BeTrue(
                     "the module locked before the deletion ran, so the file must survive");
@@ -291,7 +289,7 @@ namespace SWLOR.Toolset.Tests
             }
             finally
             {
-                Directory.Delete(moduleRoot, recursive: true);
+                ScratchDirectory.Delete(moduleRoot);
             }
         }
 
@@ -311,7 +309,7 @@ namespace SWLOR.Toolset.Tests
             {
                 var log = new OutputLogService();
                 var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-                workspace.Open(moduleRoot);
+                workspace.OpenAndSettle(moduleRoot);
                 var mutationLock = new ModuleMutationLock();
                 const string externalGeneration = "{\"generation\":\"external\"}";
                 var prompts = new ReplaceDuringConfirmationPrompts(
@@ -329,14 +327,9 @@ namespace SWLOR.Toolset.Tests
                 {
                     SelectedType = ResourceType.Utp
                 };
-                var tile = new PaletteTileViewModel(
-                    "testplc",
-                    "Test Placeable",
-                    categoryPath: null);
-
                 try
                 {
-                    await palette.DeleteTileCommand.ExecuteAsync(tile);
+                    await palette.DeleteAsync(FindPlaceableEntry(palette), CancellationToken.None);
                 }
                 finally
                 {
@@ -351,7 +344,7 @@ namespace SWLOR.Toolset.Tests
             finally
             {
                 if (Directory.Exists(moduleRoot))
-                    Directory.Delete(moduleRoot, recursive: true);
+                    ScratchDirectory.Delete(moduleRoot);
             }
         }
 
@@ -377,7 +370,7 @@ namespace SWLOR.Toolset.Tests
             {
                 var log = new OutputLogService();
                 var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-                workspace.Open(moduleRoot);
+                workspace.OpenAndSettle(moduleRoot);
                 var mutationLock = new ModuleMutationLock();
                 var prompts = new AlwaysConfirmPrompts();
 
@@ -395,12 +388,9 @@ namespace SWLOR.Toolset.Tests
                 {
                     SelectedType = ResourceType.Utp
                 };
-
-                var tile = new PaletteTileViewModel("testplc", "Test Placeable", categoryPath: null);
-
                 try
                 {
-                    await palette.DeleteTileCommand.ExecuteAsync(tile);
+                    await palette.DeleteAsync(FindPlaceableEntry(palette), CancellationToken.None);
                 }
                 finally
                 {
@@ -414,7 +404,7 @@ namespace SWLOR.Toolset.Tests
             finally
             {
                 if (Directory.Exists(moduleRoot))
-                    Directory.Delete(moduleRoot, recursive: true);
+                    ScratchDirectory.Delete(moduleRoot);
             }
         }
 
@@ -504,11 +494,11 @@ namespace SWLOR.Toolset.Tests
             {
                 mutationLock.Set(true);
 
-                var write = () => SaveService.WriteAtomic(
+                var write = () => SwlorFileWriteAccess.Writer.WriteAtomic(
                     path, System.Text.Encoding.UTF8.GetBytes("{\"new\":true}"));
                 write.Should().Throw<ModuleLockedException>();
 
-                var create = () => SaveService.WriteNewAtomic(
+                var create = () => SwlorFileWriteAccess.Writer.WriteNewAtomic(
                     Path.Combine(directory, "fresh.utc.json"),
                     System.Text.Encoding.UTF8.GetBytes("{}"));
                 create.Should().Throw<ModuleLockedException>();
@@ -547,12 +537,12 @@ namespace SWLOR.Toolset.Tests
 
                 using (ModuleMutationLock.AllowModuleWrites())
                 {
-                    SaveService.WriteAtomic(
+                    SwlorFileWriteAccess.Writer.WriteAtomic(
                         path, System.Text.Encoding.UTF8.GetBytes("{\"saved\":true}"));
                 }
 
                 File.ReadAllText(path).Should().Be("{\"saved\":true}");
-                var unrelatedWrite = () => SaveService.WriteAtomic(
+                var unrelatedWrite = () => SwlorFileWriteAccess.Writer.WriteAtomic(
                     path, System.Text.Encoding.UTF8.GetBytes("{\"raced\":true}"));
                 unrelatedWrite.Should().Throw<ModuleLockedException>(
                     "only the operation that reserved the lock may perform its prerequisite saves");
@@ -583,7 +573,7 @@ namespace SWLOR.Toolset.Tests
                     Task attemptedWrite;
                     using (ExecutionContext.SuppressFlow())
                     {
-                        attemptedWrite = Task.Run(() => SaveService.WriteAtomic(
+                        attemptedWrite = Task.Run(() => SwlorFileWriteAccess.Writer.WriteAtomic(
                             path,
                             System.Text.Encoding.UTF8.GetBytes("{\"raced\":true}")));
                     }
@@ -627,7 +617,7 @@ namespace SWLOR.Toolset.Tests
                     Task attemptedSave;
                     using (ExecutionContext.SuppressFlow())
                     {
-                        attemptedSave = Task.Run(() => SaveService.WriteAtomic(
+                        attemptedSave = Task.Run(() => SwlorFileWriteAccess.Writer.WriteAtomic(
                             path,
                             System.Text.Encoding.UTF8.GetBytes("{\"raced\":true}")));
                     }
@@ -708,6 +698,16 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
+        private static Nwn.Toolset.Avalonia.Palettes.PaletteEntrySnapshot FindPlaceableEntry(
+            PaletteViewModel palette)
+        {
+            palette.Refresh();
+            var unsorted = palette.PresentationState.Rows.Single(row => row.Name == "Unsorted");
+            palette.PresentationState.SelectedRow = unsorted;
+            return palette.PresentationState.Tiles
+                .Single(tile => tile.ResRef == "testplc")
+                .Snapshot;
+        }
         private static async Task HoldLeaseAcrossAwait(
             string moduleRoot,
             TaskCompletionSource acquired,

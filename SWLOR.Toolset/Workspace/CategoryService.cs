@@ -1,6 +1,7 @@
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Categories;
-using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Categories;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.Workspace;
@@ -135,66 +136,21 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>
-        /// The shape a "Category N" placeholder name takes, used only to recover the strref number
-        /// back out of a folder <see cref="CategoryFolder.IsUnresolvedPlaceholder"/> already marked as
-        /// one - never to decide whether a folder is a placeholder in the first place.
-        /// </summary>
-        private static readonly System.Text.RegularExpressions.Regex PlaceholderName =
-            new(@"^Category (\d+)$", System.Text.RegularExpressions.RegexOptions.Compiled);
-
-        /// <summary>
-        /// Renames categories that were imported before their TLK was available.
+        /// Renames categories that were imported before their TLK was available, through the shared
+        /// <see cref="CategoryPlaceholderRepair"/>, and saves when anything changed.
         /// </summary>
         /// <remarks>
         /// Category names are resolved once, at import, and then persisted - so a module first opened
-        /// without the base game's dialog.tlk has "Category 6782" written into its sidecar permanently,
-        /// and simply supplying the TLK later fixes nothing. Repairing on load is preferable to bumping
-        /// the sidecar version and re-seeding, which would also discard every category a builder made.
-        /// <para>
-        /// Provenance comes from <see cref="CategoryFolder.IsUnresolvedPlaceholder"/>, set only by
-        /// <see cref="ItpCategoryImporter"/> at the moment it invents the placeholder text, never
-        /// inferred here from the name matching <see cref="PlaceholderName"/>. A builder can deliberately
-        /// name a folder "Category 7", and that name is textually identical to a real placeholder;
-        /// matching on text alone used to rename (and immediately save over) exactly that deliberate
-        /// name the moment TLK resolution next succeeded.
-        /// </para>
-        /// <para>
-        /// Tradeoff: a sidecar written before this marker existed carries no such flag, so its
-        /// placeholders are never picked up here - they stay "Category N" until a builder renames them
-        /// by hand. That is intentional. Silently re-inferring provenance for old files from the name
-        /// alone would reintroduce the same bug for the "Category 7" case; a deliberate name surviving
-        /// is worth more than auto-repairing every legacy placeholder.
-        /// </para>
+        /// without the base game's dialog.tlk has "Category 6782" written into its sidecar permanently.
+        /// Only folders the importer marked <see cref="CategoryFolder.IsUnresolvedPlaceholder"/> are
+        /// touched, so a builder's deliberate "Category 7" survives.
         /// </remarks>
         private void RepairPlaceholderNames(CategorySection section)
         {
             if (_tlk == null)
                 return;
 
-            var repaired = 0;
-            foreach (var folder in section.AllFolders().ToList())
-            {
-                if (!folder.IsUnresolvedPlaceholder)
-                    continue;
-
-                var match = PlaceholderName.Match(folder.Name);
-                if (!match.Success || !uint.TryParse(match.Groups[1].Value, out var strRef))
-                    continue;
-
-                // Sanitized like every other name that comes out of the TLK: several of the base game's
-                // category names carry a path separator, and this repair runs over a tree that is already
-                // loaded and on screen, so a throw here would take the open module with it.
-                var resolved = CategoryFolder.Sanitize(ResolveCategoryName(strRef));
-                if (resolved == null)
-                    continue;
-
-                // A pin is stored by path, and a path is built from names. Renaming a folder therefore
-                // moves every pin at or below it and the stored keys need to move with the folder.
-                // TryRenameFolder -> CategoryFolder.Rename also clears IsUnresolvedPlaceholder.
-                if (section.TryRenameFolder(folder, resolved))
-                    repaired++;
-            }
-
+            var repaired = CategoryPlaceholderRepair.Repair(section, ResolveCategoryName);
             if (repaired == 0)
                 return;
 
@@ -226,6 +182,9 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         public IReadOnlyDictionary<string, string> StandardNames(ResourceType type) =>
             StandardPaletteFor(type).Names;
+
+        /// <summary>The base game's whole palette for a type: section, resolvable resrefs and names.</summary>
+        public StandardPalette Standard(ResourceType type) => StandardPaletteFor(type);
 
         /// <summary>Every resref of a type that actually exists in the module, for counts and Unsorted.</summary>
         public IReadOnlySet<string> ExistingResRefs(ResourceType type)

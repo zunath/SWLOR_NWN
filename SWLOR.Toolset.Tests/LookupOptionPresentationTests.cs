@@ -239,7 +239,7 @@ namespace SWLOR.Toolset.Tests
             }
             finally
             {
-                Directory.Delete(scratch, recursive: true);
+                ScratchDirectory.Delete(scratch);
             }
         }
 

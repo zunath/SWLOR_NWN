@@ -1,4 +1,4 @@
-using SWLOR.Toolset.Domain.Render.Icons;
+using Nwn.Preview.Icons;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Workspace

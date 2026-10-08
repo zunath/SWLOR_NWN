@@ -1,6 +1,7 @@
 #nullable disable
 
 using System.Collections.Generic;
+using Nwn.Authoring.Areas.Generation.Composition;
 
 namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
 {
@@ -19,3 +20,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         Dictionary<string, DungeonDetail> BuildDungeons();
     }
 }
+
+

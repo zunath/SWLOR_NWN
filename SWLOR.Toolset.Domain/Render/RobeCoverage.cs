@@ -1,4 +1,5 @@
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
+using Nwn.Preview.Scene;
 
 namespace SWLOR.Toolset.Domain.Render
 {

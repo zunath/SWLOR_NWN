@@ -1,12 +1,16 @@
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
+using Nwn.Preview.Scene;
 using SWLOR.NWN.Formats.Plt;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.Render;
+using Nwn.Preview.Icons;
 using SWLOR.Toolset.Domain.Render.Icons;
+using Nwn.Preview.Thumbnails;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Items;
 using SWLOR.Toolset.Viewport;
@@ -66,7 +70,7 @@ namespace SWLOR.Toolset.Workspace
         private readonly ArmorDyeSwatchService _dyeSwatches;
 
         /// <summary>Authored part textures for the compose run in flight; guarded by _composerGate.</summary>
-        private readonly Domain.Render.ComposedPartTextures _partTextures = new();
+        private readonly ComposedPartTextures _partTextures = new();
 
         private readonly MdlPartComposer? _partComposer;
 
@@ -182,7 +186,7 @@ namespace SWLOR.Toolset.Workspace
         /// the point: a ghost built any other way drifts from the preview the builder just clicked.
         /// Composition is not cheap, so callers are expected to hold the result for as long as the
         /// blueprint stays armed rather than rebuild it per frame - and, per the note on
-        /// <see cref="RenderModel(ResourceType, Domain.Gff.JsonGffStruct)"/>, nothing here is cached:
+        /// <see cref="RenderModel(ResourceType, Nwn.Authoring.Documents.NimGff.JsonGffStruct)"/>, nothing here is cached:
         /// caching every blueprint's expanded meshes is what once reached a 37 GB working set.
         /// </remarks>
         public RenderModel? BuildModel(
@@ -221,7 +225,7 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         public RenderModel? BuildModel(
             ResourceType type,
-            Domain.Gff.JsonGffStruct root,
+            Nwn.Authoring.Documents.NimGff.JsonGffStruct root,
             bool useIndexedBlueprint = false,
             bool armorPreviewFemale = false) =>
             BuildModelResult(type, root, useIndexedBlueprint, armorPreviewFemale).Model;
@@ -232,7 +236,7 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         public BlueprintModelRenderResult BuildModelResult(
             ResourceType type,
-            Domain.Gff.JsonGffStruct root,
+            Nwn.Authoring.Documents.NimGff.JsonGffStruct root,
             bool useIndexedBlueprint = false,
             bool armorPreviewFemale = false)
         {
@@ -329,7 +333,7 @@ namespace SWLOR.Toolset.Workspace
         /// previews its own unsaved document; the disk-loading <see cref="Render"/> path cannot see
         /// edits that have not been saved yet.
         /// </summary>
-        public IconImage? RenderItemIcon(Domain.Gff.JsonGffStruct root)
+        public IconImage? RenderItemIcon(Nwn.Authoring.Documents.NimGff.JsonGffStruct root)
         {
             ArgumentNullException.ThrowIfNull(root);
             if (_baseItems == null || _resourceIndex == null)
@@ -337,12 +341,12 @@ namespace SWLOR.Toolset.Workspace
 
             foreach (var stack in ItemIconResolver.Resolve(root, _baseItems.GetOrNull))
             {
-                var layers = new List<TextureImage>(stack.Layers.Count);
+                var layers = new List<ThumbnailTexture>(stack.Layers.Count);
                 foreach (var layer in stack.Layers)
                 {
                     var decoded = TextureLoader.Load(_resourceIndex, layer);
                     if (decoded != null)
-                        layers.Add(decoded);
+                        layers.Add(ToThumbnailTexture(decoded));
                 }
 
                 var composed = IconComposer.Compose(layers);
@@ -353,7 +357,7 @@ namespace SWLOR.Toolset.Workspace
             return null;
         }
 
-        private IconImage? RenderPortrait(Domain.Gff.JsonGffStruct root)
+        private IconImage? RenderPortrait(Nwn.Authoring.Documents.NimGff.JsonGffStruct root)
         {
             if (_portraits == null || _resourceIndex == null)
                 return null;
@@ -380,7 +384,7 @@ namespace SWLOR.Toolset.Workspace
                 if (decoded == null)
                     continue;
 
-                var composed = IconComposer.Compose(new[] { decoded });
+                var composed = IconComposer.Compose(new[] { ToThumbnailTexture(decoded) });
                 if (composed != null)
                     return composed;
             }
@@ -401,7 +405,7 @@ namespace SWLOR.Toolset.Workspace
         /// </remarks>
         private IconImage? RenderModel(
             ResourceType type,
-            Domain.Gff.JsonGffStruct root,
+            Nwn.Authoring.Documents.NimGff.JsonGffStruct root,
             bool useIndexedBlueprint,
             IReadOnlyDictionary<int, int>? layerColorOverrides = null)
         {
@@ -424,21 +428,23 @@ namespace SWLOR.Toolset.Workspace
             }
 
             var tintMapOverrides = TintMapOverrides.Read(new VarTable(root));
-            Func<RenderMesh, TextureImage?>? resolveMeshTexture =
+            Func<RenderMesh, ThumbnailTexture?>? resolveMeshTexture =
                 _textures == null
                     ? null
-                    : mesh => ResolveMeshTexture(
+                    : mesh => ToThumbnailTextureOrNull(ResolveMeshTexture(
                         mesh,
                         layerColors,
                         tintMapOverrides,
-                        useBlueprintOverridesForItemOwnedMeshes: type == ResourceType.Uti);
+                        useBlueprintOverridesForItemOwnedMeshes: type == ResourceType.Uti));
             var pixels = ThumbnailRenderer.Render(
-                model, ModelRenderSize, palette: null,
+                model,
+                ModelRenderSize,
+                palette: null,
                 resolveMeshTexture: resolveMeshTexture,
+                resolveCacheVariant: ResolveTextureCacheVariant,
                 renderDoorTransitionFallback: reference.IsDoorTransition);
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
         }
-
         /// <summary>
         /// Renders a model by resref, with no blueprint involved. This is how a tile gets a thumbnail:
         /// a tile is a row in a .set file, not a module resource, so there is nothing to load fields from
@@ -455,12 +461,12 @@ namespace SWLOR.Toolset.Workspace
                     : BuildRenderModel(modelResRef),
                 ModelRenderSize,
                 palette: null,
-                resolveMeshTexture: _textures == null ? null : mesh => ResolveMeshTexture(mesh),
+                resolveMeshTexture: _textures == null ? null : mesh => ToThumbnailTextureOrNull(ResolveMeshTexture(mesh)),
+                resolveCacheVariant: ResolveTextureCacheVariant,
                 renderDoorTransitionFallback: renderDoorTransitionFallback);
 
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
         }
-
         /// <summary>
         /// Renders a multi-tile palette group as one picture: every slot's model laid out on the
         /// grid, so the thumbnail shows the group's footprint instead of its first tile.
@@ -479,13 +485,14 @@ namespace SWLOR.Toolset.Workspace
             }
 
             var pixels = ThumbnailRenderer.Render(
-                TileGroupPreview.Compose(slots, columns, rows), ModelRenderSize,
+                TileGroupPreview.Compose(slots, columns, rows, copyMeshMetadata: SwlorRenderMeshMetadataStore.Copy),
+                ModelRenderSize,
                 palette: null,
-                resolveMeshTexture: _textures == null ? null : mesh => ResolveMeshTexture(mesh));
+                resolveMeshTexture: _textures == null ? null : mesh => ToThumbnailTextureOrNull(ResolveMeshTexture(mesh)),
+                resolveCacheVariant: ResolveTextureCacheVariant);
 
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
         }
-
         private TextureImage? ResolveMeshTexture(
             RenderMesh mesh,
             IReadOnlyDictionary<int, int>? fallbackLayerColors = null,
@@ -524,7 +531,7 @@ namespace SWLOR.Toolset.Workspace
                 // bitmap-only meshes must retain their authored bitmap even when an unrelated MTR
                 // happens to share its resref.
                 resolveMaterial,
-                mesh.ArmorPart);
+                SwlorRenderMeshMetadataStore.GetArmorPart(mesh));
         }
 
         private bool IsGeneratedTintMaterial(string surfaceName)
@@ -581,8 +588,8 @@ namespace SWLOR.Toolset.Workspace
                 return RenderModel(appearance.Race);
             }
 
-            var root = new Domain.Gff.JsonGffStruct();
-            root.SetInt("Appearance_Type", Domain.Gff.GffFieldType.Word, appearanceId);
+            var root = new Nwn.Authoring.Documents.NimGff.JsonGffStruct();
+            root.SetInt("Appearance_Type", Nwn.Authoring.Documents.NimGff.GffFieldType.Word, appearanceId);
             CreatureAppearanceDefaults.ApplyGenericSegmentedBody(root);
 
             return RenderModel(
@@ -724,8 +731,8 @@ namespace SWLOR.Toolset.Workspace
                 .Select(part => part.Model)
                 .FirstOrDefault();
             IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? sharedFrames = null;
-            IReadOnlyList<MdlAnimationPose.SampledAnimation> sharedAnimations =
-                Array.Empty<MdlAnimationPose.SampledAnimation>();
+            IReadOnlyList<MdlSampledAnimation> sharedAnimations =
+                Array.Empty<MdlSampledAnimation>();
             if (weightedRobe != null)
             {
                 var bindPose = LayeredGarmentBindPose(weightedRobe, skeleton);
@@ -831,7 +838,7 @@ namespace SWLOR.Toolset.Workspace
                         mesh.UsesItemTintOverrides = true;
                         mesh.TintMapOverrides = part.Part.TintMapOverrides ??
                                                 new Dictionary<string, int>(StringComparer.Ordinal);
-                        mesh.ArmorPart = part.Part.ArmorPart;
+                        SwlorRenderMeshMetadataStore.SetArmorPart(mesh, part.Part.ArmorPart);
                     }
                 }
 
@@ -1019,7 +1026,7 @@ namespace SWLOR.Toolset.Workspace
             }
 
             for (var index = 0; index < model.Meshes.Count; index++)
-                model.Meshes[index].ArmorPart = armorParts[index];
+                SwlorRenderMeshMetadataStore.SetArmorPart(model.Meshes[index], armorParts[index]);
         }
 
         /// <summary>Applies a selected surface to a weighted garment before its meshes are built.</summary>
@@ -1219,10 +1226,10 @@ namespace SWLOR.Toolset.Workspace
 
         private bool PartModelExists(string resRef) =>
             _resourceIndex != null &&
-            _resourceIndex.TryLookup(ResourceIdentity.FromFileName(resRef + ".mdl"), out _);
+            _resourceIndex.Contains(ResourceIdentity.FromFileName(resRef + ".mdl"));
 
         /// <summary>Loads an equipped item's root struct so armor can override a creature's body parts.</summary>
-        private Domain.Gff.JsonGffStruct? LoadItemBlueprintRoot(
+        private Nwn.Authoring.Documents.NimGff.JsonGffStruct? LoadItemBlueprintRoot(
             string resRef,
             bool useIndexedBlueprint)
         {
@@ -1241,5 +1248,13 @@ namespace SWLOR.Toolset.Workspace
                 ? moduleOrIndexed.Fields
                 : null;
         }
+        private static ThumbnailTexture ToThumbnailTexture(TextureImage image) =>
+            new(image.Width, image.Height, image.Pixels, image.AlphaCutoff);
+
+        private static ThumbnailTexture? ToThumbnailTextureOrNull(TextureImage? image) =>
+            image == null ? null : ToThumbnailTexture(image);
+
+        internal static ThumbnailTextureCacheVariant ResolveTextureCacheVariant(RenderMesh mesh) =>
+            new($"part:{(int)SwlorRenderMeshMetadataStore.GetArmorPart(mesh)}");
     }
 }

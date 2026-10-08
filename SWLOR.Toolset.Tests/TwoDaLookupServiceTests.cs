@@ -20,6 +20,14 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                var configuredHaksRoot = Environment.GetEnvironmentVariable("SWLOR_TEST_HAKS_ROOT");
+                if (!string.IsNullOrWhiteSpace(configuredHaksRoot))
+                {
+                    if (!Directory.Exists(configuredHaksRoot))
+                        throw new DirectoryNotFoundException($"Configured SWLOR_TEST_HAKS_ROOT does not exist: {configuredHaksRoot}");
+                    return Path.GetFullPath(configuredHaksRoot);
+                }
+
                 var current = new DirectoryInfo(AppContext.BaseDirectory);
                 while (current != null)
                 {

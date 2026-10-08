@@ -1,7 +1,11 @@
+using Nwn.Authoring.Areas.Generation;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Toolset.Domain.AreaGeneration;
-using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
+using Nwn.Authoring.Areas.Generation.Composition;
+using Nwn.Authoring.Areas.Generation.Drafting;
+using Nwn.Authoring.Areas.Generation.Population;
+using Nwn.Authoring.Areas.Generation.Preview;
+using Nwn.Authoring.Areas.Generation.Hosting;
 
 namespace SWLOR.Toolset.Tests.AreaGeneration;
 
@@ -77,3 +81,5 @@ public sealed class LayoutKnobOverridesTests
         parameters.PoolRegions.Should().Be(0);
     }
 }
+
+

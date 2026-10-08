@@ -3,8 +3,10 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
+using Nwn.Toolset.Avalonia.Areas;
 using System.Diagnostics;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -26,7 +28,7 @@ namespace SWLOR.Toolset
 
         /// <summary>
         /// The composed container, for the few views that need a shared service the view model does
-        /// not carry - see <see cref="Viewport.ViewportDisplayOptions"/>. Null before startup finishes.
+        /// not carry - see <see cref="Nwn.Toolset.Avalonia.Areas.AreaViewportDisplayOptions"/>. Null before startup finishes.
         /// </summary>
         public IServiceProvider? Services => _serviceProvider;
 
@@ -37,7 +39,7 @@ namespace SWLOR.Toolset
             // Has to be in place before the shell's docks are templated, and it is a class handler
             // rather than anything the layout owns, so it belongs with the styles rather than with
             // the container built in OnFrameworkInitializationCompleted.
-            Shell.Controls.RailToolTabs.Register();
+            Nwn.Toolset.Avalonia.Docking.RailToolTabs.Register();
             Shell.Controls.ReadableComboBoxDropDowns.Register();
         }
 
@@ -340,7 +342,8 @@ namespace SWLOR.Toolset
                 sp.GetService<TlkService>()));
             services.AddSingleton(sp => new ThumbnailService(
                 sp.GetRequiredService<WorkspaceContext>(),
-                sp.GetRequiredService<BlueprintPreviewRenderer>()));
+                sp.GetRequiredService<BlueprintPreviewRenderer>(),
+                sp.GetRequiredService<OutputLogService>()));
             services.AddSingleton(sp => new PaletteViewModel(
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<CategoryService>(),
@@ -391,8 +394,9 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<WorkspaceContext>(),
                 sp.GetRequiredService<OutputLogService>(),
                 sp.GetRequiredService<ToolsetSettings>()));
-            services.AddSingleton(sp => new Viewport.ViewportDisplayOptions(
-                sp.GetRequiredService<ToolsetSettings>()));
+            services.AddSingleton(sp => new AreaViewportDisplayOptions(
+                new Viewport.ToolsetSettingsViewportDisplayPersistence(
+                    sp.GetRequiredService<ToolsetSettings>())));
             services.AddSingleton<ShellViewModel>();
         }
 

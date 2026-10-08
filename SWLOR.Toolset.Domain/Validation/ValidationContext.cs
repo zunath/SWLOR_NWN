@@ -1,4 +1,5 @@
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Workspace;
@@ -53,7 +54,7 @@ namespace SWLOR.Toolset.Domain.Validation
             try
             {
                 var identity = ResourceIdentity.FromFileName($"{resRef}.{type.Extension()}");
-                return ResourceIndex.TryLookup(identity, out _);
+                return ResourceIndex.Contains(identity);
             }
             catch (Exception)
             {

@@ -4,7 +4,7 @@ using System.Reflection;
 using Avalonia.Threading;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Toolset.Domain.Render.Icons;
+using Nwn.Preview.Icons;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
 
@@ -232,7 +232,7 @@ namespace SWLOR.Toolset.Tests
 
                 var context = new WorkspaceContext(
                     path => new ModuleWorkspace(path), new OutputLogService());
-                context.Open(moduleRoot);
+                context.OpenAndSettle(moduleRoot);
                 await context.Catalog!.BuildTask;
                 var service = new ThumbnailService(context, new CountingSource());
                 var invalidated = new List<(ResourceType Type, string ResRef)>();
@@ -251,7 +251,7 @@ namespace SWLOR.Toolset.Tests
             finally
             {
                 if (Directory.Exists(moduleRoot))
-                    Directory.Delete(moduleRoot, recursive: true);
+                    ScratchDirectory.Delete(moduleRoot);
             }
         }
 
@@ -277,7 +277,7 @@ namespace SWLOR.Toolset.Tests
 
                 var context = new WorkspaceContext(
                     path => new ModuleWorkspace(path), new OutputLogService());
-                context.Open(moduleRoot);
+                context.OpenAndSettle(moduleRoot);
                 await context.Catalog!.BuildTask;
                 var service = new ThumbnailService(context, new CountingSource());
                 var method = typeof(ThumbnailService).GetMethod(
@@ -296,7 +296,7 @@ namespace SWLOR.Toolset.Tests
             finally
             {
                 if (Directory.Exists(moduleRoot))
-                    Directory.Delete(moduleRoot, recursive: true);
+                    ScratchDirectory.Delete(moduleRoot);
             }
         }
 
@@ -424,6 +424,51 @@ namespace SWLOR.Toolset.Tests
             service.TypeIcon(ResourceType.Utp).Should().NotBeSameAs(first);
             service.TypeChipIcon(ResourceType.Utc).Should().NotBeSameAs(
                 first, "the row chip is drawn at its own size rather than scaled down");
+        }
+
+        [AvaloniaTest]
+        public void AnUnavailableRendererSettlesTilePreviewRequests()
+        {
+            var source = new CountingSource { IsAvailable = false };
+            var service = new ThumbnailService(
+                new WorkspaceContext(_ => throw new NotSupportedException(), new OutputLogService()),
+                source);
+            var delivered = 0;
+            var failed = 0;
+
+            service.RequestTileAsync("unavailable_tile", _ => delivered++, onFailed: () => failed++);
+            Drain();
+
+            delivered.Should().Be(0);
+            failed.Should().Be(1);
+            source.ModelCalls.Should().Be(0);
+        }
+
+        [AvaloniaTest]
+        public void ANoImageTileRenderIsLoggedAndCachedFailuresNotifyEveryRequest()
+        {
+            var source = new CountingSource { ModelResult = null };
+            var outputLog = new OutputLogService();
+            var service = new ThumbnailService(
+                new WorkspaceContext(_ => throw new NotSupportedException(), outputLog),
+                source,
+                outputLog);
+            var delivered = 0;
+            var failed = 0;
+
+            service.RequestTileAsync("missing_tile", _ => delivered++, onFailed: () => failed++);
+            Drain();
+
+            delivered.Should().Be(0);
+            failed.Should().Be(1);
+            outputLog.Lines.Should().Contain(line => line.Contains("returned no image for 'missing_tile'"));
+
+            service.RequestTileAsync("missing_tile", _ => delivered++, onFailed: () => failed++);
+            Drain();
+
+            delivered.Should().Be(0);
+            failed.Should().Be(2, "a cached no-image result must settle each new palette request");
+            source.ModelCalls.Should().Be(1, "the no-image result stays cached instead of starting a retry loop");
         }
 
         [AvaloniaTest]

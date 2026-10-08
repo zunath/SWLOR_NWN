@@ -1,11 +1,13 @@
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Domain.Editors.Waypoints
 {
-    public sealed class WaypointBehaviorCatalog
+    public sealed class WaypointBehaviorCatalog : IWaypointBehaviorCatalog
     {
         public const string CreatureSpawnPointId = "creature_spawn_point";
         public const string FishingPointId = "fishing_point";
@@ -47,6 +49,10 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
         public IReadOnlyList<WaypointBehavior> All { get; }
 
         public WaypointBehavior Custom => Get(CustomId);
+
+        public IReadOnlyList<BehaviorFieldDefinition> BasicFields => WaypointEditorLayout.Basic;
+
+        string? IWaypointBehaviorCatalog.PersistedBehaviorLocal => PersistedBehaviorLocal;
 
         public WaypointBehaviorCatalog(
             IGameCodeIndex? gameCodeIndex,
@@ -219,6 +225,7 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
                 new WaypointBehavior
                 {
                     Id = TransitionDestinationId,
+                    PersistedId = TransitionDestinationId,
                     DisplayName = "Transition Destination",
                     Group = "MOVEMENT",
                     Summary = "Where a trigger or door area transition puts the player down.",

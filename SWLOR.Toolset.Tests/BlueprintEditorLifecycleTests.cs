@@ -1,11 +1,14 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Editors;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Editors.Appearance;
+using Nwn.Toolset.Avalonia.Appearances;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
 
@@ -185,28 +188,32 @@ namespace SWLOR.Toolset.Tests
                 log,
                 new ReloadPrompts(),
                 appearanceGallery: (fieldContext, runEdit) =>
-                    new AppearanceGallerySectionViewModel(
-                        options,
-                        thumbnails: null,
-                        currentKey: () => fieldContext.Document.Root
-                            .GetOrNull("Appearance_Type")!.GetInteger().ToString(),
-                        apply: option => runEdit(
-                            "Change creature appearance",
-                            () => fieldContext.Document.Root
-                                .GetOrNull("Appearance_Type")!
-                                .SetInteger(option.CreatureAppearanceId!.Value)),
+                    new AppearanceGalleryViewModel(
+                        AppearanceGalleryOptionAdapter.ToShared(options),
+                        previews: null,
+                        currentId: () => new AppearanceGalleryOptionId(
+                            fieldContext.Document.Root.GetOrNull("Appearance_Type")!.GetInteger().ToString()),
+                        apply: option =>
+                        {
+                            var hostOption = options.Single(candidate => candidate.Key == option.Id.Value);
+                            return runEdit(
+                                "Change creature appearance",
+                                () => fieldContext.Document.Root
+                                    .GetOrNull("Appearance_Type")!
+                                    .SetInteger(hostOption.CreatureAppearanceId!.Value));
+                        },
                         noun: "appearance"));
             var gallery = editor.AppearanceGallery!;
-            gallery.Tiles.Single(tile => tile.IsCurrent).Option.Key.Should().Be("6");
+            gallery.Tiles.Single(tile => tile.IsCurrent).Option.Id.Value.Should().Be("6");
 
-            gallery.Highlighted = gallery.Tiles.Single(tile => tile.Option.Key == "7");
-            gallery.Tiles.Single(tile => tile.IsCurrent).Option.Key.Should().Be("7");
+            gallery.Highlighted = gallery.Tiles.Single(tile => tile.Option.Id.Value == "7");
+            gallery.Tiles.Single(tile => tile.IsCurrent).Option.Id.Value.Should().Be("7");
 
             editor.Undo();
-            gallery.Tiles.Single(tile => tile.IsCurrent).Option.Key.Should().Be("6");
+            gallery.Tiles.Single(tile => tile.IsCurrent).Option.Id.Value.Should().Be("6");
 
             editor.Redo();
-            gallery.Tiles.Single(tile => tile.IsCurrent).Option.Key.Should().Be("7");
+            gallery.Tiles.Single(tile => tile.IsCurrent).Option.Id.Value.Should().Be("7");
 
             editor.Undo();
             editor.OnClose().Should().BeTrue();

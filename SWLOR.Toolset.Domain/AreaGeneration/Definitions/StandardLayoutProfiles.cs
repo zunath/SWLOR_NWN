@@ -1,6 +1,9 @@
 #nullable disable
+using Nwn.Authoring.Areas.Generation.Layouts;
+using Nwn.Authoring.Areas.Generation;
 using System.Collections.Generic;
-using SWLOR.Toolset.Domain.AreaGeneration;
+using Nwn.Authoring.Areas.Generation.Composition;
+using Nwn.Authoring.Areas.Generation.Drafting;
 
 namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
 {
@@ -179,3 +182,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         }
     }
 }
+
+

@@ -91012,7 +91012,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": -3.9000000953674316
+                "value": -3.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -91027,7 +91027,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": -3.9000000953674316
+                "value": -3.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -91042,7 +91042,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": 3.9000000953674316
+                "value": 3.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -91057,7 +91057,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": 3.9000000953674316
+                "value": 3.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -91215,7 +91215,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": -3.9000000953674316
+                "value": -3.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -91230,7 +91230,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": -3.9000000953674316
+                "value": -3.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -91245,7 +91245,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": 3.9000000953674316
+                "value": 3.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -91260,7 +91260,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": 3.9000000953674316
+                "value": 3.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -92027,7 +92027,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": -2.9000000953674316
+                "value": -2.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -92042,7 +92042,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": -2.9000000953674316
+                "value": -2.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -92057,7 +92057,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": 2.9000000953674316
+                "value": 2.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -92072,7 +92072,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": 2.9000000953674316
+                "value": 2.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -92226,11 +92226,11 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": -0.30000001192092896
+                "value": -0.300000011920929
               },
               "PointY": {
                 "type": "float",
-                "value": -0.30000001192092896
+                "value": -0.300000011920929
               },
               "PointZ": {
                 "type": "float",
@@ -92241,11 +92241,11 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": 0.30000001192092896
+                "value": 0.300000011920929
               },
               "PointY": {
                 "type": "float",
-                "value": -0.30000001192092896
+                "value": -0.300000011920929
               },
               "PointZ": {
                 "type": "float",
@@ -92256,11 +92256,11 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": 0.30000001192092896
+                "value": 0.300000011920929
               },
               "PointY": {
                 "type": "float",
-                "value": 0.30000001192092896
+                "value": 0.300000011920929
               },
               "PointZ": {
                 "type": "float",
@@ -92271,11 +92271,11 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": -0.30000001192092896
+                "value": -0.300000011920929
               },
               "PointY": {
                 "type": "float",
-                "value": 0.30000001192092896
+                "value": 0.300000011920929
               },
               "PointZ": {
                 "type": "float",
@@ -92429,7 +92429,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": -0.30000001192092896
+                "value": -0.300000011920929
               },
               "PointY": {
                 "type": "float",
@@ -92444,7 +92444,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": 0.30000001192092896
+                "value": 0.300000011920929
               },
               "PointY": {
                 "type": "float",
@@ -92459,7 +92459,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": 0.30000001192092896
+                "value": 0.300000011920929
               },
               "PointY": {
                 "type": "float",
@@ -92474,7 +92474,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": -0.30000001192092896
+                "value": -0.300000011920929
               },
               "PointY": {
                 "type": "float",
@@ -93651,7 +93651,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": -2.9000000953674316
+                "value": -2.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -93666,7 +93666,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": -2.9000000953674316
+                "value": -2.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -93681,7 +93681,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": 2.9000000953674316
+                "value": 2.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -93696,7 +93696,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": 2.9000000953674316
+                "value": 2.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -93854,7 +93854,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": -2.9000000953674316
+                "value": -2.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -93869,7 +93869,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": -2.9000000953674316
+                "value": -2.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -93884,7 +93884,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": 2.9000000953674316
+                "value": 2.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -93899,7 +93899,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": 2.9000000953674316
+                "value": 2.900000095367432
               },
               "PointZ": {
                 "type": "float",
@@ -94459,7 +94459,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": -3.9000000953674316
+                "value": -3.900000095367432
               },
               "PointY": {
                 "type": "float",
@@ -94474,7 +94474,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": 3.9000000953674316
+                "value": 3.900000095367432
               },
               "PointY": {
                 "type": "float",
@@ -94489,7 +94489,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": 3.9000000953674316
+                "value": 3.900000095367432
               },
               "PointY": {
                 "type": "float",
@@ -94504,7 +94504,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": -3.9000000953674316
+                "value": -3.900000095367432
               },
               "PointY": {
                 "type": "float",
@@ -94662,7 +94662,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": -2.9000000953674316
+                "value": -2.900000095367432
               },
               "PointY": {
                 "type": "float",
@@ -94677,7 +94677,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": 2.9000000953674316
+                "value": 2.900000095367432
               },
               "PointY": {
                 "type": "float",
@@ -94692,7 +94692,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": 2.9000000953674316
+                "value": 2.900000095367432
               },
               "PointY": {
                 "type": "float",
@@ -94707,7 +94707,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": -2.9000000953674316
+                "value": -2.900000095367432
               },
               "PointY": {
                 "type": "float",

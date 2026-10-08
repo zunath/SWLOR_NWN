@@ -11,12 +11,14 @@ using Avalonia.VisualTree;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Doors;
 using SWLOR.Toolset.Domain.Editors.Merchants;
 using SWLOR.Toolset.Domain.Editors.Sounds;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.Editors.Waypoints;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Doors;
@@ -24,6 +26,9 @@ using SWLOR.Toolset.Editors.Merchants;
 using SWLOR.Toolset.Editors.Sounds;
 using SWLOR.Toolset.Editors.Triggers;
 using SWLOR.Toolset.Editors.Waypoints;
+using Nwn.Toolset.Avalonia.Doors.Views;
+using Nwn.Toolset.Avalonia.Sounds.Views;
+using Nwn.Toolset.Avalonia.Waypoints.Views;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -49,7 +54,7 @@ namespace SWLOR.Toolset.Tests
                 Accept,
                 new WaypointBehaviorCatalog(gameCodeIndex: null, transitionDestinationTags: null));
 
-            AssertRenders(new WaypointEditorView { DataContext = editor }, editor.BehaviorList);
+            AssertRenders(new WaypointBehaviorEditorView { DataContext = editor }, editor.BehaviorList);
         }
 
         [AvaloniaTest]
@@ -128,9 +133,9 @@ namespace SWLOR.Toolset.Tests
             var store = new BehaviorValueStore(Struct("UTW "));
             var rows = new[]
             {
-                Row(store, "Tag", BehaviorFieldKind.Text, Domain.Gff.GffFieldType.CExoString),
-                Row(store, "HasMapNote", BehaviorFieldKind.Check, Domain.Gff.GffFieldType.Byte),
-                Row(store, "Appearance", BehaviorFieldKind.Integer, Domain.Gff.GffFieldType.Byte)
+                Row(store, "Tag", BehaviorFieldKind.Text, Nwn.Authoring.Documents.NimGff.GffFieldType.CExoString),
+                Row(store, "HasMapNote", BehaviorFieldKind.Check, Nwn.Authoring.Documents.NimGff.GffFieldType.Byte),
+                Row(store, "Appearance", BehaviorFieldKind.Integer, Nwn.Authoring.Documents.NimGff.GffFieldType.Byte)
             };
 
             foreach (var row in rows)
@@ -230,7 +235,7 @@ namespace SWLOR.Toolset.Tests
                 new BehaviorFieldDefinition
                 {
                     Label = "Dialog", Name = "Conversation", Kind = BehaviorFieldKind.Choice,
-                    FieldType = Domain.Gff.GffFieldType.ResRef, IsSearchable = true
+                    FieldType = Nwn.Authoring.Documents.NimGff.GffFieldType.ResRef, IsSearchable = true
                 },
                 new BehaviorValueStore(Struct("UTW ")),
                 Accept,
@@ -268,7 +273,7 @@ namespace SWLOR.Toolset.Tests
                     Label = "Appearance",
                     Name = "Appearance",
                     Kind = BehaviorFieldKind.Choice,
-                    FieldType = Domain.Gff.GffFieldType.Byte
+                    FieldType = Nwn.Authoring.Documents.NimGff.GffFieldType.Byte
                 },
                 new BehaviorValueStore(Struct("UTW ")),
                 Accept,
@@ -298,7 +303,7 @@ namespace SWLOR.Toolset.Tests
                 Items = waypoint.BehaviorList,
                 ChooseCommand = waypoint.ChooseBehaviorCommand
             };
-            yield return new WaypointEditorView { DataContext = waypoint };
+            yield return new WaypointBehaviorEditorView { DataContext = waypoint };
 
             var trigger = new TriggerEditorViewModel(
                 Struct("UTT "), "trg_test", isInstance: false, Accept);
@@ -310,11 +315,11 @@ namespace SWLOR.Toolset.Tests
 
             var door = new DoorEditorViewModel(
                 Struct("UTD "), "dor_test", isInstance: false, Accept);
-            yield return new DoorEditorView { DataContext = door };
+            yield return new DoorBehaviorEditorView { DataContext = door };
 
             var sound = new SoundEditorViewModel(
                 Struct("UTS "), "snd_test", isInstance: false, Accept);
-            yield return new SoundEditorView { DataContext = sound };
+            yield return new SoundBehaviorEditorView { DataContext = sound };
 
             var merchant = new MerchantEditorViewModel(
                 Struct("UTM "),
@@ -352,7 +357,7 @@ namespace SWLOR.Toolset.Tests
             BehaviorValueStore store,
             string name,
             BehaviorFieldKind kind,
-            Domain.Gff.GffFieldType type) =>
+            Nwn.Authoring.Documents.NimGff.GffFieldType type) =>
             new(
                 new BehaviorFieldDefinition
                 {

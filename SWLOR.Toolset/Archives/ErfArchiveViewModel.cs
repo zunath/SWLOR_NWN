@@ -1,3 +1,4 @@
+using NwnResRef = Nwn.Formats.Resources.ResourceReferenceRules;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;

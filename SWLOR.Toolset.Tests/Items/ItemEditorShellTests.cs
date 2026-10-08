@@ -3,10 +3,13 @@ using NUnit.Framework;
 using System.Security.Cryptography;
 using System.Text.Json;
 using SWLOR.Toolset.Domain.Categories;
+using Nwn.Authoring.Categories;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.GameData.Lookups;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Items;
@@ -258,7 +261,7 @@ namespace SWLOR.Toolset.Tests.Items
         public void DeleteScratchModule()
         {
             if (Directory.Exists(_testRoot))
-                Directory.Delete(_testRoot, recursive: true);
+                ScratchDirectory.Delete(_testRoot);
         }
 
         private string Scratch(string resRef) => Path.Combine(_root, "uti", $"{resRef}.uti.json");
@@ -415,7 +418,9 @@ namespace SWLOR.Toolset.Tests.Items
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(path => new ModuleWorkspace(path), log);
-            workspace.Open(_root);
+            // Open starts background catalog/index scans that read the scratch files; let them
+            // finish before the assertions and before TearDown deletes the module.
+            workspace.OpenAndSettle(_root);
 
             File.ReadAllBytes(oldPath).Should().Equal(oldBytes);
             File.Exists(newPath).Should().BeFalse();

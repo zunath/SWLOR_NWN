@@ -1,5 +1,7 @@
 # Area generator placement and review
 
+The generator window, planners and renderer live in the shared toolset libraries (`Nwn.Authoring` and `Nwn.Toolset.Avalonia`); SWLOR supplies its themes, tileset and layout profiles, and the adapters in `SWLOR.Toolset.Domain/AreaGeneration/Hosting` and `SWLOR.Toolset/AreaGeneration`.
+
 Open **Tools → Area Generator**. Choose the theme, tileset, layout, dimensions and seed, inspect the preview, then create the area in the open module.
 
 ## Placement controls

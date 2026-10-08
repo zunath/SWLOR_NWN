@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using Nwn.Toolset.Avalonia.Areas;
 using SWLOR.Toolset.Domain.GameData.Resources;
 
 namespace SWLOR.Toolset.Viewport
@@ -12,7 +13,7 @@ namespace SWLOR.Toolset.Viewport
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Hosts the same <see cref="GlAreaControl"/> the area editor uses rather than a second
+    /// Hosts the same <see cref="AreaViewportControl"/> the area editor uses rather than a second
     /// renderer: orbit, pan, zoom, lighting, textures and the model cache all come with it, and
     /// there is one GL path to keep working instead of two that drift apart.
     /// </para>
@@ -27,12 +28,13 @@ namespace SWLOR.Toolset.Viewport
     /// </remarks>
     public partial class ModelPreviewControl : UserControl, IDisposable
     {
-        private readonly GlAreaControl? _modelView;
+        private readonly AreaViewportControl? _modelView;
         private readonly Control? _viewportInput;
         private readonly Control? _emptyNotice;
 
         private IModelPreviewSource? _viewModel;
         private ResourceIndex? _subscribedResourceIndex;
+        private SwlorAreaViewportMaterialProvider? _materialProvider;
         private bool _isAttached;
         private bool _sceneBindingReady;
         private int _attachmentGeneration;
@@ -49,7 +51,7 @@ namespace SWLOR.Toolset.Viewport
         {
             InitializeComponent();
 
-            _modelView = this.FindControl<GlAreaControl>("ModelView");
+            _modelView = this.FindControl<AreaViewportControl>("ModelView");
             _viewportInput = this.FindControl<Control>("ViewportInput");
             _emptyNotice = this.FindControl<Control>("EmptyNotice");
 
@@ -100,6 +102,9 @@ namespace SWLOR.Toolset.Viewport
 
             _viewModel = DataContext as IModelPreviewSource;
             _subscribedResourceIndex = _viewModel?.ResourceIndex;
+            _materialProvider = _subscribedResourceIndex is { } resources
+                ? new SwlorAreaViewportMaterialProvider(resources)
+                : null;
 
             if (_viewModel != null)
                 _viewModel.PropertyChanged += OnViewModelPropertyChanged;
@@ -119,6 +124,7 @@ namespace SWLOR.Toolset.Viewport
                     return;
 
                 _modelView?.InvalidateGameResources();
+                _materialProvider?.Invalidate();
                 _viewModel?.ReloadGameResources();
             });
         }
@@ -143,7 +149,8 @@ namespace SWLOR.Toolset.Viewport
 
             var scene = _viewModel?.PreviewScene;
 
-            _modelView.ResourceIndex = _viewModel?.ResourceIndex;
+            _modelView.MaterialProvider = _materialProvider;
+            _modelView.MeshMetadataProvider = _materialProvider;
             _modelView.Scene = scene;
 
             var hasScene = scene != null;

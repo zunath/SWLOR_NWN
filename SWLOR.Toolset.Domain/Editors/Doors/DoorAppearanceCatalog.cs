@@ -1,3 +1,4 @@
+using Nwn.Authoring.Doors;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 
 namespace SWLOR.Toolset.Domain.Editors.Doors

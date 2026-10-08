@@ -1,7 +1,8 @@
 using System.Numerics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
+using Nwn.Preview.Scene;
 using SWLOR.Toolset.Domain.Animation;
 using SWLOR.Toolset.Domain.Render;
 

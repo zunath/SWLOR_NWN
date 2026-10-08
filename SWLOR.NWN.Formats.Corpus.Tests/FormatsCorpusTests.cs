@@ -6,7 +6,7 @@ using NUnit.Framework;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.NWN.Formats.Gff;
 using SWLOR.NWN.Formats.Key;
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
 using SWLOR.NWN.Formats.Plt;
 using SWLOR.NWN.Formats.Tga;
 using SWLOR.NWN.Formats.Tlk;

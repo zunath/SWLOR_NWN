@@ -1,22 +1,11 @@
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.GameData.Lookups;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Editors
 {
-    /// <summary>One selectable option of a 2DA-backed dropdown.</summary>
-    public sealed record LookupOption(long Id, string Display, bool ShowId = true)
-    {
-        /// <summary>
-        /// Behavior editors put an optional id after the readable name; generic dropdowns put it
-        /// before. Both honor the same presentation rule so a lookup cannot drift between editors.
-        /// </summary>
-        public string BehaviorDisplay => ShowId ? $"{Display} ({Id})" : Display;
-
-        public override string ToString() => ShowId ? $"{Id}: {Display}" : Display;
-    }
-
     /// <summary>
     /// Maps schema LookupKeys to option lists built from the lookup services. Every service is
     /// optional — a missing service (or unknown key) yields an empty list, and the editor

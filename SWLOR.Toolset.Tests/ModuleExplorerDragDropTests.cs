@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Categories;
+using Nwn.Authoring.Categories;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Shell.Panels;
 using SWLOR.Toolset.Workspace;
@@ -19,7 +20,7 @@ namespace SWLOR.Toolset.Tests
         {
             _root = Path.Combine(Path.GetTempPath(), $"swlor_explorer_drag_{Guid.NewGuid():N}");
             _module = Path.Combine(_root, "Module");
-            foreach (var folder in new[] { "are", "dlg", "nss", "utc" })
+            foreach (var folder in new[] { "are", "dlg", "gic", "git", "nss", "utc" })
                 Directory.CreateDirectory(Path.Combine(_module, folder));
         }
 
@@ -27,7 +28,7 @@ namespace SWLOR.Toolset.Tests
         public void TearDown()
         {
             if (Directory.Exists(_root))
-                Directory.Delete(_root, recursive: true);
+                ScratchDirectory.Delete(_root);
         }
 
         [TestCase(ResourceType.Area, "are.json")]
@@ -35,11 +36,18 @@ namespace SWLOR.Toolset.Tests
         [TestCase(ResourceType.Nss, "nss")]
         public void AResourceCanBeDraggedIntoAndBackOutOfFolders(ResourceType type, string suffix)
         {
-            File.WriteAllText(Path.Combine(_module, type.Extension(), $"resource_one.{suffix}"), "{}");
+            if (type == ResourceType.Area)
+            {
+                CopyAreaTemplate("resource_one");
+            }
+            else
+            {
+                File.WriteAllText(Path.Combine(_module, type.Extension(), $"resource_one.{suffix}"), "{}");
+            }
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_module);
+            workspace.OpenAndSettle(_module);
             var categories = new CategoryService(workspace, log);
             var section = categories.Section(type)!;
             section.IsSeeded = true;
@@ -94,6 +102,16 @@ namespace SWLOR.Toolset.Tests
             section.FoldersContaining("resource_one").Should().BeEmpty();
         }
 
+        private void CopyAreaTemplate(string targetResRef)
+        {
+            foreach (var extension in new[] { "are", "git", "gic" })
+            {
+                File.Copy(
+                    Path.Combine(CorpusLocator.ModuleDirectory, extension, $"area_template.{extension}.json"),
+                    Path.Combine(_module, extension, $"{targetResRef}.{extension}.json"));
+            }
+        }
+
         [Test]
         public void UndoRestoresEveryPreviousFolderMembership()
         {
@@ -101,7 +119,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_module);
+            workspace.OpenAndSettle(_module);
             var categories = new CategoryService(workspace, log);
             var section = categories.Section(ResourceType.Nss)!;
             section.IsSeeded = true;
@@ -141,7 +159,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_module);
+            workspace.OpenAndSettle(_module);
             var categories = new CategoryService(workspace, log);
             var section = categories.Section(ResourceType.Nss)!;
             section.IsSeeded = true;
@@ -189,7 +207,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_module);
+            workspace.OpenAndSettle(_module);
             var categories = new CategoryService(workspace, log);
             var section = categories.Section(ResourceType.Nss)!;
             section.IsSeeded = true;
@@ -233,7 +251,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_module);
+            workspace.OpenAndSettle(_module);
             var categories = new CategoryService(workspace, log);
             var section = categories.Section(ResourceType.Nss)!;
             section.IsSeeded = true;

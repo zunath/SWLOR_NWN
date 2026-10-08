@@ -2,6 +2,7 @@ using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
@@ -22,6 +23,7 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                if (Support.ToolsetCorpusPaths.RepositoryRoot is { } configuredRoot) return configuredRoot;
                 var current = new DirectoryInfo(AppContext.BaseDirectory);
                 while (current != null)
                 {
@@ -39,7 +41,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         private static string HakBuilderConfigPath => Path.Combine(RepoRoot, "Build", "hakbuilder.json");
-        private static string HaksDirectory => Path.Combine(RepoRoot, "SWLOR_Haks");
+        private static string HaksDirectory => Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks");
         private static string ModuleDirectory => CorpusLocator.ModuleDirectory;
 
         private static ResourceIndex BuildHakOnlyIndex() =>

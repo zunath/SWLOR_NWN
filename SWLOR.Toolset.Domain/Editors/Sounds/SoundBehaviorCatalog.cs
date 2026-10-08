@@ -1,5 +1,7 @@
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Domain.Editors.Sounds
@@ -63,6 +65,7 @@ namespace SWLOR.Toolset.Domain.Editors.Sounds
                 new SoundBehavior
                 {
                     Id = PointLoopId,
+                    IsLoop = true,
                     DisplayName = "Point Loop",
                     Group = "POINT",
                     Fields = new[]
@@ -115,6 +118,7 @@ namespace SWLOR.Toolset.Domain.Editors.Sounds
                 new SoundBehavior
                 {
                     Id = AreaLoopId,
+                    IsLoop = true,
                     DisplayName = "Area Loop",
                     Group = "AREA",
                     Fields = new[]

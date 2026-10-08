@@ -1,7 +1,8 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
+using Nwn.Preview.Scene;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
@@ -227,7 +228,7 @@ namespace SWLOR.Toolset.Tests
                 area.Are, area.Git, new TilesetCatalog(index), new TileModelCache(index));
         }
 
-        private static (Domain.Documents.AreDocument Are, Domain.Documents.GitDocument Git) LoadArea(string resRef)
+        private static (Nwn.Authoring.Documents.Native.AreDocument Are, Nwn.Authoring.Documents.Native.GitDocument Git) LoadArea(string resRef)
         {
             var (are, git, _) = new ModuleWorkspace(CorpusLocator.ModuleDirectory).LoadArea(resRef);
             return (are, git);

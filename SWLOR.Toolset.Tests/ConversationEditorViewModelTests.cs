@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Conversations;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
@@ -70,7 +71,7 @@ namespace SWLOR.Toolset.Tests
         private void ReplaceWithCleanConversation(string text = "Original line.")
         {
             var document = DlgDocument.Parse(ModuleResourceTemplateFactory.CreateFileContent(
-                Domain.Workspace.ResourceType.Dlg, "test_convo", "Test"));
+                Nwn.Authoring.Resources.ModuleResourceType.Dlg, "test_convo", "Test"));
             document.Openings[0].Target.Text = text;
             File.WriteAllBytes(_workingCopy, document.ToBytes());
         }
@@ -92,7 +93,7 @@ namespace SWLOR.Toolset.Tests
         public async Task OpeningAMerchantDoesNotScanPlacedStores()
         {
             var document = DlgDocument.Parse(ModuleResourceTemplateFactory.CreateFileContent(
-                Domain.Workspace.ResourceType.Dlg, "test_convo", "Test"));
+                Nwn.Authoring.Resources.ModuleResourceType.Dlg, "test_convo", "Test"));
             var choice = document.AddReply("Show me your stock.");
             choice.AddAction("action-open-store").Value = "authored_store";
             document.AddLink(document.Openings[0].Target, choice);
@@ -605,7 +606,7 @@ namespace SWLOR.Toolset.Tests
         public void CustomActionScriptDisablesOutcomesUntilCleared()
         {
             var document = DlgDocument.Parse(ModuleResourceTemplateFactory.CreateFileContent(
-                Domain.Workspace.ResourceType.Dlg, "test_convo", "Test"));
+                Nwn.Authoring.Resources.ModuleResourceType.Dlg, "test_convo", "Test"));
             document.Openings[0].Target.Script = "custom_action";
             File.WriteAllBytes(_workingCopy, document.ToBytes());
             using var editor = new Disposable(Open());
@@ -838,7 +839,7 @@ namespace SWLOR.Toolset.Tests
         public async Task BrokenDialogueIsNotSaved()
         {
             var document = DlgDocument.Parse(ModuleResourceTemplateFactory.CreateFileContent(
-                Domain.Workspace.ResourceType.Dlg, "test_convo", "Test"));
+                Nwn.Authoring.Resources.ModuleResourceType.Dlg, "test_convo", "Test"));
             File.WriteAllBytes(_workingCopy, document.ToBytes());
             var before = File.ReadAllBytes(_workingCopy);
             using var editor = new Disposable(Open());
@@ -854,7 +855,7 @@ namespace SWLOR.Toolset.Tests
         public void ANewDialogueStartsWithOnlyTheBehaviorChoice()
         {
             var document = DlgDocument.Parse(ModuleResourceTemplateFactory.CreateFileContent(
-                Domain.Workspace.ResourceType.Dlg, "test_convo", "Test"));
+                Nwn.Authoring.Resources.ModuleResourceType.Dlg, "test_convo", "Test"));
             File.WriteAllBytes(_workingCopy, document.ToBytes());
             using var editor = new Disposable(Open());
 
@@ -867,7 +868,7 @@ namespace SWLOR.Toolset.Tests
         public void MerchantBehaviorSuppliesTheStoreOutcomeAndGoodbye()
         {
             var document = DlgDocument.Parse(ModuleResourceTemplateFactory.CreateFileContent(
-                Domain.Workspace.ResourceType.Dlg, "test_convo", "Test"));
+                Nwn.Authoring.Resources.ModuleResourceType.Dlg, "test_convo", "Test"));
             File.WriteAllBytes(_workingCopy, document.ToBytes());
             using var editor = new Disposable(Open());
             var merchant = editor.Value.BehaviorOptions.Single(option =>

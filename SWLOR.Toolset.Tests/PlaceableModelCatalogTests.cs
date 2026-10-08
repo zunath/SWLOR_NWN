@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
+using SWLOR.Toolset.Tests.Support;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -14,8 +15,7 @@ namespace SWLOR.Toolset.Tests
     {
         private static PlaceableModelCatalog? TryCreate()
         {
-            var haks = Path.Combine(
-                Directory.GetParent(CorpusLocator.ModuleDirectory)!.FullName, "SWLOR_Haks");
+            var haks = ToolsetCorpusPaths.HaksRoot ?? Path.Combine(Directory.GetParent(CorpusLocator.ModuleDirectory)!.FullName, "SWLOR_Haks");
 
             if (!Directory.Exists(Path.Combine(haks, "sw_2da")))
                 return null;
@@ -43,6 +43,15 @@ namespace SWLOR.Toolset.Tests
                 "an unlabelled row falls back to its model resref, so a caption is always present");
             rows.Select(row => row.Id).Should().OnlyHaveUniqueItems(
                 "each selectable 2DA row must appear exactly once in the gallery");
+            var table = new TwoDaService(Path.Combine(ToolsetCorpusPaths.HaksRoot!, "sw_2da")).GetTable("placeables");
+            rows.Should().OnlyContain(row => row.Id >= 0 && row.Id < table.RowCount,
+                "Appearance stores the physical row position, not the printed LABEL value");
+            foreach (var row in rows)
+                table.GetString(row.Id, "ModelName").Should().Be(row.ModelName);
+            var stableRows = string.Join("\n", rows.OrderBy(row => row.Id).Select(row =>
+                $"{row.Id}\t{row.ModelName}\t{row.DisplayName}\t{row.HasLabel}"));
+            var fingerprint = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(stableRows)));
+            TestContext.Progress.WriteLine($"SWLOR placeable catalog: {rows.Count} rows; SHA-256 {fingerprint} (source parity fingerprint, not a baseline executable comparison).");
         }
 
         [Test]
@@ -57,12 +66,12 @@ namespace SWLOR.Toolset.Tests
                 File.WriteAllText(
                     Path.Combine(scratch, "placeables.2da"),
                     "2DA V2.0\r\n\r\nLabel StrRef ModelName\r\n" +
-                    "0 Real_Placeable **** real_model\r\n" +
-                    "1 **** **** unlabeled_model\r\n" +
-                    "2 **** **** bio_reserved\r\n" +
-                    "3 CEP_RESERVED **** reserved_model\r\n" +
-                    "4 Real_No_Model **** ****\r\n" +
-                    "5 User002 **** user_model\r\n");
+                    "17 Real_Placeable **** real_model\r\n" +
+                    "43 **** not-a-number unlabeled_model\r\n" +
+                    "44 **** **** bio_reserved\r\n" +
+                    "45 CEP_RESERVED **** reserved_model\r\n" +
+                    "46 Real_No_Model **** ****\r\n" +
+                    "47 User002 **** user_model\r\n");
                 var catalog = new PlaceableModelCatalog(
                     new TwoDaService(scratch),
                     new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));
@@ -127,8 +136,7 @@ namespace SWLOR.Toolset.Tests
             Directory.CreateDirectory(empty2Da);
             try
             {
-                var haks = Path.Combine(
-                    Directory.GetParent(CorpusLocator.ModuleDirectory)!.FullName, "SWLOR_Haks");
+                var haks = ToolsetCorpusPaths.HaksRoot ?? Path.Combine(Directory.GetParent(CorpusLocator.ModuleDirectory)!.FullName, "SWLOR_Haks");
                 var tlkPath = Path.Combine(haks, "sw_tlk", "sw_tlk.tlk.json");
                 if (!File.Exists(tlkPath))
                     Assert.Ignore("SWLOR_Haks TLK is not available from the test context.");

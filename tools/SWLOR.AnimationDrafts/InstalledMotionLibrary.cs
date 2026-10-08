@@ -1,4 +1,5 @@
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
+using Nwn.Preview.Scene;
 using SWLOR.Toolset.Domain.Animation;
 using System.Text.Json;
 

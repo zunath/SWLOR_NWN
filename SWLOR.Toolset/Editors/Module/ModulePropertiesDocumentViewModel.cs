@@ -6,8 +6,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Documents;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
@@ -105,6 +107,7 @@ namespace SWLOR.Toolset.Editors.Module
 
         private readonly DocumentSession _session;
         private readonly string _moduleRoot;
+        private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly OutputLogService _log;
         private readonly IEditorPromptService _prompts;
         private readonly ModuleCustomContentService? _customContent;
@@ -286,6 +289,7 @@ namespace SWLOR.Toolset.Editors.Module
             ModulePropertiesActions? actions = null)
         {
             _moduleRoot = moduleRoot;
+            _gameCodeIndex = gameCodeIndex;
             _log = log;
             _prompts = prompts;
             _customContent = customContent;
@@ -294,7 +298,7 @@ namespace SWLOR.Toolset.Editors.Module
             Id = $"module-properties:{filePath}";
             _session = DocumentSession.Open(filePath);
             Document = new IfoDocument(_session.Document);
-            Variables = new VarTableSectionViewModel(RunEdit, Document.VarTable, gameCodeIndex);
+            Variables = SwlorVarTablePolicy.Create(RunEdit, Document.VarTable, _gameCodeIndex);
             ScriptChoices = BuildScriptChoices(workspace, Document);
             foreach (var (label, field) in EventDefinitions)
                 Events.Add(new ModuleEventRowViewModel(this, label, field));
@@ -683,7 +687,7 @@ namespace SWLOR.Toolset.Editors.Module
             _refreshing = true;
             try
             {
-                Variables = new VarTableSectionViewModel(RunEdit, Document.VarTable, Variables.GameCodeIndex);
+                Variables = SwlorVarTablePolicy.Create(RunEdit, Document.VarTable, _gameCodeIndex);
                 OnPropertyChanged(nameof(Variables));
                 foreach (var row in Events)
                     row.NotifyValueChanged();

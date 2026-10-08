@@ -5,7 +5,8 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.AnimationDrafts;
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
+using Nwn.Preview.Scene;
 using SWLOR.Toolset.Domain.Animation;
 using SWLOR.Toolset.Domain.Render;
 using TextFieldParser = Microsoft.VisualBasic.FileIO.TextFieldParser;
@@ -144,31 +145,37 @@ public class AnimationDraftAssetTests
         }
     }
 
-    [Test]
-    public void EveryRegisteredClipCanBePreparedAgainstCompiledBanks()
+    private static IEnumerable<TestCaseData> RegisteredClips()
     {
         var registry = JsonSerializer.Deserialize<AnimationRegistration[]>(File.ReadAllText(Path.Combine(Root, "design", "animations", "registry.json")))!;
+        if (registry.Length == 0)
+            throw new InvalidDataException("The installed animation registry contains no clips.");
         foreach (var entry in registry)
+            yield return new TestCaseData(entry)
+                .SetName($"{nameof(EveryRegisteredClipCanBePreparedAgainstCompiledBanks)}({entry.Name})");
+    }
+
+    [TestCaseSource(nameof(RegisteredClips))]
+    public void EveryRegisteredClipCanBePreparedAgainstCompiledBanks(AnimationRegistration entry)
+    {
+        var source = Path.Combine(Root, entry.ProjectPath!);
+        var project = AnimationProject.Deserialize(File.ReadAllText(source));
+        AnimationInstallPlan plan;
+        try
         {
-            var source = Path.Combine(Root, entry.ProjectPath!);
-            var project = AnimationProject.Deserialize(File.ReadAllText(source));
-            AnimationInstallPlan plan;
-            try
-            {
-                plan = AnimationInstall.Prepare(Root, project, entry.Targets.Select(path => Path.Combine(Root, path)), source);
-            }
-            catch (Exception exception)
-            {
-                throw new InvalidDataException($"Could not prepare registered animation '{entry.Name}' against compiled banks.", exception);
-            }
-            var banks = plan.Changes.Where(change => Path.GetExtension(change.Path) == ".mdl").ToArray();
-            banks.Should().HaveCount(entry.Targets.Length);
-            foreach (var bank in banks)
-            {
-                AnimationBankSource.IsBinary(bank.Before!).Should().BeTrue();
-                AnimationBankSource.IsBinary(bank.After).Should().BeFalse("the preview produces editable text for the subsequent native compilation step");
-                plan.Inputs.Should().ContainKey(AnimationBankSource.PathFor(Path.Combine(Root, "SWLOR_Haks"), bank.Path));
-            }
+            plan = AnimationInstall.Prepare(Root, project, entry.Targets.Select(path => Path.Combine(Root, path)), source);
+        }
+        catch (Exception exception)
+        {
+            throw new InvalidDataException($"Could not prepare registered animation '{entry.Name}' against compiled banks.", exception);
+        }
+        var banks = plan.Changes.Where(change => Path.GetExtension(change.Path) == ".mdl").ToArray();
+        banks.Should().HaveCount(entry.Targets.Length);
+        foreach (var bank in banks)
+        {
+            AnimationBankSource.IsBinary(bank.Before!).Should().BeTrue();
+            AnimationBankSource.IsBinary(bank.After).Should().BeFalse("the preview produces editable text for the subsequent native compilation step");
+            plan.Inputs.Should().ContainKey(AnimationBankSource.PathFor(Path.Combine(Root, "SWLOR_Haks"), bank.Path));
         }
     }
 

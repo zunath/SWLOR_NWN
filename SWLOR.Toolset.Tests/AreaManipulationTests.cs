@@ -1,6 +1,8 @@
+using Nwn.Authoring.Areas.Placement;
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using Nwn.Toolset.Avalonia.Areas;
 using SWLOR.Toolset.Domain.Render;
 
 namespace SWLOR.Toolset.Tests
@@ -9,7 +11,7 @@ namespace SWLOR.Toolset.Tests
     /// Coverage for the WP5.2 <see cref="AreaManipulation"/> move/rotate gizmo math:
     /// ray/horizontal-plane intersection (the move gizmo tracks the drag on the plane through the
     /// instance's current Z; place-from-palette tracks it on the Z=0 ground plane) and grid-snap
-    /// rounding. No GL/UI/document dependency - GlAreaControl drives its live drag preview with
+    /// rounding. No GL/UI/document dependency - AreaViewportControl drives its live drag preview with
     /// this, and AreaEditorViewModel commits the final values through InstanceFieldMap only once
     /// the drag releases.
     /// </summary>
@@ -156,7 +158,7 @@ namespace SWLOR.Toolset.Tests
                 LayerColorIndices = palette,
                 TintMapOverrides = tints
             };
-            var clonePreview = typeof(SWLOR.Toolset.Viewport.GlAreaControl).GetMethod(
+            var clonePreview = typeof(AreaViewportControl).GetMethod(
                 "ClonePreview",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!;
 

@@ -1,10 +1,13 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Categories;
+using Nwn.Authoring.Categories;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Tests.Support;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -27,6 +30,8 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                if (ToolsetCorpusPaths.RepositoryRoot is { } selectedRoot)
+                    return selectedRoot;
                 var current = new DirectoryInfo(AppContext.BaseDirectory);
                 while (current != null)
                 {
@@ -66,16 +71,17 @@ namespace SWLOR.Toolset.Tests
                         "No NWN:EE install was found; the standard palettes only exist in the base game.");
 
                 var baseLayer = KeyBifCatalog.Load(Path.Combine(installPath, "data"));
+                var haksRoot = ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks");
                 var index = ResourceIndex.FromHakBuilderConfig(
                     Path.Combine(RepoRoot, "Build", "hakbuilder.json"),
-                    Path.Combine(RepoRoot, "SWLOR_Haks"),
+                    haksRoot,
                     baseLayer);
                 index.EnsureInitialized();
 
                 // The base-game category names are base dialog.tlk strrefs, which is the half that matters
                 // here. The custom TLK is only present when the haks submodule is checked out, so an empty
                 // one stands in for it rather than making these tests depend on the submodule.
-                var swTlkPath = Path.Combine(RepoRoot, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json");
+                var swTlkPath = Path.Combine(haksRoot, "sw_tlk", "sw_tlk.tlk.json");
                 var baseTlkPath = Path.Combine(installPath, "lang", "en", "data", "dialog.tlk");
                 var tlk = File.Exists(swTlkPath)
                     ? TlkService.Load(swTlkPath, baseTlkPath)
@@ -88,7 +94,7 @@ namespace SWLOR.Toolset.Tests
                     Index = index,
                     Tlk = tlk,
                     Workspace = new ModuleWorkspace(CorpusLocator.ModuleDirectory, index),
-                    HasPaletteHak = Directory.Exists(Path.Combine(RepoRoot, "SWLOR_Haks", "sw_palette"))
+                    HasPaletteHak = Directory.Exists(Path.Combine(haksRoot, "sw_palette"))
                 };
             }
 

@@ -40,6 +40,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             CreatureValueStore store,
             CreatureEquipmentSet equipment,
             Func<string, Action, bool> runEdit,
+            Func<string, CreatureEquipmentDocument, Action, bool> runEquipmentEdit,
             Func<Task<IReadOnlyList<CreatureEquipmentChoice>>> allChoices,
             Func<string, CreatureEquipmentChoice?> loadDetails,
             Action changed,
@@ -62,11 +63,11 @@ namespace SWLOR.Toolset.Editors.Creatures
             Slots.Add(Picker("Bolts", 8192, store, runEdit, allChoices, loadDetails, changed, previews, searchChoices));
             Slots.Add(Picker("Bullets", 4096, store, runEdit, allChoices, loadDetails, changed, previews, searchChoices));
             NaturalWeapons.Add(new CreatureWeaponViewModel(
-                "Primary Natural Weapon", CreaturePropertyCatalog.MainWeaponSlot, equipment, runEdit));
+                "Primary Natural Weapon", CreaturePropertyCatalog.MainWeaponSlot, equipment, runEdit, runEquipmentEdit));
             NaturalWeapons.Add(new CreatureWeaponViewModel(
-                "Secondary Natural Weapon", CreaturePropertyCatalog.OffWeaponSlot, equipment, runEdit));
+                "Secondary Natural Weapon", CreaturePropertyCatalog.OffWeaponSlot, equipment, runEdit, runEquipmentEdit));
             NaturalWeapons.Add(new CreatureWeaponViewModel(
-                "Additional Natural Weapon", CreaturePropertyCatalog.CreatureWeaponSlot, equipment, runEdit));
+                "Additional Natural Weapon", CreaturePropertyCatalog.CreatureWeaponSlot, equipment, runEdit, runEquipmentEdit));
             SetProperty(ref _selectedSlot, Slots[0]);
         }
 

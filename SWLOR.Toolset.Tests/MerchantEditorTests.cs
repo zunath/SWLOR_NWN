@@ -1,10 +1,14 @@
+using Nwn.Authoring.Areas.Placement;
+using NwnResRef = Nwn.Formats.Resources.ResourceReferenceRules;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Merchants;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Items;
@@ -1031,7 +1035,7 @@ namespace SWLOR.Toolset.Tests
             var reloadedAreas = new List<string>();
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(path => new ModuleWorkspace(path), log);
-            workspace.Open(moduleRoot);
+            workspace.OpenAndSettle(moduleRoot);
             var service = new MerchantInstanceService(
                 workspace,
                 log,
@@ -1077,7 +1081,7 @@ namespace SWLOR.Toolset.Tests
             finally
             {
                 await workspace.Catalog!.BuildTask;
-                Directory.Delete(Directory.GetParent(moduleRoot)!.FullName, recursive: true);
+                ScratchDirectory.Delete(Directory.GetParent(moduleRoot)!.FullName);
             }
         }
 
@@ -1104,7 +1108,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(path => new ModuleWorkspace(path), log);
-            workspace.Open(moduleRoot);
+            workspace.OpenAndSettle(moduleRoot);
             var service = new MerchantInstanceService(workspace, log);
             using var editor = new MerchantEditorViewModel(
                 merchant.Root,
@@ -1135,7 +1139,7 @@ namespace SWLOR.Toolset.Tests
             {
                 workspace.PlacementIndexInvalidated -= editor.InvalidatePlacedInstances;
                 await workspace.Catalog!.BuildTask;
-                Directory.Delete(Directory.GetParent(moduleRoot)!.FullName, recursive: true);
+                ScratchDirectory.Delete(Directory.GetParent(moduleRoot)!.FullName);
             }
         }
 

@@ -18,6 +18,9 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                if (Support.ToolsetCorpusPaths.RepositoryRoot is { } configuredRoot)
+                    return configuredRoot;
+
                 var current = new DirectoryInfo(AppContext.BaseDirectory);
                 while (current != null)
                 {
@@ -36,8 +39,14 @@ namespace SWLOR.Toolset.Tests
 
         private static (TilesetCatalog Catalog, TileModelCache Models, ModuleWorkspace Workspace) BuildFixture()
         {
+            var installPath = NwnInstallLocator.Locate(Environment.GetEnvironmentVariable("NWN_INSTALL_PATH"))
+                ?? throw new DirectoryNotFoundException(
+                    "Set NWN_INSTALL_PATH to the licensed NWN:EE installation used by the door-anchor corpus tests.");
+            var baseLayer = KeyBifCatalog.Load(Path.Combine(installPath, "data"));
             var index = ResourceIndex.FromHakBuilderConfig(
-                Path.Combine(RepoRoot, "Build", "hakbuilder.json"), Path.Combine(RepoRoot, "SWLOR_Haks"));
+                Path.Combine(RepoRoot, "Build", "hakbuilder.json"),
+                Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks"),
+                baseLayer);
 
             return (new TilesetCatalog(index), new TileModelCache(index), new ModuleWorkspace(CorpusLocator.ModuleDirectory));
         }

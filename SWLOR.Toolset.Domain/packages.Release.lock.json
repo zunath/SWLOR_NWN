@@ -1,0 +1,156 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0": {
+      "Nwn.Authoring": {
+        "type": "Direct",
+        "requested": "[0.1.0-preview.2, )",
+        "resolved": "0.1.0-preview.2",
+        "contentHash": "FRYKIktB0L7itWLgb+2AVaM0V+1H93/BK5BoB/ncCUuXy1Lb9ell+cG3t1yAGu4DOgqHNkkMXduqsh9w88yL/w==",
+        "dependencies": {
+          "Nwn.Formats": "0.1.0-preview.2"
+        }
+      },
+      "Nwn.Formats": {
+        "type": "Direct",
+        "requested": "[0.1.0-preview.2, )",
+        "resolved": "0.1.0-preview.2",
+        "contentHash": "NtptCZYYzhi3CrOs5YvbpqU1AN0hhQfyMIyNQb5VbR8vg7NPNFPiaaprsa5S6pUv8dvhnDKaCBwFJ4SQj9hvAg=="
+      },
+      "Nwn.Preview": {
+        "type": "Direct",
+        "requested": "[0.1.0-preview.2, )",
+        "resolved": "0.1.0-preview.2",
+        "contentHash": "Yy4WoncLJjP6AggJ9tCyw5KCExAlwqMcOsIWWE/uD6RqauTi69bgY1X8wkbsktkH1ZURb6sNJJ+aCfq/H86afA==",
+        "dependencies": {
+          "Nwn.Authoring": "0.1.0-preview.2",
+          "Nwn.Formats": "0.1.0-preview.2"
+        }
+      },
+      "Serilog": {
+        "type": "Direct",
+        "requested": "[4.4.0, )",
+        "resolved": "4.4.0",
+        "contentHash": "ZC6Le3rr4TVJJjS4KsQAesxeF1EhW9qcZmmG7eP5Y2G3+gTGkJEUXkq4+tZNPtyp05I0wWOxnIjwtxFweJsObw=="
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions": {
+        "type": "Transitive",
+        "resolved": "10.0.5",
+        "contentHash": "iVMtq9eRvzyhx8949EGT0OCYJfXi737SbRVzWXE5GrOgGj5AaZ9eUuxA/BSUfmOMALKn/g8KfFaNQw0eiB3lyA=="
+      },
+      "Microsoft.Extensions.Logging.Abstractions": {
+        "type": "Transitive",
+        "resolved": "10.0.5",
+        "contentHash": "9HOdqlDtPptVcmKAjsQ/Nr5Rxfq6FMYLdhvZh1lVmeKR738qeYecQD7+ldooXf+u2KzzR1kafSphWngIM3C6ug==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.5"
+        }
+      },
+      "Newtonsoft.Json": {
+        "type": "Transitive",
+        "resolved": "13.0.4",
+        "contentHash": "pdgNNMai3zv51W5aq268sujXUyx7SNdE2bj1wZcWjAQrKMFZV260lbqYop1d2GM67JI1huLRwxo9ZqnfF/lC6A=="
+      },
+      "NRediSearch": {
+        "type": "Transitive",
+        "resolved": "2.2.79",
+        "contentHash": "z9wrQr4lJKtxoho0/pasJlZ7nbAIXtX+/oo7HG4g7UQ3JDJpJJQbtjYPYltM8X97Az40C4gyszIpPmgMVvaVsw==",
+        "dependencies": {
+          "StackExchange.Redis": "2.2.79"
+        }
+      },
+      "NReJSON": {
+        "type": "Transitive",
+        "resolved": "4.0.0",
+        "contentHash": "nw0k9kYZkWShcx+Z34DllP4KE9HNYvHTs39XByAl6yMNY5b5XkharEi0oOPcaaIEfc4lCembOGoBFVky5VM7Yg==",
+        "dependencies": {
+          "StackExchange.Redis": "2.2.88"
+        }
+      },
+      "NWN.Core": {
+        "type": "Transitive",
+        "resolved": "8193.37.4",
+        "contentHash": "EFHDt//HyNY+WEUnvYLDNCtEMS7tFTVolBJw4OP5VTl6u8qIbXZ59dcsT/38x+zzaebK6/6w9uWx3eZ9ep8JDA==",
+        "dependencies": {
+          "NWNX.NET": "1.0.3"
+        }
+      },
+      "NWN.Native": {
+        "type": "Transitive",
+        "resolved": "8193.37.4",
+        "contentHash": "skuiV/mZS6r/ONCKaIfoM8on3usG9EAq+9ygnf6lPug/ofVfkafoX9R6aC7ptmwqGS9eeUPu+dzvx7nRk/PaEw==",
+        "dependencies": {
+          "NWNX.NET": "1.0.3"
+        }
+      },
+      "NWNX.NET": {
+        "type": "Transitive",
+        "resolved": "1.0.3",
+        "contentHash": "9jorNV7Afpbt3h16Z6IJjXysaD3F81rcZycEwRlgTe2f0Cz6VK7IBbT2iI+FhpQzR/cCeTdug9K+nOD+QfUrXQ=="
+      },
+      "RESPite": {
+        "type": "Transitive",
+        "resolved": "3.0.17",
+        "contentHash": "68slEMyRTUNLc75DruEDsEohFmFfNwkHLLtwQ46bobF+8Tl+UXMKM1kM87ihhKy6JdAqy1RrvAfvBWeLmcY9Gg=="
+      },
+      "Serilog.Sinks.Console": {
+        "type": "Transitive",
+        "resolved": "6.1.1",
+        "contentHash": "8jbqgjUyZlfCuSTaJk6lOca465OndqOz3KZP6Cryt/IqZYybyBu7GP0fE/AXBzrrQB3EBmQntBFAvMVz1COvAA==",
+        "dependencies": {
+          "Serilog": "4.0.0"
+        }
+      },
+      "Serilog.Sinks.File": {
+        "type": "Transitive",
+        "resolved": "7.0.0",
+        "contentHash": "fKL7mXv7qaiNBUC71ssvn/dU0k9t0o45+qm2XgKAlSt19xF+ijjxyA3R6HmCgfKEKwfcfkwWjayuQtRueZFkYw==",
+        "dependencies": {
+          "Serilog": "4.2.0"
+        }
+      },
+      "StackExchange.Redis": {
+        "type": "Transitive",
+        "resolved": "3.0.17",
+        "contentHash": "ItAm9lokZ1mWsQLF3u4Yw4eb/gvkX6Rp9bLAe1KUKgKAjPkALoQwTc6jJLtBZoOv9LT7RwvSIXZZb9FF30QhOg==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.5",
+          "RESPite": "3.0.17",
+          "System.IO.Hashing": "10.0.5"
+        }
+      },
+      "System.IO.Hashing": {
+        "type": "Transitive",
+        "resolved": "10.0.5",
+        "contentHash": "8IBJWcCT9+e4Bmevm4T7+fQEiAh133KGiz4oiVTgJckd3Q76OFdR1falgn9lpz7+C4HJvogCDJeAa2QmvbeVtg=="
+      },
+      "swlor.game.server": {
+        "type": "Project",
+        "dependencies": {
+          "NReJSON": "[4.0.0, )",
+          "NRediSearch": "[2.2.79, )",
+          "NWN.Core": "[8193.37.4, )",
+          "NWN.Native": "[8193.37.4, )",
+          "Newtonsoft.Json": "[13.0.4, )",
+          "SWLOR.NWN.API": "[1.0.0, )",
+          "Serilog": "[4.4.0, )",
+          "Serilog.Sinks.Console": "[6.1.1, )",
+          "Serilog.Sinks.File": "[7.0.0, )",
+          "StackExchange.Redis": "[3.0.17, )"
+        }
+      },
+      "swlor.nwn.api": {
+        "type": "Project",
+        "dependencies": {
+          "NWN.Core": "[8193.37.4, )"
+        }
+      },
+      "swlor.nwn.formats": {
+        "type": "Project",
+        "dependencies": {
+          "Nwn.Formats": "[0.1.0-preview.2, )"
+        }
+      }
+    }
+  }
+}

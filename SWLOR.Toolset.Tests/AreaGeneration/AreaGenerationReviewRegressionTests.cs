@@ -1,13 +1,19 @@
+using TileResolver = Nwn.Authoring.Areas.Generation.Drafting.AreaGenerationTileResolver;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Toolset.Domain.AreaGeneration;
-using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
-using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
+using Nwn.Authoring.Areas.Generation.Composition;
+using Nwn.Authoring.Areas.Generation.Drafting;
+using Nwn.Authoring.Areas.Generation.Population;
+using Nwn.Authoring.Areas.Generation.Preview;
+using Nwn.Authoring.Areas.Generation.Hosting;
+using Nwn.Authoring.Areas.Generation.Decoration;
 using SWLOR.Toolset.Domain.AreaGeneration.Definitions;
-using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
+using Nwn.Authoring.Areas.Generation.Tilesets;
+
+using Nwn.Authoring.Areas.Generation;
 
 namespace SWLOR.Toolset.Tests.AreaGeneration;
 
@@ -381,3 +387,6 @@ public class GeneratedTreasureReviewRegressionTests
             .And.Contain("vrepnpctroop1");
     }
 }
+
+
+

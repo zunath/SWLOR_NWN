@@ -5,6 +5,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Triggers;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Tlk;
@@ -39,7 +40,7 @@ namespace SWLOR.Toolset.Tests
         public void TearDown()
         {
             if (Directory.Exists(_root))
-                Directory.Delete(_root, recursive: true);
+                ScratchDirectory.Delete(_root);
         }
 
         /// <summary>
@@ -130,6 +131,39 @@ namespace SWLOR.Toolset.Tests
                 .Should().BeEquivalentTo(index.TagsFor(ResourceType.Utw))
                 .And.Contain("WP_ONLY")
                 .And.NotContain(new[] { "DOOR_ONLY", "STORE_ONLY" });
+        }
+
+        [Test]
+        public void TransitionDestinationsDistinguishTheOtherKindOfObjectCarryingTheTag()
+        {
+            WriteArea(
+                "typed",
+                waypointTag: "WP_ONLY",
+                displayName: "Typed",
+                doorTag: "DOOR_ONLY",
+                storeTag: "STORE_ONLY");
+            var index = new ModuleTagIndex(new ModuleWorkspace(_root));
+
+            SwlorTransitionDestinations.Resolve(index, BehaviorTagScope.Door, "DOOR_ONLY")
+                .Should().Be(TransitionDestinationResult.Resolved("door in typed"));
+            SwlorTransitionDestinations.Resolve(index, BehaviorTagScope.Waypoint, "WP_ONLY")
+                .Should().Be(TransitionDestinationResult.Resolved("waypoint in typed"));
+            SwlorTransitionDestinations.Resolve(index, BehaviorTagScope.Waypoint, "DOOR_ONLY")
+                .Should().Be(TransitionDestinationResult.WrongType(BehaviorTagScope.Door));
+            SwlorTransitionDestinations.Resolve(index, BehaviorTagScope.Door, "WP_ONLY")
+                .Should().Be(TransitionDestinationResult.WrongType(BehaviorTagScope.Waypoint));
+            SwlorTransitionDestinations.Resolve(index, BehaviorTagScope.Waypoint, "STORE_ONLY")
+                .Should().Be(TransitionDestinationResult.NotFound, "a store never satisfies a destination");
+            SwlorTransitionDestinations.Resolve(index, BehaviorTagScope.WaypointOrDoor, "WP_ONLY")
+                .Should().Be(TransitionDestinationResult.Resolved("waypoint in typed"));
+            SwlorTransitionDestinations.Resolve(index, BehaviorTagScope.None, "DOOR_ONLY")
+                .Should().Be(TransitionDestinationResult.TypeUnset);
+
+            var adapted = SwlorTransitionDestinations.FromLocations(
+                (scope, _) => scope == BehaviorTagScope.Door ? "somewhere" : null);
+            adapted(BehaviorTagScope.Door, "x").Should().Be(TransitionDestinationResult.Resolved("somewhere"));
+            adapted(BehaviorTagScope.Waypoint, "x").Should().Be(TransitionDestinationResult.NotFound);
+            adapted(BehaviorTagScope.None, "x").Should().Be(TransitionDestinationResult.TypeUnset);
         }
 
         [Test]
@@ -230,8 +264,12 @@ namespace SWLOR.Toolset.Tests
             appearance.RefreshUsage();
 
             appearance.Gallery.MatchSummary.Should().Be("1 model");
-            appearance.Gallery.Tiles.Should().ContainSingle()
-                .Which.Option.ModelResRef.Should().Be("plc_used");
+            var selectedId = appearance.Gallery.Tiles.Should().ContainSingle()
+                .Which.Option.Id.Value;
+            selectedId.Should().Be("0");
+            int.TryParse(selectedId, out var selectedAppearanceId).Should().BeTrue();
+            catalog.TryGet(selectedAppearanceId, out var selectedRow).Should().BeTrue();
+            selectedRow.ModelName.Should().Be("plc_used");
         }
 
         [AvaloniaTest]
@@ -240,7 +278,7 @@ namespace SWLOR.Toolset.Tests
             var workspace = new SWLOR.Toolset.Workspace.WorkspaceContext(
                 root => new ModuleWorkspace(root),
                 new SWLOR.Toolset.Workspace.OutputLogService());
-            workspace.Open(_root);
+            workspace.OpenAndSettle(_root);
 
             using var firstStarted = new ManualResetEventSlim();
             using var releaseFirst = new ManualResetEventSlim();

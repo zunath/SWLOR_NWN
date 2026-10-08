@@ -6,6 +6,7 @@ using Avalonia.VisualTree;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Factions;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;

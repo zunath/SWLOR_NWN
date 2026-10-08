@@ -10,8 +10,11 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using FluentAssertions;
 using NUnit.Framework;
+using Nwn.Toolset.Avalonia.Explorer;
+using SharedModuleExplorerView = Nwn.Toolset.Avalonia.Explorer.Views.ModuleExplorerView;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Shell;
@@ -21,6 +24,7 @@ using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
 {
+    using ToolsetEditors = global::SWLOR.Toolset.Editors;
     /// <summary>Resource deletion from each of Module Contents' Areas, Dialogs, and Scripts tabs.</summary>
     [TestFixture]
     public sealed class ModuleExplorerDeleteTests
@@ -42,7 +46,7 @@ namespace SWLOR.Toolset.Tests
         public void TearDown()
         {
             if (Directory.Exists(_root))
-                Directory.Delete(_root, recursive: true);
+                ScratchDirectory.Delete(_root);
         }
 
         [AvaloniaTest]
@@ -128,7 +132,7 @@ namespace SWLOR.Toolset.Tests
         {
             var (explorer, _) = CreateExplorer(ResourceType.Nss, new RecordingPrompts(answer: false));
             var unsorted = explorer.Rows.Single(row => row.Name == "Unsorted");
-            var view = new ModuleExplorerView { DataContext = explorer };
+            var view = new SharedModuleExplorerView { DataContext = explorer.Workflow };
             var window = new Window { Content = view, Width = 500, Height = 500 };
             window.Show();
 
@@ -151,10 +155,12 @@ namespace SWLOR.Toolset.Tests
                 pointerEvent.Should().NotBeNull();
                 var gesture = new TappedEventArgs(InputElement.DoubleTappedEvent, pointerEvent!)
                 {
-                    Source = rowSurface.ContextMenu!.Items.OfType<MenuItem>()
-                        .Single(item => Equals(item.Header, "Delete"))
+                    // The menu's last item is Delete. Picked by position rather than by header: the
+                    // headers are bound to the panel's localized text, which resolves only once the
+                    // menu has opened, and this menu is never opened.
+                    Source = rowSurface.ContextMenu!.Items.OfType<MenuItem>().Last()
                 };
-                typeof(ModuleExplorerView)
+                typeof(SharedModuleExplorerView)
                     .GetMethod("OnItemsDoubleTapped", System.Reflection.BindingFlags.Instance |
                                                        System.Reflection.BindingFlags.NonPublic)!
                     .Invoke(view, new object?[] { tree, gesture });
@@ -206,8 +212,8 @@ namespace SWLOR.Toolset.Tests
             var source = Path.Combine(_module, "nss", resRef + ".nss");
             File.WriteAllText(source, "void main() {}");
             var prompts = new RecordingPrompts(answer: true);
-            Editors.EditorService? editors = null;
-            Editors.ScriptEditorViewModel? document = null;
+            ToolsetEditors.EditorService? editors = null;
+            ToolsetEditors.ScriptEditorViewModel? document = null;
             var (explorer, _) = CreateExplorer(
                 ResourceType.Nss,
                 prompts,
@@ -215,16 +221,16 @@ namespace SWLOR.Toolset.Tests
                 {
                     var dockFactory = new ToolsetDockFactory(
                         null!, null!, null!, null!, null!, null!, null!, null!, null!);
-                    editors = new Editors.EditorService(
+                    editors = new ToolsetEditors.EditorService(
                         workspace,
-                        new Editors.LookupOptionProvider(workspace),
+                        new ToolsetEditors.LookupOptionProvider(workspace),
                         log,
                         dockFactory,
                         prompts);
-                    document = new Editors.ScriptEditorViewModel(source, resRef, log, prompts);
+                    document = new ToolsetEditors.ScriptEditorViewModel(source, resRef, log, prompts);
                     document.OnTextChanged("void main() { // unsaved\n}");
-                    var openScripts = (Dictionary<string, Editors.ScriptEditorViewModel>)
-                        typeof(Editors.EditorService)
+                    var openScripts = (Dictionary<string, ToolsetEditors.ScriptEditorViewModel>)
+                        typeof(ToolsetEditors.EditorService)
                             .GetField("_openScriptEditors", System.Reflection.BindingFlags.Instance |
                                                                System.Reflection.BindingFlags.NonPublic)!
                             .GetValue(editors)!;
@@ -251,8 +257,8 @@ namespace SWLOR.Toolset.Tests
             const string resRef = "changed_open_script";
             var source = Path.Combine(_module, "nss", resRef + ".nss");
             File.WriteAllText(source, "void main() { // original\n}");
-            Editors.EditorService? editors = null;
-            Editors.ScriptEditorViewModel? document = null;
+            ToolsetEditors.EditorService? editors = null;
+            ToolsetEditors.ScriptEditorViewModel? document = null;
             var prompts = new RecordingPrompts(
                 answer: true,
                 onConfirm: () => File.WriteAllText(source, "void main() { // external\n}"));
@@ -263,16 +269,16 @@ namespace SWLOR.Toolset.Tests
                 {
                     var dockFactory = new ToolsetDockFactory(
                         null!, null!, null!, null!, null!, null!, null!, null!, null!);
-                    editors = new Editors.EditorService(
+                    editors = new ToolsetEditors.EditorService(
                         workspace,
-                        new Editors.LookupOptionProvider(workspace),
+                        new ToolsetEditors.LookupOptionProvider(workspace),
                         log,
                         dockFactory,
                         prompts);
-                    document = new Editors.ScriptEditorViewModel(source, resRef, log, prompts);
+                    document = new ToolsetEditors.ScriptEditorViewModel(source, resRef, log, prompts);
                     document.OnTextChanged("void main() { // unsaved\n}");
-                    var openScripts = (Dictionary<string, Editors.ScriptEditorViewModel>)
-                        typeof(Editors.EditorService)
+                    var openScripts = (Dictionary<string, ToolsetEditors.ScriptEditorViewModel>)
+                        typeof(ToolsetEditors.EditorService)
                             .GetField("_openScriptEditors", System.Reflection.BindingFlags.Instance |
                                                                System.Reflection.BindingFlags.NonPublic)!
                             .GetValue(editors)!;
@@ -288,7 +294,7 @@ namespace SWLOR.Toolset.Tests
             editors!.IsOpen(ResourceType.Nss, resRef).Should().BeTrue();
             document!.IsDirty.Should().BeTrue();
             document.TextBinding.Should().Contain("// unsaved");
-            explorer.StatusMessage.Should().Contain("changed while the delete confirmation was open");
+            explorer.StatusMessage.Should().Contain("was not deleted").And.Contain("changed while");
         }
 
         [Test]
@@ -298,8 +304,8 @@ namespace SWLOR.Toolset.Tests
             var source = Path.Combine(_module, "nss", resRef + ".nss");
             File.WriteAllText(source, "void main() {}");
             Action? openScript = null;
-            Editors.EditorService? editors = null;
-            Editors.ScriptEditorViewModel? document = null;
+            ToolsetEditors.EditorService? editors = null;
+            ToolsetEditors.ScriptEditorViewModel? document = null;
             var prompts = new RecordingPrompts(answer: true, onConfirm: () => openScript!());
             var (explorer, _) = CreateExplorer(
                 ResourceType.Nss,
@@ -308,18 +314,18 @@ namespace SWLOR.Toolset.Tests
                 {
                     var dockFactory = new ToolsetDockFactory(
                         null!, null!, null!, null!, null!, null!, null!, null!, null!);
-                    editors = new Editors.EditorService(
+                    editors = new ToolsetEditors.EditorService(
                         workspace,
-                        new Editors.LookupOptionProvider(workspace),
+                        new ToolsetEditors.LookupOptionProvider(workspace),
                         log,
                         dockFactory,
                         prompts);
                     openScript = () =>
                     {
-                        document = new Editors.ScriptEditorViewModel(source, resRef, log, prompts);
+                        document = new ToolsetEditors.ScriptEditorViewModel(source, resRef, log, prompts);
                         document.OnTextChanged("void main() { // newly opened and unsaved\n}");
-                        var openScripts = (Dictionary<string, Editors.ScriptEditorViewModel>)
-                            typeof(Editors.EditorService)
+                        var openScripts = (Dictionary<string, ToolsetEditors.ScriptEditorViewModel>)
+                            typeof(ToolsetEditors.EditorService)
                                 .GetField("_openScriptEditors", System.Reflection.BindingFlags.Instance |
                                                                    System.Reflection.BindingFlags.NonPublic)!
                                 .GetValue(editors)!;
@@ -406,21 +412,21 @@ namespace SWLOR.Toolset.Tests
                 prompts,
                 editorServiceFactory: (workspace, log) =>
                 {
-                    var editors = new Editors.EditorService(
+                    var editors = new ToolsetEditors.EditorService(
                         workspace,
-                        new Editors.LookupOptionProvider(workspace),
+                        new ToolsetEditors.LookupOptionProvider(workspace),
                         log,
                         factory: null!,
                         prompts);
                     openModuleProperties = () =>
                     {
-                        var document = new Editors.Module.ModulePropertiesDocumentViewModel(
+                        var document = new ToolsetEditors.Module.ModulePropertiesDocumentViewModel(
                             ifoPath,
                             _module,
                             workspace.Workspace!,
                             log,
                             prompts);
-                        typeof(Editors.EditorService)
+                        typeof(ToolsetEditors.EditorService)
                             .GetField("_moduleProperties", System.Reflection.BindingFlags.Instance |
                                                           System.Reflection.BindingFlags.NonPublic)!
                             .SetValue(editors, document);
@@ -486,8 +492,8 @@ namespace SWLOR.Toolset.Tests
 
             await explorer.DeleteSelectedResourceCommand.ExecuteAsync(null);
 
-            File.ReadAllText(source).Should().Contain("// new");
-            explorer.StatusMessage.Should().Contain("changed while the delete confirmation was open");
+            File.ReadAllText(source).Should().Be("void main() { // new\n}");
+            explorer.StatusMessage.Should().Contain("was not deleted").And.Contain("changed while");
         }
 
         [Test]
@@ -497,12 +503,58 @@ namespace SWLOR.Toolset.Tests
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
 
-            workspace.Open(_module);
+            workspace.OpenAndSettle(_module);
 
             File.ReadAllText(interrupted.Source).Should().Be("void main() { // original\n}");
             File.ReadAllBytes(interrupted.Compiled).Should().Equal(1, 2, 3);
             File.Exists(interrupted.Backup).Should().BeFalse();
             File.Exists(interrupted.Manifest).Should().BeFalse();
+        }
+
+        [Test]
+        public void WorkspaceOpen_RestoresInterruptedSharedScriptTransactionFromModuleRoot()
+        {
+            const string resRef = "shared_interrupted_script";
+            var source = Path.GetFullPath(Path.Combine(_module, "nss", resRef + ".nss"));
+            var original = "void main() { // shared original\n}"u8.ToArray();
+            var (backup, manifest) = WriteInterruptedSharedDeletion(
+                _module,
+                new[] { _module },
+                source,
+                original);
+
+            new WorkspaceContext(root => new ModuleWorkspace(root), new OutputLogService()).OpenAndSettle(_module);
+
+            File.ReadAllBytes(source).Should().Equal(original);
+            File.Exists(backup).Should().BeFalse();
+            File.Exists(manifest).Should().BeFalse();
+        }
+
+        [Test]
+        public void WorkspaceOpen_RestoresInterruptedSharedDialogTransactionFromConversationRoot()
+        {
+            const string resRef = "shared_interrupted_dialog";
+            var conversationRoot = ModuleWorkspace.ResolveConversationDataRoot(_module);
+            var graph = Path.GetFullPath(Path.Combine(conversationRoot, resRef + ".conversation.json"));
+            var legacy = Path.Combine(_module, "dlg", resRef + ".dlg.json");
+            var original = "{\"nodes\":[]}"u8.ToArray();
+            File.WriteAllText(legacy, "legacy companion");
+            var allowedRoots = new[] { conversationRoot, _module }
+                .Select(Path.GetFullPath)
+                .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+            var (backup, manifest) = WriteInterruptedSharedDeletion(
+                conversationRoot,
+                allowedRoots,
+                graph,
+                original);
+
+            new WorkspaceContext(root => new ModuleWorkspace(root), new OutputLogService()).OpenAndSettle(_module);
+
+            File.ReadAllBytes(graph).Should().Equal(original);
+            File.ReadAllText(legacy).Should().Be("legacy companion");
+            File.Exists(backup).Should().BeFalse();
+            File.Exists(manifest).Should().BeFalse();
         }
 
         [Test]
@@ -551,7 +603,7 @@ namespace SWLOR.Toolset.Tests
 
             File.WriteAllBytes(ifoPath, updatedIfo);
             File.Move(entries[0].SourcePath, entries[0].BackupPath);
-            new WorkspaceContext(root => new ModuleWorkspace(root), new OutputLogService()).Open(_module);
+            new WorkspaceContext(root => new ModuleWorkspace(root), new OutputLogService()).OpenAndSettle(_module);
 
             paths.Should().OnlyContain(path => File.Exists(path));
             entries.Select(entry => entry.BackupPath).Should().OnlyContain(path => !File.Exists(path));
@@ -731,11 +783,11 @@ namespace SWLOR.Toolset.Tests
             ResourceType type,
             IEditorPromptService prompts,
             ModuleMutationLock? mutationLock = null,
-            Func<WorkspaceContext, OutputLogService, Editors.EditorService>? editorServiceFactory = null)
+            Func<WorkspaceContext, OutputLogService, ToolsetEditors.EditorService>? editorServiceFactory = null)
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_module);
+            workspace.OpenAndSettle(_module);
             var categories = new CategoryService(workspace, log);
             categories.Section(type)!.IsSeeded = true;
             categories.SaveChanges().Saved.Should().BeTrue();
@@ -772,6 +824,39 @@ namespace SWLOR.Toolset.Tests
                     Path.Combine(CorpusLocator.ModuleDirectory, folder, "area_template." + extension),
                     Path.Combine(_module, folder, targetResRef + "." + extension));
             }
+        }
+
+        private static (string Backup, string Manifest) WriteInterruptedSharedDeletion(
+            string transactionRoot,
+            IReadOnlyList<string> allowedRoots,
+            string sourcePath,
+            byte[] originalBytes)
+        {
+            var transactionId = Guid.NewGuid().ToString("N");
+            var backupPath = sourcePath + "." + transactionId + ".file-delete-backup";
+            File.WriteAllBytes(backupPath, originalBytes);
+            var manifestPath = Path.Combine(transactionRoot, "." + transactionId + ".file-transaction.json");
+            File.WriteAllText(manifestPath, JsonSerializer.Serialize(new
+            {
+                Version = 1,
+                TransactionId = transactionId,
+                TransactionRoot = Path.GetFullPath(transactionRoot),
+                AllowedRoots = allowedRoots,
+                Entries = new[]
+                {
+                    new
+                    {
+                        Kind = 0,
+                        Path = Path.GetFullPath(sourcePath),
+                        BackupPath = Path.GetFullPath(backupPath),
+                        OriginalSha256 = Convert.ToHexString(SHA256.HashData(originalBytes)),
+                        OriginalBytesBase64 = (string?)null,
+                        ReplacementSha256 = (string?)null,
+                        ReplacementBytesBase64 = (string?)null
+                    }
+                }
+            }));
+            return (backupPath, manifestPath);
         }
 
         private InterruptedDelete SimulateInterruptedScriptDelete(string resRef)

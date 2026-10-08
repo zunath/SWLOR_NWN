@@ -2,12 +2,16 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Shell.Panels;
 using SWLOR.Toolset.Workspace;
+using Nwn.Toolset.Avalonia.Palettes;
+using PaletteSource = SWLOR.Toolset.Shell.Panels.PaletteSource;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -31,11 +35,11 @@ namespace SWLOR.Toolset.Tests
         public void TearDown()
         {
             if (Directory.Exists(_testRoot))
-                Directory.Delete(_testRoot, recursive: true);
+                ScratchDirectory.Delete(_testRoot);
         }
 
         [Test]
-        public void EditCopyCreatesFilesRevealsAndFilesAnIndependentBlueprint()
+        public async Task EditCopyCreatesFilesRevealsAndFilesAnIndependentBlueprint()
         {
             const string sourceResRef = "test_crate";
             const string copyResRef = "test_crate001";
@@ -49,7 +53,10 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_moduleRoot);
+            var catalogCompleted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            workspace.CatalogBuildCompleted += () => catalogCompleted.TrySetResult();
+            workspace.OpenAndSettle(_moduleRoot);
+            await catalogCompleted.Task.WaitAsync(TimeSpan.FromSeconds(10));
             var categories = new CategoryService(workspace, log);
             var furniture = categories.Section(ResourceType.Utp)!.AddFolder("Furniture");
             var containers = furniture.AddChild("Containers");
@@ -70,14 +77,13 @@ namespace SWLOR.Toolset.Tests
                     SelectedType = ResourceType.Utp
                 };
                 palette.Refresh();
-                palette.SelectedRow = palette.Rows.Single(row => row.Name == "Furniture");
-                var tile = new PaletteTileViewModel(
-                    sourceResRef,
-                    "Test Crate",
-                    categoryPath: null,
-                    PaletteSource.Custom);
+                var furnitureRow = palette.PresentationState.Rows.Single(row => row.Name == "Furniture");
+                palette.PresentationState.SelectedRow = furnitureRow;
+                var sourceEntry = palette.PresentationState.Tiles
+                    .Single(entry => entry.ResRef == sourceResRef)
+                    .Snapshot;
 
-                palette.EditCopyCommand.Execute(tile);
+                palette.EditCopy(sourceEntry);
 
                 var copyPath = Path.Combine(_moduleRoot, "utp", copyResRef + ".utp.json");
                 File.Exists(copyPath).Should().BeTrue();
@@ -90,7 +96,7 @@ namespace SWLOR.Toolset.Tests
                     .Find("Furniture", "Containers")!
                     .Members.Should().Contain(copyResRef);
                 palette.Source.Should().Be(PaletteSource.Custom);
-                palette.SelectedTile?.ResRef.Should().Be(copyResRef);
+                palette.PresentationState.SelectedTile?.ResRef.Should().Be(copyResRef);
                 palette.StatusMessage.Should().Contain($"Copied Test Crate as {copyResRef}");
             }
             finally
@@ -104,7 +110,7 @@ namespace SWLOR.Toolset.Tests
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_moduleRoot);
+            workspace.OpenAndSettle(_moduleRoot);
             var mutationLock = new ModuleMutationLock();
             var palette = new PaletteViewModel(
                 workspace,
@@ -138,16 +144,17 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_moduleRoot);
+            workspace.OpenAndSettle(_moduleRoot);
             var categories = new CategoryService(workspace, log);
             var palette = new PaletteViewModel(workspace, categories, log)
             {
                 SelectedType = ResourceType.Utp
             };
             palette.Refresh();
-            palette.SelectedRow = palette.Rows.Single(row => row.IsUnsorted);
-            palette.Tiles.Should().Contain(tile => tile.ResRef == sourceResRef);
-            palette.Tiles.Should().NotContain(tile => tile.ResRef == copyResRef);
+            var unsorted = palette.PresentationState.Rows.Single(row => row.Name == "Unsorted");
+            palette.PresentationState.SelectedRow = unsorted;
+            palette.PresentationState.Tiles.Should().Contain(tile => tile.ResRef == sourceResRef);
+            palette.PresentationState.Tiles.Should().NotContain(tile => tile.ResRef == copyResRef);
 
             var editors = new EditorService(
                 workspace,
@@ -163,7 +170,7 @@ namespace SWLOR.Toolset.Tests
             editCopy.Invoke(editors, new object[] { ResourceType.Utp, sourceResRef })
                 .Should().Be(copyResRef);
 
-            palette.Tiles.Should().Contain(tile => tile.ResRef == copyResRef,
+            palette.PresentationState.Tiles.Should().Contain(tile => tile.ResRef == copyResRef,
                 "the viewport copy must appear under Unsorted without an unrelated palette refresh");
         }
     }

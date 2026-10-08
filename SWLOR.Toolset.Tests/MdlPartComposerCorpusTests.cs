@@ -1,9 +1,11 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
+using Nwn.Preview.Scene;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
+using SWLOR.Toolset.Tests.Support;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -14,6 +16,9 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                if (ToolsetCorpusPaths.RepositoryRoot is { } selected)
+                    return selected;
+
                 for (var current = new DirectoryInfo(AppContext.BaseDirectory);
                      current != null;
                      current = current.Parent)
@@ -28,6 +33,8 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
+        private static string HaksRoot => ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepositoryRoot, "SWLOR_Haks");
+
         [Test]
         public void FemaleHumanSkeleton_ComposesEverySupportedRealPartCategory()
         {
@@ -36,7 +43,7 @@ namespace SWLOR.Toolset.Tests
             var baseLayer = KeyBifCatalog.Load(Path.Combine(installRoot!, "data"));
             var index = ResourceIndex.FromHakBuilderConfig(
                 Path.Combine(RepositoryRoot, "Build", "hakbuilder.json"),
-                Path.Combine(RepositoryRoot, "SWLOR_Haks"),
+                HaksRoot,
                 baseLayer);
 
             MdlModel? Load(string resRef, bool isSkeleton)
@@ -109,7 +116,7 @@ namespace SWLOR.Toolset.Tests
             var baseLayer = KeyBifCatalog.Load(Path.Combine(installRoot!, "data"));
             var index = ResourceIndex.FromHakBuilderConfig(
                 Path.Combine(RepositoryRoot, "Build", "hakbuilder.json"),
-                Path.Combine(RepositoryRoot, "SWLOR_Haks"),
+                HaksRoot,
                 baseLayer);
 
             MdlModel? Load(string resRef, bool isSkeleton)

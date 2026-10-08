@@ -1,3 +1,4 @@
+using NwnResRef = Nwn.Formats.Resources.ResourceReferenceRules;
 // SPDX-License-Identifier: MIT
 
 using SWLOR.NWN.Formats.Common;

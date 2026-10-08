@@ -20,6 +20,7 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                if (Support.ToolsetCorpusPaths.RepositoryRoot is { } configuredRoot) return Path.Combine(configuredRoot, "Module");
                 var current = new DirectoryInfo(AppContext.BaseDirectory);
                 while (current != null)
                 {

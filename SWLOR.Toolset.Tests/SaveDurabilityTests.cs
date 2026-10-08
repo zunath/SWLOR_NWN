@@ -3,7 +3,8 @@ using System.Text;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Editing;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Validation;
 using SWLOR.Toolset.Domain.Workspace;
@@ -45,12 +46,12 @@ namespace SWLOR.Toolset.Tests
         public void AnInterruptedGroupedSaveGetsItsOriginalBack()
         {
             var target = Path.Combine(_root, "git", "cantina.git.json");
-            var backup = target + "." + Guid.NewGuid().ToString("N") + SaveService.BackupSuffix;
+            var backup = target + "." + Guid.NewGuid().ToString("N") + AtomicFileGroupWriter.BackupSuffix;
             File.WriteAllText(backup, "{\"__data_type\":\"GIT \"}");
 
             File.Exists(target).Should().BeFalse("this is the state the interruption leaves behind");
 
-            var restored = SaveService.RecoverInterruptedSaves(_root);
+            var restored = SwlorFileWriteAccess.Writer.RecoverInterruptedSaves(_root);
 
             restored.Should().ContainSingle().Which.Should().Be(target);
             File.Exists(target).Should().BeTrue();
@@ -66,10 +67,10 @@ namespace SWLOR.Toolset.Tests
         {
             var target = Path.Combine(_root, "git", "cantina.git.json");
             File.WriteAllText(target, "{\"saved\":true}");
-            var backup = target + "." + Guid.NewGuid().ToString("N") + SaveService.BackupSuffix;
+            var backup = target + "." + Guid.NewGuid().ToString("N") + AtomicFileGroupWriter.BackupSuffix;
             File.WriteAllText(backup, "{\"stale\":true}");
 
-            SaveService.RecoverInterruptedSaves(_root).Should().BeEmpty();
+            SwlorFileWriteAccess.Writer.RecoverInterruptedSaves(_root).Should().BeEmpty();
 
             File.ReadAllText(target).Should().Be("{\"saved\":true}");
             File.Exists(backup).Should().BeFalse();
@@ -83,15 +84,15 @@ namespace SWLOR.Toolset.Tests
             var transactionId = Guid.NewGuid().ToString("N");
             var areTarget = Path.Combine(_root, "are", "cantina.are.json");
             var gitTarget = Path.Combine(_root, "git", "cantina.git.json");
-            var areBackup = areTarget + "." + transactionId + SaveService.BackupSuffix;
-            var gitBackup = gitTarget + "." + transactionId + SaveService.BackupSuffix;
+            var areBackup = areTarget + "." + transactionId + AtomicFileGroupWriter.BackupSuffix;
+            var gitBackup = gitTarget + "." + transactionId + AtomicFileGroupWriter.BackupSuffix;
 
             File.WriteAllText(areTarget, newAre);
             File.WriteAllText(areBackup, "{\"generation\":\"old-are\"}");
             File.WriteAllText(gitBackup, "{\"generation\":\"old-git\"}");
 
             var manifestPath = Path.Combine(
-                _root, "." + transactionId + SaveService.TransactionSuffix);
+                _root, "." + transactionId + AtomicFileGroupWriter.TransactionSuffix);
             File.WriteAllText(
                 manifestPath,
                 JsonSerializer.Serialize(new
@@ -117,7 +118,7 @@ namespace SWLOR.Toolset.Tests
                     }
                 }));
 
-            var restored = SaveService.RecoverInterruptedSaves(_root);
+            var restored = SwlorFileWriteAccess.Writer.RecoverInterruptedSaves(_root);
 
             restored.Should().BeEquivalentTo(areTarget, gitTarget);
             File.ReadAllText(areTarget).Should().Be("{\"generation\":\"old-are\"}");
@@ -142,8 +143,8 @@ namespace SWLOR.Toolset.Tests
             var transactionId = Guid.NewGuid().ToString("N");
             var areTarget = Path.Combine(_root, "are", "cantina.are.json");
             var gitTarget = Path.Combine(_root, "git", "cantina.git.json");
-            var areBackup = areTarget + "." + transactionId + SaveService.BackupSuffix;
-            var gitBackup = gitTarget + "." + transactionId + SaveService.BackupSuffix;
+            var areBackup = areTarget + "." + transactionId + AtomicFileGroupWriter.BackupSuffix;
+            var gitBackup = gitTarget + "." + transactionId + AtomicFileGroupWriter.BackupSuffix;
 
             File.WriteAllText(areTarget, newAre);
             File.WriteAllText(areBackup, "{\"generation\":\"old-are\"}");
@@ -154,7 +155,7 @@ namespace SWLOR.Toolset.Tests
             Directory.CreateDirectory(gitTarget);
 
             var manifestPath = Path.Combine(
-                _root, "." + transactionId + SaveService.TransactionSuffix);
+                _root, "." + transactionId + AtomicFileGroupWriter.TransactionSuffix);
             File.WriteAllText(
                 manifestPath,
                 JsonSerializer.Serialize(new
@@ -180,7 +181,7 @@ namespace SWLOR.Toolset.Tests
                     }
                 }));
 
-            Action act = () => SaveService.RecoverInterruptedSaves(_root);
+            Action act = () => SwlorFileWriteAccess.Writer.RecoverInterruptedSaves(_root);
 
             act.Should().Throw<SaveRecoveryException>()
                 .Which.Message.Should().Contain(gitTarget);
@@ -202,9 +203,9 @@ namespace SWLOR.Toolset.Tests
             const string external = "{\"generation\":\"newer-external-edit\"}";
             var transactionId = Guid.NewGuid().ToString("N");
             var target = Path.Combine(_root, "git", "cantina.git.json");
-            var backup = target + "." + transactionId + SaveService.BackupSuffix;
+            var backup = target + "." + transactionId + AtomicFileGroupWriter.BackupSuffix;
             var manifestPath = Path.Combine(
-                _root, "." + transactionId + SaveService.TransactionSuffix);
+                _root, "." + transactionId + AtomicFileGroupWriter.TransactionSuffix);
 
             File.WriteAllText(target, external);
             File.WriteAllText(backup, "{\"generation\":\"original\"}");
@@ -225,7 +226,7 @@ namespace SWLOR.Toolset.Tests
                     }
                 }));
 
-            Action act = () => SaveService.RecoverInterruptedSaves(_root);
+            Action act = () => SwlorFileWriteAccess.Writer.RecoverInterruptedSaves(_root);
 
             act.Should().Throw<SaveRecoveryException>()
                 .Which.Message.Should().Contain(target);
@@ -247,8 +248,8 @@ namespace SWLOR.Toolset.Tests
             var transactionId = Guid.NewGuid().ToString("N");
             var areTarget = Path.Combine(_root, "are", "cantina.are.json");
             var gitTarget = Path.Combine(_root, "git", "cantina.git.json");
-            var areBackup = areTarget + "." + transactionId + SaveService.BackupSuffix;
-            var gitBackup = gitTarget + "." + transactionId + SaveService.BackupSuffix;
+            var areBackup = areTarget + "." + transactionId + AtomicFileGroupWriter.BackupSuffix;
+            var gitBackup = gitTarget + "." + transactionId + AtomicFileGroupWriter.BackupSuffix;
 
             // A replacement landed for the ARE but not the GIT: the generic orphan sweep would
             // delete the ARE backup (target exists) while restoring the GIT backup, leaving the
@@ -258,10 +259,10 @@ namespace SWLOR.Toolset.Tests
             File.WriteAllText(gitBackup, "{\"generation\":\"old-git\"}");
 
             var manifestPath = Path.Combine(
-                _root, "." + transactionId + SaveService.TransactionSuffix);
+                _root, "." + transactionId + AtomicFileGroupWriter.TransactionSuffix);
             File.WriteAllText(manifestPath, "{ this is not json");
 
-            Action act = () => SaveService.RecoverInterruptedSaves(_root);
+            Action act = () => SwlorFileWriteAccess.Writer.RecoverInterruptedSaves(_root);
 
             act.Should().Throw<SaveRecoveryException>().Which.Message.Should().Contain(manifestPath);
 
@@ -283,18 +284,18 @@ namespace SWLOR.Toolset.Tests
             var transactionId = Guid.NewGuid().ToString("N");
             var areTarget = Path.Combine(_root, "are", "cantina.are.json");
             var gitTarget = Path.Combine(_root, "git", "cantina.git.json");
-            var areBackup = areTarget + "." + transactionId + SaveService.BackupSuffix;
-            var gitBackup = gitTarget + "." + transactionId + SaveService.BackupSuffix;
+            var areBackup = areTarget + "." + transactionId + AtomicFileGroupWriter.BackupSuffix;
+            var gitBackup = gitTarget + "." + transactionId + AtomicFileGroupWriter.BackupSuffix;
 
             File.WriteAllText(areTarget, "{\"generation\":\"new\"}");
             File.WriteAllText(areBackup, "{\"generation\":\"old-are\"}");
             File.WriteAllText(gitBackup, "{\"generation\":\"old-git\"}");
 
             var manifestPath = Path.Combine(
-                _root, "." + transactionId + SaveService.TransactionSuffix);
+                _root, "." + transactionId + AtomicFileGroupWriter.TransactionSuffix);
             File.WriteAllText(manifestPath, "null");
 
-            Action act = () => SaveService.RecoverInterruptedSaves(_root);
+            Action act = () => SwlorFileWriteAccess.Writer.RecoverInterruptedSaves(_root);
 
             act.Should().Throw<SaveRecoveryException>().Which.Message.Should().Contain(manifestPath);
 
@@ -318,7 +319,7 @@ namespace SWLOR.Toolset.Tests
             // Held open with no sharing, so the move onto it cannot succeed.
             using (var _ = new FileStream(target, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
             {
-                var write = () => SaveService.WriteAtomic(target, Encoding.UTF8.GetBytes("{\"new\":true}"));
+                var write = () => SwlorFileWriteAccess.Writer.WriteAtomic(target, Encoding.UTF8.GetBytes("{\"new\":true}"));
                 write.Should().Throw<Exception>("the target is locked, so the move onto it cannot land");
             }
 

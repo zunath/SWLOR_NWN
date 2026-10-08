@@ -11,12 +11,14 @@ using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.Documents;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Creatures;
 using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Lookups;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
@@ -33,6 +35,7 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                if (Support.ToolsetCorpusPaths.RepositoryRoot is { } configuredRoot) return configuredRoot;
                 var current = new DirectoryInfo(AppContext.BaseDirectory);
                 while (current != null)
                 {
@@ -52,7 +55,7 @@ namespace SWLOR.Toolset.Tests
         private static ResourceIndex Resources() =>
             ResourceIndex.FromHakBuilderConfig(
                 Path.Combine(RepoRoot, "Build", "hakbuilder.json"),
-                Path.Combine(RepoRoot, "SWLOR_Haks"));
+                (Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks")));
 
         private static RenderModel ModelWith(string material) =>
             new()
@@ -83,7 +86,7 @@ namespace SWLOR.Toolset.Tests
             const string second = "pmh0_r_ro_c34862";
             var meshes = ModelWith(first).Meshes.Concat(ModelWith(second).Meshes).ToArray();
             foreach (var mesh in meshes)
-                mesh.ArmorPart = AppearanceArmor.Robe;
+                SwlorRenderMeshMetadataStore.SetArmorPart(mesh, AppearanceArmor.Robe);
             var editor = new TintMapEditorViewModel(variables,
                 (_, mutation) => { mutation(); return true; }, catalog);
             editor.Reload(new RenderModel { Meshes = meshes,
@@ -124,11 +127,12 @@ namespace SWLOR.Toolset.Tests
             var editor = new TintMapEditorViewModel(store.Locals, Edit, catalog);
             var meshes = ModelWith("pmh0_robe170").Meshes
                 .Concat(ModelWith("pmh0_r_ro_c34862").Meshes).ToList();
-            foreach (var mesh in meshes) mesh.ArmorPart = AppearanceArmor.Robe;
+            foreach (var mesh in meshes)
+                SwlorRenderMeshMetadataStore.SetArmorPart(mesh, AppearanceArmor.Robe);
             if (secondPart)
             {
                 var torso = ModelWith("pmh0_chest156").Meshes.Single();
-                torso.ArmorPart = AppearanceArmor.Torso;
+                SwlorRenderMeshMetadataStore.SetArmorPart(torso, AppearanceArmor.Torso);
                 meshes.Add(torso);
             }
             editor.Reload(new RenderModel { Meshes = meshes });
@@ -585,7 +589,7 @@ namespace SWLOR.Toolset.Tests
                 },
                 catalog!);
             var model = ItemOwnedModelWith(material);
-            model.Meshes.Single().ArmorPart = AppearanceArmor.Torso;
+            SwlorRenderMeshMetadataStore.SetArmorPart(model.Meshes.Single(), AppearanceArmor.Torso);
 
             editor.Reload(model, includeNonItemOwnedMaterials: false);
 
@@ -842,7 +846,7 @@ namespace SWLOR.Toolset.Tests
             skin.Palette.Number = 12;
 
             store.GetInteger(
-                    SWLOR.Toolset.Domain.Editors.Behaviors.BehaviorFieldStorage.Field,
+                    Nwn.Authoring.Behaviors.BehaviorFieldStorage.Field,
                     "Color_Skin")
                 .Should().Be(12);
             store.Locals.GetInt(key).Should().BeNull(

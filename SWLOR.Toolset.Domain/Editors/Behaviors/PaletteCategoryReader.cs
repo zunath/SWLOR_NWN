@@ -1,4 +1,5 @@
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 
 namespace SWLOR.Toolset.Domain.Editors.Behaviors
 {

@@ -1,7 +1,8 @@
 #nullable disable
 using System.Collections.Generic;
-using SWLOR.Toolset.Domain.AreaGeneration;
-using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
+using Nwn.Authoring.Areas.Generation.Composition;
+using Nwn.Authoring.Areas.Generation.Drafting;
+using Nwn.Authoring.Areas.Generation.Decoration;
 
 namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
 {
@@ -75,3 +76,5 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         }
     }
 }
+
+

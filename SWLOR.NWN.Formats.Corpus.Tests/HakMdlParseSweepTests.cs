@@ -2,7 +2,7 @@
 
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
 
 namespace SWLOR.NWN.Formats.Corpus.Tests;
 

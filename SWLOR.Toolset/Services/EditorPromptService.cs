@@ -1,4 +1,5 @@
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Shell.Views;
 
 namespace SWLOR.Toolset.Services

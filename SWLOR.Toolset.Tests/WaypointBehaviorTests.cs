@@ -1,10 +1,13 @@
+using Avalonia.Headless.NUnit;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Waypoints;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Waypoints;
@@ -37,10 +40,10 @@ namespace SWLOR.Toolset.Tests
 
         private static readonly Dictionary<string, int> ExpectedPlacementCounts = new()
         {
-            [WaypointBehaviorCatalog.CreatureSpawnPointId] = 2122,
+            [WaypointBehaviorCatalog.CreatureSpawnPointId] = 2123,
             [WaypointBehaviorCatalog.FishingPointId] = 431,
-            [WaypointBehaviorCatalog.MapNoteId] = 379,
-            [WaypointBehaviorCatalog.StuckRescuePointId] = 331,
+            [WaypointBehaviorCatalog.MapNoteId] = 375,
+            [WaypointBehaviorCatalog.StuckRescuePointId] = 332,
             [WaypointBehaviorCatalog.TransitionDestinationId] = 247,
             [WaypointBehaviorCatalog.PropertyEntranceId] = 43,
             [WaypointBehaviorCatalog.StarshipDockId] = 11,
@@ -49,7 +52,7 @@ namespace SWLOR.Toolset.Tests
             [WaypointBehaviorCatalog.TaxiStopId] = 4,
             [WaypointBehaviorCatalog.DeathRespawnId] = 1,
             [WaypointBehaviorCatalog.RebuildId] = 2,
-            [WaypointBehaviorCatalog.CustomId] = 622
+            [WaypointBehaviorCatalog.CustomId] = 625
         };
 
         private static string GameServerSourceRoot =>
@@ -90,12 +93,16 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void PlacementBehaviorCountsMatchTheModuleCorpus()
         {
-            var counts = CorpusPlacements()
+            var placements = CorpusPlacements().ToArray();
+            var warlord = placements.Single(waypoint =>
+                waypoint.GetStringOrNull("Tag") == "TATOOINE_TUSKEN_WARLORD");
+            Catalog().Classify(warlord).Id.Should().Be(WaypointBehaviorCatalog.CreatureSpawnPointId);
+            var counts = placements
                 .GroupBy(waypoint => Catalog().Classify(waypoint).Id)
                 .ToDictionary(group => group.Key, group => group.Count());
 
             counts.Should().BeEquivalentTo(ExpectedPlacementCounts);
-            counts.Values.Sum().Should().Be(4213);
+            counts.Values.Sum().Should().Be(4214);
         }
 
         [Test]
@@ -477,49 +484,22 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void PlainChoiceTemplateWrapsLongWaypointLabels()
-        {
-            // The row markup is shared by every behavior editor now, so the wrapping rule lives in
-            // one place rather than in a waypoint-only template.
-            var view = File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot,
-                "SWLOR.Toolset",
-                "Editors",
-                "Behaviors",
-                "BehaviorRowView.axaml"));
-
-            view.Should().Contain(
-                "<TextBlock Text=\"{Binding Display}\" TextWrapping=\"Wrap\" MaxWidth=\"420\" />");
-        }
-
-        [Test]
         public void TheRowGivesItsWidthToTheValueRatherThanTheLabel()
         {
             // Every pixel the label column takes comes out of the value, and the value is the part
-            // that has to hold a search list, a picture grid, or a tag.
-            foreach (var (path, file) in SharedRowMarkup())
-            {
-                file.Should().NotContain("ColumnDefinitions=\"220,*\"",
-                    $"{path} still reserves the old label column");
-                file.Should().NotContain("ColumnDefinitions=\"180,*\"",
-                    $"{path} still reserves the old label column");
-            }
+            // that has to hold a search list, a picture grid, or a tag. The shared row markup has
+            // its own check in the shared library's tests; this covers the app's own templates.
+            var app = File.ReadAllText(Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "App.axaml"));
+            app.Should().NotContain("ColumnDefinitions=\"220,*\"", "App.axaml still reserves the old label column");
+            app.Should().NotContain("ColumnDefinitions=\"180,*\"", "App.axaml still reserves the old label column");
 
             // Anything drawn underneath a row follows the row: indented under the label column when
-            // there is room for one, and full width when there is not. A fixed grid cannot do the
-            // second, which is how a key-item list ends up hanging off the side of a narrow pane.
-            foreach (var view in new[] { "DoorEditorView.axaml", "SoundEditorView.axaml" })
-            {
-                File.ReadAllText(Path.Combine(
-                        CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", view))
-                    .Should().Contain("behaviors:LabeledFieldPanel", $"{view} follows the shared row");
-            }
+            // there is room for one, and full width when there is not. The door, sound and waypoint
+            // editors are the shared behavior editor views, whose markup the shared library's
+            // BehaviorEditorMarkupTests hold to the same rules; the app must host those views.
+            AssertHostsSharedBehaviorEditors();
 
-            foreach (var view in new[]
-                     {
-                         "WaypointEditorView.axaml", "TriggerDocumentView.axaml",
-                         "DoorEditorView.axaml", "SoundEditorView.axaml"
-                     })
+            foreach (var view in new[] { "TriggerDocumentView.axaml" })
             {
                 var markup = File.ReadAllText(Path.Combine(
                     CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", view));
@@ -529,48 +509,50 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void APictureSetThatFitsThePageIsNotHiddenBehindAButton()
-        {
-            var row = File.ReadAllText(Path.Combine(
-                CorpusLocator.RepositoryRoot,
-                "SWLOR.Toolset", "Editors", "Behaviors", "BehaviorRowView.axaml"));
-
-            // The inline grid is the whole point of a picture picker: names are what it replaces.
-            row.Should().Contain("IsVisible=\"{Binding IsInlineGallery}\"");
-            row.Should().NotContain("Content=\"Choose&#x2026;\"",
-                "a picture set on the page needs no button, and one behind the preview is opened by "
-                + "clicking the preview");
-
-            // The large sets keep their popup, opened by the picture itself.
-            row.Should().Contain("IsVisible=\"{Binding IsPopupGallery}\"");
-            row.Should().Contain("Command=\"{Binding OpenGalleryCommand}\"");
-        }
-
-        [Test]
         public void EveryBehaviorEditorDrawsItsRowsFromTheSharedControl()
         {
             // One row control, not four. The trigger, waypoint, door, and sound editors each used to
             // carry their own copy, which is how three different label-column widths shipped.
             var app = File.ReadAllText(Path.Combine(
                 CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "App.axaml"));
-            app.Should().Contain("<DataTemplate DataType=\"behaviors:BehaviorRowViewModel\">");
+            app.Should().Contain("<DataTemplate DataType=\"sharedBehaviors:BehaviorRowViewModel\">");
             app.Should().NotContain("DataType=\"waypoints:WaypointRowViewModel\"");
 
-            foreach (var view in new[] { "DoorEditorView.axaml", "SoundEditorView.axaml" })
+            // The door and sound row templates are the shared editor views' own.
+            AssertHostsSharedBehaviorEditors();
+        }
+
+        /// <summary>The app's door, sound and waypoint documents draw the shared behavior editor views.</summary>
+        private static void AssertHostsSharedBehaviorEditors()
+        {
+            foreach (var (view, editor) in new[]
+                     {
+                         ("DoorDocumentView.axaml", "<doorViews:DoorBehaviorEditorView"),
+                         ("SoundDocumentView.axaml", "<soundViews:SoundBehaviorEditorView"),
+                         ("WaypointDocumentView.axaml", "<waypointViews:WaypointBehaviorEditorView")
+                     })
             {
-                var markup = File.ReadAllText(Path.Combine(
-                    CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", view));
-                markup.Should().Contain("<behaviors:BehaviorRowView />", $"{view} reuses the shared row");
+                File.ReadAllText(Path.Combine(
+                        CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", view))
+                    .Should().Contain(editor, $"{view} hosts the shared behavior editor");
+            }
+
+            foreach (var view in new[] { "DoorEditorView.axaml", "SoundEditorView.axaml", "WaypointEditorView.axaml" })
+            {
+                File.Exists(Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR.Toolset", "Editors", "Views", view))
+                    .Should().BeFalse($"{view} moved to the shared library and must not return as a second copy");
             }
         }
 
         [Test]
         public void NoBehaviorEditorShowsAnAdvancedTab()
         {
+            AssertHostsSharedBehaviorEditors();
+
             foreach (var view in new[]
                      {
                          "WaypointDocumentView.axaml", "TriggerDocumentView.axaml",
-                         "DoorEditorView.axaml", "SoundEditorView.axaml"
+                         "DoorDocumentView.axaml", "SoundDocumentView.axaml"
                      })
             {
                 var markup = File.ReadAllText(Path.Combine(
@@ -619,9 +601,10 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void AppearancesOfferMarkerModelsRatherThanNames()
         {
-            var sw2Da = Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks", "sw_2da");
-            if (!Directory.Exists(sw2Da))
-                Assert.Ignore("The haks submodule is not initialised in this checkout.");
+            var haksRoot = Support.ToolsetCorpusPaths.HaksRoot
+                ?? Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks");
+            var sw2Da = Path.Combine(haksRoot, "sw_2da");
+            Directory.Exists(sw2Da).Should().BeTrue("the selected HAK corpus is required; set SWLOR_TEST_HAKS_ROOT");
 
             var appearances = WaypointAppearanceCatalog.Read(
                 new Domain.GameData.Lookups.WaypointAppearanceService(
@@ -634,7 +617,7 @@ namespace SWLOR.Toolset.Tests
                 "the picker draws each marker, so every row must carry waypoint.2da's RESREF");
         }
 
-        [Test]
+        [AvaloniaTest]
         public async Task AnAppearanceRowIsPickedFromPicturesOnThePage()
         {
             var appearances = Enumerable.Range(1, 76)
@@ -718,19 +701,6 @@ namespace SWLOR.Toolset.Tests
                     field.Kind == BehaviorFieldKind.Statement &&
                     field.Label == "Planet" &&
                     field.Note == "Determined by the containing area");
-        }
-
-        /// <summary>Every markup file that declares a field row's label column.</summary>
-        private static IEnumerable<(string Path, string Markup)> SharedRowMarkup()
-        {
-            var files = new[]
-            {
-                Path.Combine("SWLOR.Toolset", "Editors", "Behaviors", "BehaviorRowView.axaml"),
-                Path.Combine("SWLOR.Toolset", "App.axaml")
-            };
-
-            foreach (var file in files)
-                yield return (file, File.ReadAllText(Path.Combine(CorpusLocator.RepositoryRoot, file)));
         }
 
         private static JsonGffStruct Waypoint(string tag, bool hasMapNote = false)

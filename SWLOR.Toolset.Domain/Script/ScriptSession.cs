@@ -2,7 +2,7 @@ namespace SWLOR.Toolset.Domain.Script
 {
     /// <summary>
     /// A script file bound to a path, with the external-change baseline the editor needs.
-    /// The text-editing counterpart to <see cref="Editing.DocumentSession"/>.
+    /// The text-editing counterpart to <see cref="Nwn.Authoring.Editing.DocumentSession"/>.
     /// </summary>
     /// <remarks>
     /// Deliberately does NOT carry an undo stack. <c>DocumentSession</c>'s stack models

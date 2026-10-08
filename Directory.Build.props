@@ -1,0 +1,34 @@
+<Project>
+  <PropertyGroup>
+    <NwnToolsetPackageVersion Condition="'$(NwnToolsetPackageVersion)' == ''">0.1.0-preview.2</NwnToolsetPackageVersion>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'SWLOR.Toolset' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Tests' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.PreviewRender'">
+    <Using Include="Nwn.Toolset.Avalonia.Behaviors" />
+    <Using Include="Nwn.Toolset.Avalonia.Variables" />
+    <Using Include="Nwn.Toolset.Avalonia.Fields" />
+    <Using Include="Nwn.Toolset.Avalonia.Doors" />
+    <Using Include="Nwn.Toolset.Avalonia.Waypoints" />
+    <Using Include="Nwn.Toolset.Avalonia.Sounds" />
+    <Using Include="Nwn.Toolset.Avalonia.Areas.Properties" />
+    <Using Include="Nwn.Toolset.Avalonia.Docking.DockProportions" Alias="DockProportions" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'SWLOR.Toolset' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Domain' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Tests' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.PreviewRender' Or '$(MSBuildProjectName)' == 'SWLOR.AnimationDrafts' Or '$(MSBuildProjectName)' == 'SWLOR.ConversationMigrator'">
+    <Using Include="Nwn.Authoring.Resources.ModuleResourceType" Alias="ResourceType" />
+    <Using Include="Nwn.Authoring.Behaviors" />
+    <Using Include="Nwn.Authoring.Fields" />
+    <Using Include="Nwn.Authoring.Doors" />
+    <Using Include="Nwn.Authoring.Waypoints" />
+    <Using Include="Nwn.Authoring.Sounds" />
+    <Using Include="Nwn.Authoring.Triggers" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'SWLOR.Toolset' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Domain' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Tests' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.PreviewRender'">
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RestoreLockedMode Condition="'$(NwnToolsetSourceRoot)' == '' And '$(RestoreLockedMode)' == ''">true</RestoreLockedMode>
+    <NuGetLockFilePath Condition="'$(NwnToolsetSourceRoot)' == '' And '$(Configuration)' != '' And '$(Configuration)' != 'Debug'">$(MSBuildProjectDirectory)/packages.$(Configuration).lock.json</NuGetLockFilePath>
+    <NuGetLockFilePath Condition="'$(NwnToolsetSourceRoot)' != ''">$(MSBuildProjectDirectory)/obj/packages.Debug.source.lock.json</NuGetLockFilePath>
+    <NuGetLockFilePath Condition="'$(NwnToolsetSourceRoot)' != '' And '$(Configuration)' != '' And '$(Configuration)' != 'Debug'">$(MSBuildProjectDirectory)/obj/packages.$(Configuration).source.lock.json</NuGetLockFilePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(NwnToolsetPackageFeed)' != ''">
+    <RestoreAdditionalProjectSources>$(NwnToolsetPackageFeed);$(RestoreAdditionalProjectSources)</RestoreAdditionalProjectSources>
+  </PropertyGroup>
+</Project>

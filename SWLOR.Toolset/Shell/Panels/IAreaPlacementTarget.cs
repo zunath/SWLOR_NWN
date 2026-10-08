@@ -1,4 +1,6 @@
 using SWLOR.Toolset.Domain.GameData.Tilesets;
+using Nwn.Formats.Tilesets;
+using Nwn.Authoring.Areas.Tiles;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Shell.Panels

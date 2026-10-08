@@ -1,6 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
@@ -46,7 +48,7 @@ namespace SWLOR.Toolset.Tests
             finally
             {
                 if (Directory.Exists(_root))
-                    Directory.Delete(_root, recursive: true);
+                    ScratchDirectory.Delete(_root);
             }
         }
 

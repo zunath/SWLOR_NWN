@@ -2,7 +2,10 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.Editors.Creatures;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
@@ -143,6 +146,73 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
+        [Test]
+        public async Task StatSkinCreationUsesOneRelatedUndoStepAndSavesBothDocuments()
+        {
+            var document = new CreatureDocumentViewModel(
+                filePath: _path,
+                resRef: "save_race",
+                gameCodeIndex: null,
+                log: new OutputLogService(),
+                prompts: new EditorPromptService(),
+                resolveChoices: null,
+                resourceIndex: null,
+                resolveModel: null,
+                appearance: _ => null,
+                armorParts: null,
+                equipmentChoices: null,
+                equipmentDetails: null,
+                choicePreviews: null,
+                previewAudio: null,
+                openLootDefinition: null,
+                appearanceOptions: null,
+                appearanceThumbnails: null);
+
+            try
+            {
+                document.Editor.Stats.Vitals.Single(cell => cell.Label == "NPC Level").Number = 7;
+                var resRef = document.Editor.Equipment.EquippedResRef(CreaturePropertyCatalog.StatSkinSlot);
+                resRef.Should().NotBeNullOrWhiteSpace();
+                var skin = document.Editor.Equipment.ForSlot(CreaturePropertyCatalog.StatSkinSlot);
+                skin.Should().NotBeNull();
+                skin!.Session.UndoStack.CanUndo.Should().BeFalse(
+                    "the parent creature history owns this multi-document edit");
+                skin.Store.GetPropertyValue(CreaturePropertyCatalog.Level, -1).Should().Be(7);
+
+                var linkedPath = Path.Combine(_moduleRoot, "uti", resRef! + ".uti.json");
+                File.Exists(linkedPath).Should().BeFalse("the prepared item is not persisted before the grouped save");
+                var templateBytes = BlueprintTemplateFactory.CreateFileContent(ResourceType.Uti, resRef!, string.Empty);
+
+                document.Undo();
+                document.Editor.Equipment.EquippedResRef(CreaturePropertyCatalog.StatSkinSlot).Should().BeNull();
+                skin.HasUnsavedChanges.Should().BeFalse("undo must revert both linked item data and its creature reference");
+                skin.Session.ToBytes().Should().Equal(templateBytes);
+                skin.Session.Document.Root.GetIntOrNull("BaseItem").Should().Be(0);
+                skin.Session.Document.Root.GetStringOrNull("Tag").Should().Be(resRef);
+                skin.Session.Document.Root.GetLocStringOrNull("LocalizedName")!.Text.Should().Be(resRef);
+                File.Exists(linkedPath).Should().BeFalse();
+
+                document.Redo();
+                document.Editor.Equipment.EquippedResRef(CreaturePropertyCatalog.StatSkinSlot).Should().Be(resRef);
+                document.Editor.Equipment.ForSlot(CreaturePropertyCatalog.StatSkinSlot)!
+                    .Store.GetPropertyValue(CreaturePropertyCatalog.Level, -1).Should().Be(7);
+                skin.Session.UndoStack.CanUndo.Should().BeFalse();
+
+                (await document.TrySaveAsync()).Should().BeTrue();
+                File.Exists(linkedPath).Should().BeTrue();
+
+                using var savedCreature = DocumentSession.Open(_path);
+                using var savedSkin = DocumentSession.Open(linkedPath);
+                var savedCreatureValues = new CreatureValueStore(savedCreature.Document.Root);
+                savedCreatureValues.EquippedResRef(CreaturePropertyCatalog.StatSkinSlot).Should().Be(resRef);
+                new SWLOR.Toolset.Domain.Editors.Items.ItemValueStore(savedSkin.Document.Root)
+                    .GetPropertyValue(CreaturePropertyCatalog.Level, -1).Should().Be(7);
+            }
+            finally
+            {
+                document.OnClose();
+            }
+        }
         private sealed class RacingOverwritePrompts(
             string moduleRoot,
             string path,

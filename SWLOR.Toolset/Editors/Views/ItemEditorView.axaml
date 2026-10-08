@@ -2,7 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:items="using:SWLOR.Toolset.Editors.Items"
              xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
-             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:behaviors="using:Nwn.Toolset.Avalonia.Behaviors"
+             xmlns:variables="using:Nwn.Toolset.Avalonia.Variables"
+             xmlns:sharedBehaviors="using:Nwn.Toolset.Avalonia.Behaviors"
              xmlns:dworkspace="using:SWLOR.Toolset.Domain.Workspace"
              x:Class="SWLOR.Toolset.Editors.Items.ItemEditorView"
              x:DataType="items:ItemEditorViewModel">
@@ -141,7 +143,7 @@
                 </ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
+                <DataTemplate DataType="sharedBehaviors:BehaviorChoiceViewModel">
                   <Button Classes="behavior" Margin="2" Padding="8,4"
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                           Content="{Binding Display}"
@@ -165,7 +167,7 @@
                   SelectedItem="{Binding Selected, Mode=TwoWay}"
                   HorizontalAlignment="Stretch">
           <ComboBox.ItemTemplate>
-            <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
+            <DataTemplate DataType="sharedBehaviors:BehaviorChoiceViewModel">
               <TextBlock Text="{Binding Display}" TextTrimming="CharacterEllipsis" />
             </DataTemplate>
           </ComboBox.ItemTemplate>
@@ -200,7 +202,7 @@
     <!-- One picture tile of an appearance gallery. Composite-part artwork is cropped to its
          visible pixels before it reaches this template, so the larger canvas shows the part
          itself instead of magnifying the texture's transparent padding. -->
-    <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
+    <DataTemplate DataType="sharedBehaviors:BehaviorChoiceViewModel">
       <StackPanel Width="100">
         <Border Height="92" Background="{DynamicResource FieldBrush}"
                 BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3">
@@ -485,7 +487,7 @@
                   <TextBlock Text="Flags" Classes="section" Margin="0,0,0,6" />
                   <ItemsControl ItemsSource="{Binding FlagRows}">
                     <ItemsControl.ItemTemplate>
-                      <DataTemplate DataType="behaviors:BehaviorRowViewModel">
+                      <DataTemplate DataType="sharedBehaviors:BehaviorRowViewModel">
                         <CheckBox Content="{Binding Label}" IsChecked="{Binding IsChecked, Mode=TwoWay}"
                                   IsEnabled="{Binding !IsReadOnly}" Margin="0,3" />
                       </DataTemplate>
@@ -555,7 +557,7 @@
                             </ItemsPanelTemplate>
                           </ItemsControl.ItemsPanel>
                           <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
+                            <DataTemplate DataType="sharedBehaviors:BehaviorChoiceViewModel">
                               <Button Classes="behavior" Classes.on="{Binding IsSelected}"
                                       Margin="2" Padding="8,5"
                                       HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
@@ -658,7 +660,7 @@
         </TabItem>
 
         <TabItem Header="Variables" IsVisible="{Binding ShowsVariablesTab}">
-          <behaviors:VariablesSectionView DataContext="{Binding Variables}" />
+          <variables:VarTableSectionView DataContext="{Binding Variables}" />
         </TabItem>
       </TabControl>
     </Grid>

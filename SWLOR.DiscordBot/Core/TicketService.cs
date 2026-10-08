@@ -72,12 +72,22 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 if (!_creations.TryAdd(id, 0))
                     return new(false, "This ticket is already being opened; try again shortly.", ticket);
                 claimed = true;
-                var channel = ticket.ChannelId ?? await discord.FindManagedChannelAsync(ticket.Id, ct) ?? await discord.CreateAsync(ticket, ct);
-                ticket = ticket with { ChannelId = channel, LastError = null };
-                await session.SaveAsync(ticket, "channel-bound", ticket.RequesterId, ct);
             }
-            // The durable binding and per-ticket guard survive long history scans without blocking other tickets.
-            await discord.OpenAsync(ticket, true, ct, progress ?? (static () => { }));
+            // Discovery, creation, and history scans can wait on Discord rate limits without blocking other tickets.
+            progress ??= static () => { };
+            var channel = ticket.ChannelId ?? await WithProgressAsync(discord.FindManagedChannelAsync(ticket.Id, ct), progress)
+                ?? await WithProgressAsync(discord.CreateAsync(ticket, ct), progress);
+            ct.ThrowIfCancellationRequested();
+            await using (var binding = await store.LockAsync(ct))
+            {
+                var current = await binding.GetTicketAsync(id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
+                if (current.State != TicketState.Creating || current.ChannelId is { } existing && existing != channel)
+                    throw new InvalidOperationException("Ticket creation binding changed during channel discovery.");
+                ticket = current with { ChannelId = channel };
+                if (current.ChannelId != channel)
+                    await binding.SaveAsync(ticket, "channel-bound", ticket.RequesterId, ct);
+            }
+            await discord.OpenAsync(ticket, true, ct, progress);
             ct.ThrowIfCancellationRequested();
             await using (var completed = await store.LockAsync(ct))
             {
@@ -95,8 +105,12 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             logger?.LogWarning(ex, "Ticket {TicketId} creation will be reconciled", id);
             await using var failed = await store.LockAsync(ct);
             var current = await failed.GetTicketAsync(id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
-            if (current.State == TicketState.Creating)
-                await failed.SaveAsync(current with { LastError = "Channel creation or opening failed; reconciliation pending." }, "creation-failed", null, ct);
+            const string error = "Channel creation or opening failed; reconciliation pending.";
+            if (current.State == TicketState.Creating && current.LastError != error)
+            {
+                current = current with { LastError = error };
+                await failed.SaveAsync(current, "creation-failed", null, ct);
+            }
             return new(false, "The ticket could not be opened yet. Staff can check the bot logs; retrying will recover this request.", current);
         }
         finally { if (claimed) _creations.TryRemove(id, out _); }
@@ -300,15 +314,24 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         Guid[] ticketIds;
         await using (var batch = await store.LockAsync(ct))
             ticketIds = (await batch.GetTicketsAsync(ct)).Where(ArchiveHasExpired).Select(ticket => ticket.Id).ToArray();
-        foreach (var id in ticketIds)
+        for (var attempt = 0; attempt < 3 && ticketIds.Length > 0; attempt++)
         {
-            ct.ThrowIfCancellationRequested();
-            using var progressTimeout = new MaintenanceProgressTimeout(clock, ct);
-            try { await ExpireArchiveAsync(id, progressTimeout.Token, progressTimeout.ReportProgress); }
-            catch (Exception ex) when (!ct.IsCancellationRequested)
+            var failed = new List<Guid>();
+            foreach (var id in ticketIds)
             {
-                await RecordMaintenanceFailureAsync(id, ex, ct);
+                ct.ThrowIfCancellationRequested();
+                using var progressTimeout = new MaintenanceProgressTimeout(clock, ct);
+                try { await ExpireArchiveAsync(id, progressTimeout.Token, progressTimeout.ReportProgress); }
+                catch (Exception ex) when (!ct.IsCancellationRequested)
+                {
+                    // Finish later entries before retrying only the failed IDs with fresh eligibility/ownership.
+                    await RecordMaintenanceFailureAsync(id, ex, ct);
+                    failed.Add(id);
+                }
             }
+            ticketIds = failed.ToArray();
+            if (ticketIds.Length > 0 && attempt < 2)
+                await Task.Delay(TimeSpan.FromSeconds(5 * (attempt + 1)), clock, ct);
         }
     }
 

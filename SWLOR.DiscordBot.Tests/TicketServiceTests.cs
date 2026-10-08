@@ -346,7 +346,7 @@ public sealed class TicketServiceTests
             return Task.CompletedTask;
         };
         if (cancelled) Assert.CatchAsync<OperationCanceledException>(() => _service.ExpireArchivesAsync(cancellation.Token));
-        else await _service.ExpireArchivesAsync();
+        else await CompleteExpirationRetriesAsync(_service.ExpireArchivesAsync());
         Assert.That(_store.Tickets.Single().ArchivePath, Is.EqualTo(expired.ArchivePath));
         Assert.That((await _service.SetHoldAsync(ChannelOne, Support, true)).Success, Is.True);
         _archive.BeforeDeleteArchiveAsync = null;
@@ -369,8 +369,12 @@ public sealed class TicketServiceTests
         };
         _store.Replace(expired);
         _store.FailNextSaveAction = "archive-expired";
-        await _service.ExpireArchivesAsync();
+        using var stopping = new CancellationTokenSource();
+        var interrupted = _service.ExpireArchivesAsync(stopping.Token);
+        await WaitForExpirationBackoffAsync(interrupted);
         Assert.That(_store.Tickets.Single().ArchivePath, Is.EqualTo(expired.ArchivePath));
+        stopping.Cancel();
+        Assert.CatchAsync<OperationCanceledException>(() => interrupted);
         var restarted = new TicketService(_configuration, _store, _discord, _archive, _clock);
         await restarted.ExpireArchivesAsync();
         Assert.That(_store.Tickets.Single().ArchivePath, Is.Null);
@@ -402,7 +406,7 @@ public sealed class TicketServiceTests
         };
         using var worker = new BotWorker(_configuration, new BotSecrets("", ""), null!, null!, _store,
             _service, null!, null!, null!, null!, _clock, null!, NullLogger<BotWorker>.Instance);
-        await worker.RetryMaintenanceAsync("Archive expiration", _service.ExpireArchivesAsync, CancellationToken.None)
+        await CompleteExpirationRetriesAsync(worker.RetryMaintenanceAsync("Archive expiration", _service.ExpireArchivesAsync, CancellationToken.None))
             .WaitAsync(TimeSpan.FromSeconds(2));
         var first = _store.Tickets.Single(ticket => ticket.ChannelId == ChannelOne);
         var later = _store.Tickets.Single(ticket => ticket.ChannelId == ChannelOne + 1);
@@ -419,6 +423,166 @@ public sealed class TicketServiceTests
             await _service.ExpireArchivesAsync();
             Assert.That(_store.Tickets.Single(ticket => ticket.ChannelId == ChannelOne).ArchivePath, Is.Null);
         }
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ExpirationRetriesFailedIdsAfterLaterEntriesFinish(bool stalled)
+    {
+        await Open("first", new Actor(1, []), "retry-first");
+        await Open("second", new Actor(2, []), "retry-later");
+        foreach (var ticket in _store.Tickets)
+            _store.Replace(ticket with { State = TicketState.Closed, ArchivePath = $"/archives/expired-{ticket.ChannelId}",
+                ArchiveComplete = true, ArchiveExpiresAt = _clock.GetUtcNow().AddSeconds(-1) });
+        var visits = new List<string>();
+        _archive.BeforeDeleteArchiveAsync = (path, progress, token) =>
+        {
+            visits.Add(path);
+            if (path.EndsWith(ChannelOne.ToString(), StringComparison.Ordinal) && visits.Count == 1)
+            {
+                if (stalled)
+                {
+                    _clock.Advance(TimeSpan.FromMinutes(4));
+                    token.ThrowIfCancellationRequested();
+                }
+                throw new IOException("Transient archive failure.");
+            }
+            progress();
+            return Task.CompletedTask;
+        };
+        var before = _clock.GetUtcNow();
+        _store.TicketEnumerationCount = 0;
+        using var worker = new BotWorker(_configuration, new BotSecrets("", ""), null!, null!, _store,
+            _service, null!, null!, null!, null!, _clock, null!, NullLogger<BotWorker>.Instance);
+        var expiration = worker.RetryMaintenanceAsync("Archive expiration", _service.ExpireArchivesAsync, CancellationToken.None);
+        await WaitForExpirationBackoffAsync(expiration);
+        Assert.That(visits, Is.EqualTo(new[] { $"/archives/expired-{ChannelOne}", $"/archives/expired-{ChannelOne + 1}" }));
+        Assert.That(_store.Tickets.Single(t => t.ChannelId == ChannelOne).ArchivePath, Is.Not.Null);
+        Assert.That(_store.Tickets.Single(t => t.ChannelId == ChannelOne + 1).ArchivePath, Is.Null);
+        _clock.Advance(TimeSpan.FromSeconds(4));
+        Assert.That(visits, Has.Count.EqualTo(2), "The retry honors its backoff.");
+        _clock.Advance(TimeSpan.FromSeconds(1));
+        await expiration.WaitAsync(TimeSpan.FromSeconds(2));
+        Assert.That(visits, Is.EqualTo(new[] { $"/archives/expired-{ChannelOne}", $"/archives/expired-{ChannelOne + 1}", $"/archives/expired-{ChannelOne}" }));
+        Assert.That(_store.Tickets.All(t => t.ArchivePath is null && t.LastError is null), Is.True);
+        Assert.That(_store.Audits.Count(a => a == "maintenance-failed"), Is.EqualTo(1));
+        Assert.That(_store.Audits.Count(a => a == "archive-expired"), Is.EqualTo(2));
+        Assert.That(_store.TicketEnumerationCount, Is.EqualTo(1), "Retries use failed IDs rather than rereading successful entries.");
+        Assert.That(_clock.GetUtcNow() - before, Is.EqualTo(TimeSpan.FromSeconds(5) + (stalled ? TimeSpan.FromMinutes(4) : TimeSpan.Zero)));
+    }
+
+    [Test]
+    public async Task ExpirationPermanentFailureStopsAfterThreeAttemptsAndCoalescesAudit()
+    {
+        await Open("first", new Actor(1, []), "permanent-expiration");
+        var expired = _store.Tickets.Single() with { State = TicketState.Closed, ArchivePath = "/archives/permanent",
+            ArchiveComplete = true, ArchiveExpiresAt = _clock.GetUtcNow().AddSeconds(-1) };
+        _store.Replace(expired);
+        var attempts = 0;
+        _archive.BeforeDeleteArchiveAsync = (_, _, _) =>
+        {
+            attempts++;
+            throw new IOException("Persistent archive failure.");
+        };
+        var before = _clock.GetUtcNow();
+        var expiration = _service.ExpireArchivesAsync();
+        await WaitForExpirationBackoffAsync(expiration);
+        _clock.Advance(TimeSpan.FromSeconds(5));
+        await WaitForExpirationBackoffAsync(expiration);
+        Assert.That(attempts, Is.EqualTo(2));
+        _clock.Advance(TimeSpan.FromSeconds(9));
+        Assert.That(attempts, Is.EqualTo(2));
+        _clock.Advance(TimeSpan.FromSeconds(1));
+        await expiration.WaitAsync(TimeSpan.FromSeconds(2));
+        Assert.That(attempts, Is.EqualTo(3));
+        Assert.That(_clock.GetUtcNow() - before, Is.EqualTo(TimeSpan.FromSeconds(15)));
+        Assert.That(_store.Tickets.Single().ArchivePath, Is.EqualTo(expired.ArchivePath));
+        Assert.That(_store.Audits.Count(a => a == "maintenance-failed"), Is.EqualTo(1));
+        _archive.BeforeDeleteArchiveAsync = null;
+        await _service.ExpireArchivesAsync();
+        Assert.That(_store.Tickets.Single().ArchivePath, Is.Null);
+        Assert.That(_store.Tickets.Single().LastError, Is.Null);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ExpirationRetryBackoffObservesNewHoldOrShutdown(bool shutdown)
+    {
+        await Open("first", new Actor(1, []), "expiration-interrupted-retry");
+        var expired = _store.Tickets.Single() with { State = TicketState.Closed, ArchivePath = "/archives/interrupted",
+            ArchiveComplete = true, ArchiveExpiresAt = _clock.GetUtcNow().AddSeconds(-1) };
+        _store.Replace(expired);
+        var attempts = 0;
+        _archive.BeforeDeleteArchiveAsync = (_, _, _) =>
+        {
+            attempts++;
+            throw new IOException("Archive failure before retry.");
+        };
+        using var stopping = new CancellationTokenSource();
+        var expiration = _service.ExpireArchivesAsync(stopping.Token);
+        await WaitForExpirationBackoffAsync(expiration);
+        try
+        {
+            Assert.That((await _service.SetHoldAsync(ChannelOne, Support, true).WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+            if (shutdown)
+            {
+                stopping.Cancel();
+                Assert.CatchAsync<OperationCanceledException>(() => expiration.WaitAsync(TimeSpan.FromSeconds(2)));
+            }
+            else
+            {
+                _clock.Advance(TimeSpan.FromSeconds(5));
+                await expiration.WaitAsync(TimeSpan.FromSeconds(2));
+            }
+            Assert.That(attempts, Is.EqualTo(1), "The next attempt must honor shutdown/current hold.");
+            Assert.That(_store.Tickets.Single().ArchivePath, Is.EqualTo(expired.ArchivePath));
+            Assert.That(_store.Tickets.Single().Hold, Is.True);
+            _archive.BeforeDeleteArchiveAsync = null;
+            await _service.SetHoldAsync(ChannelOne, Support, false);
+            await _service.ExpireArchivesAsync();
+            Assert.That(_store.Tickets.Single().ArchivePath, Is.Null);
+        }
+        finally { stopping.Cancel(); try { await expiration; } catch (OperationCanceledException) { } }
+    }
+
+    [Test]
+    public async Task ExpirationRetriesInterruptedCompletionSaveInTheSamePass()
+    {
+        await Open("first", new Actor(1, []), "expiration-save-retry");
+        _store.Replace(_store.Tickets.Single() with { State = TicketState.Closed, ArchivePath = "/archives/save-retry",
+            ArchiveComplete = true, ArchiveExpiresAt = _clock.GetUtcNow().AddSeconds(-1) });
+        _store.FailNextSaveAction = "archive-expired";
+        var expiration = _service.ExpireArchivesAsync();
+        await WaitForExpirationBackoffAsync(expiration);
+        Assert.That(_store.Tickets.Single().ArchivePath, Is.EqualTo("/archives/save-retry"));
+        _clock.Advance(TimeSpan.FromSeconds(5));
+        await expiration.WaitAsync(TimeSpan.FromSeconds(2));
+        Assert.That(_store.Tickets.Single().ArchivePath, Is.Null);
+        Assert.That(_archive.DeletedPaths, Has.Count.EqualTo(2), "An already-removed tree can complete its retained ownership on retry.");
+        Assert.That(_store.Audits.Count(a => a == "archive-expired"), Is.EqualTo(1));
+    }
+
+    private async Task WaitForExpirationBackoffAsync(Task expiration)
+    {
+        using var safety = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+        while (!_clock.HasExpirationBackoff)
+        {
+            if (expiration.IsCompleted) { await expiration; Assert.Fail("Expected expiration retry backoff."); }
+            safety.Token.ThrowIfCancellationRequested();
+            await Task.Yield();
+        }
+    }
+
+    private async Task CompleteExpirationRetriesAsync(Task expiration)
+    {
+        using var safety = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+        while (!expiration.IsCompleted)
+        {
+            safety.Token.ThrowIfCancellationRequested();
+            _clock.AdvanceExpirationBackoff();
+            await Task.Yield();
+        }
+        await expiration;
     }
 
     private Task<TicketResult> Mutate(string operation, Actor actor) => operation switch
@@ -2291,6 +2455,158 @@ public sealed class TicketServiceTests
     [TestCase(false, true)]
     [TestCase(true, false)]
     [TestCase(true, true)]
+    public async Task ChannelDiscoveryAndCreationReleaseGuildLockAndMergeConcurrentHold(bool maintenance, bool creating)
+    {
+        await Open("second", new Actor(2, []), "discovery-unrelated");
+        Ticket pending;
+        await using (var reserve = await _store.LockAsync(default))
+            pending = await reserve.ReserveAsync("first", 1, "delayed-channel", _clock.GetUtcNow(), default);
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        async Task DelayRemote(CancellationToken ct)
+        {
+            _clock.Advance(TimeSpan.FromSeconds(90));
+            started.TrySetResult();
+            await release.Task.WaitAsync(ct);
+        }
+        if (creating) _discord.BeforeCreateAsync = (ticket, ct) => ticket.Id == pending.Id ? DelayRemote(ct) : Task.CompletedTask;
+        else _discord.BeforeFindManagedAsync = (id, ct) => id == pending.Id ? DelayRemote(ct) : Task.CompletedTask;
+        _discord.BeforeProgressOpenAsync = (ticket, _, _) =>
+        {
+            if (ticket.Id == pending.Id) Assert.That(ticket.Hold, Is.True, "Opening must use the fresh record read after discovery/creation.");
+            return Task.CompletedTask;
+        };
+        using var safety = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        Task opening = maintenance ? _service.MaintainAsync(safety.Token)
+            : _service.OpenAsync("first", new Actor(1, []), "delayed-channel", safety.Token);
+        try
+        {
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(_clock.GetUtcNow() - pending.CreatedAt, Is.GreaterThan(TimeSpan.FromSeconds(60)));
+            Assert.That((await _service.CloseAsync(ChannelOne, Support).WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+            Assert.That((await _service.RenameAsync(ChannelOne, Support, "during-discovery").WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+            Assert.That((await _service.ReopenAsync(ChannelOne, Support).WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+            Assert.That((await _service.SetHoldAsync(ChannelOne, Support, true).WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+            Assert.That((await _service.OpenAsync("second", new Actor(3, []), "discovery-another").WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+            await using (var update = await _store.LockAsync(default).WaitAsync(TimeSpan.FromSeconds(2)))
+            {
+                var durable = await update.GetTicketAsync(pending.Id, default);
+                Assert.That(durable!.ChannelId, Is.Null, "The remote channel has not been bound yet.");
+                await update.SaveAsync(durable with { Hold = true }, "hold-set", Support.UserId, default);
+            }
+            var findCalls = _discord.FindManagedCalls;
+            var createCalls = _discord.CreateCalls;
+            var openCalls = _discord.OpenCalls;
+            var duplicate = await _service.OpenAsync("first", new Actor(1, []), "delayed-channel").WaitAsync(TimeSpan.FromSeconds(2));
+            var samePanel = await _service.OpenAsync("first", new Actor(1, []), "delayed-channel-click").WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(duplicate.Success, Is.False);
+            Assert.That(samePanel.Success, Is.False);
+            Assert.That(duplicate.Message, Does.Contain("already being opened"));
+            await _service.MaintainAsync().WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(_discord.FindManagedCalls, Is.EqualTo(findCalls));
+            Assert.That(_discord.CreateCalls, Is.EqualTo(createCalls));
+            Assert.That(_discord.OpenCalls, Is.EqualTo(openCalls));
+            release.SetResult();
+            await opening.WaitAsync(TimeSpan.FromSeconds(2));
+            var completed = _store.Tickets.Single(ticket => ticket.Id == pending.Id);
+            Assert.That(completed.State, Is.EqualTo(TicketState.Open));
+            Assert.That(completed.Hold, Is.True);
+            Assert.That(completed.ChannelId, Is.Not.Null);
+            Assert.That(_discord.CreateCalls, Is.EqualTo(3));
+        }
+        finally
+        {
+            release.TrySetResult();
+            safety.Cancel();
+            try { await opening; } catch (OperationCanceledException) { }
+        }
+    }
+
+    [TestCase(false, false)]
+    [TestCase(false, true)]
+    [TestCase(true, false)]
+    [TestCase(true, true)]
+    public async Task CancelledChannelDiscoveryOrCreationReleasesGuardAndRecoversUnboundTicket(bool createdRemotely, bool restart)
+    {
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        async Task WaitForCancellation(CancellationToken ct)
+        {
+            started.TrySetResult();
+            await Task.Delay(Timeout.InfiniteTimeSpan, ct);
+        }
+        if (createdRemotely) _discord.AfterCreateAsync = (_, ct) => WaitForCancellation(ct);
+        else _discord.BeforeFindManagedAsync = (_, ct) => WaitForCancellation(ct);
+        using var cancellation = new CancellationTokenSource();
+        var opening = _service.OpenAsync("first", new Actor(1, []), "cancel-before-binding", cancellation.Token);
+        try
+        {
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            await using (var update = await _store.LockAsync(default).WaitAsync(TimeSpan.FromSeconds(2)))
+            {
+                var pending = (await update.GetTicketsAsync(default)).Single();
+                await update.SaveAsync(pending with { Hold = true }, "hold-set", Support.UserId, default);
+            }
+            cancellation.Cancel();
+            Assert.That(async () => await opening.WaitAsync(TimeSpan.FromSeconds(2)), Throws.InstanceOf<OperationCanceledException>());
+            Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Creating));
+            Assert.That(_store.Tickets.Single().ChannelId, Is.Null);
+            Assert.That(_store.Tickets.Single().Hold, Is.True);
+            Assert.That(_store.Audits, Does.Not.Contain("channel-bound"));
+            _discord.BeforeFindManagedAsync = null;
+            _discord.AfterCreateAsync = null;
+            if (restart)
+                await new TicketService(_configuration, _store, _discord, _archive, _clock).MaintainAsync();
+            else Assert.That((await _service.OpenAsync("first", new Actor(1, []), "cancel-before-binding")).Success, Is.True);
+            Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Open));
+            Assert.That(_store.Tickets.Single().Hold, Is.True);
+            Assert.That(_store.Tickets.Single().ChannelId, Is.EqualTo(ChannelOne));
+            Assert.That(_discord.CreateCalls, Is.EqualTo(1), "An ambiguously created remote channel must be discovered and reused.");
+            Assert.That(_store.Audits.Count(action => action == "channel-bound"), Is.EqualTo(1));
+        }
+        finally { cancellation.Cancel(); try { await opening; } catch (OperationCanceledException) { } }
+    }
+
+    [TestCase("discovery")]
+    [TestCase("creation")]
+    [TestCase("opening")]
+    public async Task PersistentCreationErrorsDoNotRepeatBindingOrFailureAuditsAndSuccessfulRecoveryClearsError(string phase)
+    {
+        Task Fail() => throw new InvalidOperationException("Persistent remote creation failure.");
+        if (phase == "discovery") _discord.BeforeFindManagedAsync = (_, _) => Fail();
+        else if (phase == "creation") _discord.BeforeCreateAsync = (_, _) => Fail();
+        else _discord.BeforeProgressOpenAsync = (_, _, _) => Fail();
+        var requester = new Actor(1, []);
+        Assert.That((await Open("first", requester, "persistent-creation")).Success, Is.False);
+        var initialAuditCount = _store.Audits.Count;
+        var initialBindingCount = _store.Audits.Count(action => action == "channel-bound");
+        var initialError = _store.Tickets.Single().LastError;
+        Assert.That(initialError, Is.Not.Null);
+        Assert.That(_store.Audits.Count(action => action == "creation-failed"), Is.EqualTo(1));
+        await _service.MaintainAsync();
+        await _service.MaintainAsync();
+        Assert.That((await _service.OpenAsync("first", requester, "persistent-creation")).Success, Is.False);
+        Assert.That(_store.Audits.Count, Is.EqualTo(initialAuditCount), "Unchanged periodic and manual failures must not grow the audit.");
+        Assert.That(_store.Tickets.Single().LastError, Is.EqualTo(initialError));
+        _discord.BeforeFindManagedAsync = null;
+        _discord.BeforeCreateAsync = null;
+        _discord.BeforeProgressOpenAsync = null;
+        Assert.That((await _service.OpenAsync("first", requester, "persistent-creation")).Success, Is.True);
+        var recovered = _store.Tickets.Single();
+        Assert.That(recovered.LastError, Is.Null);
+        Assert.That(recovered.State, Is.EqualTo(TicketState.Open));
+        Assert.That(_store.Audits.Count(action => action == "channel-bound"), Is.EqualTo(1));
+        Assert.That(initialBindingCount, Is.EqualTo(phase == "opening" ? 1 : 0));
+        _store.Replace(recovered with { State = TicketState.Creating });
+        _discord.BeforeProgressOpenAsync = (_, _, _) => Fail();
+        Assert.That((await _service.OpenAsync("first", requester, "persistent-creation")).Success, Is.False);
+        Assert.That(_store.Audits.Count(action => action == "creation-failed"), Is.EqualTo(2), "A new failure after successful recovery must be recorded.");
+        Assert.That(_store.Audits.Count(action => action == "channel-bound"), Is.EqualTo(1));
+    }
+
+    [TestCase(false, false)]
+    [TestCase(false, true)]
+    [TestCase(true, false)]
+    [TestCase(true, true)]
     public async Task OpeningHistoryReleasesGuildLockAndPreservesConcurrentHold(bool maintenance, bool failCompletion)
     {
         var requester = new Actor(1, []);
@@ -2640,6 +2956,13 @@ public sealed class TicketServiceTests
         private readonly object _gate = new();
         private readonly List<ManualTimer> _timers = [];
         private DateTimeOffset _now = now;
+        public bool HasExpirationBackoff { get { lock (_gate) return _timers.Any(t => t.IsExpirationBackoff); } }
+        public void AdvanceExpirationBackoff()
+        {
+            DateTimeOffset? due;
+            lock (_gate) due = _timers.Where(t => t.IsExpirationBackoff).Select(t => t.DueAt).FirstOrDefault();
+            if (due is not null) Advance(due.Value - GetUtcNow());
+        }
         public override DateTimeOffset GetUtcNow() { lock (_gate) return _now; }
         public override ITimer CreateTimer(TimerCallback callback, object? state, TimeSpan dueTime, TimeSpan period)
         {
@@ -2659,6 +2982,9 @@ public sealed class TicketServiceTests
         {
             private DateTimeOffset? _dueAt;
             private TimeSpan _period;
+            public DateTimeOffset? DueAt => _dueAt;
+            public bool IsExpirationBackoff => !_disposed && _dueAt is { } due && due >= owner._now &&
+                due - owner._now <= TimeSpan.FromSeconds(10);
             private bool _disposed;
             public bool Change(TimeSpan dueTime, TimeSpan period)
             {
@@ -2802,6 +3128,9 @@ public sealed class TicketServiceTests
         private ulong _nextChannel = ChannelOne;
         public int CreateCalls { get; private set; }
         public int FindManagedCalls { get; private set; }
+        public Func<Guid, CancellationToken, Task>? BeforeFindManagedAsync { get; set; }
+        public Func<Ticket, CancellationToken, Task>? BeforeCreateAsync { get; set; }
+        public Func<Ticket, CancellationToken, Task>? AfterCreateAsync { get; set; }
         public int OpenCalls { get; private set; }
         public int CloseCalls { get; private set; }
         public int RenameCalls { get; private set; }
@@ -2835,18 +3164,26 @@ public sealed class TicketServiceTests
             if (MissingMembers.Contains(userId)) throw new InvalidOperationException("Requester is no longer a guild member.");
             return Task.FromResult(CurrentActors.GetValueOrDefault(userId) ?? new Actor(userId, []));
         }
-        public Task<ulong?> FindManagedChannelAsync(Guid ticketId, CancellationToken ct)
+        public async Task<ulong?> FindManagedChannelAsync(Guid ticketId, CancellationToken ct)
         {
             FindManagedCalls++;
-            return Task.FromResult(_managedChannels.TryGetValue(ticketId, out var channel) ? (ulong?)channel : null);
+            ct.ThrowIfCancellationRequested();
+            if (BeforeFindManagedAsync is not null) await BeforeFindManagedAsync(ticketId, ct);
+            ct.ThrowIfCancellationRequested();
+            return _managedChannels.TryGetValue(ticketId, out var channel) ? channel : null;
         }
 
-        public Task<ulong> CreateAsync(Ticket ticket, CancellationToken ct)
+        public async Task<ulong> CreateAsync(Ticket ticket, CancellationToken ct)
         {
             CreateCalls++;
+            ct.ThrowIfCancellationRequested();
+            if (BeforeCreateAsync is not null) await BeforeCreateAsync(ticket, ct);
+            ct.ThrowIfCancellationRequested();
             var channel = _nextChannel++;
             _managedChannels[ticket.Id] = channel;
-            return Task.FromResult(channel);
+            if (AfterCreateAsync is not null) await AfterCreateAsync(ticket, ct);
+            ct.ThrowIfCancellationRequested();
+            return channel;
         }
 
         public Task OpenAsync(Ticket ticket, bool sendOpeningMessage, CancellationToken ct)

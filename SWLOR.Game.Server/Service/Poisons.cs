@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service
         public const string CoatingPotencyVariable = "POISON_COATING_POTENCY";
 
         private const string NextApplyVariable = "POISON_COATING_NEXT_APPLY";
-        private const int InternalCooldownSeconds = 6;
+        public const int InternalCooldownSeconds = 6;
         private static readonly DateTime _epoch = new(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         [NWNEventHandler(ScriptName.OnSWLORDamage)]

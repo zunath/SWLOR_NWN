@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class VenomStatusEffect : StatusEffectBase
     {
+        public const int TickIntervalSeconds = 6;
         private const int BaseDamagePerTick = 8;
         private int _damageBonusPercent;
 
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatusEffectCleanseType.Purify |
             StatusEffectCleanseType.TreatmentKit2 |
             StatusEffectCleanseType.SoothePet;
-        public override float Frequency => 6f;
+        public override float Frequency => TickIntervalSeconds;
 
         public override IStatusEffect Clone()
         {

@@ -83,6 +83,155 @@ public sealed class TicketServiceTests
         });
     }
 
+    [TestCase("close", false, false)]
+    [TestCase("close", false, true)]
+    [TestCase("close", true, false)]
+    [TestCase("close", true, true)]
+    [TestCase("rename", false, false)]
+    [TestCase("rename", false, true)]
+    [TestCase("rename", true, false)]
+    [TestCase("rename", true, true)]
+    [TestCase("reopen", false, false)]
+    [TestCase("reopen", false, true)]
+    [TestCase("reopen", true, false)]
+    [TestCase("reopen", true, true)]
+    [TestCase("hold", false, false)]
+    [TestCase("hold", false, true)]
+    [TestCase("hold", true, false)]
+    [TestCase("hold", true, true)]
+    [TestCase("release", false, false)]
+    [TestCase("release", false, true)]
+    [TestCase("release", true, false)]
+    [TestCase("release", true, true)]
+    public async Task QueuedMutationRechecksRevokedSupportOrOwnerAccess(string operation, bool owner, bool intakeEnabled)
+    {
+        await Open("first", new Actor(1, []), "queued-authorization");
+        if (operation == "reopen") await _service.CloseAsync(ChannelOne, Support);
+        if (operation == "release") await _service.SetHoldAsync(ChannelOne, Support, true);
+        _configuration.Tickets.Enabled = intakeEnabled;
+        var actor = owner ? new Actor(Support.UserId, [], IsGuildOwner: true) : Support;
+        _discord.CurrentActors[actor.UserId] = actor;
+        var before = _store.Tickets.Single();
+        var auditsBefore = _store.Audits.Count;
+        var blockingSession = await _store.LockAsync(default);
+        Task<TicketResult> queued;
+        try
+        {
+            queued = Mutate(operation, actor);
+            Assert.That(queued.IsCompleted, Is.False, "The command must queue behind another ticket operation.");
+            _discord.CurrentActors[actor.UserId] = new Actor(actor.UserId, []);
+        }
+        finally { await blockingSession.DisposeAsync(); }
+        var result = await queued.WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Success, Is.False);
+            Assert.That(_store.Tickets.Single(), Is.EqualTo(before));
+            Assert.That(_store.Audits.Count, Is.EqualTo(auditsBefore), "Denied access must not persist any mutation.");
+        });
+        _discord.CurrentActors[actor.UserId] = actor;
+        Assert.That((await Mutate(operation, actor)).Success, Is.True, "Denied access must release the shared lock.");
+    }
+
+    [TestCase("close")]
+    [TestCase("rename")]
+    [TestCase("reopen")]
+    [TestCase("hold")]
+    [TestCase("release")]
+    public async Task QueuedMutationFailsClosedWhenStaffMemberLeavesGuild(string operation)
+    {
+        await Open("first", new Actor(1, []), "queued-departure");
+        if (operation == "reopen") await _service.CloseAsync(ChannelOne, Support);
+        if (operation == "release") await _service.SetHoldAsync(ChannelOne, Support, true);
+        var before = _store.Tickets.Single();
+        var blockingSession = await _store.LockAsync(default);
+        Task<TicketResult> queued;
+        try
+        {
+            queued = Mutate(operation, Support);
+            Assert.That(queued.IsCompleted, Is.False);
+            _discord.MissingMembers.Add(Support.UserId);
+        }
+        finally { await blockingSession.DisposeAsync(); }
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await queued.WaitAsync(TimeSpan.FromSeconds(5)));
+        Assert.That(_store.Tickets.Single(), Is.EqualTo(before));
+        _discord.MissingMembers.Clear();
+        Assert.That((await Mutate(operation, Support)).Success, Is.True);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task QueuedMutationUsesNewlyGrantedCurrentSupportOrOwnerAccess(bool owner)
+    {
+        await Open("first", new Actor(1, []), "queued-grant");
+        var stale = new Actor(Support.UserId, []);
+        _discord.CurrentActors[stale.UserId] = stale;
+        var blockingSession = await _store.LockAsync(default);
+        Task<TicketResult> queued;
+        try
+        {
+            queued = _service.RenameAsync(ChannelOne, stale, "current-access");
+            Assert.That(queued.IsCompleted, Is.False);
+            _discord.CurrentActors[stale.UserId] = owner ? stale with { IsGuildOwner = true } : Support;
+        }
+        finally { await blockingSession.DisposeAsync(); }
+        Assert.That((await queued.WaitAsync(TimeSpan.FromSeconds(5))).Success, Is.True);
+        Assert.That(_discord.RenameCalls, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task RepeatedMaintenanceFailureAuditsOnlyTheFirstDurableErrorAndAuditsAgainAfterRecovery()
+    {
+        await Open("first", new Actor(1, []), "maintenance-audit");
+        await _service.CloseAsync(ChannelOne, Support);
+        _discord.BeforeExistsAsync = _ => Task.FromException(new InvalidOperationException("Persistent lookup failure."));
+        for (var attempt = 0; attempt < 3; attempt++) await _service.MaintainAsync();
+        Assert.That(_store.Audits.Count(action => action == "maintenance-failed"), Is.EqualTo(1));
+        Assert.That(_store.Tickets.Single().LastError, Is.Not.Null);
+        _discord.BeforeExistsAsync = null;
+        Assert.That((await _service.ReopenAsync(ChannelOne, Support)).Success, Is.True);
+        Assert.That(_store.Tickets.Single().LastError, Is.Null);
+        _discord.BeforeExistsAsync = _ => Task.FromException(new InvalidOperationException("New failure after recovery."));
+        await _service.MaintainAsync();
+        await _service.MaintainAsync();
+        Assert.That(_store.Audits.Count(action => action == "maintenance-failed"), Is.EqualTo(2));
+    }
+
+    [Test]
+    public async Task RepeatedFailedCleanupKeepsOneOwnershipAndFailureAuditUntilAnActualStateChange()
+    {
+        await Open("first", new Actor(1, []), "cleanup-audit");
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        _archive.FailExports = true;
+        await _service.MaintainAsync();
+        var auditCount = _store.Audits.Count;
+        await _service.MaintainAsync();
+        await _service.MaintainAsync();
+        Assert.Multiple(() =>
+        {
+            Assert.That(_archive.ExportCalls, Is.EqualTo(3), "Cleanup must keep retrying the operation.");
+            Assert.That(_store.Audits.Count, Is.EqualTo(auditCount), "Unchanged retries must not grow the durable audit.");
+            Assert.That(_store.Audits.Count(action => action == "archive-pending"), Is.EqualTo(1));
+            Assert.That(_store.Audits.Count(action => action == "maintenance-failed"), Is.EqualTo(1));
+            Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Deleting));
+        });
+        _archive.FailExports = false;
+        await _service.MaintainAsync();
+        Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Deleted));
+        Assert.That(_store.Tickets.Single().LastError, Is.Null);
+    }
+
+    private Task<TicketResult> Mutate(string operation, Actor actor) => operation switch
+    {
+        "close" => _service.CloseAsync(ChannelOne, actor),
+        "rename" => _service.RenameAsync(ChannelOne, actor, "renamed-ticket"),
+        "reopen" => _service.ReopenAsync(ChannelOne, actor),
+        "hold" => _service.SetHoldAsync(ChannelOne, actor, true),
+        "release" => _service.SetHoldAsync(ChannelOne, actor, false),
+        _ => throw new ArgumentOutOfRangeException(nameof(operation))
+    };
+
     [Test]
     public async Task PerTicketOperationsUseTargetedLookupsAndMaintenanceEnumeratesOnlyOnce()
     {
@@ -779,6 +928,7 @@ public sealed class TicketServiceTests
     [TestCase("sticker")]
     [TestCase("components")]
     [TestCase("forwarded")]
+    [TestCase("reactions")]
     public async Task CleanupRejectsOlderMessageChangesEvenWhenNewestIdIsUnchanged(string change)
     {
         await Open("first", new Actor(1, []), "old-message-change");
@@ -795,7 +945,7 @@ public sealed class TicketServiceTests
                 "edit" => old with { Content = "edited" },
                 "embed" => old with { EmbedsJson = "[{modified:true}]" },
                 "attachment" => old with { Attachments = [] },
-                "poll" or "sticker" or "components" or "forwarded" => old with { MetadataJson = "{\"" + change + "\":\"changed\"}" },
+                "poll" or "sticker" or "components" or "forwarded" or "reactions" => old with { MetadataJson = "{\"" + change + "\":\"changed\"}" },
                 _ => old
             };
             _discord.Snapshot = change == "delete" ? new([newest], 101) : new([edited, newest], 101);
@@ -1006,7 +1156,7 @@ public sealed class TicketServiceTests
         var result = await _service.ReopenAsync(ChannelOne, Support);
 
         Assert.That(result.Success, Is.EqualTo(enabled == true));
-        Assert.That(_discord.ActorLookups, Is.EqualTo(new ulong[] { 1 }));
+        Assert.That(_discord.ActorLookups, Is.EqualTo(new ulong[] { Support.UserId, Support.UserId, 1 }));
         Assert.That(_store.Tickets.Single(t => t.ChannelId == ChannelOne).State,
             Is.EqualTo(enabled == true ? TicketState.Open : TicketState.Closed));
     }
@@ -1027,7 +1177,7 @@ public sealed class TicketServiceTests
         var result = await _service.ReopenAsync(ChannelOne, Support);
 
         Assert.That(result.Success, Is.EqualTo(currentlyHasRole));
-        Assert.That(_discord.ActorLookups, Is.EqualTo(new ulong[] { 1 }));
+        Assert.That(_discord.ActorLookups, Is.EqualTo(new ulong[] { Support.UserId, Support.UserId, 1 }));
     }
 
     [Test]
@@ -1040,7 +1190,7 @@ public sealed class TicketServiceTests
         var result = await _service.ReopenAsync(ChannelOne, privilegedStaff);
 
         Assert.That(result.Success, Is.False);
-        Assert.That(_discord.ActorLookups, Is.EqualTo(new ulong[] { 1 }));
+        Assert.That(_discord.ActorLookups, Is.EqualTo(new ulong[] { Support.UserId, Support.UserId, 1 }));
         Assert.That(_store.Tickets.Single(t => t.ChannelId == ChannelOne).State, Is.EqualTo(TicketState.Closed));
     }
 
@@ -2182,6 +2332,7 @@ public sealed class TicketServiceTests
         public bool FailNextSaveWithCancellation { get; set; }
         public Action? BeforeSaveCancellation { get; set; }
         public int TicketEnumerationCount { get; set; }
+        public List<string> Audits { get; } = [];
 
         public Task InitializeAsync(CancellationToken ct) => Task.CompletedTask;
 
@@ -2247,6 +2398,7 @@ public sealed class TicketServiceTests
                     throw new InvalidOperationException("Simulated persistence failure.");
                 }
                 store.Replace(ticket);
+                store.Audits.Add(action);
                 return Task.CompletedTask;
             }
 

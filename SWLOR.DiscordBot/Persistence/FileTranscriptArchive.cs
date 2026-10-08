@@ -36,7 +36,7 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
         EnsurePrivateDirectory(directory);
         var attachmentDirectory = Path.Combine(directory, "attachments");
         EnsurePrivateDirectory(attachmentDirectory);
-        RepairExistingPermissions(directory);
+        RepairExistingPermissions(directory, ct, progress);
         var files = new Dictionary<ulong, string>();
         var attachmentSizes = new Dictionary<ulong, long>();
         if (configuration.Tickets.CopyAttachments)
@@ -436,19 +436,28 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
         RejectLink(path);
     }
 
-    private static void RepairExistingPermissions(string directory)
+    private static void RepairExistingPermissions(string directory, CancellationToken ct, Action progress)
     {
         // Repair old archives and cached attachments before reading or publishing ticket data.
+        ct.ThrowIfCancellationRequested();
+        RejectLink(directory);
+        progress();
         foreach (var entry in Directory.EnumerateFileSystemEntries(directory))
         {
+            ct.ThrowIfCancellationRequested();
             RejectLink(entry);
             if (Directory.Exists(entry))
             {
                 EnsurePrivateDirectory(entry);
-                RepairExistingPermissions(entry);
+                RepairExistingPermissions(entry, ct, progress);
             }
-            else RestrictFile(entry);
+            else
+            {
+                RestrictFile(entry);
+                progress();
+            }
         }
+        ct.ThrowIfCancellationRequested();
     }
 
     private static void RestrictFile(string path)

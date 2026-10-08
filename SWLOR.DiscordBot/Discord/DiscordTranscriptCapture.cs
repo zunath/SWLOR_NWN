@@ -30,6 +30,22 @@ internal static class DiscordTranscriptCapture
             message.EditedTimestamp,
             message.Components,
             message.Stickers,
+            Reactions = message.Reactions.Select(reaction => new
+            {
+                Emoji = new
+                {
+                    Id = (reaction.Key as Emote)?.Id,
+                    reaction.Key.Name,
+                    Animated = (reaction.Key as Emote)?.Animated
+                },
+                reaction.Value.ReactionCount,
+                reaction.Value.IsMe,
+                reaction.Value.NormalCount,
+                reaction.Value.BurstCount,
+                BurstColors = reaction.Value.BurstColors?.Select(color => color.RawValue).Order().ToArray() ?? []
+            }).OrderBy(reaction => reaction.Emoji.Id)
+                .ThenBy(reaction => reaction.Emoji.Name, StringComparer.Ordinal)
+                .ThenBy(reaction => reaction.Emoji.Animated).ToArray(),
             Poll = userMessage?.Poll,
             ForwardedMessages = userMessage?.ForwardedMessages.Select(snapshot => new
             {

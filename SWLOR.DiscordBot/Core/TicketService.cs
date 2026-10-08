@@ -67,36 +67,36 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         }
     }
 
-    public Task<TicketResult> CloseAsync(ulong channelId, Actor actor, CancellationToken ct = default) => MutateAsync(channelId, actor, async (session, ticket) =>
+    public Task<TicketResult> CloseAsync(ulong channelId, Actor actor, CancellationToken ct = default) => MutateAsync(channelId, actor, async (session, ticket, currentActor) =>
     {
-        if (ticket.RequesterId != actor.UserId && !CanSupport(actor)) return new(false, "Only the requester or support staff can close this ticket.");
+        if (ticket.RequesterId != currentActor.UserId && !CanSupport(currentActor)) return new(false, "Only the requester or support staff can close this ticket.");
         if (ticket.State == TicketState.Closed) return new(true, "This ticket is already closed.", ticket);
         if (ticket.State is not (TicketState.Open or TicketState.Closing)) return new(false, "This ticket is busy; try again shortly.");
         var now = ticket.ClosedAt ?? clock.GetUtcNow();
         ticket = ticket with { State = TicketState.Closing, ClosedAt = now, DeleteAfter = now + Options.CleanupDelay, LastError = null,
             ArchiveExpiresAt = now.AddDays(Options.ArchiveRetentionDays) };
-        await session.SaveAsync(ticket, "closing", actor.UserId, ct);
+        await session.SaveAsync(ticket, "closing", currentActor.UserId, ct);
         await discord.CloseAsync(ticket, ct);
         ticket = ticket with { State = TicketState.Closed };
-        await session.SaveAsync(ticket, "closed", actor.UserId, ct);
+        await session.SaveAsync(ticket, "closed", currentActor.UserId, ct);
         await NotifyAsync($"Ticket {ticket.Number} closed.", ct);
         return new(true, "Ticket closed. Staff can reopen it before cleanup.", ticket);
     }, ct);
 
-    public Task<TicketResult> RenameAsync(ulong channelId, Actor actor, string name, CancellationToken ct = default) => MutateAsync(channelId, actor, async (session, ticket) =>
+    public Task<TicketResult> RenameAsync(ulong channelId, Actor actor, string name, CancellationToken ct = default) => MutateAsync(channelId, actor, async (session, ticket, currentActor) =>
     {
-        if (!CanSupport(actor)) return new(false, "Only support staff can rename tickets.");
+        if (!CanSupport(currentActor)) return new(false, "Only support staff can rename tickets.");
         if (ticket.State is not (TicketState.Open or TicketState.Closed)) return new(false, "This ticket is busy; try again shortly.");
         var normalized = Regex.Replace(name.Trim().ToLowerInvariant(), "[^a-z0-9_-]+", "-").Trim('-');
         if (normalized.Length is < 1 or > 100) return new(false, "Use a channel name between 1 and 100 characters.");
         await discord.RenameAsync(ticket, normalized, ct);
-        await session.SaveAsync(ticket, "renamed", actor.UserId, ct);
+        await session.SaveAsync(ticket, "renamed", currentActor.UserId, ct);
         return new(true, "Ticket renamed.", ticket);
     }, ct);
 
-    public Task<TicketResult> ReopenAsync(ulong channelId, Actor actor, CancellationToken ct = default) => MutateAsync(channelId, actor, async (session, ticket) =>
+    public Task<TicketResult> ReopenAsync(ulong channelId, Actor actor, CancellationToken ct = default) => MutateAsync(channelId, actor, async (session, ticket, currentActor) =>
     {
-        if (!CanSupport(actor)) return new(false, "Only support staff can reopen tickets.");
+        if (!CanSupport(currentActor)) return new(false, "Only support staff can reopen tickets.");
         if (ticket.State == TicketState.Open) return new(true, "This ticket is already open.", ticket);
         if (ticket.State is not (TicketState.Closed or TicketState.Reopening)) return new(false, "This ticket cannot be reopened while an operation is in progress.");
         var tickets = (await session.GetTicketsAsync(ct)).Where(t => t.Id != ticket.Id && Active(t)).ToArray();
@@ -108,19 +108,19 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             (!Bypasses(requester, Options.BypassGuildLimit) && tickets.Length >= Options.GuildLimit))
             return new(false, "Reopening would exceed an open-ticket limit.");
         ticket = ticket with { State = TicketState.Reopening, DeleteAfter = null, ClosedAt = null, ArchiveExpiresAt = null, LastError = null };
-        await session.SaveAsync(ticket, "reopening", actor.UserId, ct);
+        await session.SaveAsync(ticket, "reopening", currentActor.UserId, ct);
         await discord.OpenAsync(ticket, false, ct);
         ticket = ticket with { State = TicketState.Open };
-        await session.SaveAsync(ticket, "reopened", actor.UserId, ct);
+        await session.SaveAsync(ticket, "reopened", currentActor.UserId, ct);
         return new(true, "Ticket reopened; scheduled cleanup cancelled.", ticket);
     }, ct);
 
-    public Task<TicketResult> SetHoldAsync(ulong channelId, Actor actor, bool hold, CancellationToken ct = default) => MutateAsync(channelId, actor, async (session, ticket) =>
+    public Task<TicketResult> SetHoldAsync(ulong channelId, Actor actor, bool hold, CancellationToken ct = default) => MutateAsync(channelId, actor, async (session, ticket, currentActor) =>
     {
-        if (!CanSupport(actor)) return new(false, "Only support staff can change archive holds.");
+        if (!CanSupport(currentActor)) return new(false, "Only support staff can change archive holds.");
         if (ticket.State == TicketState.Deleted) return new(false, "The ticket channel has already been deleted.");
         ticket = ticket with { Hold = hold };
-        await session.SaveAsync(ticket, hold ? "hold-set" : "hold-released", actor.UserId, ct);
+        await session.SaveAsync(ticket, hold ? "hold-set" : "hold-released", currentActor.UserId, ct);
         return new(true, hold ? "Cleanup and archive expiration are on hold." : "Hold released.", ticket);
     }, ct);
 
@@ -203,12 +203,14 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
     }
 
     private async Task<TicketResult> MutateAsync(ulong channelId, Actor actor,
-        Func<ITicketSession, Ticket, Task<TicketResult>> mutation, CancellationToken ct)
+        Func<ITicketSession, Ticket, Actor, Task<TicketResult>> mutation, CancellationToken ct)
     {
         await using var session = await store.LockAsync(ct);
         var ticket = await session.FindByChannelAsync(channelId, ct);
         if (ticket is null) return new(false, "This channel is not a ticket managed by this bot.");
-        return await mutation(session, ticket);
+        // Lock contention can outlive a role change or guild departure. Authorize the current member.
+        var currentActor = await discord.ActorAsync(actor.UserId, ct);
+        return await mutation(session, ticket, currentActor);
     }
 
     public async Task ReconcileRetainedPermissionsAsync(CancellationToken ct = default)
@@ -286,8 +288,9 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         await using var session = await store.LockAsync(ct);
         // Keep the last durable archive and state even when a later remote operation timed out.
         var durable = await session.GetTicketAsync(id, ct);
-        if (durable is not null)
-            await session.SaveAsync(durable with { LastError = "Maintenance failed; retry scheduled. Check worker logs." }, "maintenance-failed", null, ct);
+        const string error = "Maintenance failed; retry scheduled. Check worker logs.";
+        if (durable is not null && durable.LastError != error)
+            await session.SaveAsync(durable with { LastError = error }, "maintenance-failed", null, ct);
     }
 
     private async Task MaintainTicketAsync(Guid id, CancellationToken ct, Action progress)
@@ -348,8 +351,11 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 if (!_exports.TryAdd(id, 0)) return;
                 exporting = true;
                 // Include partial/completed files in retention even if the final export save never commits.
-                ticket = ticket with { ArchivePath = ticket.ArchivePath ?? archive.GetArchivePath(ticket) };
-                await session.SaveAsync(ticket, "archive-pending", null, ct);
+                if (ticket.ArchivePath is null)
+                {
+                    ticket = ticket with { ArchivePath = archive.GetArchivePath(ticket) };
+                    await session.SaveAsync(ticket, "archive-pending", null, ct);
+                }
             }
             // Pagination and attachment downloads can take minutes; do not hold the guild ticket lock.
             await WithProgressAsync(PrunePublishedSnapshotsAsync(ticket, ct, progress), progress);

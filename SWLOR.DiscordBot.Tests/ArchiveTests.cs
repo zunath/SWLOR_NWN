@@ -284,6 +284,96 @@ public sealed class ArchiveTests
     }
 
     [Test]
+    public async Task PermissionRepairReportsEveryExistingDirectoryAndFileBeforePublishingReplacement()
+    {
+        using var client = CreateClient(_ => throw new AssertionException("No attachment download expected."));
+        var archive = CreateArchive(client);
+        var ticket = CreateTicket();
+        var previous = await archive.ExportAsync(ticket, EmptySnapshot(), default);
+        ticket = ticket with { ArchiveSnapshotPath = previous, ArchiveComplete = true };
+        var directory = ticket.ArchivePath!;
+        var empty = Path.Combine(directory, "attachments", "empty");
+        Directory.CreateDirectory(empty);
+        for (var id = 88; id < 108; id++)
+            await File.WriteAllBytesAsync(Path.Combine(directory, "attachments", $"{id}.bin"), new byte[3]);
+        var existing = Directory.GetFileSystemEntries(directory, "*", SearchOption.AllDirectories);
+        if (OperatingSystem.IsLinux())
+        {
+            foreach (var path in existing)
+                File.SetUnixFileMode(path, Directory.Exists(path) ? (UnixFileMode)511 : (UnixFileMode)438);
+        }
+        var repairProgress = 0;
+        var replacement = await archive.ExportAsync(ticket, EmptySnapshot(), default, () =>
+        {
+            if (Directory.GetDirectories(Path.GetDirectoryName(previous)!).Length == 1) repairProgress++;
+        });
+        Assert.That(repairProgress, Is.EqualTo(existing.Length + 1), "Repair reports the owning directory, every child directory and every file.");
+        Assert.That(File.Exists(Path.Combine(replacement, "transcript.html")), Is.True);
+        if (OperatingSystem.IsLinux())
+        {
+            foreach (var path in existing)
+                Assert.That(ReadUnixMode(path), Is.EqualTo(Directory.Exists(path) ? (UnixFileMode)448 : (UnixFileMode)384), path);
+        }
+    }
+
+    [Test]
+    public async Task CancellationDuringPermissionRepairStopsBeforePublicationAndPreservesSelectedPair()
+    {
+        using var client = CreateClient(_ => throw new AssertionException("No attachment download expected."));
+        var archive = CreateArchive(client);
+        var ticket = CreateTicket();
+        var previous = await archive.ExportAsync(ticket, EmptySnapshot(), default);
+        ticket = ticket with { ArchiveSnapshotPath = previous, ArchiveComplete = true };
+        var json = await File.ReadAllBytesAsync(Path.Combine(previous, "transcript.json"));
+        var html = await File.ReadAllBytesAsync(Path.Combine(previous, "transcript.html"));
+        var repairProgress = 0;
+        using var cancellation = new CancellationTokenSource();
+        Assert.CatchAsync<OperationCanceledException>(() => archive.ExportAsync(ticket, EmptySnapshot(), cancellation.Token, () =>
+        {
+            Assert.That(Directory.GetDirectories(Path.GetDirectoryName(previous)!), Is.EqualTo(new[] { previous }),
+                "Permission traversal must report progress before any replacement is staged.");
+            if (++repairProgress == 3) cancellation.Cancel();
+        }));
+        Assert.That(repairProgress, Is.EqualTo(3), "Canceled traversal stops at its next entry or directory boundary.");
+        Assert.That(await File.ReadAllBytesAsync(Path.Combine(previous, "transcript.json")), Is.EqualTo(json));
+        Assert.That(await File.ReadAllBytesAsync(Path.Combine(previous, "transcript.html")), Is.EqualTo(html));
+        Assert.That(Directory.GetDirectories(Path.GetDirectoryName(previous)!), Is.EqualTo(new[] { previous }));
+        Assert.That(Directory.GetFiles(ticket.ArchivePath!, "*.part", SearchOption.AllDirectories), Is.Empty);
+    }
+
+    [Test]
+    public async Task LinuxCancellationDuringPermissionRepairKeepsRepairedFilesPrivateAndStopsBeforeRemainingFiles()
+    {
+        if (!OperatingSystem.IsLinux()) { Assert.Ignore("Unix mode verification requires Linux."); return; }
+        using var client = CreateClient(_ => throw new AssertionException("No attachment download expected."));
+        var archive = CreateArchive(client);
+        var ticket = CreateTicket();
+        var previous = await archive.ExportAsync(ticket, EmptySnapshot(), default);
+        ticket = ticket with { ArchiveSnapshotPath = previous, ArchiveComplete = true };
+        var cache = Path.Combine(ticket.ArchivePath!, "attachments");
+        var files = Enumerable.Range(88, 20).Select(id => Path.Combine(cache, $"{id}.bin")).ToArray();
+        foreach (var path in files)
+        {
+            await File.WriteAllBytesAsync(path, new byte[3]);
+            File.SetUnixFileMode(path, (UnixFileMode)438);
+        }
+        File.SetUnixFileMode(cache, (UnixFileMode)511);
+        var repairProgress = 0;
+        using var cancellation = new CancellationTokenSource();
+        Assert.CatchAsync<OperationCanceledException>(() => archive.ExportAsync(ticket, EmptySnapshot(), cancellation.Token, () =>
+        {
+            repairProgress++;
+            if (files.Count(path => ReadUnixMode(path) == (UnixFileMode)384) == 2) cancellation.Cancel();
+        }));
+        Assert.That(repairProgress, Is.GreaterThan(2));
+        Assert.That(files.Count(path => ReadUnixMode(path) == (UnixFileMode)384), Is.EqualTo(2));
+        Assert.That(files.Count(path => ReadUnixMode(path) == (UnixFileMode)438), Is.EqualTo(18));
+        Assert.That(ReadUnixMode(cache), Is.EqualTo((UnixFileMode)448));
+        Assert.That(Directory.GetDirectories(Path.GetDirectoryName(previous)!), Is.EqualTo(new[] { previous }));
+        foreach (var path in files) Assert.That(await File.ReadAllBytesAsync(path), Is.EqualTo(new byte[3]));
+    }
+
+    [Test]
     public async Task LinuxPermissionRepairRejectsLinksWithoutChangingTheirTarget()
     {
         if (!OperatingSystem.IsLinux()) { Assert.Ignore("Unix mode verification requires Linux."); return; }

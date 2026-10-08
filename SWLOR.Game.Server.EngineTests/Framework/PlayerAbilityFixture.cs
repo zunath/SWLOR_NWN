@@ -156,6 +156,9 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             // LoadCreature restores the template's area ID, which makes AddToArea skip the area's
             // object list. The engine corrupts that list's heap block when such a creature moves.
             player.SetArea(null);
+            // IsPC is for player inventory loading. Until InstallIdentity the creature is an NPC;
+            // Dispose restores that, and the engine ignores DestroyObject on player-flagged creatures.
+            player.m_bPlayerCharacter = 0;
             // The area's normal DestroyObject/DestroyArea cleanup owns the live creature.
             player.TransferOwnershipToServer();
             return player.m_idSelf;
@@ -170,7 +173,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
                 server.GetGameObject(context.Arena).AsNWSArea(), position.X, position.Y, position.Z, 0, 0);
         }
 
-        private static bool IsListedInArena(EngineTestContext context, uint creature)
+        internal static bool IsListedInArena(EngineTestContext context, uint creature)
         {
             for (var obj = GetFirstObjectInArea(context.Arena); GetIsObjectValid(obj); obj = GetNextObjectInArea(context.Arena))
             {

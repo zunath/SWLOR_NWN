@@ -217,7 +217,7 @@ native PC creature, places it in the arena, then registers a fake `CNWSPlayer` c
 persisted `Player` record so `GetIsPC` and player DB paths work. Disposing it unregisters the
 client and deletes the record; the test context destroys the creature.
 
-Two engine rules shape the setup:
+Three engine rules shape the setup:
 
 - `LoadCreature` restores the template's area ID. The fixture clears it before entering the
   arena; otherwise `CNWSCreature::AddToArea` treats the creature as already present and skips the
@@ -231,6 +231,11 @@ Two engine rules shape the setup:
   `AddToArea` sends the area to the client and keeps the creature out of the area until the
   client reports the area loaded, which a headless client never does. For the same reason, do
   not move the fixture to another area while it is a player.
+- Loading with the `IsPC` field also sets the native player flag, and the engine ignores
+  `DestroyObject` on a creature with that flag. The fixture clears the flag after loading and
+  sets it only while the identity is installed, so the creature is destroyable after `Dispose`.
+  A fixture that kept the flag would never be destroyed, and leftover fixtures would pile up in
+  the arena during multi-case sweeps.
 
 ### Timing guidance
 

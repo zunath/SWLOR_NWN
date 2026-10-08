@@ -994,11 +994,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             IsCustomTintAvailable = true;
             IsCustomTintEditable = selections.Count > 0 &&
-                                   selections.All(RobeModelRenderer.SupportsRgb);
+                                   selections.All(SupportsRgb);
             CustomTintTooltip = IsCustomTintEditable ? "Apply an RGB color."
                 : selections.Any(selection => selection.ArmorPart == AppearanceArmor.Robe)
                     ? "This body and robe combination supports preset colors only. Select a color from the palette above."
-                    : "This part has no visible material for this color.";
+                    : selections.Any(selection => selection.IsWornHelmet)
+                        ? "This helmet supports preset colors only on this species. Select a color from the palette above."
+                        : "This part has no visible material for this color.";
             if (TryGetSelectedCustomColor(selections, layerType, out var customColor))
             {
                 SetSelectedTintColor(new GuiColor(customColor.Red, customColor.Green, customColor.Blue));
@@ -1053,6 +1055,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             SetSelectedTintColor(new GuiColor(color.Red, color.Green, color.Blue));
         }
+
+        private static bool SupportsRgb(TintMapMaterialSelection selection) =>
+            RobeModelRenderer.SupportsRgb(selection) && HelmetModelRenderer.SupportsRgb(selection);
 
         private bool TryGetSelectedCustomColor(IReadOnlyList<TintMapMaterialSelection> selections,
             TintMapLayerType layer, out TintMapColor color)
@@ -1136,7 +1141,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private Action<TintMapColor> CaptureTintColorEdit()
         {
             if (!TryGetEditableTintSelections(out var selections, out var layerType, out _) ||
-                selections.Count == 0 || !selections.All(RobeModelRenderer.SupportsRgb))
+                selections.Count == 0 || !selections.All(SupportsRgb))
                 return null;
 
             // NUI hydrates selection binds before their setters run. A pending text edit
@@ -2000,8 +2005,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale,
-                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+            var scale = HelmetModelRenderer.GetHeadScale(_target);
             if (scale <= 0f)
                 scale = 1.0f;
 
@@ -2013,9 +2017,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, scale - Increment,
-                    nScope: ObjectVisualTransformDataScopeType.CreatureHead);
-                SendMessageToPC(_target, $"Head Size: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale, nScope: ObjectVisualTransformDataScopeType.CreatureHead)}");
+                HelmetModelRenderer.SetHeadScale(_target, scale - Increment);
+                SendMessageToPC(_target, $"Head Size: {HelmetModelRenderer.GetHeadScale(_target)}");
             }
         };
 
@@ -2028,8 +2031,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var scale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale,
-                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+            var scale = HelmetModelRenderer.GetHeadScale(_target);
             if (scale <= 0f)
                 scale = 1.0f;
 
@@ -2041,9 +2043,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, scale + Increment,
-                    nScope: ObjectVisualTransformDataScopeType.CreatureHead);
-                SendMessageToPC(_target, $"Head Size: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale, nScope: ObjectVisualTransformDataScopeType.CreatureHead)}");
+                HelmetModelRenderer.SetHeadScale(_target, scale + Increment);
+                SendMessageToPC(_target, $"Head Size: {HelmetModelRenderer.GetHeadScale(_target)}");
             }
         };
 
@@ -2540,8 +2541,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var headScale = dbPlayer.HeadAppearanceScale <= 0f ? 1.0f : dbPlayer.HeadAppearanceScale;
 
             SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
-            SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, headScale,
-                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+            HelmetModelRenderer.SetHeadScale(_target, headScale);
         };
 
         public Action OnClickSaveSettings() => () =>
@@ -2555,8 +2555,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var newHeight = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale);
             dbPlayer.AppearanceScale = newHeight;
 
-            var newHeadScale = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale,
-                nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+            var newHeadScale = HelmetModelRenderer.GetHeadScale(_target);
             if (newHeadScale <= 0f)
                 newHeadScale = 1.0f;
             dbPlayer.HeadAppearanceScale = newHeadScale;
@@ -3270,6 +3269,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 SetHiddenWhenEquipped(cloak, !ShowCloak);
             }
+            TintMapService.RefreshAfterColorChange(_target);
         }
 
         public void Refresh(EquipItemRefreshEvent payload)

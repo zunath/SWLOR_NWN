@@ -131,31 +131,28 @@ namespace SWLOR.Game.Server.Service
         /// <param name="delaySeconds">The number of seconds to delay.</param>
         public static void ApplyRecastDelay(uint activator, RecastGroup group, float delaySeconds)
         {
-            if (!GetIsObjectValid(activator) || group == RecastGroup.Invalid || delaySeconds <= 0.0f) return;
-
+            if (!GetIsObjectValid(activator) || group == RecastGroup.Invalid || delaySeconds <= 0f) return;
             var now = DateTime.UtcNow;
+            ApplyRecastDelay(activator, group, now, now.AddSeconds(delaySeconds));
+        }
 
-            // NPCs and DM-possessed NPCs
+        /// <summary>Publishes an existing cooldown deadline through the regular persistence and icon process.</summary>
+        public static void ApplyRecastDelay(uint activator, RecastGroup group, DateTime startedAt, DateTime endsAt,
+            string sourceTexture = null, string iconTexture = null)
+        {
+            if (!GetIsObjectValid(activator) || group == RecastGroup.Invalid || endsAt <= DateTime.UtcNow || endsAt <= startedAt) return;
             if (!GetIsPC(activator) || GetIsDMPossessed(activator))
             {
-                var recastDate = now.AddSeconds(delaySeconds);
-                var recastDateString = RecastTimestamp.Format(recastDate);
-                SetLocalString(activator, $"ABILITY_RECAST_ID_{(int)group}", recastDateString);
+                SetLocalString(activator, $"ABILITY_RECAST_ID_{(int)group}", RecastTimestamp.Format(endsAt));
             }
-            // Players
-            else if (GetIsPC(activator) && !GetIsDM(activator))
+            else if (!GetIsDM(activator))
             {
-                var playerId = GetObjectUUID(activator);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = DB.Get<Player>(GetObjectUUID(activator));
                 dbPlayer.RecastTimes ??= new Dictionary<RecastGroup, DateTime>();
-
-                var recastDate = now.AddSeconds(delaySeconds);
-                dbPlayer.RecastTimes[group] = recastDate;
-
+                dbPlayer.RecastTimes[group] = endsAt;
                 DB.Set(dbPlayer);
-                AbilityCooldownVisual.ApplyRecastDelay(activator, group, now, recastDate);
+                AbilityCooldownVisual.ApplyRecastDelay(activator, group, startedAt, endsAt, sourceTexture, iconTexture);
             }
-
         }
 
         public static void ReduceRecastDelay(uint activator, RecastGroup group, float reduceSeconds)

@@ -11,15 +11,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     // visible in one place. Opened with /nuigallery (admin; everyone on test).
     //
     // The GALLERY_HAZARD_* / GALLERY_PROBE_* partials fall into two categories
-    // (all outcomes verified in-game 2026-07):
+    // (outcomes verified in-game 2026-07 unless noted):
     // - CONFIRMED failures: H1 + P1-P4/P6 (fixed-height row containing a same-height
     //   margined widget - button, checkbox, textedit, combo, slider, progress - blanks
     //   the window, rule R2c); H6 (watch on a never-Set property - descriptive R3
-    //   exception); P13a (partial applied to a nonexistent element id - client-side
-    //   error, no server validation exists).
-    // - VERIFIED-WORKING exhibits: W1-W4, P5 (options is margin-free), P7-P12, and
-    //   P13b (3-deep nesting renders but the innermost content is dropped by parent
-    //   re-applies - do not nest partials more than 2 deep).
+    //   exception).
+    // - VERIFIED-WORKING exhibits: W1-W4, P5 (options is margin-free), P7-P12.
+    // - Composed-root exhibits (Oct 2026, rule R7): P13a (partial applied to a
+    //   nonexistent element id - nothing is sent, no server validation exists) and
+    //   P13b (3-deep nesting is composed into the root layout).
     // They are only defined off production. Expected boot warnings on dev/test:
     // EXACTLY SIX [NUI layout warning] lines, all from this window - the R2c
     // regression canaries: GALLERY_HAZARD_BUTTON_ROW, GALLERY_PROBE_ROW_CHECKBOX,
@@ -1153,7 +1153,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindOnClicked(model => model.OnClickProbeRowProgress());
                     row.AddButton()
                         .SetText("P13a: Bad Element Id")
-                        .SetTooltip("ChangePartialView onto a nonexistent element id. CONFIRMED: client-side 'element id not found' error, no server exception; close/reopen recovers. There is no server-side element-id validation.")
+                        .SetTooltip("ChangePartialView onto a nonexistent element id. The layout is remembered for a group that never appears, so nothing is sent and nothing renders. There is no server-side element-id validation.")
                         .SetHeight(ButtonHeight)
                         .SetWidth(200f)
                         .BindOnClicked(model => model.OnClickProbeBadElementId());
@@ -1250,8 +1250,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetWidth(200f)
                         .BindOnClicked(model => model.OnClickProbeEmptyData());
                     row.AddButton()
-                        .SetText("P13b: Nested x3 (OK*)")
-                        .SetTooltip("Partial inside a partial inside a partial (3 deep). VERIFIED with caveat: renders, but the innermost content is dropped by the parent's re-apply after a moment - do not nest partials more than 2 deep in real windows.")
+                        .SetText("P13b: Nested x3")
+                        .SetTooltip("Partial inside a partial inside a partial (3 deep), composed into the root layout. Expect the inner slot's safe content to render.")
                         .SetHeight(ButtonHeight)
                         .SetWidth(200f)
                         .BindOnClicked(model => model.OnClickProbeNestedPartial());

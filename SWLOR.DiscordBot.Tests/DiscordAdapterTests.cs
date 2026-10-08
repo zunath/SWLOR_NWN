@@ -983,6 +983,98 @@ public sealed class DiscordAdapterTests
         Assert.That(claims, Is.EqualTo(1));
     }
 
+
+    [TestCase(HttpRequestError.NameResolutionError)]
+    [TestCase(HttpRequestError.ConnectionError)]
+    [TestCase(HttpRequestError.SecureConnectionError)]
+    public async Task OpeningConnectionSetupFailureProvesUnsentAndAllowsLaterRecovery(HttpRequestError error)
+    {
+        var unavailable = true;
+        var failure = new HttpRequestException(error, "Connection setup failed.");
+        using var handler = new ErrorResponseHandler(() => unavailable ? throw failure
+            : new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{\"id\":\"123\"}") });
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        var claims = 0;
+        var ticketId = Guid.NewGuid();
+        Task Claim(CancellationToken _) { claims++; return Task.CompletedTask; }
+        var proof = Assert.ThrowsAsync<OpeningMessageNotSentException>(() =>
+            poster.SendTicketOpeningAsync(10, ticketId, "Opening", default, Claim))!;
+        Assert.That(proof.InnerException, Is.SameAs(failure));
+        Assert.That(handler.Requests, Is.EqualTo(1), "A proven failure returns to durable recovery without an immediate replay.");
+        Assert.That(claims, Is.EqualTo(1));
+
+        unavailable = false;
+        Assert.That(await poster.SendTicketOpeningAsync(10, ticketId, "Opening", default, Claim)
+            .WaitAsync(TimeSpan.FromSeconds(2)), Is.EqualTo(123UL));
+        Assert.That(handler.Requests, Is.EqualTo(2));
+        Assert.That(claims, Is.EqualTo(2), "The sender gate is released and a new durable claim can be recorded.");
+    }
+
+    [TestCase(HttpRequestError.Unknown)]
+    [TestCase(HttpRequestError.HttpProtocolError)]
+    [TestCase(HttpRequestError.ExtendedConnectNotSupported)]
+    [TestCase(HttpRequestError.VersionNegotiationError)]
+    [TestCase(HttpRequestError.UserAuthenticationError)]
+    [TestCase(HttpRequestError.ProxyTunnelError)]
+    [TestCase(HttpRequestError.InvalidResponse)]
+    [TestCase(HttpRequestError.ResponseEnded)]
+    [TestCase(HttpRequestError.ConfigurationLimitExceeded)]
+    public void OpeningOtherTransportErrorsRemainAmbiguousWithoutReplay(HttpRequestError error)
+    {
+        var failure = new HttpRequestException(error, "Unconfirmed send outcome.");
+        using var handler = new ErrorResponseHandler(() => throw failure);
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        var observed = Assert.ThrowsAsync<HttpRequestException>(() =>
+            poster.SendTicketOpeningAsync(10, Guid.NewGuid(), "Opening", default))!;
+        Assert.That(observed, Is.SameAs(failure));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+    }
+
+    [TestCase(HttpRequestError.NameResolutionError)]
+    [TestCase(HttpRequestError.ConnectionError)]
+    [TestCase(HttpRequestError.SecureConnectionError)]
+    public void OpeningConnectionCodeWithHttpStatusRemainsAmbiguous(HttpRequestError error)
+    {
+        var failure = new HttpRequestException(error, "A response was received.", statusCode: HttpStatusCode.OK);
+        using var handler = new ErrorResponseHandler(() => throw failure);
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        Assert.That(Assert.ThrowsAsync<HttpRequestException>(() =>
+            poster.SendTicketOpeningAsync(10, Guid.NewGuid(), "Opening", default)), Is.SameAs(failure));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+    }
+
+    [TestCase(HttpRequestError.NameResolutionError)]
+    [TestCase(HttpRequestError.ConnectionError)]
+    [TestCase(HttpRequestError.SecureConnectionError)]
+    public void OpeningResponseBodyFailuresCannotReleaseTheSendFence(HttpRequestError error)
+    {
+        var failure = new HttpRequestException(error, "Response body read failed.");
+        using var stream = new CountedErrorStream(System.Text.Encoding.UTF8.GetBytes("{\"id\":\"123\"}"))
+            { BeforeRead = () => throw failure };
+        using var handler = new ErrorResponseHandler(() => new HttpResponseMessage(HttpStatusCode.OK)
+            { Content = new StreamContent(stream) });
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        var observed = Assert.ThrowsAsync<HttpRequestException>(() =>
+            poster.SendTicketOpeningAsync(10, Guid.NewGuid(), "Opening", default))!;
+        Assert.That(observed, Is.SameAs(failure), "Even a connection setup code cannot prove no send after a success response.");
+        Assert.That(handler.Requests, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void OpeningHttpClientTimeoutRemainsAmbiguousWithoutReplay()
+    {
+        using var handler = new DeferredOpeningHandler();
+        using var http = new HttpClient(handler) { Timeout = TimeSpan.FromMilliseconds(50) };
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        Assert.That(async () => await poster.SendTicketOpeningAsync(10, Guid.NewGuid(), "Opening", default),
+            Throws.InstanceOf<OperationCanceledException>());
+        Assert.That(handler.Bodies.Count, Is.EqualTo(1));
+    }
+
     [Test]
     public async Task TicketOpeningCanceledAfterClaimBeforeDispatchProvesUnsentAndReleasesSenderGate()
     {

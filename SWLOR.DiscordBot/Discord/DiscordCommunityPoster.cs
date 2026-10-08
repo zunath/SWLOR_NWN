@@ -86,7 +86,15 @@ public sealed class DiscordCommunityPoster(HttpClient http, BotSecrets secrets, 
                 try
                 {
                     submitted = true;
-                    using var response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct);
+                    HttpResponseMessage received;
+                    try { received = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct); }
+                    catch (HttpRequestException ex) when (!retryAmbiguousResponses && IsConnectionEstablishmentFailure(ex))
+                    {
+                        // These handler errors occur before dispatch reaches Discord. Do not extend
+                        // this catch through response parsing, where the POST may already have succeeded.
+                        throw new OpeningMessageNotSentException(ex);
+                    }
+                    using var response = received;
                     if (IsDefinitiveRejection(response.StatusCode)) submitted = false;
                     if (response.Headers.TryGetValues("X-RateLimit-Remaining", out var remaining) && remaining.FirstOrDefault() == "0" &&
                         response.Headers.TryGetValues("X-RateLimit-Reset-After", out var resets) &&
@@ -128,6 +136,9 @@ public sealed class DiscordCommunityPoster(HttpClient http, BotSecrets secrets, 
         finally { if (held) gate.Release(); }
     }
 
+    private static bool IsConnectionEstablishmentFailure(HttpRequestException exception) =>
+        exception.StatusCode is null && exception.HttpRequestError is
+            HttpRequestError.NameResolutionError or HttpRequestError.ConnectionError or HttpRequestError.SecureConnectionError;
     private static bool IsDefinitiveRejection(HttpStatusCode? status) => status is HttpStatusCode.BadRequest or
         HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden or HttpStatusCode.NotFound or
         HttpStatusCode.MethodNotAllowed or HttpStatusCode.TooManyRequests;

@@ -157,6 +157,7 @@ namespace SWLOR.Game.Server.Service.AIService
             var state = GetState(creature, profileType);
             RefreshActionCache(creature, profile, state);
             var context = new AIContext(creature, trigger, eventTarget, profile, state, allies);
+            context.UseAttackableEnmityTarget();
 
             if (GetIsObjectValid(context.CurrentEnmityTarget) &&
                 AI.TryStartCombatLeashEvade(creature, context.CurrentEnmityTarget))
@@ -588,7 +589,7 @@ namespace SWLOR.Game.Server.Service.AIService
             }
             else if (!GetIsObjectValid(target) || target == creature)
             {
-                target = Enmity.GetHighestEnmityTarget(creature);
+                target = Enmity.GetHighestEnmityAttackTarget(creature);
             }
 
             if (!GetIsObjectValid(target))

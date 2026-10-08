@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (!GetIsPC(activator))
             {
-                var enmityTarget = Enmity.GetHighestEnmityTarget(activator);
+                var enmityTarget = Enmity.GetHighestEnmityAttackTarget(activator);
                 if (GetIsObjectValid(enmityTarget))
                     return enmityTarget;
 
@@ -123,11 +123,16 @@ namespace SWLOR.Game.Server.Feature
             }
 
             if (!GetIsPC(activator) && !GetIsPC(GetMaster(activator)))
-                target = Enmity.GetHighestEnmityTarget(activator);
+                target = Enmity.GetHighestEnmityAttackTarget(activator);
 
             if (!GetIsObjectValid(target) ||
                 GetCurrentHitPoints(target) <= 0 ||
                 GetArea(activator) != GetArea(target))
+                return;
+
+            // Attacking ends invisibility. An activator that is invisible once its ability resolves,
+            // such as from an ability that grants invisibility, keeps it instead of swinging again.
+            if (Stealth.IsInvisible(activator))
                 return;
 
             if (!GetIsPC(activator))

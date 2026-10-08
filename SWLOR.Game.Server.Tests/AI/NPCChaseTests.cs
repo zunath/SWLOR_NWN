@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Tests.AI;
 public class NPCChaseTests
 {
     private MethodInfo _run = null!;
+    private MethodInfo _runHidden = null!;
 
     /// <summary>Runs production target selection and throttling with observable engine boundaries.</summary>
     [OneTimeSetUp]
@@ -24,7 +25,8 @@ public class NPCChaseTests
             "GetProximityEnmityAmount", "RemoveEnmityTableEntry",
             "RemoveProximityEnmityTracking", "ShouldRemoveStaleProximityTarget",
             "ResumeAttackAfterActionsCleared", "AttackTargetIfNeeded",
-            "ShouldIssueAttackCommand", "HasRecentAttackCommand");
+            "ShouldIssueAttackCommand", "HasRecentAttackCommand",
+            "GetHighestEnmityAttackTarget", "HoldForHiddenTargets");
         var source = $$"""
             using System;
             using System.Collections.Generic;
@@ -36,18 +38,31 @@ public class NPCChaseTests
                 public const uint OBJECT_INVALID = 0;
                 public const uint OBJECT_SELF = 100;
                 public enum ObjectType { Creature, Door }
-                public enum ActionType { Invalid, AttackObject }
+                public enum ActionType { Invalid, AttackObject, MoveToPoint }
                 public static bool Enabled, Evading, CreatureBlock;
                 public static HashSet<uint> InRange = new();
                 public static uint AttackTarget;
-                public static int AttackCommands, StopCommands;
+                public static ActionType CurrentAction;
+                public static int AttackCommands, StopCommands, ClearCommands;
                 public static bool GetIsObjectValid(uint target) => target != OBJECT_INVALID;
                 public static uint GetBlockingDoor() => 200;
                 public static ObjectType GetObjectType(uint target) => CreatureBlock ? ObjectType.Creature : ObjectType.Door;
                 public static uint GetArea(uint creature) => 300;
                 public static uint GetAttackTarget(uint creature) => AttackTarget;
-                public static ActionType GetCurrentAction(uint creature) => ActionType.Invalid;
+                public static ActionType GetCurrentAction(uint creature) => CurrentAction;
                 public static string GetName(uint creature) => creature.ToString();
+                public static void AssignCommand(uint creature, Action action) => action();
+                public static void ClearAllActions(bool clearCombatState)
+                {
+                    ClearCommands++;
+                    AttackTarget = OBJECT_INVALID;
+                    CurrentAction = ActionType.Invalid;
+                }
+            }
+            public static class Stealth
+            {
+                public static HashSet<uint> Hidden = new();
+                public static bool IsHiddenByInvisibility(uint observer, uint target) => Hidden.Contains(target);
             }
             public static class AI
             {
@@ -91,6 +106,19 @@ public class NPCChaseTests
                     _attackCommandTimes[creature] = DateTime.UtcNow;
                 }
                 {{enmityMethods}}
+
+                public static int[] RunHidden(int[] targets, int[] amounts, int[] hidden,
+                    int previousTarget, int currentAction, bool evading)
+                {
+                    Stealth.Hidden = hidden.Select(x => (uint)x).ToHashSet();
+                    CurrentAction = (ActionType)currentAction;
+                    ClearCommands = 0;
+                    var result = Run(targets, amounts, new int[targets.Length], targets, previousTarget,
+                        false, true, evading, true, false);
+                    Stealth.Hidden.Clear();
+                    CurrentAction = ActionType.Invalid;
+                    return result.Append(ClearCommands).ToArray();
+                }
 
                 public static int[] Run(int[] targets, int[] amounts, int[] proximity,
                     int[] inRange, int previousTarget, bool blockedEvent, bool enabled,
@@ -142,7 +170,9 @@ public class NPCChaseTests
         using var stream = new MemoryStream();
         var result = compilation.Emit(stream);
         result.Success.Should().BeTrue(string.Join(Environment.NewLine, result.Diagnostics));
-        _run = Assembly.Load(stream.ToArray()).GetType("Enmity")!.GetMethod("Run")!;
+        var enmity = Assembly.Load(stream.ToArray()).GetType("Enmity")!;
+        _run = enmity.GetMethod("Run")!;
+        _runHidden = enmity.GetMethod("RunHidden")!;
     }
 
     /// <summary>Prevents the NWScript bridge from bypassing enmity to acquire fresh targets.</summary>
@@ -225,6 +255,44 @@ public class NPCChaseTests
         Run([1], [10], [1], [], blockedEvent: true,
             enabled: enabled, evading: evading, creatureBlock: creatureBlock)
             .Should().Equal(0, 0, 0, 1, 1);
+    }
+
+    /// <summary>Invisibility hides the top threat, so the enemy fights the highest visible one.</summary>
+    [Test]
+    public void HiddenTopThreat_RetargetsHighestVisibleThreatAndKeepsEnmity()
+    {
+        RunHidden([1, 2], [10, 5], hidden: [1], previousTarget: 1, ActionType.AttackObject)
+            .Should().Equal(2, 1, 0, 2, 2, 0);
+    }
+
+    /// <summary>With every threat hidden, the enemy stops its attack or chase without forgetting anyone.</summary>
+    [TestCase(ActionType.AttackObject, 1)]
+    [TestCase(ActionType.MoveToPoint, 0)]
+    public void AllThreatsHidden_StopsAttackingButKeepsEnmity(ActionType currentAction, int previousTarget)
+    {
+        RunHidden([1, 2], [10, 5], hidden: [1, 2], previousTarget, currentAction)
+            .Should().Equal(0, 0, 0, 2, 2, 1);
+    }
+
+    /// <summary>An idle or returning enemy is left alone while it waits for a hidden threat.</summary>
+    [TestCase(false)]
+    [TestCase(true)]
+    public void AllThreatsHidden_LeavesIdleOrLeashingEnemyAlone(bool evading)
+    {
+        RunHidden([1], [10], hidden: [1], previousTarget: 0,
+                evading ? ActionType.MoveToPoint : ActionType.Invalid, evading)
+            .Should().Equal(0, 0, 0, 1, 1, 0);
+    }
+
+    /// <summary>Mirrors the harness action states that hidden-target tests drive.</summary>
+    public enum ActionType { Invalid, AttackObject, MoveToPoint }
+
+    /// <summary>Seeds hidden threats and the enemy's current action, then also returns clear commands.</summary>
+    private int[] RunHidden(int[] targets, int[] amounts, int[] hidden, int previousTarget,
+        ActionType currentAction, bool evading = false)
+    {
+        return (int[])_runHidden.Invoke(null,
+            [targets, amounts, hidden, previousTarget, (int)currentAction, evading])!;
     }
 
     /// <summary>Seeds threat and movement state, then returns observable chase commands and cleanup.</summary>

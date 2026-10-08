@@ -70,12 +70,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                 return;
 
             var targetPosition = GetPosition(target);
-            var facingRadians = GetFacing(target) * Math.PI / 180.0;
+            var targetFacing = GetFacing(target);
+            var facingRadians = targetFacing * Math.PI / 180.0;
             var behind = Vector3(
                 targetPosition.X - (float)Math.Cos(facingRadians) * ArrivalDistanceMeters,
                 targetPosition.Y - (float)Math.Sin(facingRadians) * ArrivalDistanceMeters,
                 targetPosition.Z);
-            var destination = Location(GetArea(target), behind, GetFacing(target));
+            var destination = Location(GetArea(target), behind, targetFacing);
 
             var playArrivalVisual = Ability.CaptureSuccessfulImpactVisualEffect(activator);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Unsummon), activator);
@@ -94,8 +95,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                     {
                         playArrivalVisual(activator);
                         if (GetIsReactionTypeHostile(target, activator))
+                        {
+                            // A target fighting the activator turns toward the new position before the
+                            // arrival action runs. Turn it back so the stun holds it facing away.
+                            SetFacing(targetFacing, target);
                             StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect),
                                 StunDurationSeconds, CombatDamageType.Physical);
+                        }
                     }
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Unsummon), activator);
                 });

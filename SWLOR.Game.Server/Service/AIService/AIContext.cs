@@ -55,6 +55,19 @@ namespace SWLOR.Game.Server.Service.AIService
             }
         }
 
+        /// <summary>
+        /// Resolves <see cref="CurrentEnmityTarget"/> to the highest-enmity creature this NPC can
+        /// attack, skipping creatures hidden by invisibility, so its decisions never aim at a target
+        /// it cannot see. Live trigger processing calls this because the check reads creature effects.
+        /// </summary>
+        public void UseAttackableEnmityTarget()
+        {
+            _currentEnmityTargetLoaded = true;
+            _currentEnmityTarget = CompanionControl.IsRegisteredCompanion(Self)
+                ? CompanionControl.PeekAuthorizedTarget(Self)
+                : Enmity.GetHighestEnmityAttackTarget(Self);
+        }
+
         public uint Master => GetMaster(Self);
 
         public int SelfHealthPercent => _selfHealthPercent ??= GetHealthPercent(Self);

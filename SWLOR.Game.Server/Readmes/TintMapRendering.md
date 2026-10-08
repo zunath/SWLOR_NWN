@@ -63,11 +63,16 @@ row parameter. Atlas coordinates occupy [0,1). Custom values occupy [1,4),
 using the two float exponent ranges' 2^24 distinct values. All three shaders
 decode this value before lighting. They multiply RGB by a neutral reference
 row's luminance curve, normalized at shade128, preserving shading without
-importing a preset's hue or reflection mask. The Toolset uses the same shading
-formula. Preset lookup and authored colors are unchanged.
+importing a preset's hue. Metal1 and Metal2 retain that neutral metal row's
+shade-dependent environment coverage: PLT-only armor relies on this alpha for
+its reflection and specularity. Other RGB layers stay opaque. Authored normal,
+specular and roughness maps still pass through standard material lighting.
+The Toolset uses the same RGB shading formula. Preset lookup and authored
+colors are unchanged.
 
-Run `TestTintRgb.py --game-data <NWN data directory>` for GPU RGB checks and
-`TestTintShaderMaterials.py` for native engine shader/MTR and preset parity.
+Run `TestTintRgb.py --game-data <NWN data directory>` for GPU RGB and metal
+material checks. `TestTintShaderMaterials.py` validates native engine shader/MTR
+and preset parity, including the RGB metal coverage curve at every shade.
 `TintMapShaderColorTests` exhaustively checks every RGB byte combination;
 the native AppearanceEditor tests cover scalar storage, drafts, reopening,
 inheritance and preset reset. Shader changes require rebuilding sw_shader.hak

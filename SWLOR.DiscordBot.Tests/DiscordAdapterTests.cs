@@ -15,6 +15,161 @@ namespace SWLOR.DiscordBot.Tests;
 [TestFixture]
 public sealed class DiscordAdapterTests
 {
+    [Test]
+    public async Task ConcurrentChannelCreationReselectsCategoryAfterLastSlotIsTaken()
+    {
+        var operations = new DiscordOperations(null!, new BotConfiguration(), null!, null!, null!);
+        var children = new Dictionary<ulong, int> { [20] = 49, [30] = 0 };
+        var selections = new List<ulong>();
+        var firstCreateStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseCreate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Task<ulong> SelectCategory(CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            var category = new ulong[] { 20, 30 }.First(id => children[id] < 50);
+            selections.Add(category);
+            return Task.FromResult(category);
+        }
+        async Task<ulong> CreateChannel(ulong category, CancellationToken ct)
+        {
+            if (selections.Count == 1)
+            {
+                firstCreateStarted.SetResult();
+                await releaseCreate.Task.WaitAsync(ct);
+            }
+            if (children[category] >= 50) throw new InvalidOperationException("Category is full.");
+            children[category]++;
+            return category;
+        }
+
+        var first = operations.AllocateNewChannelAsync(SelectCategory, CreateChannel, default);
+        Task<ulong>? second = null;
+        try
+        {
+            await firstCreateStarted.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            second = operations.AllocateNewChannelAsync(SelectCategory, CreateChannel, default);
+            Assert.That(selections, Is.EqualTo(new ulong[] { 20 }), "The second create must wait before selecting a category.");
+            Assert.That(second.IsCompleted, Is.False);
+            releaseCreate.SetResult();
+            Assert.That(await Task.WhenAll(first, second).WaitAsync(TimeSpan.FromSeconds(2)), Is.EqualTo(new ulong[] { 20, 30 }));
+            Assert.That(children[20], Is.EqualTo(50));
+            Assert.That(children[30], Is.EqualTo(1));
+        }
+        finally
+        {
+            releaseCreate.TrySetResult();
+            await first.WaitAsync(TimeSpan.FromSeconds(2));
+            if (second is not null) await second.WaitAsync(TimeSpan.FromSeconds(2));
+        }
+    }
+
+    [Test]
+    public async Task CategoryAllocationCanceledWaiterDoesNotSelectOrReleaseAnotherCreatesGate()
+    {
+        var operations = new DiscordOperations(null!, new BotConfiguration(), null!, null!, null!);
+        var releaseCreate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var cancellation = new CancellationTokenSource();
+        var holder = operations.AllocateNewChannelAsync(_ => Task.FromResult(20UL),
+            async (category, ct) => { await releaseCreate.Task.WaitAsync(ct); return category; }, default);
+        var canceledSelections = 0;
+        var waiter = operations.AllocateNewChannelAsync(_ => { canceledSelections++; return Task.FromResult(30UL); },
+            (category, _) => Task.FromResult(category), cancellation.Token);
+        Task<ulong>? next = null;
+        try
+        {
+            cancellation.Cancel();
+            var error = Assert.ThrowsAsync<ChannelCreationNotSentException>(() => waiter.WaitAsync(TimeSpan.FromSeconds(2)))!;
+            Assert.That(error.InnerException, Is.InstanceOf<OperationCanceledException>());
+            Assert.That(canceledSelections, Is.Zero);
+            next = operations.AllocateNewChannelAsync(_ => Task.FromResult(30UL), (category, _) => Task.FromResult(category), default);
+            Assert.That(next.IsCompleted, Is.False, "A canceled waiter cannot release a gate held by another create.");
+            releaseCreate.SetResult();
+            Assert.That(await holder.WaitAsync(TimeSpan.FromSeconds(2)), Is.EqualTo(20UL));
+            Assert.That(await next.WaitAsync(TimeSpan.FromSeconds(2)), Is.EqualTo(30UL));
+        }
+        finally
+        {
+            releaseCreate.TrySetResult();
+            await holder.WaitAsync(TimeSpan.FromSeconds(2));
+            if (next is not null) await next.WaitAsync(TimeSpan.FromSeconds(2));
+        }
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CategoryAllocationReleasesGateAfterCreateFailureOrCancellation(bool cancel)
+    {
+        var operations = new DiscordOperations(null!, new BotConfiguration(), null!, null!, null!);
+        using var cancellation = new CancellationTokenSource();
+        var creates = 0;
+        var failure = operations.AllocateNewChannelAsync<ulong, ulong>(_ => Task.FromResult(20UL), (_, ct) =>
+        {
+            creates++;
+            if (cancel) { cancellation.Cancel(); ct.ThrowIfCancellationRequested(); }
+            throw new HttpRequestException("Ambiguous create response.");
+        }, cancellation.Token);
+        if (cancel) Assert.CatchAsync<OperationCanceledException>(() => failure);
+        else Assert.ThrowsAsync<HttpRequestException>(() => failure);
+        Assert.That(creates, Is.EqualTo(1), "An ambiguous create must not be retried.");
+        Assert.That(await operations.AllocateNewChannelAsync(_ => Task.FromResult(30UL), (category, _) => Task.FromResult(category), default)
+            .WaitAsync(TimeSpan.FromSeconds(2)), Is.EqualTo(30UL));
+    }
+
+    [Test]
+    public async Task ChannelCreationPreparationFailureProvesNoChannelWasSubmittedAndReleasesGate()
+    {
+        var operations = new DiscordOperations(null!, new BotConfiguration(), null!, null!, null!);
+        var creates = 0;
+        var failure = operations.AllocateNewChannelAsync<ulong, ulong>(_ => throw new InvalidOperationException("Categories unavailable."),
+            (category, _) => { creates++; return Task.FromResult(category); }, default);
+        var error = Assert.ThrowsAsync<ChannelCreationNotSentException>(() => failure)!;
+        Assert.That(error.InnerException, Is.TypeOf<InvalidOperationException>());
+        Assert.That(creates, Is.Zero);
+        Assert.That(await operations.AllocateNewChannelAsync(_ => Task.FromResult(30UL), (category, _) => Task.FromResult(category), default)
+            .WaitAsync(TimeSpan.FromSeconds(2)), Is.EqualTo(30UL));
+    }
+
+    [TestCase(HttpStatusCode.BadRequest, true)]
+    [TestCase(HttpStatusCode.Unauthorized, true)]
+    [TestCase(HttpStatusCode.Forbidden, true)]
+    [TestCase(HttpStatusCode.NotFound, true)]
+    [TestCase(HttpStatusCode.MethodNotAllowed, true)]
+    [TestCase(HttpStatusCode.TooManyRequests, true)]
+    [TestCase(HttpStatusCode.Conflict, false)]
+    [TestCase(HttpStatusCode.RequestTimeout, false)]
+    [TestCase(HttpStatusCode.BadGateway, false)]
+    public void ChannelCreationOnlyDefinitiveRejectionsPermitAnotherSubmission(HttpStatusCode status, bool rejected)
+    {
+        var operations = new DiscordOperations(null!, new BotConfiguration(), null!, null!, null!);
+        var creates = 0;
+        var failure = operations.AllocateNewChannelAsync<ulong, ulong>(_ => Task.FromResult(20UL), (_, _) =>
+        {
+            creates++;
+            throw PlacementError(status);
+        }, default);
+        if (rejected) Assert.ThrowsAsync<ChannelCreationNotSentException>(() => failure);
+        else Assert.ThrowsAsync<HttpException>(() => failure);
+        Assert.That(creates, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task ChannelCreationCanceledAfterPreparationDoesNotSubmitAndReleasesGate()
+    {
+        var operations = new DiscordOperations(null!, new BotConfiguration(), null!, null!, null!);
+        using var cancellation = new CancellationTokenSource();
+        var creates = 0;
+        var failure = operations.AllocateNewChannelAsync(_ =>
+        {
+            cancellation.Cancel();
+            return Task.FromResult(20UL);
+        }, (category, _) => { creates++; return Task.FromResult(category); }, cancellation.Token);
+        var error = Assert.ThrowsAsync<ChannelCreationNotSentException>(() => failure)!;
+        Assert.That(error.InnerException, Is.InstanceOf<OperationCanceledException>());
+        Assert.That(creates, Is.Zero);
+        Assert.That(await operations.AllocateNewChannelAsync(_ => Task.FromResult(30UL), (category, _) => Task.FromResult(category), default)
+            .WaitAsync(TimeSpan.FromSeconds(2)), Is.EqualTo(30UL));
+    }
+
     [TestCase(true)]
     [TestCase(false)]
     public async Task OpeningMessageLookupReportsEveryAdvancingPageAndTerminalResult(bool found)

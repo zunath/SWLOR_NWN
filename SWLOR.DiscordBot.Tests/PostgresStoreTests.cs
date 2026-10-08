@@ -41,6 +41,48 @@ public sealed class PostgresStoreTests
     }
 
     [Test]
+    public async Task UnconfirmedChannelCreationClaimSurvivesStoreRestartAndBindingClearsIt()
+    {
+        Ticket claimed;
+        var attempt = Guid.NewGuid();
+        await using (var first = new PostgresTicketStore(ConnectionString, TestGuildId))
+        {
+            await first.InitializeAsync(default);
+            await using var session = await first.LockAsync(default);
+            var reserved = await session.ReserveAsync("support", 42, "creation-claim", DateTimeOffset.UtcNow, default);
+            claimed = reserved with { ChannelCreationAttemptId = attempt };
+            await session.SaveAsync(claimed, "channel-creation-claimed", null, default);
+            claimed = claimed with { Hold = true };
+            await session.SaveAsync(claimed, "hold-set", 99, default);
+        }
+
+        Ticket bound;
+        await using (var replacement = new PostgresTicketStore(ConnectionString, TestGuildId))
+        {
+            await replacement.InitializeAsync(default);
+            await using var session = await replacement.LockAsync(default);
+            var durable = await session.FindInteractionAsync("creation-claim", default);
+            Assert.That(durable, Is.EqualTo(claimed), "A fresh process must retain the unconfirmed POST and concurrent staff changes.");
+            Assert.That((await session.GetTicketsAsync(default)).Single().ChannelCreationAttemptId, Is.EqualTo(attempt));
+            bound = durable! with { ChannelId = 123, ChannelCreationAttemptId = null };
+            await session.SaveAsync(bound, "channel-bound", 42, default);
+        }
+
+        await using var restarted = new PostgresTicketStore(ConnectionString, TestGuildId);
+        await restarted.InitializeAsync(default);
+        await using var verification = await restarted.LockAsync(default);
+        Assert.That(await verification.FindByChannelAsync(123, default), Is.EqualTo(bound));
+        Assert.That(await verification.GetTicketAsync(claimed.Id, default), Is.EqualTo(bound));
+        await using var auditConnection = new NpgsqlConnection(ConnectionString);
+        await auditConnection.OpenAsync();
+        await using var audit = new NpgsqlCommand("SELECT action FROM swlor_bot_ticket_audit WHERE ticket_id=@ticket ORDER BY id", auditConnection);
+        audit.Parameters.AddWithValue("ticket", claimed.Id);
+        await using var reader = await audit.ExecuteReaderAsync();
+        var actions = new List<string>();
+        while (await reader.ReadAsync()) actions.Add(reader.GetString(0));
+        Assert.That(actions, Is.EqualTo(new[] { "reserved", "channel-creation-claimed", "hold-set", "channel-bound" }));
+    }
+    [Test]
     public async Task SavedArchiveGenerationSurvivesStoreRestart()
     {
         Ticket saved;

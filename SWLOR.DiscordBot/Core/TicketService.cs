@@ -61,6 +61,8 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
     private async Task<TicketResult> ResumeCreationAsync(Guid id, CancellationToken ct, Action? progress = null)
     {
         var claimed = false;
+        Guid? creationAttemptId = null;
+        var createStarted = false;
         try
         {
             Ticket ticket;
@@ -75,15 +77,45 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             }
             // Discovery, creation, and history scans can wait on Discord rate limits without blocking other tickets.
             progress ??= static () => { };
-            var channel = ticket.ChannelId ?? await WithProgressAsync(discord.FindManagedChannelAsync(ticket.Id, ct), progress)
-                ?? await WithProgressAsync(discord.CreateAsync(ticket, ct), progress);
+            var channel = ticket.ChannelId ?? await WithProgressAsync(discord.FindManagedChannelAsync(ticket.Id, ct), progress);
+            if (channel is null)
+            {
+                await using (var creation = await store.LockAsync(ct))
+                {
+                    var current = await creation.GetTicketAsync(id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
+                    if (current.State != TicketState.Creating)
+                        return new(true, "This interaction has already been handled.", current);
+                    channel = current.ChannelId;
+                    if (channel is null)
+                    {
+                        // The claim survives lease loss, process restarts, and remote outcomes that outlive cancellation.
+                        // Absence in a discovery response cannot prove a previous POST will never create a channel.
+                        if (current.ChannelCreationAttemptId is not null)
+                            throw new InvalidOperationException("An earlier channel creation remains unconfirmed. Discovery will recover a visible channel; staff must investigate if none appears.");
+                        creationAttemptId = Guid.NewGuid();
+                        ticket = current with { ChannelCreationAttemptId = creationAttemptId };
+                        await creation.SaveAsync(ticket, "channel-creation-claimed", null, ct);
+                    }
+                }
+                if (channel is null)
+                {
+                    createStarted = true;
+                    try { channel = await WithProgressAsync(discord.CreateAsync(ticket, ct), progress); }
+                    catch (ChannelCreationNotSentException)
+                    {
+                        await ReleaseUnsentCreationAsync(id, ticket.ChannelCreationAttemptId!.Value);
+                        ct.ThrowIfCancellationRequested();
+                        throw;
+                    }
+                }
+            }
             ct.ThrowIfCancellationRequested();
             await using (var binding = await store.LockAsync(ct))
             {
                 var current = await binding.GetTicketAsync(id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
                 if (current.State != TicketState.Creating || current.ChannelId is { } existing && existing != channel)
                     throw new InvalidOperationException("Ticket creation binding changed during channel discovery.");
-                ticket = current with { ChannelId = channel };
+                ticket = current with { ChannelId = channel, ChannelCreationAttemptId = null };
                 if (current.ChannelId != channel)
                     await binding.SaveAsync(ticket, "channel-bound", ticket.RequesterId, ct);
             }
@@ -100,22 +132,47 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             await NotifyAsync($"Ticket {ticket.Number} opened.", ct);
             return new(true, $"Your ticket is ready: <#{ticket.ChannelId}>.", ticket);
         }
-        catch (Exception ex) when (claimed && !ct.IsCancellationRequested)
+        catch (Exception ex)
         {
+            if (creationAttemptId is { } attempt && !createStarted)
+                await ReleaseUnsentCreationAsync(id, attempt);
+            if (!claimed || ct.IsCancellationRequested) throw;
             logger?.LogWarning(ex, "Ticket {TicketId} creation will be reconciled", id);
             await using var failed = await store.LockAsync(ct);
             var current = await failed.GetTicketAsync(id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
-            const string error = "Channel creation or opening failed; reconciliation pending.";
+            var unconfirmed = current.ChannelCreationAttemptId is not null;
+            var error = unconfirmed
+                ? "Channel creation is unconfirmed; discovery pending. Staff must investigate before another creation attempt."
+                : "Channel creation or opening failed; reconciliation pending.";
             if (current.State == TicketState.Creating && current.LastError != error)
             {
                 current = current with { LastError = error };
                 await failed.SaveAsync(current, "creation-failed", null, ct);
             }
-            return new(false, "The ticket could not be opened yet. Staff can check the bot logs; retrying will recover this request.", current);
+            return new(false, unconfirmed
+                ? "Channel creation is unconfirmed. Recovery will keep checking for its channel; staff must investigate before another creation attempt."
+                : "The ticket could not be opened yet. Staff can check the bot logs; retrying will recover this request.", current);
         }
         finally { if (claimed) _creations.TryRemove(id, out _); }
     }
 
+    private async Task ReleaseUnsentCreationAsync(Guid id, Guid attemptId)
+    {
+        // Cancellation before POST is safe to release even after the caller/worker token has ended.
+        // A failed cleanup keeps the durable fence; never infer success from a timeout here either.
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        try
+        {
+            await using var session = await store.LockAsync(timeout.Token);
+            var current = await session.GetTicketAsync(id, timeout.Token);
+            if (current is { State: TicketState.Creating, ChannelId: null } && current.ChannelCreationAttemptId == attemptId)
+                await session.SaveAsync(current with { ChannelCreationAttemptId = null }, "channel-creation-not-sent", null, timeout.Token);
+        }
+        catch (Exception ex)
+        {
+            logger?.LogWarning(ex, "Ticket {TicketId} creation claim retained after an unsent request; staff must investigate", id);
+        }
+    }
     public Task<TicketResult> CloseAsync(ulong channelId, Actor actor, CancellationToken ct = default) => MutateAsync(channelId, actor, async (session, ticket, currentActor) =>
     {
         if (ticket.RequesterId != currentActor.UserId && !CanSupport(currentActor)) return new(false, "Only the requester or support staff can close this ticket.");
@@ -300,13 +357,15 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             try
             {
                 await MaintainTicketAsync(id, progressTimeout.Token, progressTimeout.ReportProgress);
-                await ExpireArchiveAsync(id, progressTimeout.Token, progressTimeout.ReportProgress);
             }
             catch (Exception ex) when (!ct.IsCancellationRequested)
             {
                 await RecordMaintenanceFailureAsync(id, ex, ct);
             }
         }
+        // Every expiration owner uses the retrying pass. A peer may skip an occupied guard, but its owner
+        // retains failed IDs and retries them after later entries instead of dropping a one-shot failure.
+        await ExpireArchivesAsync(ticketIds, ct);
     }
 
     public async Task ExpireArchivesAsync(CancellationToken ct = default)
@@ -314,6 +373,11 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         Guid[] ticketIds;
         await using (var batch = await store.LockAsync(ct))
             ticketIds = (await batch.GetTicketsAsync(ct)).Where(ArchiveHasExpired).Select(ticket => ticket.Id).ToArray();
+        await ExpireArchivesAsync(ticketIds, ct);
+    }
+
+    private async Task ExpireArchivesAsync(Guid[] ticketIds, CancellationToken ct)
+    {
         for (var attempt = 0; attempt < 3 && ticketIds.Length > 0; attempt++)
         {
             var failed = new List<Guid>();

@@ -12,6 +12,8 @@ namespace SWLOR.DiscordBot.Discord;
 
 public sealed class DiscordOperations(DiscordSocketClient client, BotConfiguration configuration, ResponseDeletionQueue responseDeletions, DiscordCommunityPoster poster, ITicketStore store) : IDiscordTickets, ICommunityDiscord
 {
+    private readonly SemaphoreSlim categoryAllocation = new(1, 1);
+
     public string ServerName => client.GetGuild(configuration.GuildId)?.Name ?? "SWLOR";
     private static string Topic(Guid id) => $"swlor-ticket:{id:D}";
     internal static RequestOptions Options(CancellationToken ct) => new()
@@ -142,21 +144,62 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
 
     public async Task<ulong> CreateAsync(Ticket ticket, CancellationToken ct)
     {
-        var category = await SelectCategoryAsync(ticket, ct);
-        var guild = await GuildAsync(ct);
-        var overwrites = BuildOverwrites(guild.Id, client.CurrentUser.Id, ticket.RequesterId, configuration.Tickets.SupportRoleIds,
-            category.PermissionOverwrites, true, true, true);
-        // Rate-limit retries are safe; timeout/502 retries could create a second channel after an ambiguous response.
-        var createOptions = Options(ct);
-        createOptions.RetryMode = RetryMode.RetryRatelimit;
-        var channel = await guild.CreateTextChannelAsync($"ticket-{ticket.Number:D4}", properties =>
+        var channel = await AllocateNewChannelAsync(async token =>
         {
-            properties.CategoryId = category.Id;
-            properties.Topic = Topic(ticket.Id);
-            properties.PermissionOverwrites = overwrites;
-        }, createOptions);
+            var category = await SelectCategoryAsync(ticket, token);
+            var guild = await GuildAsync(token);
+            var overwrites = BuildOverwrites(guild.Id, client.CurrentUser.Id, ticket.RequesterId, configuration.Tickets.SupportRoleIds,
+                category.PermissionOverwrites, true, true, true);
+            return (category, guild, overwrites);
+        }, async (prepared, token) =>
+        {
+            // Rate-limit retries are safe; timeout/502 retries could create a second channel after an ambiguous response.
+            var createOptions = Options(token);
+            createOptions.RetryMode = RetryMode.RetryRatelimit;
+            return await prepared.guild.CreateTextChannelAsync($"ticket-{ticket.Number:D4}", properties =>
+            {
+                properties.CategoryId = prepared.category.Id;
+                properties.Topic = Topic(ticket.Id);
+                properties.PermissionOverwrites = prepared.overwrites;
+            }, createOptions);
+        }, ct);
         await VerifyPrivacyAsync(ticket with { ChannelId = channel.Id }, true, true, true, ct);
         return channel.Id;
+    }
+
+    internal async Task<TChannel> AllocateNewChannelAsync<TPreparation, TChannel>(
+        Func<CancellationToken, Task<TPreparation>> prepare,
+        Func<TPreparation, CancellationToken, Task<TChannel>> create, CancellationToken ct)
+    {
+        var submitted = false;
+        try
+        {
+            return await AllocateOpenCategoryAsync(async token =>
+            {
+                var prepared = await prepare(token);
+                token.ThrowIfCancellationRequested();
+                submitted = true;
+                return await create(prepared, token);
+            }, ct);
+        }
+        catch (Exception ex) when (!submitted || ex is HttpException http &&
+            http.HttpCode is HttpStatusCode.BadRequest or HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden or
+                HttpStatusCode.NotFound or HttpStatusCode.MethodNotAllowed or HttpStatusCode.TooManyRequests)
+        {
+            throw new ChannelCreationNotSentException(ex);
+        }
+    }
+
+    private async Task<T> AllocateOpenCategoryAsync<T>(Func<CancellationToken, Task<T>> allocate, CancellationToken ct)
+    {
+        // Selection and creation share a gate so another create cannot take the last slot between them.
+        await categoryAllocation.WaitAsync(ct);
+        try
+        {
+            ct.ThrowIfCancellationRequested();
+            return await allocate(ct);
+        }
+        finally { categoryAllocation.Release(); }
     }
 
     public Task OpenAsync(Ticket ticket, bool sendOpeningMessage, CancellationToken ct) =>

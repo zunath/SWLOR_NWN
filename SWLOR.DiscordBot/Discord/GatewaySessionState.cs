@@ -8,6 +8,7 @@ internal sealed class GatewaySessionState
     private bool validated;
     private bool pending;
     private bool ready;
+    internal event Action? ReadinessEstablished;
 
     public bool IsReady(bool connected) { lock (sync) return connected && ready && validated && !pending; }
     public bool IsCurrent(int token) { lock (sync) return token == generation && pending; }
@@ -30,8 +31,9 @@ internal sealed class GatewaySessionState
             pending = false;
             validated = connected;
             ready = connected;
-            return ready;
         }
+        if (connected) ReadinessEstablished?.Invoke();
+        return connected;
     }
     public void AbandonValidation(int token)
     {
@@ -43,14 +45,21 @@ internal sealed class GatewaySessionState
     }
     public int? ObserveHeartbeat(bool connected)
     {
+        bool becameReady;
         lock (sync)
         {
             if (!connected || !seenReady || pending) return null;
-            if (validated) { ready = true; return null; }
-            pending = true;
-            ready = false;
-            return ++generation;
+            if (!validated)
+            {
+                pending = true;
+                ready = false;
+                return ++generation;
+            }
+            becameReady = !ready;
+            ready = true;
         }
+        if (becameReady) ReadinessEstablished?.Invoke();
+        return null;
     }
     public void Stop()
     {

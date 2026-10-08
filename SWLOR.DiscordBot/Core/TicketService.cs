@@ -127,7 +127,6 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
     public async Task<TicketResult> ExportAsync(ulong channelId, Actor actor, CancellationToken ct = default,
         Func<Ticket, CancellationToken, Task>? deliver = null)
     {
-        if (!Options.Enabled) return new(false, "Ticketing is disabled.");
         if (!CanSupport(actor)) return new(false, "Only support staff can export transcripts.");
         Guid? exportId = null;
         try
@@ -171,7 +170,6 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
     private async Task<TicketResult> MutateAsync(ulong channelId, Actor actor,
         Func<ITicketSession, Ticket, Task<TicketResult>> mutation, CancellationToken ct)
     {
-        if (!Options.Enabled) return new(false, "Ticketing is disabled.");
         await using var session = await store.LockAsync(ct);
         var ticket = await session.FindByChannelAsync(channelId, ct);
         if (ticket is null) return new(false, "This channel is not a ticket managed by this bot.");

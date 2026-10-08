@@ -231,7 +231,7 @@ public sealed class GatewayConfigurationTests
     }
 
     [Test]
-    public async Task DisablingTicketsRemovesOnlyOwnedSlashCommandsAndIsRepeatable()
+    public async Task DisablingIntakeRemovesOnlyThePanelSlashCommandAndRetainsManagement()
     {
         var remaining = new Dictionary<int, (string Name, ApplicationCommandType Type)>
         {
@@ -245,13 +245,13 @@ public sealed class GatewayConfigurationTests
         {
             var commands = remaining.Select(entry => (entry.Value.Name, entry.Value.Type,
                 (Func<Task>)(() => { remaining.Remove(entry.Key); return Task.CompletedTask; }))).ToArray();
-            await TicketCommandRegistration.RemoveDisabledAsync(commands, CancellationToken.None);
+            await TicketCommandRegistration.RemoveDisabledIntakeAsync(commands, CancellationToken.None);
         }
 
         await Synchronize();
         await Synchronize();
 
-        Assert.That(remaining.Keys, Is.EquivalentTo(new[] { 3, 4, 5 }));
+        Assert.That(remaining.Keys, Is.EquivalentTo(new[] { 1, 3, 4, 5 }));
     }
 
     [Test]
@@ -268,8 +268,8 @@ public sealed class GatewayConfigurationTests
     [Test]
     public void CommandRemovalFailureDoesNotReportSuccessfulStartup()
     {
-        var commands = new[] { ("ticket", ApplicationCommandType.Slash,
+        var commands = new[] { ("ticket-panel", ApplicationCommandType.Slash,
             (Func<Task>)(() => Task.FromException(new InvalidOperationException("Discord rejected deletion")))) };
-        Assert.ThrowsAsync<InvalidOperationException>(() => TicketCommandRegistration.RemoveDisabledAsync(commands, CancellationToken.None));
+        Assert.ThrowsAsync<InvalidOperationException>(() => TicketCommandRegistration.RemoveDisabledIntakeAsync(commands, CancellationToken.None));
     }
 }

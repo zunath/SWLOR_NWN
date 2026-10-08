@@ -21,6 +21,11 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
     private CancellationToken stoppingToken;
     private readonly GatewaySessionState sessionState = new();
     public bool Ready => sessionState.IsReady(client.ConnectionState == ConnectionState.Connected);
+    internal event Action? ReadinessEstablished
+    {
+        add => sessionState.ReadinessEstablished += value;
+        remove => sessionState.ReadinessEstablished -= value;
+    }
     private sealed record CloseConfirmation(ulong UserId, ulong ChannelId, Guid TicketId, DateTimeOffset ExpiresAt);
 
     public void Suspend() { sessionState.Disconnect(); marker.Clear(); }
@@ -121,9 +126,8 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
         {
             var guild = await discord.GuildAsync(ct);
             var commands = await guild.GetApplicationCommandsAsync(options: DiscordOperations.Options(ct));
-            await TicketCommandRegistration.RemoveDisabledAsync(commands.Select(command =>
+            await TicketCommandRegistration.RemoveDisabledIntakeAsync(commands.Select(command =>
                 (command.Name, command.Type, (Func<Task>)(() => command.DeleteAsync(DiscordOperations.Options(ct))))), ct);
-            return;
         }
         var ticket = new SlashCommandBuilder().WithName("ticket").WithDescription("Manage this support ticket");
         foreach (var (name, description) in new[] { ("close", "Close this ticket"), ("reopen", "Reopen this ticket"),
@@ -135,7 +139,8 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
             .AddOption(new SlashCommandOptionBuilder().WithName("publish").WithDescription("Publish an open-ticket button in its configured channel")
                 .WithType(ApplicationCommandOptionType.SubCommand).AddOption("panel", ApplicationCommandOptionType.String, "Configured panel ID", isRequired: true));
         await client.Rest.CreateGuildCommand(ticket.Build(), configuration.GuildId, DiscordOperations.Options(ct));
-        await client.Rest.CreateGuildCommand(publish.Build(), configuration.GuildId, DiscordOperations.Options(ct));
+        if (configuration.Tickets.Enabled)
+            await client.Rest.CreateGuildCommand(publish.Build(), configuration.GuildId, DiscordOperations.Options(ct));
     }
     internal static bool CanExecuteCommunityCommand(BotConfiguration config, ChannelPermissions permissions, ulong channelId, string content)
     {
@@ -249,7 +254,7 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
         interaction.ModifyOriginalResponseAsync(x => { x.Content = content; x.Components = new ComponentBuilder().Build(); x.AllowedMentions = AllowedMentions.None; }, DiscordOperations.Options(ct));
     private async Task<bool> GuildGuardAsync(SocketInteraction interaction, CancellationToken ct)
     {
-        if (interaction.GuildId == configuration.GuildId && configuration.Tickets.Enabled) return true;
+        if (interaction.GuildId == configuration.GuildId) return true;
         await ReplyAsync(interaction, "Ticket actions are available only in the configured server.", ct);
         return false;
     }
@@ -260,6 +265,8 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
         var option = command.Data.Options.Single();
         if (command.Data.Name == "ticket-panel")
         {
+            if (!configuration.Tickets.Enabled)
+            { await ReplyAsync(command, "New ticket intake is disabled.", ct); return; }
             if (!actor.IsGuildOwner && !configuration.AdministratorRoleIds.Any(actor.RoleIds.Contains))
             { await ReplyAsync(command, "Only configured bot administrators can publish a ticket panel.", ct); return; }
             var panelId = (string)option.Options.Single(x => x.Name == "panel").Value;
@@ -334,6 +341,8 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
         var actor = await discord.ActorAsync(component.User.Id, ct);
         if (parts[1] == "open")
         {
+            if (!configuration.Tickets.Enabled)
+            { await ReplyAsync(component, "New ticket intake is disabled.", ct); return; }
             var panel = configuration.Tickets.Panels.SingleOrDefault(x => x.Id == parts[2] && x.ChannelId == component.Channel.Id);
             if (panel is null) { await ReplyAsync(component, "This ticket panel is unavailable in this channel.", ct); return; }
             var result = await tickets.OpenAsync(panel.Id, actor, component.Id.ToString(System.Globalization.CultureInfo.InvariantCulture), ct);

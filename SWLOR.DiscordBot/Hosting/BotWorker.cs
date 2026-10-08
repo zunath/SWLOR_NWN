@@ -14,6 +14,8 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
     CommunityService communityDeliveries, ResponseDeletionQueue deletions, ReadinessMarker marker, TimeProvider clock, IHostApplicationLifetime lifetime,
     ILogger<BotWorker> logger) : BackgroundService
 {
+    private readonly TicketMaintenanceScheduler ticketMaintenance = new();
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         marker.Clear();
@@ -55,6 +57,7 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
                 throw new InvalidOperationException("Persisted ticket maintenance requires retained configuration.");
             }
             deliveryRetention = PruneDeliveriesAsync(ct);
+            gateway.ReadinessEstablished += ticketMaintenance.RequestSweep;
             gateway.Attach(ct);
             consumers = Enumerable.Range(0, 4).Select(_ => gateway.ProcessAsync(ct)).ToArray();
             await client.LoginAsync(TokenType.Bot, secrets.Token);
@@ -86,6 +89,7 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
         {
             marker.Clear();
             await shutdown.CancelAsync();
+            gateway.ReadinessEstablished -= ticketMaintenance.RequestSweep;
             gateway.Detach();
             try { await client.StopAsync(); await client.LogoutAsync(); }
             catch (Exception ex) { logger.LogWarning("Discord shutdown failed: {ErrorKind}.", DiscordGateway.SafeError(ex)); }
@@ -146,20 +150,16 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
         } while (await timer.WaitForNextTickAsync(ct));
     }
 
-    private async Task MaintainAsync(CancellationToken ct)
-    {
-        using var timer = new PeriodicTimer(MaintenanceInterval, clock);
-        do
+    private Task MaintainAsync(CancellationToken ct) =>
+        ticketMaintenance.RunAsync(MaintenanceInterval, clock, () => gateway.Ready, async token =>
         {
-            if (!gateway.Ready) continue;
-            try { await RetryMaintenanceAsync("Ticket maintenance", tickets.MaintainAsync, ct, boundWholePass: false); }
-            catch (OperationCanceledException) when (ct.IsCancellationRequested) { return; }
+            try { await RetryMaintenanceAsync("Ticket maintenance", tickets.MaintainAsync, token, boundWholePass: false); }
+            catch (OperationCanceledException) when (token.IsCancellationRequested) { throw; }
             catch (Exception ex)
             {
                 logger.LogWarning("Ticket maintenance failed after retries: {ErrorKind}.", DiscordGateway.SafeError(ex));
             }
-        } while (await timer.WaitForNextTickAsync(ct));
-    }
+        }, ct);
 
     private async Task ExpireArchivesAsync(CancellationToken ct)
     {

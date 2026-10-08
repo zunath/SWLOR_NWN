@@ -48,6 +48,36 @@ public sealed class ConfigurationTests
     }
 
     [Test]
+    public void ConfigurationModels_RoundTripThroughJsonAndLoadFromFile()
+    {
+        var source = new BotConfiguration
+        {
+            GuildId = 123,
+            AdministratorRoleIds = [456],
+            Welcome = new WelcomeOptions { Enabled = true, ChannelId = 789, Template = "Hello {user}", ChannelMentions = new Dictionary<string, ulong> { ["rules"] = 42 } },
+            Answers = [new QuickAnswerOptions { Name = "help", Responses = ["ok"], AllowedRoleIds = [456] }]
+        };
+
+        var json = System.Text.Json.JsonSerializer.Serialize(source);
+        var parsed = ConfigurationLoader.Parse(json);
+        Assert.That(parsed.GuildId, Is.EqualTo(source.GuildId));
+        Assert.That(parsed.AdministratorRoleIds, Is.EqualTo(source.AdministratorRoleIds));
+        Assert.That(parsed.Welcome.ChannelMentions["RULES"], Is.EqualTo(42));
+        Assert.That(parsed.Answers[0].AllowedRoleIds, Is.EqualTo(source.Answers[0].AllowedRoleIds));
+
+        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".json");
+        try
+        {
+            File.WriteAllText(path, json);
+            var loaded = ConfigurationLoader.Load(path);
+            Assert.That(loaded.GuildId, Is.EqualTo(source.GuildId));
+            Assert.That(loaded.Welcome.ChannelMentions["rules"], Is.EqualTo(42));
+            Assert.That(loaded.Answers[0].Name, Is.EqualTo("help"));
+        }
+        finally { if (File.Exists(path)) File.Delete(path); }
+    }
+
+    [Test]
     public void Parse_NormalizesWelcomeMentionKeysBeforeValidationAndRendering()
     {
         var configuration = ConfigurationLoader.Parse("""
@@ -189,6 +219,43 @@ public sealed class ConfigurationTests
         Assert.That(errors, Has.Some.Contains("2000 character message limit"));
         Assert.That(errors, Has.Some.Contains("safe absolute HTTP or HTTPS URL"));
         Assert.That(errors, Has.Some.Contains("must contain a title, description, or field"));
+    }
+
+    [Test]
+    public void Validate_AllowsAnswerEmbedsWithOnlyTitleDescriptionOrFields()
+    {
+        var configuration = new BotConfiguration
+        {
+            GuildId = 1,
+            Answers =
+            [
+                new QuickAnswerOptions { Name = "title", Responses = [], Embeds = [new AnswerEmbed { Title = "Title" }] },
+                new QuickAnswerOptions { Name = "description", Responses = [], Embeds = [new AnswerEmbed { Description = "Description" }] },
+                new QuickAnswerOptions { Name = "fields", Responses = [], Embeds = [new AnswerEmbed { Fields = [new EmbedField { Name = "Name", Value = "Value" }] }] }
+            ]
+        };
+
+        Assert.That(ConfigurationValidator.Validate(configuration), Is.Empty);
+    }
+
+    [Test]
+    public void Validate_StillRejectsEmptyAnswerEmbedsUnsupportedMacrosAndInvalidFields()
+    {
+        var configuration = new BotConfiguration
+        {
+            GuildId = 1,
+            Answers =
+            [
+                new QuickAnswerOptions { Name = "empty", Responses = [], Embeds = [new AnswerEmbed()] },
+                new QuickAnswerOptions { Name = "macro", Responses = [], Embeds = [new AnswerEmbed { Title = "Hello {unknown}" }] },
+                new QuickAnswerOptions { Name = "field", Responses = [], Embeds = [new AnswerEmbed { Fields = [new EmbedField { Name = "", Value = "value" }] }] }
+            ]
+        };
+
+        var errors = ConfigurationValidator.Validate(configuration);
+        Assert.That(errors, Has.Some.Contains("answers[0].embeds[0] must contain a title, description, or field"));
+        Assert.That(errors, Has.Some.Contains("answers[1].embeds[0].title contains unknown macro '{unknown}'"));
+        Assert.That(errors, Has.Some.Contains("answers[2].embeds[0].fields[0] needs a name and value"));
     }
 
     [TestCase("""{"GuildId":1,"Answers":[{"Name":"help","Responses":["ok"],"Embeds":null}]}""", "answers[0].embeds must not be null.")]

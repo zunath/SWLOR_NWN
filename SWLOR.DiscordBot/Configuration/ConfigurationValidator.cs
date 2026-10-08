@@ -67,8 +67,8 @@ public static partial class ConfigurationValidator
                         if (embed.Description?.Length > 4096) errors.Add($"answers[{i}].embeds[{j}].description exceeds the 4096 character embed description limit.");
                         if (embed.Color > 0xFFFFFF) errors.Add($"answers[{i}].embeds[{j}].color must be a 24-bit RGB value.");
                         combinedEmbedText += (embed.Title?.Length ?? 0) + (embed.Description?.Length ?? 0);
-                        ValidateTemplate(embed.Title, TemplateKind.Answer, $"answers[{i}].embeds[{j}].title", errors);
-                        ValidateTemplate(embed.Description, TemplateKind.Answer, $"answers[{i}].embeds[{j}].description", errors);
+                        if (embed.Title is not null) ValidateTemplate(embed.Title, TemplateKind.Answer, $"answers[{i}].embeds[{j}].title", errors);
+                        if (embed.Description is not null) ValidateTemplate(embed.Description, TemplateKind.Answer, $"answers[{i}].embeds[{j}].description", errors);
                         if (embed.Fields is not null)
                         {
                             if (embed.Fields.Length > MaximumEmbedFields) errors.Add($"answers[{i}].embeds[{j}] exceeds the 25 field limit.");

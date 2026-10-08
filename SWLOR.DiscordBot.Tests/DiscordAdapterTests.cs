@@ -707,6 +707,64 @@ public sealed class DiscordAdapterTests
         Assert.That(state.ObserveHeartbeat(true), Is.Null);
         Assert.That(state.IsReady(true), Is.False);
     }
+    [Test]
+    public void GatewaySession_ReadinessNotificationRequiresSuccessfulValidationAndFiresOncePerRecovery()
+    {
+        var state = new GatewaySessionState();
+        var notifications = 0;
+        state.ReadinessEstablished += () =>
+        {
+            Assert.That(state.IsReady(true), Is.True, "Maintenance notifications follow the ready state transition.");
+            notifications++;
+        };
+        state.ObserveHeartbeat(true);
+        Assert.That(notifications, Is.Zero);
+        var initial = state.BeginValidation();
+        state.ObserveHeartbeat(true);
+        Assert.That(notifications, Is.Zero);
+        Assert.That(state.CompleteValidation(initial, true), Is.True);
+        Assert.That(notifications, Is.EqualTo(1));
+        Assert.That(state.CompleteValidation(initial, true), Is.False);
+        Parallel.For(0, 10, _ => state.ObserveHeartbeat(true));
+        Assert.That(notifications, Is.EqualTo(1), "Ordinary heartbeat ACKs cannot start duplicate maintenance sweeps.");
+
+        state.Disconnect();
+        state.ObserveHeartbeat(false);
+        Assert.That(notifications, Is.EqualTo(1));
+        Parallel.For(0, 10, _ => state.ObserveHeartbeat(true));
+        Assert.That(notifications, Is.EqualTo(2), "A validated RESUMED session must wake maintenance exactly once.");
+
+        state.Disconnect();
+        var fresh = state.BeginValidation();
+        state.ObserveHeartbeat(true);
+        Assert.That(notifications, Is.EqualTo(2));
+        Assert.That(state.CompleteValidation(fresh, true), Is.True);
+        Assert.That(notifications, Is.EqualTo(3), "A fresh READY must validate before waking maintenance.");
+        state.Stop();
+        state.ObserveHeartbeat(true);
+        Assert.That(state.CompleteValidation(fresh, true), Is.False);
+        Assert.That(notifications, Is.EqualTo(3));
+    }
+
+    [Test]
+    public void GatewaySession_StaleOrDisconnectedValidationCannotNotifyMaintenance()
+    {
+        var state = new GatewaySessionState();
+        var notifications = 0;
+        state.ReadinessEstablished += () => notifications++;
+        var interrupted = state.BeginValidation();
+        state.Disconnect();
+        Assert.That(state.CompleteValidation(interrupted, true), Is.False);
+        Assert.That(notifications, Is.Zero);
+        var retry = state.ObserveHeartbeat(true);
+        Assert.That(retry, Is.Not.Null);
+        Assert.That(state.CompleteValidation(retry!.Value, false), Is.False);
+        Assert.That(notifications, Is.Zero);
+        retry = state.ObserveHeartbeat(true);
+        Assert.That(retry, Is.Not.Null);
+        Assert.That(state.CompleteValidation(retry!.Value, true), Is.True);
+        Assert.That(notifications, Is.EqualTo(1));
+    }
     private static HttpException PlacementError(HttpStatusCode status = HttpStatusCode.BadRequest, string path = "parent_id")
     {
         // Discord.Net exposes structured errors read-only and constructs them internally.

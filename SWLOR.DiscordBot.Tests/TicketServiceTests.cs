@@ -47,16 +47,20 @@ public sealed class TicketServiceTests
         _service = new TicketService(_configuration, _store, _discord, _archive, _clock);
     }
 
-    [Test]
-    public async Task NonSupportCannotCloseExportRenameOrReopenAnotherMembersTicket()
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task NonSupportCannotCloseExportRenameOrReopenAnotherMembersTicket(bool intakeEnabled)
     {
         var requester = new Actor(1, []);
         var opened = await Open("first", requester, "unauthorized-check");
+        _configuration.Tickets.Enabled = intakeEnabled;
         var stranger = new Actor(2, []);
 
         var close = await _service.CloseAsync(ChannelOne, stranger);
         var export = await _service.ExportAsync(ChannelOne, stranger);
         var rename = await _service.RenameAsync(ChannelOne, stranger, "hacked name");
+        var hold = await _service.SetHoldAsync(ChannelOne, stranger, true);
+        var release = await _service.SetHoldAsync(ChannelOne, stranger, false);
         var closeBySupport = await _service.CloseAsync(ChannelOne, Support);
         var reopen = await _service.ReopenAsync(ChannelOne, stranger);
 
@@ -66,6 +70,8 @@ public sealed class TicketServiceTests
             Assert.That(close.Success, Is.False);
             Assert.That(export.Success, Is.False);
             Assert.That(rename.Success, Is.False);
+            Assert.That(hold.Success, Is.False);
+            Assert.That(release.Success, Is.False);
             Assert.That(reopen.Success, Is.False);
             Assert.That(closeBySupport.Success, Is.True);
             Assert.That(_discord.CloseCalls, Is.EqualTo(1));
@@ -920,6 +926,21 @@ public sealed class TicketServiceTests
         Assert.That(_discord.OpenCalls, Is.EqualTo(2), "Only initial creation calls may have opened channels.");
     }
 
+    [TestCase("member")]
+    [TestCase("panel")]
+    [TestCase("guild")]
+    public async Task DisabledIntakeReopeningStillEnforcesCurrentOpenTicketLimits(string scope)
+    {
+        await PrepareFullReopenLimit(scope);
+        _configuration.Tickets.Enabled = false;
+
+        var result = await _service.ReopenAsync(ChannelOne, Support);
+
+        Assert.That(result.Success, Is.False);
+        Assert.That(result.Message, Does.Contain("open-ticket limit"));
+        Assert.That(_store.Tickets.Single(ticket => ticket.ChannelId == ChannelOne).State, Is.EqualTo(TicketState.Closed));
+        Assert.That(_discord.OpenCalls, Is.EqualTo(2), "Disabling intake must not bypass reopen capacity checks.");
+    }
     private async Task PrepareFullReopenLimit(string scope)
     {
         await Open("first", new Actor(1, []), "reopen-limit-closed");
@@ -1140,6 +1161,69 @@ public sealed class TicketServiceTests
         finally { release.TrySetResult(); await export; }
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task DisabledIntakeRetainsRequesterCloseAndStaffManagementUntilCleanup(bool guildOwner)
+    {
+        var requester = new Actor(1, []);
+        var staff = guildOwner ? new Actor(9002, [], IsGuildOwner: true) : Support;
+        _discord.CurrentActors[staff.UserId] = staff;
+        await Open("first", requester, "disable-management");
+        _configuration.Tickets.Enabled = false;
+        // Management also has to survive a worker restart while new intake stays disabled.
+        _service = new TicketService(_configuration, _store, _discord, _archive, _clock);
+        var delivered = 0;
+
+        var newTicket = await _service.OpenAsync("second", new Actor(2, []), "disable-new");
+        var rename = await _service.RenameAsync(ChannelOne, staff, "Follow up");
+        var export = await _service.ExportAsync(ChannelOne, staff, deliver: (_, _) =>
+        {
+            delivered++;
+            return Task.CompletedTask;
+        });
+        var hold = await _service.SetHoldAsync(ChannelOne, staff, true);
+        var close = await _service.CloseAsync(ChannelOne, requester);
+        _clock.Advance(TimeSpan.FromDays(8));
+        await _service.MaintainAsync();
+        Assert.That(_discord.DeleteCalls, Is.Zero, "A staff hold still protects a closed ticket while intake is disabled.");
+        var release = await _service.SetHoldAsync(ChannelOne, staff, false);
+        var reopen = await _service.ReopenAsync(ChannelOne, staff);
+        Assert.That((await _service.CloseAsync(ChannelOne, requester)).Success, Is.True);
+        _clock.Advance(TimeSpan.FromDays(8));
+        await _service.MaintainAsync();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(newTicket.Success, Is.False);
+            Assert.That(new[] { rename, export, hold, close, release, reopen }.All(result => result.Success), Is.True);
+            Assert.That(delivered, Is.EqualTo(1));
+            Assert.That(_discord.CreateCalls, Is.EqualTo(1), "Management must not enable new ticket creation.");
+            Assert.That(_discord.RenameCalls, Is.EqualTo(1));
+            Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Deleted));
+            Assert.That(_discord.DeletedChannels, Is.EqualTo(new[] { ChannelOne }));
+        });
+    }
+
+    [Test]
+    public async Task DisabledIntakeManagementUsesCurrentConfiguredSupportRoles()
+    {
+        await Open("first", new Actor(1, []), "changed-disabled-support");
+        _configuration.Tickets.Enabled = false;
+        _configuration.Tickets.SupportRoleIds = [901];
+        var staff = new Actor(9002, [901]);
+        _discord.CurrentActors[staff.UserId] = staff;
+
+        Assert.That((await _service.CloseAsync(ChannelOne, Support)).Success, Is.False);
+        Assert.That((await _service.SetHoldAsync(ChannelOne, Support, false)).Success, Is.False);
+        Assert.That((await _service.ExportAsync(ChannelOne, Support)).Success, Is.False);
+        Assert.That((await _service.RenameAsync(ChannelOne, staff, "Current staff")).Success, Is.True);
+        Assert.That((await _service.ExportAsync(ChannelOne, staff, deliver: (_, _) => Task.CompletedTask)).Success, Is.True);
+        Assert.That((await _service.SetHoldAsync(ChannelOne, staff, true)).Success, Is.True);
+        Assert.That((await _service.CloseAsync(ChannelOne, staff)).Success, Is.True);
+        Assert.That((await _service.SetHoldAsync(ChannelOne, staff, false)).Success, Is.True);
+        Assert.That((await _service.ReopenAsync(ChannelOne, staff)).Success, Is.True);
+        Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Open));
+    }
     [Test]
     public async Task DisabledTicketingRejectsNewTicketsButCleansExistingClosedTicket()
     {
@@ -1256,13 +1340,18 @@ public sealed class TicketServiceTests
         finally { safety.Cancel(); try { await cleanup; } catch (OperationCanceledException) { } }
     }
 
-    [TestCase(false, false)]
-    [TestCase(false, true)]
-    [TestCase(true, false)]
-    [TestCase(true, true)]
-    public async Task TranscriptDeliveryRefreshesSupportAccessAfterExport(bool blockArchive, bool departed)
+    [TestCase(false, false, true)]
+    [TestCase(false, true, true)]
+    [TestCase(true, false, true)]
+    [TestCase(true, true, true)]
+    [TestCase(false, false, false)]
+    [TestCase(false, true, false)]
+    [TestCase(true, false, false)]
+    [TestCase(true, true, false)]
+    public async Task TranscriptDeliveryRefreshesSupportAccessAfterExport(bool blockArchive, bool departed, bool intakeEnabled)
     {
         await Open("first", new Actor(1, []), "delivery-revoked");
+        _configuration.Tickets.Enabled = intakeEnabled;
         var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         async Task Block(Ticket ticket, CancellationToken ct)

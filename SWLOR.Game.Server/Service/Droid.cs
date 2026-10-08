@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.Service
 
             if (GetBaseItemType(item) == BaseItem.Helmet)
             {
-                SetHiddenWhenEquipped(item, true);
+                HelmetModelRenderer.SetShownByOwner(item, false);
             }
 
             var constructedDroid = LoadConstructedDroid(controller);
@@ -290,7 +290,7 @@ namespace SWLOR.Game.Server.Service
 
             if (GetBaseItemType(item) == BaseItem.Helmet)
             {
-                SetHiddenWhenEquipped(item, false);
+                HelmetModelRenderer.SetShownByOwner(item, true);
             }
 
             var constructedDroid = LoadConstructedDroid(controller);

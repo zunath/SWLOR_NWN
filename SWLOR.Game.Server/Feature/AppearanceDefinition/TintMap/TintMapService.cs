@@ -114,6 +114,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         [NWNEventHandler(ScriptName.OnModuleUnequip)]
         public static void OnModuleUnequip()
         {
+            HelmetModelRenderer.Release(GetPCItemLastUnequipped());
             QueueRefresh(GetPCItemLastUnequippedBy());
         }
 

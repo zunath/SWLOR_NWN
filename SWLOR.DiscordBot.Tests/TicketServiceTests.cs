@@ -1,6 +1,8 @@
+using Discord;
 using NUnit.Framework;
 using SWLOR.DiscordBot.Configuration;
 using SWLOR.DiscordBot.Core;
+using SWLOR.DiscordBot.Discord;
 using SWLOR.DiscordBot.Persistence;
 
 namespace SWLOR.DiscordBot.Tests;
@@ -642,6 +644,131 @@ public sealed class TicketServiceTests
             Assert.That(_store.Tickets.Single(t => t.ChannelId == ChannelOne + 1).Hold, Is.True);
         }
         finally { release.TrySetResult(); await maintenance; }
+    }
+
+    [TestCase("edit", true)]
+    [TestCase("edit", false)]
+    [TestCase("delete", true)]
+    [TestCase("delete", false)]
+    public async Task CleanupDeniesRequesterMutationsAfterVerificationUntilChannelDeletion(string mutation, bool closedRequesterCanRead)
+    {
+        _configuration.Tickets.ClosedRequesterCanRead = closedRequesterCanRead;
+        await Open("first", new Actor(1, []), "requester-freeze");
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        IReadOnlyCollection<Overwrite> actual = DiscordOperations.BuildOverwrites(1, 2, 1, [SupportRole], [],
+            closedRequesterCanRead, false, true);
+        _discord.BeforeFreezeAsync = async (ticket, _) =>
+        {
+            var expected = DiscordOperations.BuildFrozenOverwrites(ticket, 1, 2, [SupportRole], actual);
+            await DiscordOperations.SynchronizeTicketOverwritesAsync(ChannelOne, expected, actual,
+                value => { actual = value; return Task.CompletedTask; }, () => Task.FromResult(actual));
+        };
+        var old = new TranscriptMessage(100, 1, "Requester", "original", _clock.GetUtcNow(), []);
+        var newest = old with { Id = 101, Content = "newest" };
+        _discord.Snapshot = new([old, newest], 101);
+        void AssertFrozen()
+        {
+            var requester = actual.Single(item => item.TargetType == PermissionTarget.User && item.TargetId == 1).Permissions;
+            Assert.That(requester.ViewChannel, Is.EqualTo(PermValue.Deny));
+            Assert.That(requester.ReadMessageHistory, Is.EqualTo(PermValue.Deny));
+            Assert.That(actual.Single(item => item.TargetType == PermissionTarget.Role && item.TargetId == SupportRole)
+                .Permissions.ViewChannel, Is.EqualTo(PermValue.Allow), "Staff must still be able to issue a hold.");
+        }
+        var scans = 0;
+        _discord.BeforeTranscriptAsync = (_, _) => { scans++; AssertFrozen(); return Task.CompletedTask; };
+        _archive.BeforeExportAsync = (_, _) => { AssertFrozen(); return Task.CompletedTask; };
+        var blocked = 0;
+        _discord.BeforeLastMessageIdAsync = (_, _) =>
+        {
+            Assert.That(scans, Is.EqualTo(2), "Attempt the mutation after the verification cursor has passed the older message.");
+            var requester = actual.Single(item => item.TargetType == PermissionTarget.User && item.TargetId == 1).Permissions;
+            if (requester.ViewChannel == PermValue.Deny) blocked++;
+            else _discord.Snapshot = mutation == "delete" ? new([newest], 101) : new([old with { Content = "tampered" }, newest], 101);
+            return Task.CompletedTask;
+        };
+        _discord.BeforeDeleteAsync = (_, _) => { AssertFrozen(); return Task.CompletedTask; };
+
+        await _service.MaintainAsync();
+
+        Assert.That(blocked, Is.EqualTo(1));
+        Assert.That(_discord.Snapshot.Messages, Is.EqualTo(new[] { old, newest }));
+        Assert.That(_discord.DeletedChannels, Is.EqualTo(new[] { ChannelOne }));
+        Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Deleted));
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task CleanupRequiresVerifiedFreezeBeforeTranscriptWorkAndRetriesFailures(bool rejected)
+    {
+        await Open("first", new Actor(1, []), "freeze-readback-failure");
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        IReadOnlyCollection<Overwrite> actual = DiscordOperations.BuildOverwrites(1, 2, 1, [SupportRole], [], true, false, true);
+        _discord.BeforeFreezeAsync = async (ticket, _) =>
+        {
+            var expected = DiscordOperations.BuildFrozenOverwrites(ticket, 1, 2, [SupportRole], actual);
+            await DiscordOperations.SynchronizeTicketOverwritesAsync(ChannelOne, expected, actual,
+                value => rejected ? Task.FromException(new InvalidOperationException("Discord denied the freeze.")) : Task.CompletedTask,
+                () => Task.FromResult(actual));
+        };
+        var reads = 0;
+        _discord.BeforeTranscriptAsync = (_, _) => { reads++; return Task.CompletedTask; };
+        await _service.MaintainAsync();
+        Assert.That(reads, Is.Zero);
+        Assert.That(_archive.ExportCalls, Is.Zero);
+        Assert.That(_discord.DeleteCalls, Is.Zero);
+        Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Deleting));
+        Assert.That(_store.Tickets.Single().LastError, Does.Contain("Maintenance failed"));
+
+        _discord.BeforeFreezeAsync = async (ticket, _) =>
+        {
+            var expected = DiscordOperations.BuildFrozenOverwrites(ticket, 1, 2, [SupportRole], actual);
+            await DiscordOperations.SynchronizeTicketOverwritesAsync(ChannelOne, expected, actual,
+                value => { actual = value; return Task.CompletedTask; }, () => Task.FromResult(actual));
+        };
+        await _service.MaintainAsync();
+        Assert.That(reads, Is.EqualTo(2));
+        Assert.That(actual.Single(item => item.TargetType == PermissionTarget.User && item.TargetId == 1)
+            .Permissions.ViewChannel, Is.EqualTo(PermValue.Deny));
+        Assert.That(_discord.DeletedChannels, Is.EqualTo(new[] { ChannelOne }));
+    }
+
+    [Test]
+    public async Task FailedCleanupKeepsRequesterFrozenAndStaffCanHoldThenReleaseForRetry()
+    {
+        await Open("first", new Actor(1, []), "failed-frozen-hold");
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        IReadOnlyCollection<Overwrite> actual = DiscordOperations.BuildOverwrites(1, 2, 1, [SupportRole], [], true, false, true);
+        _discord.BeforeFreezeAsync = async (ticket, _) =>
+        {
+            var expected = DiscordOperations.BuildFrozenOverwrites(ticket, 1, 2, [SupportRole], actual);
+            await DiscordOperations.SynchronizeTicketOverwritesAsync(ChannelOne, expected, actual,
+                value => { actual = value; return Task.CompletedTask; }, () => Task.FromResult(actual));
+        };
+        _archive.FailExports = true;
+        await _service.MaintainAsync();
+        Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Deleting));
+        Assert.That(_discord.DeleteCalls, Is.Zero);
+        Assert.That((await _service.SetHoldAsync(ChannelOne, Support, true)).Success, Is.True);
+        Assert.That((await _service.ReopenAsync(ChannelOne, Support)).Success, Is.False,
+            "A hold preserves Deleting state and must not reopen requester access during an unfinished archive.");
+        var freezes = _discord.FreezeCalls;
+        var reconciles = _discord.ReconciledTickets.Count;
+        await _service.ReconcileRetainedPermissionsAsync();
+        await _service.MaintainAsync();
+        Assert.That(_discord.FreezeCalls, Is.EqualTo(freezes));
+        Assert.That(_discord.ReconciledTickets.Count, Is.EqualTo(reconciles));
+        Assert.That(actual.Single(item => item.TargetType == PermissionTarget.User && item.TargetId == 1)
+            .Permissions.ViewChannel, Is.EqualTo(PermValue.Deny));
+        Assert.That(actual.Single(item => item.TargetType == PermissionTarget.Role && item.TargetId == SupportRole)
+            .Permissions.ViewChannel, Is.EqualTo(PermValue.Allow));
+        Assert.That((await _service.SetHoldAsync(ChannelOne, Support, false)).Success, Is.True);
+        _archive.FailExports = false;
+        await _service.MaintainAsync();
+        Assert.That(_discord.DeletedChannels, Is.EqualTo(new[] { ChannelOne }));
+        Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Deleted));
     }
 
     [TestCase("edit")]
@@ -2061,6 +2188,9 @@ public sealed class TicketServiceTests
         public bool FailNextExists { get; set; }
         public Func<Ticket, Task>? BeforeExistsAsync { get; set; }
         public int FreezeCalls { get; private set; }
+        public Func<Ticket, CancellationToken, Task>? BeforeFreezeAsync { get; set; }
+        public Func<Ticket, CancellationToken, Task>? BeforeLastMessageIdAsync { get; set; }
+        public Func<Ticket, CancellationToken, Task>? BeforeDeleteAsync { get; set; }
         public List<Ticket> ReconciledTickets { get; } = [];
         public Func<Ticket, CancellationToken, Task>? BeforeReconcileAsync { get; set; }
         public int DeleteCalls { get; private set; }
@@ -2142,10 +2272,10 @@ public sealed class TicketServiceTests
             if (BeforeReconcileAsync is not null) await BeforeReconcileAsync(ticket, ct);
             ReconciledTickets.Add(ticket);
         }
-        public Task FreezeAsync(Ticket ticket, CancellationToken ct)
+        public async Task FreezeAsync(Ticket ticket, CancellationToken ct)
         {
             FreezeCalls++;
-            return Task.CompletedTask;
+            if (BeforeFreezeAsync is not null) await BeforeFreezeAsync(ticket, ct);
         }
 
         public async Task<TranscriptSnapshot> ReadTranscriptAsync(Ticket ticket, CancellationToken ct)
@@ -2159,14 +2289,17 @@ public sealed class TicketServiceTests
             if (BeforeProgressTranscriptAsync is not null) await BeforeProgressTranscriptAsync(ticket, progress, ct);
             return await ReadTranscriptAsync(ticket, ct);
         }
-        public Task<ulong?> LastMessageIdAsync(Ticket ticket, CancellationToken ct) =>
-            Task.FromResult(LastMessageIdAfterRead ?? Snapshot.LastMessageId);
-
-        public Task DeleteAsync(Ticket ticket, CancellationToken ct)
+        public async Task<ulong?> LastMessageIdAsync(Ticket ticket, CancellationToken ct)
         {
+            if (BeforeLastMessageIdAsync is not null) await BeforeLastMessageIdAsync(ticket, ct);
+            return LastMessageIdAfterRead ?? Snapshot.LastMessageId;
+        }
+
+        public async Task DeleteAsync(Ticket ticket, CancellationToken ct)
+        {
+            if (BeforeDeleteAsync is not null) await BeforeDeleteAsync(ticket, ct);
             DeleteCalls++;
             if (ticket.ChannelId is ulong channel) DeletedChannels.Add(channel);
-            return Task.CompletedTask;
         }
 
         public Task LogAsync(string message, CancellationToken ct) => Task.CompletedTask;

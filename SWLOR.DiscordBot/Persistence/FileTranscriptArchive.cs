@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -37,6 +38,7 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
         EnsurePrivateDirectory(attachmentDirectory);
         RepairExistingPermissions(directory);
         var files = new Dictionary<ulong, string>();
+        var attachmentSizes = new Dictionary<ulong, long>();
         if (configuration.Tickets.CopyAttachments)
         {
             var attachments = PlanAttachments(snapshot, ct, progress);
@@ -60,6 +62,7 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
             foreach (var plan in attachments)
             {
                 var attachment = plan.Attachment;
+                attachmentSizes.Add(attachment.Id, attachment.Size);
                 var relative = plan.Relative;
                 var target = Path.Combine(directory, relative.Replace('/', Path.DirectorySeparatorChar));
                 if (File.Exists(target))
@@ -127,6 +130,13 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
             await AtomicWriteAsync(Path.Combine(snapshotDirectory, "transcript.html"),
                 output => WriteHtmlAsync(output, ticket, snapshot, snapshotFiles, ct, progress), ct);
             progress();
+            await AtomicWriteAsync(Path.Combine(snapshotDirectory, "attachment-manifest.json"),
+                output => WriteAttachmentManifestAsync(output, ticket, snapshotDirectory, files, attachmentSizes, ct, progress), ct);
+            progress();
+            var manifestHash = await HashFileAsync(Path.Combine(snapshotDirectory, "attachment-manifest.json"), ct, progress);
+            await AtomicWriteAsync(Path.Combine(snapshotDirectory, "attachment-manifest.sha256"),
+                async output => await output.WriteAsync(Encoding.ASCII.GetBytes(manifestHash), ct), ct);
+            progress();
             ct.ThrowIfCancellationRequested();
             complete = true;
             return snapshotDirectory;
@@ -154,23 +164,29 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
             throw new InvalidOperationException("Snapshot path does not identify a managed ticket snapshot.");
     }
 
-    public Task PruneSnapshotsAsync(Ticket ticket, CancellationToken ct)
+    public Task PruneSnapshotsAsync(Ticket ticket, CancellationToken ct) =>
+        PruneSnapshotsAsync(ticket, ct, static () => { });
+
+    public async Task PruneSnapshotsAsync(Ticket ticket, CancellationToken ct, Action progress)
     {
         ct.ThrowIfCancellationRequested();
         ValidateOwnership(ticket);
         var directory = TicketDirectory(ticket.Id);
-        if (!Directory.Exists(directory)) return Task.CompletedTask;
-        RejectLink(directory);
+        if (!Directory.Exists(directory)) return;
+        RejectLink(Root);
+        // Validate every candidate before deleting any generation or shared cached payload.
+        ValidateTree(directory, ct, progress);
         var snapshots = Path.Combine(directory, "snapshots");
-        RejectLink(snapshots);
         if (ticket.ArchiveSnapshotPath is not null)
         {
-            // Never remove the previous selection if the new durable snapshot cannot be read.
-            ValidateTree(ticket.ArchiveSnapshotPath, ct);
             foreach (var name in new[] { "transcript.json", "transcript.html" })
                 if (!File.Exists(Path.Combine(ticket.ArchiveSnapshotPath, name)))
                     throw new InvalidOperationException("The selected snapshot is incomplete; pruning is suspended.");
         }
+        // A legacy root export or an uncommitted generation cannot prove cache ownership.
+        var selectedFiles = ticket.ArchiveComplete && ticket.ArchiveSnapshotPath is not null
+            ? await ReadSelectedAttachmentFilesAsync(ticket, ct, progress) : null;
+        var obsoleteSnapshots = new List<string>();
         if (Directory.Exists(snapshots))
         {
             foreach (var path in Directory.EnumerateFileSystemEntries(snapshots))
@@ -179,10 +195,28 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
                 ValidateSnapshotPath(ticket, path);
                 if (!Directory.Exists(path)) throw new InvalidOperationException("Unexpected file in managed snapshots.");
                 if (ticket.ArchiveSnapshotPath is null || !PathEquals(path, ticket.ArchiveSnapshotPath))
-                    DeleteSnapshotDirectory(ticket, path, ct);
+                    obsoleteSnapshots.Add(path);
+                progress();
             }
         }
-        if (ticket.ArchiveComplete && ticket.ArchiveSnapshotPath is not null)
+        var obsoleteAttachments = new List<string>();
+        var attachments = Path.Combine(directory, "attachments");
+        if (selectedFiles is not null && Directory.Exists(attachments))
+        {
+            foreach (var path in Directory.EnumerateFileSystemEntries(attachments))
+            {
+                ct.ThrowIfCancellationRequested();
+                if (Directory.Exists(path)) throw new InvalidDataException("Unexpected directory in the attachment cache; pruning is suspended.");
+                if (!selectedFiles.Contains(path)) obsoleteAttachments.Add(path);
+                progress();
+            }
+        }
+        foreach (var path in obsoleteSnapshots)
+        {
+            DeleteSnapshotDirectory(ticket, path, ct);
+            progress();
+        }
+        if (selectedFiles is not null)
         {
             // Legacy exports lived at the root. Retire them only after the new selection commits.
             foreach (var name in new[] { "transcript.json", "transcript.html" })
@@ -191,9 +225,87 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
                 var path = Path.Combine(directory, name);
                 RejectLink(path);
                 if (File.Exists(path)) File.Delete(path);
+                progress();
+            }
+            foreach (var path in obsoleteAttachments)
+            {
+                ct.ThrowIfCancellationRequested();
+                RejectLink(path);
+                File.Delete(path);
+                progress();
             }
         }
-        return Task.CompletedTask;
+    }
+
+    private async Task<HashSet<string>?> ReadSelectedAttachmentFilesAsync(Ticket ticket, CancellationToken ct, Action progress)
+    {
+        var snapshot = ticket.ArchiveSnapshotPath!;
+        var manifest = Path.Combine(snapshot, "attachment-manifest.json");
+        var seal = Path.Combine(snapshot, "attachment-manifest.sha256");
+        if (!File.Exists(manifest) && !File.Exists(seal)) return null;
+        if (!File.Exists(manifest) || !File.Exists(seal) || new FileInfo(seal).Length != 64)
+            throw new InvalidDataException("The selected attachment manifest is incomplete; pruning is suspended.");
+        // Each original attachment reserves 256 content-budget bytes. A compact manifest row
+        // needs at most 96 bytes; bound both parse memory and object counts before trusting it.
+        var maxFiles = Math.Clamp(configuration.Tickets.MaxTranscriptContentBytes / 256, 0, 67108864 / 256);
+        await using var input = File.OpenRead(manifest);
+        if (input.Length > 512 + maxFiles * 96)
+            throw new InvalidDataException("The selected attachment manifest exceeds its memory budget; pruning is suspended.");
+        if (await File.ReadAllTextAsync(seal, ct) != await HashFileAsync(manifest, ct, progress))
+            throw new InvalidDataException("The selected attachment manifest checksum is invalid; pruning is suspended.");
+        JsonDocument document;
+        try { document = await JsonDocument.ParseAsync(input, new JsonDocumentOptions { MaxDepth = 4 }, ct); }
+        catch (JsonException ex) { throw new InvalidDataException("The selected attachment manifest is corrupt; pruning is suspended.", ex); }
+        using (document)
+        {
+            var root = document.RootElement;
+            if (!ManifestProperty(root, "Id", JsonValueKind.String).TryGetGuid(out var id) || id != ticket.Id)
+                throw new InvalidDataException("The selected snapshot belongs to another ticket; pruning is suspended.");
+            if (ManifestProperty(root, "TranscriptSha256", JsonValueKind.String).GetString() !=
+                    await HashFileAsync(Path.Combine(snapshot, "transcript.json"), ct, progress) ||
+                ManifestProperty(root, "HtmlSha256", JsonValueKind.String).GetString() !=
+                    await HashFileAsync(Path.Combine(snapshot, "transcript.html"), ct, progress))
+                throw new InvalidDataException("The selected snapshot does not match its attachment manifest; pruning is suspended.");
+            var files = ManifestProperty(root, "AttachmentFiles", JsonValueKind.Object);
+            var selectedFiles = new HashSet<string>(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+            var attachmentIds = new HashSet<ulong>();
+            foreach (var file in files.EnumerateObject())
+            {
+                ct.ThrowIfCancellationRequested();
+                if (attachmentIds.Count >= maxFiles ||
+                    !Regex.IsMatch(file.Name, @"^attachments/[0-9]+\.[a-zA-Z0-9]{1,8}$", RegexOptions.CultureInvariant) ||
+                    file.Value.ValueKind != JsonValueKind.Number || !file.Value.TryGetInt64(out var size) || size < 0)
+                    throw new InvalidDataException("The selected attachment manifest reference is invalid; pruning is suspended.");
+                var name = Path.GetFileName(file.Name);
+                var number = name[..name.LastIndexOf('.')];
+                if (!ulong.TryParse(number, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var attachmentId) ||
+                    number != attachmentId.ToString(System.Globalization.CultureInfo.InvariantCulture) || !attachmentIds.Add(attachmentId))
+                    throw new InvalidDataException("The selected attachment manifest has conflicting IDs; pruning is suspended.");
+                var path = Path.Combine(TicketDirectory(ticket.Id), file.Name.Replace('/', Path.DirectorySeparatorChar));
+                if (!File.Exists(path) || new FileInfo(path).Length != size)
+                    throw new InvalidDataException("The selected snapshot attachment is missing or incomplete; pruning is suspended.");
+                selectedFiles.Add(path);
+                progress();
+            }
+            return selectedFiles;
+        }
+    }
+
+    private static JsonElement ManifestProperty(JsonElement value, string name, JsonValueKind kind)
+    {
+        if (value.ValueKind != JsonValueKind.Object)
+            throw new InvalidDataException("The selected snapshot manifest is invalid; pruning is suspended.");
+        var match = default(JsonElement);
+        var count = 0;
+        foreach (var property in value.EnumerateObject())
+        {
+            if (property.Name != name) continue;
+            match = property.Value;
+            count++;
+        }
+        if (count != 1 || match.ValueKind != kind)
+            throw new InvalidDataException("The selected snapshot manifest is invalid; pruning is suspended.");
+        return match;
     }
 
     private void DeleteSnapshotDirectory(Ticket ticket, string path, CancellationToken ct = default)
@@ -206,7 +318,7 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
         Directory.Delete(path, true);
     }
 
-    private static void ValidateTree(string directory, CancellationToken ct)
+    private static void ValidateTree(string directory, CancellationToken ct, Action? progress = null)
     {
         ct.ThrowIfCancellationRequested();
         RejectLink(directory);
@@ -214,7 +326,8 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
         {
             ct.ThrowIfCancellationRequested();
             RejectLink(entry);
-            if (Directory.Exists(entry)) ValidateTree(entry, ct);
+            if (Directory.Exists(entry)) ValidateTree(entry, ct, progress);
+            progress?.Invoke();
         }
     }
 
@@ -242,13 +355,18 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
             else
             {
                 declaredBytes = AddWithinTicketBudget(declaredBytes, attachment.Size);
-                var extension = Path.GetExtension(attachment.FileName);
-                if (!Regex.IsMatch(extension, "^\\.[a-zA-Z0-9]{1,8}$")) extension = ".bin";
-                unique.Add(attachment.Id, new(attachment, $"attachments/{attachment.Id}{extension}", url));
+                unique.Add(attachment.Id, new(attachment, AttachmentRelativePath(attachment.Id, attachment.FileName), url));
             }
             progress();
         }
         return unique.Values.ToArray();
+    }
+
+    private static string AttachmentRelativePath(ulong id, string fileName)
+    {
+        var extension = Path.GetExtension(fileName);
+        if (!Regex.IsMatch(extension, "^\\.[a-zA-Z0-9]{1,8}$")) extension = ".bin";
+        return $"attachments/{id.ToString(System.Globalization.CultureInfo.InvariantCulture)}{extension}";
     }
 
     private long CountRetainedAttachments(string directory, CancellationToken ct, Action progress)
@@ -289,8 +407,13 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
     private static bool PathEquals(string a, string b) => string.Equals(a, b, OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
     private static void RejectLink(string path)
     {
-        if ((File.Exists(path) || Directory.Exists(path)) && File.GetAttributes(path).HasFlag(FileAttributes.ReparsePoint))
-            throw new InvalidOperationException("Links are not allowed in ticket archive paths.");
+        try
+        {
+            if (File.GetAttributes(path).HasFlag(FileAttributes.ReparsePoint))
+                throw new InvalidOperationException("Links are not allowed in ticket archive paths.");
+        }
+        catch (FileNotFoundException) { }
+        catch (DirectoryNotFoundException) { }
     }
     private static void EnsurePrivateDirectory(string path)
     {
@@ -351,6 +474,44 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
             throw;
         }
     }
+    private static async Task WriteAttachmentManifestAsync(Stream output, Ticket ticket, string snapshotDirectory,
+        IReadOnlyDictionary<ulong, string> files, IReadOnlyDictionary<ulong, long> sizes, CancellationToken ct, Action progress)
+    {
+        using var writer = new Utf8JsonWriter(output);
+        writer.WriteStartObject();
+        writer.WriteString("Id", ticket.Id);
+        writer.WriteString("TranscriptSha256", await HashFileAsync(Path.Combine(snapshotDirectory, "transcript.json"), ct, progress));
+        progress();
+        writer.WriteString("HtmlSha256", await HashFileAsync(Path.Combine(snapshotDirectory, "transcript.html"), ct, progress));
+        progress();
+        writer.WriteStartObject("AttachmentFiles");
+        foreach (var file in files)
+        {
+            ct.ThrowIfCancellationRequested();
+            writer.WriteNumber(file.Value, sizes[file.Key]);
+            await writer.FlushAsync(ct);
+            progress();
+        }
+        writer.WriteEndObject();
+        writer.WriteEndObject();
+        await writer.FlushAsync(ct);
+    }
+
+    private static async Task<string> HashFileAsync(string path, CancellationToken ct, Action progress)
+    {
+        await using var input = File.OpenRead(path);
+        using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+        var buffer = new byte[81920];
+        int read;
+        while ((read = await input.ReadAsync(buffer, ct)) > 0)
+        {
+            hash.AppendData(buffer, 0, read);
+            progress();
+        }
+        ct.ThrowIfCancellationRequested();
+        return Convert.ToHexString(hash.GetHashAndReset());
+    }
+
     private static async Task WriteJsonAsync(Stream output, Ticket ticket, TranscriptSnapshot snapshot,
         IReadOnlyDictionary<ulong, string> files, CancellationToken ct, Action progress)
     {

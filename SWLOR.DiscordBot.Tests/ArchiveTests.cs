@@ -1,6 +1,8 @@
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using NUnit.Framework;
 using SWLOR.DiscordBot.Configuration;
 using SWLOR.DiscordBot.Core;
@@ -688,6 +690,268 @@ public sealed class ArchiveTests
         await archive.ExportAsync(ticket, EmptySnapshot(), default);
         await archive.DeleteAsync(ticket.ArchivePath!, default);
         Assert.That(Directory.Exists(ticket.ArchivePath!), Is.False);
+    }
+
+    [Test]
+    public async Task PruningReclaimsRemovedAttachmentsOnlyAfterCompleteReplacementSelection()
+    {
+        var handler = new FakeHttpMessageHandler(request => new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new ByteArrayContent(new byte[request.RequestUri!.AbsolutePath.Contains("/89/") ? 2 : 3])
+        });
+        using var client = new HttpClient(handler);
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, 3, 5), client);
+        var ticket = CreateTicket();
+        var previous = await archive.ExportAsync(ticket, Snapshot(Attachment(88, 3), Attachment(89, 2)), default);
+        ticket = ticket with { ArchiveSnapshotPath = previous, ArchiveComplete = true };
+        var cache = Path.Combine(ticket.ArchivePath!, "attachments");
+        var uncommitted = await archive.ExportAsync(ticket, Snapshot(Attachment(89, 2)), default);
+        await archive.PruneSnapshotsAsync(ticket, default);
+        Assert.That(Directory.Exists(uncommitted), Is.False);
+        Assert.That(File.Exists(Path.Combine(cache, "88.bin")), Is.True, "The old durable selection still references this file.");
+        var replacement = await archive.ExportAsync(ticket, Snapshot(Attachment(89, 2)), default);
+        await archive.PruneSnapshotsAsync(ticket with { ArchiveSnapshotPath = replacement, ArchiveComplete = false }, default);
+        Assert.That(File.Exists(Path.Combine(cache, "88.bin")), Is.True, "An incomplete selection cannot reclaim cache.");
+        ticket = ticket with { ArchiveSnapshotPath = replacement };
+        await archive.PruneSnapshotsAsync(ticket, default);
+        Assert.That(Directory.Exists(previous), Is.False);
+        Assert.That(Directory.GetFiles(cache).Select(Path.GetFileName), Is.EqualTo(new[] { "89.bin" }));
+        Assert.That(await File.ReadAllTextAsync(Path.Combine(replacement, "transcript.html")), Does.Contain("../../attachments/89.bin"));
+        var next = await archive.ExportAsync(ticket, Snapshot(Attachment(90, 3)), default);
+        await archive.PruneSnapshotsAsync(ticket with { ArchiveSnapshotPath = next }, default);
+        Assert.That(Directory.GetFiles(cache).Select(Path.GetFileName), Is.EqualTo(new[] { "90.bin" }));
+        Assert.That(handler.RequestCount, Is.EqualTo(3), "The selected cache is reused and obsolete bytes free room for new files.");
+    }
+
+    [Test]
+    public async Task PruningEmptySelectedHistoryReclaimsAllAttachmentPayloads()
+    {
+        using var client = CreateClient(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(new byte[3]) });
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, 3, 3), client);
+        var ticket = CreateTicket();
+        var previous = await archive.ExportAsync(ticket, Snapshot(Attachment(88, 3)), default);
+        ticket = ticket with { ArchiveSnapshotPath = previous, ArchiveComplete = true };
+        var replacement = await archive.ExportAsync(ticket, EmptySnapshot(), default);
+        await archive.PruneSnapshotsAsync(ticket with { ArchiveSnapshotPath = replacement }, default);
+        Assert.That(Directory.GetFiles(Path.Combine(ticket.ArchivePath!, "attachments")), Is.Empty);
+        Assert.That(Directory.Exists(replacement), Is.True);
+        Assert.That(Directory.Exists(previous), Is.False);
+    }
+
+    [Test]
+    public async Task FailedRefreshRetriesReclaimStagingAndPreserveSelectedAttachmentWithinPeakBudget()
+    {
+        var handler = new FakeHttpMessageHandler(request => request.RequestUri!.AbsolutePath.Contains("/90/")
+            ? new HttpResponseMessage(HttpStatusCode.InternalServerError)
+            : new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new ByteArrayContent(new byte[request.RequestUri!.AbsolutePath.Contains("/88/") ? 3 : 1])
+            });
+        using var client = new HttpClient(handler);
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, 3, 5), client);
+        var ticket = CreateTicket();
+        var previous = await archive.ExportAsync(ticket, Snapshot(Attachment(88, 3)), default);
+        ticket = ticket with { ArchiveSnapshotPath = previous, ArchiveComplete = true };
+        var json = await File.ReadAllBytesAsync(Path.Combine(previous, "transcript.json"));
+        var html = await File.ReadAllBytesAsync(Path.Combine(previous, "transcript.html"));
+        var cache = Path.Combine(ticket.ArchivePath!, "attachments");
+        for (var attempt = 0; attempt < 3; attempt++)
+        {
+            Assert.ThrowsAsync<HttpRequestException>(() => archive.ExportAsync(ticket, Snapshot(Attachment(89, 1), Attachment(90, 1)), default));
+            Assert.That(File.Exists(Path.Combine(cache, "89.bin")), Is.True);
+            Assert.That(Directory.GetFiles(cache).Sum(file => new FileInfo(file).Length), Is.LessThanOrEqualTo(5));
+            await archive.PruneSnapshotsAsync(ticket, default);
+            Assert.That(Directory.GetFiles(cache).Select(Path.GetFileName), Is.EqualTo(new[] { "88.bin" }));
+            Assert.That(await File.ReadAllBytesAsync(Path.Combine(previous, "transcript.json")), Is.EqualTo(json));
+            Assert.That(await File.ReadAllBytesAsync(Path.Combine(previous, "transcript.html")), Is.EqualTo(html));
+            Assert.That(Directory.GetFiles(ticket.ArchivePath!, "*.part", SearchOption.AllDirectories), Is.Empty);
+        }
+        Assert.That(handler.RequestCount, Is.EqualTo(7));
+    }
+
+    [Test]
+    public async Task ReplacementOverPhysicalPeakBudgetFailsBeforeHttpAndKeepsSelectedArchiveUsable()
+    {
+        var handler = new FakeHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(new byte[3]) });
+        using var client = new HttpClient(handler);
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, 3, 4), client);
+        var ticket = CreateTicket();
+        var previous = await archive.ExportAsync(ticket, Snapshot(Attachment(88, 3)), default);
+        ticket = ticket with { ArchiveSnapshotPath = previous, ArchiveComplete = true };
+        await archive.PruneSnapshotsAsync(ticket, default);
+        // Each generation fits, but preserving the selected file through commit needs five bytes.
+        Assert.ThrowsAsync<InvalidDataException>(() => archive.ExportAsync(ticket, Snapshot(Attachment(89, 2)), default));
+        Assert.That(handler.RequestCount, Is.EqualTo(1));
+        Assert.That(await File.ReadAllBytesAsync(Path.Combine(ticket.ArchivePath!, "attachments", "88.bin")), Is.EqualTo(new byte[3]));
+        Assert.That(Directory.GetDirectories(Path.GetDirectoryName(previous)!), Is.EqualTo(new[] { previous }));
+        await archive.PruneSnapshotsAsync(ticket, default);
+        Assert.That(File.Exists(Path.Combine(previous, "transcript.html")), Is.True);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task LegacySelectionWithoutManifestKeepsCacheWhilePruningAbandonedGenerations(bool rootSelection)
+    {
+        using var client = CreateClient(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(new byte[3]) });
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, 3, 3), client);
+        var ticket = CreateTicket();
+        var selected = await archive.ExportAsync(ticket, Snapshot(Attachment(88, 3)), default);
+        ticket = ticket with { ArchiveSnapshotPath = rootSelection ? null : selected, ArchiveComplete = true };
+        foreach (var name in new[] { "transcript.json", "transcript.html" })
+            File.Copy(Path.Combine(selected, name), Path.Combine(ticket.ArchivePath!, name));
+        File.Delete(Path.Combine(selected, "attachment-manifest.json"));
+        File.Delete(Path.Combine(selected, "attachment-manifest.sha256"));
+        var abandoned = await archive.ExportAsync(ticket, EmptySnapshot(), default);
+        await archive.PruneSnapshotsAsync(ticket, default);
+        Assert.That(Directory.Exists(abandoned), Is.False);
+        Assert.That(Directory.Exists(selected), Is.EqualTo(!rootSelection));
+        Assert.That(File.Exists(Path.Combine(ticket.ArchivePath!, "transcript.json")), Is.True);
+        Assert.That(File.Exists(Path.Combine(ticket.ArchivePath!, "transcript.html")), Is.True);
+        Assert.That(new FileInfo(Path.Combine(ticket.ArchivePath!, "attachments", "88.bin")).Length, Is.EqualTo(3));
+    }
+
+    [TestCase("json-content")]
+    [TestCase("html-content")]
+    [TestCase("manifest-content")]
+    [TestCase("missing-manifest")]
+    [TestCase("missing-seal")]
+    [TestCase("manifest-size")]
+    [TestCase("wrong-ticket")]
+    [TestCase("missing-list")]
+    [TestCase("unsafe-path")]
+    [TestCase("duplicate-reference")]
+    [TestCase("omitted-reference")]
+    [TestCase("reference-count")]
+    [TestCase("missing-cache")]
+    [TestCase("cache-size")]
+    public async Task InvalidSelectedManifestSuspendsAllSnapshotAndAttachmentPruning(string corruption)
+    {
+        using var client = CreateClient(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(new byte[3]) });
+        var config = CreateConfiguration(true, 3, 5);
+        config.Tickets.MaxTranscriptContentBytes = 1024;
+        var archive = new FileTranscriptArchive(config, client);
+        var ticket = CreateTicket();
+        var selected = await archive.ExportAsync(ticket, Snapshot(Attachment(88, 3)), default);
+        ticket = ticket with { ArchiveSnapshotPath = selected, ArchiveComplete = true };
+        var abandoned = await archive.ExportAsync(ticket, EmptySnapshot(), default);
+        var cache = Path.Combine(ticket.ArchivePath!, "attachments");
+        var orphan = Path.Combine(cache, "89.bin");
+        await File.WriteAllBytesAsync(orphan, new byte[2]);
+        var manifest = Path.Combine(selected, "attachment-manifest.json");
+        var text = await File.ReadAllTextAsync(manifest);
+        var node = JsonNode.Parse(text)!.AsObject();
+        string? edited = null;
+        switch (corruption)
+        {
+            case "json-content": await File.AppendAllTextAsync(Path.Combine(selected, "transcript.json"), " "); break;
+            case "html-content": await File.AppendAllTextAsync(Path.Combine(selected, "transcript.html"), "changed"); break;
+            case "manifest-content": edited = "{"; break;
+            case "missing-manifest": File.Delete(manifest); break;
+            case "missing-seal": File.Delete(Path.Combine(selected, "attachment-manifest.sha256")); break;
+            case "manifest-size": edited = new string(' ', 1024); break;
+            case "wrong-ticket": node["Id"] = Guid.NewGuid().ToString(); edited = node.ToJsonString(); break;
+            case "missing-list": node.Remove("AttachmentFiles"); edited = node.ToJsonString(); break;
+            case "unsafe-path":
+                node["AttachmentFiles"] = new JsonObject { ["../../outside.bin"] = 3 };
+                edited = node.ToJsonString();
+                break;
+            case "duplicate-reference": edited = text.Replace("\"attachments/88.bin\":3", "\"attachments/88.bin\":3,\"attachments/88.bin\":3"); break;
+            case "omitted-reference": node["AttachmentFiles"] = new JsonObject(); edited = node.ToJsonString(); break;
+            case "reference-count":
+                var files = node["AttachmentFiles"]!.AsObject();
+                files["attachments/89.bin"] = 2;
+                for (var id = 90; id <= 92; id++)
+                {
+                    files[$"attachments/{id}.bin"] = 0;
+                    await File.WriteAllBytesAsync(Path.Combine(cache, $"{id}.bin"), []);
+                }
+                edited = node.ToJsonString();
+                break;
+            case "missing-cache": File.Delete(Path.Combine(cache, "88.bin")); break;
+            case "cache-size": await File.WriteAllBytesAsync(Path.Combine(cache, "88.bin"), new byte[2]); break;
+        }
+        if (edited is not null)
+        {
+            await File.WriteAllTextAsync(manifest, edited);
+            if (corruption != "omitted-reference")
+                await File.WriteAllTextAsync(Path.Combine(selected, "attachment-manifest.sha256"), Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(edited))));
+        }
+        Assert.ThrowsAsync<InvalidDataException>(() => archive.PruneSnapshotsAsync(ticket, default));
+        Assert.That(Directory.Exists(selected), Is.True);
+        Assert.That(Directory.Exists(abandoned), Is.True);
+        Assert.That(await File.ReadAllBytesAsync(orphan), Is.EqualTo(new byte[2]));
+    }
+
+    [Test]
+    public async Task CancellationDuringManifestHashingReportsChunkProgressAndKeepsPreviousSelection()
+    {
+        using var client = CreateClient(_ => throw new AssertionException("No attachment download expected."));
+        var archive = CreateArchive(client);
+        var ticket = CreateTicket();
+        var previous = await archive.ExportAsync(ticket, EmptySnapshot(), default);
+        ticket = ticket with { ArchiveSnapshotPath = previous, ArchiveComplete = true };
+        var message = new TranscriptMessage(10, 55, "member", new string('&', 200000), DateTimeOffset.UnixEpoch, []);
+        using var cancellation = new CancellationTokenSource();
+        var hashProgress = 0;
+        Assert.CatchAsync<OperationCanceledException>(() => archive.ExportAsync(ticket, new([message], 10), cancellation.Token, () =>
+        {
+            if (Directory.GetFiles(ticket.ArchivePath!, "attachment-manifest.json.part", SearchOption.AllDirectories).Length == 0) return;
+            if (++hashProgress == 2) cancellation.Cancel();
+        }));
+        Assert.That(hashProgress, Is.EqualTo(2), "Checksum reads must report progress for each chunk.");
+        Assert.That(File.Exists(Path.Combine(previous, "transcript.json")), Is.True);
+        Assert.That(File.Exists(Path.Combine(previous, "transcript.html")), Is.True);
+        Assert.That(Directory.GetDirectories(Path.GetDirectoryName(previous)!), Is.EqualTo(new[] { previous }));
+        Assert.That(Directory.GetFiles(ticket.ArchivePath!, "*.part", SearchOption.AllDirectories), Is.Empty);
+    }
+
+    [Test]
+    public async Task CancellationDuringPruningHashReadsReportsProgressBeforeDeletingAnyGeneration()
+    {
+        using var client = CreateClient(_ => throw new AssertionException("No attachment download expected."));
+        var archive = CreateArchive(client);
+        var ticket = CreateTicket();
+        var message = new TranscriptMessage(10, 55, "member", new string('&', 200000), DateTimeOffset.UnixEpoch, []);
+        var selected = await archive.ExportAsync(ticket, new([message], 10), default);
+        ticket = ticket with { ArchiveSnapshotPath = selected, ArchiveComplete = true };
+        var abandoned = await archive.ExportAsync(ticket, EmptySnapshot(), default);
+        var treeEntries = Directory.GetFileSystemEntries(ticket.ArchivePath!, "*", SearchOption.AllDirectories).Length;
+        var progress = 0;
+        using var cancellation = new CancellationTokenSource();
+        Assert.CatchAsync<OperationCanceledException>(() => archive.PruneSnapshotsAsync(ticket, cancellation.Token, () =>
+        {
+            // Tree validation reports once per entry, then the small manifest hash once.
+            // Cancel after two chunks of the selected transcript hash.
+            if (++progress == treeEntries + 3) cancellation.Cancel();
+        }));
+        Assert.That(progress, Is.EqualTo(treeEntries + 3));
+        Assert.That(Directory.Exists(selected), Is.True);
+        Assert.That(Directory.Exists(abandoned), Is.True);
+    }
+
+    [Test]
+    public async Task LinuxPruningRejectsLinkedCacheWithoutDeletingEitherGenerationOrItsTarget()
+    {
+        if (!OperatingSystem.IsLinux()) { Assert.Ignore("Symbolic link verification requires Linux."); return; }
+        using var client = CreateClient(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(new byte[3]) });
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, 3, 3), client);
+        var ticket = CreateTicket();
+        var selected = await archive.ExportAsync(ticket, Snapshot(Attachment(88, 3)), default);
+        ticket = ticket with { ArchiveSnapshotPath = selected, ArchiveComplete = true };
+        var abandoned = await archive.ExportAsync(ticket, EmptySnapshot(), default);
+        var outside = Path.Combine(_root, "unmanaged.bin");
+        var cached = Path.Combine(ticket.ArchivePath!, "attachments", "88.bin");
+        await File.WriteAllBytesAsync(outside, new byte[3]);
+        File.Delete(cached);
+        File.CreateSymbolicLink(cached, outside);
+        try
+        {
+            Assert.ThrowsAsync<InvalidOperationException>(() => archive.PruneSnapshotsAsync(ticket, default));
+            Assert.That(Directory.Exists(selected), Is.True);
+            Assert.That(Directory.Exists(abandoned), Is.True);
+            Assert.That(await File.ReadAllBytesAsync(outside), Is.EqualTo(new byte[3]));
+        }
+        finally { File.Delete(cached); }
     }
 
     private static UnixFileMode ReadUnixMode(string path)

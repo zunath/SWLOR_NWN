@@ -164,7 +164,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 string path;
                 using (var progressTimeout = new MaintenanceProgressTimeout(clock, ct))
                 {
-                    await archive.PruneSnapshotsAsync(ticket, progressTimeout.Token);
+                    await archive.PruneSnapshotsAsync(ticket, progressTimeout.Token, progressTimeout.ReportProgress);
                     var snapshot = await discord.ReadTranscriptAsync(ticket, progressTimeout.Token, progressTimeout.ReportProgress);
                     progressTimeout.ReportProgress();
                     path = await archive.ExportAsync(ticket, snapshot, progressTimeout.Token, progressTimeout.ReportProgress);
@@ -352,7 +352,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 await session.SaveAsync(ticket, "archive-pending", null, ct);
             }
             // Pagination and attachment downloads can take minutes; do not hold the guild ticket lock.
-            await WithProgressAsync(archive.PruneSnapshotsAsync(ticket, ct), progress);
+            await WithProgressAsync(archive.PruneSnapshotsAsync(ticket, ct, progress), progress);
             var snapshot = await WithProgressAsync(discord.ReadTranscriptAsync(ticket, ct, progress), progress);
             var archivePath = await WithProgressAsync(archive.ExportAsync(ticket, snapshot, ct, progress), progress);
             Ticket published;
@@ -362,7 +362,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 published = current with { ArchiveSnapshotPath = archivePath, ArchiveComplete = true, LastError = null };
                 await saveSession.SaveAsync(published, "cleanup-exported", null, ct);
             }
-            await PrunePublishedSnapshotsAsync(published, ct);
+            await PrunePublishedSnapshotsAsync(published, ct, progress);
             // A stable head alone misses edits/deletions of older messages during pagination or downloads.
             var verified = await WithProgressAsync(discord.ReadTranscriptAsync(ticket, ct, progress), progress);
             if (!SameTranscript(snapshot, verified))
@@ -380,9 +380,10 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         finally { if (exporting) _exports.TryRemove(id, out _); }
     }
 
-    private async Task PrunePublishedSnapshotsAsync(Ticket ticket, CancellationToken ct)
+    private async Task PrunePublishedSnapshotsAsync(Ticket ticket, CancellationToken ct, Action? progress = null)
     {
-        try { await archive.PruneSnapshotsAsync(ticket, ct); }
+        progress ??= static () => { };
+        try { await archive.PruneSnapshotsAsync(ticket, ct, progress); }
         catch (Exception ex) when (!ct.IsCancellationRequested)
         {
             // The entire root remains owned for retention; retry pruning on the next export.

@@ -77,7 +77,7 @@ public sealed class DiscordAdapterTests
 
     [TestCase(true)]
     [TestCase(false)]
-    public void ClosedRequesterVisibility_IsExplicitAndAllOrdinaryWritersFreeze(bool requesterRead)
+    public void RequesterVisibility_IsExplicitAndMessageSendingCanBeDenied(bool requesterRead)
     {
         var overwrites = DiscordOperations.BuildOverwrites(1, 2, 3, new ulong[] { 4 }, [], requesterRead, false, false);
         var requester = Find(overwrites, 3, PermissionTarget.User);
@@ -90,6 +90,70 @@ public sealed class DiscordAdapterTests
         Assert.That(support.SendMessages, Is.EqualTo(PermValue.Deny));
         Assert.That(support.SendMessagesInThreads, Is.EqualTo(PermValue.Deny));
         Assert.That(support.AttachFiles, Is.EqualTo(PermValue.Deny));
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task DeletionFreeze_HidesRequesterRegardlessOfClosedVisibilityAndRemovesForeignGrants(bool closedRequesterCanRead)
+    {
+        var ticket = new Ticket(Guid.NewGuid(), "support", 3, 10, TicketState.Deleting, 1, DateTimeOffset.UnixEpoch);
+        var existing = DiscordOperations.BuildOverwrites(1, 2, 3, [4], [], closedRequesterCanRead, false, true)
+            .Append(new Overwrite(5, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Allow)))
+            .Append(new Overwrite(6, PermissionTarget.User, new OverwritePermissions(viewChannel: PermValue.Allow))).ToArray();
+        var expected = DiscordOperations.BuildFrozenOverwrites(ticket, 1, 2, [4], existing);
+        IReadOnlyCollection<Overwrite> actual = existing;
+        var verified = false;
+        await DiscordOperations.SynchronizeTicketOverwritesAsync(10, expected, actual,
+            value => { actual = value; return Task.CompletedTask; },
+            () => { verified = true; return Task.FromResult(actual); });
+
+        var frozen = actual.ToArray();
+        Assert.That(verified, Is.True);
+        Assert.That(Find(frozen, 3, PermissionTarget.User).ViewChannel, Is.EqualTo(PermValue.Deny));
+        Assert.That(Find(frozen, 3, PermissionTarget.User).ReadMessageHistory, Is.EqualTo(PermValue.Deny));
+        Assert.That(Find(frozen, 3, PermissionTarget.User).SendMessages, Is.EqualTo(PermValue.Deny));
+        Assert.That(Find(frozen, 5, PermissionTarget.Role).ViewChannel, Is.EqualTo(PermValue.Deny));
+        Assert.That(frozen.Any(item => item.TargetId == 6), Is.False);
+        Assert.That(Find(frozen, 4, PermissionTarget.Role).ViewChannel, Is.EqualTo(PermValue.Allow));
+        Assert.That(Find(frozen, 4, PermissionTarget.Role).ReadMessageHistory, Is.EqualTo(PermValue.Allow));
+        Assert.That(Find(frozen, 4, PermissionTarget.Role).SendMessages, Is.EqualTo(PermValue.Deny));
+        Assert.That(Find(frozen, 2, PermissionTarget.User).ViewChannel, Is.EqualTo(PermValue.Allow));
+    }
+
+    [Test]
+    public void DeletionFreeze_RequesterMemberDenialOverridesSupportRoleVisibilityGrant()
+    {
+        var ticket = new Ticket(Guid.NewGuid(), "support", 3, 10, TicketState.Deleting, 1, DateTimeOffset.UnixEpoch);
+        var frozen = DiscordOperations.BuildFrozenOverwrites(ticket, 1, 2, [4], []);
+        // Discord applies everyone, combined role overwrites, then the member overwrite last.
+        var permissions = new GuildPermissions(viewChannel: true, readMessageHistory: true, manageMessages: true).RawValue;
+        foreach (var overwrite in new[]
+        {
+            Find(frozen, 1, PermissionTarget.Role),
+            Find(frozen, 4, PermissionTarget.Role),
+            Find(frozen, 3, PermissionTarget.User)
+        }) permissions = (permissions & ~overwrite.DenyValue) | overwrite.AllowValue;
+        Assert.That(new ChannelPermissions(permissions).ViewChannel, Is.False,
+            "The requester must remain hidden even when also holding a support role that allows channel visibility.");
+    }
+
+    [Test]
+    public void DeletionFreeze_UnappliedRequesterVisibilityDenialFailsReadBack()
+    {
+        var ticket = new Ticket(Guid.NewGuid(), "support", 3, 10, TicketState.Deleting, 1, DateTimeOffset.UnixEpoch);
+        var stale = DiscordOperations.BuildOverwrites(1, 2, 3, [4], [], true, false, false);
+        var frozen = DiscordOperations.BuildFrozenOverwrites(ticket, 1, 2, [4], stale);
+        Assert.ThrowsAsync<DiscordValidationException>(() => DiscordOperations.SynchronizeTicketOverwritesAsync(10, frozen, stale,
+            _ => Task.CompletedTask, () => Task.FromResult<IReadOnlyCollection<Overwrite>>(stale)));
+    }
+
+    [TestCase(TicketState.Open)]
+    [TestCase(TicketState.Closed)]
+    [TestCase(TicketState.Deleted)]
+    public void DeletionFreeze_RequiresDeletingState(TicketState state)
+    {
+        var ticket = new Ticket(Guid.NewGuid(), "support", 3, 10, state, 1, DateTimeOffset.UnixEpoch);
+        Assert.Throws<InvalidOperationException>(() => DiscordOperations.BuildFrozenOverwrites(ticket, 1, 2, [4], []));
     }
 
     [Test]

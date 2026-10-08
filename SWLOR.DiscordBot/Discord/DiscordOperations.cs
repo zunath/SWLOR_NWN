@@ -268,13 +268,27 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
         var open = ticket.State == TicketState.Open;
         await VerifyPrivacyAsync(ticket, open || configuration.Tickets.ClosedRequesterCanRead, open, true, ct);
     }
+    internal static Overwrite[] BuildFrozenOverwrites(Ticket ticket, ulong guildId, ulong botId,
+        IReadOnlyCollection<ulong> supportRoles, IEnumerable<Overwrite> existing)
+    {
+        if (ticket.State != TicketState.Deleting)
+            throw new InvalidOperationException("Only deleting tickets can receive the archival freeze.");
+        // Authors can edit/delete their own messages without Send Messages or Manage Messages.
+        // Deny requester visibility at member level so even support/other role grants cannot bypass it.
+        // Support retains visibility for holds; staff authors and administrators remain trusted mutators.
+        return BuildOverwrites(guildId, botId, ticket.RequesterId, supportRoles, existing,
+            requesterRead: false, requesterWrite: false, supportWrite: false);
+    }
+
     public async Task FreezeAsync(Ticket ticket, CancellationToken ct)
     {
         var channel = await RequireManagedAsync(ticket, ct);
-        var overwrites = BuildOverwrites(configuration.GuildId, client.CurrentUser.Id, ticket.RequesterId, configuration.Tickets.SupportRoleIds,
-            channel.PermissionOverwrites, configuration.Tickets.ClosedRequesterCanRead, false, false);
-        await channel.ModifyAsync(x => x.PermissionOverwrites = overwrites, Options(ct));
-        await VerifyPrivacyAsync(ticket, configuration.Tickets.ClosedRequesterCanRead, false, false, ct);
+        var overwrites = BuildFrozenOverwrites(ticket, configuration.GuildId, client.CurrentUser.Id,
+            configuration.Tickets.SupportRoleIds, channel.PermissionOverwrites);
+        await SynchronizeTicketOverwritesAsync(channel.Id, overwrites, channel.PermissionOverwrites,
+            expected => channel.ModifyAsync(properties => properties.PermissionOverwrites = expected, Options(ct)),
+            async () => (await RequireManagedAsync(ticket, ct)).PermissionOverwrites);
+        await VerifyPrivacyAsync(ticket, false, false, false, ct);
     }
 
     public async Task RenameAsync(Ticket ticket, string name, CancellationToken ct) =>

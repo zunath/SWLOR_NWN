@@ -150,7 +150,7 @@ public sealed class PostgresTicketStore(string connectionString, ulong guildId) 
     public async Task PersistCommunityDeliveryAsync(string key, string intent, CancellationToken ct)
     {
         EnsureInitialized();
-        // A join event must commit before dispatch, independently of long-running community delivery locks.
+        // Accepted community events commit independently of long-running community delivery locks.
         await using var connection = await _source.OpenConnectionAsync(ct);
         await using var insert = new NpgsqlCommand(
             "INSERT INTO swlor_bot_delivery_operations(key,intent) VALUES (@key,@intent) ON CONFLICT DO NOTHING", connection)
@@ -376,6 +376,14 @@ public sealed class PostgresTicketStore(string connectionString, ulong guildId) 
             command.Parameters.AddWithValue("channel", channelId.ToString(System.Globalization.CultureInfo.InvariantCulture));
             var data = await command.ExecuteScalarAsync(ct);
             return data is string json ? JsonSerializer.Deserialize<Ticket>(json) : null;
+        }
+
+        public async Task UpdateCommunityDeliveryIntentAsync(string key, string intent, CancellationToken ct)
+        {
+            await using var command = new NpgsqlCommand("UPDATE swlor_bot_delivery_operations SET intent=@intent,updated_at=now() WHERE key=@key AND NOT completed", connection);
+            command.Parameters.AddWithValue("key", key);
+            command.Parameters.AddWithValue("intent", intent);
+            if (await command.ExecuteNonQueryAsync(ct) != 1) throw new InvalidOperationException("Pending community delivery record disappeared.");
         }
 
         public async Task CompleteDeliveryAsync(string key, CancellationToken ct)

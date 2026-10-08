@@ -399,18 +399,38 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
         return current + bytes;
     }
 
-    public Task DeleteAsync(string path, CancellationToken ct)
+    public Task DeleteAsync(string path, CancellationToken ct) =>
+        DeleteAsync(path, ct, static () => { });
+
+    public Task DeleteAsync(string path, CancellationToken ct, Action progress)
     {
         ct.ThrowIfCancellationRequested();
         var full = Path.GetFullPath(path);
         if (!Guid.TryParseExact(Path.GetFileName(full), "N", out var id) || !PathEquals(full, TicketDirectory(id)))
             throw new InvalidOperationException("Archive path does not identify a managed ticket directory.");
+        RejectLink(Root);
         if (!Directory.Exists(full)) return Task.CompletedTask;
-        ValidateTree(full, ct);
-        Directory.Delete(full, true);
+        // Complete the link preflight before removing anything, then delete with per-entry cancellation.
+        ValidateTree(full, ct, progress);
+        DeleteTree(full, ct, progress);
         return Task.CompletedTask;
     }
 
+    private static void DeleteTree(string directory, CancellationToken ct, Action progress)
+    {
+        ct.ThrowIfCancellationRequested();
+        RejectLink(directory);
+        foreach (var entry in Directory.EnumerateFileSystemEntries(directory))
+        {
+            ct.ThrowIfCancellationRequested();
+            RejectLink(entry);
+            if (Directory.Exists(entry)) DeleteTree(entry, ct, progress);
+            else { File.Delete(entry); progress(); }
+        }
+        ct.ThrowIfCancellationRequested();
+        Directory.Delete(directory);
+        progress();
+    }
     private string TicketDirectory(Guid id) => Path.Combine(Root, id.ToString("N"));
     private static bool PathEquals(string a, string b) => string.Equals(a, b, OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
     private static void RejectLink(string path)

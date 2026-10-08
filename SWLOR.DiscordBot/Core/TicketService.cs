@@ -11,6 +11,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
 {
     // One worker owns the guild; in-flight exports protect only their ticket's archive from cleanup.
     private readonly ConcurrentDictionary<Guid, byte> _exports = new();
+    private readonly ConcurrentDictionary<Guid, byte> _archiveDeletions = new();
     private Guid? _lastMaintenanceTicketId;
     private static readonly TimeSpan TicketMaintenanceInactivityTimeout = TimeSpan.FromMinutes(4);
     private TicketOptions Options => configuration.Tickets;
@@ -24,6 +25,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         var panel = Options.Panels.SingleOrDefault(p => p.Id == panelId);
         if (panel is null) return new(false, "This ticket panel is unavailable.");
         await using var session = await store.LockAsync(ct);
+        actor = await discord.ActorAsync(actor.UserId, ct);
         var previous = await session.FindInteractionAsync(interactionId, ct);
         if (previous is not null)
         {
@@ -137,6 +139,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 var found = await session.FindByChannelAsync(channelId, ct);
                 if (found is null) return new(false, "This channel is not a ticket managed by this bot.");
                 ticket = found;
+                if (_archiveDeletions.ContainsKey(ticket.Id)) return new(false, "Archive cleanup is in progress for this ticket; try again shortly.");
                 if (ticket.State is not (TicketState.Open or TicketState.Closed)) return new(false, "This ticket is busy; try again shortly.");
                 if (useSavedArchive && (!ticket.ArchiveComplete || ticket.ArchivePath is null))
                     return new(false, "This ticket has no complete saved transcript. Export a fresh transcript first.");
@@ -208,6 +211,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         await using var session = await store.LockAsync(ct);
         var ticket = await session.FindByChannelAsync(channelId, ct);
         if (ticket is null) return new(false, "This channel is not a ticket managed by this bot.");
+        if (_archiveDeletions.ContainsKey(ticket.Id)) return new(false, "Archive cleanup is in progress for this ticket; try again shortly.");
         // Lock contention can outlive a role change or guild departure. Authorize the current member.
         var currentActor = await discord.ActorAsync(actor.UserId, ct);
         return await mutation(session, ticket, currentActor);
@@ -246,7 +250,11 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             ct.ThrowIfCancellationRequested();
             _lastMaintenanceTicketId = id;
             using var progressTimeout = new MaintenanceProgressTimeout(clock, ct);
-            try { await MaintainTicketAsync(id, progressTimeout.Token, progressTimeout.ReportProgress); }
+            try
+            {
+                await MaintainTicketAsync(id, progressTimeout.Token, progressTimeout.ReportProgress);
+                await ExpireArchiveAsync(id, progressTimeout.Token, progressTimeout.ReportProgress);
+            }
             catch (Exception ex) when (!ct.IsCancellationRequested)
             {
                 await RecordMaintenanceFailureAsync(id, ex, ct);
@@ -262,15 +270,8 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         foreach (var id in ticketIds)
         {
             ct.ThrowIfCancellationRequested();
-            try
-            {
-                await using var session = await store.LockAsync(ct);
-                var ticket = await session.GetTicketAsync(id, ct);
-                if (ticket is null || _exports.ContainsKey(id) || !ArchiveHasExpired(ticket)) continue;
-                // FileTranscriptArchive validates ownership and links; no Discord access is required.
-                await archive.DeleteAsync(ticket.ArchivePath!, ct);
-                await session.SaveAsync(ticket with { ArchivePath = null, ArchiveSnapshotPath = null, ArchiveComplete = false }, "archive-expired", null, ct);
-            }
+            using var progressTimeout = new MaintenanceProgressTimeout(clock, ct);
+            try { await ExpireArchiveAsync(id, progressTimeout.Token, progressTimeout.ReportProgress); }
             catch (Exception ex) when (!ct.IsCancellationRequested)
             {
                 await RecordMaintenanceFailureAsync(id, ex, ct);
@@ -278,6 +279,32 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         }
     }
 
+    private async Task ExpireArchiveAsync(Guid id, CancellationToken ct, Action progress)
+    {
+        var claimed = false;
+        try
+        {
+            Ticket ticket;
+            await using (var session = await store.LockAsync(ct))
+            {
+                var found = await session.GetTicketAsync(id, ct);
+                if (found is null || _exports.ContainsKey(id) || !ArchiveHasExpired(found) ||
+                    !_archiveDeletions.TryAdd(id, 0)) return;
+                claimed = true;
+                ticket = found;
+            }
+            // Only this ticket's archive and retention controls are guarded during the long traversal.
+            // The durable path remains owned after cancellation, a failed delete or an interrupted save.
+            await archive.DeleteAsync(ticket.ArchivePath!, ct, progress);
+            ct.ThrowIfCancellationRequested();
+            await using var completed = await store.LockAsync(ct);
+            var current = await completed.GetTicketAsync(id, ct);
+            if (current is not null && current.ArchivePath == ticket.ArchivePath && ArchiveHasExpired(current))
+                await completed.SaveAsync(current with { ArchivePath = null, ArchiveSnapshotPath = null,
+                    ArchiveComplete = false, LastError = null }, "archive-expired", null, ct);
+        }
+        finally { if (claimed) _archiveDeletions.TryRemove(id, out _); }
+    }
     private bool ArchiveHasExpired(Ticket ticket) => !ticket.Hold && ticket.ArchivePath is not null &&
         ticket.State is (TicketState.Closed or TicketState.Closing or TicketState.Deleting or TicketState.Deleted) &&
         ticket.ArchiveExpiresAt <= clock.GetUtcNow();
@@ -304,6 +331,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 var found = await session.GetTicketAsync(id, ct);
                 if (found is null) return;
                 ticket = found;
+                if (_archiveDeletions.ContainsKey(id)) return;
                 if (ticket.State != TicketState.Deleted && ticket.ChannelId.HasValue && !await WithProgressAsync(discord.ExistsAsync(ticket, ct), progress))
                 {
                     var now = clock.GetUtcNow();
@@ -332,15 +360,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                     await session.SaveAsync(ticket, "reopen-reconciled", null, ct);
                 }
                 if (ticket.Hold) return;
-                if (ticket.State == TicketState.Deleted)
-                {
-                    if (ticket.ArchivePath is not null && ticket.ArchiveExpiresAt <= clock.GetUtcNow())
-                    {
-                        await WithProgressAsync(archive.DeleteAsync(ticket.ArchivePath, ct), progress);
-                        await session.SaveAsync(ticket with { ArchivePath = null, ArchiveSnapshotPath = null, ArchiveComplete = false }, "archive-expired", null, ct);
-                    }
-                    return;
-                }
+                if (ticket.State == TicketState.Deleted) return;
                 if (ticket.State == TicketState.Closed && ticket.DeleteAfter <= clock.GetUtcNow())
                 {
                     ticket = ticket with { State = TicketState.Deleting };

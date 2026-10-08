@@ -12,6 +12,9 @@ public interface ITicketSession : IAsyncDisposable
     Task<DeliveryState> GetOrCreateDeliveryAsync(string key, string intent, CancellationToken ct);
     Task<IReadOnlyList<PendingDelivery>> GetPendingDeliveriesAsync(CancellationToken ct) =>
         Task.FromResult<IReadOnlyList<PendingDelivery>>([]);
+    // Called under the community lock to commit fresh authorization or a role plan before Discord mutations.
+    Task UpdateCommunityDeliveryIntentAsync(string key, string intent, CancellationToken ct) =>
+        throw new NotSupportedException("Community intent preparation is unavailable.");
     Task CompleteDeliveryAsync(string key, CancellationToken ct);
     Task<DateTimeOffset?> GetCooldownAsync(string key, CancellationToken ct);
     Task SetCooldownAsync(string key, DateTimeOffset at, CancellationToken ct);

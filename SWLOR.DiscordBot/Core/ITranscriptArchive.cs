@@ -11,4 +11,5 @@ public interface ITranscriptArchive
     Task PruneSnapshotsAsync(Ticket ticket, CancellationToken ct) => Task.CompletedTask;
     Task PruneSnapshotsAsync(Ticket ticket, CancellationToken ct, Action progress) => PruneSnapshotsAsync(ticket, ct);
     Task DeleteAsync(string path, CancellationToken ct);
+    Task DeleteAsync(string path, CancellationToken ct, Action progress) => DeleteAsync(path, ct);
 }

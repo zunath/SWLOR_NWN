@@ -246,6 +246,48 @@ public sealed class PostgresStoreTests
         Assert.That(await resumed.GetPendingDeliveriesAsync(default), Is.EqualTo(new[] { new PendingDelivery(key, intent) }));
     }
 
+    [TestCase("answer:100:300")]
+    [TestCase("faction:100:300")]
+    public async Task AcceptedPrefixEventPersistsIndependentlyOfHeldDeliveryLockAndSurvivesRestart(string key)
+    {
+        const string accepted = "accepted prefix event";
+        await using (var store = new PostgresTicketStore(ConnectionString, TestGuildId))
+        {
+            await store.InitializeAsync(default);
+            await using var held = await store.LockCommunityAsync(default);
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            await store.PersistCommunityDeliveryAsync(key, accepted, timeout.Token).WaitAsync(timeout.Token);
+            Assert.That(await held.GetOrCreateDeliveryAsync(key, "replacement", default), Is.EqualTo(new DeliveryState(accepted, false)));
+        }
+        await using var restarted = new PostgresTicketStore(ConnectionString, TestGuildId);
+        await restarted.InitializeAsync(default);
+        await using var session = await restarted.LockCommunityAsync(default);
+        Assert.That(await session.GetPendingDeliveriesAsync(default), Is.EqualTo(new[] { new PendingDelivery(key, accepted) }));
+    }
+
+    [Test]
+    public async Task PreparedFactionIntentSurvivesRestartAndDuplicateAcceptanceAndCompletedIntentCannotChange()
+    {
+        const string key = "faction:100:300";
+        const string accepted = "accepted faction without role plan";
+        const string prepared = "fresh authorized immutable role plan";
+        await using (var store = new PostgresTicketStore(ConnectionString, TestGuildId))
+        {
+            await store.InitializeAsync(default);
+            await store.PersistCommunityDeliveryAsync(key, accepted, default);
+            await using var session = await store.LockCommunityAsync(default);
+            await session.UpdateCommunityDeliveryIntentAsync(key, prepared, default);
+        }
+        await using var restarted = new PostgresTicketStore(ConnectionString, TestGuildId);
+        await restarted.InitializeAsync(default);
+        await restarted.PersistCommunityDeliveryAsync(key, accepted, default);
+        await using var resumed = await restarted.LockCommunityAsync(default);
+        Assert.That(await resumed.GetOrCreateDeliveryAsync(key, accepted, default), Is.EqualTo(new DeliveryState(prepared, false)));
+        await resumed.CompleteDeliveryAsync(key, default);
+        Assert.ThrowsAsync<InvalidOperationException>(() => resumed.UpdateCommunityDeliveryIntentAsync(key, "replacement", default));
+        Assert.That(await resumed.GetOrCreateDeliveryAsync(key, accepted, default), Is.EqualTo(new DeliveryState(prepared, true)));
+    }
+
     [Test]
     public async Task DuplicateJoinPersistencePreservesCompletedIntentAndItsOriginalRetentionTimestamp()
     {

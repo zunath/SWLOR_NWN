@@ -12,6 +12,247 @@ namespace SWLOR.DiscordBot.Tests;
 [TestFixture]
 public sealed class CommunityTests
 {
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task PrefixEventsSurviveThreeBoundedLockTimeoutsBehindProgressingRecovery(bool faction)
+    {
+        var (config, discord, store, service, clock) = LongFactionRecovery();
+        config.Factions.Behavior = "toggle";
+        config.Answers = [new QuickAnswerOptions { Name = "guide", Responses = ["Retained {args}"], AllowedRoleIds = [9], Cooldown = TimeSpan.FromMinutes(1) }];
+        discord.Member = discord.Member! with { RoleIds = discord.Member!.RoleIds.Append(9UL).ToArray() };
+        discord.BeforeRoleMutation = ct => { clock.Advance(TimeSpan.FromMinutes(3)); ct.ThrowIfCancellationRequested(); };
+        discord.SendStarted = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        discord.ReleaseSend = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        store.LockClock = clock;
+        var recovery = service.RecoverPendingDeliveriesAsync(default);
+        await discord.SendStarted.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        var command = faction ? "?rank Faction21" : "?guide original";
+        var key = faction ? "faction:100:301" : "answer:100:301";
+        try
+        {
+            for (var retry = 0; retry < 3; retry++)
+            {
+                var execution = service.ExecuteAsync(7, 100, 301, command, default);
+                Assert.That(store.HasDelivery(key), Is.True, "Accepted messages must commit before the bounded lock wait.");
+                Assert.That(execution.IsCompleted, Is.False);
+                clock.Advance(TimeSpan.FromSeconds(60));
+                Assert.ThrowsAsync<TimeoutException>(() => execution.WaitAsync(TimeSpan.FromSeconds(2)));
+                Assert.That(store.IsCompleted(key), Is.False);
+            }
+            Assert.That(recovery.IsCompleted, Is.False, "The progressing recovered plan can outlive all Gateway lock retries.");
+        }
+        finally { discord.ReleaseSend.TrySetResult(true); }
+        Assert.That(await recovery.WaitAsync(TimeSpan.FromSeconds(2)), Is.EqualTo(1));
+        discord.BeforeRoleMutation = null;
+        config.Answers[0].Responses = ["Changed configuration"];
+
+        var restarted = new CommunityService(config, store, discord, new FakeDeletionStore(), clock);
+        Assert.That(await restarted.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(store.IsCompleted(key), Is.True);
+        if (faction)
+        {
+            Assert.That(discord.Member!.RoleIds, Does.Not.Contain(21UL), "Prepare a toggle from the roles after the old plan completed.");
+            Assert.That(discord.Sent.Last().Message.Content, Is.EqualTo("Removed the Faction21 role."));
+        }
+        else
+        {
+            Assert.That(discord.Sent.Last().Message.Content, Is.EqualTo("Retained original"));
+            Assert.That(store.CooldownAt("answer-cooldown:guide:7"), Is.EqualTo(clock.GetUtcNow()));
+        }
+        Assert.That(await restarted.RecoverPendingDeliveriesAsync(default), Is.Zero);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task RetainedAnswerChecksFreshAuthorizationAndCooldownAfterLockTimeout(bool cooldown)
+    {
+        var config = new BotConfiguration { GuildId = 1, Answers = [new QuickAnswerOptions
+            { Name = "guide", Responses = ["Guide"], AllowedRoleIds = [9], Cooldown = TimeSpan.FromMinutes(1) }] };
+        var clock = new ManualTimeProvider(DateTimeOffset.UnixEpoch);
+        var store = new FakeTicketStore { LockClock = clock };
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", [9]) };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore(), clock);
+        await using (await store.LockCommunityAsync(default))
+        {
+            var execution = service.ExecuteAsync(7, 100, 300, "?guide", default);
+            clock.Advance(TimeSpan.FromSeconds(60));
+            Assert.ThrowsAsync<TimeoutException>(() => execution.WaitAsync(TimeSpan.FromSeconds(2)));
+            Assert.That(store.HasDelivery("answer:100:300"), Is.True);
+        }
+        if (cooldown) store.SeedCooldown("answer-cooldown:guide:7", clock.GetUtcNow());
+        else discord.Member = discord.Member! with { RoleIds = [] };
+        Assert.That(await new CommunityService(config, store, discord, new FakeDeletionStore(), clock).RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(store.IsCompleted("answer:100:300"), Is.True);
+        Assert.That(store.CooldownAt("answer-cooldown:guide:7"), Is.EqualTo(cooldown ? clock.GetUtcNow() : (DateTimeOffset?)null));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task FreshCooldownSuppressionDoesNotDeleteSourceDuringLiveExecutionOrRecovery(bool recovery)
+    {
+        var config = new BotConfiguration { GuildId = 1, Answers = [new QuickAnswerOptions
+            { Name = "guide", Responses = ["Guide"], Cooldown = TimeSpan.FromMinutes(1), DeleteCommand = true }] };
+        var clock = new ManualTimeProvider(DateTimeOffset.UnixEpoch);
+        var store = new FakeTicketStore { LockClock = clock };
+        var deletions = new FakeDeletionStore();
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", []) };
+        var service = new CommunityService(config, store, discord, deletions, clock);
+        if (recovery)
+        {
+            await using (await store.LockCommunityAsync(default))
+            {
+                var execution = service.ExecuteAsync(7, 100, 300, "?guide", default);
+                clock.Advance(TimeSpan.FromSeconds(60));
+                Assert.ThrowsAsync<TimeoutException>(() => execution.WaitAsync(TimeSpan.FromSeconds(2)));
+            }
+        }
+        store.SeedCooldown("answer-cooldown:guide:7", clock.GetUtcNow());
+        if (recovery)
+            Assert.That(await new CommunityService(config, store, discord, deletions, clock).RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        else await service.ExecuteAsync(7, 100, 300, "?guide", default);
+        Assert.That(store.IsCompleted("answer:100:300"), Is.True);
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(deletions.Pending, Is.Empty);
+        Assert.That(discord.Deleted, Is.Empty);
+        Assert.That(store.CooldownAt("answer-cooldown:guide:7"), Is.EqualTo(clock.GetUtcNow()));
+        clock.Advance(TimeSpan.FromMinutes(2));
+        await new CommunityService(config, store, discord, deletions, clock).ExecuteAsync(7, 100, 300, "?guide", default);
+        Assert.That(discord.Sent, Is.Empty, "Replay of a completed suppressed event must stay suppressed after cooldown expiry.");
+        Assert.That(deletions.Pending, Is.Empty);
+        Assert.That(discord.Deleted, Is.Empty);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CooldownSuppressionPreservesCleanupForPreviouslyAttemptedAnswer(bool recovery)
+    {
+        var config = new BotConfiguration { GuildId = 1, Answers = [new QuickAnswerOptions
+            { Name = "guide", Responses = ["Guide"], Cooldown = TimeSpan.FromMinutes(1), DeleteCommand = true }] };
+        var clock = new ManualTimeProvider(DateTimeOffset.UnixEpoch);
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore();
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", []), SendFailuresRemaining = 1 };
+        var service = new CommunityService(config, store, discord, deletions, clock);
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 300, "?guide", default));
+        Assert.That(deletions.Pending, Is.Empty);
+        store.SeedCooldown("answer-cooldown:guide:7", clock.GetUtcNow());
+        if (recovery)
+            Assert.That(await new CommunityService(config, store, discord, deletions, clock).RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        else await service.ExecuteAsync(7, 100, 300, "?guide", default);
+        Assert.That(store.IsCompleted("answer:100:300"), Is.True);
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(deletions.Pending.Keys, Does.Contain((100UL, 300UL)));
+        Assert.That(store.CooldownAt("answer-cooldown:guide:7"), Is.EqualTo(clock.GetUtcNow()));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task SupersededUnplannedFactionDoesNotUndoNewerChoice(bool retryLive)
+    {
+        var (config, discord, command, key) = DeletionCase(true);
+        config.Factions.Exclusive = true;
+        config.Factions.Roles = [new FactionRole { Name = "A", RoleId = 21 }, new FactionRole { Name = "B", RoleId = 22 }];
+        discord.Roles.Add(new CommunityRole(22, 1));
+        var clock = new ManualTimeProvider(DateTimeOffset.UnixEpoch);
+        var store = new FakeTicketStore { LockClock = clock };
+        var deletions = new FakeDeletionStore();
+        var service = new CommunityService(config, store, discord, deletions, clock);
+        await using (await store.LockCommunityAsync(default))
+        {
+            var execution = service.ExecuteAsync(7, 100, 300, "?rank A", default);
+            clock.Advance(TimeSpan.FromSeconds(60));
+            Assert.ThrowsAsync<TimeoutException>(() => execution.WaitAsync(TimeSpan.FromSeconds(2)));
+        }
+        await service.ExecuteAsync(7, 100, 301, "?rank B", default);
+        if (retryLive) await service.ExecuteAsync(7, 100, 300, "?rank A", default);
+        else Assert.That(await new CommunityService(config, store, discord, deletions, clock).RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.Member!.RoleIds, Is.EqualTo(new[] { 22UL }));
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+        Assert.That(store.IsCompleted(key), Is.True);
+        await service.ExecuteAsync(7, 100, 300, "?rank A", default);
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+    }
+
+    [Test]
+    public async Task FactionPreparationFailurePreservesAcceptedEventWithoutMutationsAndRestartUsesFreshRoles()
+    {
+        var (config, discord, command, key) = DeletionCase(true);
+        var store = new FakeTicketStore { BeforePrepare = _ => throw new InvalidOperationException("Plan commit failed.") };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 300, command, default));
+        Assert.That(store.HasDelivery(key), Is.True);
+        Assert.That(store.IsCompleted(key), Is.False);
+        Assert.That(discord.RoleMutations, Is.Empty);
+        discord.Member = discord.Member! with { RoleIds = [21] };
+        store.BeforePrepare = null;
+        Assert.That(await new CommunityService(config, store, discord, new FakeDeletionStore()).RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.RoleMutations, Is.EqualTo(new[] { "remove:7:21" }));
+        Assert.That(discord.Sent.Single().Message.Content, Is.EqualTo("Removed the Republic Navy role."));
+        await service.ExecuteAsync(7, 100, 300, command, default);
+        Assert.That(discord.RoleMutations, Has.Count.EqualTo(1));
+    }
+
+    [TestCase(false, false, false)]
+    [TestCase(false, true, false)]
+    [TestCase(true, false, false)]
+    [TestCase(true, true, false)]
+    [TestCase(false, false, true)]
+    [TestCase(true, false, true)]
+    public async Task RetainedOldJoinFinishesWithoutDuplicateWelcomeAfterRejoin(bool directMessage, bool newestFirst, bool legacy)
+    {
+        var config = DirectWelcomeConfiguration();
+        config.Welcome.DirectMessage = directMessage;
+        config.Welcome.ChannelId = 100;
+        var oldJoin = DateTimeOffset.UnixEpoch;
+        var newJoin = oldJoin.AddDays(1);
+        var oldKey = $"welcome:7:{oldJoin.UtcTicks}";
+        var newKey = $"welcome:7:{newJoin.UtcTicks}";
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", [], JoinedAt: newJoin) };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        if (newestFirst) await service.PersistWelcomeAsync(7, newJoin, default);
+        if (legacy)
+            store.SeedDelivery(oldKey, System.Text.Json.JsonSerializer.Serialize(new
+            {
+                Version = 1, Kind = "welcome", UserId = 7UL, ChannelId = directMessage ? (ulong?)null : 100UL,
+                DirectMessage = directMessage, Message = new CommunityMessage("Old welcome", [], DeliveryKey: oldKey)
+            }));
+        else await service.PersistWelcomeAsync(7, oldJoin, default);
+        if (!newestFirst) await service.PersistWelcomeAsync(7, newJoin, default);
+
+        Assert.That(await new CommunityService(config, store, discord, new FakeDeletionStore()).RecoverPendingDeliveriesAsync(default), Is.EqualTo(2));
+        Assert.That(store.IsCompleted(oldKey), Is.True);
+        Assert.That(store.IsCompleted(newKey), Is.True);
+        await service.WelcomeAsync(7, oldJoin, default);
+        await service.WelcomeAsync(7, newJoin, default);
+        Assert.That(discord.Sent.Count + discord.DirectMessages.Count, Is.EqualTo(1));
+        Assert.That(discord.DirectMessageAttempts, Is.EqualTo(directMessage ? 1 : 0));
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.Zero);
+    }
+
+    [Test]
+    public async Task LiveOldJoinIsSupersededAndUnavailableJoinTimestampRemainsPending()
+    {
+        var config = DirectWelcomeConfiguration();
+        var store = new FakeTicketStore();
+        var oldJoin = DateTimeOffset.UnixEpoch;
+        var currentJoin = oldJoin.AddDays(1);
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", [], JoinedAt: currentJoin) };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        await service.WelcomeAsync(7, oldJoin, default);
+        Assert.That(store.IsCompleted($"welcome:7:{oldJoin.UtcTicks}"), Is.True);
+        Assert.That(discord.DirectMessageAttempts, Is.Zero);
+        discord.Member = discord.Member! with { JoinedAt = null };
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.WelcomeAsync(7, currentJoin, default));
+        Assert.That(await new CommunityService(config, store, discord, new FakeDeletionStore()).RecoverPendingDeliveriesAsync(default), Is.Zero);
+        Assert.That(store.IsCompleted($"welcome:7:{currentJoin.UtcTicks}"), Is.False);
+        Assert.That(discord.DirectMessageAttempts, Is.Zero);
+        discord.Member = discord.Member! with { JoinedAt = currentJoin };
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.DirectMessageAttempts, Is.EqualTo(1));
+    }
+
     [Test]
     public async Task WelcomeAsync_RecordsDeliveryAndSuppressesDuplicateJoinEvents()
     {
@@ -21,9 +262,10 @@ public sealed class CommunityTests
             Welcome = new WelcomeOptions { Enabled = true, ChannelId = 100, Template = "Welcome {user} to {server}! Visit {#rules}.", ChannelMentions = new() { ["rules"] = 200 } }
         };
         var store = new FakeTicketStore();
-        var discord = new FakeCommunityDiscord { ServerName = "SWLOR", Member = new CommunityMember(7, "A Player", []) };
+        var discord = new FakeCommunityDiscord { ServerName = "SWLOR", Member = new CommunityMember(7, "A Player", [], JoinedAt: DateTimeOffset.UnixEpoch) };
         var service = new CommunityService(config, store, discord, new FakeDeletionStore());
         var joinedAt = DateTimeOffset.Parse("2026-10-03T12:00:00Z");
+        discord.Member = discord.Member! with { JoinedAt = joinedAt };
 
         await service.WelcomeAsync(7, joinedAt, CancellationToken.None);
         await service.WelcomeAsync(7, joinedAt, CancellationToken.None);
@@ -36,9 +278,10 @@ public sealed class CommunityTests
     public async Task WelcomeAsync_RetriesFailedSendUsingThePersistedDeliveryIntent()
     {
         var config = new BotConfiguration { GuildId = 1, Welcome = new WelcomeOptions { Enabled = true, ChannelId = 100, Template = "Welcome {user}" } };
-        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "A Player", []), SendFailuresRemaining = 1 };
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "A Player", [], JoinedAt: DateTimeOffset.UnixEpoch), SendFailuresRemaining = 1 };
         var service = new CommunityService(config, new FakeTicketStore(), discord, new FakeDeletionStore());
         var joinedAt = DateTimeOffset.Parse("2026-10-03T12:00:00Z");
+        discord.Member = discord.Member! with { JoinedAt = joinedAt };
 
         Assert.ThrowsAsync<InvalidOperationException>(async () => await service.WelcomeAsync(7, joinedAt, CancellationToken.None));
         await service.WelcomeAsync(7, joinedAt, CancellationToken.None);
@@ -55,7 +298,7 @@ public sealed class CommunityTests
         using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
         var config = DirectWelcomeConfiguration();
         var store = new FakeTicketStore();
-        var discord = new FakeCommunityDiscord { Member = new(7, "Player", []), DirectMessagePost = (message, ct) => poster.SendAsync(10, message, ct) };
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", [], JoinedAt: DateTimeOffset.UnixEpoch), DirectMessagePost = (message, ct) => poster.SendAsync(10, message, ct) };
         var service = new CommunityService(config, store, discord, new FakeDeletionStore());
         var joined = DateTimeOffset.UnixEpoch;
         if (recovery)
@@ -86,7 +329,7 @@ public sealed class CommunityTests
         using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
         var config = DirectWelcomeConfiguration();
         var store = new FakeTicketStore();
-        var discord = new FakeCommunityDiscord { Member = new(7, "Player", []), DirectMessagePost = (message, ct) => poster.SendAsync(10, message, ct) };
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", [], JoinedAt: DateTimeOffset.UnixEpoch), DirectMessagePost = (message, ct) => poster.SendAsync(10, message, ct) };
         var service = new CommunityService(config, store, discord, new FakeDeletionStore());
         var joined = DateTimeOffset.UnixEpoch;
         Assert.CatchAsync<Exception>(() => service.WelcomeAsync(7, joined, default));
@@ -111,7 +354,7 @@ public sealed class CommunityTests
         var store = new FakeTicketStore();
         var discord = new FakeCommunityDiscord
         {
-            Member = new(7, "Player", []),
+            Member = new(7, "Player", [], JoinedAt: DateTimeOffset.UnixEpoch),
             DirectMessageError = WelcomeHttpError(HttpStatusCode.Forbidden, 50007)
         };
         var service = new CommunityService(config, store, discord, new FakeDeletionStore());
@@ -132,6 +375,7 @@ public sealed class CommunityTests
         Assert.That(discord.Sent, Is.Empty, "Do not publish a refused private welcome in a public channel.");
 
         var rejoined = joined.AddMinutes(1);
+        discord.Member = discord.Member! with { JoinedAt = rejoined };
         await service.WelcomeAsync(7, rejoined, default);
         Assert.That(discord.DirectMessageAttempts, Is.EqualTo(2), "A later join has its own intent; this is not a permanent user blocklist.");
         Assert.That(store.IsCompleted($"welcome:7:{rejoined.UtcTicks}"), Is.True);
@@ -147,7 +391,7 @@ public sealed class CommunityTests
     {
         var config = DirectWelcomeConfiguration();
         var store = new FakeTicketStore();
-        var discord = new FakeCommunityDiscord { Member = new(7, "Player", []), DirectMessageError = WelcomeHttpError(status, code) };
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", [], JoinedAt: DateTimeOffset.UnixEpoch), DirectMessageError = WelcomeHttpError(status, code) };
         var service = new CommunityService(config, store, discord, new FakeDeletionStore());
         var joined = DateTimeOffset.UnixEpoch;
         var key = $"welcome:7:{joined.UtcTicks}";
@@ -171,7 +415,7 @@ public sealed class CommunityTests
         var config = DirectWelcomeConfiguration();
         config.Answers = [new QuickAnswerOptions { Name = "guide", Responses = ["answer"] }];
         var store = new FakeTicketStore();
-        var discord = new FakeCommunityDiscord { Member = new(7, "Player", []), DirectMessageError = WelcomeHttpError(HttpStatusCode.Forbidden, 50007), SendFailuresRemaining = 1 };
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", [], JoinedAt: DateTimeOffset.UnixEpoch), DirectMessageError = WelcomeHttpError(HttpStatusCode.Forbidden, 50007), SendFailuresRemaining = 1 };
         var service = new CommunityService(config, store, discord, new FakeDeletionStore());
         await service.PersistWelcomeAsync(7, DateTimeOffset.UnixEpoch, default);
         Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 301, "?guide", default));
@@ -193,7 +437,7 @@ public sealed class CommunityTests
         config.Welcome.DirectMessage = false;
         config.Welcome.ChannelId = 100;
         var store = new FakeTicketStore();
-        var discord = new FakeCommunityDiscord { Member = new(7, "Player", []), ChannelSendError = WelcomeHttpError(HttpStatusCode.Forbidden, 50007) };
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", [], JoinedAt: DateTimeOffset.UnixEpoch), ChannelSendError = WelcomeHttpError(HttpStatusCode.Forbidden, 50007) };
         var service = new CommunityService(config, store, discord, new FakeDeletionStore());
         var joined = DateTimeOffset.UnixEpoch;
         Assert.ThrowsAsync<HttpException>(() => service.WelcomeAsync(7, joined, default));
@@ -210,7 +454,7 @@ public sealed class CommunityTests
     {
         var config = DirectWelcomeConfiguration();
         var store = new FakeTicketStore();
-        var discord = new FakeCommunityDiscord { Member = new(7, "Player", []), ReturnNullDirectMessage = true };
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", [], JoinedAt: DateTimeOffset.UnixEpoch), ReturnNullDirectMessage = true };
         var service = new CommunityService(config, store, discord, new FakeDeletionStore());
         var joined = DateTimeOffset.UnixEpoch;
         Assert.ThrowsAsync<InvalidOperationException>(() => service.WelcomeAsync(7, joined, default));
@@ -226,7 +470,7 @@ public sealed class CommunityTests
     {
         var config = DirectWelcomeConfiguration();
         var store = new FakeTicketStore { BeforeComplete = _ => throw new InvalidOperationException("Completion failed.") };
-        var discord = new FakeCommunityDiscord { Member = new(7, "Player", []), DirectMessageError = WelcomeHttpError(HttpStatusCode.Forbidden, 50007) };
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", [], JoinedAt: DateTimeOffset.UnixEpoch), DirectMessageError = WelcomeHttpError(HttpStatusCode.Forbidden, 50007) };
         var service = new CommunityService(config, store, discord, new FakeDeletionStore());
         var joined = DateTimeOffset.UnixEpoch;
         Assert.ThrowsAsync<InvalidOperationException>(() => service.WelcomeAsync(7, joined, default));
@@ -246,7 +490,7 @@ public sealed class CommunityTests
         using var cancellation = new CancellationTokenSource();
         var discord = new FakeCommunityDiscord
         {
-            Member = new(7, "Player", []),
+            Member = new(7, "Player", [], JoinedAt: DateTimeOffset.UnixEpoch),
             DirectMessageError = WelcomeHttpError(HttpStatusCode.Forbidden, 50007),
             BeforeDirectMessageSend = _ => cancellation.Cancel()
         };
@@ -273,9 +517,10 @@ public sealed class CommunityTests
     {
         var config = new BotConfiguration { GuildId = 1, Welcome = new WelcomeOptions { Enabled = true, ChannelId = 100, Template = "Welcome {user}" } };
         var store = new FakeTicketStore();
-        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "A Player", []), SendFailuresRemaining = 1 };
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "A Player", [], JoinedAt: DateTimeOffset.UnixEpoch), SendFailuresRemaining = 1 };
         var service = new CommunityService(config, store, discord, new FakeDeletionStore());
         var joinedAt = DateTimeOffset.Parse("2026-10-03T12:00:00Z");
+        discord.Member = discord.Member! with { JoinedAt = joinedAt };
 
         Assert.ThrowsAsync<InvalidOperationException>(async () => await service.WelcomeAsync(7, joinedAt, CancellationToken.None));
         config.Welcome.ChannelId = 200;
@@ -676,7 +921,7 @@ public sealed class CommunityTests
             Assert.That(discord.Sent, Is.Empty);
             Assert.That(discord.Deleted, Is.Empty);
             Assert.That(deletions.Pending, Is.Empty);
-            Assert.That(store.HasDelivery("answer:100:300"), Is.EqualTo(retry));
+            Assert.That(store.HasDelivery("answer:100:300"), Is.True, "Acceptance is durable before waiting for authorization to be refreshed.");
             Assert.That(store.IsCompleted("answer:100:300"), Is.False);
             Assert.That(store.HasCooldown("answer-cooldown:guide:7"), Is.False);
         });
@@ -1149,7 +1394,7 @@ public sealed class CommunityTests
     public async Task WelcomeJoinPersistsBeforeReadinessOrFullQueueAndRecoversOriginalDestination(bool ready, bool queueAccepts)
     {
         var config = new BotConfiguration { GuildId = 1, Welcome = new WelcomeOptions { Enabled = true, ChannelId = 100, Template = "Welcome {user}" } };
-        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", []) };
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", [], JoinedAt: DateTimeOffset.UnixEpoch) };
         var store = new FakeTicketStore();
         var service = new CommunityService(config, store, discord, new FakeDeletionStore());
         var joined = DateTimeOffset.UnixEpoch;
@@ -1182,7 +1427,7 @@ public sealed class CommunityTests
     public async Task WelcomeQueuedBeforeDisconnectRemainsPendingUntilValidatedRecovery()
     {
         var config = new BotConfiguration { GuildId = 1, Welcome = new WelcomeOptions { Enabled = true, ChannelId = 100, Template = "Welcome {user}" } };
-        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", []) };
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", [], JoinedAt: DateTimeOffset.UnixEpoch) };
         var store = new FakeTicketStore();
         var service = new CommunityService(config, store, discord, new FakeDeletionStore());
         var ready = true;
@@ -1201,7 +1446,7 @@ public sealed class CommunityTests
     public async Task WelcomePersistenceFailurePropagatesBeforeQueueOrRestAndCanBeRetried()
     {
         var config = new BotConfiguration { GuildId = 1, Welcome = new WelcomeOptions { Enabled = true, ChannelId = 100, Template = "Welcome {user}" } };
-        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", []) };
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", [], JoinedAt: DateTimeOffset.UnixEpoch) };
         var store = new FakeTicketStore { PersistenceFailuresRemaining = 1 };
         var service = new CommunityService(config, store, discord, new FakeDeletionStore());
         var queued = 0;
@@ -1387,6 +1632,8 @@ public sealed class CommunityTests
         private readonly SemaphoreSlim _ticketLock = new(1, 1);
         private readonly SemaphoreSlim _communityLock = new(1, 1);
         public int PersistenceFailuresRemaining { get; set; }
+        public TimeProvider? LockClock { get; set; }
+        public Action<string>? BeforePrepare { get; set; }
         public Action<string>? BeforeComplete { get; set; }
         public Action<string>? AfterComplete { get; set; }
         public bool HasDelivery(string key) => _states.ContainsKey(key);
@@ -1412,7 +1659,17 @@ public sealed class CommunityTests
         }
         public async Task<ITicketSession> LockCommunityAsync(CancellationToken ct)
         {
-            await _communityLock.WaitAsync(ct);
+            if (LockClock is { } clock)
+            {
+                using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                using var timer = clock.CreateTimer(_ => timeout.Cancel(), null, TimeSpan.FromSeconds(60), Timeout.InfiniteTimeSpan);
+                try { await _communityLock.WaitAsync(timeout.Token); }
+                catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+                {
+                    throw new TimeoutException("The bounded community lock wait expired.");
+                }
+            }
+            else await _communityLock.WaitAsync(ct);
             return new Session(_deliveries, _states, _cooldowns, _communityLock, this);
         }
 
@@ -1441,6 +1698,15 @@ public sealed class CommunityTests
             public Task<IReadOnlyList<PendingDelivery>> GetPendingDeliveriesAsync(CancellationToken ct) =>
                 Task.FromResult<IReadOnlyList<PendingDelivery>>(states.Where(x => !x.Value.Completed)
                     .Select(x => new PendingDelivery(x.Key, x.Value.Intent)).ToArray());
+            public Task UpdateCommunityDeliveryIntentAsync(string key, string intent, CancellationToken ct)
+            {
+                ct.ThrowIfCancellationRequested();
+                owner.BeforePrepare?.Invoke(key);
+                if (!states.TryGetValue(key, out var state) || state.Completed)
+                    throw new InvalidOperationException("Pending community delivery record disappeared.");
+                states[key] = state with { Intent = intent };
+                return Task.CompletedTask;
+            }
             public Task CompleteDeliveryAsync(string key, CancellationToken ct)
             {
                 owner.BeforeComplete?.Invoke(key);
@@ -1481,8 +1747,8 @@ public sealed class CommunityTests
         public int DeleteFailuresRemaining { get; set; }
         public bool FailAfterNextRemove { get; set; }
         public Action<CancellationToken>? BeforeRoleMutation { get; set; }
-        public TaskCompletionSource<bool>? SendStarted { get; init; }
-        public TaskCompletionSource<bool>? ReleaseSend { get; init; }
+        public TaskCompletionSource<bool>? SendStarted { get; set; }
+        public TaskCompletionSource<bool>? ReleaseSend { get; set; }
         private readonly Dictionary<string, ulong> _sentKeys = new(StringComparer.Ordinal);
         public Task<CommunityMember?> GetMemberAsync(ulong userId, CancellationToken ct)
         {

@@ -55,6 +55,9 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
         jobs.Writer.TryComplete();
     }
     internal bool TryQueueJob(Func<CancellationToken, Task> job) => jobs.Writer.TryWrite(job);
+    internal bool TryQueueInteractionJob(DateTimeOffset createdAt, Func<CancellationToken, Task> job,
+        Func<CancellationToken, Task> expired, bool allowExtendedExecution = false) => DeferredInteractionPolicy.CanStart(createdAt, clock) &&
+        TryQueueJob(ct => DeferredInteractionPolicy.ExecuteAsync(createdAt, clock, job, expired, ct, allowExtendedExecution));
     public async Task ProcessAsync(CancellationToken ct)
     {
         await foreach (var job in jobs.Reader.ReadAllAsync(ct))
@@ -228,26 +231,41 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
             }
         }
     }
-    private async Task QueueInteractionAsync(SocketInteraction interaction, Func<CancellationToken, Task> job)
+    private async Task QueueInteractionAsync(SocketInteraction interaction, Func<CancellationToken, Task> job, bool allowExtendedExecution = false)
     {
         if (interaction is SocketMessageComponent component) await component.DeferLoadingAsync(ephemeral: true);
         else await interaction.DeferAsync(ephemeral: true);
-        if (!Ready || !TryQueueJob(async ct =>
+        async Task RejectExpiredAsync(CancellationToken ct)
+        {
+            logger.LogWarning("Interaction {InteractionId} expired in the queue and was not executed.", interaction.Id);
+            if (DeferredInteractionPolicy.CanReply(interaction.CreatedAt, clock))
+                await ReplyAsync(interaction, "This operation waited too long and was not executed. Please try again.", ct);
+        }
+        if (!DeferredInteractionPolicy.CanStart(interaction.CreatedAt, clock))
+        { await RejectExpiredAsync(stoppingToken); return; }
+        if (!Ready || !TryQueueInteractionJob(interaction.CreatedAt, async ct =>
         {
             // REST requests and ticket inactivity watchdogs bound stalled work without limiting healthy pagination.
             try { await job(ct); }
-            catch (OperationCanceledException) when (ct.IsCancellationRequested) { }
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested) { }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested)
+            {
+                logger.LogWarning("Interaction {InteractionId} exceeded its execution deadline.", interaction.Id);
+                if (DeferredInteractionPolicy.CanReply(interaction.CreatedAt, clock))
+                    await ReplyAsync(interaction, "The operation could not be completed in time. Please check the ticket before trying again.", stoppingToken);
+            }
             catch (Exception ex)
             {
                 logger.LogWarning("Interaction {InteractionId} failed: {ErrorKind}.", interaction.Id, SafeError(ex));
                 await ReplyAsync(interaction, "The operation could not be completed. Staff can check the bot status.", ct);
             }
-        })) await ReplyAsync(interaction, "The bot is temporarily unavailable. Please try again shortly.", stoppingToken);
+        }, RejectExpiredAsync, allowExtendedExecution)) await ReplyAsync(interaction, "The bot is temporarily unavailable. Please try again shortly.", stoppingToken);
     }
     private Task OnSlashAsync(SocketSlashCommand command)
     {
         if (command.Data.Name is not ("ticket" or "ticket-panel")) return Task.CompletedTask;
-        return QueueInteractionAsync(command, ct => HandleSlashAsync(command, ct));
+        return QueueInteractionAsync(command, ct => HandleSlashAsync(command, ct),
+            allowExtendedExecution: command.Data.Name == "ticket" && command.Data.Options.Single().Name == "transcript");
     }
     private Task OnButtonAsync(SocketMessageComponent component)
     {

@@ -1141,6 +1141,58 @@ public sealed class ArchiveTests
         Assert.That(await File.ReadAllTextAsync(sentinel, Encoding.UTF8), Is.EqualTo("preserve"));
     }
 
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task ManagedDeletionReportsProgressAndCancellationRetainsOwnedRemainderForRetry(bool cancelDuringPreflight)
+    {
+        using var client = CreateClient(_ => throw new AssertionException("No downloads expected."));
+        var archive = CreateArchive(client);
+        var ticket = CreateTicket();
+        var nested = Path.Combine(ticket.ArchivePath!, "attachments", "nested");
+        Directory.CreateDirectory(nested);
+        var files = Enumerable.Range(1, 10).Select(id => Path.Combine(nested, $"{id}.txt")).ToArray();
+        foreach (var file in files) await File.WriteAllTextAsync(file, "retained", Encoding.UTF8);
+        var progress = 0;
+        using var cancellation = new CancellationTokenSource();
+        Assert.CatchAsync<OperationCanceledException>(() => archive.DeleteAsync(ticket.ArchivePath!, cancellation.Token, () =>
+        {
+            progress++;
+            if (cancelDuringPreflight || files.Any(file => !File.Exists(file))) cancellation.Cancel();
+        }));
+        Assert.That(progress, Is.GreaterThan(0));
+        Assert.That(Directory.Exists(ticket.ArchivePath), Is.True);
+        Assert.That(files.Count(File.Exists), Is.EqualTo(cancelDuringPreflight ? 10 : 9));
+        var retryProgress = 0;
+        await archive.DeleteAsync(ticket.ArchivePath!, default, () => retryProgress++);
+        Assert.That(Directory.Exists(ticket.ArchivePath), Is.False);
+        Assert.That(retryProgress, Is.GreaterThan(0));
+    }
+
+    [Test]
+    public async Task LinuxDeletionPreflightsTheEntireTreeBeforeRemovingAnyEntry()
+    {
+        if (!OperatingSystem.IsLinux()) { Assert.Ignore("Symbolic link fixture requires Linux."); return; }
+        using var client = CreateClient(_ => throw new AssertionException("No downloads expected."));
+        var archive = CreateArchive(client);
+        var ticket = CreateTicket();
+        Directory.CreateDirectory(ticket.ArchivePath!);
+        var retained = Path.Combine(ticket.ArchivePath!, "preserve.txt");
+        await File.WriteAllTextAsync(retained, "preserve", Encoding.UTF8);
+        var outside = Path.Combine(_root, "outside");
+        Directory.CreateDirectory(outside);
+        var target = Path.Combine(outside, "target.txt");
+        await File.WriteAllTextAsync(target, "target", Encoding.UTF8);
+        var link = Path.Combine(ticket.ArchivePath!, "unsafe");
+        Directory.CreateSymbolicLink(link, outside);
+        try
+        {
+            Assert.ThrowsAsync<InvalidOperationException>(() => archive.DeleteAsync(ticket.ArchivePath!, default, static () => { }));
+            Assert.That(await File.ReadAllTextAsync(retained, Encoding.UTF8), Is.EqualTo("preserve"));
+            Assert.That(await File.ReadAllTextAsync(target, Encoding.UTF8), Is.EqualTo("target"));
+        }
+        finally { Directory.Delete(link); }
+    }
+
     private static UnixFileMode ReadUnixMode(string path)
     {
         if (OperatingSystem.IsWindows()) throw new PlatformNotSupportedException("Unix mode verification requires Unix.");

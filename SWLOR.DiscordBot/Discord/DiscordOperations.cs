@@ -341,7 +341,7 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
         try
         {
             var member = await (await GuildAsync(ct)).GetUserAsync(userId, Options(ct));
-            return member is null ? null : new(member.Id, member.DisplayName, member.RoleIds, member.IsBot, member.IsWebhook);
+            return member is null ? null : new(member.Id, member.DisplayName, member.RoleIds, member.IsBot, member.IsWebhook, member.JoinedAt);
         }
         catch (HttpException ex) when (ex.HttpCode == HttpStatusCode.NotFound) { return null; }
     }

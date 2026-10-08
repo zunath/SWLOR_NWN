@@ -153,7 +153,7 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
     private Task MaintainAsync(CancellationToken ct) =>
         ticketMaintenance.RunAsync(MaintenanceInterval, clock, () => gateway.Ready, async token =>
         {
-            try { await RetryMaintenanceAsync("Ticket maintenance", tickets.MaintainAsync, token, boundWholePass: false); }
+            try { await RetryMaintenanceAsync("Ticket maintenance", tickets.MaintainAsync, token); }
             catch (OperationCanceledException) when (token.IsCancellationRequested) { throw; }
             catch (Exception ex)
             {
@@ -179,14 +179,13 @@ public sealed class BotWorker(BotConfiguration configuration, BotSecrets secrets
         ? configuration.Tickets.CleanupInterval
         : TimeSpan.FromMinutes(5);
 
-    private async Task RetryMaintenanceAsync(string operationName, Func<CancellationToken, Task> operation, CancellationToken ct, bool boundWholePass = true)
+    internal async Task RetryMaintenanceAsync(string operationName, Func<CancellationToken, Task> operation, CancellationToken ct)
     {
         for (var attempt = 0; attempt < 3; attempt++)
         {
-            using var operationTimeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
-            // Per-ticket inactivity and per-request network limits cover progressing transcript exports.
-            if (boundWholePass) operationTimeout.CancelAfter(TimeSpan.FromMinutes(10));
-            try { await operation(operationTimeout.Token); return; }
+            ct.ThrowIfCancellationRequested();
+            // Ticket-level inactivity watchdogs bound stalled exports and archive validation without stopping healthy passes.
+            try { await operation(ct); return; }
             catch (OperationCanceledException) when (ct.IsCancellationRequested) { throw; }
             catch (Exception ex)
             {

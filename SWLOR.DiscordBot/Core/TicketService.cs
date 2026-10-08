@@ -11,6 +11,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
 {
     // One worker owns the guild; in-flight exports protect only their ticket's archive from cleanup.
     private readonly ConcurrentDictionary<Guid, byte> _exports = new();
+    private readonly ConcurrentDictionary<Guid, byte> _creations = new();
     private readonly ConcurrentDictionary<Guid, byte> _archiveDeletions = new();
     private Guid? _lastMaintenanceTicketId;
     private static readonly TimeSpan TicketMaintenanceInactivityTimeout = TimeSpan.FromMinutes(4);
@@ -24,49 +25,81 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         if (!Options.Enabled) return new(false, "Ticketing is disabled.");
         var panel = Options.Panels.SingleOrDefault(p => p.Id == panelId);
         if (panel is null) return new(false, "This ticket panel is unavailable.");
-        await using var session = await store.LockAsync(ct);
-        actor = await discord.ActorAsync(actor.UserId, ct);
-        var previous = await session.FindInteractionAsync(interactionId, ct);
-        if (previous is not null)
+        Ticket ticket;
+        await using (var session = await store.LockAsync(ct))
         {
-            if (previous.RequesterId != actor.UserId) return new(false, "This interaction belongs to another requester.");
-            return previous.State == TicketState.Creating
-                ? await ResumeCreationAsync(session, previous, ct)
-                : new(true, "This interaction has already been handled.", previous);
+            actor = await discord.ActorAsync(actor.UserId, ct);
+            var previous = await session.FindInteractionAsync(interactionId, ct);
+            if (previous is not null)
+            {
+                if (previous.RequesterId != actor.UserId) return new(false, "This interaction belongs to another requester.");
+                if (previous.State != TicketState.Creating)
+                    return new(true, "This interaction has already been handled.", previous);
+                ticket = previous;
+            }
+            else
+            {
+                var tickets = await session.GetTicketsAsync(ct);
+                var pending = tickets.FirstOrDefault(t => t.RequesterId == actor.UserId && t.PanelId == panelId && t.State == TicketState.Creating);
+                if (pending is not null) ticket = pending;
+                else
+                {
+                    var active = tickets.Where(Active).ToArray();
+                    if (!Bypasses(actor, Options.BypassMemberLimit) && active.Count(t => t.RequesterId == actor.UserId) >= Options.MemberLimit)
+                        return new(false, "You already have the maximum number of open tickets.", active.FirstOrDefault(t => t.RequesterId == actor.UserId));
+                    if (!Bypasses(actor, Options.BypassPanelLimit) && active.Count(t => t.PanelId == panelId) >= panel.OpenLimit)
+                        return new(false, "This ticket panel has reached its open-ticket limit.");
+                    if (!Bypasses(actor, Options.BypassGuildLimit) && active.Length >= Options.GuildLimit)
+                        return new(false, "The server has reached its open-ticket limit.");
+                    ticket = await session.ReserveAsync(panelId, actor.UserId, interactionId, clock.GetUtcNow(), ct);
+                }
+            }
         }
-        var tickets = await session.GetTicketsAsync(ct);
-        var pending = tickets.FirstOrDefault(t => t.RequesterId == actor.UserId && t.PanelId == panelId && t.State == TicketState.Creating);
-        if (pending is not null) return await ResumeCreationAsync(session, pending, ct);
-        var active = tickets.Where(Active).ToArray();
-        if (!Bypasses(actor, Options.BypassMemberLimit) && active.Count(t => t.RequesterId == actor.UserId) >= Options.MemberLimit)
-            return new(false, "You already have the maximum number of open tickets.", active.FirstOrDefault(t => t.RequesterId == actor.UserId));
-        if (!Bypasses(actor, Options.BypassPanelLimit) && active.Count(t => t.PanelId == panelId) >= panel.OpenLimit)
-            return new(false, "This ticket panel has reached its open-ticket limit.");
-        if (!Bypasses(actor, Options.BypassGuildLimit) && active.Length >= Options.GuildLimit)
-            return new(false, "The server has reached its open-ticket limit.");
-        var ticket = await session.ReserveAsync(panelId, actor.UserId, interactionId, clock.GetUtcNow(), ct);
-        return await ResumeCreationAsync(session, ticket, ct);
+        return await ResumeCreationAsync(ticket.Id, ct);
     }
 
-    private async Task<TicketResult> ResumeCreationAsync(ITicketSession session, Ticket ticket, CancellationToken ct, Action? progress = null)
+    private async Task<TicketResult> ResumeCreationAsync(Guid id, CancellationToken ct, Action? progress = null)
     {
+        var claimed = false;
         try
         {
-            var channel = ticket.ChannelId ?? await discord.FindManagedChannelAsync(ticket.Id, ct) ?? await discord.CreateAsync(ticket, ct);
-            ticket = ticket with { ChannelId = channel, LastError = null };
-            await session.SaveAsync(ticket, "channel-bound", ticket.RequesterId, ct);
+            Ticket ticket;
+            await using (var session = await store.LockAsync(ct))
+            {
+                ticket = await session.GetTicketAsync(id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
+                if (ticket.State != TicketState.Creating)
+                    return new(true, "This interaction has already been handled.", ticket);
+                if (!_creations.TryAdd(id, 0))
+                    return new(false, "This ticket is already being opened; try again shortly.", ticket);
+                claimed = true;
+                var channel = ticket.ChannelId ?? await discord.FindManagedChannelAsync(ticket.Id, ct) ?? await discord.CreateAsync(ticket, ct);
+                ticket = ticket with { ChannelId = channel, LastError = null };
+                await session.SaveAsync(ticket, "channel-bound", ticket.RequesterId, ct);
+            }
+            // The durable binding and per-ticket guard survive long history scans without blocking other tickets.
             await discord.OpenAsync(ticket, true, ct, progress ?? (static () => { }));
-            ticket = ticket with { State = TicketState.Open };
-            await session.SaveAsync(ticket, "opened", ticket.RequesterId, ct);
+            ct.ThrowIfCancellationRequested();
+            await using (var completed = await store.LockAsync(ct))
+            {
+                var current = await completed.GetTicketAsync(id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
+                if (current.State != TicketState.Creating || current.ChannelId != ticket.ChannelId)
+                    throw new InvalidOperationException("Ticket creation binding changed during opening.");
+                ticket = current with { State = TicketState.Open, LastError = null };
+                await completed.SaveAsync(ticket, "opened", ticket.RequesterId, ct);
+            }
             await NotifyAsync($"Ticket {ticket.Number} opened.", ct);
-            return new(true, $"Your ticket is ready: <#{channel}>.", ticket);
+            return new(true, $"Your ticket is ready: <#{ticket.ChannelId}>.", ticket);
         }
-        catch (Exception ex) when (!ct.IsCancellationRequested)
+        catch (Exception ex) when (claimed && !ct.IsCancellationRequested)
         {
-            logger?.LogWarning(ex, "Ticket {TicketId} creation will be reconciled", ticket.Id);
-            await session.SaveAsync(ticket with { LastError = "Channel creation or opening failed; reconciliation pending." }, "creation-failed", null, ct);
-            return new(false, "The ticket could not be opened yet. Staff can check the bot logs; retrying will recover this request.", ticket);
+            logger?.LogWarning(ex, "Ticket {TicketId} creation will be reconciled", id);
+            await using var failed = await store.LockAsync(ct);
+            var current = await failed.GetTicketAsync(id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
+            if (current.State == TicketState.Creating)
+                await failed.SaveAsync(current with { LastError = "Channel creation or opening failed; reconciliation pending." }, "creation-failed", null, ct);
+            return new(false, "The ticket could not be opened yet. Staff can check the bot logs; retrying will recover this request.", current);
         }
+        finally { if (claimed) _creations.TryRemove(id, out _); }
     }
 
     public Task<TicketResult> CloseAsync(ulong channelId, Actor actor, CancellationToken ct = default) => MutateAsync(channelId, actor, async (session, ticket, currentActor) =>
@@ -331,7 +364,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 var found = await session.GetTicketAsync(id, ct);
                 if (found is null) return;
                 ticket = found;
-                if (_archiveDeletions.ContainsKey(id)) return;
+                if (_archiveDeletions.ContainsKey(id) || _creations.ContainsKey(id)) return;
                 if (ticket.State != TicketState.Deleted && ticket.ChannelId.HasValue && !await WithProgressAsync(discord.ExistsAsync(ticket, ct), progress))
                 {
                     var now = clock.GetUtcNow();
@@ -346,36 +379,43 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                     await WithProgressAsync(discord.ReconcilePermissionsAsync(ticket, ct), progress);
                 // Manual exports in Open/Closed retain that state policy; deleting exports keep their freeze.
                 if (_exports.ContainsKey(id)) return;
-                if (ticket.State == TicketState.Creating) { await ResumeCreationAsync(session, ticket, ct, progress); return; }
-                if (ticket.State == TicketState.Closing)
+                if (ticket.State != TicketState.Creating)
                 {
-                    await WithProgressAsync(discord.CloseAsync(ticket, ct), progress);
-                    ticket = ticket with { State = TicketState.Closed, LastError = null };
-                    await session.SaveAsync(ticket, "close-reconciled", null, ct);
+                    if (ticket.State == TicketState.Closing)
+                    {
+                        await WithProgressAsync(discord.CloseAsync(ticket, ct), progress);
+                        ticket = ticket with { State = TicketState.Closed, LastError = null };
+                        await session.SaveAsync(ticket, "close-reconciled", null, ct);
+                    }
+                    if (ticket.State == TicketState.Reopening)
+                    {
+                        await WithProgressAsync(discord.OpenAsync(ticket, false, ct), progress);
+                        ticket = ticket with { State = TicketState.Open, LastError = null };
+                        await session.SaveAsync(ticket, "reopen-reconciled", null, ct);
+                    }
+                    if (ticket.Hold) return;
+                    if (ticket.State == TicketState.Deleted) return;
+                    if (ticket.State == TicketState.Closed && ticket.DeleteAfter <= clock.GetUtcNow())
+                    {
+                        ticket = ticket with { State = TicketState.Deleting };
+                        await session.SaveAsync(ticket, "deleting", null, ct);
+                    }
+                    if (ticket.State != TicketState.Deleting) return;
+                    await WithProgressAsync(discord.FreezeAsync(ticket, ct), progress);
+                    if (!_exports.TryAdd(id, 0)) return;
+                    exporting = true;
+                    // Include partial/completed files in retention even if the final export save never commits.
+                    if (ticket.ArchivePath is null)
+                    {
+                        ticket = ticket with { ArchivePath = archive.GetArchivePath(ticket) };
+                        await session.SaveAsync(ticket, "archive-pending", null, ct);
+                    }
                 }
-                if (ticket.State == TicketState.Reopening)
-                {
-                    await WithProgressAsync(discord.OpenAsync(ticket, false, ct), progress);
-                    ticket = ticket with { State = TicketState.Open, LastError = null };
-                    await session.SaveAsync(ticket, "reopen-reconciled", null, ct);
-                }
-                if (ticket.Hold) return;
-                if (ticket.State == TicketState.Deleted) return;
-                if (ticket.State == TicketState.Closed && ticket.DeleteAfter <= clock.GetUtcNow())
-                {
-                    ticket = ticket with { State = TicketState.Deleting };
-                    await session.SaveAsync(ticket, "deleting", null, ct);
-                }
-                if (ticket.State != TicketState.Deleting) return;
-                await WithProgressAsync(discord.FreezeAsync(ticket, ct), progress);
-                if (!_exports.TryAdd(id, 0)) return;
-                exporting = true;
-                // Include partial/completed files in retention even if the final export save never commits.
-                if (ticket.ArchivePath is null)
-                {
-                    ticket = ticket with { ArchivePath = archive.GetArchivePath(ticket) };
-                    await session.SaveAsync(ticket, "archive-pending", null, ct);
-                }
+            }
+            if (ticket.State == TicketState.Creating)
+            {
+                await ResumeCreationAsync(ticket.Id, ct, progress);
+                return;
             }
             // Pagination and attachment downloads can take minutes; do not hold the guild ticket lock.
             await WithProgressAsync(PrunePublishedSnapshotsAsync(ticket, ct, progress), progress);

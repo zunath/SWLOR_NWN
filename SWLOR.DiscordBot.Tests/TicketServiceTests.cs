@@ -1,4 +1,6 @@
 using Discord;
+using Microsoft.Extensions.Logging.Abstractions;
+using SWLOR.DiscordBot.Hosting;
 using NUnit.Framework;
 using SWLOR.DiscordBot.Configuration;
 using SWLOR.DiscordBot.Core;
@@ -380,14 +382,17 @@ public sealed class TicketServiceTests
     public async Task ArchiveExpirationBoundsInactivityWhileAllowingLongProgressingDeletion(bool progressing)
     {
         await Open("first", new Actor(1, []), "expiration-progress");
-        _store.Replace(_store.Tickets.Single() with
+        await Open("second", new Actor(2, []), "expiration-later");
+        foreach (var ticket in _store.Tickets)
+            _store.Replace(ticket with
+            {
+                State = TicketState.Closed, ArchivePath = $"/archives/expired-{ticket.ChannelId}", ArchiveComplete = true,
+                ArchiveExpiresAt = _clock.GetUtcNow().AddSeconds(-1)
+            });
+        _archive.BeforeDeleteArchiveAsync = async (path, progress, token) =>
         {
-            State = TicketState.Closed, ArchivePath = "/archives/expired", ArchiveComplete = true,
-            ArchiveExpiresAt = _clock.GetUtcNow().AddSeconds(-1)
-        });
-        _archive.BeforeDeleteArchiveAsync = async (_, progress, token) =>
-        {
-            for (var step = 0; step < 6; step++)
+            if (!path.EndsWith(ChannelOne.ToString(), StringComparison.Ordinal)) return;
+            for (var step = 0; step < 12; step++)
             {
                 _clock.Advance(TimeSpan.FromMinutes(1));
                 if (progressing) progress();
@@ -395,17 +400,24 @@ public sealed class TicketServiceTests
                 token.ThrowIfCancellationRequested();
             }
         };
-        await _service.ExpireArchivesAsync().WaitAsync(TimeSpan.FromSeconds(2));
-        Assert.That(_archive.DeletedPaths.Count, Is.EqualTo(progressing ? 1 : 0));
-        Assert.That(_store.Tickets.Single().ArchivePath, progressing ? Is.Null : Is.Not.Null);
-        Assert.That(_store.Tickets.Single().LastError, progressing ? Is.Null : Is.Not.Null);
+        using var worker = new BotWorker(_configuration, new BotSecrets("", ""), null!, null!, _store,
+            _service, null!, null!, null!, null!, _clock, null!, NullLogger<BotWorker>.Instance);
+        await worker.RetryMaintenanceAsync("Archive expiration", _service.ExpireArchivesAsync, CancellationToken.None)
+            .WaitAsync(TimeSpan.FromSeconds(2));
+        var first = _store.Tickets.Single(ticket => ticket.ChannelId == ChannelOne);
+        var later = _store.Tickets.Single(ticket => ticket.ChannelId == ChannelOne + 1);
+        Assert.That(_archive.DeletedPaths.Count, Is.EqualTo(progressing ? 2 : 1));
+        Assert.That(first.ArchivePath, progressing ? Is.Null : Is.Not.Null);
+        Assert.That(first.LastError, progressing ? Is.Null : Is.Not.Null);
+        Assert.That(later.ArchivePath, Is.Null, "A stalled earlier item must not starve later expiration.");
+        Assert.That(later.LastError, Is.Null);
         if (!progressing)
         {
             Assert.That((await _service.SetHoldAsync(ChannelOne, Support, true)).Success, Is.True);
             _archive.BeforeDeleteArchiveAsync = null;
             await _service.SetHoldAsync(ChannelOne, Support, false);
             await _service.ExpireArchivesAsync();
-            Assert.That(_store.Tickets.Single().ArchivePath, Is.Null);
+            Assert.That(_store.Tickets.Single(ticket => ticket.ChannelId == ChannelOne).ArchivePath, Is.Null);
         }
     }
 
@@ -2273,6 +2285,115 @@ public sealed class TicketServiceTests
             Assert.That(_discord.DeletedChannels, Is.EquivalentTo(new[] { ChannelOne, ChannelOne + 1 }));
         }
         finally { safety.Cancel(); try { await cleanup; } catch (OperationCanceledException) { } }
+    }
+
+    [TestCase(false, false)]
+    [TestCase(false, true)]
+    [TestCase(true, false)]
+    [TestCase(true, true)]
+    public async Task OpeningHistoryReleasesGuildLockAndPreservesConcurrentHold(bool maintenance, bool failCompletion)
+    {
+        var requester = new Actor(1, []);
+        _discord.FailNextOpen = true;
+        Assert.That((await Open("first", requester, "unlocked-opening")).Success, Is.False);
+        await Open("second", new Actor(2, []), "unrelated-ticket");
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _discord.BeforeProgressOpenAsync = async (ticket, progress, ct) =>
+        {
+            if (ticket.ChannelId != ChannelOne) return;
+            for (var page = 0; page < 12; page++)
+            {
+                _clock.Advance(TimeSpan.FromMinutes(1));
+                progress();
+                ct.ThrowIfCancellationRequested();
+            }
+            started.TrySetResult();
+            await release.Task.WaitAsync(ct);
+        };
+        using var safety = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        Task opening = maintenance ? _service.MaintainAsync(safety.Token)
+            : _service.OpenAsync("first", requester, "unlocked-opening", safety.Token);
+        try
+        {
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(_store.Tickets.Single(t => t.ChannelId == ChannelOne).State, Is.EqualTo(TicketState.Creating));
+            Assert.That((await _service.CloseAsync(ChannelOne + 1, Support).WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+            Assert.That((await _service.RenameAsync(ChannelOne + 1, Support, "unrelated-renamed").WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+            Assert.That((await _service.ReopenAsync(ChannelOne + 1, Support).WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+            Assert.That((await _service.SetHoldAsync(ChannelOne + 1, Support, true).WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+            Assert.That((await _service.OpenAsync("second", new Actor(3, []), "during-opening").WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+            var openCalls = _discord.OpenCalls;
+            var duplicate = await _service.OpenAsync("first", requester, "unlocked-opening").WaitAsync(TimeSpan.FromSeconds(2));
+            var samePanel = await _service.OpenAsync("first", requester, "another-opening-click").WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(duplicate.Success, Is.False);
+            Assert.That(samePanel.Success, Is.False);
+            Assert.That(duplicate.Message, Does.Contain("already being opened"));
+            await _service.MaintainAsync().WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(_discord.OpenCalls, Is.EqualTo(openCalls), "Only the owning operation may scan/post the opening.");
+            Assert.That((await _service.CloseAsync(ChannelOne, Support).WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.False);
+            Assert.That((await _service.SetHoldAsync(ChannelOne, Support, true).WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+            if (failCompletion) _store.FailNextSaveAction = "opened";
+            release.SetResult();
+            await opening.WaitAsync(TimeSpan.FromSeconds(2));
+            var completed = _store.Tickets.Single(t => t.ChannelId == ChannelOne);
+            Assert.That(completed.Hold, Is.True, "Completion/failure must merge the current durable record.");
+            Assert.That(completed.State, Is.EqualTo(failCompletion ? TicketState.Creating : TicketState.Open));
+            Assert.That(_discord.CreateCalls, Is.EqualTo(3));
+            if (failCompletion)
+            {
+                _discord.BeforeProgressOpenAsync = null;
+                Assert.That((await _service.OpenAsync("first", requester, "unlocked-opening")).Success, Is.True);
+                Assert.That(_store.Tickets.Single(t => t.ChannelId == ChannelOne).Hold, Is.True);
+                Assert.That(_discord.CreateCalls, Is.EqualTo(3), "Retry reuses the committed channel binding.");
+            }
+        }
+        finally
+        {
+            release.TrySetResult();
+            safety.Cancel();
+            try { await opening; } catch (OperationCanceledException) { }
+        }
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CancelledOpeningReleasesItsGuardAndRetainsBindingForRecovery(bool maintenance)
+    {
+        var requester = new Actor(1, []);
+        _discord.FailNextOpen = true;
+        Assert.That((await Open("first", requester, "cancelled-opening")).Success, Is.False);
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _discord.BeforeProgressOpenAsync = async (_, progress, ct) =>
+        {
+            progress();
+            started.TrySetResult();
+            await Task.Delay(Timeout.InfiniteTimeSpan, ct);
+        };
+        using var cancellation = new CancellationTokenSource();
+        Task opening = maintenance ? _service.MaintainAsync(cancellation.Token)
+            : _service.OpenAsync("first", requester, "cancelled-opening", cancellation.Token);
+        try
+        {
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That((await _service.SetHoldAsync(ChannelOne, Support, true).WaitAsync(TimeSpan.FromSeconds(2))).Success, Is.True);
+            cancellation.Cancel();
+            Assert.That(async () => await opening.WaitAsync(TimeSpan.FromSeconds(2)), Throws.InstanceOf<OperationCanceledException>());
+            var durable = _store.Tickets.Single();
+            Assert.That(durable.State, Is.EqualTo(TicketState.Creating));
+            Assert.That(durable.ChannelId, Is.EqualTo(ChannelOne));
+            Assert.That(durable.Hold, Is.True);
+            _discord.BeforeProgressOpenAsync = null;
+            Assert.That((await _service.OpenAsync("first", requester, "cancelled-opening")).Success, Is.True);
+            Assert.That(_discord.CreateCalls, Is.EqualTo(1));
+            _store.Replace(_store.Tickets.Single() with { State = TicketState.Creating });
+            var restarted = new TicketService(_configuration, _store, _discord, _archive, _clock);
+            await restarted.MaintainAsync();
+            Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Open));
+            Assert.That(_store.Tickets.Single().Hold, Is.True);
+            Assert.That(_discord.CreateCalls, Is.EqualTo(1));
+        }
+        finally { cancellation.Cancel(); try { await opening; } catch (OperationCanceledException) { } }
     }
 
     [TestCase(true)]

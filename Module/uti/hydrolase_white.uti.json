@@ -46,7 +46,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 147
+    "value": 7
   },
   "PaletteID": {
     "type": "byte",
@@ -110,6 +110,6 @@
   },
   "xModelPart1": {
     "type": "word",
-    "value": 147
+    "value": 7
   }
 }

@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(shortName)
                 .Type(ShipModuleType.TurboLaser)
-                .Texture("iit_ess_079")
+                .Texture("iit_smturbolas")
                 .Description(description)
                 .MaxDistance(30f)
                 .ValidTargetType(ObjectType.Creature)

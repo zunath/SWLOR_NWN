@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(shortName)
-                .Texture("iit_ess_247")
+                .Texture("iit_smtgtarray")
                 .Description($"A suite of dedicated passive sensors for your ship's weapons systems. They improve your accuracy by {boostAmount}, but passive sensor tech reduces your Attack by five.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, 5)

@@ -175,7 +175,7 @@ The gameplay icon manifest is:
 
 Required fields:
 
-- `Type`: `Ability`, `Feat`, `Spell`, or `StatusEffect`.
+- `Type`: `Ability`, `Feat`, `Spell`, `StatusEffect`, or `Item`.
 - `Key`: stable identifier, such as a feat label or status-effect class name.
 - `DisplayName`: player-facing name when available.
 - `SemanticCategory`: one of the approved semantic categories.
@@ -186,6 +186,10 @@ Required fields:
 Generated status-effect labels in `effecticons.2da` must use compact PascalCase without underscores, such as `AilmentResistance3`. Icon file resrefs should be short, meaningful abbreviations that stay within NWN's 16-character resource limit. Do not append opaque hash, collision, or generator suffixes such as random-looking letters or digits after the meaningful abbreviation.
 
 ## Enforcement
+
+Item artwork uses the existing `GameplayIconManifest.csv`. Original sources and generation prompts live in `SWLOR_Haks/sw_item_source/`. Use meaningful 32x32 action resrefs and engine-required 64x64 `i<ItemClass>_<model>` inventory aliases, with the shared semantic frame and regular green cooldown tools. Ranks of one function share artwork; different functions need distinct designs.
+
+Current appearances come from blueprints. Legacy conversion belongs only in new player migration 16 and server migration 23; historical mappings are icon test fixtures. Retain unused numeric ESS slots as original artwork aliases for saved custom appearances; `sw_item_source/general/native-library.csv` records their source mappings and hashes.
 
 Icon tools and audits must fail when a gameplay icon violates these standards:
 

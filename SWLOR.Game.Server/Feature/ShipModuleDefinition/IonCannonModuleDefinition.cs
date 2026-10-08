@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(shortName)
                 .Type(ShipModuleType.IonCannon)
-                .Texture("iit_ess_050")
+                .Texture("iit_smioncann")
                 .Description(description)
                 .MaxDistance(40f)
                 .ValidTargetType(ObjectType.Creature)

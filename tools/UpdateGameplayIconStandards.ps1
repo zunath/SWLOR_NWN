@@ -502,6 +502,8 @@ function Get-CustomFeatSpellRows([object[]]$abilityRows, [hashtable]$existing) {
         }
     }
 
+    # Item artwork is authored in the existing gameplay manifest, rather than 2DA rows.
+    $rows += @($existing.Values | Where-Object { $_.Type -eq "Item" })
     return $rows | Sort-Object Type, Key
 }
 
@@ -1986,11 +1988,11 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
         }
         else {
             Add-TgaValidationErrors $errors $iconFile "$($entry.Type) '$($entry.Key)'"
-            if ($entry.Type -eq "Ability" -or $entry.Type -eq "Feat" -or $entry.Type -eq "Spell") {
+            if ($entry.Type -eq "Ability" -or $entry.Type -eq "Feat" -or $entry.Type -eq "Spell" -or $entry.Type -eq "Item") {
                 Add-SemanticFrameValidationErrors $errors $iconFile "$($entry.Type) '$($entry.Key)'" $entry.SemanticCategory
             }
 
-            if ($entry.Type -eq "Ability" -or $entry.Type -eq "StatusEffect") {
+            if ($entry.Type -eq "Ability" -or $entry.Type -eq "StatusEffect" -or $entry.Type -eq "Item") {
                 $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $iconFile).Hash
                 if ($iconHashes.ContainsKey($hash)) {
                     $other = $iconHashes[$hash]

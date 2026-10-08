@@ -32,6 +32,20 @@ public class MigrationDataTests
     }
 
     [Test]
+    public void ItemIconMigration_CheckpointsAfterAlreadyCompletedSchemaMigration()
+    {
+        var type = ServerAssembly.GetType("SWLOR.Game.Server.Service.MigrationService.ServerMigrationState")!;
+        var state = Activator.CreateInstance(type, 22)!;
+        var executed = false;
+        type.GetMethod("Run")!.Invoke(state, new object[]
+        {
+            new _23_UpdateItemIcons(), (Action<IServerMigration>)(_ => executed = true)
+        });
+        executed.Should().BeTrue();
+        type.GetProperty("CompletedVersion")!.GetValue(state).Should().Be(23);
+    }
+
+    [Test]
     public void AFailedLaterPhaseCannotCheckpointAnEarlierHigherVersion()
     {
         var type = ServerAssembly.GetType("SWLOR.Game.Server.Service.MigrationService.ServerMigrationState")!;

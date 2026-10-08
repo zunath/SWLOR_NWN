@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(name)
-                .Texture("iit_ess_055")
+                .Texture("iit_smtgtsystem")
                 .Description($"Improves a ship's accuracy by {accuracyBoostAmount}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)

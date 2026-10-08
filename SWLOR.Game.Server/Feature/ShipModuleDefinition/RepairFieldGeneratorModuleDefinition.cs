@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(shortName)
                 .Type(ShipModuleType.RepairFieldGenerator)
-                .Texture("iit_ess_074")
+                .Texture("iit_smrepfield")
                 .Description(description)
                 .PowerType(ShipModulePowerType.High)
                 .Capacitor(25)

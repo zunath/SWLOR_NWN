@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             .Name(name)
             .ShortName(shortName)
             .Type(ShipModuleType.LaserBattery)
-            .Texture("iit_ess8_088")
+            .Texture("iit_smlasbattery")
             .Description(description)
             .ValidTargetType(ObjectType.Creature)
             .MaxDistance(20f)

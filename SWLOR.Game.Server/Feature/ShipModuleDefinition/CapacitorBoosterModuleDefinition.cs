@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(name)
-                .Texture("iit_ess_035")
+                .Texture("iit_smcapboost")
                 .Description($"Improves a ship's maximum capacitor by {capacitorBoostAmount}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)

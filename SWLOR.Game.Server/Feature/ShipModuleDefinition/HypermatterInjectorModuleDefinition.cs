@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .CanTargetSelf()
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)
-                .Texture("iit_ess_032")
+                .Texture("iit_smhminject")
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
                 .Recast(60f)
                 .ValidationAction((activator, _, _, _, _) =>

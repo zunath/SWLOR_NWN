@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
         public const int BaseCharges = 20;
         public const int ConcentratedCharges = 10;
-        public const int ConcentratedPotencyPerTier = 10;
+        public const int ConcentratedDamageBonusPercent = 50;
 
         private static readonly Dictionary<int, string> _tierLabels = new()
         {
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 })
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    var potency = Stat.GetStatAdjustment(user, StatType.PoisonBonus) + (concentrated ? tier * ConcentratedPotencyPerTier : 0);
+                    var potency = Stat.GetStatAdjustment(user, StatType.PoisonBonus) + (concentrated ? ConcentratedDamageBonusPercent : 0);
                     var coatingDurationBonus = Stat.GetStatAdjustment(user, StatType.PoisonCoatingDurationPercent);
                     var charges = concentrated ? ConcentratedCharges : CalculateCharges(coatingDurationBonus);
 
@@ -105,11 +105,11 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         {
             var lines = new List<string>
             {
-                $"{VenomStatusEffect.CalculateBaseDamagePerTick(0)} poison damage every {VenomStatusEffect.TickIntervalSeconds}s"
+                $"{Poisons.GetCoatingVenomDamagePerTick(tier)} poison damage every {VenomStatusEffect.TickIntervalSeconds}s"
             };
 
             if (concentrated)
-                lines.Add($"+{tier * ConcentratedPotencyPerTier}% Venom damage");
+                lines.Add($"+{ConcentratedDamageBonusPercent}% Venom damage");
 
             lines.Add($"Venom lasts {Poisons.GetVenomDurationSeconds(tier):0}s");
             lines.Add($"{(concentrated ? ConcentratedCharges : BaseCharges)} charges, 1 use per {Poisons.InternalCooldownSeconds}s");

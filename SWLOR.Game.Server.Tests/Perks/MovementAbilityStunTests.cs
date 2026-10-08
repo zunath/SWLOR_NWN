@@ -41,4 +41,40 @@ public class MovementAbilityStunTests
             .And.Contain("GetArea(activator) != GetArea(target)").And.Contain("GetIsReactionTypeHostile(target, activator)");
         source.Should().NotContain("EffectStunned()", "tracked Stunned supplies resistance and shared control immunity");
     }
+
+    [Test]
+    public void ShadowStep_TurnsTargetBackToItsCastFacingOnArrival()
+    {
+        var source = ReadDefinitionSource("Espionage", nameof(ShadowStepAbilityDefinition));
+        var root = CSharpSyntaxTree.ParseText(source).GetRoot();
+        var calls = root.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
+        var jump = calls.Single(call => call.Expression.ToString() == "ActionJumpToLocation");
+        var arrival = calls.Single(call => call.Expression.ToString() == "ActionDoCommand");
+        var stun = arrival.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Single(call => call.Expression.ToString() == "StatusEffect.ApplyStatusEffect");
+        var turnBack = arrival.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Single(call => call.Expression.ToString() == "SetFacing");
+        var facingCapture = root.DescendantNodes().OfType<VariableDeclaratorSyntax>()
+            .Single(declarator => declarator.Identifier.Text == "targetFacing");
+
+        facingCapture.Initializer!.Value.ToString().Should().Be("GetFacing(target)");
+        facingCapture.SpanStart.Should().BeLessThan(jump.SpanStart,
+            "the facing that places the activator behind the target is read before the jump");
+        turnBack.ArgumentList.Arguments.Select(argument => argument.Expression.ToString())
+            .Should().Equal("targetFacing", "target");
+        turnBack.SpanStart.Should().BeLessThan(stun.SpanStart,
+            "the target must be facing away when the stun freezes it");
+        turnBack.Ancestors().OfType<IfStatementSyntax>().Should().Contain(statement =>
+            statement.Condition.ToString() == "GetIsReactionTypeHostile(target, activator)");
+    }
+
+    private static string ReadDefinitionSource(string folder, string typeName)
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+            directory = directory.Parent;
+        directory.Should().NotBeNull();
+        return File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server",
+            "Feature", "AbilityDefinition", folder, typeName + ".cs"));
+    }
 }

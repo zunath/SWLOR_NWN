@@ -168,10 +168,15 @@ The hook fires after every modal close (confirm and cancel, both modal kinds).
   enforces the single root call). `SwapNestedPartialView` is `ChangePartialView` with
   before/after callbacks.
 - **Every group-layout change rebuilds the whole window.** Controls outside the
-  changed group are recreated too, so scroll positions reset. Publish bind values in
-  the same tick as, or after, the layout that first shows them: a value pushed in an
-  earlier tick, before any control used that bind, is dropped by the client. Values
-  pushed while their controls were on screen survive later rebuilds.
+  changed group are recreated too, so scroll positions reset. Rebuilt controls do not
+  send watch events, and values pushed while their controls were on screen survive.
+- **Push input values after the swap.** The client drops a bind value that arrives
+  before any control uses it, which happens when a heavy tick delivers the layout
+  late. After each root layout the base class re-sends the display binds it uses
+  (labels, lists, visibility). It does not re-send input values (`textedit`, `check`,
+  `combo`, `slider`, `options`, toggles, `color_picker`) or watched binds, because
+  that would overwrite what the player typed. Set those after the swap, for example
+  in `onAfterApply`.
 - **A group that is not on screen keeps its layout until it is.** While a modal is
   showing, or when the group belongs to a partial that is not displayed, the layout
   is remembered and nothing is sent. A mistyped element id therefore shows nothing and

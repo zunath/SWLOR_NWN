@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Service.GuiService
 
         private readonly Dictionary<string, PropertyDetail> _propertyValues = new Dictionary<string, PropertyDetail>();
         private readonly Dictionary<string, string> _groupLayouts = new();
+        private readonly HashSet<string> _watchedProperties = new();
         private string _rootPartial;
 
         protected abstract void Initialize(TPayload initialPayload);
@@ -253,6 +254,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         {
             _rootPartial = null;
             _groupLayouts.Clear();
+            _watchedProperties.Clear();
             Player = player;
             WindowToken = windowToken;
             WindowType = type;
@@ -374,6 +376,7 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             NuiSetBind(Player, WindowToken, propertyName, json);
             NuiSetBindWatch(Player, WindowToken, propertyName, true);
+            _watchedProperties.Add(propertyName);
         }
 
         /// <summary>
@@ -442,7 +445,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             if (elementId == WindowElementId)
             {
                 _rootPartial = partialName;
-                ApplyRootLayout(GuiLayoutComposer.Compose(layout, _groupLayouts));
+                ApplyRootLayout(null);
                 return;
             }
 
@@ -461,25 +464,35 @@ namespace SWLOR.Game.Server.Service.GuiService
         private void AssignGroupLayout(string elementId, string layout)
         {
             _groupLayouts[elementId] = layout;
-            if (_rootPartial == null)
-                return;
-
-            var placedGroupIds = new HashSet<string>();
-            var rootLayout = ComposeRootLayout(placedGroupIds);
-            if (placedGroupIds.Contains(elementId))
-                ApplyRootLayout(rootLayout);
+            if (_rootPartial != null)
+                ApplyRootLayout(elementId);
         }
 
-        private string ComposeRootLayout(ISet<string> placedGroupIds)
+        /// <summary>
+        /// Sends the root partial with every assigned group layout in place. When
+        /// <paramref name="changedGroupId"/> is given, nothing is sent unless that group is on screen.
+        /// </summary>
+        private void ApplyRootLayout(string changedGroupId)
         {
             var window = Gui.GetWindowTemplate(WindowType);
-            return GuiLayoutComposer.Compose(window.PartialViewLayouts[_rootPartial], _groupLayouts, placedGroupIds);
-        }
+            var placedGroupIds = new HashSet<string>();
+            var displayBindNames = new HashSet<string>();
+            var rootLayout = GuiLayoutComposer.Compose(
+                window.PartialViewLayouts[_rootPartial], _groupLayouts, placedGroupIds, displayBindNames);
+            if (changedGroupId != null && !placedGroupIds.Contains(changedGroupId))
+                return;
 
-        private void ApplyRootLayout(string rootLayout)
-        {
             NuiSetGroupLayout(Player, WindowToken, WindowElementId, JsonParse(rootLayout));
             ApplyRefreshBugFix();
+
+            // A value sent before the layout that shows it can reach the client first and be dropped.
+            foreach (var bindName in displayBindNames)
+            {
+                if (_propertyValues.TryGetValue(bindName, out var property) &&
+                    property.Value != null &&
+                    !_watchedProperties.Contains(bindName))
+                    OnPropertyChanged(bindName);
+            }
         }
 
         /// <summary>

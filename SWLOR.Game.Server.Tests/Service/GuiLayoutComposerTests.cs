@@ -109,6 +109,25 @@ public class GuiLayoutComposerTests
         composed.Should().Contain("Might");
     }
 
+    [Test]
+    public void Compose_ReportsDisplayBindsButNotPlayerInputs()
+    {
+        const string layout =
+            """{"type":"group","children":[{"type":"col","visible":{"bind":"ShowForm"},"children":[""" +
+            """{"type":"label","value":{"bind":"Name"}},""" +
+            """{"type":"textedit","value":{"bind":"Typed"},"enabled":{"bind":"CanType"}},""" +
+            """{"type":"combo","value":{"bind":"Choice"},"elements":{"bind":"ChoiceOptions"}},""" +
+            """{"type":"check","value":{"bind":"Flag"}},""" +
+            """{"type":"label","value":{"bind":"Flag"}},""" +
+            """{"type":"group","id":"tab_content","visible":{"bind":"ShowTab"},"children":[{"type":"label","value":{"bind":"Hidden"}}]}]}]}""";
+        const string tab = """{"type":"group","children":[{"type":"label","value":{"bind":"Might"}}]}""";
+        var displayBinds = new HashSet<string>();
+
+        GuiLayoutComposer.Compose(layout, Slots(("tab_content", tab)), displayBindNames: displayBinds);
+
+        displayBinds.Should().BeEquivalentTo("ShowForm", "Name", "CanType", "ChoiceOptions", "ShowTab", "Might");
+    }
+
     private static Dictionary<string, string> Slots(params (string Id, string Layout)[] slots) =>
         slots.ToDictionary(slot => slot.Id, slot => slot.Layout);
 

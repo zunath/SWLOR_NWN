@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature
             if (Convert.ToInt32(EventsPlugin.GetEventData("TYPE")) != (int)EffectTypeEngine.TemporaryHitpoints)
                 return;
 
-            // The engine updates its effect list after these events, so read the pool on the next tick.
+            // Deferred one tick in case the effect list is not yet updated when these events fire (unverified).
             DelayCommand(0f, () => Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP)));
         }
 

@@ -42,8 +42,8 @@ namespace SWLOR.Toolset.Tests
         {
             [WaypointBehaviorCatalog.CreatureSpawnPointId] = 2123,
             [WaypointBehaviorCatalog.FishingPointId] = 431,
-            [WaypointBehaviorCatalog.MapNoteId] = 379,
-            [WaypointBehaviorCatalog.StuckRescuePointId] = 331,
+            [WaypointBehaviorCatalog.MapNoteId] = 375,
+            [WaypointBehaviorCatalog.StuckRescuePointId] = 332,
             [WaypointBehaviorCatalog.TransitionDestinationId] = 247,
             [WaypointBehaviorCatalog.PropertyEntranceId] = 43,
             [WaypointBehaviorCatalog.StarshipDockId] = 11,
@@ -52,7 +52,7 @@ namespace SWLOR.Toolset.Tests
             [WaypointBehaviorCatalog.TaxiStopId] = 4,
             [WaypointBehaviorCatalog.DeathRespawnId] = 1,
             [WaypointBehaviorCatalog.RebuildId] = 2,
-            [WaypointBehaviorCatalog.CustomId] = 622
+            [WaypointBehaviorCatalog.CustomId] = 625
         };
 
         private static string GameServerSourceRoot =>

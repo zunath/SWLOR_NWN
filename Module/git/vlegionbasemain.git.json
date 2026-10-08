@@ -14718,9 +14718,18 @@
                 "value": [
                   {
                     "__struct_id": 0,
-                    "Name": { "type": "cexostring", "value": "NO_ECONOMY" },
-                    "Type": { "type": "dword", "value": 1 },
-                    "Value": { "type": "int", "value": 1 }
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
                   }
                 ]
               }
@@ -16488,9 +16497,18 @@
                 "value": [
                   {
                     "__struct_id": 0,
-                    "Name": { "type": "cexostring", "value": "NO_ECONOMY" },
-                    "Type": { "type": "dword", "value": 1 },
-                    "Value": { "type": "int", "value": 1 }
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
                   }
                 ]
               }
@@ -18258,9 +18276,18 @@
                 "value": [
                   {
                     "__struct_id": 0,
-                    "Name": { "type": "cexostring", "value": "NO_ECONOMY" },
-                    "Type": { "type": "dword", "value": 1 },
-                    "Value": { "type": "int", "value": 1 }
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
                   }
                 ]
               }

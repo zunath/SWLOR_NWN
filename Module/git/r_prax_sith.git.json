@@ -214,6 +214,7 @@
           "type": "list",
           "value": [
             {
+              "__struct_id": 1,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -335,8 +336,7 @@
               "xModelPart1": {
                 "type": "word",
                 "value": 33
-              },
-              "__struct_id": 1
+              }
             },
             {
               "__struct_id": 2,
@@ -2660,6 +2660,7 @@
           "type": "list",
           "value": [
             {
+              "__struct_id": 1,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -2781,8 +2782,7 @@
               "xModelPart1": {
                 "type": "word",
                 "value": 44
-              },
-              "__struct_id": 1
+              }
             },
             {
               "__struct_id": 2,

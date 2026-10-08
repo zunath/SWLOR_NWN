@@ -121,6 +121,9 @@ namespace SWLOR.Game.Server.Native
                 LogDamageCalculation(attackerStat, damageProfile);
 
                 // Apply combat mode bonuses
+                if (weapon != null && damageProfile.HasItemDamage)
+                    damageProfile = new WeaponDamageProfile(damageProfile.DamageType,
+                        WeaponDamage.GetEffectiveDMG(attacker.m_idSelf, weapon.m_idSelf, damageProfile.Damage));
                 damageProfile = ApplyCombatModeBonus(attacker, damageProfile);
                 damageProfile = ApplyMightModifierDamageBonus(attacker, weapon, damageProfile);
 
@@ -311,7 +314,7 @@ namespace SWLOR.Game.Server.Native
                 Stat.ReduceFP(attacker.m_idSelf, fpCost);
             }
 
-            return new WeaponDamageProfile(CombatDamageType.Force, damageProfile.Damage);
+            return new WeaponDamageProfile(CombatDamageType.Force, damageProfile.Damage, damageProfile.HasItemDamage);
         }
 
         private static WeaponDamageProfile ExtractWeaponDamageProfile(CNWSItem weapon)
@@ -344,7 +347,7 @@ namespace SWLOR.Game.Server.Native
             // the unarmed/default physical fallback instead of manufacturing elemental damage.
             if (!hasDamageProperty)
             {
-                return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage);
+                return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage, false);
             }
 
             return new WeaponDamageProfile(damageType, damage);
@@ -424,9 +427,9 @@ namespace SWLOR.Game.Server.Native
             switch (attacker?.m_nCombatMode)
             {
                 case PowerAttackMode:
-                    return new WeaponDamageProfile(damageProfile.DamageType, damageProfile.Damage + PowerAttackDamageBonus);
+                    return new WeaponDamageProfile(damageProfile.DamageType, damageProfile.Damage + PowerAttackDamageBonus, damageProfile.HasItemDamage);
                 case ImprovedPowerAttackMode:
-                    return new WeaponDamageProfile(damageProfile.DamageType, damageProfile.Damage + ImprovedPowerAttackDamageBonus);
+                    return new WeaponDamageProfile(damageProfile.DamageType, damageProfile.Damage + ImprovedPowerAttackDamageBonus, damageProfile.HasItemDamage);
                 default:
                     return damageProfile;
             }
@@ -450,7 +453,7 @@ namespace SWLOR.Game.Server.Native
             if (multiplier <= 0)
                 return damageProfile;
 
-            return new WeaponDamageProfile(damageProfile.DamageType, damageProfile.Damage + mightModifier * multiplier);
+            return new WeaponDamageProfile(damageProfile.DamageType, damageProfile.Damage + mightModifier * multiplier, damageProfile.HasItemDamage);
         }
 
         private static int CalculateTargetSpecificDamage(void* pTarget, CNWSCreature attacker,
@@ -634,11 +637,13 @@ namespace SWLOR.Game.Server.Native
         {
             public CombatDamageType DamageType { get; }
             public int Damage { get; }
+            public bool HasItemDamage { get; }
 
-            public WeaponDamageProfile(CombatDamageType damageType, int damage)
+            public WeaponDamageProfile(CombatDamageType damageType, int damage, bool hasItemDamage = true)
             {
                 DamageType = damageType;
                 Damage = damage;
+                HasItemDamage = hasItemDamage;
             }
         }
 

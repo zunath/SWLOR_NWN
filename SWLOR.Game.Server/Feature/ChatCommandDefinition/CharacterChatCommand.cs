@@ -17,6 +17,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using HoloCom = SWLOR.Game.Server.Service.HoloCom;
 using Player = SWLOR.Game.Server.Entity.Player;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -28,7 +29,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             Char();
             CDKey();
-            Save();
             Skills();
             EndCall();
             Recipes();
@@ -102,18 +102,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     var cdKey = GetPCPublicCDKey(user);
                     SendMessageToPC(user, "Your public CD Key is: " + cdKey);
-                });
-        }
-
-        private void Save()
-        {
-            _builder.Create("save")
-                .Description("Manually saves your character. Your character also saves automatically every few minutes.")
-                .Permissions(AuthorizationLevel.Player)
-                .Action((user, target, location, args) =>
-                {
-                    ExportSingleCharacter(user);
-                    SendMessageToPC(user, "Character saved successfully.");
                 });
         }
 
@@ -474,8 +462,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     dbPlayer.HeadAppearanceScale = newScale;
                     DB.Set(dbPlayer);
 
-                    SetObjectVisualTransform(user, ObjectVisualTransform.Scale, newScale,
-                        nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+                    HelmetModelRenderer.SetHeadScale(user, newScale);
 
                     SendMessageToPC(user, $"Head Size: {newScale:0.##}");
                 });

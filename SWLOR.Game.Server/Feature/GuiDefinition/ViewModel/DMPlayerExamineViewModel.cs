@@ -38,6 +38,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private string _targetDescription;
         private string _characterType;
         private string _credits;
+        private string _descriptor;
+        private string _accountName;
+        private string _publicCDKey;
 
         public const string PartialView = "PARTIAL";
 
@@ -86,6 +89,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string Description
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Descriptor
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string TrueName
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string AccountName
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string PublicCDKey
         {
             get => Get<string>();
             set => Set(value);
@@ -164,6 +191,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? "Force Sensitive"
                 : "Standard";
             _credits = $"{GetGold(initialPayload.Target)}cr";
+            _descriptor = GetIsPC(initialPayload.Target) && !GetIsDM(initialPayload.Target)
+                ? Disguise.GetDisplayDescriptor(initialPayload.Target)
+                : "N/A";
+            _accountName = GetPCPlayerName(initialPayload.Target);
+            _publicCDKey = GetPCPublicCDKey(initialPayload.Target);
 
             ActiveNoteName = string.Empty;
             ActiveNoteCreator = string.Empty;
@@ -188,6 +220,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Description = _targetDescription;
             CharacterType = _characterType;
             Credits = _credits;
+            Descriptor = $"Descriptor: {_descriptor}";
+            TrueName = $"True Name: {_targetName}";
+            AccountName = $"Account: {_accountName}";
+            PublicCDKey = $"Public CD Key: {_publicCDKey}";
         }
 
         private void LoadTargetSkills()

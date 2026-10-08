@@ -95,6 +95,10 @@ public class CombatDamageTests
             "the creature-weapon fallback must not be gated on BeastMastery: gating it there made "
             + "every other skill resolve ability accuracy against an invalid weapon, which zeroes "
             + "the attacker's accuracy stat");
+        weaponLookup.Should().NotContain("GetSkillTypeByBaseItem",
+            "a mismatched main-hand weapon must not be skipped for an empty off hand or shield");
+        weaponLookup.Should().Contain("IsAbilityWeapon(rightHand)");
+        weaponLookup.Should().Contain("IsAbilityWeapon(leftHand)");
     }
 
     [Test]
@@ -268,13 +272,13 @@ public class CombatDamageTests
 
         usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item)");
         abilitySource.Should().Contain("trackedImpact.TriggeringWeaponDamage = GetIsObjectValid(triggeringWeapon)");
-        abilitySource.Should().Contain("? Item.GetDMG(triggeringWeapon)");
+        abilitySource.Should().Contain("? WeaponDamage.GetEffectiveDMG(activator, triggeringWeapon)");
         abilitySource.Should().Contain("triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage");
         Combat.GetCombatImpactWeaponDamage(0, SkillType.Vibroblade, triggeringWeaponDamage: 23).Should().Be(23);
         Combat.GetCombatImpactWeaponDamage(0, SkillType.Pistol, triggeringWeaponDamage: 0).Should().Be(0);
         Combat.GetCombatImpactWeaponDamage(0, SkillType.Force, triggeringWeaponDamage: 23).Should().Be(0);
-        abilitySource.Should().Contain("TriggeringWeaponDamage = sequenceOwner?.TriggeringWeaponDamage");
-        abilitySource.Should().Contain("TriggeringWeaponDamage = originatingImpact.TriggeringWeaponDamage");
+        abilitySource.Should().Contain("TriggeringWeaponDamage = triggeringWeaponDamage ?? sequenceOwner?.TriggeringWeaponDamage");
+        abilitySource.Should().Contain("triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage");
         combatSource.Should().Contain("GetCombatImpactWeaponDamage(attacker, attackerWeaponSkill, requireMatchingSkill: true)");
         var selection = ExtractMethod(combatSource, "private static uint GetCombatImpactWeapon");
         selection.Should().Contain("Skill.GetSkillTypeByBaseItem(GetBaseItemType(rightHand)) == skillType");
@@ -391,7 +395,7 @@ public class CombatDamageTests
 
         combatSource.Should().Contain("SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalDamagePercentAdjustment)");
         combatSource.Should().Contain("IsRangedWeaponSkill(skillType)");
-        combatSource.Should().Contain("StatType.RangedCriticalDamagePercentAdjustment");
+        combatSource.Should().Contain("StatType.WeaponCriticalDamagePercentAdjustment");
         combatSource.Should().Contain("StatType.RangedAttackDamageFlatAdjustment");
         combatSource.Should().Contain("StatType.RangedAttackDefenseIgnorePercentAdjustment");
         combatSource.Should().Contain("SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalRatePercentAdjustment)");
@@ -1183,7 +1187,16 @@ public class CombatDamageTests
         var extractor = ExtractMethod(damageRollSource, "private static WeaponDamageProfile ExtractWeaponDamageProfile(");
         extractor.Should().Contain("var hasDamageProperty = false;");
         extractor.Should().Contain("if (!hasDamageProperty)");
-        extractor.Should().Contain("return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage);");
+        extractor.Should().Contain("return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage, false);");
+        damageRollSource.Should().Contain("if (weapon != null && damageProfile.HasItemDamage)");
+        var ratingSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "CombatService", "WeaponDamage.cs"));
+        ratingSource.Should().Contain("if (!GetItemHasItemProperty(weapon, ItemPropertyType.DMG))");
+        var payloadSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "GuiDefinition", "Payload", "ExamineItemPayload.cs"));
+        var previewSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "ExamineItemViewModel.cs"));
+        payloadSource.Should().Contain("HasItemDMG = GetItemHasItemProperty(item, ItemPropertyType.DMG)");
+        previewSource.Should().Contain("var hasItemDMG = _payload.HasItemDMG;");
+        previewSource.Should().Contain("hasItemDMG = GetItemHasItemProperty(_payload.ItemObject, ItemPropertyType.DMG)");
+        previewSource.Should().Contain("StatType.SingleWeaponDamagePercentAdjustment), hasItemDMG)");
     }
 
     [Test]

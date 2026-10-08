@@ -251,8 +251,14 @@ namespace SWLOR.Game.Server.Service
 
             if (detected)
             {
-                ExitDetectedPlayerStealth(observer, target);
-                if (acquireAggroOnDetection)
+                // Hostility is judged from the observer's perspective. A friendly or neutral
+                // observer still sees the target (the verdict stays true), but only a hostile
+                // observer's success ends the target's stealth for everyone.
+                var hostile = GetIsEnemy(target, observer);
+
+                if (ShouldBreakStealthOnDetection(true, hostile))
+                    ExitDetectedPlayerStealth(observer, target);
+                if (acquireAggroOnDetection && hostile)
                     AI.TryAcquireAggroAfterDetection(observer, target);
             }
 
@@ -260,9 +266,17 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// A successful detection reveals a player to everyone by ending their stealth mode. NPC
-        /// stealth keeps the engine's observer-specific behavior so creature encounters are not
-        /// globally revealed when a single observer succeeds.
+        /// Only a successful detection by a hostile observer globally breaks stealth.
+        /// </summary>
+        public static bool ShouldBreakStealthOnDetection(bool detected, bool observerIsHostile)
+        {
+            return detected && observerIsHostile;
+        }
+
+        /// <summary>
+        /// A hostile observer's successful detection reveals a player to everyone by ending their
+        /// stealth mode. NPC stealth keeps the engine's observer-specific behavior so creature
+        /// encounters are not globally revealed when a single observer succeeds.
         /// </summary>
         private static void ExitDetectedPlayerStealth(uint observer, uint target)
         {

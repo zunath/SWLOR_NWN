@@ -11,18 +11,21 @@ public class RobeModelCatalogTests
         ("pfh0_robe187", 110, 0), ("pmh0_robe187", 110, 0), ("pfh0_robe001", 34, 0)
     }, new[] { (111, 0) });
 
-    [TestCase(0, "pfh0_robe187", true, 110)]
-    [TestCase(110, "PFH0_ROBE187", true, 110)]
-    [TestCase(110, "pfh0_robe001", true, 34)]
-    [TestCase(110, "pfh0_robe187", false, 0)]
-    [TestCase(110, null, true, 0)]
-    [TestCase(110, "missing", true, 0)]
-    [TestCase(111, "missing", true, 0)]
-    [TestCase(22, "pfh0_robe187", true, 22)]
-    [TestCase(2, "pfh22_robe187", true, 2)]
-    [TestCase(254, null, false, 254)]
-    public void ResolvesRgbWithoutLosingTheBaseBody(int current, string model, bool rgb, int expected) =>
-        Assert.That(Catalog().ResolvePhenotype(current, model, rgb), Is.EqualTo(expected));
+    [TestCase(0, "pfh0_robe187", 110)]
+    [TestCase(110, "PFH0_ROBE187", 110)]
+    [TestCase(110, "pfh0_robe001", 34)]
+    [TestCase(110, null, 0)]
+    [TestCase(110, "missing", 0)]
+    [TestCase(111, "missing", 0)]
+    [TestCase(22, "pfh0_robe187", 22)]
+    [TestCase(2, "pfh22_robe187", 2)]
+    [TestCase(254, null, 254)]
+    public void ResolvesRgbWithoutLosingTheBaseBody(int current, string model, int expected) =>
+        Assert.That(Catalog().ResolvePhenotype(current, model), Is.EqualTo(expected));
+
+    [Test]
+    public void UntintedCataloguedRobesStillRenderThroughTheirBoundBodyRoot() =>
+        Assert.That(Catalog().ResolvePhenotype(0, "pmh0_robe187"), Is.EqualTo(110));
 
     [TestCase(-1)]
     [TestCase(33)]

@@ -253,7 +253,7 @@ def build_sheet() -> Sheet:
 
     sheet.merged("Core Implementation Rules")
     sheet.table(["Rule", "Value", "", "", "", "", "", "Notes"], [
-        ["Interaction model", "Turn-based", "", "", "", "", "", "No timers or heartbeat-driven puzzle state; the server reacts only to player actions."],
+        ["Interaction model", "Turn-based", "", "", "", "", "", ""],
         ["Win condition", "Powered route", "", "", "", "", "", "Rotate and swap tiles until one continuous entry-to-core circuit is powered."],
         ["Rotate", "1 trace", "", "", "", "", "", "Clockwise rotation only."],
         ["Adjacent swap", "2 trace", "", "", "", "", "", "Entry and core tiles cannot be swapped."],
@@ -272,7 +272,7 @@ def build_sheet() -> Sheet:
     sheet.table(["Tier", "Grid", "Extra Trace", "Authored Swaps", "Slicing Rank", "Armor Bands", "", "Notes"], [
         [1, "3 x 3", 4, 0, 1, "0 / 5", "", "Slicing I starts at Espionage rank 0 and trains to 22. Optional tier 1 supplies are sold at the Veles General Store. Base trace equals solution cost plus extra trace."],
         [2, "4 x 3", 3, 1, 2, "10 / 15", "", "Deterministic guaranteed-solvable route."],
-        [3, "4 x 4", 3, 2, 3, "20 / 25", "", "No runtime solver."],
+        [3, "4 x 4", 3, 2, 3, "20 / 25", "", ""],
         [4, "5 x 4", 2, 3, 4, "30 / 35", "", "Rare exceptional named item uses the half-tier Armor band."],
         [5, "5 x 5", 2, 4, 5, "40 / 45", "", "Rare exceptional named item uses the half-tier Armor band."],
     ])
@@ -295,7 +295,7 @@ def build_sheet() -> Sheet:
     sheet.blank()
 
     sheet.merged("Shared World Terminal Nodes")
-    area_rows = [[tier, area, f"SLICING_TERMINAL_T{tier}", 1, "45-75 minutes", "Random valid walkmesh", "", "One shared node per area"]
+    area_rows = [[tier, area, f"SLICING_TERMINAL_T{tier}", 1, "45-75 minutes", "Random valid walkmesh", "", ""]
                  for area, tier in content.TERMINAL_AREAS.items()]
     sheet.table(["Tier", "Area Resref", "Spawn Table", "Node Count", "Respawn", "Placement", "", "Notes"], area_rows)
     sheet.blank()

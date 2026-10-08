@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -9,54 +10,45 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private readonly GuiWindowBuilder<ExamineItemViewModel> _builder = new();
         public GuiConstructedWindow BuildWindow()
         {
-            _builder.CreateWindow(GuiWindowType.ExamineItem)
+            var window = _builder.CreateWindow(GuiWindowType.ExamineItem)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 385f, 379f)
+                .SetInitialGeometry(0, 0, 430f, 460f)
                 .BindTitle(model => model.WindowTitle)
+                .DefinePartialView(ExamineItemViewModel.ContentPartial, host =>
+                    host.AddColumn(col =>
+                        col.AddRow(row =>
+                            row.AddGroup(panel =>
+                            {
+                                panel.SetShowBorder(false)
+                                    .SetScrollbars(NuiScrollbars.None);
 
-                .AddColumn(col =>
-                {
-                    col.AddRow(row =>
-                    {
-                        row.AddGroup(group =>
-                        {
-                            group.AddLabel()
-                                .SetText("Description")
-                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                .SetVerticalAlign(NuiVerticalAlign.Middle);
-                        })
-                            .SetHeight(26f);
-                    });
+                                panel.AddColumn(body =>
+                                {
+                                    body.AddRow(row =>
+                                        row.AddLabel()
+                                            .SetText("Description")
+                                            .SetHeight(26f));
 
-                    col.AddRow(row =>
-                    {
-                        row.AddText()
-                            .BindText(model => model.Description)
-                            .SetHeight(160f);
-                    });
+                                    body.AddRow(row =>
+                                        row.AddText()
+                                            .BindText(model => model.Description)
+                                            .SetHeight(230f));
 
-                    col.AddRow(row =>
-                    {
-                        row.AddGroup(group =>
-                        {
-                            group.AddLabel()
-                                .SetText("Item Properties")
-                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                .SetVerticalAlign(NuiVerticalAlign.Middle);
-                        })
-                            .SetHeight(26f);
-                    });
+                                    body.AddRow(row =>
+                                        row.AddLabel()
+                                            .SetText("Item Properties")
+                                            .SetHeight(26f));
 
-                    col.AddRow(row =>
-                    {
-                        row.AddText()
-                            .BindText(model => model.ItemProperties)
-                            .SetHeight(105f);
-                    });
-                });
-                ;
-
+                                    body.AddRow(row =>
+                                        row.AddText()
+                                            .BindText(model => model.ItemProperties)
+                                            .SetHeight(160f));
+                                });
+                            })
+                                .SetWidth(390f))));
+            window.AddStandardLayout(layout =>
+                layout.SetContentPartialElement(ExamineItemViewModel.ContentElement));
             return _builder.Build();
         }
     }

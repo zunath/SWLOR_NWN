@@ -31,6 +31,9 @@ namespace SWLOR.Game.Server.Service
         // window never has to read the 2da per-row on open (mirrors how perks cache detail.IconResref).
         private static readonly Dictionary<FeatType, string> _techniqueIcons = new();
 
+        // Authored text resolved at boot, before hotbar TLK overrides add resource and recast headers.
+        private static readonly Dictionary<FeatType, string> _techniqueDescriptions = new();
+
         // Source NPC feat -> the technique feat it teaches.
         private static readonly Dictionary<FeatType, FeatType> _techniqueByNpcFeat = new();
 
@@ -80,6 +83,7 @@ namespace SWLOR.Game.Server.Service
             _techniques.Clear();
             _techniqueByNpcFeat.Clear();
             _techniqueIcons.Clear();
+            _techniqueDescriptions.Clear();
             _traitStatsByStat.Clear();
             _traitResistancesByResistance.Clear();
 
@@ -125,18 +129,25 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            // Resolve icon resrefs in a separate, guarded pass: Get2DAString requires a live engine,
+            // Resolve icons and authored descriptions during boot, before OnModuleLoad publishes
+            // hotbar TLK overrides. Get2DAString requires a live engine,
             // so a unit-test harness (no NWNCore.Init) would otherwise throw and abort the technique
-            // caching above. Icons are only consumed by the live Techniques UI, so leaving them
-            // unresolved in that harness is harmless.
+            // caching above. Engine-backed presentation data is unused in that harness.
             try
             {
                 foreach (var feat in _techniques.Keys)
+                {
                     _techniqueIcons[feat] = Get2DAString("feat", "ICON", (int)feat);
+                    _techniqueDescriptions[feat] =
+                        int.TryParse(Get2DAString("feat", "DESCRIPTION", (int)feat), out var strRef) && strRef > 0
+                            ? GetStringByStrRef(strRef)
+                            : string.Empty;
+                }
             }
             catch
             {
                 _techniqueIcons.Clear();
+                _techniqueDescriptions.Clear();
             }
         }
 
@@ -232,6 +243,15 @@ namespace SWLOR.Game.Server.Service
         public static string GetTechniqueIcon(FeatType feat)
         {
             return _techniqueIcons.TryGetValue(feat, out var icon) ? icon : string.Empty;
+        }
+
+        /// <summary>
+        /// Returns authored technique text cached at boot, without the hotbar TLK headers.
+        /// Empty string if the feat has no cached description.
+        /// </summary>
+        public static string GetTechniqueDescription(FeatType feat)
+        {
+            return _techniqueDescriptions.TryGetValue(feat, out var description) ? description : string.Empty;
         }
 
         /// <summary>
@@ -906,7 +926,8 @@ namespace SWLOR.Game.Server.Service
                     StatusEffect.RemoveStatusEffectsFromAllTargetsBySource(
                         player,
                         statusEffectType,
-                        false);
+                        false,
+                        detail);
                 }
             }
 

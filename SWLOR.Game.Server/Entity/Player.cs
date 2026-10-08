@@ -212,6 +212,8 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<CurrencyType, int> Currencies { get; set; }
         public float AppearanceScale { get; set; }
         public float HeadAppearanceScale { get; set; }
+        // Null means no tint snapshot exists yet; an empty snapshot records cleared RGB overrides.
+        public Dictionary<string, int> CreatureTintOverrides { get; set; }
     }
 
     public class MapPin

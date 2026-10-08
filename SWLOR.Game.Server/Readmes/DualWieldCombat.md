@@ -4,6 +4,12 @@ Two equipped melee weapons, or the two ends of a double weapon, share one attack
 main-hand roll and an off-hand roll. Each roll uses its own weapon's accuracy, damage type,
 damage amount, skill, critical roll, and on-hit effects. The existing combined weapon delay
 and off-hand delay reduction still determine the cycle interval.
+Ordinary Haste/Slow scales that effective interval by the acceleration of a comparable
+single weapon, using the average of the two hands' original delays as the reference.
+Dual Wield reduces the off hand before that scaling. This preserves the unhasted paired
+cadence and keeps its relative roll-rate advantage stable across ordinary Haste/Slow,
+including near the single-weapon floor. Swapping mixed weapons does not change the
+acceleration factor. Limited/no-delay effects still budget their matching actual rolls.
 Main-hand rolls resolve first. Off-hand rolls resolve after the main-hand animation and
 its ready transition, so native damage and hit effects follow the two separate swings.
 
@@ -52,6 +58,15 @@ Keep the attack data alive until the native damage/animation phase finishes; do 
 `RecomputeRound` or clear attacks between the two hands.
 
 Single weapons, shields, ranged attacks, and natural weapons keep their existing scheduling paths.
+Players and their combat droids with one eligible one-handed melee, pistol, or throwing weapon
+and an empty off hand receive +20% item weapon DMG. Doublehand I/II/III adds 10/25/40%
+to that percentage. The combined adjustment rounds up once, before the damage formula
+and flat bonuses. Weapon ability impacts capture the effective rating so equipment changes
+between targets or repeated impacts cannot change a cast's damage. Fixed DoT ticks and
+unrelated Force/Devices damage keep their own budgets. Any off-hand item disables this
+bonus, including a shield; rifles, two-handed/double weapons, unarmed and natural attacks do
+not qualify.
+Authored NPCs retain their explicit item ratings unless given a Single Weapon stat adjustment.
 Twinblades and saberstaves use the main-hand item for both native weapon selections, so
 both ends receive its properties and skill. Dual Wield reduces only the second end's delay.
 Player double weapons use the corresponding one-handed weapon's per-end damage and delay;

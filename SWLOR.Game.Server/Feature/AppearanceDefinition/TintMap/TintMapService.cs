@@ -57,8 +57,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (!GetIsPC(player))
                 return;
 
-            // A freshly loaded PC has persisted appearance and tint locals but no stale
-            // runtime rows to clear. Keep unrelated material overrides during relog restore.
+            RestorePlayerOverrides(player);
+            // Restore tint locals from the player record before any queued model refresh.
+            // Keep unrelated material overrides during relog restore.
             DelayCommand(1f, () => ApplyCurrentColors(player, resetShaderOverrides: false));
         }
 
@@ -144,9 +145,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // A complete reset also removes legacy wildcard values left by older implementations
             // before the current material-scoped values are installed.
             var selections = TintMapModelResolver.GetCurrentSelections(creature);
-            var hasRobeRgb = selections.Any(selection => selection.ArmorPart == AppearanceArmor.Robe &&
-                selection.Material.Layers.Any(layer => GetEffectiveColor(creature, selection, layer).CustomColor.HasValue));
-            var rendersRobeRgb = RobeModelRenderer.Apply(creature, selections, hasRobeRgb);
+            var rendersRobeRgb = RobeModelRenderer.Apply(creature, selections);
+            HelmetModelRenderer.Apply(creature, selections);
             ProjectNativeRobeColors(creature, selections, rendersRobeRgb);
             ApplyEquippedHelmetColors(creature, selections, resetShaderOverrides);
             if (resetShaderOverrides)
@@ -876,6 +876,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             RemoveDroidOverrides(creature, variableNames);
+            SavePlayerOverrides(creature);
             ApplyCurrentColorsAndPublish(creature);
         }
 
@@ -927,6 +928,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 creature,
                 variableNames.Concat(new[] { stateVariable }).ToList(),
                 savedColor);
+            SavePlayerOverrides(creature);
 
             // Creature colors are semantic across the whole modular model: every registered
             // material whose tint mask uses this layer must receive the same value. The enabled
@@ -1929,6 +1931,64 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         private static string GetCreatureCustomColorStateVariable(TintMapLayerType layer)
         {
             return TintMapVariable.GetCreatureColorStateName(layer);
+        }
+
+        private static IEnumerable<string> GetCreatureTintSnapshotVariables(uint creature)
+        {
+            return GetCreatureCustomColorVariables(creature).Concat(
+                Enum.GetValues<TintMapLayerType>()
+                    .Where(TintMapVariable.IsCreatureColorLayer)
+                    .Select(GetCreatureCustomColorStateVariable));
+        }
+
+        private static void SavePlayerOverrides(uint creature)
+        {
+            if (!GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature))
+                return;
+
+            var player = DB.Get<Entity.Player>(GetObjectUUID(creature));
+            if (player == null)
+                return;
+
+            var colors = GetCreatureTintSnapshotVariables(creature)
+                .Select(name => new KeyValuePair<string, int>(name, GetLocalInt(creature, name)))
+                .Where(entry => entry.Value > 0)
+                .ToDictionary(entry => entry.Key, entry => entry.Value, StringComparer.Ordinal);
+            if (UpdatePlayerTintOverrides(player, colors))
+                DB.Set(player);
+        }
+
+        private static bool UpdatePlayerTintOverrides(
+            Entity.Player player, IReadOnlyDictionary<string, int> colors)
+        {
+            if (player.CreatureTintOverrides != null &&
+                player.CreatureTintOverrides.Count == colors.Count &&
+                colors.All(entry => player.CreatureTintOverrides.TryGetValue(entry.Key, out var saved) &&
+                                    saved == entry.Value))
+                return false;
+
+            player.CreatureTintOverrides = new Dictionary<string, int>(colors, StringComparer.Ordinal);
+            return true;
+        }
+
+        private static void RestorePlayerOverrides(uint creature)
+        {
+            if (!GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature))
+                return;
+
+            var player = DB.Get<Entity.Player>(GetObjectUUID(creature));
+            if (player?.CreatureTintOverrides == null)
+                return;
+
+            // A saved clear must win over stale locals from an older character export.
+            foreach (var name in GetCreatureTintSnapshotVariables(creature).ToList())
+                DeleteLocalInt(creature, name);
+            foreach (var (name, value) in player.CreatureTintOverrides)
+            {
+                if (value > 0 && (TintMapVariable.IsCreatureColorStateName(name) ||
+                    TintMapVariable.TryGetLayer(name, out var layer) && TintMapVariable.IsCreatureColorLayer(layer)))
+                    SetLocalInt(creature, name, value);
+            }
         }
 
         private static void RemoveDroidOverrides(uint creature, IReadOnlyList<string> variableNames)

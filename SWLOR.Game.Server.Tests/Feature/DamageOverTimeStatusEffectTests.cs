@@ -52,6 +52,73 @@ public class DamageOverTimeStatusEffectTests
     }
 
     [Test]
+    public void RefreshingTickDuration_PreservesThePendingDamageTick()
+    {
+        var statusEffect = new CountingStatusEffect();
+        statusEffect.ApplyEffect(1, 1, 2);
+        var lastRunField = typeof(StatusEffectBase).GetField(
+            "_lastRun", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var pendingTick = DateTime.UtcNow.AddSeconds(-3.1);
+        lastRunField.SetValue(statusEffect, pendingTick);
+
+        statusEffect.SetDurationTicks(2);
+
+        lastRunField.GetValue(statusEffect).Should().Be(pendingTick);
+        statusEffect.TickEffect(1);
+        statusEffect.TickCount.Should().Be(1);
+        statusEffect.DurationTicks.Should().Be(1);
+    }
+
+    [Test]
+    public void ReapplyingAProc_PreservesTheTargetsPendingTickAndGetsAFreshExpiration()
+    {
+        var existing = new CountingStatusEffect();
+        existing.ApplyEffect(1, 2, 2);
+        var lastRun = DateTime.UtcNow.AddSeconds(-3.1);
+        typeof(StatusEffectBase).GetField("_lastRun", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .SetValue(existing, lastRun);
+        var incoming = new CountingStatusEffect();
+        var anchor = StatusEffect.GetRefreshTickAnchor(incoming, new[] { existing }, 3);
+        anchor.Should().Be(lastRun, "a new source must not postpone a non-stacking DoT either");
+
+        incoming.ApplyEffect(3, 2, 2, 6f, anchor);
+        incoming.GetRemainingDurationSeconds(DateTime.UtcNow).Should().BeApproximately(6f, 0.1f);
+        incoming.TickEffect(2);
+        incoming.TickCount.Should().Be(1, "the refresh path used by normal applications must deliver the pending tick");
+        incoming.Source.Should().Be(3);
+    }
+
+    [TestCase(6f, 20, 7.2f)]
+    [TestCase(10f, 20, 12f)]
+    [TestCase(12f, 20, 14.4f)]
+    public void DurationBonuses_UseAuthoredSecondsBeforeSchedulingTicks(float authored, int bonus, float expected)
+    {
+        var seconds = StatusEffect.CalculateAdjustedStatusDurationSeconds(authored, bonus);
+        seconds.Should().BeApproximately(expected, 0.001f);
+        var effect = new CountingStatusEffect();
+        effect.ApplyEffect(1, 2, (int)Math.Ceiling(seconds / effect.Frequency), seconds);
+        effect.GetRemainingDurationSeconds(DateTime.UtcNow).Should().BeApproximately(expected, 0.1f);
+    }
+
+    [Test]
+    public void FractionalFinalInterval_ExpiresWithoutGrantingAnExtraDamageTick()
+    {
+        var effect = new CountingStatusEffect();
+        effect.ApplyEffect(1, 2, 2, 3.6f);
+        var lastRun = typeof(StatusEffectBase).GetField("_lastRun", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        lastRun.SetValue(effect, DateTime.UtcNow.AddSeconds(-3.1));
+        effect.TickEffect(2);
+        effect.TickCount.Should().Be(1);
+        effect.IsFlaggedForRemoval.Should().BeFalse();
+
+        lastRun.SetValue(effect, DateTime.UtcNow.AddSeconds(-0.7));
+        effect.TickEffect(2);
+        effect.TickCount.Should().Be(1);
+        effect.IsFlaggedForRemoval.Should().BeTrue();
+        effect.WasNaturallyExpired.Should().BeTrue();
+    }
+
+    [Test]
     public void BurnStatusEffect_FloorsTickDamageAndAttributesFireDamageToSource()
     {
         var burnSource = ReadStatusEffectSource("BurnStatusEffect.cs");
@@ -226,6 +293,7 @@ public class DamageOverTimeStatusEffectTests
         public override string Name => "Counting";
         public override EffectIconType Icon => EffectIconType.Invalid;
         public override float Frequency => 3f;
+        public override bool PreservesTickScheduleOnRefresh => true;
         public int TickCount { get; private set; }
 
         protected override void Tick(uint creature)

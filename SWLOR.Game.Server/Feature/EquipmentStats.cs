@@ -133,6 +133,15 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
+        [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
+        [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
+        public static void RefreshCombatReadinessAfterEquipmentChange()
+        {
+            // The native slots now describe the completed change. Reconciliation
+            // also handles failed attempts and repeated events without delta drift.
+            Stat.RefreshCombatReadinessEquipment(OBJECT_SELF);
+        }
+
         /// <summary>
         /// Applies or removes an HP bonus on a creature.
         /// </summary>
@@ -353,31 +362,13 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, we're adding the bonus, if false we're removing it.</param>
         private static void ApplyCombatReadiness(uint creature, uint item, ItemProperty ip, bool isAdding)
         {
-            if (GetIsDM(creature) || GetIsDMPossessed(creature))
+            // Player equipment totals are refreshed after the native operation.
+            // Updating them during validation can persist a change that never occurs.
+            if (GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
 
             var amount = GetItemPropertyCostTableValue(ip);
-
-            if (GetIsPC(creature))
-            {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
-
-                if (isAdding)
-                {
-                    Stat.AdjustCombatReadiness(dbPlayer, amount);
-                }
-                else
-                {
-                    Stat.AdjustCombatReadiness(dbPlayer, -amount);
-                }
-
-                DB.Set(dbPlayer);
-            }
-            else
-            {
-                ReapplyNPCStat(creature, ItemPropertyType.CombatReadiness, amount, isAdding);
-            }
+            ReapplyNPCStat(creature, ItemPropertyType.CombatReadiness, amount, isAdding);
         }
 
         /// <summary>

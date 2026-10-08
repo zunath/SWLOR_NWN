@@ -59,7 +59,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation,
                 "Helmet114 geometry must render through the head which receives creature material rows.");
             ctx.AssertEqual(OBJECT_INVALID, nativePilot.m_cAppearance.m_oidHeadItem,
-                "The separate native helmet is suppressed only in the replicated appearance.");
+                "The separate native helmet is suppressed in the replicated appearance.");
+            // Full creature updates send the worn helmet from the inventory unless it is natively hidden.
+            ctx.AssertEqual(1, GetHiddenWhenEquipped(helmet), "The native helmet attachment is hidden from clients.");
+            ctx.Assert(HelmetModelRenderer.IsShownByOwner(helmet), "The owner still shows the helmet.");
             // The server rebuilds the replicated equipment before every client appearance update.
             nativePilot.UpdateAppearanceForEquippedItems();
             ctx.AssertEqual(OBJECT_INVALID, nativePilot.m_cAppearance.m_oidHeadItem,
@@ -119,17 +122,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 try
                 {
-                    SetHiddenWhenEquipped(helmet, true);
+                    HelmetModelRenderer.SetShownByOwner(helmet, false);
                     TintMapService.RefreshAfterColorChange(pilot);
                     ctx.AssertEqual(originalHead, nativePilot.m_cAppearance.m_nHeadVariation, "Hide helmet restores the canonical head.");
                     ctx.AssertEqual(1, GetHiddenWhenEquipped(helmet), "Rendering honors the user's hidden flag.");
+                    ctx.Assert(!HelmetModelRenderer.IsShownByOwner(helmet), "The owner's hide choice is kept.");
                 }
                 finally
                 {
-                    SetHiddenWhenEquipped(helmet, false);
+                    HelmetModelRenderer.SetShownByOwner(helmet, true);
                     TintMapService.RefreshAfterColorChange(pilot);
                 }
                 ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation, "Show helmet restores the render head.");
+                ctx.AssertEqual(1, GetHiddenWhenEquipped(helmet), "Show helmet hides the native attachment again.");
 
                 // The head path carries the native per-species helmet scale on top of the
                 // creature's own head size, and restores that head size when the helmet hides.
@@ -143,12 +148,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(Math.Abs(GetObjectVisualTransform(pilot, ObjectVisualTransform.Scale,
                         nScope: ObjectVisualTransformDataScopeType.CreatureHead) - 1.1f * pilotHelmetScale) < 0.001f,
                     "A head size change while projected keeps the helmet scale.");
-                SetHiddenWhenEquipped(helmet, true);
+                HelmetModelRenderer.SetShownByOwner(helmet, false);
                 TintMapService.RefreshAfterColorChange(pilot);
                 ctx.Assert(Math.Abs(GetObjectVisualTransform(pilot, ObjectVisualTransform.Scale,
                         nScope: ObjectVisualTransformDataScopeType.CreatureHead) - 1.1f) < 0.001f,
                     "Hiding the helmet restores the creature's own head size.");
-                SetHiddenWhenEquipped(helmet, false);
+                HelmetModelRenderer.SetShownByOwner(helmet, true);
                 HelmetModelRenderer.SetHeadScale(pilot, 1f);
                 TintMapService.RefreshAfterColorChange(pilot);
 
@@ -163,6 +168,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         "A race without generated helmet heads keeps its canonical head.");
                     ctx.AssertEqual(helmet, nativePilot.m_cAppearance.m_oidHeadItem,
                         "A race without generated helmet heads keeps the native helmet attachment.");
+                    ctx.AssertEqual(0, GetHiddenWhenEquipped(helmet),
+                        "The native helmet is visible to clients again where it cannot render through the head.");
                     ctx.Assert(!HelmetModelRenderer.SupportsRgb(TintMapModelResolver.GetCurrentSelections(pilot)
                             .Single(s => s.Material.Resref == "helm_114")),
                         "RGB is unavailable where the helmet cannot render through the head.");

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using NWN.Native.API;
 using SWLOR.NWN.API.NWScript.Enum;
+using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using ObjectVisualTransform = SWLOR.NWN.API.NWScript.Enum.ObjectVisualTransform;
 
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
@@ -16,6 +17,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         /// </summary>
         public const ushort HeadBase = 1000;
         private const string HelmetPrefix = "helm_";
+
+        /// <summary>
+        /// Marks a helmet whose native hidden flag was set only because it renders through
+        /// the head. The owner still shows it; this flag is not the player's choice.
+        /// </summary>
+        private const string RenderHeadHiddenVariable = "HELMET_RENDER_HEAD_HIDDEN";
 
         /// <summary>
         /// Returns the render head for a worn, visible helmet on a parts-based body, or the
@@ -36,11 +43,33 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         public static bool IsRenderedHead(ushort head) => head > HeadBase && head < HeadBase + 1000;
 
         /// <summary>
-        /// True while the creature's helmet renders through its head. The native equipment
-        /// refresh re-reads the worn helmet into the replicated appearance before every client
-        /// update, so <see cref="Native.HelmetRenderHead"/> keeps the helmet suppressed for these.
+        /// Whether the owner shows this helmet. Use this instead of GetHiddenWhenEquipped,
+        /// which is also set while the helmet renders through the head.
         /// </summary>
-        public static bool IsProjected(uint creature) => BaseHeadScales.ContainsKey(creature);
+        public static bool IsShownByOwner(uint helmet) =>
+            GetHiddenWhenEquipped(helmet) == 0 || GetLocalInt(helmet, RenderHeadHiddenVariable) != 0;
+
+        /// <summary>
+        /// Applies the owner's show/hide choice. Every writer of a helmet's hidden flag other
+        /// than the render-head projection must go through here.
+        /// </summary>
+        public static void SetShownByOwner(uint helmet, bool shown)
+        {
+            DeleteLocalInt(helmet, RenderHeadHiddenVariable);
+            SetHiddenWhenEquipped(helmet, !shown);
+        }
+
+        /// <summary>
+        /// Restores the native flag of a helmet that leaves the head slot while it renders
+        /// through the head.
+        /// </summary>
+        public static void Release(uint helmet)
+        {
+            if (GetLocalInt(helmet, RenderHeadHiddenVariable) == 0)
+                return;
+            DeleteLocalInt(helmet, RenderHeadHiddenVariable);
+            SetHiddenWhenEquipped(helmet, false);
+        }
 
         /// <summary>
         /// The phenotype-0 head resource the client loads for a render head. Missing phenotypes
@@ -83,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 return;
 
             var helmet = selections.FirstOrDefault(selection => selection.IsWornHelmet);
-            var visible = helmet != null && GetHiddenWhenEquipped(helmet.PaletteSource) == 0 &&
+            var visible = helmet != null && IsShownByOwner(helmet.PaletteSource) &&
                           HasRenderHead(creature, helmet.ModelResref);
             var parts = Get2DAString("appearance", "MODELTYPE", (int)GetAppearanceType(creature))
                 .StartsWith("P", StringComparison.OrdinalIgnoreCase);
@@ -92,6 +121,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var appearance = nativeCreature.m_cAppearance;
             if (head == originalHead)
             {
+                Release(GetItemInSlot(InventorySlot.Head, creature));
                 RestoreHeadScale(creature);
                 // Leave unsupported appearances entirely native. Restore only an appearance
                 // that we previously projected; this also honors the native hidden-item flag.
@@ -105,12 +135,22 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             // The native helmet slot scales the helmet per species and gender; a head does not.
             ProjectHeadScale(creature);
+
+            // Full creature updates send the worn helmet from the inventory unless the item is
+            // natively hidden, and the client never replays material rows onto that attachment.
+            // Hiding it natively also keeps it out of the owner's own view and the native
+            // equipment refresh.
+            if (GetHiddenWhenEquipped(helmet.PaletteSource) == 0)
+            {
+                SetLocalInt(helmet.PaletteSource, RenderHeadHiddenVariable, 1);
+                SetHiddenWhenEquipped(helmet.PaletteSource, true);
+            }
             if (appearance.m_nHeadVariation == head && appearance.m_oidHeadItem == OBJECT_INVALID)
                 return;
 
             // The client skips its separate helmet when replaying creature material rows.
-            // Render the same compiled geometry as its head instead. Only the replicated
-            // appearance changes: stats, the equipped item, dyes, and visibility stay native.
+            // Render the same compiled geometry as its head instead. Stats, the equipped item
+            // and dyes stay native.
             appearance.m_nHeadVariation = head;
             appearance.m_oidHeadItem = OBJECT_INVALID;
             server.SetForceUpdate();

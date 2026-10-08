@@ -3261,7 +3261,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var helmet = GetItemInSlot(InventorySlot.Head, _target);
             if (GetIsObjectValid(helmet))
             {
-                SetHiddenWhenEquipped(helmet, !ShowHelmet);
+                HelmetModelRenderer.SetShownByOwner(helmet, ShowHelmet);
             }
 
             var cloak = GetItemInSlot(InventorySlot.Cloak, _target);

@@ -804,6 +804,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     EffectInvisibility(InvisibilityType.Normal),
                     activator,
                     SelfInvisibilityDurationSeconds);
+                Enmity.ReevaluateEnemyAttackTargets(activator);
             }
 
             private void ApplyNearbyPartyStatus(uint activator)

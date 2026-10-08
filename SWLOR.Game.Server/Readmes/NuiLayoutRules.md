@@ -141,10 +141,12 @@ a player's persisted window geometry is small. `Gui.CreatePlayerWindows` discard
 only non-positive persisted dimensions; legitimate compact HUD windows are as small
 as 72x52 and must retain their saved positions.
 
-### R6 — Re-apply the current tab partial after any modal closes (framework hook)
-Closing `ShowModal`/`ShowInputModal` swaps `%%WINDOW_MAIN%%` back into the root, which
-**wipes any partial applied to a nested element** — the selected tab's content
-disappears. Tabbed windows must override the base-class hook:
+### R6 — Re-select the current tab after any modal closes (framework hook)
+Closing `ShowModal`/`ShowInputModal` swaps `%%WINDOW_MAIN%%` back into the root with
+every group layout assigned through `ChangePartialView`/`SetGroupLayout` already
+composed in (R7), so the selected tab's content comes back on its own. The
+`OnModalClosedRestore` hook runs afterwards; tabbed windows override it to re-select
+the tab so its refresh action picks up anything the modal's action changed:
 
 ```csharp
 protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentElement, SelectedTabId);
@@ -152,28 +154,39 @@ protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentEl
 
 The hook fires after every modal close (confirm and cancel, both modal kinds).
 
-### R7 — Partial-view element rules (verified 2026-07)
-- **`ChangePartialView` protects main-view slots automatically.** NUI can drop a
-  plain nested partial mid-redraw and leave the content area blank (the Settings
-  Identity and Chat tabs shipped this way). `ChangePartialView` therefore routes any
-  group declared directly in `%%WINDOW_MAIN%%` through `SwapNestedPartialView` (root
-  redraw → apply → re-apply next tick → re-apply after 0.2s), the path the Character
-  Sheet tabs proved. The next-tick re-apply alone can land in the same client frame as
-  the root redraw and be dropped too (Character Sheet opened blank, Oct 2026).
-  The root, slots nested inside another partial (a root redraw would wipe their
-  parent), and swaps made while a modal is showing are applied directly
-  (`GuiPartialViewRouting`). Call `SwapNestedPartialView` yourself only to pass
-  callbacks.
-- **Element ids are not validated server-side.** `ChangePartialView` onto a
-  nonexistent element id produces a client-side `NuiSetLayout failed: element id not
-  found` error and the window must be closed/reopened (gallery P13a). Keep element-id
-  constants in the ViewModel and reference them from the definition.
-- **Do not nest partials more than 2 deep** (window root → partial → nested slot is
-  the proven maximum, used by every tabbed window). At 3 deep the innermost content
-  renders and is then dropped by the parent's re-apply pass (gallery P13b).
-- After a partial swap makes the whole window layout fail (e.g. loading an R2c shape),
-  subsequent `NuiSetGroupLayout` calls report `element id not found` because the
-  client discarded the layout — close and reopen the window.
+### R7 — Partial-view element rules (verified in the real client 2026-10)
+- **Group layouts are sent inside the root layout.** NUI only draws a group's
+  replacement layout when it arrives while the window root is being rebuilt. A group
+  layout sent on its own to a window that has already drawn stays blank, with or
+  without the geometry nudge, and a re-apply that lands after the rebuild blanks
+  content that was showing. That is how the Settings Identity/Chat tabs and the
+  Character Sheet tabs went blank (Sept–Oct 2026); a client probe using the Character
+  Sheet's exact layout reproduced it. `ChangePartialView(groupId, partial)` and
+  `SetGroupLayout` therefore remember the group's layout and send the whole window as
+  one root layout built by `GuiLayoutComposer`. Never call `NuiSetGroupLayout` on a
+  group directly and never schedule delayed re-applies (`GuiGroupLayoutSourceTests`
+  enforces the single root call). `SwapNestedPartialView` is `ChangePartialView` with
+  before/after callbacks.
+- **Every group-layout change rebuilds the whole window.** Controls outside the
+  changed group are recreated too, so scroll positions reset. Rebuilt controls do not
+  send watch events, and values pushed while their controls were on screen survive.
+- **Push input values after the swap.** The client drops a bind value that arrives
+  before any control uses it, which happens when a heavy tick delivers the layout
+  late. After each root layout the base class re-sends the display binds it uses
+  (labels, lists, visibility). It does not re-send input values (`textedit`, `check`,
+  `combo`, `slider`, `options`, toggles, `color_picker`) or watched binds, because
+  that would overwrite what the player typed. Set those after the swap, for example
+  in `onAfterApply`.
+- **A group that is not on screen keeps its layout until it is.** While a modal is
+  showing, or when the group belongs to a partial that is not displayed, the layout
+  is remembered and nothing is sent. A mistyped element id therefore shows nothing and
+  raises no client error. Keep element-id constants in the ViewModel and reference
+  them from the definition.
+- **Groups inside assigned partials compose too.** Window root → main view →
+  Appearance Editor armor tab → color palette renders and swaps palettes in the real
+  client. `Bind` clears assigned group layouts when a window opens.
+- After a partial makes the whole window layout fail (e.g. loading an R2c shape), the
+  remembered layout fails every rebuild — close and reopen the window.
 
 ## Verified-working shapes (do not fear these)
 

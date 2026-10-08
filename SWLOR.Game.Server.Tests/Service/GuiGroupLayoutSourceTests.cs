@@ -7,9 +7,7 @@ namespace SWLOR.Game.Server.Tests.Service;
 [TestFixture]
 public class GuiGroupLayoutSourceTests
 {
-    // A group layout sent on its own to a window that has already drawn stays blank in the
-    // real client, and a delayed re-apply blanks content that was showing (Character Sheet,
-    // Oct 2026). Group layouts must reach the client only inside the composed root layout.
+    // See Readmes/NuiLayoutRules.md, R7.
     [Test]
     public void GroupLayoutsAreOnlySentInsideTheComposedRootLayout()
     {

@@ -6,32 +6,22 @@ using System.Text.Json.Nodes;
 namespace SWLOR.Game.Server.Service.GuiService
 {
     /// <summary>
-    /// Builds a complete window layout from a root partial and the layouts assigned to its group
-    /// slots. NUI only draws a group's replacement layout when it arrives while the window root is
-    /// being rebuilt. A group layout sent on its own to a window that has already drawn stays blank,
-    /// with or without a geometry nudge, and a re-apply that lands after the rebuild blanks content
-    /// that was showing. Sending the assigned slot layouts inside one root layout keeps them on
-    /// screen without depending on frame timing.
+    /// Places the layouts assigned to group elements into a root layout. NUI leaves a group
+    /// blank when its layout is sent on its own (see Readmes/NuiLayoutRules.md, R7).
     /// </summary>
     public static class GuiLayoutComposer
     {
-        // NUI layouts nest an object and a "children" array per widget, so a composed root
-        // (main view -> tab -> palette) runs deeper than System.Text.Json's default of 64.
+        // Composed layouts nest deeper than System.Text.Json's default of 64.
         private const int MaxLayoutDepth = 512;
         private static readonly JsonDocumentOptions ParseOptions = new() { MaxDepth = MaxLayoutDepth };
 
-        // The default encoder escapes every non-ASCII character, so the output is plain ASCII
-        // and survives JsonParse's game-local string encoding unchanged.
+        // The default encoder writes ASCII only, which JsonParse reads unchanged.
         private static readonly JsonSerializerOptions WriteOptions = new() { MaxDepth = MaxLayoutDepth };
 
         /// <summary>
-        /// Returns <paramref name="layoutJson"/> with each assigned layout placed as the content
-        /// of the group whose id it is assigned to, including groups inside placed layouts.
-        /// Groups without an assigned layout keep their declared content.
+        /// Returns <paramref name="layoutJson"/> with each group's assigned layout as its content.
+        /// <paramref name="placedSlotIds"/> receives the ids of the groups that were filled.
         /// </summary>
-        /// <param name="layoutJson">The layout to fill, usually the window's root partial.</param>
-        /// <param name="slotLayouts">Assigned layouts keyed by group element id.</param>
-        /// <param name="placedSlotIds">Receives the id of every group that was filled.</param>
         public static string Compose(
             string layoutJson,
             IReadOnlyDictionary<string, string> slotLayouts,
@@ -62,8 +52,6 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             var slotId = GetGroupId(element);
 
-            // A layout that contains its own slot keeps the inner group's declared content
-            // instead of recursing forever.
             if (slotId != null &&
                 slotLayouts.TryGetValue(slotId, out var slotLayout) &&
                 slotsBeingPlaced.Add(slotId))
@@ -72,7 +60,6 @@ namespace SWLOR.Game.Server.Service.GuiService
                 PlaceSlotLayouts(content, slotLayouts, placedSlotIds, slotsBeingPlaced);
                 slotsBeingPlaced.Remove(slotId);
 
-                // NuiSetGroupLayout makes the new layout the group's only child.
                 element["children"] = new JsonArray(content);
                 placedSlotIds?.Add(slotId);
                 return;

@@ -32,9 +32,6 @@ namespace SWLOR.Game.Server.Service.GuiService
         private const string WindowElementId = "_window_";
 
         private readonly Dictionary<string, PropertyDetail> _propertyValues = new Dictionary<string, PropertyDetail>();
-
-        // Layout JSON assigned to each group element, keyed by element id. Every root layout
-        // sent to the client is composed from the root partial plus these.
         private readonly Dictionary<string, string> _groupLayouts = new();
         private string _rootPartial;
 
@@ -434,12 +431,7 @@ namespace SWLOR.Game.Server.Service.GuiService
 
         /// <summary>
         /// Applies a partial view to the window root (<c>_window_</c>) or to a group element.
-        /// A group's layout is remembered and sent inside the root layout
-        /// (<see cref="GuiLayoutComposer"/>), because NUI leaves a group blank when its layout
-        /// arrives on its own after the window has drawn. Remembered group layouts are
-        /// composed into every later root layout, so they survive a modal opening and closing.
-        /// A group that is not on screen (for example while a modal is showing) is shown
-        /// with its layout once its parent is displayed again.
+        /// Group layouts are remembered and always sent inside the root layout.
         /// </summary>
         /// <param name="elementId">The element to change, or <c>_window_</c> for the root.</param>
         /// <param name="partialName">The partial view to apply.</param>
@@ -460,7 +452,6 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <summary>
         /// Swaps a group element's layout for one generated at runtime. Event handlers
         /// remain valid when regenerated elements reuse their registered element IDs.
-        /// The layout is composed into the root like <see cref="ChangePartialView"/>.
         /// </summary>
         protected void SetGroupLayout(string elementId, Json layout)
         {
@@ -492,19 +483,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         }
 
         /// <summary>
-        /// Applies a partial view to a group like <see cref="ChangePartialView"/>, running
-        /// callbacks around the apply.
+        /// <see cref="ChangePartialView"/> with callbacks run before and after the apply.
         /// </summary>
-        /// <param name="elementId">The group element id to change.</param>
-        /// <param name="partialName">The partial view to apply.</param>
-        /// <param name="onBeforeApply">
-        /// Optional callback run immediately before the apply (e.g. to refresh
-        /// the data the partial will display).
-        /// </param>
-        /// <param name="onAfterApply">
-        /// Optional callback run after the layout is sent. Use this to restore child
-        /// partials and publish their bindings.
-        /// </param>
         /// <remarks>
         /// Public rather than protected: orchestrator helpers like GuiTabGroup
         /// live outside the ViewModel's own type hierarchy and need to call
@@ -563,18 +543,14 @@ namespace SWLOR.Game.Server.Service.GuiService
 
         /// <summary>
         /// Called after ANY modal (ShowModal / ShowInputModal) closes - confirm or
-        /// cancel - after the caller's confirm/cancel action has run. Closing a
-        /// modal swaps %%WINDOW_MAIN%% back into the root with every assigned group
-        /// layout (e.g. the selected tab's content) already in place. Override to
-        /// refresh content the modal's action may have changed. Default: no-op.
+        /// cancel - after the caller's confirm/cancel action has run. Default: no-op.
         /// </summary>
         protected virtual void OnModalClosedRestore()
         {
         }
 
         /// <summary>
-        /// Called immediately after the main view is restored, with every assigned
-        /// group layout already in place. Default: no-op.
+        /// Called immediately after the main view is restored. Default: no-op.
         /// </summary>
         protected virtual void OnMainViewRestored()
         {

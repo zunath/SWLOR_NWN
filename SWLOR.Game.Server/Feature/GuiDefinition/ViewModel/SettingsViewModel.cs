@@ -282,7 +282,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // temporarily changes the window geometry.
             UpdatePropertyFromClient(nameof(Geometry));
 
-            // RefreshPartialViewBindings runs after the tab's controls are created.
             SwapNestedPartialView(SettingsView, partialName, onAfterApply: RefreshPartialViewBindings);
         }
 

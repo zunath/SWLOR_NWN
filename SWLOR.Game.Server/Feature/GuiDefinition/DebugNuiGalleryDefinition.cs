@@ -17,9 +17,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     //   the window, rule R2c); H6 (watch on a never-Set property - descriptive R3
     //   exception).
     // - VERIFIED-WORKING exhibits: W1-W4, P5 (options is margin-free), P7-P12.
-    // - Composed-root exhibits (Oct 2026, rule R7): P13a (partial applied to a
-    //   nonexistent element id - nothing is sent, no server validation exists) and
-    //   P13b (3-deep nesting is composed into the root layout).
+    // - Not re-verified since group layouts moved into the root layout (R7): P13a, P13b.
     // They are only defined off production. Expected boot warnings on dev/test:
     // EXACTLY SIX [NUI layout warning] lines, all from this window - the R2c
     // regression canaries: GALLERY_HAZARD_BUTTON_ROW, GALLERY_PROBE_ROW_CHECKBOX,

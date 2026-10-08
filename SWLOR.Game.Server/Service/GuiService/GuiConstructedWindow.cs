@@ -15,9 +15,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         public IReadOnlyList<string> LayoutFindings { get; set; }
 
         /// <summary>
-        /// The JSON text of each partial view, keyed by partial name. Slot layouts are composed
-        /// into the root from these (see <see cref="GuiLayoutComposer"/>). Empty in
-        /// validation-only builds.
+        /// The JSON text of each partial view, keyed by partial name.
         /// </summary>
         public IReadOnlyDictionary<string, string> PartialViewLayouts { get; set; }
 

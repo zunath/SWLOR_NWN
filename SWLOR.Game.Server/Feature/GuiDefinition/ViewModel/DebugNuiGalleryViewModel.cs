@@ -731,8 +731,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // even if the window blanks out client-side.
             LogEvent($"LOADING HAZARD {partialName} (expect: {expectedFailure})");
 
-            // The hazard slot sits inside the hazards tab partial; ChangePartialView
-            // composes both into the root layout.
             ChangePartialView(HazardSlotElement, partialName);
         }
 

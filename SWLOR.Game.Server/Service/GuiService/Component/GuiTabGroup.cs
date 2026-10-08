@@ -1,14 +1,7 @@
 // ============================================================================
 // GuiTabGroup.cs
 //
-// PROBLEM THIS SOLVES
-// --------------------
-// Tabbed windows each hand-rolled tab registration (a partial name and a
-// refresh action per tab) and a re-entrancy guard (_isSynchronizingTabRows)
-// to keep two paired toggle groups and one logical SelectedTabId from
-// feeding back into each other. Both are generic, so they live here. Tab
-// content goes through SwapNestedPartialView, which composes it into the
-// window's root layout (see GuiLayoutComposer).
+// Reusable tab registration and paired-toggle sync for tabbed windows.
 // ============================================================================
 
 using System;
@@ -18,15 +11,8 @@ using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    // ------------------------------------------------------------------
-    // TAB REGISTRATION - replaces GetTabPartialName + the RefreshSelectedTabData
-    // switch statement
-    // ------------------------------------------------------------------
-
     /// <summary>
-    /// Registers a set of tabs (id -> partial name -> optional refresh action)
-    /// and drives selection through SwapNestedPartialView, so a window author
-    /// just describes "what tabs exist".
+    /// Registers a set of tabs (id -> partial name -> optional refresh action).
     /// </summary>
     public class GuiTabGroup<TViewModel, TPayload>
         where TViewModel : GuiViewModelBase<TViewModel, TPayload>
@@ -43,8 +29,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         public string GetPartialName(int tabId) => _tabs[tabId].PartialId;
 
         /// <summary>
-        /// Applies the given tab: runs its refresh action (if any) then swaps
-        /// its partial into the content element.
+        /// Runs the tab's refresh action (if any), then applies its partial.
         /// </summary>
         public void Select(TViewModel model, string contentElementId, int tabId, Action onAfterApply = null)
         {

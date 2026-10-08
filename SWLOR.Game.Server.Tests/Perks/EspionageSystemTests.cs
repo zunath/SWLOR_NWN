@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Espionage;
 using SWLOR.Game.Server.Feature.ItemDefinition;
 using SWLOR.Game.Server.Feature.PerkDefinition;
+using SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
@@ -426,8 +427,11 @@ public class EspionageSystemTests
     }
 
     [Test]
-    public void VenomExpertiseRaisesDamageWhileTierControlsDuration()
+    public void CoatingTierRaisesVenomDamageAndDuration()
     {
+        Enumerable.Range(1, 5).Select(Poisons.GetCoatingVenomDamagePerTick).Should().Equal(8, 12, 16, 21, 26);
+        VenomStatusEffect.CalculateBaseDamagePerTick(50, 26).Should().Be(39);
+
         VenomStatusEffect.CalculateBaseDamagePerTick(0).Should().Be(8);
         VenomStatusEffect.CalculateBaseDamagePerTick(10).Should().Be(9);
         VenomStatusEffect.CalculateBaseDamagePerTick(20).Should().Be(10);
@@ -436,6 +440,56 @@ public class EspionageSystemTests
         Poisons.GetVenomDurationSeconds(1).Should().BeApproximately(12f, 0.001f);
         Poisons.GetVenomDurationSeconds(3).Should().BeApproximately(24f, 0.001f);
         Poisons.GetVenomDurationSeconds(5).Should().BeApproximately(36f, 0.001f);
+    }
+
+    [Test]
+    public void VenomCoatingDescriptions_StateTheVenomTheyApply()
+    {
+        var interval = VenomStatusEffect.TickIntervalSeconds;
+        for (var tier = 1; tier <= 5; tier++)
+        {
+            foreach (var concentrated in new[] { false, true })
+            {
+                var resref = concentrated ? $"conc_poison_{tier}" : $"poison_vial_{tier}";
+                using var blueprint = System.Text.Json.JsonDocument.Parse(File.ReadAllText(
+                    Path.Combine(FindRepositoryRoot(), "Module", "uti", resref + ".uti.json")));
+                var description = blueprint.RootElement.GetProperty("Description").GetProperty("value").GetProperty("0").GetString();
+                var identified = blueprint.RootElement.GetProperty("DescIdentified").GetProperty("value").GetProperty("0").GetString();
+                identified.Should().Be(description, resref);
+
+                var charges = concentrated
+                    ? VenomCoatingItemDefinition.ConcentratedCharges
+                    : VenomCoatingItemDefinition.BaseCharges;
+                description.Should().Contain($"dealing {Poisons.GetCoatingVenomDamagePerTick(tier)} poison damage every {interval} seconds", resref)
+                    .And.Contain($"Venom lasts {Poisons.GetVenomDurationSeconds(tier):0} seconds", resref)
+                    .And.Contain($"Charges: {charges}.", resref)
+                    .And.Contain($"at most once every {Poisons.InternalCooldownSeconds} seconds", resref);
+                if (concentrated)
+                    description.Should().Contain($"increased by {VenomCoatingItemDefinition.ConcentratedDamageBonusPercent}%", resref);
+            }
+        }
+    }
+
+    [Test]
+    public void VenomCoatingRecipes_ShowTheVenomEffectInRecipeDetails()
+    {
+        var recipes = new VenomCoatingRecipes().BuildRecipes()
+            .Concat(new ConcentratedVenomRecipes().BuildRecipes());
+        foreach (var (type, recipe) in recipes)
+        {
+            recipe.EffectLines.Should().NotBeEmpty(type.ToString());
+            recipe.EffectLines.Should().OnlyContain(line => line.Length <= 30, type.ToString());
+        }
+
+        VenomCoatingItemDefinition.BuildEffectSummary(1, false).Should().Equal(
+            "8 poison damage every 6s",
+            "Venom lasts 12s",
+            "20 charges, 1 use per 6s");
+        VenomCoatingItemDefinition.BuildEffectSummary(5, true).Should().Equal(
+            "26 poison damage every 6s",
+            "+50% Venom damage",
+            "Venom lasts 36s",
+            "10 charges, 1 use per 6s");
     }
 
     [Test]
@@ -449,6 +503,7 @@ public class EspionageSystemTests
             "StatusEffect.GetStatusEffect(defender, typeof(VenomStatusEffect), attacker)");
         calls.Should().Contain(call => call.ToString() ==
             "StatusEffect.RefreshStatusEffectDuration(defender, typeof(VenomStatusEffect), attacker, durationSeconds)");
+        calls.Should().Contain(call => call.ToString() == ".UpdatePotency(damagePerTick, potency)");
         var credit = calls.Single(call => call.Expression.ToString() == "CombatPoint.AddCombatPoint");
         credit.ArgumentList.Arguments.Select(arg => arg.ToString()).Should()
             .Equal("attacker", "defender", "SkillType.Espionage");
@@ -461,12 +516,12 @@ public class EspionageSystemTests
     public void RefreshedVenom_UsesTheLatestCoatingPotencyWhenCloned()
     {
         var venom = new VenomStatusEffect(0);
-        venom.UpdateDamageBonusPercent(30);
+        venom.UpdatePotency(VenomStatusEffect.DefaultDamagePerTick, 30);
         var clone = (VenomStatusEffect)venom.Clone();
         var potency = typeof(VenomStatusEffect).GetField("_damageBonusPercent",
             System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
         VenomStatusEffect.CalculateBaseDamagePerTick((int)potency.GetValue(clone)!).Should().Be(11);
-        venom.UpdateDamageBonusPercent(-10);
+        venom.UpdatePotency(VenomStatusEffect.DefaultDamagePerTick, -10);
         potency.GetValue(venom).Should().Be(0);
         potency.GetValue(clone).Should().Be(30);
     }

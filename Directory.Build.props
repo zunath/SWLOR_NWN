@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <NwnToolsetPackageVersion Condition="'$(NwnToolsetPackageVersion)' == ''">0.1.0-preview.1</NwnToolsetPackageVersion>
+    <NwnToolsetPackageVersion Condition="'$(NwnToolsetPackageVersion)' == ''">0.1.0-preview.2</NwnToolsetPackageVersion>
   </PropertyGroup>
   <ItemGroup Condition="'$(MSBuildProjectName)' == 'SWLOR.Toolset' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.Tests' Or '$(MSBuildProjectName)' == 'SWLOR.Toolset.PreviewRender'">
     <Using Include="Nwn.Toolset.Avalonia.Behaviors" />

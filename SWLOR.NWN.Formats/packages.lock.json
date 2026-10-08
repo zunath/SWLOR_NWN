@@ -4,9 +4,9 @@
     "net10.0": {
       "Nwn.Formats": {
         "type": "Direct",
-        "requested": "[0.1.0-preview.1, )",
-        "resolved": "0.1.0-preview.1",
-        "contentHash": "KMD6HoRgCPCNU/7W2/7QITQ4BSv+cZbJfC6xXcXBiEz8fxu6Q5430zOIaP5y0XCPawwOsqOKliF/ZUoBbEkuRQ=="
+        "requested": "[0.1.0-preview.2, )",
+        "resolved": "0.1.0-preview.2",
+        "contentHash": "NtptCZYYzhi3CrOs5YvbpqU1AN0hhQfyMIyNQb5VbR8vg7NPNFPiaaprsa5S6pUv8dvhnDKaCBwFJ4SQj9hvAg=="
       }
     }
   }

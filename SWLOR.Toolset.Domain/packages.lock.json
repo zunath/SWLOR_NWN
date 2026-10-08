@@ -4,27 +4,27 @@
     "net10.0": {
       "Nwn.Authoring": {
         "type": "Direct",
-        "requested": "[0.1.0-preview.1, )",
-        "resolved": "0.1.0-preview.1",
-        "contentHash": "U6FtmEKNoutXtXxeTowzX+WXeuZGIBthl0i+z6tGeIOwvsq9pYtu5C4K++UszaXI2JbMsaDplTicwBgRvlCRhQ==",
+        "requested": "[0.1.0-preview.2, )",
+        "resolved": "0.1.0-preview.2",
+        "contentHash": "FRYKIktB0L7itWLgb+2AVaM0V+1H93/BK5BoB/ncCUuXy1Lb9ell+cG3t1yAGu4DOgqHNkkMXduqsh9w88yL/w==",
         "dependencies": {
-          "Nwn.Formats": "0.1.0-preview.1"
+          "Nwn.Formats": "0.1.0-preview.2"
         }
       },
       "Nwn.Formats": {
         "type": "Direct",
-        "requested": "[0.1.0-preview.1, )",
-        "resolved": "0.1.0-preview.1",
-        "contentHash": "KMD6HoRgCPCNU/7W2/7QITQ4BSv+cZbJfC6xXcXBiEz8fxu6Q5430zOIaP5y0XCPawwOsqOKliF/ZUoBbEkuRQ=="
+        "requested": "[0.1.0-preview.2, )",
+        "resolved": "0.1.0-preview.2",
+        "contentHash": "NtptCZYYzhi3CrOs5YvbpqU1AN0hhQfyMIyNQb5VbR8vg7NPNFPiaaprsa5S6pUv8dvhnDKaCBwFJ4SQj9hvAg=="
       },
       "Nwn.Preview": {
         "type": "Direct",
-        "requested": "[0.1.0-preview.1, )",
-        "resolved": "0.1.0-preview.1",
-        "contentHash": "SBW91vbW+1rw8nDDGVnPbTiyVIHIcupiO4p+jCWU2psBCIbdWXdjEa5qpIQz4+u8d94pIiM5sxi7SS7P+GJwZQ==",
+        "requested": "[0.1.0-preview.2, )",
+        "resolved": "0.1.0-preview.2",
+        "contentHash": "Yy4WoncLJjP6AggJ9tCyw5KCExAlwqMcOsIWWE/uD6RqauTi69bgY1X8wkbsktkH1ZURb6sNJJ+aCfq/H86afA==",
         "dependencies": {
-          "Nwn.Authoring": "0.1.0-preview.1",
-          "Nwn.Formats": "0.1.0-preview.1"
+          "Nwn.Authoring": "0.1.0-preview.2",
+          "Nwn.Formats": "0.1.0-preview.2"
         }
       },
       "Serilog": {
@@ -148,7 +148,7 @@
       "swlor.nwn.formats": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Formats": "[0.1.0-preview.1, )"
+          "Nwn.Formats": "[0.1.0-preview.2, )"
         }
       }
     }

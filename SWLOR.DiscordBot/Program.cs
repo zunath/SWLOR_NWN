@@ -87,7 +87,7 @@ public static class Program
             .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
         builder.Services.AddSingleton<IDiscordTickets>(provider => provider.GetRequiredService<DiscordOperations>());
         builder.Services.AddSingleton<ICommunityDiscord>(provider => provider.GetRequiredService<DiscordOperations>());
-        builder.Services.AddSingleton(_ => new PostgresTicketStore(secrets.Database));
+        builder.Services.AddSingleton(_ => new PostgresTicketStore(secrets.Database, config.GuildId));
         builder.Services.AddSingleton<ITicketStore>(provider => provider.GetRequiredService<PostgresTicketStore>());
         builder.Services.AddSingleton<IResponseDeletionStore>(provider => provider.GetRequiredService<PostgresTicketStore>());
         builder.Services.AddHttpClient("transcripts", client => client.Timeout = TimeSpan.FromMinutes(2))

@@ -14,6 +14,48 @@ namespace SWLOR.DiscordBot.Tests;
 [TestFixture]
 public sealed class DiscordAdapterTests
 {
+    [TestCase(TicketState.Creating)]
+    [TestCase(TicketState.Open)]
+    [TestCase(TicketState.Closing)]
+    [TestCase(TicketState.Closed)]
+    [TestCase(TicketState.Reopening)]
+    public void DisabledIntakePreflightUsesOnlyRetainedPanelDestinationsAndLog(TicketState state)
+    {
+        var config = new BotConfiguration
+        {
+            Tickets = new TicketOptions
+            {
+                Enabled = false, ClosedCategoryId = 30, LogChannelId = 40,
+                Panels =
+                [
+                    new TicketPanelOptions { Id = "support", ChannelId = 0, Label = "", PanelMessage = "{obsolete}", OpenCategoryIds = [20] },
+                    new TicketPanelOptions { Id = "SUPPORT", ChannelId = 999, OpenCategoryIds = [998] }
+                ]
+            }
+        };
+        var tickets = new[] { new Ticket(Guid.NewGuid(), "support", 5, 10, state, 1, DateTimeOffset.UnixEpoch) };
+        var permissions = new ChannelPermissions(viewChannel: true, sendMessages: true, manageChannel: true,
+            manageRoles: true, readMessageHistory: true, attachFiles: true);
+        (ulong Id, ChannelType Type, ChannelPermissions Permissions)[] channels =
+            [(20, ChannelType.Category, permissions), (30, ChannelType.Category, permissions), (40, ChannelType.Text, permissions)];
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateTicketChannels(config, tickets, channels));
+        Assert.That(TicketMaintenanceRequirements.RequiredPanels(config, tickets).Single().Id, Is.EqualTo("support"));
+        Assert.Throws<DiscordValidationException>(() => DiscordOperations.ValidateTicketChannels(config, tickets,
+            channels.Where(channel => channel.Id != 20).ToArray()));
+        config.Tickets.Enabled = true;
+        Assert.Throws<DiscordValidationException>(() => DiscordOperations.ValidateTicketChannels(config, tickets, channels));
+    }
+
+    [Test]
+    public void DeletingOnlyDisabledIntakePreflightNeedsNoPanelsOrCategoryDestinations()
+    {
+        var config = new BotConfiguration { Tickets = new TicketOptions { Enabled = false, LogChannelId = 40, Panels = [] } };
+        var tickets = new[] { new Ticket(Guid.NewGuid(), "obsolete", 5, 10, TicketState.Deleting, 1, DateTimeOffset.UnixEpoch) };
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateTicketChannels(config, tickets,
+            [(40, ChannelType.Text, new ChannelPermissions(viewChannel: true, sendMessages: true))]));
+        Assert.That(TicketMaintenanceRequirements.RequiredCategoryIds(config, tickets), Is.Empty);
+        Assert.Throws<DiscordValidationException>(() => DiscordOperations.ValidateTicketChannels(config, tickets, []));
+    }
     [Test]
     public void Privacy_DeniesForeignInheritedVisibilityAndPreservesOnlyConfiguredAccess()
     {

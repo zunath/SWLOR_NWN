@@ -842,6 +842,103 @@ public sealed class CommunityTests
         Assert.That(store.CooldownAt("answer-cooldown:guide:7"), Is.EqualTo(DateTimeOffset.UnixEpoch));
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task PendingZeroCooldownAnswerRecordsNewConfiguredCooldownAfterDelivery(bool retryLiveEvent)
+    {
+        var answer = new QuickAnswerOptions { Name = "guide", Responses = ["Guide"] };
+        var config = new BotConfiguration { GuildId = 1, Prefix = "?", Answers = [answer] };
+        var clock = new ManualTimeProvider(DateTimeOffset.UnixEpoch);
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", []), SendFailuresRemaining = 1 };
+        var deletions = new FakeDeletionStore();
+        var service = new CommunityService(config, store, discord, deletions, clock);
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 300, "?guide", default));
+        Assert.That(store.HasCooldown("answer-cooldown:guide:7"), Is.False);
+        answer.Cooldown = TimeSpan.FromMinutes(1);
+        clock.Advance(TimeSpan.FromSeconds(10));
+        var restarted = new CommunityService(config, store, discord, deletions, clock);
+
+        if (retryLiveEvent) await restarted.ExecuteAsync(7, 100, 300, "?guide", default);
+        else Assert.That(await restarted.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(store.CooldownAt("answer-cooldown:guide:7"), Is.EqualTo(clock.GetUtcNow()));
+        Assert.That(store.IsCompleted("answer:100:300"), Is.True);
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+        Assert.That(await restarted.RecoverPendingDeliveriesAsync(default), Is.Zero);
+
+        clock.Advance(TimeSpan.FromSeconds(59));
+        await restarted.ExecuteAsync(7, 100, 301, "?guide", default);
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+        clock.Advance(TimeSpan.FromSeconds(1));
+        await restarted.ExecuteAsync(7, 100, 302, "?guide", default);
+        Assert.That(discord.Sent, Has.Count.EqualTo(2));
+    }
+
+    [Test]
+    public async Task PendingZeroCooldownAnswersRecoverOnlyOneResponseInsideNewConfiguredCooldown()
+    {
+        var answer = new QuickAnswerOptions { Name = "guide", Responses = ["Guide"] };
+        var config = new BotConfiguration { GuildId = 1, Prefix = "?", Answers = [answer] };
+        var clock = new ManualTimeProvider(DateTimeOffset.UnixEpoch);
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", []), SendFailuresRemaining = 2 };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore(), clock);
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 300, "?guide", default));
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 301, "?guide", default));
+        answer.Cooldown = TimeSpan.FromMinutes(1);
+        clock.Advance(TimeSpan.FromSeconds(10));
+
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(2));
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+        Assert.That(store.CooldownAt("answer-cooldown:guide:7"), Is.EqualTo(clock.GetUtcNow()));
+        Assert.That(store.IsCompleted("answer:100:300"), Is.True);
+        Assert.That(store.IsCompleted("answer:100:301"), Is.True);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task OlderZeroCooldownAnswerDoesNotExtendNewerConfiguredCooldown(bool cooldownExpired)
+    {
+        var answer = new QuickAnswerOptions { Name = "guide", Responses = ["Guide"] };
+        var config = new BotConfiguration { GuildId = 1, Prefix = "?", Answers = [answer] };
+        var clock = new ManualTimeProvider(DateTimeOffset.UnixEpoch);
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", []), SendFailuresRemaining = 1 };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore(), clock);
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 300, "?guide", default));
+        answer.Cooldown = TimeSpan.FromMinutes(1);
+        await service.ExecuteAsync(7, 100, 301, "?guide", default);
+        var originalCooldown = store.CooldownAt("answer-cooldown:guide:7");
+        clock.Advance(cooldownExpired ? TimeSpan.FromMinutes(2) : TimeSpan.FromSeconds(10));
+
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+        Assert.That(store.CooldownAt("answer-cooldown:guide:7"), Is.EqualTo(originalCooldown));
+        Assert.That(store.IsCompleted("answer:100:300"), Is.True);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task PendingAnswerRetainsPersistedCooldownWhenCurrentCooldownWasRemoved(bool retryLiveEvent)
+    {
+        var answer = new QuickAnswerOptions { Name = "guide", Responses = ["Guide"], Cooldown = TimeSpan.FromMinutes(1) };
+        var config = new BotConfiguration { GuildId = 1, Prefix = "?", Answers = [answer] };
+        var clock = new ManualTimeProvider(DateTimeOffset.UnixEpoch);
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", []), SendFailuresRemaining = 1 };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore(), clock);
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 300, "?guide", default));
+        store.SeedCooldown("answer-cooldown:guide:7", clock.GetUtcNow());
+        answer.Cooldown = TimeSpan.Zero;
+        clock.Advance(TimeSpan.FromSeconds(10));
+
+        if (retryLiveEvent) await service.ExecuteAsync(7, 100, 300, "?guide", default);
+        else Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(store.IsCompleted("answer:100:300"), Is.True);
+        Assert.That(store.CooldownAt("answer-cooldown:guide:7"), Is.EqualTo(DateTimeOffset.UnixEpoch));
+    }
+
     [Test]
     public async Task FactionRecoveryCompletesLongPlanWhileIndividualStepsKeepProgressing()
     {

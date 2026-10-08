@@ -5,18 +5,35 @@ using SWLOR.DiscordBot.Core;
 
 namespace SWLOR.DiscordBot.Persistence;
 
-public sealed class PostgresTicketStore(string connectionString) : ITicketStore, IResponseDeletionStore, IAsyncDisposable
+public sealed class PostgresTicketStore(string connectionString, ulong guildId) : ITicketStore, IResponseDeletionStore, IAsyncDisposable
 {
     // Gateway retries/resume and REST nonce deduplication are much shorter than this replay window.
     // Thirty days also covers the longest permitted quick-answer cooldown.
     internal static readonly TimeSpan CompletedDeliveryRetention = TimeSpan.FromDays(30);
     private const long MutationLock = 7821653091;
     private const long CommunityLock = 7821653092;
+    private readonly ulong _guildId = guildId != 0 ? guildId : throw new ArgumentOutOfRangeException(nameof(guildId));
+    private volatile bool _initialized;
     private readonly NpgsqlDataSource _source = NpgsqlDataSource.Create(connectionString);
 
     public async Task InitializeAsync(CancellationToken ct)
     {
-        await using var session = (Session)await LockAsync(ct);
+        _initialized = false;
+        await using var session = (Session)await AcquireLockAsync(MutationLock, ct);
+        await using var transaction = await session.Connection.BeginTransactionAsync(ct);
+        const string ownership = """
+            CREATE TABLE IF NOT EXISTS swlor_bot_database_owner (
+                singleton boolean PRIMARY KEY DEFAULT true CHECK(singleton),
+                guild_id text NOT NULL);
+            INSERT INTO swlor_bot_database_owner(singleton,guild_id)
+                VALUES (true,@guild) ON CONFLICT(singleton) DO NOTHING;
+            SELECT guild_id FROM swlor_bot_database_owner WHERE singleton;
+            """;
+        await using var ownerCommand = new NpgsqlCommand(ownership, session.Connection, transaction);
+        ownerCommand.Parameters.AddWithValue("guild", Snowflake(_guildId));
+        var owner = await ownerCommand.ExecuteScalarAsync(ct);
+        if (owner is not string ownedGuild || ownedGuild != Snowflake(_guildId))
+            throw new InvalidOperationException("This bot database belongs to a different Discord guild. Use a separate database for this guild.");
         const string schema = """
             CREATE SEQUENCE IF NOT EXISTS swlor_bot_ticket_numbers;
             CREATE TABLE IF NOT EXISTS swlor_bot_tickets (
@@ -37,12 +54,11 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
                 version integer PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now());
             INSERT INTO swlor_bot_schema(version) VALUES (1) ON CONFLICT DO NOTHING;
             """;
-        await using var command = new NpgsqlCommand(schema, session.Connection);
+        await using var command = new NpgsqlCommand(schema, session.Connection, transaction);
         await command.ExecuteNonQueryAsync(ct);
-        await using var versionCommand = new NpgsqlCommand("SELECT max(version) FROM swlor_bot_schema", session.Connection);
-        if (Convert.ToInt32(await versionCommand.ExecuteScalarAsync(ct)) > 4)
+        await using var versionCommand = new NpgsqlCommand("SELECT max(version) FROM swlor_bot_schema", session.Connection, transaction);
+        if (Convert.ToInt32(await versionCommand.ExecuteScalarAsync(ct)) > 5)
             throw new InvalidOperationException("The bot database schema is newer than this application.");
-        await using var transaction = await session.Connection.BeginTransactionAsync(ct);
         const string upgrade = """
             CREATE TABLE IF NOT EXISTS swlor_bot_response_deletions (
                 channel_id text NOT NULL, message_id text NOT NULL, due_at timestamptz NOT NULL,
@@ -105,17 +121,35 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
             INSERT INTO swlor_bot_schema(version) VALUES (4) ON CONFLICT DO NOTHING;
             END IF;
             END $$;
+            INSERT INTO swlor_bot_schema(version) VALUES (5) ON CONFLICT DO NOTHING;
             """;
         await using var upgradeCommand = new NpgsqlCommand(upgrade, session.Connection, transaction);
         await upgradeCommand.ExecuteNonQueryAsync(ct);
         await transaction.CommitAsync(ct);
+        _initialized = true;
     }
 
-    public Task<ITicketSession> LockAsync(CancellationToken ct) => AcquireLockAsync(MutationLock, ct);
-    public Task<ITicketSession> LockCommunityAsync(CancellationToken ct) => AcquireLockAsync(CommunityLock, ct);
+    private void EnsureInitialized()
+    {
+        if (!_initialized)
+            throw new InvalidOperationException("Bot database guild ownership has not been validated.");
+    }
+
+    public Task<ITicketSession> LockAsync(CancellationToken ct)
+    {
+        EnsureInitialized();
+        return AcquireLockAsync(MutationLock, ct);
+    }
+
+    public Task<ITicketSession> LockCommunityAsync(CancellationToken ct)
+    {
+        EnsureInitialized();
+        return AcquireLockAsync(CommunityLock, ct);
+    }
 
     public async Task PersistCommunityDeliveryAsync(string key, string intent, CancellationToken ct)
     {
+        EnsureInitialized();
         // A join event must commit before dispatch, independently of long-running community delivery locks.
         await using var connection = await _source.OpenConnectionAsync(ct);
         await using var insert = new NpgsqlCommand(
@@ -150,6 +184,7 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
 
     public async Task ScheduleDeletionAsync(ulong channelId, ulong messageId, DateTimeOffset dueAt, CancellationToken ct)
     {
+        EnsureInitialized();
         await using var connection = await _source.OpenConnectionAsync(ct);
         await using var command = new NpgsqlCommand("INSERT INTO swlor_bot_response_deletions(channel_id,message_id,due_at) VALUES (@channel,@message,@due) ON CONFLICT DO NOTHING", connection);
         command.Parameters.AddWithValue("channel", Snowflake(channelId));
@@ -160,6 +195,7 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
 
     public async Task<IReadOnlyList<PendingResponseDeletion>> GetDueDeletionsAsync(DateTimeOffset now, CancellationToken ct)
     {
+        EnsureInitialized();
         await using var connection = await _source.OpenConnectionAsync(ct);
         await using var command = new NpgsqlCommand("SELECT channel_id,message_id,due_at,attempts,last_error FROM swlor_bot_response_deletions WHERE NOT completed AND due_at<=@now ORDER BY due_at LIMIT 100", connection);
         command.Parameters.AddWithValue("now", now.ToUniversalTime());
@@ -175,6 +211,7 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
 
     public async Task CompleteDeletionAsync(ulong channelId, ulong messageId, CancellationToken ct)
     {
+        EnsureInitialized();
         await using var connection = await _source.OpenConnectionAsync(ct);
         await using var command = new NpgsqlCommand("UPDATE swlor_bot_response_deletions SET completed=true,completed_at=COALESCE(completed_at,now()),last_error=NULL WHERE channel_id=@channel AND message_id=@message", connection);
         command.Parameters.AddWithValue("channel", Snowflake(channelId));
@@ -184,6 +221,7 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
 
     public async Task RetryDeletionAsync(PendingResponseDeletion deletion, DateTimeOffset dueAt, string error, CancellationToken ct)
     {
+        EnsureInitialized();
         await using var connection = await _source.OpenConnectionAsync(ct);
         await using var command = new NpgsqlCommand("UPDATE swlor_bot_response_deletions SET due_at=@due,attempts=LEAST(attempts::bigint+1,2147483647)::integer,last_error=@error WHERE NOT completed AND channel_id=@channel AND message_id=@message", connection);
         command.Parameters.AddWithValue("channel", Snowflake(deletion.ChannelId));
@@ -195,6 +233,7 @@ public sealed class PostgresTicketStore(string connectionString) : ITicketStore,
 
     public async Task PruneCompletedDeliveriesAsync(DateTimeOffset now, CancellationToken ct)
     {
+        EnsureInitialized();
         // Bounded, indexed deletes avoid holding guild advisory locks or monopolizing the database.
         // Unfinished intentions are never age-expired; retention starts only at confirmed completion.
         await using var connection = await _source.OpenConnectionAsync(ct);

@@ -12,6 +12,7 @@ internal sealed class TranscriptContentBudget(long limit)
         AddText(message.AuthorName);
         AddText(message.Content);
         AddText(message.EmbedsJson);
+        AddText(message.MetadataJson);
         foreach (var attachment in message.Attachments)
         {
             Reserve(256);

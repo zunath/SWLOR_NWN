@@ -125,7 +125,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
     }, ct);
 
     public async Task<TicketResult> ExportAsync(ulong channelId, Actor actor, CancellationToken ct = default,
-        Func<Ticket, CancellationToken, Task>? deliver = null)
+        Func<Ticket, CancellationToken, Task>? deliver = null, bool useSavedArchive = false)
     {
         if (!CanSupport(actor)) return new(false, "Only support staff can export transcripts.");
         Guid? exportId = null;
@@ -138,17 +138,38 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 if (found is null) return new(false, "This channel is not a ticket managed by this bot.");
                 ticket = found;
                 if (ticket.State is not (TicketState.Open or TicketState.Closed)) return new(false, "This ticket is busy; try again shortly.");
+                if (useSavedArchive && (!ticket.ArchiveComplete || ticket.ArchivePath is null))
+                    return new(false, "This ticket has no complete saved transcript. Export a fresh transcript first.");
                 if (!_exports.TryAdd(ticket.Id, 0)) return new(false, "A transcript export is already in progress for this ticket.");
                 exportId = ticket.Id;
-                ticket = ticket with { ArchivePath = archive.GetArchivePath(ticket), ArchiveComplete = false };
-                await session.SaveAsync(ticket, "archive-pending", actor.UserId, ct);
+                if (!useSavedArchive)
+                {
+                    ticket = ticket with { ArchivePath = archive.GetArchivePath(ticket), ArchiveComplete = false };
+                    await session.SaveAsync(ticket, "archive-pending", actor.UserId, ct);
+                }
             }
-            // Discord pagination and attachment downloads must not hold the shared database lock.
-            var snapshot = await discord.ReadTranscriptAsync(ticket, ct);
-            var path = await archive.ExportAsync(ticket, snapshot, ct);
             Ticket current;
-            await using (var saveSession = await store.LockAsync(ct))
+            if (useSavedArchive)
             {
+                // A fresh interaction can deliver a long export that outlived Discord's interaction token.
+                // Recheck both live staff membership and exact managed-channel identity before preparation.
+                var currentActor = await discord.ActorAsync(actor.UserId, ct);
+                if (!CanSupport(currentActor)) return new(false, "Support access changed; transcript delivery was denied.", ticket);
+                if (!await discord.ExistsAsync(ticket, ct)) return new(false, "The managed ticket channel is unavailable.", ticket);
+                current = ticket;
+            }
+            else
+            {
+                // Discord pagination and attachment downloads must not hold the shared database lock.
+                string path;
+                using (var progressTimeout = new MaintenanceProgressTimeout(clock, ct))
+                {
+                    var snapshot = await discord.ReadTranscriptAsync(ticket, progressTimeout.Token, progressTimeout.ReportProgress);
+                    progressTimeout.ReportProgress();
+                    path = await archive.ExportAsync(ticket, snapshot, progressTimeout.Token, progressTimeout.ReportProgress);
+                    progressTimeout.Token.ThrowIfCancellationRequested();
+                }
+                await using var saveSession = await store.LockAsync(ct);
                 current = await saveSession.GetTicketAsync(ticket.Id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
                 // Preserve closes, reopens, holds, and deadlines changed while the snapshot was written.
                 current = current with { ArchivePath = path, ArchiveComplete = true };
@@ -157,12 +178,21 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             // Keep this ticket's files protected through delivery without blocking unrelated mutations.
             if (deliver is not null)
             {
+                if (useSavedArchive)
+                {
+                    await using (var session = await store.LockAsync(ct))
+                        current = await session.GetTicketAsync(ticket.Id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
+                    if (current.ChannelId != channelId || current.State is not (TicketState.Open or TicketState.Closed) ||
+                        !current.ArchiveComplete || current.ArchivePath != ticket.ArchivePath)
+                        return new(false, "The saved transcript is no longer available for this ticket.", current);
+                    if (!await discord.ExistsAsync(current, ct)) return new(false, "The managed ticket channel is unavailable.", current);
+                }
                 var currentActor = await discord.ActorAsync(actor.UserId, ct);
                 if (!CanSupport(currentActor)) return new(false, "Support access changed; transcript delivery was denied.", current);
                 ct.ThrowIfCancellationRequested();
                 await deliver(current, ct);
             }
-            return new(true, "Transcript archived.", current);
+            return new(true, useSavedArchive ? "Latest saved transcript ready." : "Transcript archived.", current);
         }
         finally { if (exportId is { } id) _exports.TryRemove(id, out _); }
     }
@@ -186,11 +216,14 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         foreach (var id in ticketIds)
         {
             ct.ThrowIfCancellationRequested();
-            await using var session = await store.LockAsync(ct);
-            var ticket = await session.GetTicketAsync(id, ct);
+            using var progressTimeout = new MaintenanceProgressTimeout(clock, ct);
+            var token = progressTimeout.Token;
+            await using var session = await store.LockAsync(token);
+            var ticket = await WithProgressAsync(session.GetTicketAsync(id, token), progressTimeout.ReportProgress);
             if (ticket is null || ticket.State is not (TicketState.Open or TicketState.Closed)) continue;
             // A missing channel is handled by maintenance; an inaccessible/unmanaged channel must fail readiness.
-            if (await discord.ExistsAsync(ticket, ct)) await discord.ReconcilePermissionsAsync(ticket, ct);
+            if (await WithProgressAsync(discord.ExistsAsync(ticket, token), progressTimeout.ReportProgress))
+                await WithProgressAsync(discord.ReconcilePermissionsAsync(ticket, token), progressTimeout.ReportProgress);
         }
     }
     public async Task MaintainAsync(CancellationToken ct = default)
@@ -410,6 +443,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             .All(pair => pair.First.Id == pair.Second.Id && pair.First.AuthorId == pair.Second.AuthorId &&
                 pair.First.AuthorName == pair.Second.AuthorName && pair.First.Content == pair.Second.Content &&
                 pair.First.Timestamp == pair.Second.Timestamp && pair.First.EmbedsJson == pair.Second.EmbedsJson &&
+                pair.First.MetadataJson == pair.Second.MetadataJson &&
                 pair.First.Attachments.OrderBy(attachment => attachment.Id).Select(AttachmentIdentity)
                     .SequenceEqual(pair.Second.Attachments.OrderBy(attachment => attachment.Id).Select(AttachmentIdentity)));
     }

@@ -108,7 +108,7 @@ public static partial class ConfigurationValidator
         // Enabled controls accepting new tickets, not ownership of existing channel mutations.
         if (channelMaintenance && !options.Enabled)
         {
-            ValidateTickets(options, errors);
+            ValidateRetainedTickets(options, retained.Where(ticket => ticket.State != TicketState.Deleted).ToArray(), errors);
             if (configuration.Factions?.Enabled == true)
             {
                 var retainedRoles = (options.SupportRoleIds ?? []).Concat(options.BypassRoleIds ?? []).ToHashSet();
@@ -117,7 +117,7 @@ public static partial class ConfigurationValidator
                         errors.Add($"Faction role '{role.Name}' overlaps a ticket support or bypass role retained for persisted maintenance.");
             }
         }
-        foreach (var ticket in retained.Where(ticket => ticket.State is TicketState.Creating or TicketState.Open or TicketState.Closing or TicketState.Closed or TicketState.Reopening))
+        foreach (var ticket in retained.Where(ticket => TicketMaintenanceRequirements.RequiresPanel(ticket.State)))
             if (!(options.Panels ?? []).Any(panel => panel is not null && panel.Id == ticket.PanelId))
                 errors.Add($"tickets.panels must retain panel '{ticket.PanelId}' required to keep persisted ticket {ticket.Id} reopenable.");
 
@@ -190,6 +190,77 @@ public static partial class ConfigurationValidator
         if (tickets.MaxTicketAttachmentBytes > 10737418240L) errors.Add("tickets.maxTicketAttachmentBytes must not exceed 10 GiB.");
         if (tickets.MaxTranscriptContentBytes <= 0) errors.Add("tickets.maxTranscriptContentBytes must be positive.");
         if (tickets.MaxTranscriptContentBytes > 67108864L) errors.Add("tickets.maxTranscriptContentBytes must not exceed 64 MiB.");
+    }
+
+    private static void ValidateRetainedTickets(TicketOptions tickets, IReadOnlyList<Ticket> retained, List<string> errors)
+    {
+        if (tickets.SupportRoleIds is null || tickets.SupportRoleIds.Length == 0)
+            errors.Add("tickets.supportRoleIds must contain at least one role when persisted channels require maintenance.");
+        ValidateUniqueIds(tickets.SupportRoleIds, "tickets.supportRoleIds", errors);
+        ValidateUniqueIds(tickets.BypassRoleIds, "tickets.bypassRoleIds", errors);
+
+        var panelIds = retained.Where(ticket => TicketMaintenanceRequirements.RequiresPanel(ticket.State))
+            .Select(ticket => ticket.PanelId).ToHashSet(StringComparer.Ordinal);
+        if (panelIds.Count > 0 && (tickets.Panels is null || tickets.Panels.Length == 0))
+            errors.Add("tickets.panels must retain the panels required by persisted tickets.");
+
+        var needsReopenCapacity = retained.Any(ticket => TicketMaintenanceRequirements.RequiresPanel(ticket.State));
+        if (needsReopenCapacity)
+        {
+            if ((tickets.BypassRoleIds?.Length ?? 0) > 0 && (tickets.BypassMemberLimit is null || tickets.BypassPanelLimit is null || tickets.BypassGuildLimit is null))
+                errors.Add("tickets.bypassMemberLimit, bypassPanelLimit, and bypassGuildLimit must all be explicitly set when bypassRoleIds are configured.");
+            if (tickets.MemberLimit <= 0) errors.Add("tickets.memberLimit must be positive.");
+            if (tickets.GuildLimit <= 0) errors.Add("tickets.guildLimit must be positive.");
+        }
+
+        var seenPanelIds = new HashSet<string>(StringComparer.Ordinal);
+        if (tickets.Panels is not null)
+            for (var i = 0; i < tickets.Panels.Length; i++)
+            {
+                var panel = tickets.Panels[i];
+                if (panel is null) continue;
+                if (!panelIds.Contains(panel.Id)) continue;
+                if (!IsSafeIdentifier(panel.Id)) errors.Add($"tickets.panels[{i}].id must be a safe identifier (letters, digits, underscore, or hyphen; 1 to 32 characters).");
+                else if (!seenPanelIds.Add(panel.Id)) errors.Add($"Duplicate ticket panel id '{panel.Id}'.");
+
+                if (panel.OpenLimit <= 0) errors.Add($"tickets.panels[{i}].openLimit must be positive for persisted ticket reopen capacity.");
+                ValidateUniqueIds(panel.OpenCategoryIds, $"tickets.panels[{i}].openCategoryIds", errors);
+                if (panel.OpenCategoryIds is null || panel.OpenCategoryIds.Length == 0)
+                    errors.Add($"tickets.panels[{i}].openCategoryIds must contain at least one category for persisted ticket creation or reopening.");
+                if (retained.Any(ticket => ticket.State == TicketState.Creating && string.Equals(ticket.PanelId, panel.Id, StringComparison.Ordinal)))
+                {
+                    ValidateTemplate(panel.OpeningMessage, TemplateKind.Ticket, $"tickets.panels[{i}].openingMessage", errors);
+                    if (panel.OpeningMessage?.Length > MaximumMessageLength) errors.Add($"tickets.panels[{i}].openingMessage exceeds the 2000 character message limit.");
+                }
+            }
+
+        var closeCapable = retained.Any(ticket => TicketMaintenanceRequirements.RequiresPanel(ticket.State));
+        if (closeCapable)
+        {
+            RequireId(tickets.ClosedCategoryId, "tickets.closedCategoryId", errors);
+            if (tickets.CleanupDelay <= TimeSpan.Zero) errors.Add("tickets.cleanupDelay must be positive.");
+            if (tickets.ArchiveRetentionDays <= 0 || tickets.ArchiveRetentionDays <= tickets.CleanupDelay.TotalDays)
+                errors.Add("tickets.archiveRetentionDays must be positive and longer than cleanupDelay.");
+        }
+        else if (retained.Any(ticket => ticket.State is TicketState.Closing or TicketState.Deleting))
+        {
+            // Interrupted close/deletion can reconcile without reapplying a close deadline, but a missing channel
+            // still needs a bounded archive expiration policy.
+            if (tickets.ArchiveRetentionDays <= 0) errors.Add("tickets.archiveRetentionDays must be positive.");
+        }
+
+        if (retained.Any(ticket => TicketMaintenanceRequirements.RequiresPanel(ticket.State) || ticket.State == TicketState.Deleting))
+        {
+            RequireId(tickets.LogChannelId, "tickets.logChannelId", errors);
+            ValidateArchiveDirectory(tickets.ArchiveDirectory, errors);
+            if (tickets.ArchiveRetentionDays > 3650) errors.Add("tickets.archiveRetentionDays must not exceed 3650 days.");
+            if (tickets.MaxAttachmentBytes <= 0) errors.Add("tickets.maxAttachmentBytes must be positive.");
+            if (tickets.MaxAttachmentBytes > 10737418240L) errors.Add("tickets.maxAttachmentBytes must not exceed 10 GiB.");
+            if (tickets.MaxTicketAttachmentBytes <= 0) errors.Add("tickets.maxTicketAttachmentBytes must be positive.");
+            if (tickets.MaxTicketAttachmentBytes > 10737418240L) errors.Add("tickets.maxTicketAttachmentBytes must not exceed 10 GiB.");
+            if (tickets.MaxTranscriptContentBytes <= 0) errors.Add("tickets.maxTranscriptContentBytes must be positive.");
+            if (tickets.MaxTranscriptContentBytes > 67108864L) errors.Add("tickets.maxTranscriptContentBytes must not exceed 64 MiB.");
+        }
     }
 
     private static void ValidateWelcome(WelcomeOptions welcome, List<string> errors)

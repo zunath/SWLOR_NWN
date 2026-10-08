@@ -8,6 +8,7 @@ namespace SWLOR.DiscordBot.Tests;
 [TestFixture]
 public sealed class PostgresStoreTests
 {
+    private const ulong TestGuildId = 484936923341651971;
     private string ConnectionString = "";
     private string? schema;
     private string configuredDatabase = "";
@@ -40,11 +41,141 @@ public sealed class PostgresStoreTests
     }
 
     [Test]
+    public async Task DifferentGuildCannotReadMutateOrPruneOwnedDatabase()
+    {
+        await using var owner = new PostgresTicketStore(ConnectionString, TestGuildId);
+        await owner.InitializeAsync(default);
+        Ticket retained;
+        await using (var session = await owner.LockAsync(default))
+        {
+            retained = await session.ReserveAsync("support", 42, "owned-ticket", DateTimeOffset.UtcNow, default);
+            retained = retained with { State = TicketState.Closed, ChannelId = 123, ArchivePath = "retained/transcript.html" };
+            await session.SaveAsync(retained, "closed", 42, default);
+            await session.GetOrCreateDeliveryAsync("owned-delivery", "private reply", default);
+            await session.CompleteDeliveryAsync("owned-delivery", default);
+        }
+        await owner.ScheduleDeletionAsync(123, 456, DateTimeOffset.UtcNow.AddDays(-40), default);
+        await using (var age = new NpgsqlConnection(ConnectionString))
+        {
+            await age.OpenAsync();
+            await using var command = new NpgsqlCommand(
+                "UPDATE swlor_bot_delivery_operations SET updated_at=now()-interval '40 days'", age);
+            await command.ExecuteNonQueryAsync();
+        }
+        await using var other = new PostgresTicketStore(ConnectionString, TestGuildId + 1);
+        var error = Assert.ThrowsAsync<InvalidOperationException>(async () => await other.InitializeAsync(default));
+        Assert.That(error!.Message, Does.Contain("different Discord guild"));
+        Assert.Throws<InvalidOperationException>(() => other.LockAsync(default));
+        Assert.Throws<InvalidOperationException>(() => other.LockCommunityAsync(default));
+        Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await other.PersistCommunityDeliveryAsync("other", "other reply", default));
+        Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await other.ScheduleDeletionAsync(123, 789, DateTimeOffset.UtcNow, default));
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await other.GetDueDeletionsAsync(DateTimeOffset.UtcNow, default));
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await other.CompleteDeletionAsync(123, 456, default));
+        Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await other.RetryDeletionAsync(new(123, 456, DateTimeOffset.UtcNow, 0, null),
+                DateTimeOffset.UtcNow.AddDays(1), "other", default));
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await other.PruneCompletedDeliveriesAsync(DateTimeOffset.UtcNow, default));
+
+        await using var verify = await owner.LockAsync(default);
+        Assert.That(await verify.FindInteractionAsync("owned-ticket", default), Is.EqualTo(retained));
+        Assert.That(await verify.GetOrCreateDeliveryAsync("owned-delivery", "replacement", default),
+            Is.EqualTo(new DeliveryState("private reply", true)));
+        Assert.That(await owner.GetDueDeletionsAsync(DateTimeOffset.UtcNow, default),
+            Has.One.Matches<PendingResponseDeletion>(x => x.MessageId == 456 && x.Attempts == 0));
+    }
+
+    [Test]
+    public async Task ConcurrentFirstInitializationClaimsDatabaseForOnlyOneGuild()
+    {
+        await using var first = new PostgresTicketStore(ConnectionString, TestGuildId);
+        await using var second = new PostgresTicketStore(ConnectionString, TestGuildId + 1);
+        async Task<bool> Initialize(PostgresTicketStore store)
+        {
+            try { await store.InitializeAsync(default); return true; }
+            catch (InvalidOperationException error) when (error.Message.Contains("different Discord guild")) { return false; }
+        }
+        var results = await Task.WhenAll(Initialize(first), Initialize(second));
+        Assert.That(results.Count(x => x), Is.EqualTo(1));
+        await using var connection = new NpgsqlConnection(ConnectionString);
+        await connection.OpenAsync();
+        await using var read = new NpgsqlCommand("SELECT guild_id FROM swlor_bot_database_owner", connection);
+        Assert.That(await read.ExecuteScalarAsync(), Is.EqualTo((results[0] ? TestGuildId : TestGuildId + 1)
+            .ToString(System.Globalization.CultureInfo.InvariantCulture)));
+        await using var successful = await (results[0] ? first : second).LockAsync(default);
+        Assert.That(await successful.GetTicketsAsync(default), Is.Empty);
+    }
+
+    [Test]
+    public async Task VersionFourDatabaseBindsOwnershipWithoutDiscardingRetainedData()
+    {
+        Ticket retained;
+        await using (var original = new PostgresTicketStore(ConnectionString, TestGuildId))
+        {
+            await original.InitializeAsync(default);
+            await using var session = await original.LockAsync(default);
+            retained = await session.ReserveAsync("support", 42, "legacy-ticket", DateTimeOffset.UtcNow, default);
+            await session.GetOrCreateDeliveryAsync("legacy", "legacy reply", default);
+        }
+        await using (var connection = new NpgsqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            await using var legacy = new NpgsqlCommand(
+                "DROP TABLE swlor_bot_database_owner; DELETE FROM swlor_bot_schema WHERE version=5", connection);
+            await legacy.ExecuteNonQueryAsync();
+        }
+        await using var upgraded = new PostgresTicketStore(ConnectionString, TestGuildId);
+        await upgraded.InitializeAsync(default);
+        await upgraded.InitializeAsync(default);
+        await using var sessionAfterUpgrade = await upgraded.LockAsync(default);
+        Assert.That(await sessionAfterUpgrade.FindInteractionAsync("legacy-ticket", default), Is.EqualTo(retained));
+        Assert.That(await sessionAfterUpgrade.GetOrCreateDeliveryAsync("legacy", "replacement", default),
+            Is.EqualTo(new DeliveryState("legacy reply", false)));
+        await sessionAfterUpgrade.DisposeAsync();
+        await using var wrongGuild = new PostgresTicketStore(ConnectionString, TestGuildId + 1);
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await wrongGuild.InitializeAsync(default));
+    }
+
+    [Test]
+    public async Task FailedSchemaUpgradeRollsBackOwnershipAndSchemaChanges()
+    {
+        await using var connection = new NpgsqlConnection(ConnectionString);
+        await connection.OpenAsync();
+        await using (var newer = new NpgsqlCommand(
+            "CREATE TABLE swlor_bot_schema(version integer PRIMARY KEY, applied_at timestamptz DEFAULT now()); INSERT INTO swlor_bot_schema VALUES (6, now())",
+            connection))
+            await newer.ExecuteNonQueryAsync();
+        await using var store = new PostgresTicketStore(ConnectionString, TestGuildId);
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await store.InitializeAsync(default));
+        Assert.Throws<InvalidOperationException>(() => store.LockAsync(default));
+        await using var owner = new NpgsqlCommand("SELECT to_regclass('swlor_bot_database_owner')::text", connection);
+        Assert.That(await owner.ExecuteScalarAsync(), Is.EqualTo(DBNull.Value));
+        await using var versions = new NpgsqlCommand("SELECT count(*) FROM swlor_bot_schema", connection);
+        Assert.That(await versions.ExecuteScalarAsync(), Is.EqualTo(1L));
+    }
+
+    [Test]
+    public async Task GuildOwnershipPreservesUnsignedSnowflakeAndRequiresInitialization()
+    {
+        await using var store = new PostgresTicketStore(ConnectionString, ulong.MaxValue);
+        Assert.Throws<InvalidOperationException>(() => store.LockAsync(default));
+        await store.InitializeAsync(default);
+        await using var restarted = new PostgresTicketStore(ConnectionString, ulong.MaxValue);
+        await restarted.InitializeAsync(default);
+        await using var connection = new NpgsqlConnection(ConnectionString);
+        await connection.OpenAsync();
+        await using var command = new NpgsqlCommand("SELECT guild_id FROM swlor_bot_database_owner", connection);
+        Assert.That(await command.ExecuteScalarAsync(), Is.EqualTo("18446744073709551615"));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new PostgresTicketStore(ConnectionString, 0));
+    }
+
+    [Test]
     public async Task TicketAndPendingIntentSurviveStoreRestart()
     {
         var key = Guid.NewGuid().ToString("N");
         Ticket ticket;
-        await using (var first = new PostgresTicketStore(ConnectionString))
+        await using (var first = new PostgresTicketStore(ConnectionString, TestGuildId))
         {
             await first.InitializeAsync(default);
             await using var session = await first.LockAsync(default);
@@ -55,7 +186,7 @@ public sealed class PostgresStoreTests
             await session.GetOrCreateDeliveryAsync(key, "add-faction:123", default);
             await session.SetCooldownAsync(key, DateTimeOffset.UtcNow, default);
         }
-        await using var second = new PostgresTicketStore(ConnectionString);
+        await using var second = new PostgresTicketStore(ConnectionString, TestGuildId);
         await second.InitializeAsync(default);
         await using var resumed = await second.LockAsync(default);
         Assert.That(await resumed.FindInteractionAsync(key, default), Is.EqualTo(ticket));
@@ -75,7 +206,7 @@ public sealed class PostgresStoreTests
     {
         const string key = "welcome:7:100";
         const string intent = """{"Version":1,"Kind":"welcome","UserId":7,"ChannelId":100}""";
-        await using (var store = new PostgresTicketStore(ConnectionString))
+        await using (var store = new PostgresTicketStore(ConnectionString, TestGuildId))
         {
             await store.InitializeAsync(default);
             await using var held = await store.LockCommunityAsync(default);
@@ -84,7 +215,7 @@ public sealed class PostgresStoreTests
             Assert.That(await held.GetOrCreateDeliveryAsync(key, "replacement", default),
                 Is.EqualTo(new DeliveryState(intent, false)), "The short insert must neither wait for the advisory lock nor overwrite the original intent.");
         }
-        await using var restarted = new PostgresTicketStore(ConnectionString);
+        await using var restarted = new PostgresTicketStore(ConnectionString, TestGuildId);
         await restarted.InitializeAsync(default);
         await using var resumed = await restarted.LockCommunityAsync(default);
         Assert.That(await resumed.GetPendingDeliveriesAsync(default), Is.EqualTo(new[] { new PendingDelivery(key, intent) }));
@@ -94,7 +225,7 @@ public sealed class PostgresStoreTests
     public async Task DuplicateJoinPersistencePreservesCompletedIntentAndItsOriginalRetentionTimestamp()
     {
         const string key = "welcome:7:100";
-        await using var store = new PostgresTicketStore(ConnectionString);
+        await using var store = new PostgresTicketStore(ConnectionString, TestGuildId);
         await store.InitializeAsync(default);
         await store.PersistCommunityDeliveryAsync(key, "original welcome destination and content", default);
         await using (var session = await store.LockCommunityAsync(default))
@@ -118,14 +249,14 @@ public sealed class PostgresStoreTests
     {
         const string key = "answer:100:300";
         const string intent = "{\"Version\":1,\"Kind\":\"answer\",\"ChannelId\":100}";
-        await using (var first = new PostgresTicketStore(ConnectionString))
+        await using (var first = new PostgresTicketStore(ConnectionString, TestGuildId))
         {
             await first.InitializeAsync(default);
             await using var session = await first.LockCommunityAsync(default);
             await session.GetOrCreateDeliveryAsync(key, intent, default);
         }
 
-        await using var restarted = new PostgresTicketStore(ConnectionString);
+        await using var restarted = new PostgresTicketStore(ConnectionString, TestGuildId);
         await restarted.InitializeAsync(default);
         await using (var session = await restarted.LockCommunityAsync(default))
         {
@@ -138,7 +269,7 @@ public sealed class PostgresStoreTests
     [Test]
     public async Task PendingCommunityDeliveryBatchesRotateThroughBacklog()
     {
-        await using var store = new PostgresTicketStore(ConnectionString);
+        await using var store = new PostgresTicketStore(ConnectionString, TestGuildId);
         await store.InitializeAsync(default);
         await using var session = await store.LockCommunityAsync(default);
         for (var index = 0; index < 25; index++)
@@ -162,9 +293,10 @@ public sealed class PostgresStoreTests
     [Test]
     public async Task CompetingStoreCannotMutateWhileAnotherSessionOwnsLock()
     {
-        await using var first = new PostgresTicketStore(ConnectionString);
-        await using var second = new PostgresTicketStore(ConnectionString);
+        await using var first = new PostgresTicketStore(ConnectionString, TestGuildId);
+        await using var second = new PostgresTicketStore(ConnectionString, TestGuildId);
         await first.InitializeAsync(default);
+        await second.InitializeAsync(default);
         var session = await first.LockAsync(default);
         using var timeout = new CancellationTokenSource(TimeSpan.FromMilliseconds(300));
         try
@@ -184,7 +316,7 @@ public sealed class PostgresStoreTests
     public async Task DeletedTicketWithPendingArchiveOwnershipSurvivesRestartAndRemainsInRetentionQuery()
     {
         Ticket pending;
-        await using (var first = new PostgresTicketStore(ConnectionString))
+        await using (var first = new PostgresTicketStore(ConnectionString, TestGuildId))
         {
             await first.InitializeAsync(default);
             await using var session = await first.LockAsync(default);
@@ -193,7 +325,7 @@ public sealed class PostgresStoreTests
                 ArchiveComplete = false, ArchiveExpiresAt = DateTimeOffset.UtcNow.AddDays(90) };
             await session.SaveAsync(pending, "archive-pending", null, default);
         }
-        await using var restarted = new PostgresTicketStore(ConnectionString);
+        await using var restarted = new PostgresTicketStore(ConnectionString, TestGuildId);
         await restarted.InitializeAsync(default);
         await using var recovered = await restarted.LockAsync(default);
         Assert.That((await recovered.GetTicketsAsync(default)).Single(), Is.EqualTo(pending));
@@ -205,7 +337,7 @@ public sealed class PostgresStoreTests
         var channel = ulong.MaxValue;
         var message = ulong.MaxValue - 1;
         var due = new DateTimeOffset(2026, 10, 3, 0, 0, 0, TimeSpan.Zero);
-        await using (var first = new PostgresTicketStore(ConnectionString))
+        await using (var first = new PostgresTicketStore(ConnectionString, TestGuildId))
         {
             await first.InitializeAsync(default);
             await using var session = await first.LockAsync(default);
@@ -218,7 +350,7 @@ public sealed class PostgresStoreTests
             // A repeated delivery must preserve both retry metadata and its original due time.
             await first.ScheduleDeletionAsync(channel, message, due.AddHours(5), timeout.Token);
         }
-        await using var second = new PostgresTicketStore(ConnectionString);
+        await using var second = new PostgresTicketStore(ConnectionString, TestGuildId);
         await second.InitializeAsync(default);
         Assert.That(await second.GetDueDeletionsAsync(due, default), Is.Empty);
         var pending = (await second.GetDueDeletionsAsync(due.AddMinutes(1), default)).Single();
@@ -254,7 +386,7 @@ public sealed class PostgresStoreTests
             await using var command = new NpgsqlCommand(versionOne, connection);
             await command.ExecuteNonQueryAsync();
         }
-        await using var store = new PostgresTicketStore(ConnectionString);
+        await using var store = new PostgresTicketStore(ConnectionString, TestGuildId);
         await store.InitializeAsync(default);
         await store.InitializeAsync(default);
         await using var session = await store.LockAsync(default);
@@ -278,15 +410,16 @@ public sealed class PostgresStoreTests
         await using var verify = new NpgsqlConnection(ConnectionString);
         await verify.OpenAsync();
         await using var version = new NpgsqlCommand("SELECT max(version) FROM swlor_bot_schema", verify);
-        Assert.That(await version.ExecuteScalarAsync(), Is.EqualTo(4));
+        Assert.That(await version.ExecuteScalarAsync(), Is.EqualTo(5));
     }
 
     [Test]
     public async Task CommunityLockSerializesCommunityAndDoesNotBlockTickets()
     {
-        await using var first = new PostgresTicketStore(ConnectionString);
-        await using var second = new PostgresTicketStore(ConnectionString);
+        await using var first = new PostgresTicketStore(ConnectionString, TestGuildId);
+        await using var second = new PostgresTicketStore(ConnectionString, TestGuildId);
         await first.InitializeAsync(default);
+        await second.InitializeAsync(default);
         await using var community = await first.LockCommunityAsync(default);
         using var timeout = new CancellationTokenSource(TimeSpan.FromMilliseconds(300));
         Assert.ThrowsAsync<OperationCanceledException>(async () =>
@@ -304,7 +437,7 @@ public sealed class PostgresStoreTests
     public async Task ConfirmedUnlockPreservesNormalPooling()
     {
         var settings = new NpgsqlConnectionStringBuilder(ConnectionString) { MaxPoolSize = 1 };
-        await using var store = new PostgresTicketStore(settings.ConnectionString);
+        await using var store = new PostgresTicketStore(settings.ConnectionString, TestGuildId);
         await store.InitializeAsync(default);
         int backend;
         await using (var session = (PostgresTicketStore.Session)await store.LockAsync(default))
@@ -317,7 +450,7 @@ public sealed class PostgresStoreTests
     public async Task UnconfirmedUnlockDiscardsBackendInsteadOfReturningItToPool()
     {
         var settings = new NpgsqlConnectionStringBuilder(ConnectionString) { MaxPoolSize = 1 };
-        await using var store = new PostgresTicketStore(settings.ConnectionString);
+        await using var store = new PostgresTicketStore(settings.ConnectionString, TestGuildId);
         await store.InitializeAsync(default);
         var session = (PostgresTicketStore.Session)await store.LockAsync(default);
         var backend = session.Connection.ProcessID;
@@ -331,12 +464,13 @@ public sealed class PostgresStoreTests
     [Test]
     public async Task CanceledAcquisitionDiscardsWaitingBackend()
     {
-        await using var first = new PostgresTicketStore(ConnectionString);
+        await using var first = new PostgresTicketStore(ConnectionString, TestGuildId);
         await first.InitializeAsync(default);
-        await using var owner = await first.LockAsync(default);
         var name = "bot_lock_test_" + Guid.NewGuid().ToString("N");
         var settings = new NpgsqlConnectionStringBuilder(ConnectionString) { ApplicationName = name, MaxPoolSize = 1 };
-        await using var second = new PostgresTicketStore(settings.ConnectionString);
+        await using var second = new PostgresTicketStore(settings.ConnectionString, TestGuildId);
+        await second.InitializeAsync(default);
+        await using var owner = await first.LockAsync(default);
         using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
         var waiting = second.LockAsync(cancellation.Token);
         await using var observer = new NpgsqlConnection(ConnectionString);
@@ -367,7 +501,7 @@ public sealed class PostgresStoreTests
     public async Task DeliveryRetentionSurvivesRestartAndPreservesPendingRecentAndBoundaryRecords()
     {
         var now = new DateTimeOffset(2026, 10, 3, 0, 0, 0, TimeSpan.Zero);
-        await using (var first = new PostgresTicketStore(ConnectionString))
+        await using (var first = new PostgresTicketStore(ConnectionString, TestGuildId))
         {
             await first.InitializeAsync(default);
             await using var connection = new NpgsqlConnection(ConnectionString);
@@ -387,7 +521,7 @@ public sealed class PostgresStoreTests
             command.Parameters.AddWithValue("boundary", now - PostgresTicketStore.CompletedDeliveryRetention);
             await command.ExecuteNonQueryAsync();
         }
-        await using var restarted = new PostgresTicketStore(ConnectionString);
+        await using var restarted = new PostgresTicketStore(ConnectionString, TestGuildId);
         await restarted.InitializeAsync(default);
         await restarted.PruneCompletedDeliveriesAsync(now, default);
         await using var session = await restarted.LockCommunityAsync(default);
@@ -426,7 +560,7 @@ public sealed class PostgresStoreTests
             await using var seed = new NpgsqlCommand(versionTwo, connection);
             await seed.ExecuteNonQueryAsync();
         }
-        await using var store = new PostgresTicketStore(ConnectionString);
+        await using var store = new PostgresTicketStore(ConnectionString, TestGuildId);
         await store.InitializeAsync(default);
         await using var verify = new NpgsqlConnection(ConnectionString);
         await verify.OpenAsync();
@@ -450,7 +584,7 @@ public sealed class PostgresStoreTests
     [Test]
     public async Task RetentionDrainsMoreThanOneBatchWithoutTouchingUnfinishedWork()
     {
-        await using var store = new PostgresTicketStore(ConnectionString);
+        await using var store = new PostgresTicketStore(ConnectionString, TestGuildId);
         await store.InitializeAsync(default);
         await using var connection = new NpgsqlConnection(ConnectionString);
         await connection.OpenAsync();
@@ -472,7 +606,7 @@ public sealed class PostgresStoreTests
     [Test]
     public async Task RepeatedDeliveryCompletionDoesNotExtendReplayRetention()
     {
-        await using var store = new PostgresTicketStore(ConnectionString);
+        await using var store = new PostgresTicketStore(ConnectionString, TestGuildId);
         await store.InitializeAsync(default);
         await using (var session = await store.LockCommunityAsync(default))
         {

@@ -8,6 +8,41 @@ namespace SWLOR.DiscordBot.Tests;
 [TestFixture]
 public sealed class GatewayConfigurationTests
 {
+    [Test]
+    public void TranscriptCommandOffersExplicitOptionalSavedSnapshotDownload()
+    {
+        var transcript = DiscordGateway.TranscriptCommandOptions().Build();
+        Assert.That(transcript.Name, Is.EqualTo("transcript"));
+        Assert.That(transcript.Type, Is.EqualTo(ApplicationCommandOptionType.SubCommand));
+        var saved = transcript.Options.Single();
+        Assert.That(saved.Name, Is.EqualTo("saved"));
+        Assert.That(saved.Type, Is.EqualTo(ApplicationCommandOptionType.Boolean));
+        Assert.That(saved.Description, Is.EqualTo("Download the latest saved transcript"));
+        Assert.That(saved.IsRequired, Is.False, "Fresh capture remains the default.");
+    }
+    [Test]
+    public async Task GatewayQueuedJobsUseCallerCancellationWithoutAWholeOperationDeadline()
+    {
+        var gateway = new DiscordGateway(null!, new BotConfiguration(), null!, null!, null!, null!,
+            TimeProvider.System, null!, null!, Microsoft.Extensions.Logging.Abstractions.NullLogger<DiscordGateway>.Instance);
+        using var stopping = new CancellationTokenSource();
+        var completed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Assert.That(gateway.TryQueueJob(async token =>
+        {
+            Assert.That(token, Is.EqualTo(stopping.Token), "Healthy scans must not inherit an additional whole-operation timer.");
+            await Task.Yield();
+            token.ThrowIfCancellationRequested();
+            completed.SetResult();
+        }), Is.True);
+        var processor = gateway.ProcessAsync(stopping.Token);
+        try { await completed.Task.WaitAsync(TimeSpan.FromSeconds(2)); }
+        finally
+        {
+            stopping.Cancel();
+            try { await processor; } catch (OperationCanceledException) { }
+        }
+        Assert.That(processor.IsCompleted, Is.True);
+    }
     [TestCase(1UL, false, false, true, true)]
     [TestCase(2UL, false, false, true, false)]
     [TestCase(1UL, true, false, true, false)]

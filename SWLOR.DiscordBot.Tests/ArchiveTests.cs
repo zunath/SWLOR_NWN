@@ -534,6 +534,7 @@ public sealed class ArchiveTests
 
     [TestCase("author")]
     [TestCase("embeds")]
+    [TestCase("message-metadata")]
     [TestCase("attachment-metadata")]
     public void TranscriptBudgetIncludesAllRetainedTextBeforeAnyFilesOrDownloads(string field)
     {
@@ -547,6 +548,7 @@ public sealed class ArchiveTests
         {
             "author" => message with { AuthorName = new string('a', 800) },
             "embeds" => message with { EmbedsJson = new string('e', 800) },
+            "message-metadata" => message with { MetadataJson = new string('m', 800) },
             _ => message with { Attachments = [new(88, new string('f', 800), "https://cdn.discordapp.com/a", 1)] }
         };
 
@@ -573,6 +575,20 @@ public sealed class ArchiveTests
         Assert.ThrowsAsync<InvalidDataException>(() => archive.ExportAsync(ticket, new(emptyMessages, 100), default));
     }
 
+    [Test]
+    public async Task ArchivePreservesAndEscapesAdditionalMessagePayloadsInJsonAndHtml()
+    {
+        using var client = CreateClient(_ => throw new AssertionException("No attachment should be downloaded."));
+        var archive = CreateArchive(client);
+        var metadata = "{\"Poll\":{\"Question\":\"<script>alert('poll')</script>\"},\"Stickers\":[\"sticker\"],\"Components\":[\"text display\"],\"ForwardedMessages\":[\"evidence\"]}";
+        var message = new TranscriptMessage(10, 55, "member", "", DateTimeOffset.UnixEpoch, [], MetadataJson: metadata);
+        var directory = await archive.ExportAsync(CreateTicket(), new([message], 10), default);
+        var html = await File.ReadAllTextAsync(Path.Combine(directory, "transcript.html"));
+        Assert.That(html, Does.Contain(WebUtility.HtmlEncode(metadata)));
+        Assert.That(html, Does.Not.Contain("<script>"));
+        using var json = JsonDocument.Parse(await File.ReadAllTextAsync(Path.Combine(directory, "transcript.json")));
+        Assert.That(json.RootElement.GetProperty("Messages")[0].GetProperty("MetadataJson").GetString(), Is.EqualTo(metadata));
+    }
     [Test]
     public async Task StreamedHtmlPreservesUnicodeAtChunkBoundaryAndEscapesEntireContent()
     {

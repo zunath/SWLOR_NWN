@@ -8,26 +8,6 @@ using System.Text.Json;
 
 namespace SWLOR.DiscordBot.Core;
 
-public sealed record CommunityMember(ulong UserId, string DisplayName, IReadOnlyCollection<ulong> RoleIds, bool IsBot = false, bool IsWebhook = false);
-public sealed record CommunityRole(ulong RoleId, int Position, bool IsManaged = false);
-public sealed record CommunityEmbedField(string Name, string Value, bool Inline = false);
-public sealed record CommunityEmbed(string? Title, string? Description, string? Url, uint Color, IReadOnlyList<CommunityEmbedField> Fields);
-public sealed record CommunityMessage(string Content, IReadOnlyList<CommunityEmbed> Embeds, TimeSpan? DeleteAfter = null, string? DeliveryKey = null);
-
-public interface ICommunityDiscord
-{
-    string ServerName { get; }
-    Task<CommunityMember?> GetMemberAsync(ulong userId, CancellationToken ct);
-    Task<CommunityRole?> GetRoleAsync(ulong roleId, CancellationToken ct);
-    Task ValidateCommunityChannelAsync(ulong channelId, bool deleteSource, bool requireEmbeds, CancellationToken ct) =>
-        throw new NotSupportedException("Fresh community channel permission validation is unavailable.");
-    Task AddRoleAsync(ulong userId, ulong roleId, CancellationToken ct);
-    Task RemoveRoleAsync(ulong userId, ulong roleId, CancellationToken ct);
-    Task<ulong?> SendAsync(ulong channelId, CommunityMessage message, CancellationToken ct);
-    Task<ulong?> SendDirectMessageAsync(ulong userId, CommunityMessage message, CancellationToken ct);
-    Task DeleteMessageAsync(ulong channelId, ulong messageId, CancellationToken ct);
-}
-
 public sealed class CommunityService(BotConfiguration configuration, ITicketStore store, ICommunityDiscord discord,
     IResponseDeletionStore deletions, TimeProvider? timeProvider = null, ILogger<CommunityService>? logger = null)
 {
@@ -167,8 +147,7 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
                         continue;
                     }
 
-                    var scope = intent.Kind == "faction" ? $"faction:{userId}" :
-                        intent.Kind == "answer" && intent.Cooldown > TimeSpan.Zero ? intent.CooldownKey : null;
+                    var scope = intent.Kind == "faction" ? $"faction:{userId}" : null;
                     if (scope is not null && !await WithRecoveryProgressAsync(session.TryAdvanceCommunityActionAsync(scope, intent.SourceMessageId!.Value, intentCt), Progress))
                     {
                         await WithRecoveryProgressAsync(SuppressDeliveryAsync(session, item.Key, intent, intentCt), Progress);
@@ -211,8 +190,14 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
                                 recovered++;
                                 continue;
                             }
-                            var cooldownDuration = answer.Cooldown > (intent.Cooldown ?? TimeSpan.Zero)
-                                ? answer.Cooldown : intent.Cooldown ?? TimeSpan.Zero;
+                            var cooldownDuration = EffectiveAnswerCooldown(answer, intent);
+                            if (cooldownDuration > TimeSpan.Zero && intent.CooldownKey is { } answerScope &&
+                                !await WithRecoveryProgressAsync(session.TryAdvanceCommunityActionAsync(answerScope, intent.SourceMessageId!.Value, intentCt), Progress))
+                            {
+                                await WithRecoveryProgressAsync(SuppressDeliveryAsync(session, item.Key, intent, intentCt), Progress);
+                                recovered++;
+                                continue;
+                            }
                             var lastDelivered = cooldownDuration > TimeSpan.Zero && intent.CooldownKey is { } recoveryCooldownKey
                                 ? await WithRecoveryProgressAsync(session.GetCooldownAsync(recoveryCooldownKey, intentCt), Progress) : null;
                             if (lastDelivered is { } last && Clock.GetUtcNow() < last + cooldownDuration)
@@ -225,7 +210,7 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
                                 intent.DeleteSource, intent.Message.Embeds.Count > 0, intentCt), Progress);
                             if (await WithRecoveryProgressAsync(discord.SendAsync(intent.ChannelId!.Value, intent.Message, intentCt), Progress) is null)
                                 throw new InvalidOperationException("The pending quick answer response was not delivered.");
-                            if (intent.Cooldown is { } cooldown && cooldown > TimeSpan.Zero && intent.CooldownKey is { } cooldownKey)
+                            if (cooldownDuration > TimeSpan.Zero && intent.CooldownKey is { } cooldownKey)
                                 await WithRecoveryProgressAsync(session.SetCooldownAsync(cooldownKey, Clock.GetUtcNow(), intentCt), Progress);
                             break;
 
@@ -358,8 +343,16 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
             }
             if (!delivery.Completed)
             {
-                if (persistedIntent.Cooldown > TimeSpan.Zero && persistedIntent.CooldownKey is { } scope &&
+                var cooldownDuration = EffectiveAnswerCooldown(answer, persistedIntent);
+                if (cooldownDuration > TimeSpan.Zero && persistedIntent.CooldownKey is { } scope &&
                     !await session.TryAdvanceCommunityActionAsync(scope, persistedIntent.SourceMessageId!.Value, ct))
+                {
+                    await SuppressDeliveryAsync(session, deliveryKey, persistedIntent, ct);
+                    return;
+                }
+                var lastPersistedDelivery = cooldownDuration > TimeSpan.Zero && persistedIntent.CooldownKey is { } retryCooldownKey
+                    ? await session.GetCooldownAsync(retryCooldownKey, ct) : null;
+                if (lastPersistedDelivery is { } deliveredAt && now < deliveredAt + cooldownDuration)
                 {
                     await SuppressDeliveryAsync(session, deliveryKey, persistedIntent, ct);
                     return;
@@ -369,7 +362,7 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
                 if (persistedIntent.ChannelId is not { } destination || destination == 0 ||
                     await discord.SendAsync(destination, persistedMessage, ct) is null)
                     throw new InvalidOperationException("The quick answer response was not delivered.");
-                if (persistedIntent.Cooldown is { } cooldown && cooldown > TimeSpan.Zero && persistedIntent.CooldownKey is { } persistedCooldownKey)
+                if (cooldownDuration > TimeSpan.Zero && persistedIntent.CooldownKey is { } persistedCooldownKey)
                     await session.SetCooldownAsync(persistedCooldownKey, Clock.GetUtcNow(), ct);
                 // Commit cleanup ownership before acknowledging delivery so a shutdown after this point
                 // does not depend on Discord replaying the source Gateway event.
@@ -380,6 +373,9 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
         }
         if (deleteSourceCommand) await CompleteCommandDeletionAsync(channelId, messageId, ct);
     }
+
+    private static TimeSpan EffectiveAnswerCooldown(QuickAnswerOptions answer, CommunityDeliveryIntent intent) =>
+        answer.Cooldown > (intent.Cooldown ?? TimeSpan.Zero) ? answer.Cooldown : intent.Cooldown ?? TimeSpan.Zero;
 
     private FactionRole? FindFaction(string command)
     {

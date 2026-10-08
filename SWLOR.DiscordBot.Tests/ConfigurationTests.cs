@@ -380,20 +380,59 @@ public sealed class ConfigurationTests
         Assert.Throws<System.Text.Json.JsonException>(() => ConfigurationLoader.Parse("""{"GuildId":1,"TypoField":true}"""));
     }
 
+    [TestCase(TicketState.Creating, true)]
+    [TestCase(TicketState.Open, true)]
+    [TestCase(TicketState.Closing, true)]
+    [TestCase(TicketState.Closed, true)]
+    [TestCase(TicketState.Reopening, true)]
+    [TestCase(TicketState.Deleting, false)]
+    public void PersistedChannelsRequireRetainedTicketSettingsEvenWhenNewTicketingIsDisabled(TicketState state, bool requiresPanel)
+    {
+        var config = new BotConfiguration { GuildId = 1, Tickets = new TicketOptions { Enabled = false, ArchiveDirectory = "" } };
+        Assert.That(ConfigurationValidator.Validate(config), Is.Empty, "the config-only check cannot know persisted state");
+        var errors = ConfigurationValidator.ValidatePersistedTickets(config, [StoredTicket(state)]);
+        Assert.That(errors.Any(error => error.Contains("tickets.panels", StringComparison.Ordinal)), Is.EqualTo(requiresPanel));
+        Assert.That(errors, Has.Some.Contains("tickets.supportRoleIds"));
+        Assert.That(errors, Has.Some.Contains("tickets.archiveDirectory"));
+    }
+
     [TestCase(TicketState.Creating)]
     [TestCase(TicketState.Open)]
     [TestCase(TicketState.Closing)]
     [TestCase(TicketState.Closed)]
     [TestCase(TicketState.Reopening)]
-    [TestCase(TicketState.Deleting)]
-    public void PersistedChannelsRequireRetainedTicketSettingsEvenWhenNewTicketingIsDisabled(TicketState state)
+    public void DisabledIntakeWithPersistedChannelsDoesNotRequirePanelPublicationSettings(TicketState state)
     {
-        var config = new BotConfiguration { GuildId = 1, Tickets = new TicketOptions { Enabled = false, ArchiveDirectory = "" } };
-        Assert.That(ConfigurationValidator.Validate(config), Is.Empty, "the config-only check cannot know persisted state");
-        var errors = ConfigurationValidator.ValidatePersistedTickets(config, [StoredTicket(state)]);
-        Assert.That(errors, Has.Some.Contains("tickets.panels"));
-        Assert.That(errors, Has.Some.Contains("tickets.supportRoleIds"));
-        Assert.That(errors, Has.Some.Contains("tickets.archiveDirectory"));
+        var config = RetainedTicketConfiguration();
+        config.Tickets.Panels[0].ChannelId = 0;
+        config.Tickets.Panels[0].Label = "";
+        config.Tickets.Panels[0].PanelMessage = "";
+
+        Assert.That(ConfigurationValidator.ValidatePersistedTickets(config, [StoredTicket(state)]), Is.Empty);
+    }
+
+    [Test]
+    public void EnabledIntakeStillRequiresPanelPublicationSettings()
+    {
+        var config = RetainedTicketConfiguration();
+        config.Tickets.Enabled = true;
+        config.Tickets.Panels[0].ChannelId = 0;
+        config.Tickets.Panels[0].Label = "";
+        config.Tickets.Panels[0].PanelMessage = "";
+
+        var errors = ConfigurationValidator.ValidatePersistedTickets(config, []);
+        Assert.That(errors, Has.Some.Contains("tickets.panels[0].channelId"));
+        Assert.That(errors, Has.Some.Contains("tickets.panels[0].label"));
+        Assert.That(errors, Has.Some.Contains("tickets.panels[0].panelMessage"));
+    }
+
+    [Test]
+    public void RetainedCreatingTicketStillRequiresItsOperationalCategory()
+    {
+        var config = RetainedTicketConfiguration();
+        config.Tickets.Panels[0].OpenCategoryIds = [];
+        Assert.That(ConfigurationValidator.ValidatePersistedTickets(config, [StoredTicket(TicketState.Creating)]),
+            Has.Some.Contains("openCategoryIds must contain at least one category"));
     }
 
     [Test]

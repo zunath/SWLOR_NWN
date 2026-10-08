@@ -309,6 +309,12 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
                 await WriteEncodedAsync(writer, message.EmbedsJson, ct, progress);
                 await writer.WriteAsync("</pre>".AsMemory(), ct);
             }
+            if (!string.IsNullOrWhiteSpace(message.MetadataJson))
+            {
+                await writer.WriteAsync("<p>Message details</p><pre>".AsMemory(), ct);
+                await WriteEncodedAsync(writer, message.MetadataJson, ct, progress);
+                await writer.WriteAsync("</pre>".AsMemory(), ct);
+            }
             foreach (var attachment in message.Attachments)
             {
                 if (files.TryGetValue(attachment.Id, out var relative))

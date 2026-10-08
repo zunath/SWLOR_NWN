@@ -54,13 +54,13 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
         client.Log -= OnLogAsync;
         jobs.Writer.TryComplete();
     }
+    internal bool TryQueueJob(Func<CancellationToken, Task> job) => jobs.Writer.TryWrite(job);
     public async Task ProcessAsync(CancellationToken ct)
     {
         await foreach (var job in jobs.Reader.ReadAllAsync(ct))
         {
-            using var operation = CancellationTokenSource.CreateLinkedTokenSource(ct);
-            operation.CancelAfter(TimeSpan.FromMinutes(10));
-            try { await job(operation.Token); }
+            // REST requests and ticket inactivity watchdogs bound stalled work without limiting healthy pagination.
+            try { await job(ct); }
             catch (OperationCanceledException) when (ct.IsCancellationRequested) { break; }
             catch (Exception ex) { logger.LogError("Discord event failed: {ErrorKind}.", SafeError(ex)); }
         }
@@ -96,7 +96,7 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
     }
     private void QueueValidation(int generation)
     {
-        if (!jobs.Writer.TryWrite(async ct =>
+        if (!TryQueueJob(async ct =>
         {
             if (!sessionState.IsCurrent(generation)) return;
             try
@@ -120,6 +120,10 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
             }
         })) { Environment.ExitCode = 1; lifetime.StopApplication(); }
     }
+    internal static SlashCommandOptionBuilder TranscriptCommandOptions() =>
+        new SlashCommandOptionBuilder().WithName("transcript").WithDescription("Export a transcript (support only)")
+            .WithType(ApplicationCommandOptionType.SubCommand)
+            .AddOption("saved", ApplicationCommandOptionType.Boolean, "Download the latest saved transcript", isRequired: false);
     private async Task RegisterAsync(CancellationToken ct)
     {
         if (!configuration.Tickets.Enabled)
@@ -131,8 +135,9 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
         }
         var ticket = new SlashCommandBuilder().WithName("ticket").WithDescription("Manage this support ticket");
         foreach (var (name, description) in new[] { ("close", "Close this ticket"), ("reopen", "Reopen this ticket"),
-            ("transcript", "Export a transcript (support only)"), ("hold", "Hold cleanup (support only)"), ("release", "Release cleanup hold (support only)") })
+            ("hold", "Hold cleanup (support only)"), ("release", "Release cleanup hold (support only)") })
             ticket.AddOption(new SlashCommandOptionBuilder().WithName(name).WithDescription(description).WithType(ApplicationCommandOptionType.SubCommand));
+        ticket.AddOption(TranscriptCommandOptions());
         ticket.AddOption(new SlashCommandOptionBuilder().WithName("rename").WithDescription("Rename this ticket (support only)")
             .WithType(ApplicationCommandOptionType.SubCommand).AddOption("name", ApplicationCommandOptionType.String, "New channel name", isRequired: true));
         var publish = new SlashCommandBuilder().WithName("ticket-panel").WithDescription("Publish a configured ticket panel (bot administrators only)")
@@ -227,11 +232,10 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
     {
         if (interaction is SocketMessageComponent component) await component.DeferLoadingAsync(ephemeral: true);
         else await interaction.DeferAsync(ephemeral: true);
-        if (!Ready || !jobs.Writer.TryWrite(async ct =>
+        if (!Ready || !TryQueueJob(async ct =>
         {
-            using var operation = CancellationTokenSource.CreateLinkedTokenSource(ct);
-            operation.CancelAfter(TimeSpan.FromMinutes(10));
-            try { await job(operation.Token); }
+            // REST requests and ticket inactivity watchdogs bound stalled work without limiting healthy pagination.
+            try { await job(ct); }
             catch (OperationCanceledException) when (ct.IsCancellationRequested) { }
             catch (Exception ex)
             {
@@ -288,7 +292,9 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
             "rename" => await tickets.RenameAsync(channelId, actor, (string)option.Options.Single(x => x.Name == "name").Value, ct),
             "transcript" => await tickets.ExportAsync(channelId, actor, ct, async (ticket, token) =>
             {
-                await ReplyAsync(command, "Transcript archived; preparing download.", token);
+                await ReplyAsync(command, option.Options.Any(item => item.Name == "saved" && item.Value is true)
+                    ? "Preparing the latest saved transcript; newer messages are not included."
+                    : "Transcript archived; preparing download.", token);
                 await TranscriptDelivery.SendAsync(Path.Combine(ticket.ArchivePath!, "transcript.html"), command.AttachmentSizeLimit,
                     async (stream, name, text, uploadToken) =>
                     {
@@ -300,7 +306,7 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
                         if (!tickets.CanSupport(currentActor))
                             throw new DiscordValidationException("Support access changed; transcript delivery was denied.");
                     });
-            }),
+            }, useSavedArchive: option.Options.Any(item => item.Name == "saved" && item.Value is true)),
             "hold" => await tickets.SetHoldAsync(channelId, actor, true, ct),
             "release" => await tickets.SetHoldAsync(channelId, actor, false, ct),
             _ => new TicketResult(false, "Unknown ticket action.")

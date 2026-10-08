@@ -648,6 +648,10 @@ public sealed class TicketServiceTests
     [TestCase("delete")]
     [TestCase("embed")]
     [TestCase("attachment")]
+    [TestCase("poll")]
+    [TestCase("sticker")]
+    [TestCase("components")]
+    [TestCase("forwarded")]
     public async Task CleanupRejectsOlderMessageChangesEvenWhenNewestIdIsUnchanged(string change)
     {
         await Open("first", new Actor(1, []), "old-message-change");
@@ -664,6 +668,7 @@ public sealed class TicketServiceTests
                 "edit" => old with { Content = "edited" },
                 "embed" => old with { EmbedsJson = "[{modified:true}]" },
                 "attachment" => old with { Attachments = [] },
+                "poll" or "sticker" or "components" or "forwarded" => old with { MetadataJson = "{\"" + change + "\":\"changed\"}" },
                 _ => old
             };
             _discord.Snapshot = change == "delete" ? new([newest], 101) : new([edited, newest], 101);
@@ -1268,6 +1273,237 @@ public sealed class TicketServiceTests
             Assert.That(_store.Tickets.Single(t => t.Id == expired.Id).ArchivePath, Is.Null);
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    }
+    [Test]
+    public async Task SavedTranscriptDownloadPreservesTheArchiveAndRefreshesLiveAuthorizationAndOwnership()
+    {
+        await Open("first", new Actor(1, []), "saved-download");
+        await _service.ExportAsync(ChannelOne, Support);
+        await _service.CloseAsync(ChannelOne, Support);
+        await _service.SetHoldAsync(ChannelOne, Support, true);
+        var retained = _store.Tickets.Single();
+        var existsBefore = _discord.ExistsCalls;
+        _discord.ActorLookups.Clear();
+        _discord.BeforeTranscriptAsync = (_, _) => throw new AssertionException("A saved download must not rescan Discord history.");
+        _archive.BeforeExportAsync = (_, _) => throw new AssertionException("A saved download must not publish or rewrite the archive.");
+        var delivered = 0;
+
+        var result = await _service.ExportAsync(ChannelOne, Support, deliver: (ticket, token) =>
+        {
+            token.ThrowIfCancellationRequested();
+            Assert.That(ticket, Is.EqualTo(retained));
+            delivered++;
+            return Task.CompletedTask;
+        }, useSavedArchive: true);
+
+        Assert.That(result.Success, Is.True);
+        Assert.That(delivered, Is.EqualTo(1));
+        Assert.That(_store.Tickets.Single(), Is.EqualTo(retained), "Saved downloads preserve holds, deadlines and completion state.");
+        Assert.That(_discord.ActorLookups, Is.EqualTo(new[] { Support.UserId, Support.UserId }));
+        Assert.That(_discord.ExistsCalls - existsBefore, Is.EqualTo(2));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task SavedDownloadRejectsMissingOrIncompleteArchiveWithoutCapturing(bool incomplete)
+    {
+        await Open("first", new Actor(1, []), "saved-not-ready");
+        if (incomplete)
+        {
+            var ticket = _store.Tickets.Single();
+            _store.Replace(ticket with { ArchivePath = _archive.GetArchivePath(ticket), ArchiveComplete = false });
+        }
+        var retained = _store.Tickets.Single();
+        _discord.BeforeTranscriptAsync = (_, _) => throw new AssertionException("Missing saved evidence must not trigger a fresh export.");
+        var delivered = 0;
+        var result = await _service.ExportAsync(ChannelOne, Support,
+            deliver: (_, _) => { delivered++; return Task.CompletedTask; }, useSavedArchive: true);
+        Assert.That(result.Success, Is.False);
+        Assert.That(result.Message, Does.Contain("no complete saved transcript"));
+        Assert.That(delivered, Is.Zero);
+        Assert.That(_store.Tickets.Single(), Is.EqualTo(retained));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task SavedDownloadRejectsSupportLossBeforePreparationOrDeliveryAndReleasesGuard(bool beforePreparation)
+    {
+        await Open("first", new Actor(1, []), "saved-support-loss");
+        await _service.ExportAsync(ChannelOne, Support);
+        if (beforePreparation) _discord.CurrentActors[Support.UserId] = new Actor(Support.UserId, []);
+        else _discord.BeforeExistsAsync = _ =>
+        {
+            _discord.CurrentActors[Support.UserId] = new Actor(Support.UserId, []);
+            return Task.CompletedTask;
+        };
+        var delivered = 0;
+        var denied = await _service.ExportAsync(ChannelOne, Support,
+            deliver: (_, _) => { delivered++; return Task.CompletedTask; }, useSavedArchive: true);
+        Assert.That(denied.Success, Is.False);
+        Assert.That(delivered, Is.Zero);
+        _discord.BeforeExistsAsync = null;
+        _discord.CurrentActors[Support.UserId] = Support;
+        Assert.That((await _service.ExportAsync(ChannelOne, Support,
+            deliver: (_, _) => { delivered++; return Task.CompletedTask; }, useSavedArchive: true)).Success, Is.True);
+        Assert.That(delivered, Is.EqualTo(1));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task SavedDownloadRequiresManagedChannelIdentityBeforePreparationAndDelivery(bool beforePreparation)
+    {
+        await Open("first", new Actor(1, []), "saved-channel-identity");
+        await _service.ExportAsync(ChannelOne, Support);
+        var lookups = 0;
+        _discord.BeforeExistsAsync = _ =>
+        {
+            if (beforePreparation || ++lookups == 2)
+                throw new InvalidOperationException("The ticket channel no longer has its managed identity.");
+            return Task.CompletedTask;
+        };
+        var delivered = 0;
+        Assert.ThrowsAsync<InvalidOperationException>(() => _service.ExportAsync(ChannelOne, Support,
+            deliver: (_, _) => { delivered++; return Task.CompletedTask; }, useSavedArchive: true));
+        Assert.That(delivered, Is.Zero);
+        _discord.BeforeExistsAsync = null;
+        Assert.That((await _service.ExportAsync(ChannelOne, Support, useSavedArchive: true)).Success, Is.True);
+    }
+
+    [Test]
+    public async Task SavedDownloadKeepsFilesProtectedDuringDeliveryAndRejectsOverlappingExports()
+    {
+        await Open("first", new Actor(1, []), "saved-protected");
+        await _service.ExportAsync(ChannelOne, Support);
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(8));
+        var result = await _service.ExportAsync(ChannelOne, Support, deliver: async (_, _) =>
+        {
+            Assert.That((await _service.ExportAsync(ChannelOne, Support, useSavedArchive: true)).Success, Is.False);
+            await _service.MaintainAsync();
+            Assert.That(_discord.DeleteCalls, Is.Zero);
+            Assert.That(_store.Tickets.Single().ArchiveComplete, Is.True);
+        }, useSavedArchive: true);
+        Assert.That(result.Success, Is.True);
+        await _service.MaintainAsync();
+        Assert.That(_discord.DeleteCalls, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task FreshSavedInteractionCanDownloadArchiveAfterLongExportOutlivesItsOriginalInteraction()
+    {
+        await Open("first", new Actor(1, []), "long-interaction-expiry");
+        _discord.BeforeProgressTranscriptAsync = async (_, progress, token) =>
+        {
+            for (var page = 0; page < 6; page++)
+            {
+                _clock.Advance(TimeSpan.FromMinutes(3));
+                token.ThrowIfCancellationRequested();
+                progress();
+                await Task.Yield();
+            }
+        };
+        Assert.ThrowsAsync<InvalidOperationException>(() => _service.ExportAsync(ChannelOne, Support,
+            deliver: (_, _) => throw new InvalidOperationException("The original interaction token expired.")));
+        Assert.That(_store.Tickets.Single().ArchiveComplete, Is.True);
+        _discord.BeforeProgressTranscriptAsync = null;
+        _discord.BeforeTranscriptAsync = (_, _) => throw new AssertionException("The fresh saved interaction must not repeat the slow scan.");
+        _archive.BeforeExportAsync = (_, _) => throw new AssertionException("The complete archive must be reused.");
+        var delivered = 0;
+        var saved = await _service.ExportAsync(ChannelOne, Support,
+            deliver: (_, _) => { delivered++; return Task.CompletedTask; }, useSavedArchive: true);
+        Assert.That(saved.Success, Is.True);
+        Assert.That(delivered, Is.EqualTo(1));
+    }
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ManualExportProgressCanExceedTwelveMinutes(bool slowArchive)
+    {
+        await Open("first", new Actor(1, []), "large-manual-export");
+        var before = _clock.GetUtcNow();
+        var reports = 0;
+        async Task Work(Ticket ticket, Action progress, CancellationToken ct)
+        {
+            for (var page = 0; page < 5; page++)
+            {
+                _clock.Advance(TimeSpan.FromMinutes(3));
+                ct.ThrowIfCancellationRequested();
+                progress();
+                reports++;
+                await Task.Yield();
+            }
+        }
+        if (slowArchive) _archive.BeforeProgressExportAsync = Work;
+        else _discord.BeforeProgressTranscriptAsync = Work;
+
+        var result = await _service.ExportAsync(ChannelOne, Support);
+
+        Assert.That(result.Success, Is.True);
+        Assert.That(reports, Is.EqualTo(5));
+        Assert.That(_clock.GetUtcNow() - before, Is.GreaterThan(TimeSpan.FromMinutes(12)));
+        Assert.That(_store.Tickets.Single().ArchiveComplete, Is.True);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ManualExportStallsCancelWithoutMarkingCompleteAndReleaseGuard(bool blockArchive)
+    {
+        await Open("first", new Actor(1, []), "stalled-manual-export");
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        async Task Work(Ticket ticket, Action progress, CancellationToken ct)
+        {
+            _clock.Advance(TimeSpan.FromMinutes(3));
+            progress();
+            started.SetResult();
+            await Task.Delay(Timeout.InfiniteTimeSpan, ct);
+        }
+        if (blockArchive) _archive.BeforeProgressExportAsync = Work;
+        else _discord.BeforeProgressTranscriptAsync = Work;
+        var export = _service.ExportAsync(ChannelOne, Support);
+        await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        _clock.Advance(TimeSpan.FromMinutes(4));
+        Assert.CatchAsync<OperationCanceledException>(async () => await export.WaitAsync(TimeSpan.FromSeconds(2)));
+        Assert.That(_store.Tickets.Single().ArchiveComplete, Is.False);
+        _archive.BeforeProgressExportAsync = null;
+        _discord.BeforeProgressTranscriptAsync = null;
+        Assert.That((await _service.ExportAsync(ChannelOne, Support)).Success, Is.True);
+    }
+
+    [Test]
+    public async Task ReadinessReconciliationCanProgressAcrossTicketsBeyondTwelveMinutes()
+    {
+        for (var index = 0; index < 4; index++)
+            await Open(index < 2 ? "first" : "second", new Actor((ulong)(index + 1), []), "large-readiness-" + index);
+        var before = _clock.GetUtcNow();
+        _discord.BeforeReconcileAsync = (_, token) =>
+        {
+            _clock.Advance(TimeSpan.FromMinutes(3));
+            token.ThrowIfCancellationRequested();
+            return Task.CompletedTask;
+        };
+
+        await _service.ReconcileRetainedPermissionsAsync();
+
+        Assert.That(_clock.GetUtcNow() - before, Is.EqualTo(TimeSpan.FromMinutes(12)));
+        Assert.That(_discord.ReconciledTickets, Has.Count.EqualTo(4));
+    }
+
+    [Test]
+    public async Task ReadinessReconciliationStallTimesOutAndReleasesDatabaseLock()
+    {
+        await Open("first", new Actor(1, []), "stalled-readiness");
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _discord.BeforeReconcileAsync = async (_, token) =>
+        {
+            started.SetResult();
+            await Task.Delay(Timeout.InfiniteTimeSpan, token);
+        };
+        var reconciliation = _service.ReconcileRetainedPermissionsAsync();
+        await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        _clock.Advance(TimeSpan.FromMinutes(4));
+        Assert.CatchAsync<OperationCanceledException>(async () => await reconciliation.WaitAsync(TimeSpan.FromSeconds(2)));
+        _discord.BeforeReconcileAsync = null;
+        await _service.ReconcileRetainedPermissionsAsync().WaitAsync(TimeSpan.FromSeconds(2));
+        Assert.That(_discord.ReconciledTickets, Has.Count.EqualTo(1));
     }
     [TestCase(false)]
     [TestCase(true)]

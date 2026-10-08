@@ -307,9 +307,7 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
             if (!page.Any()) { progress(); break; }
             foreach (var message in page)
             {
-                var retained = new TranscriptMessage(message.Id, message.Author.Id, message.Author.Username, message.Content, message.Timestamp,
-                    message.Attachments.Select(x => new TranscriptAttachment(x.Id, x.Filename, x.Url, x.Size)).ToArray(),
-                    JsonSerializer.Serialize(message.Embeds));
+                var retained = DiscordTranscriptCapture.Capture(message);
                 contentBudget.Add(retained);
                 messages.Add(retained);
             }
@@ -457,6 +455,28 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
         catch (HttpException ex) when (ex.HttpCode == HttpStatusCode.NotFound) { }
     }
 
+    internal static void ValidateTicketChannels(BotConfiguration configuration, IReadOnlyList<Ticket> tickets,
+        IReadOnlyCollection<(ulong Id, ChannelType Type, ChannelPermissions Permissions)> channels)
+    {
+        foreach (var id in TicketMaintenanceRequirements.RequiredCategoryIds(configuration, tickets))
+        {
+            var category = channels.SingleOrDefault(channel => channel.Id == id && channel.Type == ChannelType.Category);
+            if (category.Id == 0) throw new DiscordValidationException($"Configured category {id} is unavailable.");
+            var permissions = category.Permissions;
+            if (!permissions.ViewChannel || !permissions.ManageChannel || !permissions.ManageRoles ||
+                !permissions.ReadMessageHistory || !permissions.AttachFiles)
+                throw new DiscordValidationException($"The bot cannot manage ticket channels in category {id}.");
+        }
+        void RequireText(ulong id)
+        {
+            var channel = channels.SingleOrDefault(item => item.Id == id && item.Type == ChannelType.Text);
+            if (channel.Id == 0) throw new DiscordValidationException($"Configured text channel {id} is unavailable.");
+            ValidateTextChannelPermissions(id, channel.Permissions);
+        }
+        if (configuration.Tickets.Enabled)
+            foreach (var panel in configuration.Tickets.Panels) RequireText(panel.ChannelId);
+        RequireText(configuration.Tickets.LogChannelId);
+    }
     internal static bool RequiresTicketCapabilities(BotConfiguration configuration, IReadOnlyList<Ticket> persistedTickets) =>
         configuration.Tickets.Enabled || persistedTickets.Any(ticket => ticket.State != TicketState.Deleted);
     public async Task ValidateDiscordAsync(CancellationToken ct)
@@ -473,28 +493,14 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
             .Concat(configuration.Answers.Where(x => x.Enabled).SelectMany(x => x.AllowedRoleIds)).Distinct())
             if (id == guild.Id || guild.Roles.All(x => x.Id != id)) throw new DiscordValidationException($"Configured access role {id} is unavailable or is the everyone role.");
         var channels = await guild.GetChannelsAsync(Options(ct));
-        void RequireText(ulong id)
-        {
-            var channel = channels.OfType<RestTextChannel>().SingleOrDefault(x => x.Id == id && x.ChannelType == ChannelType.Text)
-                ?? throw new DiscordValidationException($"Configured text channel {id} is unavailable.");
-            ValidateTextChannelPermissions(id, bot.GetPermissions(channel));
-        }
         if (requiresTicketCapabilities)
         {
             var application = await ((IDiscordClient)client.Rest).GetApplicationInfoAsync(Options(ct));
             ValidateTranscriptCapability(application.Flags);
             if (!bot.GuildPermissions.ManageChannels || !bot.GuildPermissions.ManageRoles)
                 throw new DiscordValidationException("Tickets require Manage Channels and Manage Roles permissions.");
-            foreach (var id in configuration.Tickets.Panels.SelectMany(x => x.OpenCategoryIds).Append(configuration.Tickets.ClosedCategoryId).Distinct())
-            {
-                var category = channels.OfType<RestCategoryChannel>().SingleOrDefault(x => x.Id == id)
-                    ?? throw new DiscordValidationException($"Configured category {id} is unavailable.");
-                var permissions = bot.GetPermissions(category);
-                if (!permissions.ViewChannel || !permissions.ManageChannel || !permissions.ManageRoles || !permissions.ReadMessageHistory || !permissions.AttachFiles)
-                    throw new DiscordValidationException($"The bot cannot manage ticket channels in category {id}.");
-            }
-            foreach (var panel in configuration.Tickets.Panels) RequireText(panel.ChannelId);
-            RequireText(configuration.Tickets.LogChannelId);
+            ValidateTicketChannels(configuration, persistedTickets,
+                channels.Select(channel => (channel.Id, channel.ChannelType, bot.GetPermissions(channel))).ToArray());
         }
         ValidateCommunityChannels(configuration, channels.Select(x => (x.Id, x.ChannelType, bot.GetPermissions(x))).ToArray());
         if (configuration.Factions.Enabled)

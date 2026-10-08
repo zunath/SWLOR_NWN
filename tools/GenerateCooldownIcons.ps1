@@ -1,6 +1,7 @@
 param(
     [string]$Feat2daPath = "SWLOR_Haks\sw_2da\feat.2da",
     [string]$IconPath = "SWLOR_Haks\sw_ability",
+    [string]$SourceIconPath = "",
     [string]$MagickPath = "magick",
     # Start at 1992 so the Lightsaber Force Link actives (feat rows 1992-1994), which sit just below the
     # main generated block, are covered by a plain -Force run. Rows 1982-1991 have no ife_ feats, so this
@@ -95,6 +96,10 @@ function Get-FeatIcons {
     return $icons | Sort-Object
 }
 
+<#
+.SYNOPSIS
+Builds a native recharge resource name from feat or inventory artwork and rejects invalid stages or oversized names.
+#>
 function Get-CooldownIconName {
     param(
         [string]$SourceIcon,
@@ -106,8 +111,8 @@ function Get-CooldownIconName {
     }
 
     if ([string]::IsNullOrWhiteSpace($SourceIcon) -or
-        !$SourceIcon.StartsWith("ife_", [StringComparison]::OrdinalIgnoreCase)) {
-        throw "Cooldown icon generation expects feat icons to start with 'ife_'. Source icon '$SourceIcon' does not match."
+        !($SourceIcon.StartsWith("ife_", [StringComparison]::OrdinalIgnoreCase) -or $SourceIcon.StartsWith("iit_", [StringComparison]::OrdinalIgnoreCase))) {
+        throw "Cooldown icon generation expects icon names to start with 'ife_' or 'iit_'. Source icon '$SourceIcon' does not match."
     }
 
     $name = "pr$($Stage)_$($SourceIcon.Substring(4))"
@@ -170,13 +175,14 @@ function New-CooldownOverlay {
 $script:MagickExecutable = Resolve-MagickPath $MagickPath
 $featPath = (Resolve-Path -Path $Feat2daPath).Path
 $iconDirectory = (Resolve-Path -Path $IconPath).Path
+$sourceDirectory = if ([string]::IsNullOrWhiteSpace($SourceIconPath)) { $iconDirectory } else { (Resolve-Path -LiteralPath $SourceIconPath).Path }
 $icons = if ($IconResRefs.Count -gt 0) {
     $set = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
     foreach ($iconValue in $IconResRefs) {
         foreach ($icon in ([string]$iconValue -split "[,;]")) {
             $trimmed = $icon.Trim()
             if ([string]::IsNullOrWhiteSpace($trimmed) -or
-                !$trimmed.StartsWith("ife_", [StringComparison]::OrdinalIgnoreCase)) {
+                !($trimmed.StartsWith("ife_", [StringComparison]::OrdinalIgnoreCase) -or $trimmed.StartsWith("iit_", [StringComparison]::OrdinalIgnoreCase))) {
                 continue
             }
 
@@ -203,7 +209,7 @@ foreach ($icon in $icons) {
         [void](Get-CooldownIconName -SourceIcon $icon -Stage $stage)
     }
 
-    $sourceFile = Join-Path $iconDirectory "$icon.tga"
+    $sourceFile = Join-Path $sourceDirectory "$icon.tga"
     if (!(Test-Path -LiteralPath $sourceFile)) {
         throw "Source icon does not exist: $sourceFile"
     }

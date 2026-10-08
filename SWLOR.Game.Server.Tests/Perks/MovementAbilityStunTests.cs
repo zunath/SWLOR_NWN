@@ -1,0 +1,44 @@
+using System.Reflection;
+using FluentAssertions;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Espionage;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
+
+namespace SWLOR.Game.Server.Tests.Perks;
+
+public class MovementAbilityStunTests
+{
+    [TestCase(typeof(ShadowStepAbilityDefinition), "Espionage", "ActionJumpToLocation")]
+    [TestCase(typeof(ForceLeapAbilityDefinition), "Force", "JumpToLocation")]
+    public void MovementStun_UsesTrackedControlOnlyAfterSuccessfulArrival(
+        Type definitionType, string folder, string jumpMethod)
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+            directory = directory.Parent;
+        directory.Should().NotBeNull();
+        var source = File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server",
+            "Feature", "AbilityDefinition", folder, definitionType.Name + ".cs"));
+        var calls = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
+            .OfType<InvocationExpressionSyntax>().ToArray();
+        var arrival = calls.Single(call => call.Expression.ToString() == "ActionDoCommand");
+        var stun = arrival.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Single(call => call.Expression.ToString() == "StatusEffect.ApplyStatusEffect");
+
+        stun.ArgumentList.Arguments.Take(4).Select(argument => argument.Expression.ToString())
+            .Should().Equal("activator", "target", "typeof(StunnedStatusEffect)", "StunDurationSeconds");
+        definitionType.GetField("StunDurationSeconds", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetRawConstantValue().Should().Be(2f);
+        stun.SpanStart.Should().BeGreaterThan(calls.Single(call => call.Expression.ToString() == jumpMethod).SpanStart,
+            "the stun must follow the jump rather than consume its duration during travel");
+        stun.Ancestors().OfType<IfStatementSyntax>().Should().Contain(statement =>
+            statement.Condition.ToString().Contains("GetDistanceBetweenLocations(GetLocation(activator), destination) < 2f") &&
+            statement.Condition.ToString().Contains("GetArea(activator) == GetAreaFromLocation(destination)"),
+            "a failed jump must not stun the remote target");
+        arrival.ToString().Should().Contain("GetIsDead(activator)").And.Contain("GetIsDead(target)")
+            .And.Contain("GetArea(activator) != GetArea(target)").And.Contain("GetIsReactionTypeHostile(target, activator)");
+        source.Should().NotContain("EffectStunned()", "tracked Stunned supplies resistance and shared control immunity");
+    }
+}

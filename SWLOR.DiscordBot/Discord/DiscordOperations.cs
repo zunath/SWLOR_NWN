@@ -205,7 +205,13 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
     public Task OpenAsync(Ticket ticket, bool sendOpeningMessage, CancellationToken ct) =>
         OpenAsync(ticket, sendOpeningMessage, ct, static () => { });
 
-    public async Task OpenAsync(Ticket ticket, bool sendOpeningMessage, CancellationToken ct, Action progress)
+    public Task OpenAsync(Ticket ticket, bool sendOpeningMessage, CancellationToken ct, Action progress) =>
+        sendOpeningMessage
+            ? Task.FromException(new NotSupportedException("Opening-message sends require the durable send callback."))
+            : OpenAsync(ticket, false, ct, progress, static _ => Task.CompletedTask);
+
+    public async Task OpenAsync(Ticket ticket, bool sendOpeningMessage, CancellationToken ct, Action progress,
+        Func<CancellationToken, Task> beforeOpeningSend)
     {
         var category = await SelectCategoryAsync(ticket, ct);
         progress();
@@ -217,18 +223,27 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
         progress();
         await VerifyPrivacyAsync(ticket, true, true, true, ct);
         progress();
-        if (sendOpeningMessage && !await HasOpeningMessageAsync(ticket.Id, client.CurrentUser.Id, async (before, token) =>
-            (await (before.HasValue ? channel.GetMessagesAsync(before.Value, Direction.Before, 100, Options(token)) :
-                channel.GetMessagesAsync(100, Options(token))).FlattenAsync()).ToArray(), ct, progress))
+        if (sendOpeningMessage)
         {
             ct.ThrowIfCancellationRequested();
             var panel = configuration.Tickets.Panels.Single(x => x.Id == ticket.PanelId);
             var text = TemplateRenderer.RenderTicket(panel.OpeningMessage, ticket.RequesterId, ServerName);
             if (string.IsNullOrWhiteSpace(text)) text = $"Ticket #{ticket.Number} is open. Tell support how we can help.";
-            await channel.SendMessageAsync(text, allowedMentions: AllowedMentions.None,
-                components: new ComponentBuilder().WithButton("Close ticket", $"v1:close:{ticket.Id:D}", ButtonStyle.Danger).Build(), options: PostingOptions(ct));
-            progress();
+            await EnsureOpeningMessageAsync(ticket.Id, client.CurrentUser.Id, async (before, token) =>
+                (await (before.HasValue ? channel.GetMessagesAsync(before.Value, Direction.Before, 100, Options(token)) :
+                    channel.GetMessagesAsync(100, Options(token))).FlattenAsync()).ToArray(),
+                token => poster.SendTicketOpeningAsync(channel.Id, ticket.Id, text, token, beforeOpeningSend), ct, progress);
         }
+    }
+
+    internal static async Task EnsureOpeningMessageAsync(Guid ticketId, ulong botId,
+        Func<ulong?, CancellationToken, Task<IReadOnlyCollection<IMessage>>> readPage,
+        Func<CancellationToken, Task> send, CancellationToken ct, Action progress)
+    {
+        if (await HasOpeningMessageAsync(ticketId, botId, readPage, ct, progress)) return;
+        ct.ThrowIfCancellationRequested();
+        await send(ct);
+        progress();
     }
 
     internal static async Task<bool> HasOpeningMessageAsync(Guid ticketId, ulong botId,

@@ -861,6 +861,167 @@ public sealed class DiscordAdapterTests
         }
     }
 
+    [Test]
+    public async Task TicketOpeningPosterUsesStableEnforcedNonceAndCloseButtonAcrossWorkerInstances()
+    {
+        var handler = new RecordingHandler();
+        using var http = new HttpClient(handler);
+        var ticketId = Guid.NewGuid();
+        var claims = 0;
+        using (var firstWorker = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System))
+            Assert.That(await firstWorker.SendTicketOpeningAsync(10, ticketId, "Opening <@3>", default,
+                _ => { claims++; return Task.CompletedTask; }), Is.EqualTo(123UL));
+        Assert.That(claims, Is.EqualTo(1), "A rejected rate-limit retry reuses the durable send claim.");
+        using (var nextWorker = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System))
+        {
+            Assert.That(await nextWorker.SendTicketOpeningAsync(10, ticketId, "Opening <@3>", default), Is.EqualTo(123UL));
+            await nextWorker.SendTicketOpeningAsync(10, Guid.NewGuid(), "Other opening", default);
+        }
+        Assert.That(handler.Bodies.Count, Is.EqualTo(4));
+        foreach (var body in handler.Bodies.Take(3))
+        {
+            using var json = JsonDocument.Parse(body);
+            Assert.Multiple(() =>
+            {
+                Assert.That(json.RootElement.GetProperty("nonce").GetString(), Is.EqualTo(DiscordCommunityPoster.Nonce($"ticket-opening:{ticketId:D}")));
+                Assert.That(json.RootElement.GetProperty("enforce_nonce").GetBoolean(), Is.True);
+                Assert.That(json.RootElement.GetProperty("allowed_mentions").GetProperty("parse").GetArrayLength(), Is.Zero);
+                Assert.That(json.RootElement.GetProperty("content").GetString(), Is.EqualTo("Opening <@3>"));
+                var row = json.RootElement.GetProperty("components")[0];
+                Assert.That(row.GetProperty("type").GetInt32(), Is.EqualTo(1));
+                var button = row.GetProperty("components")[0];
+                Assert.That(button.GetProperty("type").GetInt32(), Is.EqualTo(2));
+                Assert.That(button.GetProperty("style").GetInt32(), Is.EqualTo((int)ButtonStyle.Danger));
+                Assert.That(button.GetProperty("label").GetString(), Is.EqualTo("Close ticket"));
+                Assert.That(button.GetProperty("custom_id").GetString(), Is.EqualTo($"v1:close:{ticketId:D}"));
+            });
+        }
+        using var other = JsonDocument.Parse(handler.Bodies[3]);
+        Assert.That(other.RootElement.GetProperty("nonce").GetString(), Is.Not.EqualTo(DiscordCommunityPoster.Nonce($"ticket-opening:{ticketId:D}")));
+    }
+
+    [Test]
+    public async Task DeferredOpeningAcceptedBeforeCancellationBlocksHandoffResendUntilVisibleHistoryRecovers()
+    {
+        using var handler = new DeferredOpeningHandler();
+        using var http = new HttpClient(handler);
+        using var firstPoster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        using var nextPoster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        using var cancellation = new CancellationTokenSource();
+        var ticketId = Guid.NewGuid();
+        var claimed = false;
+        var claims = 0;
+        var visible = false;
+        var reports = 0;
+        Task ClaimOpening(CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            if (claimed) throw new InvalidOperationException("Opening send is unconfirmed; discovery pending.");
+            claimed = true;
+            claims++;
+            return Task.CompletedTask;
+        }
+        Task<IReadOnlyCollection<IMessage>> History(ulong? before, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            return Task.FromResult<IReadOnlyCollection<IMessage>>(visible ? [OpeningHistoryMessage(123, 2, $"v1:close:{ticketId:D}")] : []);
+        }
+        var first = DiscordOperations.EnsureOpeningMessageAsync(ticketId, 2, History,
+            ct => firstPoster.SendTicketOpeningAsync(10, ticketId, "Opening", ct, ClaimOpening), cancellation.Token, () => reports++);
+        try
+        {
+            await handler.Accepted.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(claimed, Is.True, "The durable claim precedes remote acceptance.");
+            cancellation.Cancel();
+            Assert.CatchAsync<OperationCanceledException>(() => first.WaitAsync(TimeSpan.FromSeconds(2)));
+            Assert.That(reports, Is.EqualTo(1), "A canceled send must not report completed posting progress.");
+            var recoveryError = Assert.ThrowsAsync<OpeningMessageNotSentException>(() => DiscordOperations.EnsureOpeningMessageAsync(ticketId, 2, History,
+                ct => nextPoster.SendTicketOpeningAsync(10, ticketId, "Opening", ct, ClaimOpening), default, () => reports++)
+                .WaitAsync(TimeSpan.FromSeconds(2)))!;
+            Assert.That(recoveryError.InnerException, Is.TypeOf<InvalidOperationException>());
+            Assert.That(handler.Bodies.Count, Is.EqualTo(1), "A new worker cannot resubmit while accepted content is absent from history.");
+            Assert.That(claims, Is.EqualTo(1));
+            visible = true;
+            await DiscordOperations.EnsureOpeningMessageAsync(ticketId, 2, History,
+                ct => nextPoster.SendTicketOpeningAsync(10, ticketId, "Opening", ct, ClaimOpening), default, () => reports++)
+                .WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(handler.Bodies.Count, Is.EqualTo(1), "Visible opening controls complete recovery without another claim or POST.");
+            using var json = JsonDocument.Parse(handler.Bodies.Single());
+            Assert.That(json.RootElement.GetProperty("nonce").GetString(), Is.EqualTo(DiscordCommunityPoster.Nonce($"ticket-opening:{ticketId:D}")));
+            Assert.That(json.RootElement.GetProperty("enforce_nonce").GetBoolean(), Is.True);
+        }
+        finally
+        {
+            cancellation.Cancel();
+            try { await first.WaitAsync(TimeSpan.FromSeconds(2)); }
+            catch (OperationCanceledException) { }
+        }
+    }
+
+    [Test]
+    public void TicketOpeningLegacyOverloadsRequireDurableSendCallback()
+    {
+        var operations = new DiscordOperations(null!, new BotConfiguration(), null!, null!, null!);
+        var ticket = new Ticket(Guid.NewGuid(), "support", 3, 10, TicketState.Creating, 1, DateTimeOffset.UnixEpoch);
+        Assert.ThrowsAsync<NotSupportedException>(() => operations.OpenAsync(ticket, true, default));
+        Assert.ThrowsAsync<NotSupportedException>(() => operations.OpenAsync(ticket, true, default, static () => { }));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void TicketOpeningPosterDoesNotRetryAmbiguousTransportOrServerResponses(bool serverResponse)
+    {
+        using var handler = new ErrorResponseHandler(() => serverResponse
+            ? new HttpResponseMessage(HttpStatusCode.BadGateway) { Content = new StringContent("{}") }
+            : throw new HttpRequestException("Response lost after dispatch."));
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        var claims = 0;
+        Assert.ThrowsAsync<HttpRequestException>(() => poster.SendTicketOpeningAsync(10, Guid.NewGuid(), "Opening", default,
+            _ => { claims++; return Task.CompletedTask; }));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+        Assert.That(claims, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task TicketOpeningCanceledAfterClaimBeforeDispatchProvesUnsentAndReleasesSenderGate()
+    {
+        using var handler = new ErrorResponseHandler(() => new HttpResponseMessage(HttpStatusCode.OK)
+            { Content = new StringContent("{\"id\":\"123\"}") });
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        using var cancellation = new CancellationTokenSource();
+        var claims = 0;
+        var error = Assert.ThrowsAsync<OpeningMessageNotSentException>(() => poster.SendTicketOpeningAsync(10, Guid.NewGuid(), "Opening", cancellation.Token,
+            _ => { claims++; cancellation.Cancel(); return Task.CompletedTask; }))!;
+        Assert.That(error.InnerException, Is.InstanceOf<OperationCanceledException>());
+        Assert.That(claims, Is.EqualTo(1));
+        Assert.That(handler.Requests, Is.Zero);
+        Assert.That(await poster.SendTicketOpeningAsync(10, Guid.NewGuid(), "Another opening", default).WaitAsync(TimeSpan.FromSeconds(2)), Is.EqualTo(123UL));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+    }
+
+    [TestCase(HttpStatusCode.BadRequest, true)]
+    [TestCase(HttpStatusCode.Unauthorized, true)]
+    [TestCase(HttpStatusCode.Forbidden, true)]
+    [TestCase(HttpStatusCode.NotFound, true)]
+    [TestCase(HttpStatusCode.MethodNotAllowed, true)]
+    [TestCase(HttpStatusCode.TooManyRequests, true)]
+    [TestCase(HttpStatusCode.Conflict, false)]
+    [TestCase(HttpStatusCode.RequestTimeout, false)]
+    [TestCase(HttpStatusCode.BadGateway, false)]
+    public void TicketOpeningOnlyProvenRejectionsPermitAnotherSubmission(HttpStatusCode status, bool rejected)
+    {
+        using var handler = new ErrorResponseHandler(() => new HttpResponseMessage(status)
+            { Content = new StringContent("{\"code\":50013,\"retry_after\":0}") });
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        var send = poster.SendTicketOpeningAsync(10, Guid.NewGuid(), "Opening", default);
+        if (rejected) Assert.ThrowsAsync<OpeningMessageNotSentException>(() => send);
+        else Assert.ThrowsAsync<HttpException>(() => send);
+        Assert.That(handler.Requests, Is.EqualTo(status == HttpStatusCode.TooManyRequests ? 4 : 1));
+    }
+
     [TestCase(50007)]
     [TestCase(50013)]
     [TestCase(50001)]
@@ -1156,6 +1317,20 @@ public sealed class DiscordAdapterTests
             return Bodies.Count == 1
                 ? new HttpResponseMessage(HttpStatusCode.TooManyRequests) { Content = new StringContent("{\"retry_after\":0,\"global\":false}") }
                 : new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{\"id\":\"123\"}") };
+        }
+    }
+
+    private sealed class DeferredOpeningHandler : HttpMessageHandler
+    {
+        public List<string> Bodies { get; } = [];
+        public TaskCompletionSource Accepted { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            Assert.That(request.RequestUri?.AbsoluteUri, Is.EqualTo("https://discord.com/api/v10/channels/10/messages"));
+            Bodies.Add(await request.Content!.ReadAsStringAsync(ct));
+            Accepted.TrySetResult();
+            await Task.Delay(Timeout.Infinite, ct);
+            throw new InvalidOperationException("The accepted response should have been canceled.");
         }
     }
 }

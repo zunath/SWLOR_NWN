@@ -2740,11 +2740,13 @@ public sealed class TicketServiceTests
             Assert.That(async () => await _service.OpenAsync("first", new Actor(1, []), "unsent-creation", cancellation.Token),
                 Throws.InstanceOf<OperationCanceledException>());
         else Assert.That((await _service.OpenAsync("first", new Actor(1, []), "unsent-creation")).Success, Is.False);
-        Assert.That(_store.Tickets.Single().ChannelCreationAttemptId, Is.Null);
-        Assert.That(_store.Audits.Count(action => action == "channel-creation-not-sent"), Is.EqualTo(1));
+        Assert.That(_store.Tickets.Single().ChannelCreationAttemptId.HasValue, Is.EqualTo(cancelled),
+            "Shutdown persists proof without waiting for a guild-lock release; reconciliation consumes it later.");
         _discord.BeforeCreateAsync = null;
         var replacement = new TicketService(_configuration, _store, _discord, _archive, _clock);
         Assert.That((await replacement.OpenAsync("first", new Actor(1, []), "unsent-creation")).Success, Is.True);
+        Assert.That(_store.Tickets.Single().ChannelCreationAttemptId, Is.Null);
+        Assert.That(_store.Audits.Count(action => action == "channel-creation-not-sent"), Is.EqualTo(1));
         Assert.That(_discord.CreateCalls, Is.EqualTo(2));
     }
 
@@ -2760,22 +2762,94 @@ public sealed class TicketServiceTests
         Assert.That(async () => await _service.OpenAsync("first", new Actor(1, []), "interrupted-claim", cancellation.Token),
             Throws.InstanceOf<OperationCanceledException>());
         Assert.That(_discord.CreateCalls, Is.Zero);
-        Assert.That(_store.Tickets.Single().ChannelCreationAttemptId, Is.Null);
+        Assert.That(_store.Tickets.Single().ChannelCreationAttemptId.HasValue, Is.EqualTo(committed));
         Assert.That((await _service.OpenAsync("first", new Actor(1, []), "interrupted-claim")).Success, Is.True);
         Assert.That(_discord.CreateCalls, Is.EqualTo(1));
     }
 
     [Test]
-    public async Task FailedUnsentClaimReleaseKeepsFenceUntilAuthoritativeResolution()
+    public async Task FailedUnsentOutcomeWriteKeepsFenceUntilAuthoritativeResolution()
     {
         _discord.BeforeCreateAsync = (_, _) => throw new ChannelCreationNotSentException(new InvalidOperationException("No POST was sent."));
-        _store.FailNextSaveAction = "channel-creation-not-sent";
+        _store.FailNextOutcomeWrite = true;
         Assert.That((await _service.OpenAsync("first", new Actor(1, []), "failed-claim-release")).Success, Is.False);
         Assert.That(_store.Tickets.Single().ChannelCreationAttemptId, Is.Not.Null);
         _discord.BeforeCreateAsync = null;
         var replacement = new TicketService(_configuration, _store, _discord, _archive, _clock);
         Assert.That((await replacement.OpenAsync("first", new Actor(1, []), "failed-claim-release")).Success, Is.False);
         Assert.That(_discord.CreateCalls, Is.EqualTo(1));
+    }
+    [Test]
+    public async Task ProvenUnsentOutcomePersistsWhileGuildControlHoldsLockForThirtySeconds()
+    {
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var stopping = new CancellationTokenSource();
+        _discord.BeforeCreateAsync = async (_, token) =>
+        {
+            entered.TrySetResult();
+            try { await Task.Delay(Timeout.InfiniteTimeSpan, token); }
+            catch (OperationCanceledException ex) { throw new ChannelCreationNotSentException(ex); }
+        };
+        var opening = _service.OpenAsync("first", new Actor(1, []), "long-guild-control", stopping.Token);
+        await entered.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        await using (var control = await _store.LockAsync(default))
+        {
+            var before = _clock.GetUtcNow();
+            stopping.Cancel();
+            Assert.That(async () => await opening.WaitAsync(TimeSpan.FromSeconds(2)), Throws.InstanceOf<OperationCanceledException>(),
+                "Outcome recording must complete while the unrelated control still owns the guild lock.");
+            var pending = (await control.GetTicketsAsync(default)).Single();
+            Assert.That(pending.ChannelCreationAttemptId, Is.Not.Null);
+            Assert.That(await control.IsChannelCreationNotSentAsync(pending.Id, pending.ChannelCreationAttemptId!.Value, default), Is.True);
+            _clock.Advance(TimeSpan.FromSeconds(30));
+            Assert.That(_clock.GetUtcNow() - before, Is.EqualTo(TimeSpan.FromSeconds(30)));
+            await control.SaveAsync(pending with { Hold = true }, "hold-set", Support.UserId, default);
+        }
+        _discord.BeforeCreateAsync = null;
+        var replacement = new TicketService(_configuration, _store, _discord, _archive, _clock);
+        Assert.That((await replacement.OpenAsync("first", new Actor(1, []), "long-guild-control")).Success, Is.True);
+        Assert.That(_store.Tickets.Single().Hold, Is.True);
+        Assert.That(_store.Audits.Count(action => action == "channel-creation-not-sent"), Is.EqualTo(1));
+        Assert.That(_discord.CreateCalls, Is.EqualTo(2));
+    }
+
+    [Test]
+    public async Task StaleUnsentOutcomeCannotReleaseAnotherCreationAttempt()
+    {
+        Ticket pending;
+        var first = Guid.NewGuid();
+        var second = Guid.NewGuid();
+        await using (var session = await _store.LockAsync(default))
+        {
+            pending = await session.ReserveAsync("first", 1, "stale-creation-outcome", _clock.GetUtcNow(), default);
+            pending = pending with { ChannelCreationAttemptId = first };
+            await session.SaveAsync(pending, "channel-creation-claimed", null, default);
+        }
+        await _store.RecordChannelCreationNotSentAsync(pending.Id, first, default);
+        await using (var session = await _store.LockAsync(default))
+            await session.SaveAsync(pending with { ChannelCreationAttemptId = second, Hold = true }, "channel-creation-claimed", null, default);
+        await _store.RecordChannelCreationNotSentAsync(pending.Id, first, default);
+        Assert.That((await _service.OpenAsync("first", new Actor(1, []), "stale-creation-outcome")).Success, Is.False);
+        Assert.That(_discord.CreateCalls, Is.Zero);
+        Assert.That(_store.Tickets.Single().ChannelCreationAttemptId, Is.EqualTo(second));
+        Assert.That(_store.Tickets.Single().Hold, Is.True);
+        Assert.That(_store.Audits, Does.Not.Contain("channel-creation-not-sent"));
+    }
+
+    [Test]
+    public async Task FailedUnsentClaimCompletionRetainsProofForRestartRecovery()
+    {
+        _discord.BeforeCreateAsync = (_, _) => throw new ChannelCreationNotSentException(new InvalidOperationException("No POST was sent."));
+        _store.FailNextSaveAction = "channel-creation-not-sent";
+        Assert.That(async () => await _service.OpenAsync("first", new Actor(1, []), "failed-outcome-completion"),
+            Throws.InstanceOf<InvalidOperationException>());
+        var pending = _store.Tickets.Single();
+        Assert.That(pending.ChannelCreationAttemptId, Is.Not.Null);
+        _discord.BeforeCreateAsync = null;
+        var replacement = new TicketService(_configuration, _store, _discord, _archive, _clock);
+        Assert.That((await replacement.OpenAsync("first", new Actor(1, []), "failed-outcome-completion")).Success, Is.True);
+        Assert.That(_store.Audits.Count(action => action == "channel-creation-not-sent"), Is.EqualTo(1));
+        Assert.That(_discord.CreateCalls, Is.EqualTo(2));
     }
     [TestCase("discovery")]
     [TestCase("creation")]
@@ -3161,6 +3235,225 @@ public sealed class TicketServiceTests
         }
         finally { release.TrySetResult(); await export; }
     }
+
+    [TestCase(TicketState.Open, false, true, true)]
+    [TestCase(TicketState.Open, false, true, false)]
+    [TestCase(TicketState.Open, false, false, true)]
+    [TestCase(TicketState.Open, false, false, false)]
+    [TestCase(TicketState.Closed, false, true, true)]
+    [TestCase(TicketState.Closed, false, true, false)]
+    [TestCase(TicketState.Closed, false, false, true)]
+    [TestCase(TicketState.Closed, false, false, false)]
+    [TestCase(TicketState.Closed, true, true, true)]
+    [TestCase(TicketState.Closed, true, true, false)]
+    [TestCase(TicketState.Closed, true, false, true)]
+    [TestCase(TicketState.Closed, true, false, false)]
+    public async Task StableMaintenanceClearsRecoveredErrorAndRecordsTheNextFailure(
+        TicketState state, bool held, bool lookupFailure, bool intakeEnabled)
+    {
+        await Open("first", new Actor(1, []), "stable-error-recovery");
+        var existing = _store.Tickets.Single();
+        _store.Replace(existing with { State = state, Hold = held, DeleteAfter = _clock.GetUtcNow().AddDays(7) });
+        _configuration.Tickets.Enabled = intakeEnabled;
+        var failing = true;
+        _discord.BeforeExistsAsync = _ =>
+        {
+            if (failing && lookupFailure) throw new IOException("Temporary lookup failure.");
+            return Task.CompletedTask;
+        };
+        _discord.BeforeReconcileAsync = (_, _) =>
+        {
+            if (failing && !lookupFailure) throw new IOException("Temporary permission failure.");
+            return Task.CompletedTask;
+        };
+        await _service.MaintainAsync();
+        await _service.MaintainAsync();
+        Assert.That(_store.Audits.Count(action => action == "maintenance-failed"), Is.EqualTo(1));
+        Assert.That(_store.Tickets.Single().LastError, Does.Contain("Maintenance failed"));
+
+        failing = false;
+        await _service.MaintainAsync();
+        await _service.MaintainAsync();
+        Assert.Multiple(() =>
+        {
+            Assert.That(_store.Tickets.Single().LastError, Is.Null);
+            Assert.That(_store.Tickets.Single().State, Is.EqualTo(state));
+            Assert.That(_store.Tickets.Single().Hold, Is.EqualTo(held));
+            Assert.That(_store.Audits.Count(action => action == "maintenance-recovered"), Is.EqualTo(1));
+        });
+        failing = true;
+        await _service.MaintainAsync();
+        Assert.That(_store.Audits.Count(action => action == "maintenance-failed"), Is.EqualTo(2),
+            "A new failure after successful recovery needs a fresh audit.");
+    }
+
+    [TestCase(TicketState.Open)]
+    [TestCase(TicketState.Closed)]
+    public async Task StableMaintenancePreservesAnUnrelatedDiagnostic(TicketState state)
+    {
+        await Open("first", new Actor(1, []), "other-diagnostic");
+        _store.Replace(_store.Tickets.Single() with
+        {
+            State = state, DeleteAfter = _clock.GetUtcNow().AddDays(7), LastError = "Operator investigation required."
+        });
+        await _service.MaintainAsync();
+        Assert.That(_store.Tickets.Single().LastError, Is.EqualTo("Operator investigation required."));
+        Assert.That(_store.Audits, Does.Not.Contain("maintenance-recovered"));
+    }
+
+    [Test]
+    public async Task StableChannelChecksDoNotClearPendingArchiveExpirationFailure()
+    {
+        await Open("first", new Actor(1, []), "archive-error-recovery");
+        _store.Replace(_store.Tickets.Single() with
+        {
+            State = TicketState.Closed, DeleteAfter = _clock.GetUtcNow().AddDays(7),
+            ArchivePath = "/owned/archive", ArchiveExpiresAt = _clock.GetUtcNow().AddDays(-1),
+            LastError = "Maintenance failed; retry scheduled. Check worker logs."
+        });
+        _archive.BeforeDeleteArchiveAsync = (_, _, _) =>
+        {
+            Assert.That(_store.Tickets.Single().LastError, Does.Contain("Maintenance failed"));
+            Assert.That(_store.Audits, Does.Not.Contain("maintenance-recovered"));
+            return Task.CompletedTask;
+        };
+        await _service.MaintainAsync();
+        Assert.That(_store.Tickets.Single().ArchivePath, Is.Null);
+        Assert.That(_store.Tickets.Single().LastError, Is.Null);
+        Assert.That(_store.Audits, Does.Contain("archive-expired"));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task AmbiguousOpeningPostStaysFencedAcrossReplacementAndLateVisibility(bool cancellation)
+    {
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _discord.AfterOpeningPostAsync = async (_, ct) =>
+        {
+            started.TrySetResult();
+            await release.Task.WaitAsync(ct);
+            throw new IOException("Opening accepted but response lost.");
+        };
+        using var stopping = new CancellationTokenSource();
+        var opening = _service.OpenAsync("first", new Actor(1, []), "late-opening-message", stopping.Token);
+        await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        var pending = _store.Tickets.Single();
+        Assert.That(pending.OpeningMessageAttemptId, Is.Not.Null);
+        await _service.SetHoldAsync(ChannelOne, Support, true);
+        var replacement = new TicketService(_configuration, _store, _discord, _archive, _clock);
+        try
+        {
+            var concurrent = await replacement.OpenAsync("first", new Actor(1, []), "late-opening-message");
+            Assert.That(concurrent.Success, Is.False);
+            Assert.That(concurrent.Message, Does.Contain("opening message is unconfirmed").IgnoreCase);
+            if (cancellation)
+            {
+                stopping.Cancel();
+                Assert.That(async () => await opening, Throws.InstanceOf<OperationCanceledException>());
+            }
+            else
+            {
+                release.SetResult();
+                Assert.That((await opening).Success, Is.False);
+            }
+            _clock.Advance(TimeSpan.FromDays(1));
+            await replacement.MaintainAsync();
+            Assert.Multiple(() =>
+            {
+                Assert.That(_discord.OpeningPostCalls, Is.EqualTo(1));
+                Assert.That(_store.Tickets.Single().OpeningMessageAttemptId, Is.EqualTo(pending.OpeningMessageAttemptId));
+                Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Creating));
+                Assert.That(_store.Tickets.Single().Hold, Is.True);
+            });
+            _discord.AfterOpeningPostAsync = null;
+            _discord.VisibleOpenings.Add(pending.Id);
+            var recovered = await replacement.OpenAsync("first", new Actor(1, []), "late-opening-message");
+            Assert.Multiple(() =>
+            {
+                Assert.That(recovered.Success, Is.True);
+                Assert.That(_store.Tickets.Single().OpeningMessageAttemptId, Is.Null);
+                Assert.That(_store.Tickets.Single().LastError, Is.Null);
+                Assert.That(_store.Tickets.Single().Hold, Is.True);
+                Assert.That(_discord.OpeningPostCalls, Is.EqualTo(1));
+                Assert.That(_discord.CreateCalls, Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            stopping.Cancel();
+            release.TrySetResult();
+            try { await opening; } catch (OperationCanceledException) { }
+        }
+    }
+
+    [Test]
+    public async Task ProvenUnsentOpeningSurvivesShutdownWhileAnotherControlOwnsGuildLock()
+    {
+        var reached = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        _discord.BeforeOpeningPostAsync = async (_, ct) =>
+        {
+            reached.TrySetResult();
+            await Task.Delay(Timeout.InfiniteTimeSpan, ct);
+        };
+        using var stopping = new CancellationTokenSource();
+        var opening = _service.OpenAsync("first", new Actor(1, []), "unsent-opening-lock", stopping.Token);
+        await reached.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        var pending = _store.Tickets.Single();
+        Assert.That(pending.OpeningMessageAttemptId, Is.Not.Null);
+        await using (var control = await _store.LockAsync(CancellationToken.None))
+        {
+            await control.SaveAsync(pending with { Hold = true }, "hold", Support.UserId, CancellationToken.None);
+            stopping.Cancel();
+            Assert.That(async () => await opening.WaitAsync(TimeSpan.FromSeconds(2)), Throws.InstanceOf<OperationCanceledException>());
+            _clock.Advance(TimeSpan.FromSeconds(30));
+            Assert.That(await control.IsOpeningMessageNotSentAsync(pending.Id, pending.OpeningMessageAttemptId!.Value, CancellationToken.None), Is.True);
+            Assert.That(_store.Tickets.Single().OpeningMessageAttemptId, Is.EqualTo(pending.OpeningMessageAttemptId));
+        }
+        _discord.BeforeOpeningPostAsync = null;
+        var replacement = new TicketService(_configuration, _store, _discord, _archive, _clock);
+        Assert.That((await replacement.OpenAsync("first", new Actor(1, []), "unsent-opening-lock")).Success, Is.True);
+        Assert.That(_store.Tickets.Single().Hold, Is.True);
+        Assert.That(_store.Tickets.Single().OpeningMessageAttemptId, Is.Null);
+        Assert.That(_discord.OpeningPostCalls, Is.EqualTo(1));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task InterruptedOpeningClaimSaveRecoversOnlyWithProvenUnsentOutcome(bool claimCommitted)
+    {
+        _store.FailNextSaveAction = "opening-message-claimed";
+        _store.FailNextSaveWithCancellation = true;
+        _store.CommitSaveBeforeFailure = claimCommitted;
+        using var stopping = new CancellationTokenSource();
+        _store.BeforeSaveCancellation = stopping.Cancel;
+        Assert.That(async () => await _service.OpenAsync("first", new Actor(1, []), "opening-claim-save", stopping.Token),
+            Throws.InstanceOf<OperationCanceledException>());
+        Assert.That(_discord.OpeningPostCalls, Is.Zero);
+        Assert.That(_store.Tickets.Single().OpeningMessageAttemptId.HasValue, Is.EqualTo(claimCommitted));
+        var replacement = new TicketService(_configuration, _store, _discord, _archive, _clock);
+        Assert.That((await replacement.OpenAsync("first", new Actor(1, []), "opening-claim-save")).Success, Is.True);
+        Assert.That(_discord.OpeningPostCalls, Is.EqualTo(1));
+        Assert.That(_discord.CreateCalls, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task FailedOpeningProofWriteRetainsTheFenceUntilMessageIsFound()
+    {
+        _store.FailNextOpeningOutcomeWrite = true;
+        _discord.BeforeOpeningPostAsync = (_, _) => throw new IOException("Failure before dispatch.");
+        Assert.That((await _service.OpenAsync("first", new Actor(1, []), "opening-proof-failure")).Success, Is.False);
+        var pending = _store.Tickets.Single();
+        Assert.That(pending.OpeningMessageAttemptId, Is.Not.Null);
+        _discord.BeforeOpeningPostAsync = null;
+        var replacement = new TicketService(_configuration, _store, _discord, _archive, _clock);
+        Assert.That((await replacement.OpenAsync("first", new Actor(1, []), "opening-proof-failure")).Success, Is.False);
+        Assert.That(_discord.OpeningPostCalls, Is.Zero);
+        _discord.VisibleOpenings.Add(pending.Id);
+        Assert.That((await replacement.OpenAsync("first", new Actor(1, []), "opening-proof-failure")).Success, Is.True);
+        Assert.That(_discord.OpeningPostCalls, Is.Zero);
+    }
+
     private async Task<TicketResult> Open(string panel, Actor actor, string interactionId) =>
         await _service.OpenAsync(panel, actor, interactionId);
 
@@ -3233,6 +3526,10 @@ public sealed class TicketServiceTests
         private readonly List<Ticket> _tickets = [];
         private readonly Dictionary<string, Guid> _interactions = new(StringComparer.Ordinal);
         private readonly HashSet<string> _deliveries = new(StringComparer.Ordinal);
+        private readonly System.Collections.Concurrent.ConcurrentDictionary<(Guid, Guid), byte> _unsentAttempts = new();
+        public bool FailNextOutcomeWrite { get; set; }
+        private readonly System.Collections.Concurrent.ConcurrentDictionary<(Guid, Guid), byte> _unsentOpeningAttempts = new();
+        public bool FailNextOpeningOutcomeWrite { get; set; }
         public IReadOnlyList<Ticket> Tickets => _tickets.ToArray();
         public string? FailNextSaveAction { get; set; }
         public bool FailNextSaveWithCancellation { get; set; }
@@ -3243,6 +3540,30 @@ public sealed class TicketServiceTests
 
         public Task InitializeAsync(CancellationToken ct) => Task.CompletedTask;
 
+        public Task RecordChannelCreationNotSentAsync(Guid ticketId, Guid attemptId, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            if (FailNextOutcomeWrite)
+            {
+                FailNextOutcomeWrite = false;
+                throw new IOException("Simulated outcome persistence failure.");
+            }
+            _unsentAttempts.TryAdd((ticketId, attemptId), 0);
+            return Task.CompletedTask;
+        }
+
+
+        public Task RecordOpeningMessageNotSentAsync(Guid ticketId, Guid attemptId, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            if (FailNextOpeningOutcomeWrite)
+            {
+                FailNextOpeningOutcomeWrite = false;
+                throw new IOException("Simulated opening outcome persistence failure.");
+            }
+            _unsentOpeningAttempts.TryAdd((ticketId, attemptId), 0);
+            return Task.CompletedTask;
+        }
         public async Task<ITicketSession> LockAsync(CancellationToken ct)
         {
             await _gate.WaitAsync(ct);
@@ -3291,6 +3612,10 @@ public sealed class TicketServiceTests
                 return Task.FromResult(ticket);
             }
 
+            public Task<bool> IsChannelCreationNotSentAsync(Guid ticketId, Guid attemptId, CancellationToken ct) =>
+                Task.FromResult(store._unsentAttempts.ContainsKey((ticketId, attemptId)));
+            public Task<bool> IsOpeningMessageNotSentAsync(Guid ticketId, Guid attemptId, CancellationToken ct) =>
+                Task.FromResult(store._unsentOpeningAttempts.ContainsKey((ticketId, attemptId)));
             public Task SaveAsync(Ticket ticket, string action, ulong? actorId, CancellationToken ct)
             {
                 if (store.FailNextSaveAction == action)
@@ -3426,6 +3751,34 @@ public sealed class TicketServiceTests
             if (BeforeProgressOpenAsync is not null) await BeforeProgressOpenAsync(ticket, progress, ct);
             ct.ThrowIfCancellationRequested();
             progress();
+        }
+
+
+        public int OpeningPostCalls { get; private set; }
+        public HashSet<Guid> VisibleOpenings { get; } = [];
+        public Func<Ticket, CancellationToken, Task>? BeforeOpeningPostAsync { get; set; }
+        public Func<Ticket, CancellationToken, Task>? AfterOpeningPostAsync { get; set; }
+        public async Task OpenAsync(Ticket ticket, bool sendOpeningMessage, CancellationToken ct, Action progress,
+            Func<CancellationToken, Task> beforeOpeningSend)
+        {
+            await OpenAsync(ticket, sendOpeningMessage, ct, progress);
+            if (!sendOpeningMessage || VisibleOpenings.Contains(ticket.Id)) return;
+            var dispatched = false;
+            try
+            {
+                await beforeOpeningSend(ct);
+                ct.ThrowIfCancellationRequested();
+                if (BeforeOpeningPostAsync is not null) await BeforeOpeningPostAsync(ticket, ct);
+                ct.ThrowIfCancellationRequested();
+                dispatched = true;
+                OpeningPostCalls++;
+                if (AfterOpeningPostAsync is not null) await AfterOpeningPostAsync(ticket, ct);
+                VisibleOpenings.Add(ticket.Id);
+            }
+            catch (Exception ex) when (!dispatched)
+            {
+                throw new OpeningMessageNotSentException(ex);
+            }
         }
 
         public Task CloseAsync(Ticket ticket, CancellationToken ct)

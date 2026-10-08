@@ -14,6 +14,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
     private readonly ConcurrentDictionary<Guid, byte> _creations = new();
     private readonly ConcurrentDictionary<Guid, byte> _archiveDeletions = new();
     private Guid? _lastMaintenanceTicketId;
+    private const string MaintenanceFailureMessage = "Maintenance failed; retry scheduled. Check worker logs.";
     private static readonly TimeSpan TicketMaintenanceInactivityTimeout = TimeSpan.FromMinutes(4);
     private TicketOptions Options => configuration.Tickets;
     public bool CanSupport(Actor actor) => actor.IsGuildOwner || actor.RoleIds.Intersect(Options.SupportRoleIds).Any();
@@ -62,6 +63,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
     {
         var claimed = false;
         Guid? creationAttemptId = null;
+        Guid? openingAttemptId = null;
         var createStarted = false;
         try
         {
@@ -71,6 +73,8 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 ticket = await session.GetTicketAsync(id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
                 if (ticket.State != TicketState.Creating)
                     return new(true, "This interaction has already been handled.", ticket);
+                ticket = await ReconcileUnsentCreationAsync(session, ticket, ct);
+                ticket = await ReconcileUnsentOpeningAsync(session, ticket, ct);
                 if (!_creations.TryAdd(id, 0))
                     return new(false, "This ticket is already being opened; try again shortly.", ticket);
                 claimed = true;
@@ -83,6 +87,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 await using (var creation = await store.LockAsync(ct))
                 {
                     var current = await creation.GetTicketAsync(id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
+                    current = await ReconcileUnsentCreationAsync(creation, current, ct);
                     if (current.State != TicketState.Creating)
                         return new(true, "This interaction has already been handled.", current);
                     channel = current.ChannelId;
@@ -119,14 +124,37 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 if (current.ChannelId != channel)
                     await binding.SaveAsync(ticket, "channel-bound", ticket.RequesterId, ct);
             }
-            await discord.OpenAsync(ticket, true, ct, progress);
+            try
+            {
+                await discord.OpenAsync(ticket, true, ct, progress, async sendCt =>
+                {
+                    // The adapter scans before this callback and calls it immediately before dispatch.
+                    // Empty history cannot prove an earlier in-flight POST will never become visible.
+                    await using var opening = await store.LockAsync(sendCt);
+                    var current = await opening.GetTicketAsync(id, sendCt) ?? throw new InvalidOperationException("Ticket record disappeared.");
+                    current = await ReconcileUnsentOpeningAsync(opening, current, sendCt);
+                    if (current.State != TicketState.Creating || current.ChannelId != ticket.ChannelId)
+                        throw new InvalidOperationException("Ticket creation binding changed before the opening message.");
+                    if (current.OpeningMessageAttemptId is not null)
+                        throw new InvalidOperationException("An earlier opening message remains unconfirmed. History recovery must find it before another send.");
+                    openingAttemptId = Guid.NewGuid();
+                    await opening.SaveAsync(current with { OpeningMessageAttemptId = openingAttemptId },
+                        "opening-message-claimed", null, sendCt);
+                });
+            }
+            catch (OpeningMessageNotSentException)
+            {
+                if (openingAttemptId is { } attempt) await ReleaseUnsentOpeningAsync(id, attempt);
+                ct.ThrowIfCancellationRequested();
+                throw;
+            }
             ct.ThrowIfCancellationRequested();
             await using (var completed = await store.LockAsync(ct))
             {
                 var current = await completed.GetTicketAsync(id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
                 if (current.State != TicketState.Creating || current.ChannelId != ticket.ChannelId)
                     throw new InvalidOperationException("Ticket creation binding changed during opening.");
-                ticket = current with { State = TicketState.Open, LastError = null };
+                ticket = current with { State = TicketState.Open, LastError = null, OpeningMessageAttemptId = null };
                 await completed.SaveAsync(ticket, "opened", ticket.RequesterId, ct);
             }
             await NotifyAsync($"Ticket {ticket.Number} opened.", ct);
@@ -140,10 +168,15 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             logger?.LogWarning(ex, "Ticket {TicketId} creation will be reconciled", id);
             await using var failed = await store.LockAsync(ct);
             var current = await failed.GetTicketAsync(id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
+            current = await ReconcileUnsentCreationAsync(failed, current, ct);
+            current = await ReconcileUnsentOpeningAsync(failed, current, ct);
             var unconfirmed = current.ChannelCreationAttemptId is not null;
+            var openingUnconfirmed = current.OpeningMessageAttemptId is not null;
             var error = unconfirmed
                 ? "Channel creation is unconfirmed; discovery pending. Staff must investigate before another creation attempt."
-                : "Channel creation or opening failed; reconciliation pending.";
+                : openingUnconfirmed
+                    ? "Opening message is unconfirmed; history recovery pending. Staff must investigate before another send."
+                    : "Channel creation or opening failed; reconciliation pending.";
             if (current.State == TicketState.Creating && current.LastError != error)
             {
                 current = current with { LastError = error };
@@ -151,26 +184,53 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             }
             return new(false, unconfirmed
                 ? "Channel creation is unconfirmed. Recovery will keep checking for its channel; staff must investigate before another creation attempt."
-                : "The ticket could not be opened yet. Staff can check the bot logs; retrying will recover this request.", current);
+                : openingUnconfirmed
+                    ? "The opening message is unconfirmed. Recovery will keep checking its history; staff must investigate before another send."
+                    : "The ticket could not be opened yet. Staff can check the bot logs; retrying will recover this request.", current);
         }
         finally { if (claimed) _creations.TryRemove(id, out _); }
     }
 
-    private async Task ReleaseUnsentCreationAsync(Guid id, Guid attemptId)
+    private static async Task<Ticket> ReconcileUnsentCreationAsync(ITicketSession session, Ticket current, CancellationToken ct)
     {
-        // Cancellation before POST is safe to release even after the caller/worker token has ended.
-        // A failed cleanup keeps the durable fence; never infer success from a timeout here either.
-        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-        try
+        if (current is { State: TicketState.Creating, ChannelId: null, ChannelCreationAttemptId: { } attempt } &&
+            await session.IsChannelCreationNotSentAsync(current.Id, attempt, ct))
         {
-            await using var session = await store.LockAsync(timeout.Token);
-            var current = await session.GetTicketAsync(id, timeout.Token);
-            if (current is { State: TicketState.Creating, ChannelId: null } && current.ChannelCreationAttemptId == attemptId)
-                await session.SaveAsync(current with { ChannelCreationAttemptId = null }, "channel-creation-not-sent", null, timeout.Token);
+            current = current with { ChannelCreationAttemptId = null };
+            await session.SaveAsync(current, "channel-creation-not-sent", null, ct);
         }
+        return current;
+    }
+
+    private static async Task<Ticket> ReconcileUnsentOpeningAsync(ITicketSession session, Ticket current, CancellationToken ct)
+    {
+        if (current is { State: TicketState.Creating, OpeningMessageAttemptId: { } attempt } &&
+            await session.IsOpeningMessageNotSentAsync(current.Id, attempt, ct))
+        {
+            current = current with { OpeningMessageAttemptId = null };
+            await session.SaveAsync(current, "opening-message-not-sent", null, ct);
+        }
+        return current;
+    }
+
+    private async Task ReleaseUnsentOpeningAsync(Guid id, Guid attemptId)
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        try { await store.RecordOpeningMessageNotSentAsync(id, attemptId, timeout.Token); }
         catch (Exception ex)
         {
-            logger?.LogWarning(ex, "Ticket {TicketId} creation claim retained after an unsent request; staff must investigate", id);
+            logger?.LogWarning(ex, "Ticket {TicketId} unsent opening proof could not be persisted; staff must investigate", id);
+        }
+    }
+    private async Task ReleaseUnsentCreationAsync(Guid id, Guid attemptId)
+    {
+        // Record proof outside the guild lock. Later reconciliation clears only this exact attempt,
+        // even if shutdown finishes before a long-running unrelated control releases the guild lock.
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        try { await store.RecordChannelCreationNotSentAsync(id, attemptId, timeout.Token); }
+        catch (Exception ex)
+        {
+            logger?.LogWarning(ex, "Ticket {TicketId} unsent creation proof could not be persisted; staff must investigate", id);
         }
     }
     public Task<TicketResult> CloseAsync(ulong channelId, Actor actor, CancellationToken ct = default) => MutateAsync(channelId, actor, async (session, ticket, currentActor) =>
@@ -435,9 +495,8 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         await using var session = await store.LockAsync(ct);
         // Keep the last durable archive and state even when a later remote operation timed out.
         var durable = await session.GetTicketAsync(id, ct);
-        const string error = "Maintenance failed; retry scheduled. Check worker logs.";
-        if (durable is not null && durable.LastError != error)
-            await session.SaveAsync(durable with { LastError = error }, "maintenance-failed", null, ct);
+        if (durable is not null && durable.LastError != MaintenanceFailureMessage)
+            await session.SaveAsync(durable with { LastError = MaintenanceFailureMessage }, "maintenance-failed", null, ct);
     }
 
     private async Task MaintainTicketAsync(Guid id, CancellationToken ct, Action progress)
@@ -466,6 +525,15 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                     await WithProgressAsync(discord.ReconcilePermissionsAsync(ticket, ct), progress);
                 // Manual exports in Open/Closed retain that state policy; deleting exports keep their freeze.
                 if (_exports.ContainsKey(id)) return;
+                // Stable channel checks have recovered. Do not clear an archive/cleanup failure
+                // while its operation is still due, or an unrelated diagnostic.
+                if (ticket.ChannelId.HasValue && ticket.LastError == MaintenanceFailureMessage && !ArchiveHasExpired(ticket) &&
+                    (ticket.State == TicketState.Open || ticket.State == TicketState.Closed &&
+                        (ticket.Hold || !(ticket.DeleteAfter <= clock.GetUtcNow()))))
+                {
+                    ticket = ticket with { LastError = null };
+                    await session.SaveAsync(ticket, "maintenance-recovered", null, ct);
+                }
                 if (ticket.State != TicketState.Creating)
                 {
                     if (ticket.State == TicketState.Closing)

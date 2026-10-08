@@ -24,8 +24,17 @@ public sealed class DiscordCommunityPoster(HttpClient http, BotSecrets secrets, 
         [property: JsonPropertyName("embeds")] EmbedPayload[] Embeds,
         [property: JsonPropertyName("allowed_mentions")] AllowedMentionsPayload AllowedMentions,
         [property: JsonPropertyName("nonce")] string Nonce,
-        [property: JsonPropertyName("enforce_nonce")] bool EnforceNonce = true);
+        [property: JsonPropertyName("enforce_nonce")] bool EnforceNonce = true,
+        [property: JsonPropertyName("components")] ActionRowPayload[]? Components = null);
     private sealed record AllowedMentionsPayload([property: JsonPropertyName("parse")] string[] Parse);
+    private sealed record ActionRowPayload(
+        [property: JsonPropertyName("type")] int Type,
+        [property: JsonPropertyName("components")] ButtonPayload[] Components);
+    private sealed record ButtonPayload(
+        [property: JsonPropertyName("type")] int Type,
+        [property: JsonPropertyName("style")] int Style,
+        [property: JsonPropertyName("label")] string Label,
+        [property: JsonPropertyName("custom_id")] string CustomId);
     private sealed record EmbedPayload(
         [property: JsonPropertyName("title")] string? Title,
         [property: JsonPropertyName("description")] string? Description,
@@ -37,15 +46,33 @@ public sealed class DiscordCommunityPoster(HttpClient http, BotSecrets secrets, 
         [property: JsonPropertyName("value")] string Value,
         [property: JsonPropertyName("inline")] bool Inline);
 
-    public async Task<ulong> SendAsync(ulong channelId, CommunityMessage message, CancellationToken ct)
+    public Task<ulong> SendAsync(ulong channelId, CommunityMessage message, CancellationToken ct)
     {
         var payload = new PostPayload(message.Content, message.Embeds.Select(embed => new EmbedPayload(embed.Title, embed.Description,
             embed.Url, embed.Color, embed.Fields.Select(field => new FieldPayload(field.Name, field.Value, field.Inline)).ToArray())).ToArray(),
             new([]), Nonce(message.DeliveryKey ?? Guid.NewGuid().ToString("N")));
+        return SendPayloadAsync(channelId, payload, ct);
+    }
+
+    public Task<ulong> SendTicketOpeningAsync(ulong channelId, Guid ticketId, string content, CancellationToken ct,
+        Func<CancellationToken, Task>? beforeSend = null)
+    {
+        // Discord enforces this nonce only for recent messages; durable attempts guard recovery after that window.
+        var payload = new PostPayload(content, [], new([]), Nonce($"ticket-opening:{ticketId:D}"),
+            Components: [new(1, [new(2, (int)ButtonStyle.Danger, "Close ticket", $"v1:close:{ticketId:D}")])]);
+        return SendPayloadAsync(channelId, payload, ct, beforeSend, retryAmbiguousResponses: false);
+    }
+
+    private async Task<ulong> SendPayloadAsync(ulong channelId, PostPayload payload, CancellationToken ct,
+        Func<CancellationToken, Task>? beforeSend = null, bool retryAmbiguousResponses = true)
+    {
         var json = JsonSerializer.Serialize(payload, JsonOptions);
-        await gate.WaitAsync(ct);
+        var held = false;
+        var submitted = false;
         try
         {
+            await gate.WaitAsync(ct);
+            held = true;
             for (var attempt = 0; attempt < 4; attempt++)
             {
                 var delay = nextAllowed - clock.GetUtcNow();
@@ -54,9 +81,13 @@ public sealed class DiscordCommunityPoster(HttpClient http, BotSecrets secrets, 
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bot", secrets.Token);
                 request.Headers.UserAgent.ParseAdd("DiscordBot (https://github.com/zunath/SWLOR_NWN, 1.0)");
                 request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+                if (attempt == 0 && beforeSend is not null) await beforeSend(ct);
+                ct.ThrowIfCancellationRequested();
                 try
                 {
+                    submitted = true;
                     using var response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct);
+                    if (IsDefinitiveRejection(response.StatusCode)) submitted = false;
                     if (response.Headers.TryGetValues("X-RateLimit-Remaining", out var remaining) && remaining.FirstOrDefault() == "0" &&
                         response.Headers.TryGetValues("X-RateLimit-Reset-After", out var resets) &&
                         double.TryParse(resets.FirstOrDefault(), NumberStyles.Float, CultureInfo.InvariantCulture, out var seconds) && double.IsFinite(seconds) && seconds >= 0)
@@ -69,7 +100,7 @@ public sealed class DiscordCommunityPoster(HttpClient http, BotSecrets secrets, 
                         nextAllowed = clock.GetUtcNow() + TimeSpan.FromSeconds(secondsToWait);
                         if (attempt < 3) continue;
                     }
-                    if ((int)response.StatusCode >= 500 && attempt < 3)
+                    if (retryAmbiguousResponses && (int)response.StatusCode >= 500 && attempt < 3)
                     { nextAllowed = clock.GetUtcNow() + TimeSpan.FromSeconds(attempt + 1); continue; }
                     if (!response.IsSuccessStatusCode)
                     {
@@ -81,15 +112,25 @@ public sealed class DiscordCommunityPoster(HttpClient http, BotSecrets secrets, 
                     using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync(ct), cancellationToken: ct);
                     return ulong.Parse(document.RootElement.GetProperty("id").GetString()!, CultureInfo.InvariantCulture);
                 }
-                catch (HttpRequestException ex) when (ex.StatusCode is null && attempt < 3)
+                catch (HttpRequestException ex) when (retryAmbiguousResponses && ex.StatusCode is null && attempt < 3)
                 { nextAllowed = clock.GetUtcNow() + TimeSpan.FromSeconds(attempt + 1); }
-                catch (OperationCanceledException) when (!ct.IsCancellationRequested && attempt < 3)
+                catch (OperationCanceledException) when (retryAmbiguousResponses && !ct.IsCancellationRequested && attempt < 3)
                 { nextAllowed = clock.GetUtcNow() + TimeSpan.FromSeconds(attempt + 1); }
             }
             throw new HttpRequestException("Discord message creation exhausted bounded retries.");
         }
-        finally { gate.Release(); }
+        catch (Exception ex) when (!retryAmbiguousResponses && (!submitted ||
+            ex is HttpException discordError && IsDefinitiveRejection(discordError.HttpCode) ||
+            ex is HttpRequestException requestError && IsDefinitiveRejection(requestError.StatusCode)))
+        {
+            throw new OpeningMessageNotSentException(ex);
+        }
+        finally { if (held) gate.Release(); }
     }
+
+    private static bool IsDefinitiveRejection(HttpStatusCode? status) => status is HttpStatusCode.BadRequest or
+        HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden or HttpStatusCode.NotFound or
+        HttpStatusCode.MethodNotAllowed or HttpStatusCode.TooManyRequests;
     private static async Task<DiscordErrorCode?> ReadErrorCodeAsync(HttpResponseMessage response, CancellationToken ct)
     {
         // Preserve only a bounded numeric code. Discord payload text and request credentials must not enter exceptions/logs.

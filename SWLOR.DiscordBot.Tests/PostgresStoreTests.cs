@@ -82,6 +82,92 @@ public sealed class PostgresStoreTests
         while (await reader.ReadAsync()) actions.Add(reader.GetString(0));
         Assert.That(actions, Is.EqualTo(new[] { "reserved", "channel-creation-claimed", "hold-set", "channel-bound" }));
     }
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task UnsentOutcomeCommitsUnderHeldGuildLockAndSurvivesRestart(bool openingMessage)
+    {
+        Task RecordAsync(PostgresTicketStore store, Guid ticketId, Guid attemptId, CancellationToken token) => openingMessage
+            ? store.RecordOpeningMessageNotSentAsync(ticketId, attemptId, token)
+            : store.RecordChannelCreationNotSentAsync(ticketId, attemptId, token);
+        Task<bool> RecordedAsync(ITicketSession session, Guid ticketId, Guid attemptId) => openingMessage
+            ? session.IsOpeningMessageNotSentAsync(ticketId, attemptId, default)
+            : session.IsChannelCreationNotSentAsync(ticketId, attemptId, default);
+        Ticket claimed;
+        var attempt = Guid.NewGuid();
+        await using (var first = new PostgresTicketStore(ConnectionString, TestGuildId))
+        {
+            Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await RecordAsync(first, Guid.NewGuid(), attempt, default));
+            await first.InitializeAsync(default);
+            await using var held = await first.LockAsync(default);
+            var reserved = await held.ReserveAsync("support", 42, "unsent-under-control", DateTimeOffset.UtcNow, default);
+            claimed = openingMessage ? reserved with { ChannelId = 123, OpeningMessageAttemptId = attempt }
+                : reserved with { ChannelCreationAttemptId = attempt };
+            using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+            // An interrupted claim commit can become visible after its locally proven-unsent outcome.
+            await RecordAsync(first, claimed.Id, attempt, deadline.Token);
+            await held.SaveAsync(claimed, "remote-attempt-claimed", null, default);
+            await RecordAsync(first, claimed.Id, attempt, deadline.Token);
+            Assert.That(await RecordedAsync(held, claimed.Id, attempt), Is.True,
+                "The real PostgreSQL advisory lock must not block independently committing an unsent outcome.");
+            claimed = claimed with { Hold = true };
+            await held.SaveAsync(claimed, "hold-set", 99, default);
+            Assert.That(await RecordedAsync(held, claimed.Id, attempt), Is.True,
+                "A whole-ticket save from the older control snapshot cannot erase the independently committed proof.");
+            var otherKind = openingMessage
+                ? await held.IsChannelCreationNotSentAsync(claimed.Id, attempt, default)
+                : await held.IsOpeningMessageNotSentAsync(claimed.Id, attempt, default);
+            Assert.That(otherKind, Is.False, "Channel and opening outcomes remain separate even for an identical UUID.");
+        }
+
+        await using var restarted = new PostgresTicketStore(ConnectionString, TestGuildId);
+        await restarted.InitializeAsync(default);
+        await using var verify = await restarted.LockAsync(default);
+        Assert.That(await verify.GetTicketAsync(claimed.Id, default), Is.EqualTo(claimed));
+        Assert.That(await RecordedAsync(verify, claimed.Id, attempt), Is.True);
+        Assert.That(await RecordedAsync(verify, claimed.Id, Guid.NewGuid()), Is.False);
+        await using var connection = new NpgsqlConnection(ConnectionString);
+        await connection.OpenAsync();
+        var table = openingMessage ? "swlor_bot_opening_message_not_sent" : "swlor_bot_channel_creation_not_sent";
+        await using var count = new NpgsqlCommand($"SELECT count(*) FROM {table} WHERE ticket_id=@ticket", connection);
+        count.Parameters.AddWithValue("ticket", claimed.Id);
+        Assert.That(await count.ExecuteScalarAsync(), Is.EqualTo(1L), "Repeated proof writes are idempotent.");
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task StaleUnsentOutcomeNeverMatchesReplacementAttempt(bool openingMessage)
+    {
+        await using var store = new PostgresTicketStore(ConnectionString, TestGuildId);
+        await store.InitializeAsync(default);
+        Task RecordAsync(Guid ticketId, Guid attemptId) => openingMessage
+            ? store.RecordOpeningMessageNotSentAsync(ticketId, attemptId, default)
+            : store.RecordChannelCreationNotSentAsync(ticketId, attemptId, default);
+        Task<bool> RecordedAsync(ITicketSession session, Guid ticketId, Guid attemptId) => openingMessage
+            ? session.IsOpeningMessageNotSentAsync(ticketId, attemptId, default)
+            : session.IsChannelCreationNotSentAsync(ticketId, attemptId, default);
+        var oldAttempt = Guid.NewGuid();
+        var currentAttempt = Guid.NewGuid();
+        await using var held = await store.LockAsync(default);
+        var ticket = await held.ReserveAsync("support", 42, "stale-unsent-outcome", DateTimeOffset.UtcNow, default);
+        ticket = openingMessage ? ticket with { ChannelId = 123, OpeningMessageAttemptId = oldAttempt }
+            : ticket with { ChannelCreationAttemptId = oldAttempt };
+        await held.SaveAsync(ticket, "remote-attempt-claimed", null, default);
+        await RecordAsync(ticket.Id, oldAttempt);
+        ticket = openingMessage ? ticket with { OpeningMessageAttemptId = currentAttempt, Hold = true }
+            : ticket with { ChannelCreationAttemptId = currentAttempt, Hold = true };
+        await held.SaveAsync(ticket, "remote-attempt-claimed", null, default);
+        await RecordAsync(ticket.Id, oldAttempt);
+        Assert.That(await RecordedAsync(held, ticket.Id, oldAttempt), Is.True);
+        Assert.That(await RecordedAsync(held, ticket.Id, currentAttempt), Is.False,
+            "A late unsent response for the earlier UUID cannot authorize retry of a new ambiguous POST.");
+        var unrelated = Guid.NewGuid();
+        await RecordAsync(ticket.Id, unrelated);
+        Assert.That(await RecordedAsync(held, ticket.Id, unrelated), Is.True);
+        Assert.That(await RecordedAsync(held, ticket.Id, currentAttempt), Is.False,
+            "Proof may precede a claim's commit, but only the exact durable attempt may consume it.");
+        Assert.That(await held.GetTicketAsync(ticket.Id, default), Is.EqualTo(ticket));
+    }
     [Test]
     public async Task SavedArchiveGenerationSurvivesStoreRestart()
     {
@@ -134,6 +220,10 @@ public sealed class PostgresStoreTests
         Assert.That(error!.Message, Does.Contain("different Discord guild"));
         Assert.Throws<InvalidOperationException>(() => other.LockAsync(default));
         Assert.Throws<InvalidOperationException>(() => other.LockCommunityAsync(default));
+        Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await other.RecordChannelCreationNotSentAsync(retained.Id, Guid.NewGuid(), default));
+        Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await other.RecordOpeningMessageNotSentAsync(retained.Id, Guid.NewGuid(), default));
         Assert.ThrowsAsync<InvalidOperationException>(async () =>
             await other.PersistCommunityDeliveryAsync("other", "other reply", default));
         Assert.ThrowsAsync<InvalidOperationException>(async () =>
@@ -189,7 +279,7 @@ public sealed class PostgresStoreTests
         {
             await connection.OpenAsync();
             await using var legacy = new NpgsqlCommand(
-                "DROP TABLE swlor_bot_database_owner; DELETE FROM swlor_bot_schema WHERE version=5", connection);
+                "DROP TABLE swlor_bot_database_owner; DROP TABLE swlor_bot_channel_creation_not_sent; DROP TABLE swlor_bot_opening_message_not_sent; DELETE FROM swlor_bot_schema WHERE version>=5", connection);
             await legacy.ExecuteNonQueryAsync();
         }
         await using var upgraded = new PostgresTicketStore(ConnectionString, TestGuildId);
@@ -210,7 +300,7 @@ public sealed class PostgresStoreTests
         await using var connection = new NpgsqlConnection(ConnectionString);
         await connection.OpenAsync();
         await using (var newer = new NpgsqlCommand(
-            "CREATE TABLE swlor_bot_schema(version integer PRIMARY KEY, applied_at timestamptz DEFAULT now()); INSERT INTO swlor_bot_schema VALUES (6, now())",
+            "CREATE TABLE swlor_bot_schema(version integer PRIMARY KEY, applied_at timestamptz DEFAULT now()); INSERT INTO swlor_bot_schema VALUES (7, now())",
             connection))
             await newer.ExecuteNonQueryAsync();
         await using var store = new PostgresTicketStore(ConnectionString, TestGuildId);
@@ -519,7 +609,7 @@ public sealed class PostgresStoreTests
         await using var verify = new NpgsqlConnection(ConnectionString);
         await verify.OpenAsync();
         await using var version = new NpgsqlCommand("SELECT max(version) FROM swlor_bot_schema", verify);
-        Assert.That(await version.ExecuteScalarAsync(), Is.EqualTo(5));
+        Assert.That(await version.ExecuteScalarAsync(), Is.EqualTo(6));
     }
 
     [Test]

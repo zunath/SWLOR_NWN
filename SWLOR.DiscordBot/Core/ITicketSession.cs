@@ -8,6 +8,10 @@ public interface ITicketSession : IAsyncDisposable
     Task<Ticket> ReserveAsync(string panelId, ulong requesterId, string interactionId, DateTimeOffset now, CancellationToken ct);
     Task<Ticket?> FindInteractionAsync(string interactionId, CancellationToken ct);
     Task SaveAsync(Ticket ticket, string action, ulong? actorId, CancellationToken ct);
+    Task<bool> IsChannelCreationNotSentAsync(Guid ticketId, Guid attemptId, CancellationToken ct) =>
+        Task.FromResult(false);
+    Task<bool> IsOpeningMessageNotSentAsync(Guid ticketId, Guid attemptId, CancellationToken ct) =>
+        Task.FromResult(false);
     Task<bool> TryRecordDeliveryAsync(string key, CancellationToken ct);
     Task<DeliveryState> GetOrCreateDeliveryAsync(string key, string intent, CancellationToken ct);
     Task<IReadOnlyList<PendingDelivery>> GetPendingDeliveriesAsync(CancellationToken ct) =>

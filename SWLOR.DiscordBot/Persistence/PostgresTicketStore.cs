@@ -57,7 +57,7 @@ public sealed class PostgresTicketStore(string connectionString, ulong guildId) 
         await using var command = new NpgsqlCommand(schema, session.Connection, transaction);
         await command.ExecuteNonQueryAsync(ct);
         await using var versionCommand = new NpgsqlCommand("SELECT max(version) FROM swlor_bot_schema", session.Connection, transaction);
-        if (Convert.ToInt32(await versionCommand.ExecuteScalarAsync(ct)) > 5)
+        if (Convert.ToInt32(await versionCommand.ExecuteScalarAsync(ct)) > 6)
             throw new InvalidOperationException("The bot database schema is newer than this application.");
         const string upgrade = """
             CREATE TABLE IF NOT EXISTS swlor_bot_response_deletions (
@@ -122,6 +122,13 @@ public sealed class PostgresTicketStore(string connectionString, ulong guildId) 
             END IF;
             END $$;
             INSERT INTO swlor_bot_schema(version) VALUES (5) ON CONFLICT DO NOTHING;
+            CREATE TABLE IF NOT EXISTS swlor_bot_channel_creation_not_sent (
+                ticket_id uuid NOT NULL REFERENCES swlor_bot_tickets(id), attempt_id uuid NOT NULL,
+                at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(ticket_id, attempt_id));
+            CREATE TABLE IF NOT EXISTS swlor_bot_opening_message_not_sent (
+                ticket_id uuid NOT NULL REFERENCES swlor_bot_tickets(id), attempt_id uuid NOT NULL,
+                at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(ticket_id, attempt_id));
+            INSERT INTO swlor_bot_schema(version) VALUES (6) ON CONFLICT DO NOTHING;
             """;
         await using var upgradeCommand = new NpgsqlCommand(upgrade, session.Connection, transaction);
         await upgradeCommand.ExecuteNonQueryAsync(ct);
@@ -147,6 +154,26 @@ public sealed class PostgresTicketStore(string connectionString, ulong guildId) 
         return AcquireLockAsync(CommunityLock, ct);
     }
 
+    public Task RecordChannelCreationNotSentAsync(Guid ticketId, Guid attemptId, CancellationToken ct) =>
+        RecordNotSentAsync("swlor_bot_channel_creation_not_sent", ticketId, attemptId, ct);
+
+    public Task RecordOpeningMessageNotSentAsync(Guid ticketId, Guid attemptId, CancellationToken ct) =>
+        RecordNotSentAsync("swlor_bot_opening_message_not_sent", ticketId, attemptId, ct);
+
+    private async Task RecordNotSentAsync(string table, Guid ticketId, Guid attemptId, CancellationToken ct)
+    {
+        EnsureInitialized();
+        // Persist proof even if the claim's interrupted commit becomes visible only afterwards.
+        // Readers match the exact attempt UUID; stale proof cannot release a later attempt.
+        // The table is one of the two fixed names above, never configuration or user input.
+        await using var connection = await _source.OpenConnectionAsync(ct);
+        await using var command = new NpgsqlCommand(
+            $"INSERT INTO {table}(ticket_id,attempt_id) VALUES (@ticket,@attempt) ON CONFLICT DO NOTHING", connection)
+            { CommandTimeout = 10 };
+        command.Parameters.AddWithValue("ticket", ticketId);
+        command.Parameters.AddWithValue("attempt", attemptId);
+        await command.ExecuteNonQueryAsync(ct);
+    }
     public async Task PersistCommunityDeliveryAsync(string key, string intent, CancellationToken ct)
     {
         EnsureInitialized();
@@ -299,6 +326,22 @@ public sealed class PostgresTicketStore(string connectionString, ulong guildId) 
             return ticket;
         }
 
+        public async Task<bool> IsChannelCreationNotSentAsync(Guid ticketId, Guid attemptId, CancellationToken ct)
+        {
+            await using var command = new NpgsqlCommand(
+                "SELECT EXISTS(SELECT 1 FROM swlor_bot_channel_creation_not_sent WHERE ticket_id=@ticket AND attempt_id=@attempt)", connection);
+            command.Parameters.AddWithValue("ticket", ticketId);
+            command.Parameters.AddWithValue("attempt", attemptId);
+            return await command.ExecuteScalarAsync(ct) is true;
+        }
+        public async Task<bool> IsOpeningMessageNotSentAsync(Guid ticketId, Guid attemptId, CancellationToken ct)
+        {
+            await using var command = new NpgsqlCommand(
+                "SELECT EXISTS(SELECT 1 FROM swlor_bot_opening_message_not_sent WHERE ticket_id=@ticket AND attempt_id=@attempt)", connection);
+            command.Parameters.AddWithValue("ticket", ticketId);
+            command.Parameters.AddWithValue("attempt", attemptId);
+            return await command.ExecuteScalarAsync(ct) is true;
+        }
         public async Task SaveAsync(Ticket ticket, string action, ulong? actorId, CancellationToken ct)
         {
             await using var transaction = await connection.BeginTransactionAsync(ct);

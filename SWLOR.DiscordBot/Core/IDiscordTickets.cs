@@ -8,6 +8,10 @@ public interface IDiscordTickets
     Task OpenAsync(Ticket ticket, bool sendOpeningMessage, CancellationToken ct);
     Task OpenAsync(Ticket ticket, bool sendOpeningMessage, CancellationToken ct, Action progress) =>
         OpenAsync(ticket, sendOpeningMessage, ct);
+    Task OpenAsync(Ticket ticket, bool sendOpeningMessage, CancellationToken ct, Action progress,
+        Func<CancellationToken, Task> beforeOpeningSend) => sendOpeningMessage
+            ? Task.FromException(new NotSupportedException("The ticket adapter must honor the durable opening-message send callback."))
+            : OpenAsync(ticket, false, ct, progress);
     Task CloseAsync(Ticket ticket, CancellationToken ct);
     Task RenameAsync(Ticket ticket, string name, CancellationToken ct);
     Task<bool> ExistsAsync(Ticket ticket, CancellationToken ct);

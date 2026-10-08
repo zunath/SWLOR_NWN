@@ -1193,14 +1193,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnMouseUpTintPicker() => () =>
         {
-            if (!_tintPickerActive)
-                return;
-
-            DelayCommand(0.1f, ReleaseTintPickerGesture());
+            var payload = NuiGetEventPayload();
+            var button = JsonGetInt(JsonObjectGet(payload, "mouse_btn"));
+            var finishRelease = ReleaseTintPickerGesture((NuiMouseButton)button);
+            if (finishRelease != null)
+                DelayCommand(0.1f, finishRelease);
         };
 
-        private Action ReleaseTintPickerGesture()
+        private Action ReleaseTintPickerGesture(NuiMouseButton button)
         {
+            if (button != NuiMouseButton.Left || !_tintPickerActive)
+                return null;
+
             FlushPendingPickerColor();
             var generation = _tintPickerGestureGeneration;
             var token = WindowToken;

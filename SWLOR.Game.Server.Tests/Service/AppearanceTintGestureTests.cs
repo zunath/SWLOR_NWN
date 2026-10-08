@@ -20,7 +20,7 @@ public class AppearanceTintGestureTests
         editor.SelectedTintColor = new GuiColor(0, 0, 0);
         Begin(editor, applied.Add, button);
         Field(editor, "_tintPickerActive").Should().Be(button == NuiMouseButton.Left);
-        Release(editor)();
+        Release(editor, button)?.Invoke();
         applied.Should().BeEmpty();
         Field(editor, "_pendingPickerColor").Should().BeNull();
         Field(editor, "_pendingPickerApply").Should().BeNull();
@@ -110,15 +110,35 @@ public class AppearanceTintGestureTests
         var applied = new List<TintMapColor>();
         Begin(editor, applied.Add, button);
         Queue(editor, new GuiColor(70, 80, 90)).Should().BeFalse();
-        Release(editor)();
+        Release(editor, button)?.Invoke();
         applied.Should().BeEmpty();
+    }
+
+    [TestCase(NuiMouseButton.Middle)]
+    [TestCase(NuiMouseButton.Right)]
+    public void OtherMouseButtonReleasesDoNotEndAnActiveLeftDrag(NuiMouseButton button)
+    {
+        var editor = new AppearanceEditorViewModel();
+        var applied = new List<TintMapColor>();
+        Begin(editor, applied.Add);
+        Queue(editor, new GuiColor(10, 20, 30));
+
+        Release(editor, button).Should().BeNull();
+        applied.Should().BeEmpty();
+        Queue(editor, new GuiColor(40, 50, 60)).Should().BeTrue();
+        Invoke(editor, "FlushPendingPickerColor");
+        applied.Should().Equal(new TintMapColor(40, 50, 60));
+        Queue(editor, new GuiColor(70, 80, 90)).Should().BeTrue();
+        Release(editor)();
+        applied.Should().Equal(new TintMapColor(40, 50, 60), new TintMapColor(70, 80, 90));
+        Queue(editor, new GuiColor(100, 110, 120)).Should().BeFalse();
     }
 
     private static void Begin(AppearanceEditorViewModel editor, Action<TintMapColor> apply,
         NuiMouseButton button = NuiMouseButton.Left) => Invoke(editor, "BeginTintPickerGesture", button, apply);
 
-    private static Action Release(AppearanceEditorViewModel editor) =>
-        (Action)Invoke(editor, "ReleaseTintPickerGesture");
+    private static Action Release(AppearanceEditorViewModel editor, NuiMouseButton button = NuiMouseButton.Left) =>
+        (Action)Invoke(editor, "ReleaseTintPickerGesture", button);
 
     private static bool Queue(AppearanceEditorViewModel editor, GuiColor color) =>
         (bool)Invoke(editor, "QueueTintPickerColor", color);

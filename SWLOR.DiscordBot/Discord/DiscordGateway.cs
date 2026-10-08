@@ -295,7 +295,7 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
                 await ReplyAsync(command, option.Options.Any(item => item.Name == "saved" && item.Value is true)
                     ? "Preparing the latest saved transcript; newer messages are not included."
                     : "Transcript archived; preparing download.", token);
-                await TranscriptDelivery.SendAsync(Path.Combine(ticket.ArchivePath!, "transcript.html"), command.AttachmentSizeLimit,
+                await TranscriptDelivery.SendAsync(Path.Combine(ticket.ArchiveSnapshotPath ?? ticket.ArchivePath!, "transcript.html"), command.AttachmentSizeLimit,
                     async (stream, name, text, uploadToken) =>
                     {
                         await command.FollowupWithFileAsync(stream, name, text: text,

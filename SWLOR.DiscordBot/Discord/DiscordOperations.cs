@@ -489,7 +489,11 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
         var requiresTicketCapabilities = RequiresTicketCapabilities(configuration, persistedTickets);
         var guild = await GuildAsync(ct);
         var bot = await guild.GetUserAsync(client.CurrentUser.Id, Options(ct)) ?? throw new DiscordValidationException("The bot is not a member of the configured guild.");
-        foreach (var id in configuration.AdministratorRoleIds.Concat(requiresTicketCapabilities ? configuration.Tickets.SupportRoleIds.Concat(configuration.Tickets.BypassRoleIds) : [])
+        var requiredTicketRoles = requiresTicketCapabilities
+            ? configuration.Tickets.SupportRoleIds.Concat(TicketMaintenanceRequirements.RequiresBypassRoles(configuration, persistedTickets)
+                ? configuration.Tickets.BypassRoleIds : [])
+            : [];
+        foreach (var id in configuration.AdministratorRoleIds.Concat(requiredTicketRoles)
             .Concat(configuration.Answers.Where(x => x.Enabled).SelectMany(x => x.AllowedRoleIds)).Distinct())
             if (id == guild.Id || guild.Roles.All(x => x.Id != id)) throw new DiscordValidationException($"Configured access role {id} is unavailable or is the everyone role.");
         var channels = await guild.GetChannelsAsync(Options(ct));

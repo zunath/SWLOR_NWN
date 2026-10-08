@@ -144,7 +144,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 exportId = ticket.Id;
                 if (!useSavedArchive)
                 {
-                    ticket = ticket with { ArchivePath = archive.GetArchivePath(ticket), ArchiveComplete = false };
+                    ticket = ticket with { ArchivePath = ticket.ArchivePath ?? archive.GetArchivePath(ticket) };
                     await session.SaveAsync(ticket, "archive-pending", actor.UserId, ct);
                 }
             }
@@ -164,16 +164,20 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 string path;
                 using (var progressTimeout = new MaintenanceProgressTimeout(clock, ct))
                 {
+                    await archive.PruneSnapshotsAsync(ticket, progressTimeout.Token);
                     var snapshot = await discord.ReadTranscriptAsync(ticket, progressTimeout.Token, progressTimeout.ReportProgress);
                     progressTimeout.ReportProgress();
                     path = await archive.ExportAsync(ticket, snapshot, progressTimeout.Token, progressTimeout.ReportProgress);
                     progressTimeout.Token.ThrowIfCancellationRequested();
                 }
-                await using var saveSession = await store.LockAsync(ct);
-                current = await saveSession.GetTicketAsync(ticket.Id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
-                // Preserve closes, reopens, holds, and deadlines changed while the snapshot was written.
-                current = current with { ArchivePath = path, ArchiveComplete = true };
-                await saveSession.SaveAsync(current, "exported", actor.UserId, ct);
+                await using (var saveSession = await store.LockAsync(ct))
+                {
+                    current = await saveSession.GetTicketAsync(ticket.Id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
+                    // Preserve closes, reopens, holds, and deadlines changed while the snapshot was written.
+                    current = current with { ArchiveSnapshotPath = path, ArchiveComplete = true };
+                    await saveSession.SaveAsync(current, "exported", actor.UserId, ct);
+                }
+                await PrunePublishedSnapshotsAsync(current, ct);
             }
             // Keep this ticket's files protected through delivery without blocking unrelated mutations.
             if (deliver is not null)
@@ -183,7 +187,8 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                     await using (var session = await store.LockAsync(ct))
                         current = await session.GetTicketAsync(ticket.Id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
                     if (current.ChannelId != channelId || current.State is not (TicketState.Open or TicketState.Closed) ||
-                        !current.ArchiveComplete || current.ArchivePath != ticket.ArchivePath)
+                        !current.ArchiveComplete || current.ArchivePath != ticket.ArchivePath ||
+                        current.ArchiveSnapshotPath != ticket.ArchiveSnapshotPath)
                         return new(false, "The saved transcript is no longer available for this ticket.", current);
                     if (!await discord.ExistsAsync(current, ct)) return new(false, "The managed ticket channel is unavailable.", current);
                 }
@@ -262,7 +267,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 if (ticket is null || _exports.ContainsKey(id) || !ArchiveHasExpired(ticket)) continue;
                 // FileTranscriptArchive validates ownership and links; no Discord access is required.
                 await archive.DeleteAsync(ticket.ArchivePath!, ct);
-                await session.SaveAsync(ticket with { ArchivePath = null, ArchiveComplete = false }, "archive-expired", null, ct);
+                await session.SaveAsync(ticket with { ArchivePath = null, ArchiveSnapshotPath = null, ArchiveComplete = false }, "archive-expired", null, ct);
             }
             catch (Exception ex) when (!ct.IsCancellationRequested)
             {
@@ -329,7 +334,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                     if (ticket.ArchivePath is not null && ticket.ArchiveExpiresAt <= clock.GetUtcNow())
                     {
                         await WithProgressAsync(archive.DeleteAsync(ticket.ArchivePath, ct), progress);
-                        await session.SaveAsync(ticket with { ArchivePath = null, ArchiveComplete = false }, "archive-expired", null, ct);
+                        await session.SaveAsync(ticket with { ArchivePath = null, ArchiveSnapshotPath = null, ArchiveComplete = false }, "archive-expired", null, ct);
                     }
                     return;
                 }
@@ -343,17 +348,21 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                 if (!_exports.TryAdd(id, 0)) return;
                 exporting = true;
                 // Include partial/completed files in retention even if the final export save never commits.
-                ticket = ticket with { ArchivePath = archive.GetArchivePath(ticket), ArchiveComplete = false };
+                ticket = ticket with { ArchivePath = ticket.ArchivePath ?? archive.GetArchivePath(ticket) };
                 await session.SaveAsync(ticket, "archive-pending", null, ct);
             }
             // Pagination and attachment downloads can take minutes; do not hold the guild ticket lock.
+            await WithProgressAsync(archive.PruneSnapshotsAsync(ticket, ct), progress);
             var snapshot = await WithProgressAsync(discord.ReadTranscriptAsync(ticket, ct, progress), progress);
             var archivePath = await WithProgressAsync(archive.ExportAsync(ticket, snapshot, ct, progress), progress);
+            Ticket published;
             await using (var saveSession = await store.LockAsync(ct))
             {
                 var current = await saveSession.GetTicketAsync(id, ct) ?? throw new InvalidOperationException("Ticket record disappeared.");
-                await saveSession.SaveAsync(current with { ArchivePath = archivePath, ArchiveComplete = true, LastError = null }, "cleanup-exported", null, ct);
+                published = current with { ArchiveSnapshotPath = archivePath, ArchiveComplete = true, LastError = null };
+                await saveSession.SaveAsync(published, "cleanup-exported", null, ct);
             }
+            await PrunePublishedSnapshotsAsync(published, ct);
             // A stable head alone misses edits/deletions of older messages during pagination or downloads.
             var verified = await WithProgressAsync(discord.ReadTranscriptAsync(ticket, ct, progress), progress);
             if (!SameTranscript(snapshot, verified))
@@ -369,6 +378,16 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
             await NotifyAsync($"Ticket {latest.Number} archived and deleted.", ct);
         }
         finally { if (exporting) _exports.TryRemove(id, out _); }
+    }
+
+    private async Task PrunePublishedSnapshotsAsync(Ticket ticket, CancellationToken ct)
+    {
+        try { await archive.PruneSnapshotsAsync(ticket, ct); }
+        catch (Exception ex) when (!ct.IsCancellationRequested)
+        {
+            // The entire root remains owned for retention; retry pruning on the next export.
+            logger?.LogWarning(ex, "Ticket {TicketId} superseded snapshots retained for retry", ticket.Id);
+        }
     }
 
     private static async Task<T> WithProgressAsync<T>(Task<T> operation, Action progress)

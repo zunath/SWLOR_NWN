@@ -7,6 +7,9 @@ internal static class TicketMaintenanceRequirements
     public static bool RequiresPanel(TicketState state) => state is TicketState.Creating or TicketState.Open or
         TicketState.Closing or TicketState.Closed or TicketState.Reopening;
 
+    public static bool RequiresBypassRoles(BotConfiguration configuration, IReadOnlyList<Ticket> tickets) =>
+        configuration.Tickets.Enabled || tickets.Any(ticket => RequiresPanel(ticket.State));
+
     public static IReadOnlyList<TicketPanelOptions> RequiredPanels(BotConfiguration configuration, IReadOnlyList<Ticket> tickets)
     {
         if (configuration.Tickets.Enabled) return configuration.Tickets.Panels;

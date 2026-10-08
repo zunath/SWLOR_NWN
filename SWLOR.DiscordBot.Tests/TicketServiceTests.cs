@@ -808,7 +808,7 @@ public sealed class TicketServiceTests
             else Assert.ThrowsAsync<InvalidOperationException>(() => _service.ExportAsync(ChannelOne, Support));
             var pending = _store.Tickets.Single();
             Assert.That(pending.ArchivePath, Is.EqualTo(files.GetArchivePath(pending)));
-            Assert.That(File.Exists(Path.Combine(pending.ArchivePath!, "transcript.html")), Is.True);
+            Assert.That(Directory.GetFiles(pending.ArchivePath!, "transcript.html", SearchOption.AllDirectories), Has.Length.EqualTo(1));
             Assert.That(pending.ArchiveComplete, Is.False, "publication and its successful completion commit are distinct");
             _discord.MissingChannels.Add(ChannelOne);
             // Restart loses the in-process guard but preserves the committed ownership record.
@@ -1257,10 +1257,14 @@ public sealed class TicketServiceTests
             var files = new FileTranscriptArchive(_configuration, http);
             var expired = (await Open("first", new Actor(1, []), "files-expired")).Ticket!;
             var held = (await Open("second", new Actor(2, []), "files-held")).Ticket!;
+            expired = expired with { ArchivePath = files.GetArchivePath(expired) };
+            held = held with { ArchivePath = files.GetArchivePath(held) };
+            _store.Replace(expired);
+            _store.Replace(held);
             var expiredPath = await files.ExportAsync(expired, new TranscriptSnapshot([], null), default);
             var heldPath = await files.ExportAsync(held, new TranscriptSnapshot([], null), default);
-            _store.Replace(expired with { State = TicketState.Closed, ArchivePath = expiredPath, ArchiveExpiresAt = _clock.GetUtcNow() });
-            _store.Replace(held with { State = TicketState.Deleting, Hold = true, ArchivePath = heldPath, ArchiveExpiresAt = _clock.GetUtcNow() });
+            _store.Replace(expired with { State = TicketState.Closed, ArchiveSnapshotPath = expiredPath, ArchiveComplete = true, ArchiveExpiresAt = _clock.GetUtcNow() });
+            _store.Replace(held with { State = TicketState.Deleting, Hold = true, ArchiveSnapshotPath = heldPath, ArchiveComplete = true, ArchiveExpiresAt = _clock.GetUtcNow() });
             _configuration.Tickets.Enabled = false;
             _service = new TicketService(_configuration, _store, _discord, files, _clock);
             _discord.BeforeExistsAsync = _ => throw new AssertionException("Offline expiration must not contact Discord.");
@@ -1274,6 +1278,132 @@ public sealed class TicketServiceTests
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     }
+    [TestCase("scan")]
+    [TestCase("ownership")]
+    [TestCase("storage")]
+    [TestCase("completion")]
+    public async Task FailedRefreshKeepsTheCompleteSavedSnapshotUsable(string failure)
+    {
+        await Open("first", new Actor(1, []), "refresh-failure");
+        await _service.ExportAsync(ChannelOne, Support);
+        var previous = _store.Tickets.Single();
+        if (failure == "scan")
+            _discord.BeforeTranscriptAsync = (_, _) => throw new InvalidOperationException("Discord pagination failed.");
+        else if (failure == "ownership") _store.FailNextSaveAction = "archive-pending";
+        else if (failure == "storage") _archive.FailExports = true;
+        else _store.FailNextSaveAction = "exported";
+
+        Assert.ThrowsAsync<InvalidOperationException>(() => _service.ExportAsync(ChannelOne, Support));
+
+        var retained = _store.Tickets.Single();
+        Assert.That(retained.ArchivePath, Is.EqualTo(previous.ArchivePath));
+        Assert.That(retained.ArchiveSnapshotPath, Is.EqualTo(previous.ArchiveSnapshotPath));
+        Assert.That(retained.ArchiveComplete, Is.True);
+        var delivered = false;
+        var result = await _service.ExportAsync(ChannelOne, Support, useSavedArchive: true,
+            deliver: (ticket, _) =>
+            {
+                Assert.That(ticket.ArchiveSnapshotPath, Is.EqualTo(previous.ArchiveSnapshotPath));
+                delivered = true;
+                return Task.CompletedTask;
+            });
+        Assert.That(result.Success, Is.True);
+        Assert.That(delivered, Is.True);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task StalledRefreshPreservesSavedSnapshotAndProtectsItFromConcurrentExpiration(bool storage)
+    {
+        await Open("first", new Actor(1, []), "refresh-timeout");
+        await _service.ExportAsync(ChannelOne, Support);
+        await _service.CloseAsync(ChannelOne, Support);
+        _clock.Advance(TimeSpan.FromDays(91));
+        var previous = _store.Tickets.Single();
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        async Task Stall(Ticket ticket, Action progress, CancellationToken token)
+        {
+            started.TrySetResult();
+            await Task.Delay(Timeout.InfiniteTimeSpan, token);
+        }
+        if (storage) _archive.BeforeProgressExportAsync = Stall;
+        else _discord.BeforeProgressTranscriptAsync = Stall;
+        var refresh = _service.ExportAsync(ChannelOne, Support);
+        await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        await _service.ExpireArchivesAsync().WaitAsync(TimeSpan.FromSeconds(2));
+        await _service.MaintainAsync().WaitAsync(TimeSpan.FromSeconds(2));
+        Assert.That(_archive.DeletedPaths, Is.Empty);
+        Assert.That(_discord.DeleteCalls, Is.Zero);
+        Assert.That(_store.Tickets.Single().ArchiveComplete, Is.True);
+        _clock.Advance(TimeSpan.FromMinutes(4));
+        Assert.CatchAsync<OperationCanceledException>(() => refresh.WaitAsync(TimeSpan.FromSeconds(2)));
+        Assert.That(_store.Tickets.Single().ArchiveSnapshotPath, Is.EqualTo(previous.ArchiveSnapshotPath));
+        Assert.That((await _service.ExportAsync(ChannelOne, Support, useSavedArchive: true)).Success, Is.True);
+        await _service.ExpireArchivesAsync();
+        Assert.That(_archive.DeletedPaths, Is.EqualTo(new[] { previous.ArchivePath }));
+        Assert.That(_store.Tickets.Single().ArchiveSnapshotPath, Is.Null);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task InterruptedRefreshSaveKeepsPriorFilesAcrossRestartThenSuccessfulRefreshPrunesThem(bool legacy)
+    {
+        var root = Path.Combine(Path.GetTempPath(), "swlor-refresh-tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            _configuration.Tickets.ArchiveDirectory = root;
+            _configuration.Tickets.CopyAttachments = false;
+            using var http = new HttpClient();
+            var files = new FileTranscriptArchive(_configuration, http);
+            _service = new TicketService(_configuration, _store, _discord, files, _clock);
+            var ticket = (await Open("first", new Actor(1, []), "refresh-restart")).Ticket!;
+            string previousDirectory;
+            if (legacy)
+            {
+                previousDirectory = files.GetArchivePath(ticket);
+                Directory.CreateDirectory(previousDirectory);
+                await File.WriteAllTextAsync(Path.Combine(previousDirectory, "transcript.json"), "legacy JSON");
+                await File.WriteAllTextAsync(Path.Combine(previousDirectory, "transcript.html"), "legacy HTML");
+                _store.Replace(ticket with { ArchivePath = previousDirectory, ArchiveComplete = true });
+            }
+            else
+            {
+                await _service.ExportAsync(ChannelOne, Support);
+                previousDirectory = _store.Tickets.Single().ArchiveSnapshotPath!;
+            }
+            var previous = _store.Tickets.Single();
+            var originalJson = await File.ReadAllBytesAsync(Path.Combine(previousDirectory, "transcript.json"));
+            var originalHtml = await File.ReadAllBytesAsync(Path.Combine(previousDirectory, "transcript.html"));
+            _discord.Snapshot = new([new(10, 1, "member", "replacement", _clock.GetUtcNow(), [])], 10);
+            _store.FailNextSaveAction = "exported";
+            Assert.ThrowsAsync<InvalidOperationException>(() => _service.ExportAsync(ChannelOne, Support));
+            Assert.That(_store.Tickets.Single(), Is.EqualTo(previous));
+            Assert.That(await File.ReadAllBytesAsync(Path.Combine(previousDirectory, "transcript.json")), Is.EqualTo(originalJson));
+            Assert.That(await File.ReadAllBytesAsync(Path.Combine(previousDirectory, "transcript.html")), Is.EqualTo(originalHtml));
+            Assert.That(Directory.GetFiles(previous.ArchivePath!, "transcript.html", SearchOption.AllDirectories), Has.Length.EqualTo(2),
+                "The unpublished complete pair remains inside the durably owned root until retry or expiration.");
+            _service = new TicketService(_configuration, _store, _discord, files, _clock);
+            Assert.That((await _service.ExportAsync(ChannelOne, Support, useSavedArchive: true,
+                deliver: async (saved, token) =>
+                {
+                    var selected = saved.ArchiveSnapshotPath ?? saved.ArchivePath!;
+                    Assert.That(selected, Is.EqualTo(previousDirectory));
+                    Assert.That(await File.ReadAllBytesAsync(Path.Combine(selected, "transcript.html"), token), Is.EqualTo(originalHtml));
+                })).Success, Is.True);
+            var refreshed = await _service.ExportAsync(ChannelOne, Support);
+            Assert.That(refreshed.Success, Is.True);
+            Assert.That(refreshed.Ticket!.ArchivePath, Is.EqualTo(previous.ArchivePath));
+            Assert.That(refreshed.Ticket.ArchiveSnapshotPath, Is.Not.EqualTo(previousDirectory));
+            Assert.That(refreshed.Ticket.ArchiveComplete, Is.True);
+            var selectedPath = refreshed.Ticket.ArchiveSnapshotPath!;
+            Assert.That(await File.ReadAllTextAsync(Path.Combine(selectedPath, "transcript.html")), Does.Contain("replacement"));
+            Assert.That(Directory.GetFiles(previous.ArchivePath!, "transcript.html", SearchOption.AllDirectories),
+                Is.EqualTo(new[] { Path.Combine(selectedPath, "transcript.html") }));
+            Assert.That(File.Exists(Path.Combine(previousDirectory, "transcript.html")), Is.False);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    }
+
     [Test]
     public async Task SavedTranscriptDownloadPreservesTheArchiveAndRefreshesLiveAuthorizationAndOwnership()
     {
@@ -2057,7 +2187,7 @@ public sealed class TicketServiceTests
             ExportCalls++;
             if (BeforeExportAsync is not null) await BeforeExportAsync(ticket, ct);
             if (FailExports) throw new InvalidOperationException("Simulated archive storage failure.");
-            return $"/archives/{ticket.Id:N}.json";
+            return $"/archives/{ticket.Id:N}.json/snapshots/{ExportCalls}";
         }
 
         public async Task<string> ExportAsync(Ticket ticket, TranscriptSnapshot snapshot, CancellationToken ct, Action progress)

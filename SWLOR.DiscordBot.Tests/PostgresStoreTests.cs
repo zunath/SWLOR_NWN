@@ -41,6 +41,31 @@ public sealed class PostgresStoreTests
     }
 
     [Test]
+    public async Task SavedArchiveGenerationSurvivesStoreRestart()
+    {
+        Ticket saved;
+        await using (var store = new PostgresTicketStore(ConnectionString, TestGuildId))
+        {
+            await store.InitializeAsync(default);
+            await using var session = await store.LockAsync(default);
+            var reserved = await session.ReserveAsync("support", 42, "archive-generation", DateTimeOffset.UtcNow, default);
+            var directory = Path.Combine(Path.GetTempPath(), "archives", reserved.Id.ToString("N"));
+            saved = reserved with
+            {
+                State = TicketState.Closed, ChannelId = 123, ArchivePath = directory,
+                ArchiveComplete = true, ArchiveSnapshotPath = Path.Combine(directory, "snapshots", Guid.NewGuid().ToString("N"))
+            };
+            await session.SaveAsync(saved, "archived", 42, default);
+        }
+
+        await using var restarted = new PostgresTicketStore(ConnectionString, TestGuildId);
+        await restarted.InitializeAsync(default);
+        await using var verification = await restarted.LockAsync(default);
+        Assert.That(await verification.FindInteractionAsync("archive-generation", default), Is.EqualTo(saved));
+        Assert.That(await verification.FindByChannelAsync(123, default), Is.EqualTo(saved));
+    }
+
+    [Test]
     public async Task DifferentGuildCannotReadMutateOrPruneOwnedDatabase()
     {
         await using var owner = new PostgresTicketStore(ConnectionString, TestGuildId);

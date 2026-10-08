@@ -27,7 +27,7 @@ public sealed class ArchiveTests
     }
 
     [Test]
-    public async Task PlanningArchiveOwnershipDoesNotPublishFilesAndMatchesExportDirectory()
+    public async Task PlanningArchiveOwnershipDoesNotPublishFilesAndContainsExportSnapshot()
     {
         using var client = CreateClient(_ => throw new AssertionException("No attachments should be downloaded."));
         var archive = CreateArchive(client);
@@ -35,7 +35,9 @@ public sealed class ArchiveTests
         var planned = archive.GetArchivePath(ticket);
         Assert.That(planned, Is.EqualTo(Path.Combine(_root, ticket.Id.ToString("N"))));
         Assert.That(Directory.Exists(planned), Is.False);
-        Assert.That(await archive.ExportAsync(ticket, EmptySnapshot(), default), Is.EqualTo(planned));
+        var snapshot = await archive.ExportAsync(ticket, EmptySnapshot(), default);
+        Assert.That(Path.GetDirectoryName(snapshot), Is.EqualTo(Path.Combine(planned, "snapshots")));
+        Assert.That(File.Exists(Path.Combine(snapshot, "transcript.html")), Is.True);
     }
 
     [Test]
@@ -99,7 +101,7 @@ public sealed class ArchiveTests
         var ticket = CreateTicket();
         var managed = await archive.ExportAsync(ticket, EmptySnapshot(), CancellationToken.None);
 
-        await archive.DeleteAsync(managed, CancellationToken.None);
+        await archive.DeleteAsync(archive.GetArchivePath(ticket), CancellationToken.None);
 
         Assert.That(Directory.Exists(managed), Is.False);
         Assert.That(Directory.Exists(_root), Is.True);
@@ -157,7 +159,7 @@ public sealed class ArchiveTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(html, Does.Contain("href=\"attachments/88.png\""));
+            Assert.That(html, Does.Contain("href=\"../../attachments/88.png\""));
             Assert.That(File.ReadAllBytes(attachmentPath), Is.EqualTo(new byte[] { 1, 2, 3 }));
         });
     }
@@ -228,13 +230,13 @@ public sealed class ArchiveTests
         var snapshot = new TranscriptSnapshot(
         [new TranscriptMessage(10, 55, "member", "attachment", DateTimeOffset.UnixEpoch, [attachment])], 10);
 
-        await archive.ExportAsync(ticket, snapshot, default);
+        var exported = await archive.ExportAsync(ticket, snapshot, default);
 
         Assert.Multiple(() =>
         {
             Assert.That(ReadUnixMode(attachmentPath), Is.EqualTo((UnixFileMode)384));
-            Assert.That(ReadUnixMode(Path.Combine(directory, "transcript.html")), Is.EqualTo((UnixFileMode)384));
-            Assert.That(ReadUnixMode(Path.Combine(directory, "transcript.json")), Is.EqualTo((UnixFileMode)384));
+            Assert.That(ReadUnixMode(Path.Combine(exported, "transcript.html")), Is.EqualTo((UnixFileMode)384));
+            Assert.That(ReadUnixMode(Path.Combine(exported, "transcript.json")), Is.EqualTo((UnixFileMode)384));
             Assert.That(File.ReadAllBytes(attachmentPath), Is.EqualTo(bytes));
             Assert.That(Directory.GetFiles(directory, "*.part", SearchOption.AllDirectories), Is.Empty);
         });
@@ -319,7 +321,7 @@ public sealed class ArchiveTests
         await archive.ExportAsync(ticket, snapshot, default, () =>
         {
             if (File.Exists(target + ".part")) observedPartialLengths.Add(new FileInfo(target + ".part").Length);
-            completedTranscriptWasReported |= File.Exists(Path.Combine(directory, "transcript.html"));
+            completedTranscriptWasReported |= Directory.Exists(directory) && Directory.GetFiles(directory, "transcript.html", SearchOption.AllDirectories).Length > 0;
         });
 
         Assert.That(observedPartialLengths.Any(length => length > 0 && length < payload.Length), Is.True,
@@ -361,9 +363,10 @@ public sealed class ArchiveTests
         });
         using var client = new HttpClient(handler);
         var archive = new FileTranscriptArchive(CreateConfiguration(true, 4, budget), client);
-        var directory = await archive.ExportAsync(CreateTicket(), Snapshot(Attachment(88, 3), Attachment(89, 2)), default);
+        var ticket = CreateTicket();
+        var directory = await archive.ExportAsync(ticket, Snapshot(Attachment(88, 3), Attachment(89, 2)), default);
         Assert.That(handler.RequestCount, Is.EqualTo(2));
-        Assert.That(Directory.GetFiles(Path.Combine(directory, "attachments")).Sum(file => new FileInfo(file).Length), Is.EqualTo(5));
+        Assert.That(Directory.GetFiles(Path.Combine(archive.GetArchivePath(ticket), "attachments")).Sum(file => new FileInfo(file).Length), Is.EqualTo(5));
         Assert.That(File.Exists(Path.Combine(directory, "transcript.html")), Is.True);
     }
 
@@ -387,9 +390,10 @@ public sealed class ArchiveTests
         var archive = new FileTranscriptArchive(CreateConfiguration(true, 3, 3), client);
         var attachment = Attachment(88, 3);
         var snapshot = Snapshot(attachment, attachment with { Url = attachment.Url + "?expires=refreshed" });
-        var directory = await archive.ExportAsync(CreateTicket(), snapshot, default);
+        var ticket = CreateTicket();
+        await archive.ExportAsync(ticket, snapshot, default);
         Assert.That(handler.RequestCount, Is.EqualTo(1));
-        Assert.That(Directory.GetFiles(Path.Combine(directory, "attachments")), Has.Length.EqualTo(1));
+        Assert.That(Directory.GetFiles(Path.Combine(archive.GetArchivePath(ticket), "attachments")), Has.Length.EqualTo(1));
     }
 
     [TestCase("size")]
@@ -459,12 +463,12 @@ public sealed class ArchiveTests
         var archive = new FileTranscriptArchive(CreateConfiguration(true, 4, 5), client);
         var ticket = CreateTicket();
         var directory = await archive.ExportAsync(ticket, Snapshot(Attachment(88, 3)), default);
-        await archive.ExportAsync(ticket, Snapshot(Attachment(89, 2)), default);
+        directory = await archive.ExportAsync(ticket, Snapshot(Attachment(89, 2)), default);
         var published = await File.ReadAllTextAsync(Path.Combine(directory, "transcript.json"));
         Assert.ThrowsAsync<InvalidDataException>(() => archive.ExportAsync(ticket, Snapshot(Attachment(90, 1)), default));
         Assert.That(handler.RequestCount, Is.EqualTo(2));
         Assert.That(await File.ReadAllTextAsync(Path.Combine(directory, "transcript.json")), Is.EqualTo(published));
-        Assert.That(Directory.GetFiles(Path.Combine(directory, "attachments")).Sum(file => new FileInfo(file).Length), Is.EqualTo(5));
+        Assert.That(Directory.GetFiles(Path.Combine(archive.GetArchivePath(ticket), "attachments")).Sum(file => new FileInfo(file).Length), Is.EqualTo(5));
     }
 
     [TestCase(false)]
@@ -612,15 +616,78 @@ public sealed class ArchiveTests
         var directory = await archive.ExportAsync(ticket, EmptySnapshot(), default);
         var htmlPath = Path.Combine(directory, "transcript.html");
         var original = await File.ReadAllBytesAsync(htmlPath);
+        var originalJson = await File.ReadAllBytesAsync(Path.Combine(directory, "transcript.json"));
         var message = new TranscriptMessage(10, 55, "member", new string('&', 200000), DateTimeOffset.UnixEpoch, []);
         using var cancellation = new CancellationTokenSource();
         Assert.CatchAsync<OperationCanceledException>(() => archive.ExportAsync(ticket, new([message], 10),
             cancellation.Token, () =>
             {
-                if (File.Exists(htmlPath + ".part") && new FileInfo(htmlPath + ".part").Length > 0) cancellation.Cancel();
+                if (Directory.GetFiles(archive.GetArchivePath(ticket), "transcript.html.part", SearchOption.AllDirectories)
+                    .Any(path => new FileInfo(path).Length > 0)) cancellation.Cancel();
             }));
         Assert.That(await File.ReadAllBytesAsync(htmlPath), Is.EqualTo(original));
-        Assert.That(Directory.GetFiles(directory, "*.part", SearchOption.AllDirectories), Is.Empty);
+        Assert.That(await File.ReadAllBytesAsync(Path.Combine(directory, "transcript.json")), Is.EqualTo(originalJson));
+        Assert.That(Directory.GetFiles(archive.GetArchivePath(ticket), "*.part", SearchOption.AllDirectories), Is.Empty);
+        Assert.That(Directory.GetDirectories(Path.GetDirectoryName(directory)!), Is.EqualTo(new[] { directory }));
+    }
+
+    [Test]
+    public void ExportRejectsUncommittedOwnershipBeforeCreatingFiles()
+    {
+        using var client = CreateClient(_ => throw new AssertionException("No HTTP before durable ownership."));
+        var archive = CreateArchive(client);
+        var ticket = CreateTicket() with { ArchivePath = null };
+        Assert.ThrowsAsync<InvalidOperationException>(() => archive.ExportAsync(ticket, EmptySnapshot(), default));
+        Assert.That(Directory.GetFileSystemEntries(_root), Is.Empty);
+    }
+
+    [Test]
+    public async Task FailedHtmlPublicationKeepsBothPreviousTranscriptFilesAndDiscardsOnlyStaging()
+    {
+        using var client = CreateClient(_ => throw new AssertionException("No attachments should be downloaded."));
+        var archive = CreateArchive(client);
+        var ticket = CreateTicket();
+        var previous = await archive.ExportAsync(ticket, EmptySnapshot(), default);
+        ticket = ticket with { ArchiveSnapshotPath = previous, ArchiveComplete = true };
+        var json = await File.ReadAllBytesAsync(Path.Combine(previous, "transcript.json"));
+        var html = await File.ReadAllBytesAsync(Path.Combine(previous, "transcript.html"));
+        var replacement = new TranscriptSnapshot([new(10, 55, "member", "new content", DateTimeOffset.UnixEpoch, [])], 10);
+        var error = Assert.CatchAsync<Exception>(() => archive.ExportAsync(ticket, replacement, default, () =>
+        {
+            var stagedJson = Directory.GetFiles(ticket.ArchivePath!, "transcript.json", SearchOption.AllDirectories)
+                .SingleOrDefault(path => Path.GetDirectoryName(path) != previous);
+            if (stagedJson is not null)
+                Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(stagedJson)!, "transcript.html"));
+        }));
+        Assert.That(error, Is.InstanceOf<IOException>().Or.InstanceOf<UnauthorizedAccessException>());
+        Assert.That(await File.ReadAllBytesAsync(Path.Combine(previous, "transcript.json")), Is.EqualTo(json));
+        Assert.That(await File.ReadAllBytesAsync(Path.Combine(previous, "transcript.html")), Is.EqualTo(html));
+        Assert.That(Directory.GetDirectories(Path.GetDirectoryName(previous)!), Is.EqualTo(new[] { previous }));
+        Assert.That(Directory.GetFiles(ticket.ArchivePath!, "*.part", SearchOption.AllDirectories), Is.Empty);
+    }
+
+    [Test]
+    public async Task PruningPreservesSelectedPairAndSharedAttachmentsAndExpirationRemovesEveryGeneration()
+    {
+        var payload = new byte[] { 1, 2, 3 };
+        using var client = CreateClient(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(payload) });
+        var archive = new FileTranscriptArchive(CreateConfiguration(true), client);
+        var ticket = CreateTicket();
+        var previous = await archive.ExportAsync(ticket, Snapshot(Attachment(88, 3)), default);
+        ticket = ticket with { ArchiveSnapshotPath = previous, ArchiveComplete = true };
+        var uncommitted = await archive.ExportAsync(ticket, EmptySnapshot(), default);
+        await archive.PruneSnapshotsAsync(ticket, default);
+        Assert.That(Directory.Exists(previous), Is.True);
+        Assert.That(Directory.Exists(uncommitted), Is.False);
+        var replacement = await archive.ExportAsync(ticket, Snapshot(Attachment(88, 3)), default);
+        await archive.PruneSnapshotsAsync(ticket with { ArchiveSnapshotPath = replacement }, default);
+        Assert.That(Directory.Exists(previous), Is.False);
+        Assert.That(await File.ReadAllBytesAsync(Path.Combine(ticket.ArchivePath!, "attachments", "88.bin")), Is.EqualTo(payload));
+        var html = await File.ReadAllTextAsync(Path.Combine(replacement, "transcript.html"));
+        Assert.That(html, Does.Contain("../../attachments/88.bin"));
+        await archive.ExportAsync(ticket, EmptySnapshot(), default);
+        await archive.DeleteAsync(ticket.ArchivePath!, default);
+        Assert.That(Directory.Exists(ticket.ArchivePath!), Is.False);
     }
 
     private static UnixFileMode ReadUnixMode(string path)
@@ -642,8 +709,12 @@ public sealed class ArchiveTests
         }
     };
 
-    private static Ticket CreateTicket() => new(Guid.NewGuid(), "support", 42, 1234,
-        TicketState.Closed, 1, DateTimeOffset.UnixEpoch);
+    private Ticket CreateTicket()
+    {
+        var id = Guid.NewGuid();
+        return new(id, "support", 42, 1234, TicketState.Closed, 1, DateTimeOffset.UnixEpoch,
+            ArchivePath: Path.Combine(_root, id.ToString("N")));
+    }
 
     private static TranscriptSnapshot EmptySnapshot() => new([], null);
 

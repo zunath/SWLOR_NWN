@@ -22,6 +22,7 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
 
     public async Task<string> ExportAsync(Ticket ticket, TranscriptSnapshot snapshot, CancellationToken ct, Action progress)
     {
+        ValidateOwnership(ticket);
         var contentBudget = new TranscriptContentBudget(configuration.Tickets.MaxTranscriptContentBytes);
         foreach (var message in snapshot.Messages)
         {
@@ -110,13 +111,111 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
                 files[attachment.Id] = relative;
             }
         }
-        await AtomicWriteAsync(Path.Combine(directory, "transcript.json"),
-            output => WriteJsonAsync(output, ticket, snapshot, files, ct, progress), ct);
-        progress();
-        await AtomicWriteAsync(Path.Combine(directory, "transcript.html"),
-            output => WriteHtmlAsync(output, ticket, snapshot, files, ct, progress), ct);
-        progress();
-        return directory;
+        // Publish a complete pair by selecting an immutable snapshot in the ticket record.
+        // Its owning root was committed before the scan; interrupted publication is still retained.
+        var snapshots = Path.Combine(directory, "snapshots");
+        EnsurePrivateDirectory(snapshots);
+        var snapshotDirectory = Path.Combine(snapshots, Guid.NewGuid().ToString("N"));
+        EnsurePrivateDirectory(snapshotDirectory);
+        var snapshotFiles = files.ToDictionary(pair => pair.Key, pair => "../../" + pair.Value);
+        var complete = false;
+        try
+        {
+            await AtomicWriteAsync(Path.Combine(snapshotDirectory, "transcript.json"),
+                output => WriteJsonAsync(output, ticket, snapshot, snapshotFiles, ct, progress), ct);
+            progress();
+            await AtomicWriteAsync(Path.Combine(snapshotDirectory, "transcript.html"),
+                output => WriteHtmlAsync(output, ticket, snapshot, snapshotFiles, ct, progress), ct);
+            progress();
+            ct.ThrowIfCancellationRequested();
+            complete = true;
+            return snapshotDirectory;
+        }
+        finally
+        {
+            if (!complete) DeleteSnapshotDirectory(ticket, snapshotDirectory);
+        }
+    }
+
+    private void ValidateOwnership(Ticket ticket)
+    {
+        if (ticket.ArchivePath is null || !Path.IsPathRooted(ticket.ArchivePath) ||
+            !PathEquals(Path.GetFullPath(ticket.ArchivePath), TicketDirectory(ticket.Id)))
+            throw new InvalidOperationException("Commit the managed ticket archive directory before writing transcript files.");
+        if (ticket.ArchiveSnapshotPath is not null) ValidateSnapshotPath(ticket, ticket.ArchiveSnapshotPath);
+    }
+
+    private void ValidateSnapshotPath(Ticket ticket, string path)
+    {
+        if (!Path.IsPathRooted(path)) throw new InvalidOperationException("Snapshot paths must be absolute.");
+        var full = Path.GetFullPath(path);
+        if (!Guid.TryParseExact(Path.GetFileName(full), "N", out var snapshotId) ||
+            !PathEquals(full, Path.Combine(TicketDirectory(ticket.Id), "snapshots", snapshotId.ToString("N"))))
+            throw new InvalidOperationException("Snapshot path does not identify a managed ticket snapshot.");
+    }
+
+    public Task PruneSnapshotsAsync(Ticket ticket, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        ValidateOwnership(ticket);
+        var directory = TicketDirectory(ticket.Id);
+        if (!Directory.Exists(directory)) return Task.CompletedTask;
+        RejectLink(directory);
+        var snapshots = Path.Combine(directory, "snapshots");
+        RejectLink(snapshots);
+        if (ticket.ArchiveSnapshotPath is not null)
+        {
+            // Never remove the previous selection if the new durable snapshot cannot be read.
+            ValidateTree(ticket.ArchiveSnapshotPath, ct);
+            foreach (var name in new[] { "transcript.json", "transcript.html" })
+                if (!File.Exists(Path.Combine(ticket.ArchiveSnapshotPath, name)))
+                    throw new InvalidOperationException("The selected snapshot is incomplete; pruning is suspended.");
+        }
+        if (Directory.Exists(snapshots))
+        {
+            foreach (var path in Directory.EnumerateFileSystemEntries(snapshots))
+            {
+                ct.ThrowIfCancellationRequested();
+                ValidateSnapshotPath(ticket, path);
+                if (!Directory.Exists(path)) throw new InvalidOperationException("Unexpected file in managed snapshots.");
+                if (ticket.ArchiveSnapshotPath is null || !PathEquals(path, ticket.ArchiveSnapshotPath))
+                    DeleteSnapshotDirectory(ticket, path, ct);
+            }
+        }
+        if (ticket.ArchiveComplete && ticket.ArchiveSnapshotPath is not null)
+        {
+            // Legacy exports lived at the root. Retire them only after the new selection commits.
+            foreach (var name in new[] { "transcript.json", "transcript.html" })
+            {
+                ct.ThrowIfCancellationRequested();
+                var path = Path.Combine(directory, name);
+                RejectLink(path);
+                if (File.Exists(path)) File.Delete(path);
+            }
+        }
+        return Task.CompletedTask;
+    }
+
+    private void DeleteSnapshotDirectory(Ticket ticket, string path, CancellationToken ct = default)
+    {
+        ValidateSnapshotPath(ticket, path);
+        RejectLink(TicketDirectory(ticket.Id));
+        RejectLink(Path.GetDirectoryName(path)!);
+        if (!Directory.Exists(path)) return;
+        ValidateTree(path, ct);
+        Directory.Delete(path, true);
+    }
+
+    private static void ValidateTree(string directory, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        RejectLink(directory);
+        foreach (var entry in Directory.EnumerateFileSystemEntries(directory))
+        {
+            ct.ThrowIfCancellationRequested();
+            RejectLink(entry);
+            if (Directory.Exists(entry)) ValidateTree(entry, ct);
+        }
     }
 
     private sealed record AttachmentPlan(TranscriptAttachment Attachment, string Relative, Uri Url);
@@ -181,8 +280,7 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
         if (!Guid.TryParseExact(Path.GetFileName(full), "N", out var id) || !PathEquals(full, TicketDirectory(id)))
             throw new InvalidOperationException("Archive path does not identify a managed ticket directory.");
         if (!Directory.Exists(full)) return Task.CompletedTask;
-        RejectLink(full);
-        foreach (var entry in Directory.EnumerateFileSystemEntries(full, "*", SearchOption.AllDirectories)) RejectLink(entry);
+        ValidateTree(full, ct);
         Directory.Delete(full, true);
         return Task.CompletedTask;
     }

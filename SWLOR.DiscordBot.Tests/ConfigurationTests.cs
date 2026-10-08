@@ -475,6 +475,22 @@ public sealed class ConfigurationTests
     }
 
     [Test]
+    public void DeletingOnlyDisabledIntakeDoesNotValidateObsoleteBypassRoles()
+    {
+        var config = RetainedTicketConfiguration();
+        config.Tickets.BypassRoleIds = [0, 11, 11];
+        config.Factions = new FactionOptions
+        {
+            Enabled = true, Exclusive = true, Behavior = "join",
+            Roles = [new FactionRole { Name = "Jedi", RoleId = 11 }]
+        };
+
+        Assert.That(ConfigurationValidator.ValidatePersistedTickets(config, [StoredTicket(TicketState.Deleting)]), Is.Empty);
+        Assert.That(ConfigurationValidator.ValidatePersistedTickets(config, [StoredTicket(TicketState.Closed)]),
+            Has.Some.Contains("tickets.bypassRoleIds"));
+    }
+
+    [Test]
     public void DeletedArchiveRetentionRequiresOnlyTheOriginalArchiveDirectory()
     {
         var config = new BotConfiguration { GuildId = 1, Tickets = new TicketOptions { Enabled = false, ArchiveDirectory = Path.GetTempPath() } };
@@ -489,6 +505,28 @@ public sealed class ConfigurationTests
         var errors = ConfigurationValidator.ValidatePersistedTickets(config, [deleted]);
         Assert.That(errors, Has.Count.EqualTo(1));
         Assert.That(errors.Single(), Does.Contain("tickets.archiveDirectory"));
+    }
+
+    [TestCase("outside")]
+    [TestCase("other-ticket")]
+    [TestCase("root")]
+    [TestCase("missing-owner")]
+    public void PersistedSnapshotMustHaveOwnershipAndRemainInItsTicketsSnapshotDirectory(string invalid)
+    {
+        var config = RetainedTicketConfiguration();
+        var ticket = StoredTicket(TicketState.Deleted);
+        var owned = Path.Combine(config.Tickets.ArchiveDirectory, ticket.Id.ToString("N"));
+        var snapshotId = Guid.NewGuid().ToString("N");
+        ticket = ticket with { ArchivePath = owned, ArchiveSnapshotPath = Path.Combine(owned, "snapshots", snapshotId), ArchiveComplete = true };
+        Assert.That(ConfigurationValidator.ValidatePersistedTickets(config, [ticket]), Is.Empty);
+        ticket = invalid switch
+        {
+            "outside" => ticket with { ArchiveSnapshotPath = Path.Combine(Path.GetTempPath(), snapshotId) },
+            "other-ticket" => ticket with { ArchiveSnapshotPath = Path.Combine(config.Tickets.ArchiveDirectory, Guid.NewGuid().ToString("N"), "snapshots", snapshotId) },
+            "root" => ticket with { ArchiveSnapshotPath = owned },
+            _ => ticket with { ArchivePath = null }
+        };
+        Assert.That(ConfigurationValidator.ValidatePersistedTickets(config, [ticket]), Is.Not.Empty);
     }
 
     [Test]

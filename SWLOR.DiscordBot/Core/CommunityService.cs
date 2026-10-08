@@ -310,6 +310,10 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
         var deleteSourceCommand = false;
         await using (var session = await store.LockCommunityAsync(ct))
         {
+            // Authorization can change while this command waits for another community operation.
+            var currentMember = await discord.GetMemberAsync(userId, ct);
+            if (currentMember is null || currentMember.IsBot || currentMember.IsWebhook ||
+                answer.AllowedRoleIds.Length > 0 && !answer.AllowedRoleIds.Any(currentMember.RoleIds.Contains)) return;
             var now = Clock.GetUtcNow();
             var lastDelivered = answer.Cooldown > TimeSpan.Zero ? await session.GetCooldownAsync(cooldownKey, ct) : null;
             if (answer.Cooldown > TimeSpan.Zero && lastDelivered is { } last && now < last + answer.Cooldown)

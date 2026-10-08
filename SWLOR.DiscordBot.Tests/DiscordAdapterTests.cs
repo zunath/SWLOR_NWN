@@ -505,6 +505,19 @@ public sealed class DiscordAdapterTests
     }
 
     [Test]
+    public void DisabledTicketing_DeletingOnlyMaintenanceDoesNotRequireBypassRole()
+    {
+        var configuration = new BotConfiguration { Tickets = new TicketOptions { Enabled = false } };
+        var deleting = new Ticket(Guid.NewGuid(), "old-panel", 42, 123, TicketState.Deleting, 1, DateTimeOffset.UnixEpoch);
+        var closed = deleting with { State = TicketState.Closed };
+
+        Assert.That(TicketMaintenanceRequirements.RequiresBypassRoles(configuration, [deleting]), Is.False);
+        Assert.That(TicketMaintenanceRequirements.RequiresBypassRoles(configuration, [closed]), Is.True);
+        configuration.Tickets.Enabled = true;
+        Assert.That(TicketMaintenanceRequirements.RequiresBypassRoles(configuration, []), Is.True);
+    }
+
+    [Test]
     public void DisabledTicketing_CapabilityPolicyUsesCurrentSnapshotAfterRetainedTicketDeletion()
     {
         var configuration = new BotConfiguration { Tickets = new TicketOptions { Enabled = false } };

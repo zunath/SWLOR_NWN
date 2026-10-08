@@ -522,6 +522,72 @@ public sealed class CommunityTests
         Assert.That(discord.Deleted, Is.EqualTo(new[] { (100UL, 301UL) }));
     }
 
+    [TestCase(false, "role")]
+    [TestCase(true, "role")]
+    [TestCase(false, "member")]
+    [TestCase(false, "bot")]
+    [TestCase(false, "webhook")]
+    public async Task ExecuteAsync_RevalidatesAnswerAuthorizationAfterWaitingForCommunityLock(bool retry, string authorizationLoss)
+    {
+        var config = new BotConfiguration
+        {
+            GuildId = 1, Prefix = "?",
+            Answers = [new QuickAnswerOptions
+            {
+                Name = "guide", Responses = ["Guide"], AllowedRoleIds = [9],
+                Cooldown = TimeSpan.FromMinutes(1), DeleteCommand = true
+            }]
+        };
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore();
+        var authorizedMember = new CommunityMember(7, "A Player", [9]);
+        var discord = new FakeCommunityDiscord { Member = authorizedMember, SendFailuresRemaining = retry ? 1 : 0 };
+        var service = new CommunityService(config, store, discord, deletions);
+        if (retry)
+        {
+            Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 300, "?guide", default));
+            config.Answers[0].Responses = ["Changed"];
+        }
+        var memberLookupsBefore = discord.MemberLookups;
+        var permissionChecksBefore = discord.PermissionChecks.Count;
+        Task execution;
+        await using (await store.LockCommunityAsync(default))
+        {
+            execution = service.ExecuteAsync(7, 100, 300, "?guide", default);
+            Assert.That(discord.MemberLookups, Is.EqualTo(memberLookupsBefore + 1));
+            Assert.That(execution.IsCompleted, Is.False, "the initially authorized command must be waiting for the community lock");
+            discord.Member = authorizationLoss switch
+            {
+                "role" => authorizedMember with { RoleIds = [] },
+                "member" => null,
+                "bot" => authorizedMember with { IsBot = true },
+                "webhook" => authorizedMember with { IsWebhook = true },
+                _ => throw new ArgumentOutOfRangeException(nameof(authorizationLoss))
+            };
+        }
+        await execution.WaitAsync(TimeSpan.FromSeconds(2));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(discord.MemberLookups, Is.EqualTo(memberLookupsBefore + 2));
+            Assert.That(discord.PermissionChecks.Count, Is.EqualTo(permissionChecksBefore));
+            Assert.That(discord.Sent, Is.Empty);
+            Assert.That(discord.Deleted, Is.Empty);
+            Assert.That(deletions.Pending, Is.Empty);
+            Assert.That(store.HasDelivery("answer:100:300"), Is.EqualTo(retry));
+            Assert.That(store.IsCompleted("answer:100:300"), Is.False);
+            Assert.That(store.HasCooldown("answer-cooldown:guide:7"), Is.False);
+        });
+
+        discord.Member = authorizedMember;
+        if (retry) Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        else await service.ExecuteAsync(7, 100, 300, "?guide", default);
+        Assert.That(discord.Sent.Single().Message.Content, Is.EqualTo("Guide"));
+        Assert.That(discord.Deleted, Is.EqualTo(new[] { (100UL, 300UL) }));
+        Assert.That(store.IsCompleted("answer:100:300"), Is.True);
+        Assert.That(store.HasCooldown("answer-cooldown:guide:7"), Is.True);
+    }
+
     [TestCase("alpha   beta  ", "alpha", "beta")]
     [TestCase("alpha\tbeta\n gamma", "alpha", "beta")]
     [TestCase("  alpha beta", "alpha", "beta")]

@@ -102,7 +102,7 @@ public static partial class ConfigurationValidator
         ArgumentNullException.ThrowIfNull(persistedTickets);
         var errors = Validate(configuration).ToList();
         if (configuration.Tickets is not { } options) return errors;
-        var retained = persistedTickets.Where(ticket => ticket.State != TicketState.Deleted || ticket.ArchivePath is not null).ToArray();
+        var retained = persistedTickets.Where(ticket => ticket.State != TicketState.Deleted || ticket.ArchivePath is not null || ticket.ArchiveSnapshotPath is not null).ToArray();
         if (retained.Length == 0) return errors;
         var channelMaintenance = retained.Any(ticket => ticket.State != TicketState.Deleted);
         // Enabled controls accepting new tickets, not ownership of existing channel mutations.
@@ -111,7 +111,9 @@ public static partial class ConfigurationValidator
             ValidateRetainedTickets(options, retained.Where(ticket => ticket.State != TicketState.Deleted).ToArray(), errors);
             if (configuration.Factions?.Enabled == true)
             {
-                var retainedRoles = (options.SupportRoleIds ?? []).Concat(options.BypassRoleIds ?? []).ToHashSet();
+                var retainedRoles = (options.SupportRoleIds ?? []).ToHashSet();
+                if (TicketMaintenanceRequirements.RequiresBypassRoles(configuration, persistedTickets))
+                    retainedRoles.UnionWith(options.BypassRoleIds ?? []);
                 foreach (var role in configuration.Factions.Roles ?? [])
                     if (role is not null && retainedRoles.Contains(role.RoleId))
                         errors.Add($"Faction role '{role.Name}' overlaps a ticket support or bypass role retained for persisted maintenance.");
@@ -124,12 +126,17 @@ public static partial class ConfigurationValidator
         // Deleted tickets only need archive ownership; expired archives must not depend on panel/role configuration.
         if (!channelMaintenance && !options.Enabled) ValidateArchiveDirectory(options.ArchiveDirectory, errors);
         if (TryArchiveRoot(options.ArchiveDirectory, out var root))
-            foreach (var ticket in retained.Where(ticket => ticket.ArchivePath is not null))
+            foreach (var ticket in retained.Where(ticket => ticket.ArchivePath is not null || ticket.ArchiveSnapshotPath is not null))
             {
                 var comparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
                 var expected = Path.Combine(root!, ticket.Id.ToString("N"));
                 if (!TryArchiveRoot(ticket.ArchivePath!, out var archivePath) || !string.Equals(archivePath, expected, comparison))
                     errors.Add($"tickets.archiveDirectory must retain ownership of the persisted archive for ticket {ticket.Id}; restore its original archive root before startup.");
+                if (ticket.ArchiveSnapshotPath is not null &&
+                    (!TryArchiveRoot(ticket.ArchiveSnapshotPath, out var snapshotPath) ||
+                     !Guid.TryParseExact(Path.GetFileName(snapshotPath), "N", out var snapshotId) ||
+                     !string.Equals(snapshotPath, Path.Combine(expected, "snapshots", snapshotId.ToString("N")), comparison)))
+                    errors.Add($"Persisted snapshot for ticket {ticket.Id} must remain inside its owned archive directory.");
             }
         return errors;
     }
@@ -197,8 +204,6 @@ public static partial class ConfigurationValidator
         if (tickets.SupportRoleIds is null || tickets.SupportRoleIds.Length == 0)
             errors.Add("tickets.supportRoleIds must contain at least one role when persisted channels require maintenance.");
         ValidateUniqueIds(tickets.SupportRoleIds, "tickets.supportRoleIds", errors);
-        ValidateUniqueIds(tickets.BypassRoleIds, "tickets.bypassRoleIds", errors);
-
         var panelIds = retained.Where(ticket => TicketMaintenanceRequirements.RequiresPanel(ticket.State))
             .Select(ticket => ticket.PanelId).ToHashSet(StringComparer.Ordinal);
         if (panelIds.Count > 0 && (tickets.Panels is null || tickets.Panels.Length == 0))
@@ -207,6 +212,7 @@ public static partial class ConfigurationValidator
         var needsReopenCapacity = retained.Any(ticket => TicketMaintenanceRequirements.RequiresPanel(ticket.State));
         if (needsReopenCapacity)
         {
+            ValidateUniqueIds(tickets.BypassRoleIds, "tickets.bypassRoleIds", errors);
             if ((tickets.BypassRoleIds?.Length ?? 0) > 0 && (tickets.BypassMemberLimit is null || tickets.BypassPanelLimit is null || tickets.BypassGuildLimit is null))
                 errors.Add("tickets.bypassMemberLimit, bypassPanelLimit, and bypassGuildLimit must all be explicitly set when bypassRoleIds are configured.");
             if (tickets.MemberLimit <= 0) errors.Add("tickets.memberLimit must be positive.");

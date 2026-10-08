@@ -20,6 +20,7 @@ public sealed class SwlorAreaViewportMaterialProvider :
     private readonly Dictionary<string, MtrDocument?> _parsedMaterialCache =
         new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<TextureSurfaceKey, CachedTextureSurface?> _textureCache = new();
+    private readonly Dictionary<SurfaceKey, ResolvedSurface?> _surfaceCache = new();
     private long _revision;
 
     public long Revision => Interlocked.Read(ref _revision);
@@ -35,6 +36,7 @@ public sealed class SwlorAreaViewportMaterialProvider :
         {
             _parsedMaterialCache.Clear();
             _textureCache.Clear();
+            _surfaceCache.Clear();
         }
         Interlocked.Increment(ref _revision);
     }
@@ -55,6 +57,44 @@ public sealed class SwlorAreaViewportMaterialProvider :
             return new AreaViewportMaterial();
 
         var hasMaterial = !string.IsNullOrWhiteSpace(request.MaterialName);
+        var metadata = request.MeshMetadata ?? (request.Mesh is null ? null : GetMetadata(request.Mesh));
+        var colors = SelectLayerColors(metadata, request.Instance, request.Model);
+        var surface = ResolveSurface(surfaceName, hasMaterial, colors);
+        if (surface is null)
+            return new AreaViewportMaterial();
+
+        var tintSurface = surface.IsTint
+            ? ResolveTintSurface(surfaceName, surface.Material!, metadata, request.Mesh, request.Instance, request.Purpose)
+            : null;
+
+        return new AreaViewportMaterial
+        {
+            Diffuse = surface.Diffuse,
+            Normal = surface.Normal,
+            Specular = surface.Specular,
+            Roughness = surface.Roughness,
+            Environment = surface.Environment,
+            Tint = tintSurface,
+            AlphaCutoff = surface.AlphaCutoff,
+            UseTextureAlpha = surface.Blending == TxiBlendMode.Additive,
+            BlendMode = surface.Blending == TxiBlendMode.Additive
+                ? AreaViewportBlendMode.Additive
+                : AreaViewportBlendMode.None
+        };
+    }
+
+    // The viewport asks once per mesh and placed instance, but everything here depends only on the
+    // surface and its dye set. Resolving it per instance repeated the companion-map lookups and the
+    // full-image alpha scan for every copy of a placeable.
+    private ResolvedSurface? ResolveSurface(string surfaceName, bool hasMaterial, IReadOnlyDictionary<int, int>? colors)
+    {
+        var key = new SurfaceKey(surfaceName.Trim().ToLowerInvariant(), hasMaterial, PaletteKey(colors));
+        lock (_cacheLock)
+        {
+            if (_surfaceCache.TryGetValue(key, out var cached))
+                return cached;
+        }
+
         var material = hasMaterial
             ? TryParseMaterial(surfaceName)
             : TryTintMaterialFallback(surfaceName);
@@ -77,35 +117,30 @@ public sealed class SwlorAreaViewportMaterialProvider :
             maps = new MaterialMaps { Diffuse = surfaceName };
         }
 
-        var metadata = request.MeshMetadata ?? (request.Mesh is null ? null : GetMetadata(request.Mesh));
-        var colors = SelectLayerColors(metadata, request.Instance, request.Model);
+        ResolvedSurface? surface = null;
         var diffuse = LoadSurface(maps.Diffuse, colors);
-        if (diffuse is null)
-            return new AreaViewportMaterial();
-
-        var hints = TextureRenderPolicy.Resolve(_resources, maps.Diffuse, diffuse.Image);
-        var isTint = TintMapTextureRenderer.IsTintMapMaterial(material);
-        var tintSurface = isTint
-            ? ResolveTintSurface(surfaceName, material!, metadata, request.Mesh, request.Instance, request.Purpose)
-            : null;
-        var environmentName = isTint
-            ? hints.EnvironmentMapTexture ?? TextureRenderPolicy.StandaloneEnvironmentMap
-            : hints.EnvironmentMapTexture;
-
-        return new AreaViewportMaterial
+        if (diffuse is not null)
         {
-            Diffuse = diffuse.Pixels,
-            Normal = LoadSurface(maps.Normal)?.Pixels,
-            Specular = LoadSurface(maps.Specular)?.Pixels,
-            Roughness = LoadSurface(maps.Roughness)?.Pixels,
-            Environment = LoadSurface(environmentName)?.Pixels,
-            Tint = tintSurface,
-            AlphaCutoff = hints.AlphaCutoff,
-            UseTextureAlpha = hints.Blending == TxiBlendMode.Additive,
-            BlendMode = hints.Blending == TxiBlendMode.Additive
-                ? AreaViewportBlendMode.Additive
-                : AreaViewportBlendMode.None
-        };
+            var hints = TextureRenderPolicy.Resolve(_resources, maps.Diffuse, diffuse.Image);
+            var isTint = TintMapTextureRenderer.IsTintMapMaterial(material);
+            var environmentName = isTint
+                ? hints.EnvironmentMapTexture ?? TextureRenderPolicy.StandaloneEnvironmentMap
+                : hints.EnvironmentMapTexture;
+            surface = new ResolvedSurface(
+                material,
+                isTint,
+                diffuse.Pixels,
+                LoadSurface(maps.Normal)?.Pixels,
+                LoadSurface(maps.Specular)?.Pixels,
+                LoadSurface(maps.Roughness)?.Pixels,
+                LoadSurface(environmentName)?.Pixels,
+                hints.AlphaCutoff,
+                hints.Blending);
+        }
+
+        lock (_cacheLock)
+            _surfaceCache[key] = surface;
+        return surface;
     }
 
     private MtrDocument? TryTintMaterialFallback(string surfaceName)
@@ -281,5 +316,18 @@ public sealed class SwlorAreaViewportMaterialProvider :
     private sealed record CachedTextureSurface(TextureImage Image, RgbaImage Pixels);
 
     private readonly record struct TextureSurfaceKey(string Name, string Palette);
+
+    private readonly record struct SurfaceKey(string Name, bool HasMaterial, string Palette);
+
+    private sealed record ResolvedSurface(
+        MtrDocument? Material,
+        bool IsTint,
+        RgbaImage Diffuse,
+        RgbaImage? Normal,
+        RgbaImage? Specular,
+        RgbaImage? Roughness,
+        RgbaImage? Environment,
+        float AlphaCutoff,
+        TxiBlendMode Blending);
 
 }

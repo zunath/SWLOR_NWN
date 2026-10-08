@@ -176,7 +176,15 @@ the helmet scale.
 
 For parts appearances, `HelmetModelRenderer` selects this head in the replicated
 creature appearance and suppresses the separate helmet there, but only when the
-wearer's head resource exists. The native stats head, equipped item, item visibility
+wearer's head resource exists. It also sets the helmet's native hidden-when-equipped
+flag. Full creature updates (login, area entry, an object coming into view) send the
+worn helmet from the inventory unless that flag is set, and the replicated head item is
+not part of that message, so without it every client attaches the native helmet over
+the tinted head. `CNWSCreature::UpdateAppearanceForEquippedItems` honors the same flag.
+A `HELMET_RENDER_HEAD_HIDDEN` local marks a flag set only for this projection, so read
+and write the owner's show/hide choice through `HelmetModelRenderer.IsShownByOwner` and
+`SetShownByOwner`, never through `GetHiddenWhenEquipped`/`SetHiddenWhenEquipped`.
+Unequipping or losing support releases the flag. The native stats head, equipped item
 and palette fields remain unchanged. The existing creature material publication
 now reaches the visible helmet geometry through the client's head replay path.
 Hiding or unequipping the helmet restores the canonical head; non-parts appearances

@@ -146,6 +146,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // before the current material-scoped values are installed.
             var selections = TintMapModelResolver.GetCurrentSelections(creature);
             var rendersRobeRgb = RobeModelRenderer.Apply(creature, selections);
+            HelmetModelRenderer.Apply(creature, selections);
             ProjectNativeRobeColors(creature, selections, rendersRobeRgb);
             ApplyEquippedHelmetColors(creature, selections, resetShaderOverrides);
             if (resetShaderOverrides)

@@ -373,8 +373,12 @@ public class PlayerFacingNameBroadcastTests
         propertyPermissionsSource.Should().Contain("AddFieldSearch(nameof(Entity.Player.Name), sanitizedSearch, true)");
         propertyPermissionsSource.Should().NotContain("PlayerNameService.GetDisplayNameByPlayerId");
 
-        var agentsSource = File.ReadAllText(Path.Combine(root.FullName, "AGENTS.md"));
-        agentsSource.Should().Contain("Property and ship permission management is a narrow exception");
+        var identityRulesSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Readmes",
+            "PlayerIdentity.md"));
+        identityRulesSource.Should().Contain("Property and ship permission management is a narrow exception");
 
         var electionSource = File.ReadAllText(Path.Combine(
             root.FullName,

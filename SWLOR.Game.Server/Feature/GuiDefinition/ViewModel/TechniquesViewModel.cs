@@ -325,16 +325,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedDetails = text;
         }
 
-        // Techniques carry no description in their AbilityDetail; the player-facing text lives in the
-        // feat.2da DESCRIPTION strref (a custom TLK entry). Resolve it on demand for the details pane.
-        private static string GetTechniqueDescription(FeatType feat)
-        {
-            var strRefText = Get2DAString("feat", "DESCRIPTION", (int)feat);
-            if (!int.TryParse(strRefText, out var strRef) || strRef <= 0)
-                return string.Empty;
-
-            return GetStringByStrRef(strRef);
-        }
+        // The menu adds its own costs, so use authored text without the hotbar header.
+        private static string GetTechniqueDescription(FeatType feat) => Mimicry.GetTechniqueDescription(feat);
 
         public Action OnSelectUnequipped() => () =>
         {

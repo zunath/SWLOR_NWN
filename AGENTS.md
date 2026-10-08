@@ -37,7 +37,7 @@ Before writing code in an unfamiliar area, find two or three existing examples o
 ## Git and Pull Requests
 
 - Start each request on a new feature branch from up-to-date `origin/master` unless the user names a different base. Never commit directly to `master`, and never mix one request's work into another request's branch.
-- Put scratch files in a temp directory outside the repo.
+- Before handing off, `git status` must be clean: no stray local edits, generated files, or scratch files left in the repo. Put scratch files in a temp directory outside the repo.
 - Use one branch and one pull request per request. Add follow-ups as new commits on the same branch. Open a second pull request only for a required submodule companion. Separate branches that edit the Design Bible `.xlsx` cannot be merged.
 - When a parent pull request changes a submodule pointer (usually `SWLOR_Haks`), push the submodule branch, open its companion pull request against the branch matching the parent's base, and link the two pull requests in both descriptions. A pushed submodule branch alone is not a complete handoff.
 - Addressing review findings means **resolving the review threads**, not just replying. After the fix is pushed, or after replying with a concrete reason the finding does not apply, resolve each thread with `gh api graphql` and the `resolveReviewThread` mutation. This applies to bot reviewers (CodeRabbit, Codex connector) too. Before calling pull request work done, confirm zero unresolved threads on the parent and every companion pull request.

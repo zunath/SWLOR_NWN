@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A concentrated tier 4 venom formula. One vial applies 10 charges and snapshots an additional 40% Poison Bonus potency when applied to a weapon. Right-click this item in your inventory and choose Activate Item and select a weapon in your own inventory. One vial is consumed after the coating is applied. Anyone can use a coating; Poisoncraft is required to craft it."
+      "0": "A concentrated tier 4 venom formula. It hits harder than a Venom Coating IV but holds fewer charges.\n\nEffect: Hits with the coated weapon inflict Venom, dealing 21 poison damage every 6 seconds, increased by 50%. Venom lasts 30 seconds, and each new application refreshes it.\n\nCharges: 10. The weapon applies Venom at most once every 6 seconds, and each application spends one charge. Lasting Coatings does not add charges to concentrates.\n\nVenom Expertise and Master Saboteur increase Venom damage. Bonuses are locked in when the coating is applied.\n\nUse: Right-click this vial, choose Activate Item, and select a weapon in your own inventory. One vial is consumed when the coating is applied. Anyone can apply a coating; Poisoncraft is required to craft it."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A concentrated tier 4 venom formula. One vial applies 10 charges and snapshots an additional 40% Poison Bonus potency when applied to a weapon. Right-click this item in your inventory and choose Activate Item and select a weapon in your own inventory. One vial is consumed after the coating is applied. Anyone can use a coating; Poisoncraft is required to craft it."
+      "0": "A concentrated tier 4 venom formula. It hits harder than a Venom Coating IV but holds fewer charges.\n\nEffect: Hits with the coated weapon inflict Venom, dealing 21 poison damage every 6 seconds, increased by 50%. Venom lasts 30 seconds, and each new application refreshes it.\n\nCharges: 10. The weapon applies Venom at most once every 6 seconds, and each application spends one charge. Lasting Coatings does not add charges to concentrates.\n\nVenom Expertise and Master Saboteur increase Venom damage. Bonuses are locked in when the coating is applied.\n\nUse: Right-click this vial, choose Activate Item, and select a weapon in your own inventory. One vial is consumed when the coating is applied. Anyone can apply a coating; Poisoncraft is required to craft it."
     }
   },
   "Identified": {

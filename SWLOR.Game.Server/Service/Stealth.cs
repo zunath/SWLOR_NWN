@@ -218,6 +218,37 @@ namespace SWLOR.Game.Server.Service
             return ResolveDetection(observer, target, false);
         }
 
+        /// <summary>
+        /// Returns whether a creature has an invisibility effect.
+        /// </summary>
+        public static bool IsInvisible(uint creature)
+        {
+            return GetIsObjectValid(creature) &&
+                   HasEffect(creature, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility);
+        }
+
+        /// <summary>
+        /// Returns whether invisibility hides the target from the observer. See Invisibility and
+        /// True Seeing let the observer see through it. Listen detection is suppressed, so a hidden
+        /// target cannot be located by sound either.
+        /// </summary>
+        public static bool IsHiddenByInvisibility(uint observer, uint target)
+        {
+            return IsInvisible(target) &&
+                   !HasEffect(observer, EffectTypeScript.SeeInvisible, EffectTypeScript.TrueSeeing);
+        }
+
+        private static bool HasEffect(uint creature, params EffectTypeScript[] effectTypes)
+        {
+            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
+            {
+                if (effectTypes.Contains(GetEffectType(effect)))
+                    return true;
+            }
+
+            return false;
+        }
+
         [NWNEventHandler(ScriptName.OnDoListenDetectionBefore)]
         public static void SuppressListenDetection()
         {

@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A masterwork venom formulation. Apply to a weapon to coat it in poison. Right-click this item in your inventory and choose Activate Item and select a weapon in your own inventory. One vial is consumed after the coating is applied. Anyone can use a coating; Poisoncraft is required to craft it."
+      "0": "A masterwork venom formulation.\n\nEffect: Hits with the coated weapon inflict Venom, dealing 26 poison damage every 6 seconds. Venom lasts 36 seconds, and each new application refreshes it.\n\nCharges: 20. The weapon applies Venom at most once every 6 seconds, and each application spends one charge. Lasting Coatings raises this to 30 charges.\n\nVenom Expertise and Master Saboteur increase Venom damage. Bonuses are locked in when the coating is applied.\n\nUse: Right-click this vial, choose Activate Item, and select a weapon in your own inventory. One vial is consumed when the coating is applied. Anyone can apply a coating; Poisoncraft is required to craft it."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A masterwork venom formulation. Apply to a weapon to coat it in poison. Right-click this item in your inventory and choose Activate Item and select a weapon in your own inventory. One vial is consumed after the coating is applied. Anyone can use a coating; Poisoncraft is required to craft it."
+      "0": "A masterwork venom formulation.\n\nEffect: Hits with the coated weapon inflict Venom, dealing 26 poison damage every 6 seconds. Venom lasts 36 seconds, and each new application refreshes it.\n\nCharges: 20. The weapon applies Venom at most once every 6 seconds, and each application spends one charge. Lasting Coatings raises this to 30 charges.\n\nVenom Expertise and Master Saboteur increase Venom damage. Bonuses are locked in when the coating is applied.\n\nUse: Right-click this vial, choose Activate Item, and select a weapon in your own inventory. One vial is consumed when the coating is applied. Anyone can apply a coating; Poisoncraft is required to craft it."
     }
   },
   "Identified": {

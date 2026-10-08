@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         public int EnhancementSlots { get; set; }
         public float ResearchCostModifier { get; set; }
         public bool IsItemIntendedForCrafting { get; set; }
+        public List<string> EffectLines { get; set; }
 
         public RecipeDetail()
         {
@@ -29,6 +30,7 @@ namespace SWLOR.Game.Server.Service.CraftService
 
             Requirements = new List<IRecipeRequirement>();
             Components = new Dictionary<string, int>();
+            EffectLines = new List<string>();
         }
     }
 }

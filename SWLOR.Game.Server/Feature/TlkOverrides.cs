@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -116,12 +118,6 @@ namespace SWLOR.Game.Server.Feature
 
         private static void OverrideFeatDescriptions()
         {
-            var template = "Name: {0}\n" +
-                           "FP: {1}\n" +
-                           "STM: {2}\n" +
-                           "Recast: {3}s\n" +
-                           "Description: {4}\n";
-
             foreach (var (_, detail) in Perk.GetAllPerks())
             {
                 var levelOneFeatDescriptionId = -1;
@@ -139,39 +135,9 @@ namespace SWLOR.Game.Server.Feature
                         if (!Ability.IsFeatRegistered(feat))
                             continue;
 
-                        var spellDescriptionId = 0;
-                        int.TryParse(Get2DAString("feat", "SPELLID", (int)feat), out var spellId);
-
-                        if (spellId > 0)
-                        {
-                            int.TryParse(Get2DAString("spells", "SpellDesc", spellId), out spellDescriptionId);
-                        }
-
+                        var spellDescriptionId = GetSpellDescriptionId(feat);
                         var abilityDetail = Ability.GetAbilityDetail(feat);
-                        var fp = 0;
-                        var stm = 0;
-                        var recast = abilityDetail.RecastDelay?.Invoke(OBJECT_INVALID) ?? 0f;
-
-                        foreach (var requirement in abilityDetail.Requirements)
-                        {
-                            if (requirement.GetType() == typeof(AbilityRequirementFP))
-                            {
-                                var req = (AbilityRequirementFP)requirement;
-                                fp = req.RequiredFP;
-                            }
-                            else if (requirement.GetType() == typeof(AbilityRequirementStamina))
-                            {
-                                var req = (AbilityRequirementStamina)requirement;
-                                stm = req.RequiredSTM;
-                            }
-                        }
-
-                        var description = string.Format(template,
-                            abilityDetail.Name,
-                            fp,
-                            stm,
-                            recast,
-                            perkLevel.Description);
+                        var description = BuildAbilityDescription(abilityDetail, perkLevel.Description);
 
                         if (level == 1)
                         {
@@ -202,6 +168,43 @@ namespace SWLOR.Game.Server.Feature
                     }
                 }
             }
+
+            // Learned techniques grant their feats through Mimicry equipment rather than
+            // perk levels, so they need the same hotbar overrides from the ability registry.
+            foreach (var (feat, abilityDetail) in Ability.GetAllAbilityDetails())
+            {
+                if (!abilityDetail.IsMimicryTechnique ||
+                    !int.TryParse(Get2DAString("feat", "DESCRIPTION", (int)feat), out var descriptionId) ||
+                    descriptionId <= 0)
+                    continue;
+
+                var description = BuildAbilityDescription(abilityDetail, Mimicry.GetTechniqueDescription(feat));
+                SetTlkOverride(descriptionId, description);
+                var spellDescriptionId = GetSpellDescriptionId(feat);
+                if (spellDescriptionId > 0)
+                    SetTlkOverride(spellDescriptionId, description);
+            }
+        }
+
+        private static int GetSpellDescriptionId(FeatType feat)
+        {
+            if (int.TryParse(Get2DAString("feat", "SPELLID", (int)feat), out var spellId) && spellId > 0 &&
+                int.TryParse(Get2DAString("spells", "SpellDesc", spellId), out var descriptionId))
+                return descriptionId;
+            return 0;
+        }
+
+        private static string BuildAbilityDescription(AbilityDetail detail, string description)
+        {
+            if (detail.IsMimicryTrait)
+                return $"Name: {detail.Name}\nType: Passive Trait\nDescription: {description}\n";
+
+            var fp = detail.Requirements.OfType<AbilityRequirementFP>().LastOrDefault()?.RequiredFP ?? 0;
+            var stamina = detail.Requirements.OfType<AbilityRequirementStamina>().LastOrDefault()?.RequiredSTM ?? 0;
+            var recast = detail.RecastDelay?.Invoke(OBJECT_INVALID) ?? 0f;
+            return string.Format(CultureInfo.InvariantCulture,
+                "Name: {0}\nFP: {1}\nSTM: {2}\nRecast: {3}s\nDescription: {4}\n",
+                detail.Name, fp, stamina, recast, description);
         }
 
         private static void OverrideAttackBonus()

@@ -147,6 +147,42 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves the creature with the highest amount of enmity that the enemy can attack.
+        /// Creatures hidden from the enemy by invisibility keep their enmity but are skipped until
+        /// they can be seen again. If no creature can be attacked, OBJECT_INVALID will be returned.
+        /// </summary>
+        /// <param name="enemy">The enemy to retrieve the attack target for.</param>
+        /// <returns>The visible target with the highest enmity</returns>
+        public static uint GetHighestEnmityAttackTarget(uint enemy)
+        {
+            // OrderByDescending is stable, so ties resolve to the same creature as GetHighestEnmityTarget.
+            foreach (var (creature, _) in GetEnmityTable(enemy).OrderByDescending(entry => entry.Value))
+            {
+                if (!Stealth.IsHiddenByInvisibility(enemy, creature))
+                    return creature;
+            }
+
+            return OBJECT_INVALID;
+        }
+
+        /// <summary>
+        /// Makes every enemy with this creature on its enmity table choose its attack target again.
+        /// Call after the creature becomes hidden so enemies react without waiting for their next
+        /// heartbeat or combat round.
+        /// </summary>
+        /// <param name="creature">The creature whose enemies should re-evaluate their target.</param>
+        public static void ReevaluateEnemyAttackTargets(uint creature)
+        {
+            if (!_creatureToEnemies.TryGetValue(creature, out var enemies))
+                return;
+
+            foreach (var enemy in enemies.ToArray())
+            {
+                AttackHighestEnmityTarget(enemy);
+            }
+        }
+
+        /// <summary>
         /// Determines whether a creature holds the enemy's attention by a safe margin: it must be the
         /// enemy's highest enmity target and lead the next-highest creature by at least
         /// <see cref="SecureThreatLeadPercent"/>. Taunts are wasted when this is already true.
@@ -577,8 +613,9 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Forces a creature to attack the highest enmity target.
+        /// Forces a creature to attack the highest enmity target it can see.
         /// Stops an existing chase when its last proximity target is no longer in range.
+        /// Stops attacking, but keeps its enmity, while every target is hidden by invisibility.
         /// If creature did not have enmity, nothing will happen.
         /// If the creature is already actively attacking that target, nothing will happen.
         /// </summary>
@@ -592,12 +629,18 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                target = GetHighestEnmityTarget(creature);
+                target = GetHighestEnmityAttackTarget(creature);
                 while (GetIsObjectValid(target) && ShouldRemoveStaleProximityTarget(creature, target))
                 {
                     RemoveProximityEnmity(target, creature);
                     removedProximityEnmity = true;
-                    target = GetHighestEnmityTarget(creature);
+                    target = GetHighestEnmityAttackTarget(creature);
+                }
+
+                if (!GetIsObjectValid(target) && GetIsObjectValid(GetHighestEnmityTarget(creature)))
+                {
+                    HoldForHiddenTargets(creature);
+                    return;
                 }
             }
 
@@ -608,6 +651,28 @@ namespace SWLOR.Game.Server.Service
             }
 
             AttackTargetIfNeeded(creature, target);
+        }
+
+        /// <summary>
+        /// Every creature on the enemy's enmity table is hidden by invisibility. Drops the enemy's
+        /// attack or chase so it stops striking at a target it cannot see. The enmity table is kept,
+        /// so the enemy resumes once one of its targets can be seen again.
+        /// </summary>
+        private static void HoldForHiddenTargets(uint creature)
+        {
+            if (Activity.IsBusy(creature) || AI.IsLeashEvading(creature))
+                return;
+
+            var currentAction = GetCurrentAction(creature);
+            if (currentAction != ActionType.AttackObject &&
+                currentAction != ActionType.MoveToPoint &&
+                !GetIsObjectValid(GetAttackTarget(creature)))
+            {
+                return;
+            }
+
+            _attackCommandTimes.Remove(creature);
+            AssignCommand(creature, () => ClearAllActions(true));
         }
 
         private static void AttackTargetIfNeeded(uint creature, uint target)
@@ -683,6 +748,10 @@ namespace SWLOR.Game.Server.Service
                 ActionDoCommand(() =>
                 {
                     if (AI.TryStartCombatLeashEvade(creature, target))
+                        return;
+
+                    // The target may have turned invisible during the approach.
+                    if (Stealth.IsHiddenByInvisibility(creature, target))
                         return;
 
                     ActionAttack(target);

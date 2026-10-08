@@ -75,6 +75,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private Action<TintMapColor> _pendingPickerApply;
         private bool _pickerFlushScheduled;
         private bool _tintPickerActive;
+        private int _tintPickerGestureGeneration;
+        private Action<TintMapColor> _tintPickerApply;
         private bool _tintControlBindingsWatched;
         private string _tintComponentCorrection;
 
@@ -251,16 +253,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                // A newly created NUI picker can report its default black value. Only
-                // an explicit pointer gesture may turn a watched value into a tint edit.
-                if (!_tintPickerActive)
+                if (!QueueTintPickerColor(value))
                     return;
-
-                _tintEditGeneration++;
-                _tintComponentCorrection = null;
-                _hasTintComponentDraft = false;
-                _pendingPickerColor = value;
-                _pendingPickerApply = CaptureTintColorEdit();
                 if (_pickerFlushScheduled)
                     return;
                 _pickerFlushScheduled = true;
@@ -887,7 +881,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(AppearanceEditorPayload initialPayload)
         {
-            _tintPickerActive = false;
+            CancelTintPickerGesture();
             _pendingPickerColor = null;
             _pendingPickerApply = null;
             _pickerFlushScheduled = false;
@@ -1080,7 +1074,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             GuiColor color,
             bool synchronizeComponents = true)
         {
-            _tintPickerActive = false;
+            CancelTintPickerGesture();
             SynchronizeTintControlBindings(() =>
             {
                 _loadingTintColor = true;
@@ -1168,22 +1162,68 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var payload = NuiGetEventPayload();
             var button = JsonGetInt(JsonObjectGet(payload, "mouse_btn"));
-            BeginTintPickerGesture((NuiMouseButton)button);
+            if ((NuiMouseButton)button == NuiMouseButton.Left)
+                BeginTintPickerGesture(NuiMouseButton.Left, CaptureTintColorEdit());
         };
 
-        private void BeginTintPickerGesture(NuiMouseButton button)
+        private void BeginTintPickerGesture(NuiMouseButton button, Action<TintMapColor> apply)
         {
             if (button == NuiMouseButton.Left)
+            {
+                _tintPickerGestureGeneration++;
                 _tintPickerActive = true;
+                _tintPickerApply = apply;
+            }
+        }
+
+        private bool QueueTintPickerColor(GuiColor value)
+        {
+            // A newly created NUI picker can report its default black value. Only
+            // an explicit pointer gesture may turn a watched value into a tint edit.
+            if (!_tintPickerActive)
+                return false;
+
+            _tintEditGeneration++;
+            _tintComponentCorrection = null;
+            _hasTintComponentDraft = false;
+            _pendingPickerColor = value;
+            _pendingPickerApply = _tintPickerApply;
+            return true;
         }
 
         public Action OnMouseUpTintPicker() => () =>
         {
-            // Only watched values received during a gesture create pending edits.
-            // Hydration and clicks without a color update must not create overrides.
-            FlushPendingPickerColor();
-            _tintPickerActive = false;
+            if (!_tintPickerActive)
+                return;
+
+            DelayCommand(0.1f, ReleaseTintPickerGesture());
         };
+
+        private Action ReleaseTintPickerGesture()
+        {
+            FlushPendingPickerColor();
+            var generation = _tintPickerGestureGeneration;
+            var token = WindowToken;
+            // A quick click's watched color can arrive after mouse-up. Keep its
+            // captured target alive until those events have had time to arrive.
+            return () =>
+            {
+                if (generation != _tintPickerGestureGeneration || token != WindowToken)
+                    return;
+
+                FlushPendingPickerColor();
+                CancelTintPickerGesture();
+            };
+        }
+
+        private void CancelTintPickerGesture()
+        {
+            _tintPickerGestureGeneration++;
+            _tintPickerActive = false;
+            _tintPickerApply = null;
+            _pendingPickerColor = null;
+            _pendingPickerApply = null;
+        }
 
         private void FlushPendingPickerColor()
         {
@@ -2531,6 +2571,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnCloseWindow() => () =>
         {
             FlushPendingPickerColor();
+            CancelTintPickerGesture();
             CommitCustomTintComponents();
             _tintEditGeneration++;
             if (GetIsDM(_target) || GetIsDMPossessed(_target) || !GetIsPC(_target))

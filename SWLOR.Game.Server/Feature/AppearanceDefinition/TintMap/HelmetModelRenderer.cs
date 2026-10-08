@@ -36,6 +36,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         public static bool IsRenderedHead(ushort head) => head > HeadBase && head < HeadBase + 1000;
 
         /// <summary>
+        /// True while the creature's helmet renders through its head. The native equipment
+        /// refresh re-reads the worn helmet into the replicated appearance before every client
+        /// update, so <see cref="Native.HelmetRenderHead"/> keeps the helmet suppressed for these.
+        /// </summary>
+        public static bool IsProjected(uint creature) => BaseHeadScales.ContainsKey(creature);
+
+        /// <summary>
         /// The phenotype-0 head resource the client loads for a render head. Missing phenotypes
         /// fall back to 0 (phenotype.2da DefaultPhenoType), but head models never fall back across
         /// race or gender, so a missing resource would render the wearer headless.

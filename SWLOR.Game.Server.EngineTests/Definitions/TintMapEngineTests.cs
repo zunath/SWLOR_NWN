@@ -60,6 +60,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "Helmet114 geometry must render through the head which receives creature material rows.");
             ctx.AssertEqual(OBJECT_INVALID, nativePilot.m_cAppearance.m_oidHeadItem,
                 "The separate native helmet is suppressed only in the replicated appearance.");
+            // The server rebuilds the replicated equipment before every client appearance update.
+            nativePilot.UpdateAppearanceForEquippedItems();
+            ctx.AssertEqual(OBJECT_INVALID, nativePilot.m_cAppearance.m_oidHeadItem,
+                "The native equipment refresh sent to observers keeps the helmet on its render head.");
+            ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation,
+                "The native equipment refresh keeps the render head.");
             ctx.AssertEqual(originalHead, nativePilot.m_pStats.m_nHeadVariation, "Canonical head remains unchanged.");
             ctx.AssertEqual((int)originalHead, GetCreatureBodyPart(CreaturePart.Head, pilot),
                 "Appearance editing and persistence still read the canonical head through NWScript.");

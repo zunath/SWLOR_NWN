@@ -176,7 +176,13 @@ the helmet scale.
 
 For parts appearances, `HelmetModelRenderer` selects this head in the replicated
 creature appearance and suppresses the separate helmet there, but only when the
-wearer's head resource exists. The native stats head, equipped item, item visibility
+wearer's head resource exists. `CNWSMessage::ComputeAppearanceUpdateRequired` calls
+`CNWSCreature::UpdateAppearanceForEquippedItems` before every client appearance update,
+and that function re-reads the worn helmet into the replicated head item (it honors only
+the item's hidden-when-equipped flag). `Native/HelmetRenderHead` hooks it and clears the
+head item again for projected creatures. Without the hook the server state looks correct
+while observers still receive the native helmet; engine tests have no observers, so the
+Shuttle Pilot test calls the native refresh directly to cover this. The native stats head, equipped item, item visibility
 and palette fields remain unchanged. The existing creature material publication
 now reaches the visible helmet geometry through the client's head replay path.
 Hiding or unequipping the helmet restores the canonical head; non-parts appearances

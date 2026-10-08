@@ -199,6 +199,154 @@ public sealed class DiscordTranscriptCaptureTests
         }
     }
 
+    [TestCase(MessageType.Reply, MessageFlags.None, MessageReferenceType.Default)]
+    [TestCase(MessageType.Default, MessageFlags.IsCrosspost, MessageReferenceType.Default)]
+    [TestCase(MessageType.Default, MessageFlags.None, MessageReferenceType.Forward)]
+    public void ReplyCrosspostAndForwardReferencesKeepTargetIdsAndReferenceType(
+        MessageType messageType, MessageFlags flags, MessageReferenceType referenceType)
+    {
+        var reference = new MessageReference(100, 200, 300, referenceType: referenceType);
+        var retained = DiscordTranscriptCapture.Capture(Message("Evidence", reference: reference, type: messageType, flags: flags));
+        using var metadata = JsonDocument.Parse(retained.MetadataJson!);
+        var captured = metadata.RootElement.GetProperty("Reference");
+        Assert.Multiple(() =>
+        {
+            Assert.That(captured.GetProperty("MessageId").GetUInt64(), Is.EqualTo(100));
+            Assert.That(captured.GetProperty("ChannelId").GetUInt64(), Is.EqualTo(200));
+            Assert.That(captured.GetProperty("GuildId").GetUInt64(), Is.EqualTo(300));
+            Assert.That(captured.GetProperty("ReferenceType").GetInt32(), Is.EqualTo((int)referenceType));
+            Assert.That(captured.EnumerateObject().Select(property => property.Name),
+                Is.EquivalentTo(new[] { "MessageId", "ChannelId", "GuildId", "ReferenceType" }),
+                "Retain scalar reference data without SDK optional wrappers or related message/client graphs.");
+        });
+    }
+
+    [TestCase(false, true, true)]
+    [TestCase(true, true, false)]
+    [TestCase(true, false, false)]
+    [TestCase(false, false, false)]
+    public void MessageReferenceMetadataAcceptsMissingIds(bool hasMessageId, bool hasChannelId, bool hasGuildId)
+    {
+        var reference = new MessageReference(hasMessageId ? 100UL : null, hasChannelId ? 200UL : null, hasGuildId ? 300UL : null);
+        var retained = DiscordTranscriptCapture.Capture(Message(reference: reference));
+        using var metadata = JsonDocument.Parse(retained.MetadataJson!);
+        var captured = metadata.RootElement.GetProperty("Reference");
+        Assert.That(captured.GetProperty("MessageId").ValueKind, Is.EqualTo(hasMessageId ? JsonValueKind.Number : JsonValueKind.Null));
+        Assert.That(captured.GetProperty("ChannelId").ValueKind, Is.EqualTo(hasChannelId ? JsonValueKind.Number : JsonValueKind.Null));
+        Assert.That(captured.GetProperty("GuildId").ValueKind, Is.EqualTo(hasGuildId ? JsonValueKind.Number : JsonValueKind.Null));
+        Assert.That(captured.GetProperty("ReferenceType").GetInt32(), Is.EqualTo((int)MessageReferenceType.Default));
+    }
+
+    [Test]
+    public void MissingReferenceAndMissingReferenceTypeAreHandledWithoutAccessingUnspecifiedValues()
+    {
+        using var noReference = JsonDocument.Parse(DiscordTranscriptCapture.Capture(Message()).MetadataJson!);
+        Assert.That(noReference.RootElement.GetProperty("Reference").ValueKind, Is.EqualTo(JsonValueKind.Null));
+        var reference = new MessageReference(100, 200);
+        var explicitDefault = DiscordTranscriptCapture.Capture(Message(reference: reference));
+        typeof(MessageReference).GetProperty(nameof(MessageReference.ReferenceType))!
+            .SetValue(reference, Optional<MessageReferenceType>.Unspecified);
+        Assert.That(DiscordTranscriptCapture.Capture(Message(reference: reference)).MetadataJson,
+            Is.EqualTo(explicitDefault.MetadataJson), "Discord defines an omitted reference type as Default.");
+    }
+
+    [TestCase("message-id")]
+    [TestCase("channel-id")]
+    [TestCase("guild-id")]
+    [TestCase("type")]
+    [TestCase("message-id-removed")]
+    [TestCase("guild-id-removed")]
+    [TestCase("added")]
+    [TestCase("removed")]
+    public void ReferenceOnlyChangesAlterTranscriptMetadata(string change)
+    {
+        var reference = change == "added" ? null : new MessageReference(100, 200, 300);
+        var message = Message("Reply evidence", reference: reference, type: MessageType.Reply);
+        var original = DiscordTranscriptCapture.Capture(message);
+        MessageReference? changed = change switch
+        {
+            "message-id" => new(101, 200, 300),
+            "channel-id" => new(100, 201, 300),
+            "guild-id" => new(100, 200, 301),
+            "type" => new(100, 200, 300, referenceType: MessageReferenceType.Forward),
+            "message-id-removed" => new(null, 200, 300),
+            "guild-id-removed" => new(100, 200),
+            "removed" => null,
+            _ => new(100, 200, 300)
+        };
+        ((TranscriptPayloadProxy)(object)message).Properties["Reference"] = changed;
+        var current = DiscordTranscriptCapture.Capture(message);
+        Assert.That(current.MetadataJson, Is.Not.EqualTo(original.MetadataJson));
+        Assert.That(current.Content, Is.EqualTo(original.Content));
+        Assert.That(current.Timestamp, Is.EqualTo(original.Timestamp));
+    }
+
+    [Test]
+    public void ForwardedMessageKeepsItsSourceAndAvailableSnapshotReferences()
+    {
+        var forwarded = Message("Forwarded reply", reference: new MessageReference(100, 200, 300), type: MessageType.Reply);
+        var message = Message(reference: new MessageReference(901, 902, 903, referenceType: MessageReferenceType.Forward),
+            forwarded: [Sdk<MessageSnapshot>(forwarded)]);
+        var retained = DiscordTranscriptCapture.Capture(message);
+        using var metadata = JsonDocument.Parse(retained.MetadataJson!);
+        var source = metadata.RootElement.GetProperty("Reference");
+        var nested = metadata.RootElement.GetProperty("ForwardedMessages")[0].GetProperty("Metadata").GetProperty("Reference");
+        Assert.That(source.GetProperty("MessageId").GetUInt64(), Is.EqualTo(901));
+        Assert.That(source.GetProperty("ReferenceType").GetInt32(), Is.EqualTo((int)MessageReferenceType.Forward));
+        Assert.That(nested.GetProperty("MessageId").GetUInt64(), Is.EqualTo(100));
+        Assert.That(nested.GetProperty("ReferenceType").GetInt32(), Is.EqualTo((int)MessageReferenceType.Default));
+        ((TranscriptPayloadProxy)(object)forwarded).Properties["Reference"] = new MessageReference(101, 200, 300);
+        Assert.That(DiscordTranscriptCapture.Capture(message).MetadataJson, Is.Not.EqualTo(retained.MetadataJson));
+    }
+
+    [Test]
+    public void ReferenceMetadataUsesTheExistingCumulativeTranscriptBudget()
+    {
+        var reference = new MessageReference(100, 200, 300);
+        var retained = DiscordTranscriptCapture.Capture(Message(reference: reference));
+        var budget = new TranscriptContentBudget(1024);
+        Assert.DoesNotThrow(() => budget.Add(retained));
+        Assert.Throws<InvalidDataException>(() => budget.Add(retained with { Id = 11 }));
+
+        var content = new string('x', 300);
+        Assert.DoesNotThrow(() => new TranscriptContentBudget(1024).Add(DiscordTranscriptCapture.Capture(Message(content))));
+        var largeIds = new MessageReference(ulong.MaxValue, ulong.MaxValue, ulong.MaxValue);
+        Assert.Throws<InvalidDataException>(() => new TranscriptContentBudget(1024)
+            .Add(DiscordTranscriptCapture.Capture(Message(content, reference: largeIds))));
+    }
+
+    [Test]
+    public async Task CapturedReferenceMetadataIsPreservedInArchiveJsonAndEncodedInHtml()
+    {
+        var archiveRoot = Path.Combine(Path.GetTempPath(), "swlor-discord-reference-tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            using var client = new HttpClient();
+            var archive = new FileTranscriptArchive(new BotConfiguration
+            {
+                Tickets = new TicketOptions { ArchiveDirectory = archiveRoot, CopyAttachments = false }
+            }, client);
+            var reference = new MessageReference(ulong.MaxValue, 200, 300);
+            var retained = DiscordTranscriptCapture.Capture(Message("<script>reply 🚀</script>", reference: reference, type: MessageType.Reply));
+            var ticket = new Ticket(Guid.NewGuid(), "support", 55, 1234, TicketState.Closed, 1, DateTimeOffset.UnixEpoch);
+            ticket = ticket with { ArchivePath = archive.GetArchivePath(ticket) };
+            var directory = await archive.ExportAsync(ticket, new([retained], retained.Id), default);
+            var html = await File.ReadAllTextAsync(Path.Combine(directory, "transcript.html"), Encoding.UTF8);
+            using var json = JsonDocument.Parse(await File.ReadAllTextAsync(Path.Combine(directory, "transcript.json"), Encoding.UTF8));
+            var retainedMetadata = json.RootElement.GetProperty("Messages")[0].GetProperty("MetadataJson").GetString();
+            Assert.That(retainedMetadata, Is.EqualTo(retained.MetadataJson));
+            Assert.That(html, Does.Contain(WebUtility.HtmlEncode(retained.MetadataJson)));
+            Assert.That(html, Does.Contain(WebUtility.HtmlEncode(retained.Content)));
+            Assert.That(html, Does.Not.Contain("<script>"));
+            using var metadata = JsonDocument.Parse(retainedMetadata!);
+            Assert.That(metadata.RootElement.GetProperty("Reference").GetProperty("MessageId").GetUInt64(), Is.EqualTo(ulong.MaxValue));
+        }
+        finally
+        {
+            if (Directory.Exists(archiveRoot)) Directory.Delete(archiveRoot, recursive: true);
+        }
+    }
+
     [Test]
     public void StickerOnlyMessageKeepsItsIdNameAndFormat()
     {
@@ -276,15 +424,16 @@ public sealed class DiscordTranscriptCaptureTests
     private static IUserMessage Message(string content = "", Poll? poll = null,
         IReadOnlyCollection<IMessageComponent>? components = null, IReadOnlyCollection<IStickerItem>? stickers = null,
         IReadOnlyCollection<MessageSnapshot>? forwarded = null, IReadOnlyCollection<IAttachment>? attachments = null,
-        IReadOnlyDictionary<IEmote, ReactionMetadata>? reactions = null) =>
+        IReadOnlyDictionary<IEmote, ReactionMetadata>? reactions = null, MessageReference? reference = null,
+        MessageType type = MessageType.Default, MessageFlags flags = MessageFlags.None) =>
         Proxy<IUserMessage>(new Dictionary<string, object?>
         {
             ["Id"] = 10UL, ["Author"] = Proxy<IUser>(new Dictionary<string, object?> { ["Id"] = 55UL, ["Username"] = "member" }),
             ["Content"] = content, ["Timestamp"] = DateTimeOffset.UnixEpoch, ["Attachments"] = attachments ?? [],
             ["Embeds"] = Array.Empty<IEmbed>(), ["Components"] = components ?? [], ["Stickers"] = stickers ?? [],
-            ["ForwardedMessages"] = forwarded ?? [], ["Poll"] = poll, ["Type"] = MessageType.Default,
+            ["ForwardedMessages"] = forwarded ?? [], ["Poll"] = poll, ["Type"] = type,
             ["Reactions"] = reactions ?? new Dictionary<IEmote, ReactionMetadata>(),
-            ["Flags"] = (MessageFlags?)MessageFlags.None, ["EditedTimestamp"] = (DateTimeOffset?)null
+            ["Reference"] = reference, ["Flags"] = (MessageFlags?)flags, ["EditedTimestamp"] = (DateTimeOffset?)null
         });
 
     private static ReactionMetadata Reaction(int count, int normal, int burst, bool isMe, IReadOnlyCollection<Color>? colors = null)

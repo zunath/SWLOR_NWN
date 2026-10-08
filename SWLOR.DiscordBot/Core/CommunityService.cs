@@ -225,12 +225,13 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
                             var factions = configuration.Factions;
                             var faction = (factions.Roles ?? []).FirstOrDefault(x => x.RoleId == intent.FactionRoleId &&
                                 x.Name.Equals(intent.FactionName, StringComparison.OrdinalIgnoreCase));
-                            if (!factions.Enabled || faction is null || intent.RoleOperations is null && !intent.AwaitingRolePlan)
+                            if (!factions.Enabled || intent.RoleOperations is null && !intent.AwaitingRolePlan)
                             {
                                 await WithRecoveryProgressAsync(session.CompleteDeliveryAsync(item.Key, intentCt), Progress);
                                 recovered++;
                                 continue;
                             }
+                            if (faction is null) throw new InvalidOperationException("The selected faction role is no longer configured.");
                             if (intent.AwaitingRolePlan)
                             {
                                 var factionMember = await WithRecoveryProgressAsync(discord.GetMemberAsync(userId, intentCt), Progress);
@@ -243,18 +244,18 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
                                 intent = PrepareFactionIntent(intent, faction, factionMember, factions, item.Key);
                                 await WithRecoveryProgressAsync(session.UpdateCommunityDeliveryIntentAsync(item.Key, JsonSerializer.Serialize(intent), intentCt), Progress);
                             }
+                            await ValidateFactionPlanAsync(intent, intentCt, Progress);
                             await WithRecoveryProgressAsync(discord.ValidateCommunityChannelAsync(intent.ChannelId!.Value,
                                 intent.DeleteSource, intent.Message!.Embeds.Count > 0, intentCt), Progress);
                             foreach (var operation in intent.RoleOperations!)
                             {
-                                var configuredRole = (factions.Roles ?? []).FirstOrDefault(x => x.RoleId == operation.RoleId);
-                                var roleInfo = await WithRecoveryProgressAsync(discord.GetRoleAsync(operation.RoleId, intentCt), Progress);
-                                if (configuredRole is null || roleInfo is null || roleInfo.IsManaged) continue;
+                                await ValidateFactionPlanAsync(intent, intentCt, Progress, operation.RoleId);
                                 await WithRecoveryProgressAsync(discord.ValidateCommunityChannelAsync(intent.ChannelId!.Value,
                                     intent.DeleteSource, intent.Message!.Embeds.Count > 0, intentCt), Progress);
                                 if (operation.Add) await WithRecoveryProgressAsync(discord.AddRoleAsync(userId, operation.RoleId, intentCt), Progress);
                                 else await WithRecoveryProgressAsync(discord.RemoveRoleAsync(userId, operation.RoleId, intentCt), Progress);
                             }
+                            await ValidateFactionPlanAsync(intent, intentCt, Progress);
                             if (await WithRecoveryProgressAsync(discord.SendAsync(intent.ChannelId!.Value, intent.Message!, intentCt), Progress) is null)
                                 throw new InvalidOperationException("The pending faction response was not delivered.");
                             break;
@@ -290,6 +291,55 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
         return recovered;
     }
 
+    public async Task<bool> PersistCommandAsync(ulong userId, ulong channelId, ulong messageId, string content, CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        if (userId == 0 || channelId == 0 || messageId == 0 || string.IsNullOrWhiteSpace(content)) return false;
+        var body = content.TrimStart();
+        if (!body.StartsWith(configuration.Prefix, StringComparison.Ordinal)) return false;
+        var command = body[configuration.Prefix.Length..].TrimStart();
+        if (command.Length == 0) return false;
+        var faction = FindFaction(command);
+        if (faction is not null)
+        {
+            var key = $"faction:{channelId}:{messageId}";
+            await store.PersistCommunityDeliveryAsync(key,
+                JsonSerializer.Serialize(CreateAcceptedFactionIntent(faction, userId, channelId, messageId)), ct);
+            return true;
+        }
+        var tokenLength = 0;
+        while (tokenLength < command.Length && !char.IsWhiteSpace(command[tokenLength])) tokenLength++;
+        var name = command[..tokenLength];
+        var answer = (configuration.Answers ?? []).FirstOrDefault(x => x.Enabled && x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        if (answer is null || answer.AllowedChannelIds.Length > 0 && !answer.AllowedChannelIds.Contains(channelId)) return false;
+        var arguments = tokenLength < command.Length ? command[(tokenLength + 1)..] : "";
+        await store.PersistCommunityDeliveryAsync($"answer:{channelId}:{messageId}",
+            JsonSerializer.Serialize(CreateAcceptedAnswerIntent(answer, userId, channelId, messageId, arguments)), ct);
+        return true;
+    }
+
+    private CommunityDeliveryIntent CreateAcceptedAnswerIntent(QuickAnswerOptions answer, ulong userId,
+        ulong channelId, ulong messageId, string rawArguments)
+    {
+        var arguments = rawArguments.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+        var deliveryKey = $"answer:{channelId}:{messageId}";
+        var texts = answer.Responses ?? [];
+        var response = texts.Length == 0 ? "" : TemplateRenderer.RenderAnswer(texts[Random.Shared.Next(texts.Length)],
+            userId, discord.ServerName, arguments, rawArguments);
+        var embeds = (answer.Embeds ?? []).Select(embed => TemplateRenderer.RenderEmbed(embed,
+            userId, discord.ServerName, arguments, rawArguments)).ToArray();
+        var message = TemplateRenderer.EnforceMessageLimits(new CommunityMessage(response, embeds, answer.DeleteResponseAfter, deliveryKey));
+        return new CommunityDeliveryIntent(1, "answer", message, UserId: userId,
+            ChannelId: channelId, SourceMessageId: messageId, DeleteSource: answer.DeleteCommand,
+            AnswerName: answer.Name, CooldownKey: $"answer-cooldown:{answer.Name.ToLowerInvariant()}:{userId}",
+            Cooldown: answer.Cooldown, AwaitingAnswerAuthorization: true);
+    }
+
+    private CommunityDeliveryIntent CreateAcceptedFactionIntent(FactionRole faction, ulong userId, ulong channelId, ulong messageId) =>
+        new(1, "faction", null, UserId: userId, ChannelId: channelId, SourceMessageId: messageId,
+            DeleteSource: configuration.Factions.DeleteCommand, FactionName: faction.Name, FactionRoleId: faction.RoleId,
+            AwaitingRolePlan: true, FactionDeleteResponseAfter: configuration.Factions.DeleteResponse ? TimeSpan.FromSeconds(5) : null);
+
     public async Task ExecuteAsync(ulong userId, ulong channelId, ulong messageId, string content, CancellationToken ct)
     {
         if (userId == 0 || channelId == 0 || messageId == 0 || string.IsNullOrWhiteSpace(content)) return;
@@ -316,16 +366,9 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
         if (answer is null || answer.AllowedChannelIds.Length > 0 && !answer.AllowedChannelIds.Contains(channelId) ||
             answer.AllowedRoleIds.Length > 0 && !answer.AllowedRoleIds.Any(member.RoleIds.Contains)) return;
 
-        var arguments = rawArguments.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
         var deliveryKey = $"answer:{channelId}:{messageId}";
         var cooldownKey = $"answer-cooldown:{answer.Name.ToLowerInvariant()}:{userId}";
-        var texts = answer.Responses ?? [];
-        var response = texts.Length == 0 ? "" : TemplateRenderer.RenderAnswer(texts[Random.Shared.Next(texts.Length)], userId, discord.ServerName, arguments, rawArguments);
-        var embeds = (answer.Embeds ?? []).Select(embed => TemplateRenderer.RenderEmbed(embed, userId, discord.ServerName, arguments, rawArguments)).ToArray();
-        var candidateMessage = TemplateRenderer.EnforceMessageLimits(new CommunityMessage(response, embeds, answer.DeleteResponseAfter, deliveryKey));
-        var candidate = new CommunityDeliveryIntent(1, "answer", candidateMessage, UserId: userId,
-            ChannelId: channelId, SourceMessageId: messageId, DeleteSource: answer.DeleteCommand,
-            AnswerName: answer.Name, CooldownKey: cooldownKey, Cooldown: answer.Cooldown, AwaitingAnswerAuthorization: true);
+        var candidate = CreateAcceptedAnswerIntent(answer, userId, channelId, messageId, rawArguments);
         // Commit the accepted event before a bounded lock wait can exhaust Gateway retries.
         await store.PersistCommunityDeliveryAsync(deliveryKey, JsonSerializer.Serialize(candidate), ct);
         var deleteSourceCommand = false;
@@ -427,10 +470,7 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
         // The adapter checks the bot's current permissions and hierarchy again before each role mutation.
         var deliveryKey = $"faction:{channelId}:{messageId}";
         // Persist acceptance now; compute the toggle against fresh roles only after the lock is acquired.
-        var accepted = new CommunityDeliveryIntent(1, "faction", null, UserId: member.UserId,
-            ChannelId: channelId, SourceMessageId: messageId, DeleteSource: factions.DeleteCommand,
-            FactionName: faction.Name, FactionRoleId: faction.RoleId, AwaitingRolePlan: true,
-            FactionDeleteResponseAfter: factions.DeleteResponse ? TimeSpan.FromSeconds(5) : null);
+        var accepted = CreateAcceptedFactionIntent(faction, member.UserId, channelId, messageId);
         await store.PersistCommunityDeliveryAsync(deliveryKey, JsonSerializer.Serialize(accepted), ct);
         var deleteSourceCommand = false;
         await using (var session = await store.LockCommunityAsync(ct))
@@ -466,18 +506,18 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
                     await SuppressDeliveryAsync(session, deliveryKey, intent, ct);
                     return;
                 }
+                await ValidateFactionPlanAsync(intent, ct);
                 await discord.ValidateCommunityChannelAsync(intent.ChannelId!.Value,
                     intent.DeleteSource, intent.Message.Embeds.Count > 0, ct);
                 foreach (var operation in intent.RoleOperations)
                 {
-                    var configuredRole = (factions.Roles ?? []).FirstOrDefault(x => x.RoleId == operation.RoleId);
-                    var info = await discord.GetRoleAsync(operation.RoleId, ct);
-                    if (configuredRole is null || info is null || info.IsManaged) continue;
+                    await ValidateFactionPlanAsync(intent, ct, operationRoleId: operation.RoleId);
                     await discord.ValidateCommunityChannelAsync(intent.ChannelId!.Value,
                         intent.DeleteSource, intent.Message.Embeds.Count > 0, ct);
                     if (operation.Add) await discord.AddRoleAsync(intent.UserId!.Value, operation.RoleId, ct);
                     else await discord.RemoveRoleAsync(intent.UserId!.Value, operation.RoleId, ct);
                 }
+                await ValidateFactionPlanAsync(intent, ct);
                 if (intent.ChannelId is not { } responseChannel || responseChannel == 0 ||
                     await discord.SendAsync(responseChannel, intent.Message, ct) is null)
                     throw new InvalidOperationException("The faction response was not delivered.");
@@ -487,6 +527,32 @@ public sealed class CommunityService(BotConfiguration configuration, ITicketStor
             }
         }
         if (deleteSourceCommand) await CompleteCommandDeletionAsync(channelId, messageId, ct);
+    }
+
+    private async Task ValidateFactionPlanAsync(CommunityDeliveryIntent intent, CancellationToken ct,
+        Action? progress = null, ulong? operationRoleId = null)
+    {
+        if (intent.FactionRoleId is not > 0 || intent.RoleOperations is null)
+            throw new InvalidDataException("The persisted faction role plan is invalid.");
+        var roles = configuration.Factions.Roles ?? [];
+        if (!roles.Any(role => role.RoleId == intent.FactionRoleId &&
+            role.Name.Equals(intent.FactionName, StringComparison.OrdinalIgnoreCase)))
+            throw new InvalidOperationException("The selected faction role is no longer configured.");
+        // Preflight the entire plan and verify it again before success. Between mutations, recheck the
+        // selected role and the next operation so long plans require a linear number of fresh lookups.
+        var roleIds = operationRoleId is { } nextRole
+            ? new[] { intent.FactionRoleId.Value, nextRole }
+            : intent.RoleOperations.Select(operation => operation.RoleId).Prepend(intent.FactionRoleId.Value);
+        foreach (var roleId in roleIds.Distinct())
+        {
+            ct.ThrowIfCancellationRequested();
+            if (!roles.Any(role => role.RoleId == roleId))
+                throw new InvalidOperationException("A planned faction role is no longer configured.");
+            var role = await discord.GetRoleAsync(roleId, ct);
+            progress?.Invoke();
+            if (role is null || role.IsManaged)
+                throw new InvalidOperationException("A planned faction role is unavailable or cannot be selected.");
+        }
     }
 
     private static CommunityDeliveryIntent PrepareFactionIntent(CommunityDeliveryIntent accepted, FactionRole faction,

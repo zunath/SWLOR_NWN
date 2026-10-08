@@ -159,40 +159,56 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
         return channel.Id;
     }
 
-    public async Task OpenAsync(Ticket ticket, bool sendOpeningMessage, CancellationToken ct)
+    public Task OpenAsync(Ticket ticket, bool sendOpeningMessage, CancellationToken ct) =>
+        OpenAsync(ticket, sendOpeningMessage, ct, static () => { });
+
+    public async Task OpenAsync(Ticket ticket, bool sendOpeningMessage, CancellationToken ct, Action progress)
     {
         var category = await SelectCategoryAsync(ticket, ct);
+        progress();
         var channel = await RequireManagedAsync(ticket, ct);
+        progress();
         var overwrites = BuildOverwrites(configuration.GuildId, client.CurrentUser.Id, ticket.RequesterId, configuration.Tickets.SupportRoleIds,
             category.PermissionOverwrites, true, true, true);
         await channel.ModifyAsync(x => { x.CategoryId = category.Id; x.PermissionOverwrites = overwrites; }, Options(ct));
+        progress();
         await VerifyPrivacyAsync(ticket, true, true, true, ct);
-        if (sendOpeningMessage && !await HasOpeningMessageAsync(ticket, channel, ct))
+        progress();
+        if (sendOpeningMessage && !await HasOpeningMessageAsync(ticket.Id, client.CurrentUser.Id, async (before, token) =>
+            (await (before.HasValue ? channel.GetMessagesAsync(before.Value, Direction.Before, 100, Options(token)) :
+                channel.GetMessagesAsync(100, Options(token))).FlattenAsync()).ToArray(), ct, progress))
         {
+            ct.ThrowIfCancellationRequested();
             var panel = configuration.Tickets.Panels.Single(x => x.Id == ticket.PanelId);
             var text = TemplateRenderer.RenderTicket(panel.OpeningMessage, ticket.RequesterId, ServerName);
             if (string.IsNullOrWhiteSpace(text)) text = $"Ticket #{ticket.Number} is open. Tell support how we can help.";
             await channel.SendMessageAsync(text, allowedMentions: AllowedMentions.None,
                 components: new ComponentBuilder().WithButton("Close ticket", $"v1:close:{ticket.Id:D}", ButtonStyle.Danger).Build(), options: PostingOptions(ct));
+            progress();
         }
     }
 
-    private async Task<bool> HasOpeningMessageAsync(Ticket ticket, RestTextChannel channel, CancellationToken ct)
+    internal static async Task<bool> HasOpeningMessageAsync(Guid ticketId, ulong botId,
+        Func<ulong?, CancellationToken, Task<IReadOnlyCollection<IMessage>>> readPage, CancellationToken ct, Action progress)
     {
         ulong? before = null;
         while (true)
         {
-            var messages = await (before.HasValue ? channel.GetMessagesAsync(before.Value, Direction.Before, 100, Options(ct)) :
-                channel.GetMessagesAsync(100, Options(ct))).FlattenAsync();
-            if (!messages.Any()) return false;
-            if (messages.Any(message => message.Author.Id == client.CurrentUser.Id &&
+            ct.ThrowIfCancellationRequested();
+            var messages = await readPage(before, ct);
+            ct.ThrowIfCancellationRequested();
+            if (messages.Count == 0) { progress(); return false; }
+            var found = messages.Any(message => message.Author.Id == botId &&
                 message.Components.OfType<ActionRowComponent>().SelectMany(row => row.Components).OfType<ButtonComponent>()
-                    .Any(button => button.CustomId == $"v1:close:{ticket.Id:D}"))) return true;
-            var oldest = messages.Min(x => x.Id);
+                    .Any(button => button.CustomId == $"v1:close:{ticketId:D}"));
+            if (found) { progress(); return true; }
+            var oldest = messages.Min(message => message.Id);
             if (before.HasValue && oldest >= before.Value) throw new InvalidOperationException("Opening-message lookup did not advance.");
             before = oldest;
+            progress();
         }
     }
+
     internal static bool IsCategoryPlacementFailure(HttpException exception) =>
         exception.HttpCode == HttpStatusCode.BadRequest && exception.DiscordCode == DiscordErrorCode.InvalidFormBody &&
         exception.Errors.Count > 0 && exception.Errors.All(x => x.Path == "parent_id");

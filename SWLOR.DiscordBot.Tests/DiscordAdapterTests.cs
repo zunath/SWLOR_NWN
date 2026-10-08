@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Reflection;
 using System.Net;
 using System.Text.Json;
 using Discord;
@@ -14,6 +15,75 @@ namespace SWLOR.DiscordBot.Tests;
 [TestFixture]
 public sealed class DiscordAdapterTests
 {
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task OpeningMessageLookupReportsEveryAdvancingPageAndTerminalResult(bool found)
+    {
+        var ticketId = Guid.NewGuid();
+        var beforeIds = new List<ulong?>();
+        var reports = 0;
+        var page = 0;
+        var result = await DiscordOperations.HasOpeningMessageAsync(ticketId, 2, (before, _) =>
+        {
+            beforeIds.Add(before);
+            page++;
+            IReadOnlyCollection<IMessage> messages = page switch
+            {
+                1 => [OpeningHistoryMessage(500, 1, $"v1:close:{ticketId:D}")],
+                2 => [OpeningHistoryMessage(400, 2, $"v1:close:{Guid.NewGuid():D}")],
+                3 when found => [OpeningHistoryMessage(300, 2, $"v1:close:{ticketId:D}")],
+                _ => []
+            };
+            return Task.FromResult(messages);
+        }, default, () => reports++);
+        Assert.That(result, Is.EqualTo(found));
+        Assert.That(beforeIds, Is.EqualTo(new ulong?[] { null, 500, 400 }));
+        Assert.That(reports, Is.EqualTo(3), "Foreign authors and other tickets must not stop the advancing scan.");
+    }
+
+    [Test]
+    public void OpeningMessageLookupRejectsNonAdvancingHistory()
+    {
+        var reports = 0;
+        var ticketId = Guid.NewGuid();
+        Assert.ThrowsAsync<InvalidOperationException>(() => DiscordOperations.HasOpeningMessageAsync(ticketId, 2,
+            (_, _) => Task.FromResult<IReadOnlyCollection<IMessage>>([OpeningHistoryMessage(500, 1, "other")]),
+            default, () => reports++));
+        Assert.That(reports, Is.EqualTo(1), "Repeated data must not reset the inactivity watchdog.");
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void OpeningMessageLookupObservesCancellationBeforeAndAfterPageRequest(bool cancelDuringRequest)
+    {
+        using var cancellation = new CancellationTokenSource();
+        var requests = 0;
+        var reports = 0;
+        if (!cancelDuringRequest) cancellation.Cancel();
+        Assert.CatchAsync<OperationCanceledException>(() => DiscordOperations.HasOpeningMessageAsync(Guid.NewGuid(), 2,
+            (_, _) =>
+            {
+                requests++;
+                cancellation.Cancel();
+                return Task.FromResult<IReadOnlyCollection<IMessage>>([]);
+            }, cancellation.Token, () => reports++));
+        Assert.That(requests, Is.EqualTo(cancelDuringRequest ? 1 : 0));
+        Assert.That(reports, Is.Zero);
+    }
+
+    private static IMessage OpeningHistoryMessage(ulong id, ulong authorId, string closeId)
+    {
+        var author = DispatchProxy.Create<IUser, TranscriptPayloadProxy>();
+        ((TranscriptPayloadProxy)(object)author).Properties = new() { ["Id"] = authorId };
+        var message = DispatchProxy.Create<IMessage, TranscriptPayloadProxy>();
+        ((TranscriptPayloadProxy)(object)message).Properties = new()
+        {
+            ["Id"] = id, ["Author"] = author,
+            ["Components"] = new ComponentBuilder().WithButton("Close", closeId).Build().Components
+        };
+        return message;
+    }
+
     [TestCase(TicketState.Creating)]
     [TestCase(TicketState.Open)]
     [TestCase(TicketState.Closing)]

@@ -49,9 +49,14 @@ public static partial class TemplateRenderer
             foreach (var field in embed.Fields.Take(25))
             {
                 if (remaining <= 0) break;
-                var name = Take(field.Name, 256, ref remaining) ?? "";
-                var value = Take(field.Value, 1024, ref remaining) ?? "";
-                if (name.Length > 0 && value.Length > 0) fields.Add(new CommunityEmbedField(name, value, field.Inline));
+                var fieldRemaining = remaining;
+                var name = Take(field.Name, 256, ref fieldRemaining);
+                var value = Take(field.Value, 1024, ref fieldRemaining);
+                if (name is not null && value is not null)
+                {
+                    fields.Add(new CommunityEmbedField(name, value, field.Inline));
+                    remaining = fieldRemaining;
+                }
             }
             if (!string.IsNullOrWhiteSpace(title) || !string.IsNullOrWhiteSpace(description) ||
                 fields.Any(field => !string.IsNullOrWhiteSpace(field.Name) && !string.IsNullOrWhiteSpace(field.Value)))
@@ -76,10 +81,11 @@ public static partial class TemplateRenderer
 
     private static string? Take(string? value, int maxLength, ref int remaining)
     {
-        if (string.IsNullOrEmpty(value) || remaining <= 0) return null;
-        var length = Math.Min(Math.Min(value.Length, maxLength), remaining);
-        remaining -= length;
-        return Truncate(value, length);
+        if (string.IsNullOrWhiteSpace(value) || remaining <= 0) return null;
+        var rendered = Truncate(value, Math.Min(maxLength, remaining));
+        if (string.IsNullOrWhiteSpace(rendered)) return null;
+        remaining -= rendered.Length;
+        return rendered;
     }
 
     private static string Truncate(string value, int maxLength)

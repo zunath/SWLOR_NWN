@@ -28,6 +28,13 @@ internal static class DiscordTranscriptCapture
             message.Type,
             message.Flags,
             message.EditedTimestamp,
+            Reference = message.Reference is { } reference ? new
+            {
+                MessageId = reference.MessageId.IsSpecified ? reference.MessageId.Value : (ulong?)null,
+                ChannelId = reference.ChannelId != 0 ? reference.ChannelId : (ulong?)null,
+                GuildId = reference.GuildId.IsSpecified ? reference.GuildId.Value : (ulong?)null,
+                ReferenceType = reference.ReferenceType.GetValueOrDefault(MessageReferenceType.Default)
+            } : null,
             message.Components,
             message.Stickers,
             Reactions = message.Reactions.Select(reaction => new

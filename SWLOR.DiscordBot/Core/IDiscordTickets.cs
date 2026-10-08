@@ -6,6 +6,8 @@ public interface IDiscordTickets
     Task<ulong?> FindManagedChannelAsync(Guid ticketId, CancellationToken ct);
     Task<ulong> CreateAsync(Ticket ticket, CancellationToken ct);
     Task OpenAsync(Ticket ticket, bool sendOpeningMessage, CancellationToken ct);
+    Task OpenAsync(Ticket ticket, bool sendOpeningMessage, CancellationToken ct, Action progress) =>
+        OpenAsync(ticket, sendOpeningMessage, ct);
     Task CloseAsync(Ticket ticket, CancellationToken ct);
     Task RenameAsync(Ticket ticket, string name, CancellationToken ct);
     Task<bool> ExistsAsync(Ticket ticket, CancellationToken ct);

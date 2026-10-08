@@ -170,18 +170,44 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
         ? "Close this ticket? The channel will become read-only for the requester."
         : "Close this ticket? The channel will be hidden from the requester.";
 
-    private Task OnMessageAsync(SocketMessage message)
+    private async Task OnMessageAsync(SocketMessage message)
     {
         if (!Ready || message.Author.IsBot || message.Author.IsWebhook || message.Channel is not SocketTextChannel channel ||
-            channel.ChannelType != ChannelType.Text || channel.Guild.Id != configuration.GuildId) return Task.CompletedTask;
-        bool CanExecute() => channel.Guild.CurrentUser is { } bot &&
+            channel.ChannelType != ChannelType.Text || channel.Guild.Id != configuration.GuildId) return;
+        bool CanExecute() => Ready && channel.Guild.CurrentUser is { } bot &&
             CanExecuteCommunityCommand(configuration, bot.GetPermissions(channel), channel.Id, message.Content);
-        if (!CanExecute()) return Task.CompletedTask;
-        if (!jobs.Writer.TryWrite(ct => RetryCommunityAsync(token => CanExecute()
-            ? community.ExecuteAsync(message.Author.Id, channel.Id, message.Id, message.Content, token) : Task.CompletedTask, ct)))
-            logger.LogWarning("Community event queue is full.");
-        return Task.CompletedTask;
+        if (!CanExecute()) return;
+        try
+        {
+            using var persistence = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+            persistence.CancelAfter(TimeSpan.FromSeconds(10));
+            if (!await PersistAndQueueCommandAsync(community, message.Author.Id, channel.Id, message.Id,
+                message.Content, CanExecute, job => TryQueueJob(ct => RetryCommunityAsync(job, ct)), persistence.Token))
+                logger.LogInformation("Community command was not queued; accepted intents remain available for recovery.");
+        }
+        catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+        {
+            logger.LogWarning("Community command persistence was interrupted by shutdown.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogCritical("Community command persistence failed: {ErrorKind}.", SafeError(ex));
+            Suspend();
+            Environment.ExitCode = 1;
+            lifetime.StopApplication();
+        }
     }
+
+    internal static async Task<bool> PersistAndQueueCommandAsync(CommunityService community, ulong userId,
+        ulong channelId, ulong messageId, string content, Func<bool> canExecute,
+        Func<Func<CancellationToken, Task>, bool> tryQueue, CancellationToken ct)
+    {
+        if (!await community.PersistCommandAsync(userId, channelId, messageId, content, ct)) return false;
+        ct.ThrowIfCancellationRequested();
+        return canExecute() && tryQueue(token => canExecute()
+            ? community.ExecuteAsync(userId, channelId, messageId, content, token) : Task.CompletedTask);
+    }
+
     internal static bool ShouldPersistWelcome(BotConfiguration configuration, ulong guildId,
         bool isBot, bool isWebhook, DateTimeOffset? joinedAt) =>
         configuration.Welcome.Enabled && guildId == configuration.GuildId && !isBot && !isWebhook && joinedAt.HasValue;

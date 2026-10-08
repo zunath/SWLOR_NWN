@@ -14,6 +14,218 @@ public sealed class CommunityTests
 {
     [TestCase(false)]
     [TestCase(true)]
+    public async Task FullGatewayQueueRetainsRecognizedCommandsForExactlyOneAuthorizedRestartRecovery(bool faction)
+    {
+        var (config, discord, command, key) = DeletionCase(faction);
+        config.Answers[0].Responses = ["Original {args}"];
+        config.Answers[0].AllowedRoleIds = [9];
+        config.Answers[0].Cooldown = TimeSpan.FromMinutes(1);
+        discord.Member = discord.Member! with { RoleIds = [9] };
+        if (!faction) command += "   arguments  ";
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore();
+        var service = new CommunityService(config, store, discord, deletions);
+        var gateway = new DiscordGateway(null!, config, null!, null!, store, service, TimeProvider.System,
+            null!, null!, NullLogger<DiscordGateway>.Instance);
+        using var stopping = new CancellationTokenSource();
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var consumersStarted = 0;
+        for (var consumer = 0; consumer < 4; consumer++)
+            Assert.That(gateway.TryQueueJob(async ct =>
+            {
+                if (Interlocked.Increment(ref consumersStarted) == 4) started.TrySetResult();
+                await release.Task.WaitAsync(ct);
+            }), Is.True);
+        var consumers = Enumerable.Range(0, 4).Select(_ => gateway.ProcessAsync(stopping.Token)).ToArray();
+        try
+        {
+            await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            for (var queued = 0; queued < 128; queued++)
+                Assert.That(gateway.TryQueueJob(_ => Task.CompletedTask), Is.True);
+            Assert.That(gateway.TryQueueJob(_ => Task.CompletedTask), Is.False, "All four consumers and all 128 pending queue slots must be occupied.");
+            Assert.That(await DiscordGateway.PersistAndQueueCommandAsync(service, 7, 100, 300, command,
+                () => true, gateway.TryQueueJob, stopping.Token).WaitAsync(TimeSpan.FromSeconds(2)), Is.False);
+            Assert.That(store.HasDelivery(key), Is.True);
+            Assert.That(store.IsCompleted(key), Is.False);
+            Assert.That(discord.MemberLookups, Is.Zero, "Admission persists context without trusting stale cached membership or making REST mutations.");
+            Assert.That(discord.RoleMutations, Is.Empty);
+            Assert.That(discord.Sent, Is.Empty);
+            Assert.That(deletions.Pending, Is.Empty);
+            // Duplicate admission cannot replace the accepted response payload.
+            config.Answers[0].Responses = ["Changed response"];
+            Assert.That(await DiscordGateway.PersistAndQueueCommandAsync(service, 7, 100, 300, command,
+                () => true, gateway.TryQueueJob, stopping.Token), Is.False);
+        }
+        finally
+        {
+            stopping.Cancel();
+            try { await Task.WhenAll(consumers).WaitAsync(TimeSpan.FromSeconds(2)); }
+            catch (OperationCanceledException) { }
+        }
+        Assert.That(consumers.All(consumer => consumer.IsCompleted), Is.True);
+        var restarted = new CommunityService(config, store, discord, deletions);
+        Assert.That(await restarted.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(store.IsCompleted(key), Is.True);
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+        Assert.That(discord.Deleted, Is.EqualTo(new[] { (100UL, 300UL) }));
+        Assert.That(deletions.Pending, Is.Empty);
+        if (faction) Assert.That(discord.RoleMutations, Is.EqualTo(new[] { "add:7:21" }));
+        else Assert.That(discord.Sent.Single().Message.Content, Is.EqualTo("Original   arguments  "));
+        Assert.That(await restarted.RecoverPendingDeliveriesAsync(default), Is.Zero);
+        await restarted.ExecuteAsync(7, 100, 300, command, default);
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+        if (faction) Assert.That(discord.RoleMutations, Has.Count.EqualTo(1));
+    }
+
+    [TestCase("role")]
+    [TestCase("cooldown")]
+    public async Task PrefixAdmissionDoesNotAuthorizeAnswerOrIntroduceCleanupWhenRecoveryRejectsIt(string rejection)
+    {
+        var (config, discord, command, key) = DeletionCase(false);
+        config.Answers[0].AllowedRoleIds = [9];
+        config.Answers[0].Cooldown = TimeSpan.FromMinutes(1);
+        discord.Member = discord.Member! with { RoleIds = [9] };
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore();
+        var service = new CommunityService(config, store, discord, deletions);
+        Assert.That(await DiscordGateway.PersistAndQueueCommandAsync(service, 7, 100, 300, command,
+            () => true, _ => false, default), Is.False);
+        Assert.That(store.HasDelivery(key), Is.True);
+        Assert.That(discord.MemberLookups, Is.Zero);
+        if (rejection == "role") discord.Member = discord.Member! with { RoleIds = [] };
+        else store.SeedCooldown("answer-cooldown:guide:7", DateTimeOffset.UtcNow);
+        Assert.That(await new CommunityService(config, store, discord, deletions).RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(store.IsCompleted(key), Is.True);
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(discord.RoleMutations, Is.Empty);
+        Assert.That(discord.Deleted, Is.Empty);
+        Assert.That(deletions.Pending, Is.Empty);
+    }
+
+    [Test]
+    public async Task PrefixAdmissionFailureAndCancellationNeverQueueAnUndurableJob()
+    {
+        var (config, discord, command, key) = DeletionCase(false);
+        var store = new FakeTicketStore { PersistenceFailuresRemaining = 1 };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        var queued = 0;
+        bool TryQueue(Func<CancellationToken, Task> _) { queued++; return true; }
+        Assert.ThrowsAsync<InvalidOperationException>(() => DiscordGateway.PersistAndQueueCommandAsync(service,
+            7, 100, 300, command, () => true, TryQueue, default));
+        using var cancelled = new CancellationTokenSource();
+        cancelled.Cancel();
+        Assert.CatchAsync<OperationCanceledException>(() => DiscordGateway.PersistAndQueueCommandAsync(service,
+            7, 100, 300, command, () => true, TryQueue, cancelled.Token));
+        Assert.That(queued, Is.Zero);
+        Assert.That(store.HasDelivery(key), Is.False);
+        Assert.That(discord.MemberLookups, Is.Zero);
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(await service.PersistCommandAsync(7, 100, 300, "ordinary message", default), Is.False);
+        Assert.That(await service.PersistCommandAsync(7, 100, 300, "?missing", default), Is.False);
+        Assert.That(store.HasDelivery(key), Is.False);
+    }
+
+    [TestCase(true, false)]
+    [TestCase(false, false)]
+    [TestCase(true, true)]
+    [TestCase(false, true)]
+    public async Task QueuedFactionWithMissingSelectedOrMutationRoleRetainsIntentWithoutPartialExclusiveRemoval(bool selected, bool recovery)
+    {
+        var (config, discord, command, key) = DeletionCase(true);
+        config.Factions.Exclusive = true;
+        config.Factions.Roles = [new FactionRole { Name = "Old", RoleId = 20 }, config.Factions.Roles[0]];
+        discord.Roles.Add(new CommunityRole(20, 1));
+        discord.Member = discord.Member! with { RoleIds = [20] };
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore();
+        var service = new CommunityService(config, store, discord, deletions);
+        Func<CancellationToken, Task>? queued = null;
+        Assert.That(await DiscordGateway.PersistAndQueueCommandAsync(service, 7, 100, 300, command,
+            () => true, job => { queued = job; return true; }, default), Is.True);
+        var missingRole = selected ? 21UL : 20UL;
+        discord.Roles.RemoveAll(role => role.RoleId == missingRole);
+        if (recovery) Assert.That(await new CommunityService(config, store, discord, deletions).RecoverPendingDeliveriesAsync(default), Is.Zero);
+        else if (selected) await queued!(default);
+        else Assert.ThrowsAsync<InvalidOperationException>(() => queued!(default));
+        Assert.That(store.IsCompleted(key), Is.False);
+        Assert.That(discord.Member!.RoleIds, Is.EqualTo(new[] { 20UL }));
+        Assert.That(discord.RoleMutations, Is.Empty);
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(deletions.Pending, Is.Empty);
+        Assert.That(discord.Deleted, Is.Empty);
+        discord.Roles.Add(new CommunityRole(missingRole, 1));
+        Assert.That(await new CommunityService(config, store, discord, deletions).RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.RoleMutations, Is.EqualTo(new[] { "remove:7:20", "add:7:21" }));
+        Assert.That(discord.Sent.Single().Message.Content, Is.EqualTo("Added the Republic Navy role."));
+        Assert.That(store.IsCompleted(key), Is.True);
+    }
+
+    [TestCase(true, false)]
+    [TestCase(false, false)]
+    [TestCase(true, true)]
+    [TestCase(false, true)]
+    public async Task ImmutableFactionPlanRejectsUnavailableRolesBeforeAnyExclusiveMutation(bool selected, bool removedFromConfiguration)
+    {
+        var (config, discord, command, key) = DeletionCase(true);
+        config.Factions.Exclusive = true;
+        config.Factions.Roles = [new FactionRole { Name = "Old", RoleId = 20 }, config.Factions.Roles[0]];
+        discord.Roles.Add(new CommunityRole(20, 1));
+        discord.Member = discord.Member! with { RoleIds = [20] };
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore();
+        var service = new CommunityService(config, store, discord, deletions);
+        discord.BeforeRoleMutation = _ => throw new InvalidOperationException("Stop after the immutable plan is committed.");
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 300, command, default));
+        discord.BeforeRoleMutation = null;
+        var missingRole = selected ? 21UL : 20UL;
+        var originalRoles = config.Factions.Roles;
+        if (removedFromConfiguration) config.Factions.Roles = originalRoles.Where(role => role.RoleId != missingRole).ToArray();
+        else discord.Roles.RemoveAll(role => role.RoleId == missingRole);
+        Assert.That(await new CommunityService(config, store, discord, deletions).RecoverPendingDeliveriesAsync(default), Is.Zero);
+        Assert.That(store.IsCompleted(key), Is.False);
+        Assert.That(discord.Member!.RoleIds, Is.EqualTo(new[] { 20UL }));
+        Assert.That(discord.RoleMutations, Is.Empty);
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(deletions.Pending, Is.Empty);
+        config.Factions.Roles = originalRoles;
+        if (!removedFromConfiguration) discord.Roles.Add(new CommunityRole(missingRole, 1));
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.RoleMutations, Is.EqualTo(new[] { "remove:7:20", "add:7:21" }));
+        Assert.That(store.IsCompleted(key), Is.True);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task RoleDisappearingDuringFactionExecutionStopsSuccessAndKeepsImmutableRetry(bool recovery)
+    {
+        var (config, discord, command, key) = DeletionCase(true);
+        config.Factions.Exclusive = true;
+        config.Factions.Roles = [new FactionRole { Name = "Old", RoleId = 20 }, config.Factions.Roles[0]];
+        discord.Roles.Add(new CommunityRole(20, 1));
+        discord.Member = discord.Member! with { RoleIds = [20] };
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore();
+        var service = new CommunityService(config, store, discord, deletions);
+        Assert.That(await service.PersistCommandAsync(7, 100, 300, command, default), Is.True);
+        discord.BeforeRoleMutation = _ => discord.Roles.RemoveAll(role => role.RoleId == 21);
+        if (recovery) Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.Zero);
+        else Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 300, command, default));
+        Assert.That(store.IsCompleted(key), Is.False);
+        Assert.That(discord.RoleMutations, Is.EqualTo(new[] { "remove:7:20" }));
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(deletions.Pending, Is.Empty);
+        Assert.That(discord.Deleted, Is.Empty);
+        discord.BeforeRoleMutation = null;
+        discord.Roles.Add(new CommunityRole(21, 1));
+        Assert.That(await new CommunityService(config, store, discord, deletions).RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.Member!.RoleIds, Is.EqualTo(new[] { 21UL }));
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+        Assert.That(store.IsCompleted(key), Is.True);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
     public async Task PrefixEventsSurviveThreeBoundedLockTimeoutsBehindProgressingRecovery(bool faction)
     {
         var (config, discord, store, service, clock) = LongFactionRecovery();
@@ -552,6 +764,46 @@ public sealed class CommunityTests
         Assert.That(discord.Deleted, Is.EqualTo(new[] { (100UL, 300UL) }));
         Assert.That(store.IsCompleted("answer:100:300"), Is.True);
         Assert.That(store.HasCooldown("answer-cooldown:guide:7"), Is.True);
+    }
+
+    [Test]
+    public async Task RecoverPendingDeliveriesAsync_PreservesLaterContentWhenEmptyRenderedFieldsAreOmitted()
+    {
+        var omittedFields = Enumerable.Range(0, 8).Select(_ => new SWLOR.DiscordBot.Configuration.EmbedField
+            { Name = "{1}", Value = new string('x', 1000) }).ToArray();
+        var config = new BotConfiguration
+        {
+            GuildId = 1,
+            Answers = [new QuickAnswerOptions
+            {
+                Name = "guide",
+                Embeds =
+                [
+                    new AnswerEmbed
+                    {
+                        Fields = omittedFields.Append(new SWLOR.DiscordBot.Configuration.EmbedField
+                            { Name = "Guide", Value = "Instructions" }).ToArray()
+                    },
+                    new AnswerEmbed { Title = "Next steps", Description = "Later useful content" }
+                ]
+            }]
+        };
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new(7, "Player", []), SendFailuresRemaining = 1 };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 300, "?guide", default));
+        Assert.That(store.IsCompleted("answer:100:300"), Is.False);
+        config.Answers[0].Embeds = [new AnswerEmbed { Title = "Changed configuration" }];
+        Assert.That(await new CommunityService(config, store, discord, new FakeDeletionStore()).RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        var delivered = discord.Sent.Single().Message;
+        Assert.That(delivered.Embeds, Has.Count.EqualTo(2));
+        Assert.That(delivered.Embeds[0].Fields, Has.Count.EqualTo(1));
+        Assert.That(delivered.Embeds[0].Fields.Single().Name, Is.EqualTo("Guide"));
+        Assert.That(delivered.Embeds[0].Fields.Single().Value, Is.EqualTo("Instructions"));
+        Assert.That(delivered.Embeds[1].Title, Is.EqualTo("Next steps"));
+        Assert.That(delivered.Embeds[1].Description, Is.EqualTo("Later useful content"));
+        Assert.That(store.IsCompleted("answer:100:300"), Is.True);
+        Assert.That(await service.RecoverPendingDeliveriesAsync(default), Is.Zero);
     }
 
     [Test]

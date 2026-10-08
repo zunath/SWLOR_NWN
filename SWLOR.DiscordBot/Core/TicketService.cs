@@ -48,14 +48,14 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
         return await ResumeCreationAsync(session, ticket, ct);
     }
 
-    private async Task<TicketResult> ResumeCreationAsync(ITicketSession session, Ticket ticket, CancellationToken ct)
+    private async Task<TicketResult> ResumeCreationAsync(ITicketSession session, Ticket ticket, CancellationToken ct, Action? progress = null)
     {
         try
         {
             var channel = ticket.ChannelId ?? await discord.FindManagedChannelAsync(ticket.Id, ct) ?? await discord.CreateAsync(ticket, ct);
             ticket = ticket with { ChannelId = channel, LastError = null };
             await session.SaveAsync(ticket, "channel-bound", ticket.RequesterId, ct);
-            await discord.OpenAsync(ticket, true, ct);
+            await discord.OpenAsync(ticket, true, ct, progress ?? (static () => { }));
             ticket = ticket with { State = TicketState.Open };
             await session.SaveAsync(ticket, "opened", ticket.RequesterId, ct);
             await NotifyAsync($"Ticket {ticket.Number} opened.", ct);
@@ -346,7 +346,7 @@ public sealed class TicketService(BotConfiguration configuration, ITicketStore s
                     await WithProgressAsync(discord.ReconcilePermissionsAsync(ticket, ct), progress);
                 // Manual exports in Open/Closed retain that state policy; deleting exports keep their freeze.
                 if (_exports.ContainsKey(id)) return;
-                if (ticket.State == TicketState.Creating) { await ResumeCreationAsync(session, ticket, ct); return; }
+                if (ticket.State == TicketState.Creating) { await ResumeCreationAsync(session, ticket, ct, progress); return; }
                 if (ticket.State == TicketState.Closing)
                 {
                     await WithProgressAsync(discord.CloseAsync(ticket, ct), progress);

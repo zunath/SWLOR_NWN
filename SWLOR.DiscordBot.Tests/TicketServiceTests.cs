@@ -1116,6 +1116,7 @@ public sealed class TicketServiceTests
     [TestCase("components")]
     [TestCase("forwarded")]
     [TestCase("reactions")]
+    [TestCase("reference")]
     public async Task CleanupRejectsOlderMessageChangesEvenWhenNewestIdIsUnchanged(string change)
     {
         await Open("first", new Actor(1, []), "old-message-change");
@@ -1132,7 +1133,7 @@ public sealed class TicketServiceTests
                 "edit" => old with { Content = "edited" },
                 "embed" => old with { EmbedsJson = "[{modified:true}]" },
                 "attachment" => old with { Attachments = [] },
-                "poll" or "sticker" or "components" or "forwarded" or "reactions" => old with { MetadataJson = "{\"" + change + "\":\"changed\"}" },
+                "poll" or "sticker" or "components" or "forwarded" or "reactions" or "reference" => old with { MetadataJson = "{\"" + change + "\":\"changed\"}" },
                 _ => old
             };
             _discord.Snapshot = change == "delete" ? new([newest], 101) : new([edited, newest], 101);
@@ -2274,6 +2275,63 @@ public sealed class TicketServiceTests
         finally { safety.Cancel(); try { await cleanup; } catch (OperationCanceledException) { } }
     }
 
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task CreatingRecoveryReportsOpeningProgressAndRetriesAfterStalledLookup(bool progressing)
+    {
+        _discord.FailNextOpen = true;
+        Assert.That((await Open("first", new Actor(1, []), "opening-progress")).Success, Is.False);
+        await Open("second", new Actor(2, []), "later-missing");
+        _discord.MissingChannels.Add(ChannelOne + 1);
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var reports = 0;
+        _discord.BeforeProgressOpenAsync = async (ticket, progress, ct) =>
+        {
+            if (ticket.ChannelId != ChannelOne) return;
+            if (!progressing)
+            {
+                started.TrySetResult();
+                await Task.Delay(Timeout.InfiniteTimeSpan, ct);
+                return;
+            }
+            for (var page = 0; page < 6; page++)
+            {
+                _clock.Advance(TimeSpan.FromMinutes(1));
+                ct.ThrowIfCancellationRequested();
+                progress();
+                reports++;
+                await Task.Yield();
+            }
+        };
+        using var safety = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        var maintenance = _service.MaintainAsync(safety.Token);
+        try
+        {
+            if (!progressing)
+            {
+                await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+                _clock.Advance(TimeSpan.FromMinutes(4));
+            }
+            await maintenance.WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(_store.Tickets.Single(ticket => ticket.ChannelId == ChannelOne).State,
+                Is.EqualTo(progressing ? TicketState.Open : TicketState.Creating));
+            Assert.That(_store.Tickets.Single(ticket => ticket.ChannelId == ChannelOne + 1).State, Is.EqualTo(TicketState.Deleted));
+            if (progressing)
+            {
+                Assert.That(reports, Is.EqualTo(6));
+                Assert.That((await _service.CloseAsync(ChannelOne, new Actor(1, []))).Success, Is.True);
+            }
+            else
+            {
+                _discord.BeforeProgressOpenAsync = null;
+                await _service.MaintainAsync().WaitAsync(TimeSpan.FromSeconds(2));
+                Assert.That(_store.Tickets.Single(ticket => ticket.ChannelId == ChannelOne).State, Is.EqualTo(TicketState.Open));
+                Assert.That(_discord.CreateCalls, Is.EqualTo(2), "Recovery must reuse the two existing managed channels.");
+            }
+        }
+        finally { safety.Cancel(); try { await maintenance; } catch (OperationCanceledException) { } }
+    }
+
     [TestCase(false, false, true)]
     [TestCase(false, true, true)]
     [TestCase(true, false, true)]
@@ -2639,6 +2697,7 @@ public sealed class TicketServiceTests
         public int DeleteCalls { get; private set; }
         public List<ulong> DeletedChannels { get; } = [];
         public bool FailNextOpen { get; set; }
+        public Func<Ticket, Action, CancellationToken, Task>? BeforeProgressOpenAsync { get; set; }
         public bool FailNextClose { get; set; }
         public Func<Ticket, CancellationToken, Task>? BeforeTranscriptAsync { get; set; }
         public Func<Ticket, Action, CancellationToken, Task>? BeforeProgressTranscriptAsync { get; set; }
@@ -2678,6 +2737,14 @@ public sealed class TicketServiceTests
                 throw new InvalidOperationException("Simulated Discord open failure.");
             }
             return Task.CompletedTask;
+        }
+
+        public async Task OpenAsync(Ticket ticket, bool sendOpeningMessage, CancellationToken ct, Action progress)
+        {
+            await OpenAsync(ticket, sendOpeningMessage, ct);
+            if (BeforeProgressOpenAsync is not null) await BeforeProgressOpenAsync(ticket, progress, ct);
+            ct.ThrowIfCancellationRequested();
+            progress();
         }
 
         public Task CloseAsync(Ticket ticket, CancellationToken ct)

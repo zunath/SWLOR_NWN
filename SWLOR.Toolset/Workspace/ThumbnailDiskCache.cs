@@ -88,8 +88,20 @@ namespace SWLOR.Toolset.Workspace
             }
         }
 
-        public void StoreNoArtwork(ResourceType type, string resRef, bool useIndexedBlueprint) =>
-            _cache?.Write(Key(type, resRef, useIndexedBlueprint), FormatVersion, [], hasImage: false);
+        public void StoreNoArtwork(ResourceType type, string resRef, bool useIndexedBlueprint)
+        {
+            if (_cache is null)
+                return;
+            try
+            {
+                _cache.Write(Key(type, resRef, useIndexedBlueprint), FormatVersion, [], hasImage: false);
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                // Same as Store: a failed write only costs a later re-render, and throwing here would
+                // fault the render before its waiting palette tiles are released.
+            }
+        }
 
         public void Remove(ResourceType type, string resRef, bool useIndexedBlueprint) =>
             _cache?.Remove(Key(type, resRef, useIndexedBlueprint));

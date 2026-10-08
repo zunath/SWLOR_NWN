@@ -27,6 +27,11 @@ namespace SWLOR.CLI
         // Mirrors ModuleResourceDeletionService.DeleteTransactionSuffix. SWLOR.CLI cannot reference
         // SWLOR.Toolset, so it refuses the durable manifest and lets the toolset roll it back.
         private const string ResourceDeleteTransactionPattern = ".*.resource-delete-transaction.json";
+        // Mirrors Nwn.Authoring's FileTransaction manifest, which ModuleResourceDeletionService now
+        // commits through, and ModuleWorkspace.ResolveConversationDataRoot for dialog deletes.
+        private const string FileTransactionManifestPattern = ".*.file-transaction.json";
+        private static readonly string ConversationDataRelativePath =
+            Path.Combine("..", "SWLOR.Game.Server", "ConversationData");
 
         public void PackModule(string filePath, bool noPrompt = false)
         {
@@ -582,17 +587,21 @@ namespace SWLOR.CLI
         }
 
         /// <summary>
-        /// Refuses to pack a partially moved logical resource. The toolset writes this manifest
+        /// Refuses to pack a partially moved logical resource. The toolset writes a manifest
         /// before moving the first area/dialog/script companion and removes it only at the commit
-        /// point. This check runs after the CLI acquires the module lease, so it also catches a
+        /// point: in the module root for areas and scripts, and in the conversation source root for
+        /// dialogs. This check runs after the CLI acquires the module lease, so it also catches a
         /// second toolset that crashes during PackService's preceding CLI build.
         /// </summary>
         private static void RequireNoInterruptedResourceDelete()
         {
-            var pending = Directory.GetFiles(
-                ".",
-                ResourceDeleteTransactionPattern,
-                SearchOption.TopDirectoryOnly);
+            var moduleRoot = Path.GetFullPath(Environment.CurrentDirectory);
+            var conversationRoot = Path.GetFullPath(Path.Combine(moduleRoot, ConversationDataRelativePath));
+            var pending = new[] { moduleRoot, conversationRoot }
+                .Where(Directory.Exists)
+                .SelectMany(root => new[] { ResourceDeleteTransactionPattern, FileTransactionManifestPattern }
+                    .SelectMany(pattern => Directory.GetFiles(root, pattern, SearchOption.TopDirectoryOnly)))
+                .ToArray();
             if (pending.Length == 0)
                 return;
 

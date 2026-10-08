@@ -450,6 +450,15 @@ data directory so every run starts against a fresh, empty database, there are no
 `swlor.env` points `SWLOR_APP_LOG_DIRECTORY`), and `NWNX_METRICS_INFLUXDB_SKIP=y` (no InfluxDB
 service exists in this compose file) on top of the normal `swlor.env` defaults.
 
+The `redis` service keeps the production image (`redislabs/redismod:latest`) but passes
+`FORK_GC_CLEAN_THRESHOLD 100000000` to RediSearch, so the search GC never cleans during a run. The
+bundled RediSearch build (commit `669b3f0c`) sets a numeric range's cardinality array to NULL when
+GC removes every entry in that range, and the next value indexed into the range segfaults Redis in
+`NumericRange_Add` (`Accessing address: 0xfffffffffffffff4`). Player fixtures create and delete
+their `Player` records case after case, so long sweeps such as the Mimicry behaviors emptied those
+ranges and killed the run (Redis exit 139, server exit 137, no report). The command repeats the
+image's default module list; keep it in sync if the image changes.
+
 **Hard wall clock**: both runner scripts enforce a timeout on the containerized run
 (`-TimeoutMinutes` / `--timeout-minutes`, default 90; a full sweep takes roughly 45). On expiry
 the stack is torn down and the run is reported as failed. This exists because

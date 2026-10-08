@@ -954,6 +954,103 @@ public sealed class ArchiveTests
         finally { File.Delete(cached); }
     }
 
+    [Test]
+    public async Task FirstExportDownloadFailuresReclaimCacheBeforeChangedHistoryRetriesWithinPeakBudget()
+    {
+        var handler = new FakeHttpMessageHandler(request => request.RequestUri!.AbsolutePath.Contains("/99/")
+            ? new HttpResponseMessage(HttpStatusCode.InternalServerError)
+            : new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(new byte[3]) });
+        using var client = new HttpClient(handler);
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, 3, 4), client);
+        var ticket = CreateTicket();
+        var cache = Path.Combine(ticket.ArchivePath!, "attachments");
+        Assert.That(ticket.ArchiveComplete, Is.False);
+        Assert.That(ticket.ArchiveSnapshotPath, Is.Null);
+        for (ulong id = 88; id <= 90; id++)
+        {
+            Assert.ThrowsAsync<HttpRequestException>(() => archive.ExportAsync(ticket, Snapshot(Attachment(id, 3), Attachment(99, 1)), default));
+            Assert.That(Directory.GetFiles(cache).Sum(file => new FileInfo(file).Length), Is.EqualTo(3));
+            var requests = handler.RequestCount;
+            Assert.ThrowsAsync<InvalidDataException>(() => archive.ExportAsync(ticket, Snapshot(Attachment(100, 3)), default));
+            Assert.That(handler.RequestCount, Is.EqualTo(requests), "The hard physical peak cap still rejects retained plus new files.");
+            await archive.PruneSnapshotsAsync(ticket, default);
+            Assert.That(Directory.GetFiles(cache), Is.Empty);
+        }
+        var replacement = await archive.ExportAsync(ticket, Snapshot(Attachment(100, 3)), default);
+        await archive.PruneSnapshotsAsync(ticket with { ArchiveSnapshotPath = replacement, ArchiveComplete = true }, default);
+        Assert.That(Directory.GetFiles(cache).Select(Path.GetFileName), Is.EqualTo(new[] { "100.bin" }));
+        Assert.That(File.Exists(Path.Combine(replacement, "transcript.html")), Is.True);
+        Assert.That(handler.RequestCount, Is.EqualTo(7));
+    }
+
+    [TestCase("complete")]
+    [TestCase("partial")]
+    [TestCase("corrupt-manifest")]
+    public async Task UncommittedFirstGenerationAndCacheAreReclaimedBeforeNewExactBudgetExport(string interruptedGeneration)
+    {
+        var handler = new FakeHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(new byte[3]) });
+        using var client = new HttpClient(handler);
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, 3, 3), client);
+        var ticket = CreateTicket();
+        var uncommitted = await archive.ExportAsync(ticket, Snapshot(Attachment(88, 3)), default);
+        if (interruptedGeneration == "partial") File.Delete(Path.Combine(uncommitted, "transcript.html"));
+        if (interruptedGeneration == "corrupt-manifest")
+            await File.WriteAllTextAsync(Path.Combine(uncommitted, "attachment-manifest.json"), "{", Encoding.UTF8);
+        var cache = Path.Combine(ticket.ArchivePath!, "attachments");
+        await archive.PruneSnapshotsAsync(ticket, default);
+        Assert.That(Directory.Exists(uncommitted), Is.False, "No durable ticket selection references this generation.");
+        Assert.That(Directory.GetFiles(cache), Is.Empty);
+        var replacement = await archive.ExportAsync(ticket, Snapshot(Attachment(89, 3)), default);
+        await archive.PruneSnapshotsAsync(ticket with { ArchiveSnapshotPath = replacement, ArchiveComplete = true }, default);
+        Assert.That(Directory.GetDirectories(Path.GetDirectoryName(replacement)!), Is.EqualTo(new[] { replacement }));
+        Assert.That(Directory.GetFiles(cache).Select(Path.GetFileName), Is.EqualTo(new[] { "89.bin" }));
+        Assert.That(handler.RequestCount, Is.EqualTo(2));
+    }
+
+    [TestCase("transcript.json")]
+    [TestCase("transcript.html")]
+    [TestCase("both")]
+    public async Task LegacyRootArtifactsProtectCacheEvenWhenDurableCompleteFlagIsMissing(string artifact)
+    {
+        var handler = new FakeHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(new byte[3]) });
+        using var client = new HttpClient(handler);
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, 3, 3), client);
+        var ticket = CreateTicket();
+        var uncommitted = await archive.ExportAsync(ticket, Snapshot(Attachment(88, 3)), default);
+        var legacyFiles = artifact == "both" ? new[] { "transcript.json", "transcript.html" } : new[] { artifact };
+        var original = new Dictionary<string, byte[]>();
+        foreach (var name in legacyFiles)
+        {
+            original[name] = await File.ReadAllBytesAsync(Path.Combine(uncommitted, name));
+            await File.WriteAllBytesAsync(Path.Combine(ticket.ArchivePath!, name), original[name]);
+        }
+        await archive.PruneSnapshotsAsync(ticket, default);
+        Assert.That(Directory.Exists(uncommitted), Is.False);
+        foreach (var file in original)
+            Assert.That(await File.ReadAllBytesAsync(Path.Combine(ticket.ArchivePath!, file.Key)), Is.EqualTo(file.Value));
+        Assert.That(new FileInfo(Path.Combine(ticket.ArchivePath!, "attachments", "88.bin")).Length, Is.EqualTo(3));
+        Assert.ThrowsAsync<InvalidDataException>(() => archive.ExportAsync(ticket, Snapshot(Attachment(89, 3)), default));
+        Assert.That(handler.RequestCount, Is.EqualTo(1), "Preserving legacy cache still enforces the physical peak budget.");
+    }
+
+    [Test]
+    public async Task FirstExportPruningRejectsUnexpectedCacheDirectoryBeforeDeletingGeneration()
+    {
+        using var client = CreateClient(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(new byte[3]) });
+        var archive = new FileTranscriptArchive(CreateConfiguration(true, 3, 3), client);
+        var ticket = CreateTicket();
+        var uncommitted = await archive.ExportAsync(ticket, Snapshot(Attachment(88, 3)), default);
+        var cache = Path.Combine(ticket.ArchivePath!, "attachments");
+        var nested = Path.Combine(cache, "unexpected");
+        Directory.CreateDirectory(nested);
+        var sentinel = Path.Combine(nested, "preserve.txt");
+        await File.WriteAllTextAsync(sentinel, "preserve", Encoding.UTF8);
+        Assert.ThrowsAsync<InvalidDataException>(() => archive.PruneSnapshotsAsync(ticket, default));
+        Assert.That(Directory.Exists(uncommitted), Is.True);
+        Assert.That(File.Exists(Path.Combine(cache, "88.bin")), Is.True);
+        Assert.That(await File.ReadAllTextAsync(sentinel, Encoding.UTF8), Is.EqualTo("preserve"));
+    }
+
     private static UnixFileMode ReadUnixMode(string path)
     {
         if (OperatingSystem.IsWindows()) throw new PlatformNotSupportedException("Unix mode verification requires Unix.");

@@ -1405,6 +1405,110 @@ public sealed class TicketServiceTests
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     }
+    [TestCase(false, "html")]
+    [TestCase(false, "seal")]
+    [TestCase(false, "missing-json")]
+    [TestCase(true, "html")]
+    [TestCase(true, "seal")]
+    [TestCase(true, "missing-json")]
+    public async Task InvalidSelectedArchiveDoesNotBlockFreshExportOrDueCleanup(bool cleanup, string corruption)
+    {
+        var root = Path.Combine(Path.GetTempPath(), "swlor-prune-recovery", Guid.NewGuid().ToString("N"));
+        try
+        {
+            _configuration.Tickets.ArchiveDirectory = root;
+            _configuration.Tickets.CopyAttachments = false;
+            using var http = new HttpClient();
+            var files = new FileTranscriptArchive(_configuration, http);
+            _service = new TicketService(_configuration, _store, _discord, files, _clock);
+            await Open("first", new Actor(1, []), "corrupt-selected-export");
+            _discord.Snapshot = new([new(10, 1, "member", "previous evidence", _clock.GetUtcNow(), [])], 10);
+            await _service.ExportAsync(ChannelOne, Support);
+            var previous = _store.Tickets.Single();
+            var selected = previous.ArchiveSnapshotPath!;
+            if (corruption == "html") await File.AppendAllTextAsync(Path.Combine(selected, "transcript.html"), "changed");
+            else if (corruption == "seal") await File.WriteAllTextAsync(Path.Combine(selected, "attachment-manifest.sha256"), new string('0', 64));
+            else File.Delete(Path.Combine(selected, "transcript.json"));
+            var priorHtml = await File.ReadAllBytesAsync(Path.Combine(selected, "transcript.html"));
+            var reads = 0;
+            _discord.BeforeTranscriptAsync = (_, _) =>
+            {
+                if (++reads == 1)
+                {
+                    Assert.That(Directory.Exists(selected), Is.True, "A failed validation must not prune the selected generation.");
+                    Assert.That(File.ReadAllBytes(Path.Combine(selected, "transcript.html")), Is.EqualTo(priorHtml));
+                    Assert.That(_store.Tickets.Single().ArchiveSnapshotPath, Is.EqualTo(selected));
+                }
+                return Task.CompletedTask;
+            };
+            _discord.Snapshot = new([new(11, 1, "member", "replacement evidence", _clock.GetUtcNow(), [])], 11);
+            if (cleanup)
+            {
+                await _service.CloseAsync(ChannelOne, Support);
+                _clock.Advance(TimeSpan.FromDays(8));
+                await _service.MaintainAsync();
+                Assert.That(_store.Tickets.Single().State, Is.EqualTo(TicketState.Deleted));
+                Assert.That(_discord.DeleteCalls, Is.EqualTo(1));
+                Assert.That(reads, Is.EqualTo(2));
+            }
+            else
+            {
+                Assert.That((await _service.ExportAsync(ChannelOne, Support)).Success, Is.True);
+                Assert.That(reads, Is.EqualTo(1));
+                Assert.That(_discord.DeleteCalls, Is.Zero);
+            }
+            var current = _store.Tickets.Single();
+            Assert.That(current.ArchiveComplete, Is.True);
+            Assert.That(current.ArchiveSnapshotPath, Is.Not.EqualTo(selected));
+            Assert.That(await File.ReadAllTextAsync(Path.Combine(current.ArchiveSnapshotPath!, "transcript.html")), Does.Contain("replacement evidence"));
+            Assert.That(Directory.Exists(selected), Is.False, "Only a successfully selected replacement permits reclamation.");
+            await files.PruneSnapshotsAsync(current, default);
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    }
+
+    [TestCase(false, false)]
+    [TestCase(false, true)]
+    [TestCase(true, false)]
+    [TestCase(true, true)]
+    public async Task PreExportPruningPreservesCallerAndInactivityCancellationAndReleasesGuard(bool cleanup, bool inactivity)
+    {
+        await Open("first", new Actor(1, []), "prune-cancellation");
+        if (cleanup)
+        {
+            await _service.CloseAsync(ChannelOne, Support);
+            _clock.Advance(TimeSpan.FromDays(8));
+        }
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var reads = 0;
+        _discord.BeforeTranscriptAsync = (_, _) => { reads++; return Task.CompletedTask; };
+        _archive.BeforePruneAsync = async (_, progress, token) =>
+        {
+            progress();
+            started.TrySetResult();
+            await Task.Delay(Timeout.InfiniteTimeSpan, token);
+        };
+        using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        var operation = cleanup ? _service.MaintainAsync(cancellation.Token) :
+            _service.ExportAsync(ChannelOne, Support, cancellation.Token);
+        await started.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        if (inactivity) _clock.Advance(TimeSpan.FromMinutes(4));
+        else cancellation.Cancel();
+        if (cleanup && inactivity) await operation.WaitAsync(TimeSpan.FromSeconds(2));
+        else Assert.CatchAsync<OperationCanceledException>(() => operation.WaitAsync(TimeSpan.FromSeconds(2)));
+        Assert.That(_archive.ExportCalls, Is.Zero);
+        Assert.That(reads, Is.Zero);
+        Assert.That(_archive.PruneCalls, Is.EqualTo(1));
+        Assert.That(_discord.DeleteCalls, Is.Zero);
+        Assert.That(_store.Tickets.Single().ArchiveComplete, Is.False);
+        _archive.BeforePruneAsync = null;
+        if (cleanup)
+        {
+            await _service.MaintainAsync();
+            Assert.That(_discord.DeleteCalls, Is.EqualTo(1));
+        }
+        else Assert.That((await _service.ExportAsync(ChannelOne, Support)).Success, Is.True);
+    }
     [TestCase("scan")]
     [TestCase("ownership")]
     [TestCase("storage")]
@@ -2311,6 +2415,8 @@ public sealed class TicketServiceTests
         public int ExportCalls { get; private set; }
         public Func<Ticket, CancellationToken, Task>? BeforeExportAsync { get; set; }
         public Func<Ticket, Action, CancellationToken, Task>? BeforeProgressExportAsync { get; set; }
+        public Func<Ticket, Action, CancellationToken, Task>? BeforePruneAsync { get; set; }
+        public int PruneCalls { get; private set; }
         public List<string> DeletedPaths { get; } = [];
 
         public string GetArchivePath(Ticket ticket) => $"/archives/{ticket.Id:N}.json";
@@ -2327,6 +2433,16 @@ public sealed class TicketServiceTests
         {
             if (BeforeProgressExportAsync is not null) await BeforeProgressExportAsync(ticket, progress, ct);
             return await ExportAsync(ticket, snapshot, ct);
+        }
+        public Task PruneSnapshotsAsync(Ticket ticket, CancellationToken ct) =>
+            PruneSnapshotsAsync(ticket, ct, static () => { });
+
+        public async Task PruneSnapshotsAsync(Ticket ticket, CancellationToken ct, Action progress)
+        {
+            ct.ThrowIfCancellationRequested();
+            PruneCalls++;
+            if (BeforePruneAsync is not null) await BeforePruneAsync(ticket, progress, ct);
+            ct.ThrowIfCancellationRequested();
         }
         public Task DeleteAsync(string path, CancellationToken ct)
         {

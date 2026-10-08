@@ -310,6 +310,108 @@ public sealed class CommunityTests
     }
 
     [Test]
+    public async Task RecoverPendingDeliveriesAsync_DropsEmbedsEmptiedByAggregateTemplateBudget()
+    {
+        var config = new BotConfiguration
+        {
+            GuildId = 1, Prefix = "?",
+            Answers = [new QuickAnswerOptions
+            {
+                Name = "guide",
+                Embeds =
+                [
+                    new AnswerEmbed
+                    {
+                        Url = "https://example.com/guide",
+                        Fields = Enumerable.Range(0, 6)
+                            .Select(_ => new SWLOR.DiscordBot.Configuration.EmbedField { Name = "N", Value = "{args}" }).ToArray()
+                    },
+                    new AnswerEmbed { Title = "Later {args}", Url = "https://example.com/later" }
+                ]
+            }]
+        };
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", []), SendFailuresRemaining = 1 };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        var arguments = new string('x', 1000);
+
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 300, $"?guide {arguments}", default));
+        Assert.That(store.IsCompleted("answer:100:300"), Is.False);
+        Assert.That(await new CommunityService(config, store, discord, new FakeDeletionStore()).RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+
+        var delivered = discord.Sent.Single().Message;
+        Assert.That(delivered.Embeds, Has.Count.EqualTo(1));
+        Assert.That(delivered.Embeds[0].Url, Is.EqualTo("https://example.com/guide"));
+        Assert.That(delivered.Embeds[0].Fields.Sum(field => field.Name.Length + field.Value.Length), Is.EqualTo(6000));
+        Assert.That(store.IsCompleted("answer:100:300"), Is.True);
+    }
+
+    [Test]
+    public async Task RecoverPendingDeliveriesAsync_DropsEmbedWhenTruncationRemovesSplitSurrogate()
+    {
+        var config = new BotConfiguration
+        {
+            GuildId = 1, Prefix = "?",
+            Answers = [new QuickAnswerOptions
+            {
+                Name = "guide",
+                Embeds =
+                [
+                    new AnswerEmbed
+                    {
+                        Description = new string('d', 4096),
+                        Fields =
+                        [
+                            new SWLOR.DiscordBot.Configuration.EmbedField { Name = new string('n', 256), Value = new string('v', 1024) },
+                            new SWLOR.DiscordBot.Configuration.EmbedField { Name = new string('n', 256), Value = new string('v', 367) }
+                        ]
+                    },
+                    new AnswerEmbed { Title = "{1}", Url = "https://example.com/split" }
+                ]
+            }]
+        };
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", []), SendFailuresRemaining = 1 };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+
+        Assert.ThrowsAsync<InvalidOperationException>(() => service.ExecuteAsync(7, 100, 301, "?guide 😀", default));
+        Assert.That(await new CommunityService(config, store, discord, new FakeDeletionStore()).RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+
+        var delivered = discord.Sent.Single().Message;
+        Assert.That(delivered.Embeds, Has.Count.EqualTo(1));
+        Assert.That(delivered.Embeds[0].Description, Has.Length.EqualTo(4096));
+        Assert.That(delivered.Embeds[0].Fields.Sum(field => field.Name.Length + field.Value.Length), Is.EqualTo(1903));
+        Assert.That(store.IsCompleted("answer:100:301"), Is.True);
+    }
+
+    [Test]
+    public async Task ExecuteAsync_DropsWhitespaceOnlyRenderedEmbedContent()
+    {
+        var config = new BotConfiguration
+        {
+            GuildId = 1, Prefix = "?",
+            Answers = [new QuickAnswerOptions
+            {
+                Name = "guide",
+                Embeds =
+                [
+                    new AnswerEmbed { Title = "{args}", Url = "https://example.com/whitespace" },
+                    new AnswerEmbed { Title = "Useful" }
+                ]
+            }]
+        };
+        var store = new FakeTicketStore();
+        var discord = new FakeCommunityDiscord { Member = new CommunityMember(7, "Player", []) };
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+
+        await service.ExecuteAsync(7, 100, 302, "?guide   ", default);
+
+        Assert.That(discord.Sent.Single().Message.Embeds, Has.Count.EqualTo(1));
+        Assert.That(discord.Sent.Single().Message.Embeds[0].Title, Is.EqualTo("Useful"));
+        Assert.That(store.IsCompleted("answer:100:302"), Is.True);
+    }
+
+    [Test]
     public async Task RecoverPendingDeliveriesAsync_SkipsAnswerWhenCurrentRoleAuthorizationWasRevoked()
     {
         var config = new BotConfiguration

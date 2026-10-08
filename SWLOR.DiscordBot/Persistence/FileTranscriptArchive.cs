@@ -183,9 +183,17 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
                 if (!File.Exists(Path.Combine(ticket.ArchiveSnapshotPath, name)))
                     throw new InvalidOperationException("The selected snapshot is incomplete; pruning is suspended.");
         }
-        // A legacy root export or an uncommitted generation cannot prove cache ownership.
+        // A complete selection needs a trustworthy manifest before reclaiming shared cache.
         var selectedFiles = ticket.ArchiveComplete && ticket.ArchiveSnapshotPath is not null
             ? await ReadSelectedAttachmentFilesAsync(ticket, ct, progress) : null;
+        // First-export downloads and generations have no durable readers until selection commits.
+        // Preserve any legacy root transcript artifact, including records missing the complete flag.
+        var legacyRoot = new[] { "transcript.json", "transcript.html" }.Any(name =>
+        {
+            var path = Path.Combine(directory, name);
+            return File.Exists(path) || Directory.Exists(path);
+        });
+        var discardUnpublishedCache = !ticket.ArchiveComplete && ticket.ArchiveSnapshotPath is null && !legacyRoot;
         var obsoleteSnapshots = new List<string>();
         if (Directory.Exists(snapshots))
         {
@@ -201,13 +209,13 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
         }
         var obsoleteAttachments = new List<string>();
         var attachments = Path.Combine(directory, "attachments");
-        if (selectedFiles is not null && Directory.Exists(attachments))
+        if ((selectedFiles is not null || discardUnpublishedCache) && Directory.Exists(attachments))
         {
             foreach (var path in Directory.EnumerateFileSystemEntries(attachments))
             {
                 ct.ThrowIfCancellationRequested();
                 if (Directory.Exists(path)) throw new InvalidDataException("Unexpected directory in the attachment cache; pruning is suspended.");
-                if (!selectedFiles.Contains(path)) obsoleteAttachments.Add(path);
+                if (selectedFiles is null || !selectedFiles.Contains(path)) obsoleteAttachments.Add(path);
                 progress();
             }
         }
@@ -227,13 +235,13 @@ public sealed class FileTranscriptArchive(BotConfiguration configuration, HttpCl
                 if (File.Exists(path)) File.Delete(path);
                 progress();
             }
-            foreach (var path in obsoleteAttachments)
-            {
-                ct.ThrowIfCancellationRequested();
-                RejectLink(path);
-                File.Delete(path);
-                progress();
-            }
+        }
+        foreach (var path in obsoleteAttachments)
+        {
+            ct.ThrowIfCancellationRequested();
+            RejectLink(path);
+            File.Delete(path);
+            progress();
         }
     }
 

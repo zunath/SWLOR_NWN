@@ -40,7 +40,8 @@ public static partial class TemplateRenderer
     {
         var content = Truncate(message.Content ?? "", 2000);
         var remaining = 6000;
-        var embeds = (message.Embeds ?? []).Take(10).Select(embed =>
+        var embeds = new List<CommunityEmbed>();
+        foreach (var embed in (message.Embeds ?? []).Take(10))
         {
             var title = Take(embed.Title, 256, ref remaining);
             var description = Take(embed.Description, 4096, ref remaining);
@@ -52,8 +53,10 @@ public static partial class TemplateRenderer
                 var value = Take(field.Value, 1024, ref remaining) ?? "";
                 if (name.Length > 0 && value.Length > 0) fields.Add(new CommunityEmbedField(name, value, field.Inline));
             }
-            return new CommunityEmbed(title, description, embed.Url, embed.Color, fields);
-        }).ToArray();
+            if (!string.IsNullOrWhiteSpace(title) || !string.IsNullOrWhiteSpace(description) ||
+                fields.Any(field => !string.IsNullOrWhiteSpace(field.Name) && !string.IsNullOrWhiteSpace(field.Value)))
+                embeds.Add(new CommunityEmbed(title, description, embed.Url, embed.Color, fields));
+        }
         return message with { Content = content, Embeds = embeds };
     }
 

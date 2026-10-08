@@ -152,6 +152,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 if (!string.IsNullOrEmpty(beastId)) DB.Delete<Beast>(beastId);
                 if (target != player && GetIsObjectValid(target)) DestroyObject(target);
                 await ctx.WaitFrameAsync();
+                // Queued last so it runs after Dispose clears the player flag; otherwise the
+                // fixture stays at the spawn point through the rest of the sweep.
+                AssignCommand(player, () => DestroyObject(player));
             }
         }
     }

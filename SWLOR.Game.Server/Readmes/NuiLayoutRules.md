@@ -157,9 +157,7 @@ The hook fires after every modal close (confirm and cancel, both modal kinds).
   plain nested partial mid-redraw and leave the content area blank (the Settings
   Identity and Chat tabs shipped this way). `ChangePartialView` therefore routes any
   group declared directly in `%%WINDOW_MAIN%%` through `SwapNestedPartialView` (root
-  redraw → apply → re-apply next tick → re-apply after 0.2s), the path the Character
-  Sheet tabs proved. The next-tick re-apply alone can land in the same client frame as
-  the root redraw and be dropped too (Character Sheet opened blank, Oct 2026).
+  redraw → apply → re-apply next tick), the path the Character Sheet tabs proved.
   The root, slots nested inside another partial (a root redraw would wipe their
   parent), and swaps made while a modal is showing are applied directly
   (`GuiPartialViewRouting`). Call `SwapNestedPartialView` yourself only to pass

@@ -75,8 +75,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private Action<TintMapColor> _pendingPickerApply;
         private bool _pickerFlushScheduled;
         private bool _tintPickerActive;
-        private int _tintPickerGestureGeneration;
         private Action<TintMapColor> _tintPickerApply;
+        private GuiColor _unclaimedPickerColor;
+        private int _unclaimedPickerGeneration;
         private bool _tintControlBindingsWatched;
         private string _tintComponentCorrection;
 
@@ -254,7 +255,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 if (!QueueTintPickerColor(value))
+                {
+                    DelayCommand(0.1f, StageTintPickerColor(value));
                     return;
+                }
                 if (_pickerFlushScheduled)
                     return;
                 _pickerFlushScheduled = true;
@@ -1162,18 +1166,39 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var payload = NuiGetEventPayload();
             var button = JsonGetInt(JsonObjectGet(payload, "mouse_btn"));
-            if ((NuiMouseButton)button == NuiMouseButton.Left)
-                BeginTintPickerGesture(NuiMouseButton.Left, CaptureTintColorEdit());
+            BeginTintPickerGesture((NuiMouseButton)button,
+                (NuiMouseButton)button == NuiMouseButton.Left ? CaptureTintColorEdit() : null);
         };
 
         private void BeginTintPickerGesture(NuiMouseButton button, Action<TintMapColor> apply)
         {
+            var color = _unclaimedPickerColor;
+            _unclaimedPickerColor = null;
+            _unclaimedPickerGeneration++;
             if (button == NuiMouseButton.Left)
             {
-                _tintPickerGestureGeneration++;
                 _tintPickerActive = true;
                 _tintPickerApply = apply;
+                if (color != null)
+                {
+                    QueueTintPickerColor(color);
+                    FlushPendingPickerColor();
+                }
             }
+        }
+
+        private Action StageTintPickerColor(GuiColor color)
+        {
+            // The native picker sends a click's color watch before mousedown.
+            // Hold it briefly for that press, without applying unsolicited hydration.
+            _unclaimedPickerColor = color;
+            var generation = ++_unclaimedPickerGeneration;
+            var token = WindowToken;
+            return () =>
+            {
+                if (generation == _unclaimedPickerGeneration && token == WindowToken)
+                    _unclaimedPickerColor = null;
+            };
         }
 
         private bool QueueTintPickerColor(GuiColor value)
@@ -1195,34 +1220,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var payload = NuiGetEventPayload();
             var button = JsonGetInt(JsonObjectGet(payload, "mouse_btn"));
-            var finishRelease = ReleaseTintPickerGesture((NuiMouseButton)button);
-            if (finishRelease != null)
-                DelayCommand(0.1f, finishRelease);
+            ReleaseTintPickerGesture((NuiMouseButton)button);
         };
 
-        private Action ReleaseTintPickerGesture(NuiMouseButton button)
+        private void ReleaseTintPickerGesture(NuiMouseButton button)
         {
             if (button != NuiMouseButton.Left || !_tintPickerActive)
-                return null;
+                return;
 
             FlushPendingPickerColor();
-            var generation = _tintPickerGestureGeneration;
-            var token = WindowToken;
-            // A quick click's watched color can arrive after mouse-up. Keep its
-            // captured target alive until those events have had time to arrive.
-            return () =>
-            {
-                if (generation != _tintPickerGestureGeneration || token != WindowToken)
-                    return;
-
-                FlushPendingPickerColor();
-                CancelTintPickerGesture();
-            };
+            CancelTintPickerGesture();
         }
 
         private void CancelTintPickerGesture()
         {
-            _tintPickerGestureGeneration++;
+            _unclaimedPickerColor = null;
+            _unclaimedPickerGeneration++;
             _tintPickerActive = false;
             _tintPickerApply = null;
             _pendingPickerColor = null;

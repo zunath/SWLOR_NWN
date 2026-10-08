@@ -153,7 +153,7 @@ public sealed class DiscordOperations(DiscordSocketClient client, BotConfigurati
             return (category, guild, overwrites);
         }, async (prepared, token) =>
         {
-            // Rate-limit retries are safe; timeout/502 retries could create a second channel after an ambiguous response.
+            // The configured transport proves setup failures at SendAsync; SDK body/timeout failures stay ambiguous.
             var createOptions = Options(token);
             createOptions.RetryMode = RetryMode.RetryRatelimit;
             return await prepared.guild.CreateTextChannelAsync($"ticket-{ticket.Number:D4}", properties =>

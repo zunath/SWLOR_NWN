@@ -12,6 +12,156 @@ namespace SWLOR.DiscordBot.Tests;
 [TestFixture]
 public sealed class CommunityTests
 {
+    [TestCase(false, false)]
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    [TestCase(true, true)]
+    public async Task PrefixEventsDuringReadyOrResumedValidationPersistForOneRestartRecovery(bool faction, bool resumed)
+    {
+        var (config, discord, command, key) = DeletionCase(faction);
+        config.Answers[0].Responses = ["Original answer"];
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore();
+        var service = new CommunityService(config, store, discord, deletions);
+        var gateway = new DiscordGateway(null!, config, null!, null!, store, service, TimeProvider.System,
+            null!, null!, NullLogger<DiscordGateway>.Instance);
+        var state = new GatewaySessionState();
+        if (resumed)
+        {
+            state.BeginValidation();
+            state.Disconnect();
+        }
+        var validation = resumed ? state.ObserveHeartbeat(true)!.Value : state.BeginValidation();
+        Assert.That(state.IsReady(true), Is.False);
+        var capabilityChecks = 0;
+        bool CanExecute() { capabilityChecks++; return state.IsReady(true); }
+
+        await gateway.ReceiveCommunityCommandAsync(1, ChannelType.Text, 7, false, false, 100, 300, command, CanExecute);
+        Assert.That(store.HasDelivery(key), Is.True, "One-shot events must commit while validation is pending.");
+        Assert.That(store.IsCompleted(key), Is.False);
+        Assert.That(capabilityChecks, Is.EqualTo(1), "Readiness gates queue admission only after persistence.");
+        Assert.That(discord.MemberLookups, Is.Zero);
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(discord.RoleMutations, Is.Empty);
+        Assert.That(discord.Deleted, Is.Empty);
+        Assert.That(deletions.Pending, Is.Empty);
+
+        config.Answers[0].Responses = ["Changed answer"];
+        await gateway.ReceiveCommunityCommandAsync(1, ChannelType.Text, 7, false, false, 100, 300, command, CanExecute);
+        Assert.That(state.CompleteValidation(validation, true), Is.True);
+        var restarted = new CommunityService(config, store, discord, deletions);
+        Assert.That(await restarted.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(store.IsCompleted(key), Is.True);
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+        Assert.That(discord.Deleted, Is.EqualTo(new[] { (100UL, 300UL) }));
+        if (faction) Assert.That(discord.RoleMutations, Is.EqualTo(new[] { "add:7:21" }));
+        else Assert.That(discord.Sent.Single().Message.Content, Is.EqualTo("Original answer"));
+        Assert.That(await restarted.RecoverPendingDeliveriesAsync(default), Is.Zero);
+        await restarted.ExecuteAsync(7, 100, 300, command, default);
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+        if (faction) Assert.That(discord.RoleMutations, Has.Count.EqualTo(1));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task PrefixQueuedBeforeDisconnectWaitsForValidatedRecovery(bool faction)
+    {
+        var (config, discord, command, key) = DeletionCase(faction);
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore();
+        var service = new CommunityService(config, store, discord, deletions);
+        var gateway = new DiscordGateway(null!, config, null!, null!, store, service, TimeProvider.System,
+            null!, null!, NullLogger<DiscordGateway>.Instance);
+        var state = new GatewaySessionState();
+        Assert.That(state.CompleteValidation(state.BeginValidation(), true), Is.True);
+        await gateway.ReceiveCommunityCommandAsync(1, ChannelType.Text, 7, false, false, 100, 300, command, () => state.IsReady(true));
+        state.Disconnect();
+        using var stopping = new CancellationTokenSource();
+        var drained = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Assert.That(gateway.TryQueueJob(_ => { drained.SetResult(); return Task.CompletedTask; }), Is.True);
+        var processing = gateway.ProcessAsync(stopping.Token);
+        try { await drained.Task.WaitAsync(TimeSpan.FromSeconds(2)); }
+        finally
+        {
+            stopping.Cancel();
+            try { await processing.WaitAsync(TimeSpan.FromSeconds(2)); } catch (OperationCanceledException) { }
+        }
+        Assert.That(store.IsCompleted(key), Is.False);
+        Assert.That(discord.MemberLookups, Is.Zero);
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(discord.RoleMutations, Is.Empty);
+        Assert.That(discord.Deleted, Is.Empty);
+        Assert.That(deletions.Pending, Is.Empty);
+        Assert.That(state.CompleteValidation(state.BeginValidation(), true), Is.True);
+        Assert.That(await new CommunityService(config, store, discord, deletions).RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.Sent, Has.Count.EqualTo(1));
+        if (faction) Assert.That(discord.RoleMutations, Is.EqualTo(new[] { "add:7:21" }));
+    }
+
+    [TestCase("role")]
+    [TestCase("departure")]
+    [TestCase("cooldown")]
+    public async Task PrefixPersistedDuringValidationRechecksAuthorizationAtRecovery(string rejection)
+    {
+        var (config, discord, command, key) = DeletionCase(false);
+        config.Answers[0].AllowedRoleIds = [9];
+        config.Answers[0].Cooldown = TimeSpan.FromMinutes(1);
+        discord.Member = discord.Member! with { RoleIds = [9] };
+        var store = new FakeTicketStore();
+        var deletions = new FakeDeletionStore();
+        var service = new CommunityService(config, store, discord, deletions);
+        var gateway = new DiscordGateway(null!, config, null!, null!, store, service, TimeProvider.System,
+            null!, null!, NullLogger<DiscordGateway>.Instance);
+        await gateway.ReceiveCommunityCommandAsync(1, ChannelType.Text, 7, false, false, 100, 300, command, () => false);
+        Assert.That(store.HasDelivery(key), Is.True);
+        Assert.That(discord.MemberLookups, Is.Zero);
+        if (rejection == "role") discord.Member = discord.Member! with { RoleIds = [] };
+        else if (rejection == "departure") discord.Member = null;
+        else store.SeedCooldown("answer-cooldown:guide:7", DateTimeOffset.UtcNow);
+        var restarted = new CommunityService(config, store, discord, deletions);
+        Assert.That(await restarted.RecoverPendingDeliveriesAsync(default), Is.EqualTo(1));
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(discord.RoleMutations, Is.Empty);
+        Assert.That(discord.Deleted, Is.Empty);
+        Assert.That(deletions.Pending, Is.Empty);
+    }
+
+    [TestCase(2UL, ChannelType.Text, false, false)]
+    [TestCase(1UL, ChannelType.Voice, false, false)]
+    [TestCase(1UL, ChannelType.Text, true, false)]
+    [TestCase(1UL, ChannelType.Text, false, true)]
+    public async Task PrefixIngressStillRejectsOtherGuildsNonTextChannelsBotsAndWebhooks(ulong guildId,
+        ChannelType channelType, bool bot, bool webhook)
+    {
+        var (config, discord, command, key) = DeletionCase(false);
+        var store = new FakeTicketStore();
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        var gateway = new DiscordGateway(null!, config, null!, null!, store, service, TimeProvider.System,
+            null!, null!, NullLogger<DiscordGateway>.Instance);
+        await gateway.ReceiveCommunityCommandAsync(guildId, channelType, 7, bot, webhook, 100, 300, command,
+            () => throw new InvalidOperationException("Excluded events must not reach capability checks."));
+        Assert.That(store.HasDelivery(key), Is.False);
+        Assert.That(discord.MemberLookups, Is.Zero);
+        Assert.That(discord.Sent, Is.Empty);
+        Assert.That(discord.RoleMutations, Is.Empty);
+    }
+
+    [TestCase("ordinary message")]
+    [TestCase("?missing")]
+    public async Task UnrecognizedPrefixEventsDuringValidationDoNotPersist(string content)
+    {
+        var (config, discord, _, _) = DeletionCase(false);
+        var store = new FakeTicketStore();
+        var service = new CommunityService(config, store, discord, new FakeDeletionStore());
+        var gateway = new DiscordGateway(null!, config, null!, null!, store, service, TimeProvider.System,
+            null!, null!, NullLogger<DiscordGateway>.Instance);
+        await gateway.ReceiveCommunityCommandAsync(1, ChannelType.Text, 7, false, false, 100, 300, content,
+            () => throw new InvalidOperationException("Unrecognized events must not reach capability checks."));
+        Assert.That(store.HasDelivery("answer:100:300"), Is.False);
+        Assert.That(store.HasDelivery("faction:100:300"), Is.False);
+        Assert.That(discord.MemberLookups, Is.Zero);
+    }
+
     [TestCase(false)]
     [TestCase(true)]
     public async Task FullGatewayQueueRetainsRecognizedCommandsForExactlyOneAuthorizedRestartRecovery(bool faction)

@@ -4,6 +4,7 @@ using System.Net;
 using System.Text.Json;
 using Discord;
 using Discord.Net;
+using Discord.Net.Rest;
 using NUnit.Framework;
 using SWLOR.DiscordBot.Configuration;
 using SWLOR.DiscordBot.Core;
@@ -15,6 +16,193 @@ namespace SWLOR.DiscordBot.Tests;
 [TestFixture]
 public sealed class DiscordAdapterTests
 {
+    [Test]
+    public void ConfiguredChannelTransportDisablesRedirectsAndPreservesTlsValidation()
+    {
+        var configuration = Program.CreateSocketConfiguration(new BotConfiguration());
+        using var transport = configuration.RestClientProvider(DiscordConfig.APIUrl);
+        Assert.That(transport, Is.TypeOf<TicketChannelRestClient>());
+        using var handler = TicketChannelRestClient.CreateChannelHandler();
+        Assert.That(handler.AllowAutoRedirect, Is.False);
+        Assert.That(handler.ServerCertificateCustomValidationCallback, Is.Null);
+        using var other = configuration.RestClientProvider("https://another.example/api/v10/");
+        Assert.That(other, Is.Not.TypeOf<TicketChannelRestClient>(), "Foreign API origins retain the default unclassified transport.");
+    }
+
+    [TestCase(HttpRequestError.NameResolutionError)]
+    [TestCase(HttpRequestError.ConnectionError)]
+    [TestCase(HttpRequestError.SecureConnectionError)]
+    public async Task ChannelOriginalSendSetupFailureProvesUnsentAndAllowsAnotherAllocation(HttpRequestError error)
+    {
+        var failure = new HttpRequestException(error, "Connection setup failed.");
+        var fail = true;
+        using var handler = new ErrorResponseHandler(() => fail
+            ? throw failure : new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{\"id\":\"123\"}") });
+        using var http = new HttpClient(handler);
+        var fallback = new RecordingRestClient();
+        using var transport = new TicketChannelRestClient(DiscordConfig.APIUrl, fallback, http);
+        var operations = new DiscordOperations(null!, new BotConfiguration(), null!, null!, null!);
+        var sent = operations.AllocateNewChannelAsync(_ => Task.FromResult(20UL),
+            (_, ct) => transport.SendAsync("POST", "guilds/42/channels", "{}", ct), default);
+        Assert.That(Assert.ThrowsAsync<ChannelCreationNotSentException>(() => sent)!.InnerException, Is.SameAs(failure));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+        Assert.That(fallback.Calls, Is.Empty);
+        fail = false;
+        var response = await operations.AllocateNewChannelAsync(_ => Task.FromResult(20UL),
+            (_, ct) => transport.SendAsync("POST", "guilds/42/channels", "{}", ct), default).WaitAsync(TimeSpan.FromSeconds(2));
+        using var reader = new StreamReader(response.Stream);
+        Assert.That(await reader.ReadToEndAsync(), Is.EqualTo("{\"id\":\"123\"}"));
+        Assert.That(handler.Requests, Is.EqualTo(2));
+    }
+
+    [TestCase(HttpRequestError.Unknown)]
+    [TestCase(HttpRequestError.ResponseEnded)]
+    [TestCase(HttpRequestError.HttpProtocolError)]
+    [TestCase(HttpRequestError.ProxyTunnelError)]
+    public void ChannelOtherTransportFailuresRemainAmbiguousWithoutReplay(HttpRequestError error)
+    {
+        var failure = new HttpRequestException(error, "Request outcome unknown.");
+        using var handler = new ErrorResponseHandler(() => throw failure);
+        using var transport = new TicketChannelRestClient(DiscordConfig.APIUrl, new RecordingRestClient(), new HttpClient(handler));
+        Assert.That(Assert.ThrowsAsync<HttpRequestException>(() => transport.SendAsync("POST", "guilds/42/channels", "{}", default)), Is.SameAs(failure));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+    }
+
+    [TestCase(HttpRequestError.NameResolutionError)]
+    [TestCase(HttpRequestError.ConnectionError)]
+    [TestCase(HttpRequestError.SecureConnectionError)]
+    public void ChannelResponseBodySetupCodesCannotReleaseTheCreationFence(HttpRequestError error)
+    {
+        var failure = new HttpRequestException(error, "Response body failed after acceptance.");
+        using var handler = new ErrorResponseHandler(() => new HttpResponseMessage(HttpStatusCode.OK)
+            { Content = new TransportFailureContent(failure) });
+        using var transport = new TicketChannelRestClient(DiscordConfig.APIUrl, new RecordingRestClient(), new HttpClient(handler));
+        Assert.That(Assert.ThrowsAsync<HttpRequestException>(() => transport.SendAsync("POST", "guilds/42/channels", "{}", default)), Is.SameAs(failure));
+        Assert.That(handler.Requests, Is.EqualTo(1), "Response buffering must occur after the setup-proof catch.");
+    }
+
+    [TestCase(HttpRequestError.NameResolutionError)]
+    [TestCase(HttpRequestError.ConnectionError)]
+    [TestCase(HttpRequestError.SecureConnectionError)]
+    public void ChannelSetupCodeWithHttpStatusRemainsAmbiguous(HttpRequestError error)
+    {
+        var failure = new HttpRequestException(error, "Response phase error.", statusCode: HttpStatusCode.OK);
+        using var handler = new ErrorResponseHandler(() => throw failure);
+        using var transport = new TicketChannelRestClient(DiscordConfig.APIUrl, new RecordingRestClient(), new HttpClient(handler));
+        Assert.That(Assert.ThrowsAsync<HttpRequestException>(() => transport.SendAsync("POST", "guilds/42/channels", "{}", default)), Is.SameAs(failure));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+    }
+
+    [TestCase("GET", "guilds/42/channels")]
+    [TestCase("POST", "channels/42/messages")]
+    [TestCase("POST", "guilds/42/channels/99")]
+    [TestCase("POST", "guilds/42/channels?extra=true")]
+    [TestCase("POST", "guilds/0/channels")]
+    [TestCase("POST", "guilds/invalid/channels")]
+    [TestCase("POST", "https://another.example/guilds/42/channels")]
+    public async Task ChannelProofTransportDelegatesOtherRoutesAndRequestOverloads(string method, string endpoint)
+    {
+        using var handler = new ErrorResponseHandler(() => throw new InvalidOperationException("Only exact channel-create JSON routes use this transport."));
+        var fallback = new RecordingRestClient();
+        using var transport = new TicketChannelRestClient(DiscordConfig.APIUrl, fallback, new HttpClient(handler));
+        transport.SetHeader("authorization", "Bot fake-test-token");
+        using var cancellation = new CancellationTokenSource();
+        transport.SetCancelToken(cancellation.Token);
+        var json = await transport.SendAsync(method, endpoint, "{}", default);
+        json.Stream.Dispose();
+        var empty = await transport.SendAsync("POST", "guilds/42/channels", default);
+        empty.Stream.Dispose();
+        var multipart = await transport.SendAsync("POST", "guilds/42/channels", new Dictionary<string, object>(), default);
+        multipart.Stream.Dispose();
+        Assert.That(fallback.Calls, Is.EqualTo(new[] { $"json:{method}:{endpoint}", "empty:POST:guilds/42/channels", "multipart:POST:guilds/42/channels" }));
+        Assert.That(fallback.Headers["authorization"], Is.EqualTo("Bot fake-test-token"));
+        Assert.That(fallback.Cancellation, Is.EqualTo(cancellation.Token));
+        Assert.That(handler.Requests, Is.Zero);
+        transport.Dispose();
+        Assert.That(fallback.Disposed, Is.True);
+    }
+
+    [Test]
+    public async Task ChannelTransportForwardsSdkHeadersAuditReasonBodyAndRateLimitResponse()
+    {
+        HttpRequestMessage? observed = null;
+        string? body = null;
+        using var handler = new InspectingChannelHandler(async (request, ct) =>
+        {
+            observed = request;
+            body = await request.Content!.ReadAsStringAsync(ct);
+            var response = new HttpResponseMessage(HttpStatusCode.TooManyRequests) { Content = new StringContent("{\"retry_after\":0}") };
+            response.Headers.Add("X-RateLimit-Bucket", "channel-create");
+            return response;
+        });
+        using var transport = new TicketChannelRestClient(DiscordConfig.APIUrl, new RecordingRestClient(), new HttpClient(handler));
+        transport.SetHeader("authorization", "Bot fake-test-token");
+        transport.SetHeader("user-agent", DiscordConfig.UserAgent);
+        transport.SetHeader("accept", "*/*");
+        var response = await transport.SendAsync("POST", "guilds/42/channels", "{\"name\":\"ticket-0001\"}", default,
+            reason: "SWLOR support bot", requestHeaders: [new("X-Test-Header", ["forwarded"])]);
+        using var reader = new StreamReader(response.Stream);
+        Assert.That(await reader.ReadToEndAsync(), Is.EqualTo("{\"retry_after\":0}"));
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.TooManyRequests));
+        Assert.That(response.Headers["X-RateLimit-Bucket"], Is.EqualTo("channel-create"));
+        Assert.That(body, Is.EqualTo("{\"name\":\"ticket-0001\"}"));
+        Assert.That(observed!.RequestUri!.AbsoluteUri, Is.EqualTo("https://discord.com/api/v10/guilds/42/channels"));
+        Assert.That(observed.Headers.Authorization!.ToString(), Is.EqualTo("Bot fake-test-token"));
+        Assert.That(observed.Headers.UserAgent.ToString(), Is.EqualTo(DiscordConfig.UserAgent));
+        Assert.That(observed.Headers.GetValues("X-Audit-Log-Reason").Single(), Is.EqualTo("SWLOR%20support%20bot"));
+        Assert.That(observed.Headers.GetValues("X-Test-Header").Single(), Is.EqualTo("forwarded"));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void ChannelDispatchedCancellationLinksSessionAndRequestTokensAndRemainsAmbiguous(bool sessionToken)
+    {
+        using var cancellation = new CancellationTokenSource();
+        var requests = 0;
+        using var handler = new InspectingChannelHandler(async (_, ct) =>
+        {
+            requests++;
+            cancellation.Cancel();
+            await Task.Delay(Timeout.Infinite, ct);
+            throw new InvalidOperationException("The linked cancellation must interrupt the request.");
+        });
+        using var transport = new TicketChannelRestClient(DiscordConfig.APIUrl, new RecordingRestClient(), new HttpClient(handler));
+        if (sessionToken) transport.SetCancelToken(cancellation.Token);
+        var send = transport.SendAsync("POST", "guilds/42/channels", "{}", sessionToken ? default : cancellation.Token);
+        Assert.That(async () => await send.WaitAsync(TimeSpan.FromSeconds(2)), Throws.InstanceOf<OperationCanceledException>());
+        Assert.That(requests, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void ChannelHttpClientTimeoutRemainsAmbiguousWithoutReplay()
+    {
+        var requests = 0;
+        using var handler = new InspectingChannelHandler(async (_, ct) =>
+        {
+            requests++;
+            await Task.Delay(Timeout.Infinite, ct);
+            throw new InvalidOperationException("The timeout must interrupt the request.");
+        });
+        using var http = new HttpClient(handler) { Timeout = TimeSpan.FromMilliseconds(50) };
+        using var transport = new TicketChannelRestClient(DiscordConfig.APIUrl, new RecordingRestClient(), http);
+        Assert.That(async () => await transport.SendAsync("POST", "guilds/42/channels", "{}", default).WaitAsync(TimeSpan.FromSeconds(2)),
+            Throws.InstanceOf<OperationCanceledException>());
+        Assert.That(requests, Is.EqualTo(1));
+    }
+
+    [TestCase(HttpStatusCode.BadGateway)]
+    [TestCase(HttpStatusCode.TemporaryRedirect)]
+    [TestCase(HttpStatusCode.Conflict)]
+    public async Task ChannelTransportReturnsUnknownStatusForSdkHandlingWithoutFollowingOrRetrying(HttpStatusCode status)
+    {
+        using var handler = new ErrorResponseHandler(() => new HttpResponseMessage(status) { Content = new StringContent("{}") });
+        using var transport = new TicketChannelRestClient(DiscordConfig.APIUrl, new RecordingRestClient(), new HttpClient(handler));
+        var response = await transport.SendAsync("POST", "guilds/42/channels", "{}", default);
+        response.Stream.Dispose();
+        Assert.That(response.StatusCode, Is.EqualTo(status));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+    }
+
     [Test]
     public async Task ConcurrentChannelCreationReselectsCategoryAfterLastSlotIsTaken()
     {
@@ -1383,6 +1571,41 @@ public sealed class DiscordAdapterTests
             Requests++;
             return Task.FromResult(response());
         }
+    }
+
+    private sealed class RecordingRestClient : IRestClient
+    {
+        public List<string> Calls { get; } = [];
+        public Dictionary<string, string> Headers { get; } = [];
+        public CancellationToken Cancellation { get; private set; }
+        public bool Disposed { get; private set; }
+        public void SetHeader(string key, string value) => Headers[key] = value;
+        public void SetCancelToken(CancellationToken cancelToken) => Cancellation = cancelToken;
+        private Task<RestResponse> Record(string kind, string method, string endpoint)
+        {
+            Calls.Add($"{kind}:{method}:{endpoint}");
+            return Task.FromResult(new RestResponse(HttpStatusCode.OK, [], new MemoryStream()));
+        }
+        public Task<RestResponse> SendAsync(string method, string endpoint, CancellationToken cancelToken, bool headerOnly = false,
+            string? reason = null, IEnumerable<KeyValuePair<string, IEnumerable<string>>>? requestHeaders = null) => Record("empty", method, endpoint);
+        public Task<RestResponse> SendAsync(string method, string endpoint, string json, CancellationToken cancelToken, bool headerOnly = false,
+            string? reason = null, IEnumerable<KeyValuePair<string, IEnumerable<string>>>? requestHeaders = null) => Record("json", method, endpoint);
+        public Task<RestResponse> SendAsync(string method, string endpoint, IReadOnlyDictionary<string, object> multipartParams,
+            CancellationToken cancelToken, bool headerOnly = false, string? reason = null,
+            IEnumerable<KeyValuePair<string, IEnumerable<string>>>? requestHeaders = null) => Record("multipart", method, endpoint);
+        public void Dispose() => Disposed = true;
+    }
+
+    private sealed class InspectingChannelHandler(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> respond) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) =>
+            respond(request, cancellationToken);
+    }
+
+    private sealed class TransportFailureContent(HttpRequestException failure) : HttpContent
+    {
+        protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context) => Task.FromException(failure);
+        protected override bool TryComputeLength(out long length) { length = 0; return false; }
     }
 
     private sealed class CountedErrorStream(byte[] bytes) : MemoryStream(bytes)

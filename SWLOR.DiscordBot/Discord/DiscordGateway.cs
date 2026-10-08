@@ -170,20 +170,26 @@ public sealed class DiscordGateway(DiscordSocketClient client, BotConfiguration 
         ? "Close this ticket? The channel will become read-only for the requester."
         : "Close this ticket? The channel will be hidden from the requester.";
 
-    private async Task OnMessageAsync(SocketMessage message)
+    private Task OnMessageAsync(SocketMessage message)
     {
-        if (!Ready || message.Author.IsBot || message.Author.IsWebhook || message.Channel is not SocketTextChannel channel ||
-            channel.ChannelType != ChannelType.Text || channel.Guild.Id != configuration.GuildId) return;
+        if (message.Channel is not SocketTextChannel channel) return Task.CompletedTask;
         bool CanExecute() => Ready && channel.Guild.CurrentUser is { } bot &&
             CanExecuteCommunityCommand(configuration, bot.GetPermissions(channel), channel.Id, message.Content);
-        if (!CanExecute()) return;
+        return ReceiveCommunityCommandAsync(channel.Guild.Id, channel.ChannelType, message.Author.Id,
+            message.Author.IsBot, message.Author.IsWebhook, channel.Id, message.Id, message.Content, CanExecute);
+    }
+
+    internal async Task ReceiveCommunityCommandAsync(ulong guildId, ChannelType channelType, ulong userId,
+        bool isBot, bool isWebhook, ulong channelId, ulong messageId, string content, Func<bool> canExecute)
+    {
+        if (guildId != configuration.GuildId || channelType != ChannelType.Text || isBot || isWebhook) return;
         try
         {
+            // READY/RESUMED validation can overlap one-shot message events. Commit before readiness or capability gates.
             using var persistence = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
             persistence.CancelAfter(TimeSpan.FromSeconds(10));
-            if (!await PersistAndQueueCommandAsync(community, message.Author.Id, channel.Id, message.Id,
-                message.Content, CanExecute, job => TryQueueJob(ct => RetryCommunityAsync(job, ct)), persistence.Token))
-                logger.LogInformation("Community command was not queued; accepted intents remain available for recovery.");
+            await PersistAndQueueCommandAsync(community, userId, channelId, messageId,
+                content, canExecute, job => TryQueueJob(ct => RetryCommunityAsync(job, ct)), persistence.Token);
         }
         catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
         {

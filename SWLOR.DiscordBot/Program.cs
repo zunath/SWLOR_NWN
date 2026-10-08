@@ -13,6 +13,14 @@ namespace SWLOR.DiscordBot;
 
 public static class Program
 {
+    internal static DiscordSocketConfig CreateSocketConfiguration(BotConfiguration config) => new()
+    {
+        GatewayIntents = GatewayIntentsFor(config),
+        AlwaysDownloadUsers = false, MessageCacheSize = 0, LogLevel = LogSeverity.Warning,
+        DefaultRetryMode = RetryMode.RetryRatelimit | RetryMode.Retry502,
+        RestClientProvider = TicketChannelRestClient.CreateProvider()
+    };
+
     internal static GatewayIntents GatewayIntentsFor(BotConfiguration config)
     {
         // Ticket transcripts use REST; their application-level content access is validated separately at startup.
@@ -74,12 +82,7 @@ public static class Program
         builder.Services.AddSingleton(config);
         builder.Services.AddSingleton(secrets);
         builder.Services.AddSingleton(TimeProvider.System);
-        builder.Services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
-        {
-            GatewayIntents = GatewayIntentsFor(config),
-            AlwaysDownloadUsers = false, MessageCacheSize = 0, LogLevel = LogSeverity.Warning,
-            DefaultRetryMode = RetryMode.RetryRatelimit | RetryMode.Retry502
-        }));
+        builder.Services.AddSingleton(new DiscordSocketClient(CreateSocketConfiguration(config)));
         builder.Services.AddSingleton<ReadinessMarker>();
         builder.Services.AddSingleton<ResponseDeletionQueue>();
         builder.Services.AddSingleton<DiscordOperations>();

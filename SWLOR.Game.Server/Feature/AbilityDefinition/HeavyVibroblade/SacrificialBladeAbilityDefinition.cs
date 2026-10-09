@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .UsesAnimation(Animation.DoubleStrike)
                 .HasRecastDelay(RecastGroup.SacrificialBlade, 45f)
                 .RequiresTarget()
+                .HasMaxRange(MeleeAbilityRange.Standard)
                 .HasImpactAction(SacrificialBlade1ImpactAction)
                 .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()

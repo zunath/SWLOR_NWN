@@ -1705,6 +1705,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                     if (maxRange > 0f)
                         ability.HasMaxRange(maxRange);
+                    else if (!profile.IsQueuedWeaponAbility && Combat.IsMeleeWeaponSkill(skill))
+                        ability.HasMaxRange(MeleeAbilityRange.Standard);
                 }
 
                 ability.HasCustomValidation((activator, target, level, targetLocation) =>

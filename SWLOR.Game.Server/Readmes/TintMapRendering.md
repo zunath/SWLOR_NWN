@@ -67,12 +67,15 @@ importing a preset's hue. Metal1 and Metal2 retain that neutral metal row's
 shade-dependent environment coverage: PLT-only armor relies on this alpha for
 its reflection and specularity. Other RGB layers stay opaque. Authored normal,
 specular and roughness maps still pass through standard material lighting.
-The Toolset uses the same RGB shading formula. Preset lookup and authored
-colors are unchanged.
+The Toolset viewport uses the same RGB shading and metal coverage. Preset
+lookup and authored colors are unchanged.
 
 Run `TestTintRgb.py --game-data <NWN data directory>` for GPU RGB and metal
 material checks. `TestTintShaderMaterials.py` validates native engine shader/MTR
 and preset parity, including the RGB metal coverage curve at every shade.
+`python -B -m unittest discover -s tools/tests -p test_toolset_tint_shader.py`
+draws the Toolset's production desktop and ES shader pairs on Windows, checking
+RGB/preset coverage and lit metal reflection without normal or specular maps.
 `TintMapShaderColorTests` exhaustively checks every RGB byte combination;
 the native AppearanceEditor tests cover scalar storage, drafts, reopening,
 inheritance and preset reset. Shader changes require rebuilding sw_shader.hak

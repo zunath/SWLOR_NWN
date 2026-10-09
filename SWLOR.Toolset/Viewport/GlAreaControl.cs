@@ -295,24 +295,23 @@ vec4 ResolveTintMapColor()
         0.0);
     if (custom.a > 0.5)
     {
-        vec3 referenceShade = textureLod(
+        vec4 referenceShade = textureLod(
             tintPaletteTexture,
             vec2(paletteU, referenceRow),
-            0.0).rgb;
+            0.0);
         vec3 referenceMidpoint = textureLod(
             tintPaletteTexture,
             vec2(128.5 / 256.0, referenceRow),
             0.0).rgb;
         const vec3 luminanceWeights = vec3(0.2126, 0.7152, 0.0722);
         float shadeScale = max(
-            dot(referenceShade, luminanceWeights) /
+            dot(referenceShade.rgb, luminanceWeights) /
                 max(dot(referenceMidpoint, luminanceWeights), 1.0 / 255.0),
             0.0);
         paletteColor.rgb = clamp(custom.rgb * shadeScale, 0.0, 1.0);
-        // A direct RGB choice must not inherit the hidden preset row's reflection mask. Without
-        // this, the same custom color can turn chrome/grey depending on the preset selected before
-        // it. Presets retain their authored PLT environment coverage through paletteColor.a.
-        paletteColor.a = 1.0;
+        // Metal RGB keeps the neutral metal row's reflection coverage, independently of the
+        // hidden preset. Other RGB layers stay opaque, matching the client tint shaders.
+        paletteColor.a = layer > 1.5 && layer < 3.5 ? referenceShade.a : 1.0;
     }
     return paletteColor;
 }

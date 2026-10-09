@@ -310,6 +310,16 @@ def max_range_for_row(row, skill):
         if range_match:
             return float(range_match.group(1))
 
+    if (
+        skill not in RANGED_COMBAT_IMPACT_SKILLS
+        and row["Type"] in {"Combat", "Capstone"}
+        and not is_friendly_target_active(row["Description"])
+        and not is_self_only_active(row["Description"])
+        and not is_area(row["Description"])
+        and not is_queued_weapon_active(row)
+    ):
+        return 7.0
+
     return MAX_RANGE_BY_SKILL.get(skill, 0.0)
 
 FEAT_COLUMN_WIDTHS = [

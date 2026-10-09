@@ -237,7 +237,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RainOfSteel1)
-                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 20 to enemies within 5m of you. For 45 seconds, thrown area abilities leave fragmentation zones that deal 8 physical DMG every 6 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Throwing, 50)
@@ -438,7 +437,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PerfectFlurry1)
-                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 30. Bleeding targets take +45 DMG and spread Bleed to enemies within 5m for 45 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Throwing, 50)

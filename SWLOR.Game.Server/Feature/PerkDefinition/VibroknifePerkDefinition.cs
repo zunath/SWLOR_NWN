@@ -231,7 +231,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ViralCascade1)
-                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 30, deals an additional +20 DMG if the target is inflicted with your Venom and +8 DMG per stack of your Infection on the target. Consumes your Venom and Infection stacks from the target.")
                 .Price(6)
                 .RequirementSkill(SkillType.Vibroknife, 50)
@@ -428,7 +427,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.EscapeArtist1)
-                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 30 and Blinds the target for 12 seconds and grants Invisibility for 30 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Vibroknife, 50)

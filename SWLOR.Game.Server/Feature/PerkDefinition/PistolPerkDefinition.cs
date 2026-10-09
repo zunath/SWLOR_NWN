@@ -240,7 +240,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LastWord1)
-                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 35. For 45 seconds, evading an attack refreshes Snap Roll and quickens your next auto-attack.")
                 .Price(6)
                 .RequirementSkill(SkillType.Pistol, 50)
@@ -439,7 +438,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DeadMansHand1)
-                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 30. If this critically hits, your next three weapon attacks have +20% Critical Rate and no extra attack delay.")
                 .Price(6)
                 .RequirementSkill(SkillType.Pistol, 50)

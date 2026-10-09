@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                     Perk = PerkType.SoulAscension,
                     MaxLevel = 1,
                     Prices = new[] { 6 },
-                    GrantedFeats = new[] { FeatType.SoulAscensionTrait },
+                    GrantedFeats = new[] { FeatType.SoulAscensionBurst },
                 },
                 new()
                 {

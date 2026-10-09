@@ -1463,3 +1463,7 @@
 "StatusEffect","PointBlankBurstStatusEffect","Point Blank Burst","Beneficial","","ief_ptblnkbrst","SWLOR.Game.Server\Feature\StatusEffectDefinition\PointBlankBurstStatusEffect.cs",""
 "StatusEffect","ReloadTempoStatusEffect","Reload Tempo","Beneficial","","ief_rldtempo","SWLOR.Game.Server\Feature\StatusEffectDefinition\ReloadTempoStatusEffect.cs",""
 "Feat","DoublehandTrait","Doublehand","Passive","","ife_dblhand","SWLOR_Haks\sw_2da\feat.2da",""
+"Ability","BloodFrenzyBurst","BloodFrenzyBurst","Self","","ife_bldfrenburst","SWLOR_Haks\sw_2da\feat.2da",""
+"StatusEffect","BloodFrenzyStatusEffect","Blood Frenzy","Beneficial","","ief_bldfrenzy","SWLOR.Game.Server\Feature\StatusEffectDefinition\BloodFrenzyStatusEffect.cs",""
+"Ability","SoulAscensionBurst","SoulAscensionBurst","Self","","ife_soulascburst","SWLOR_Haks\sw_2da\feat.2da",""
+"StatusEffect","SoulAscensionBurstStatusEffect","Soul Ascension Burst","Beneficial","","ief_soulascburst","SWLOR.Game.Server\Feature\StatusEffectDefinition\SoulAscensionBurstStatusEffect.cs",""

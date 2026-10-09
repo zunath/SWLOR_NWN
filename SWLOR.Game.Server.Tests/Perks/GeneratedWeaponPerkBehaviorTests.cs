@@ -823,7 +823,6 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("VibroknifePerkDefinition.cs", StatType.HostileAbilityHitNextAutoAttackNoDelayAllSkills, "1");
 
         AssertSourceStat("HeavyVibrobladePerkDefinition.cs", StatType.HeavyVibrobladeOffenseEssenceHunter, "1");
-        AssertSourceStat("HeavyVibrobladePerkDefinition.cs", StatType.HeavyVibrobladeOffenseSoulAscension, "1");
         AssertSourceStat("HeavyVibrobladePerkDefinition.cs", StatType.HeavyVibrobladeDefenseDamageDealtHPPercentRestore, "1");
 
         AssertSourceStat("RiflePerkDefinition.cs", StatType.IdleSkillAbilitySkillType, "(int)SkillType.Rifle");

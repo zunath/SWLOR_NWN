@@ -6184,6 +6184,10 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         HostileAbilityPartyBuffIcon = 1096,
 
+        /// <summary>Stamina restored on each successful auto-attack, independently of chance-based recovery.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AutoAttackHitStaminaRestore = 1097,
+
     }
 
     public class StatTypeAttribute : Attribute

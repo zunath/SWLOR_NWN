@@ -610,8 +610,8 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var combatSource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
-        combatSource.Should().Contain("if (isFirstSuccessfulTarget)");
-        combatSource.Should().Contain("ApplyLeadershipVanguardImpactRiders(activator)");
+        combatSource.Should().Contain("sequence.TryTriggerPartyBuff()");
+        combatSource.Should().Contain("ApplyHostileAbilityPartyBuff(activator, ability, damage, statusApplied)");
 
         var generatedWeaponSource = File.ReadAllText(Path.Combine(
             root.FullName,

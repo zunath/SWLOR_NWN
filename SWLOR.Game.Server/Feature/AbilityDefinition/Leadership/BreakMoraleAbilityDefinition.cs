@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             if (affectedCount <= 0)
                 return;
 
-            Combat.ApplyLeadershipVanguardImpactRiders(activator);
+            Combat.ApplyHostileAbilityPartyBuff(activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability, 0, true);
             ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst), location);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
         }

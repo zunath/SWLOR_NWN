@@ -6152,6 +6152,10 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         PhysicalAndForceDefenseAuraPercentAdjustment = 1088,
 
+        /// <summary>Stamina restored on each successful auto-attack, independently of chance-based recovery.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AutoAttackHitStaminaRestore = 1089,
+
     }
 
     public class StatTypeAttribute : Attribute

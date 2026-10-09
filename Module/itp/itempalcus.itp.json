@@ -68533,6 +68533,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Instruction Disc: Blood Frenzy"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_bloodfrenzy"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Instruction Disc: Soul Ascension"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_soulascension"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Instruction Disc: Iron Wall Stance"
                     },
                     "RESREF": {

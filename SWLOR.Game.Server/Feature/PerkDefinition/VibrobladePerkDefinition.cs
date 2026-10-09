@@ -56,11 +56,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Blood Frenzy")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.BloodFrenzyTrait)
-                .Description("Defeating an enemy restores 10 STM and grants +8% Haste for 30 seconds.")
-                .IncreasesStat(StatType.DefeatedEnemyStaminaRestore, 10)
-                .IncreasesStat(StatType.DefeatedEnemyAttackDelayReductionPercent, 8)
-                .IncreasesStat(StatType.DefeatedEnemyAttackDelayReductionDurationSeconds, 30)
+                .GrantsFeat(FeatType.BloodFrenzyBurst)
+                .DroidAISlots(1)
+                .Description("For 45 seconds, gain +15% Haste. Successful auto-attacks restore 1 STM, and defeating an enemy restores 8 STM. Works with any weapon.")
                 .Price(6)
                 .RequirementSkill(SkillType.Vibroblade, 50)
                 .RequirementQuest(BloodFrenzyQuestDefinition.FinalQuestId);

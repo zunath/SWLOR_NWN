@@ -3402,5 +3402,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         InstructionBackstab2 = 6224,
         InstructionShadowflowStance = 6225,
         InstructionEscapeArtist = 6226,
+        InstructionBloodFrenzy = 6227,
+        InstructionSoulAscension = 6228,
     }
 }

@@ -282,6 +282,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             CreateTier(50, "emerald", "elec_high", "zinsiam",
                 new DroidInstructionRecipe(RecipeType.InstructionAbsoluteDefense, "id_absodefe"),
+                new DroidInstructionRecipe(RecipeType.InstructionBloodFrenzy, "id_bloodfrenzy"),
+                new DroidInstructionRecipe(RecipeType.InstructionSoulAscension, "id_soulascension"),
                 new DroidInstructionRecipe(RecipeType.InstructionAdamantineGuard, "id_adamguar"),
                 new DroidInstructionRecipe(RecipeType.InstructionAimedShot4, "id_aimedshot4"),
                 new DroidInstructionRecipe(RecipeType.InstructionArcProjector3, "id_arcproj3"),

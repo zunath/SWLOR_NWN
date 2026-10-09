@@ -1214,6 +1214,12 @@ namespace SWLOR.Game.Server.Service
                 damage += nextAutoAttackBonus;
             }
 
+            var guaranteedStaminaRestore = Stat.GetStatAdjustment(attacker, StatType.AutoAttackHitStaminaRestore);
+            if (guaranteedStaminaRestore > 0)
+            {
+                RestoreAbilityHitStamina(attacker, guaranteedStaminaRestore);
+            }
+
             var staminaRestoreChance = Stat.GetStatAdjustment(attacker, StatType.AutoAttackStaminaRestoreChance);
             var staminaRestore = Stat.GetStatAdjustment(attacker, StatType.AutoAttackStaminaRestore);
             if (staminaRestoreChance > 0 && staminaRestore > 0 && Random.D100(1) <= staminaRestoreChance)

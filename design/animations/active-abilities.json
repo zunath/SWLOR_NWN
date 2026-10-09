@@ -3326,7 +3326,9 @@
     "BibleAnimationRow": 215,
     "PerkId": "OverclockedAnalyzer",
     "Feats": [
-      "Overload"
+      "Overload",
+      "BloodFrenzyBurst",
+      "SoulAscensionBurst"
     ],
     "DefinitionFiles": [
       "SWLOR.Game.Server/Feature/AbilityDefinition/CombatAnalyzer/OverclockedAnalyzerAbilityDefinition.cs"

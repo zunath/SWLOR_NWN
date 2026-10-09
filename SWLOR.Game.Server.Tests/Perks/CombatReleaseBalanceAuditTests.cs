@@ -293,6 +293,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.DefeatedEnemyStaminaRestore,
         StatType.DefeatedEnemyFPRestore,
         StatType.AutoAttackStaminaRestore,
+        StatType.AutoAttackHitStaminaRestore,
         StatType.AutoAttackFPRestore,
         StatType.DamageDealtStaminaRestore,
         StatType.BeastBalancedAbilityStaminaRestore,

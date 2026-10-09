@@ -16,7 +16,7 @@ public class EshanThyrsianLoreTests
         var quest = new EshanQuestDefinition().BuildQuests()["eshan_sunguard_stand"];
 
         quest.Name.Should().Be("Thyrsian Incursion");
-        quest.States[0].JournalText.Should().Contain("former Revanite Thyrsian warriors");
+        quest.States[1].JournalText.Should().Contain("former Revanite Thyrsian warriors");
         quest.States.Values.Select(state => state.JournalText)
             .Should().NotContain(text => text.Contains("Sun Guard"));
 

@@ -135,7 +135,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "esh_marble_egg"
+    "value": "FOOD"
   },
   "TemplateResRef": {
     "type": "resref",

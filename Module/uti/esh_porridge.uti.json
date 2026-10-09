@@ -166,7 +166,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "esh_porridge"
+    "value": "FOOD"
   },
   "TemplateResRef": {
     "type": "resref",

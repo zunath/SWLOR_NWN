@@ -197,7 +197,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "esh_steam_bun"
+    "value": "FOOD"
   },
   "TemplateResRef": {
     "type": "resref",

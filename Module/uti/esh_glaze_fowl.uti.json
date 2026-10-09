@@ -197,7 +197,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "esh_glaze_fowl"
+    "value": "FOOD"
   },
   "TemplateResRef": {
     "type": "resref",

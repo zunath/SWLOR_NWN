@@ -166,7 +166,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "esh_ginger_fish"
+    "value": "FOOD"
   },
   "TemplateResRef": {
     "type": "resref",

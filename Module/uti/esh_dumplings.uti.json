@@ -197,7 +197,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "esh_dumplings"
+    "value": "FOOD"
   },
   "TemplateResRef": {
     "type": "resref",

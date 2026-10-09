@@ -135,7 +135,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "esh_broth_noodle"
+    "value": "FOOD"
   },
   "TemplateResRef": {
     "type": "resref",

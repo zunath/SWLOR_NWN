@@ -33,6 +33,8 @@ public class EchaniCookingTests
             using var food = ReadItem(recipe.Resref);
             var item = food.RootElement;
             item.GetProperty("Charges").GetProperty("value").GetInt32().Should().Be(1);
+            item.GetProperty("Tag").GetProperty("value").GetString().Should().Be("FOOD",
+                "Item.UseItem dispatches the existing food handler by tag");
             item.GetProperty("TemplateResRef").GetProperty("value").GetString().Should().Be(recipe.Resref);
             recipe.Resref.Length.Should().BeLessThanOrEqualTo(16);
             var properties = item.GetProperty("PropertiesList").GetProperty("value").EnumerateArray().ToArray();

@@ -135,7 +135,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "esh_flatbread"
+    "value": "FOOD"
   },
   "TemplateResRef": {
     "type": "resref",

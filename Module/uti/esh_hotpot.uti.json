@@ -166,7 +166,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "esh_hotpot"
+    "value": "FOOD"
   },
   "TemplateResRef": {
     "type": "resref",

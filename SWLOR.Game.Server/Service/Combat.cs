@@ -5745,6 +5745,8 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
                 return;
 
+            ApplyHostileAbilityPartyBuff(activator, ability, damage, statusApplied);
+
             if (firstHostileAbilityHitDamageBonusApplied)
                 ApplyFirstHostileAbilityHitCount(activator, ability);
             if (ability.IsHostileAbility && !ability.SuppressesSourceStatusStackRiders)
@@ -5961,10 +5963,6 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case SkillType.Katar:
                     ApplyKatarVenomCurrentImpactRiders(activator, target);
-                    break;
-                case SkillType.Leadership:
-                    if (isFirstSuccessfulTarget)
-                        ApplyLeadershipVanguardImpactRiders(activator);
                     break;
                 case SkillType.Lightsaber:
                     ApplyLightsaberOffenseImpactRiders(activator, target, ability);
@@ -7125,21 +7123,43 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void ApplyLeadershipVanguardImpactRiders(uint activator)
+        internal static bool IsSuccessfulHostileAbilityImpact(AbilityDetail ability, int damage, bool statusApplied)
         {
-            var rank = Stat.GetStatAdjustment(activator, StatType.LeadershipVanguardMarkTargetRank);
-            if (rank <= 0)
+            return ability?.IsHostileAbility == true && (damage > 0 || statusApplied);
+        }
+
+        public static void ApplyHostileAbilityPartyBuff(uint activator, AbilityDetail ability, int damage, bool statusApplied)
+        {
+            if (!IsSuccessfulHostileAbilityImpact(ability, damage, statusApplied))
                 return;
 
+            var baseDamage = Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffDamagePercent);
+            var baseAccuracy = Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffAccuracyPercent);
+            var baseDuration = Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffDurationSeconds);
+            var cooldown = Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffCooldownSeconds);
+            var nameStrRef = Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffNameStrRef);
+            var icon = (EffectIconType)Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffIcon);
+            if ((baseDamage <= 0 && baseAccuracy <= 0) || baseDuration <= 0 || cooldown <= 0 ||
+                nameStrRef <= 0 || icon == EffectIconType.Invalid)
+                return;
+
+            var sequence = Ability.GetAbilityImpactSequence(activator);
+            if (sequence != null && !sequence.TryTriggerPartyBuff())
+                return;
+            if (!TryUseStatTrigger(activator, StatType.HostileAbilityPartyBuffDamagePercent, cooldown))
+                return;
+
+            var damagePercent = AbilityEffectScaling.ScaleValueBySourceSocial(activator, baseDamage,
+                Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffMaximumDamagePercent));
+            var accuracyPercent = AbilityEffectScaling.ScaleValueBySourceSocial(activator, baseAccuracy,
+                Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffMaximumAccuracyPercent));
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
-            var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, 30f);
-            var statusEffectType = rank >= 2
-                ? typeof(MarkTarget2StatusEffect)
-                : typeof(MarkTarget1StatusEffect);
+            var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, baseDuration);
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, activator, true, radius))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, statusEffectType, duration);
+                StatusEffect.ApplyStatusEffect(activator, friendly,
+                    new HostileAbilityPartyBuffStatusEffect(damagePercent, accuracyPercent, nameStrRef, icon), duration);
             }
         }
 

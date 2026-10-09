@@ -62,7 +62,7 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             self.assertIn(".HasAIScore(AIScore.SelfBuff<GuardingStatusEffect>(1))", steel_shoulder)
             self.assertNotIn(".HasAITarget", gambler_stance)
 
-    def test_regeneration_preserves_weapon_instruction_costs_and_force_exclusions(self):
+    def test_regeneration_preserves_weapon_instruction_costs_and_force_and_capstone_exclusions(self):
         rows = GENERATOR.read_manifest()
         _, feats = GENERATOR.parse_enum_values(ROOT / "SWLOR.NWN.API/NWScript/Enum/FeatType.cs")
         with tempfile.TemporaryDirectory() as folder:
@@ -76,6 +76,7 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
                 expected = [GENERATOR.base_and_level(row["PerkName"])[1]
                             for row in rows if row["Tab"] == tab
                             and row["Type"] in GENERATOR.ACTIVE_TYPES
+                            and row["Type"] != "Capstone"
                             and row["CharacterType"] != "Force"]
                 import re
                 actual = [int(rank) for rank in re.findall(r"\.DroidAISlots\((\d+)\)", source)]

@@ -56,7 +56,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AbsoluteDefense1)
-                .DroidAISlots(1)
                 .Description("For 45 seconds, party members within 5m including you take 15% less physical and Force damage and are immune to Knockdown and Dazed.")
                 .Price(6)
                 .RequirementSkill(SkillType.HeavyVibroblade, 50)
@@ -412,7 +411,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulAscensionBurst)
-                .DroidAISlots(1)
                 .Description("For 45 seconds, gain +20% Attack and heal for 8% of direct damage dealt. Costs 10% max HP. Works with any weapon.")
                 .Price(6)
                 .RequirementSkill(SkillType.HeavyVibroblade, 50)

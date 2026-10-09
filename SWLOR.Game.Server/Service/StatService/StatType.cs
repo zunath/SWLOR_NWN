@@ -6152,9 +6152,41 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
         PhysicalAndForceDefenseAuraPercentAdjustment = 1088,
 
+        /// <summary>Party damage bonus triggered by a successful hostile ability impact.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        HostileAbilityPartyBuffDamagePercent = 1089,
+
+        /// <summary>Maximum party damage bonus after Social scaling.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        HostileAbilityPartyBuffMaximumDamagePercent = 1090,
+
+        /// <summary>Party Accuracy bonus triggered by a successful hostile ability impact.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        HostileAbilityPartyBuffAccuracyPercent = 1091,
+
+        /// <summary>Maximum party Accuracy bonus after Social scaling.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        HostileAbilityPartyBuffMaximumAccuracyPercent = 1092,
+
+        /// <summary>Base duration of the party buff, before Leadership duration bonuses.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        HostileAbilityPartyBuffDurationSeconds = 1093,
+
+        /// <summary>Shared cooldown across skills for the hostile-ability party buff.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        HostileAbilityPartyBuffCooldownSeconds = 1094,
+
+        /// <summary>Displayed name of the hostile-ability party buff.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        HostileAbilityPartyBuffNameStrRef = 1095,
+
+        /// <summary>Displayed effect icon of the hostile-ability party buff.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        HostileAbilityPartyBuffIcon = 1096,
+
         /// <summary>Stamina restored on each successful auto-attack, independently of chance-based recovery.</summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        AutoAttackHitStaminaRestore = 1089,
+        AutoAttackHitStaminaRestore = 1097,
 
     }
 

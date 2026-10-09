@@ -239,7 +239,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.KillBox1)
-                .DroidAISlots(1)
                 .Description("Target an enemy or location to deal weapon DMG + 20 to enemies within 8m and apply Kill Box for 45 seconds. While Kill Box remains, any player's weapon attacks against affected enemies add Suppression stacks lasting 30 seconds using the Kill Box caster's Suppressing Shot stack strength; each stack reduces Evasion by an additional 3%.")
                 .Price(6)
                 .RequirementSkill(SkillType.Rifle, 50)
@@ -443,7 +442,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.OneShot1)
-                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 50. If used after 3 seconds without attacking, gains +25% Critical Rate and ignores 25% Defense.")
                 .Price(6)
                 .RequirementSkill(SkillType.Rifle, 50)

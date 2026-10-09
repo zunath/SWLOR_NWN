@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(feat, PerkType.ForceBurst)
-                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceBurst)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.None)
                 .UsesAuthoredAnimationAtImpact()
                 .Name(name)
                 .Level(level)
@@ -76,6 +76,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             Location targetLocation,
             int baseDamage)
         {
+            AssignCommand(activator, () =>
+            {
+                if (GetIsObjectValid(target))
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_Fireball), target);
+            });
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
@@ -90,8 +96,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 0f,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Wind,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Bump);
+                targetVisualEffect: VisualEffect.VFX_IMP_KIN_L,
+                afterSuccessfulHit: creature =>
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Silence), creature));
+
+            ApplyWindPulse(target);
+            DelayCommand(0.1f, () => ApplyWindPulse(target));
+            DelayCommand(0.2f, () => ApplyWindPulse(target));
+        }
+
+        private static void ApplyWindPulse(uint target)
+        {
+            if (GetIsObjectValid(target))
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Wind), target);
         }
     }
 }

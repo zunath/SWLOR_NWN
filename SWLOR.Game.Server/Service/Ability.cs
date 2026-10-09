@@ -2440,6 +2440,13 @@ namespace SWLOR.Game.Server.Service
                 trackedImpact == null || trackedImpact.Summary.ImpactedTargetCount == 0,
                 appliedStatusCategories);
 
+            if (damage > 0 && trackedImpact?.Ability is { } impactAbility &&
+                impactAbility.DamageImpactVisualEffect != VisualEffect.None)
+            {
+                var damageVisual = EffectVisualEffect(impactAbility.DamageImpactVisualEffect);
+                ApplyEffectToObject(DurationType.Instant, damageVisual, target);
+            }
+
             if (damage > 0 || statusApplied)
             {
                 if (trackedImpact?.VisualEffects.Effect is { } authoredEffect && authoredEffect != VisualEffect.None)

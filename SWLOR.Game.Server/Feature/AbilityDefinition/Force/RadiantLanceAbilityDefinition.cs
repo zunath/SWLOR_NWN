@@ -83,7 +83,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(feat, PerkType.RadiantLance)
-                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RadiantLance)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.None)
+                .DisplaysVisualEffectOnDamage(VisualEffect.Vfx_Imp_Sunstrike)
                 .UsesAuthoredAnimationAtImpact()
                 .Name(name)
                 .Level(level)
@@ -102,15 +103,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     LineWidthMeters,
                     AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .HasImpactAction((activator, target, _, targetLocation) =>
-                    ApplyRadiantLance(activator, target, targetLocation, baseDamage))
+                    ApplyRadiantLance(activator, target, targetLocation, baseDamage, level))
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementFP(fp);
         }
 
-        private static void ApplyRadiantLance(uint activator, uint target, Location targetLocation, int baseDamage)
+        private static void ApplyRadiantLance(uint activator, uint target, Location targetLocation, int baseDamage, int level)
         {
+            if (level == 3)
+                LaunchRadiantLance(activator, target, targetLocation);
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
@@ -125,8 +129,41 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 LineWidthMeters,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                targetVisualEffect: VisualEffect.None,
                 areaVisualEffect: VisualEffect.None);
+        }
+
+        private static void LaunchRadiantLance(uint activator, uint target, Location targetLocation)
+        {
+            var origin = GetPosition(activator);
+            var destination = GetIsObjectValid(target) ? GetPosition(target) : GetPositionFromLocation(targetLocation);
+            var delta = destination - origin;
+            var rotation = Math.Abs(delta.X) <= 0.01f && Math.Abs(delta.Y) <= 0.01f
+                ? GetFacing(activator) * Math.PI / 180.0
+                : Math.Atan2(delta.Y, delta.X);
+            var end = origin + new System.Numerics.Vector3(
+                (float)Math.Cos(rotation) * LineLengthMeters,
+                (float)Math.Sin(rotation) * LineLengthMeters, 0f);
+            var endLocation = Location(GetArea(activator), end, GetFacing(activator));
+
+            // MIRV projectiles need an object endpoint, including casts aimed at ground.
+            var projectileTarget = GetIsObjectValid(target) && target != activator
+                ? target
+                : CreateObject(ObjectType.Placeable, "plc_invisobj", endLocation);
+            if (!GetIsObjectValid(projectileTarget))
+                return;
+
+            if (projectileTarget != target)
+            {
+                SetPlotFlag(projectileTarget, true);
+                SetUseableFlag(projectileTarget, false);
+                DestroyObject(projectileTarget, 3f);
+            }
+
+            AssignCommand(activator, () => ApplyEffectToObject(
+                DurationType.Instant,
+                EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_BoltGlory),
+                projectileTarget));
         }
     }
 }

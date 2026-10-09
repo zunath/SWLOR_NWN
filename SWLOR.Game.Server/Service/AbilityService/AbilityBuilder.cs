@@ -390,6 +390,12 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>Sets the finite receipt burst used after a recipient is successfully affected.</summary>
+        public AbilityBuilder DisplaysVisualEffectOnDamage(VisualEffect visualEffect)
+        {
+            _activeAbility.DamageImpactVisualEffect = visualEffect;
+            return this;
+        }
+
         public AbilityBuilder DisplaysVisualEffectOnSuccessfulImpact(VisualEffect visualEffect)
         {
             _activeAbility.SuccessfulImpactVisualEffect = visualEffect;

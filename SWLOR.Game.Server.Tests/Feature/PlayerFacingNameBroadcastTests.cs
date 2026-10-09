@@ -97,7 +97,7 @@ public class PlayerFacingNameBroadcastTests
             "GuiDefinition",
             "ViewModel",
             "HoloNetViewModel.cs"));
-        holoNetSource.Should().Contain("PlayerName.GetChatDisplayName(onlinePlayer, Player)");
+        holoNetSource.Should().Contain("PlayerName.GetChatDisplayName(onlinePlayer, player)");
         holoNetSource.Should().Contain("\"HoloNet Broadcast\"");
         holoNetSource.Should().NotContain("authorName + \" broadcasts a new HoloNet message");
 

@@ -1,0 +1,1651 @@
+using System.Globalization;
+using System.Reflection;
+using System.Net;
+using System.Text.Json;
+using Discord;
+using Discord.Net;
+using Discord.Net.Rest;
+using NUnit.Framework;
+using SWLOR.DiscordBot.Configuration;
+using SWLOR.DiscordBot.Core;
+using SWLOR.DiscordBot.Discord;
+using SWLOR.DiscordBot.Hosting;
+
+namespace SWLOR.DiscordBot.Tests;
+
+[TestFixture]
+public sealed class DiscordAdapterTests
+{
+    [Test]
+    public void ConfiguredChannelTransportDisablesRedirectsAndPreservesTlsValidation()
+    {
+        var configuration = Program.CreateSocketConfiguration(new BotConfiguration());
+        using var transport = configuration.RestClientProvider(DiscordConfig.APIUrl);
+        Assert.That(transport, Is.TypeOf<TicketChannelRestClient>());
+        using var handler = TicketChannelRestClient.CreateChannelHandler();
+        Assert.That(handler.AllowAutoRedirect, Is.False);
+        Assert.That(handler.ServerCertificateCustomValidationCallback, Is.Null);
+        using var other = configuration.RestClientProvider("https://another.example/api/v10/");
+        Assert.That(other, Is.Not.TypeOf<TicketChannelRestClient>(), "Foreign API origins retain the default unclassified transport.");
+    }
+
+    [TestCase(HttpRequestError.NameResolutionError)]
+    [TestCase(HttpRequestError.ConnectionError)]
+    [TestCase(HttpRequestError.SecureConnectionError)]
+    public async Task ChannelOriginalSendSetupFailureProvesUnsentAndAllowsAnotherAllocation(HttpRequestError error)
+    {
+        var failure = new HttpRequestException(error, "Connection setup failed.");
+        var fail = true;
+        using var handler = new ErrorResponseHandler(() => fail
+            ? throw failure : new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{\"id\":\"123\"}") });
+        using var http = new HttpClient(handler);
+        var fallback = new RecordingRestClient();
+        using var transport = new TicketChannelRestClient(DiscordConfig.APIUrl, fallback, http);
+        var operations = new DiscordOperations(null!, new BotConfiguration(), null!, null!, null!);
+        var sent = operations.AllocateNewChannelAsync(_ => Task.FromResult(20UL),
+            (_, ct) => transport.SendAsync("POST", "guilds/42/channels", "{}", ct), default);
+        Assert.That(Assert.ThrowsAsync<ChannelCreationNotSentException>(() => sent)!.InnerException, Is.SameAs(failure));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+        Assert.That(fallback.Calls, Is.Empty);
+        fail = false;
+        var response = await operations.AllocateNewChannelAsync(_ => Task.FromResult(20UL),
+            (_, ct) => transport.SendAsync("POST", "guilds/42/channels", "{}", ct), default).WaitAsync(TimeSpan.FromSeconds(2));
+        using var reader = new StreamReader(response.Stream);
+        Assert.That(await reader.ReadToEndAsync(), Is.EqualTo("{\"id\":\"123\"}"));
+        Assert.That(handler.Requests, Is.EqualTo(2));
+    }
+
+    [TestCase(HttpRequestError.Unknown)]
+    [TestCase(HttpRequestError.ResponseEnded)]
+    [TestCase(HttpRequestError.HttpProtocolError)]
+    [TestCase(HttpRequestError.ProxyTunnelError)]
+    public void ChannelOtherTransportFailuresRemainAmbiguousWithoutReplay(HttpRequestError error)
+    {
+        var failure = new HttpRequestException(error, "Request outcome unknown.");
+        using var handler = new ErrorResponseHandler(() => throw failure);
+        using var transport = new TicketChannelRestClient(DiscordConfig.APIUrl, new RecordingRestClient(), new HttpClient(handler));
+        Assert.That(Assert.ThrowsAsync<HttpRequestException>(() => transport.SendAsync("POST", "guilds/42/channels", "{}", default)), Is.SameAs(failure));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+    }
+
+    [TestCase(HttpRequestError.NameResolutionError)]
+    [TestCase(HttpRequestError.ConnectionError)]
+    [TestCase(HttpRequestError.SecureConnectionError)]
+    public void ChannelResponseBodySetupCodesCannotReleaseTheCreationFence(HttpRequestError error)
+    {
+        var failure = new HttpRequestException(error, "Response body failed after acceptance.");
+        using var handler = new ErrorResponseHandler(() => new HttpResponseMessage(HttpStatusCode.OK)
+            { Content = new TransportFailureContent(failure) });
+        using var transport = new TicketChannelRestClient(DiscordConfig.APIUrl, new RecordingRestClient(), new HttpClient(handler));
+        Assert.That(Assert.ThrowsAsync<HttpRequestException>(() => transport.SendAsync("POST", "guilds/42/channels", "{}", default)), Is.SameAs(failure));
+        Assert.That(handler.Requests, Is.EqualTo(1), "Response buffering must occur after the setup-proof catch.");
+    }
+
+    [TestCase(HttpRequestError.NameResolutionError)]
+    [TestCase(HttpRequestError.ConnectionError)]
+    [TestCase(HttpRequestError.SecureConnectionError)]
+    public void ChannelSetupCodeWithHttpStatusRemainsAmbiguous(HttpRequestError error)
+    {
+        var failure = new HttpRequestException(error, "Response phase error.", statusCode: HttpStatusCode.OK);
+        using var handler = new ErrorResponseHandler(() => throw failure);
+        using var transport = new TicketChannelRestClient(DiscordConfig.APIUrl, new RecordingRestClient(), new HttpClient(handler));
+        Assert.That(Assert.ThrowsAsync<HttpRequestException>(() => transport.SendAsync("POST", "guilds/42/channels", "{}", default)), Is.SameAs(failure));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+    }
+
+    [TestCase("GET", "guilds/42/channels")]
+    [TestCase("POST", "channels/42/messages")]
+    [TestCase("POST", "guilds/42/channels/99")]
+    [TestCase("POST", "guilds/42/channels?extra=true")]
+    [TestCase("POST", "guilds/0/channels")]
+    [TestCase("POST", "guilds/invalid/channels")]
+    [TestCase("POST", "https://another.example/guilds/42/channels")]
+    public async Task ChannelProofTransportDelegatesOtherRoutesAndRequestOverloads(string method, string endpoint)
+    {
+        using var handler = new ErrorResponseHandler(() => throw new InvalidOperationException("Only exact channel-create JSON routes use this transport."));
+        var fallback = new RecordingRestClient();
+        using var transport = new TicketChannelRestClient(DiscordConfig.APIUrl, fallback, new HttpClient(handler));
+        transport.SetHeader("authorization", "Bot fake-test-token");
+        using var cancellation = new CancellationTokenSource();
+        transport.SetCancelToken(cancellation.Token);
+        var json = await transport.SendAsync(method, endpoint, "{}", default);
+        json.Stream.Dispose();
+        var empty = await transport.SendAsync("POST", "guilds/42/channels", default);
+        empty.Stream.Dispose();
+        var multipart = await transport.SendAsync("POST", "guilds/42/channels", new Dictionary<string, object>(), default);
+        multipart.Stream.Dispose();
+        Assert.That(fallback.Calls, Is.EqualTo(new[] { $"json:{method}:{endpoint}", "empty:POST:guilds/42/channels", "multipart:POST:guilds/42/channels" }));
+        Assert.That(fallback.Headers["authorization"], Is.EqualTo("Bot fake-test-token"));
+        Assert.That(fallback.Cancellation, Is.EqualTo(cancellation.Token));
+        Assert.That(handler.Requests, Is.Zero);
+        transport.Dispose();
+        Assert.That(fallback.Disposed, Is.True);
+    }
+
+    [Test]
+    public async Task ChannelTransportForwardsSdkHeadersAuditReasonBodyAndRateLimitResponse()
+    {
+        HttpRequestMessage? observed = null;
+        string? body = null;
+        using var handler = new InspectingChannelHandler(async (request, ct) =>
+        {
+            observed = request;
+            body = await request.Content!.ReadAsStringAsync(ct);
+            var response = new HttpResponseMessage(HttpStatusCode.TooManyRequests) { Content = new StringContent("{\"retry_after\":0}") };
+            response.Headers.Add("X-RateLimit-Bucket", "channel-create");
+            return response;
+        });
+        using var transport = new TicketChannelRestClient(DiscordConfig.APIUrl, new RecordingRestClient(), new HttpClient(handler));
+        transport.SetHeader("authorization", "Bot fake-test-token");
+        transport.SetHeader("user-agent", DiscordConfig.UserAgent);
+        transport.SetHeader("accept", "*/*");
+        var response = await transport.SendAsync("POST", "guilds/42/channels", "{\"name\":\"ticket-0001\"}", default,
+            reason: "SWLOR support bot", requestHeaders: [new("X-Test-Header", ["forwarded"])]);
+        using var reader = new StreamReader(response.Stream);
+        Assert.That(await reader.ReadToEndAsync(), Is.EqualTo("{\"retry_after\":0}"));
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.TooManyRequests));
+        Assert.That(response.Headers["X-RateLimit-Bucket"], Is.EqualTo("channel-create"));
+        Assert.That(body, Is.EqualTo("{\"name\":\"ticket-0001\"}"));
+        Assert.That(observed!.RequestUri!.AbsoluteUri, Is.EqualTo("https://discord.com/api/v10/guilds/42/channels"));
+        Assert.That(observed.Headers.Authorization!.ToString(), Is.EqualTo("Bot fake-test-token"));
+        Assert.That(observed.Headers.UserAgent.ToString(), Is.EqualTo(DiscordConfig.UserAgent));
+        Assert.That(observed.Headers.GetValues("X-Audit-Log-Reason").Single(), Is.EqualTo("SWLOR%20support%20bot"));
+        Assert.That(observed.Headers.GetValues("X-Test-Header").Single(), Is.EqualTo("forwarded"));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void ChannelDispatchedCancellationLinksSessionAndRequestTokensAndRemainsAmbiguous(bool sessionToken)
+    {
+        using var cancellation = new CancellationTokenSource();
+        var requests = 0;
+        using var handler = new InspectingChannelHandler(async (_, ct) =>
+        {
+            requests++;
+            cancellation.Cancel();
+            await Task.Delay(Timeout.Infinite, ct);
+            throw new InvalidOperationException("The linked cancellation must interrupt the request.");
+        });
+        using var transport = new TicketChannelRestClient(DiscordConfig.APIUrl, new RecordingRestClient(), new HttpClient(handler));
+        if (sessionToken) transport.SetCancelToken(cancellation.Token);
+        var send = transport.SendAsync("POST", "guilds/42/channels", "{}", sessionToken ? default : cancellation.Token);
+        Assert.That(async () => await send.WaitAsync(TimeSpan.FromSeconds(2)), Throws.InstanceOf<OperationCanceledException>());
+        Assert.That(requests, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void ChannelHttpClientTimeoutRemainsAmbiguousWithoutReplay()
+    {
+        var requests = 0;
+        using var handler = new InspectingChannelHandler(async (_, ct) =>
+        {
+            requests++;
+            await Task.Delay(Timeout.Infinite, ct);
+            throw new InvalidOperationException("The timeout must interrupt the request.");
+        });
+        using var http = new HttpClient(handler) { Timeout = TimeSpan.FromMilliseconds(50) };
+        using var transport = new TicketChannelRestClient(DiscordConfig.APIUrl, new RecordingRestClient(), http);
+        Assert.That(async () => await transport.SendAsync("POST", "guilds/42/channels", "{}", default).WaitAsync(TimeSpan.FromSeconds(2)),
+            Throws.InstanceOf<OperationCanceledException>());
+        Assert.That(requests, Is.EqualTo(1));
+    }
+
+    [TestCase(HttpStatusCode.BadGateway)]
+    [TestCase(HttpStatusCode.TemporaryRedirect)]
+    [TestCase(HttpStatusCode.Conflict)]
+    public async Task ChannelTransportReturnsUnknownStatusForSdkHandlingWithoutFollowingOrRetrying(HttpStatusCode status)
+    {
+        using var handler = new ErrorResponseHandler(() => new HttpResponseMessage(status) { Content = new StringContent("{}") });
+        using var transport = new TicketChannelRestClient(DiscordConfig.APIUrl, new RecordingRestClient(), new HttpClient(handler));
+        var response = await transport.SendAsync("POST", "guilds/42/channels", "{}", default);
+        response.Stream.Dispose();
+        Assert.That(response.StatusCode, Is.EqualTo(status));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task ConcurrentChannelCreationReselectsCategoryAfterLastSlotIsTaken()
+    {
+        var operations = new DiscordOperations(null!, new BotConfiguration(), null!, null!, null!);
+        var children = new Dictionary<ulong, int> { [20] = 49, [30] = 0 };
+        var selections = new List<ulong>();
+        var firstCreateStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseCreate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Task<ulong> SelectCategory(CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            var category = new ulong[] { 20, 30 }.First(id => children[id] < 50);
+            selections.Add(category);
+            return Task.FromResult(category);
+        }
+        async Task<ulong> CreateChannel(ulong category, CancellationToken ct)
+        {
+            if (selections.Count == 1)
+            {
+                firstCreateStarted.SetResult();
+                await releaseCreate.Task.WaitAsync(ct);
+            }
+            if (children[category] >= 50) throw new InvalidOperationException("Category is full.");
+            children[category]++;
+            return category;
+        }
+
+        var first = operations.AllocateNewChannelAsync(SelectCategory, CreateChannel, default);
+        Task<ulong>? second = null;
+        try
+        {
+            await firstCreateStarted.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            second = operations.AllocateNewChannelAsync(SelectCategory, CreateChannel, default);
+            Assert.That(selections, Is.EqualTo(new ulong[] { 20 }), "The second create must wait before selecting a category.");
+            Assert.That(second.IsCompleted, Is.False);
+            releaseCreate.SetResult();
+            Assert.That(await Task.WhenAll(first, second).WaitAsync(TimeSpan.FromSeconds(2)), Is.EqualTo(new ulong[] { 20, 30 }));
+            Assert.That(children[20], Is.EqualTo(50));
+            Assert.That(children[30], Is.EqualTo(1));
+        }
+        finally
+        {
+            releaseCreate.TrySetResult();
+            await first.WaitAsync(TimeSpan.FromSeconds(2));
+            if (second is not null) await second.WaitAsync(TimeSpan.FromSeconds(2));
+        }
+    }
+
+    [Test]
+    public async Task CategoryAllocationCanceledWaiterDoesNotSelectOrReleaseAnotherCreatesGate()
+    {
+        var operations = new DiscordOperations(null!, new BotConfiguration(), null!, null!, null!);
+        var releaseCreate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var cancellation = new CancellationTokenSource();
+        var holder = operations.AllocateNewChannelAsync(_ => Task.FromResult(20UL),
+            async (category, ct) => { await releaseCreate.Task.WaitAsync(ct); return category; }, default);
+        var canceledSelections = 0;
+        var waiter = operations.AllocateNewChannelAsync(_ => { canceledSelections++; return Task.FromResult(30UL); },
+            (category, _) => Task.FromResult(category), cancellation.Token);
+        Task<ulong>? next = null;
+        try
+        {
+            cancellation.Cancel();
+            var error = Assert.ThrowsAsync<ChannelCreationNotSentException>(() => waiter.WaitAsync(TimeSpan.FromSeconds(2)))!;
+            Assert.That(error.InnerException, Is.InstanceOf<OperationCanceledException>());
+            Assert.That(canceledSelections, Is.Zero);
+            next = operations.AllocateNewChannelAsync(_ => Task.FromResult(30UL), (category, _) => Task.FromResult(category), default);
+            Assert.That(next.IsCompleted, Is.False, "A canceled waiter cannot release a gate held by another create.");
+            releaseCreate.SetResult();
+            Assert.That(await holder.WaitAsync(TimeSpan.FromSeconds(2)), Is.EqualTo(20UL));
+            Assert.That(await next.WaitAsync(TimeSpan.FromSeconds(2)), Is.EqualTo(30UL));
+        }
+        finally
+        {
+            releaseCreate.TrySetResult();
+            await holder.WaitAsync(TimeSpan.FromSeconds(2));
+            if (next is not null) await next.WaitAsync(TimeSpan.FromSeconds(2));
+        }
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CategoryAllocationReleasesGateAfterCreateFailureOrCancellation(bool cancel)
+    {
+        var operations = new DiscordOperations(null!, new BotConfiguration(), null!, null!, null!);
+        using var cancellation = new CancellationTokenSource();
+        var creates = 0;
+        var failure = operations.AllocateNewChannelAsync<ulong, ulong>(_ => Task.FromResult(20UL), (_, ct) =>
+        {
+            creates++;
+            if (cancel) { cancellation.Cancel(); ct.ThrowIfCancellationRequested(); }
+            throw new HttpRequestException("Ambiguous create response.");
+        }, cancellation.Token);
+        if (cancel) Assert.CatchAsync<OperationCanceledException>(() => failure);
+        else Assert.ThrowsAsync<HttpRequestException>(() => failure);
+        Assert.That(creates, Is.EqualTo(1), "An ambiguous create must not be retried.");
+        Assert.That(await operations.AllocateNewChannelAsync(_ => Task.FromResult(30UL), (category, _) => Task.FromResult(category), default)
+            .WaitAsync(TimeSpan.FromSeconds(2)), Is.EqualTo(30UL));
+    }
+
+    [Test]
+    public async Task ChannelCreationPreparationFailureProvesNoChannelWasSubmittedAndReleasesGate()
+    {
+        var operations = new DiscordOperations(null!, new BotConfiguration(), null!, null!, null!);
+        var creates = 0;
+        var failure = operations.AllocateNewChannelAsync<ulong, ulong>(_ => throw new InvalidOperationException("Categories unavailable."),
+            (category, _) => { creates++; return Task.FromResult(category); }, default);
+        var error = Assert.ThrowsAsync<ChannelCreationNotSentException>(() => failure)!;
+        Assert.That(error.InnerException, Is.TypeOf<InvalidOperationException>());
+        Assert.That(creates, Is.Zero);
+        Assert.That(await operations.AllocateNewChannelAsync(_ => Task.FromResult(30UL), (category, _) => Task.FromResult(category), default)
+            .WaitAsync(TimeSpan.FromSeconds(2)), Is.EqualTo(30UL));
+    }
+
+    [TestCase(HttpStatusCode.BadRequest, true)]
+    [TestCase(HttpStatusCode.Unauthorized, true)]
+    [TestCase(HttpStatusCode.Forbidden, true)]
+    [TestCase(HttpStatusCode.NotFound, true)]
+    [TestCase(HttpStatusCode.MethodNotAllowed, true)]
+    [TestCase(HttpStatusCode.TooManyRequests, true)]
+    [TestCase(HttpStatusCode.Conflict, false)]
+    [TestCase(HttpStatusCode.RequestTimeout, false)]
+    [TestCase(HttpStatusCode.BadGateway, false)]
+    public void ChannelCreationOnlyDefinitiveRejectionsPermitAnotherSubmission(HttpStatusCode status, bool rejected)
+    {
+        var operations = new DiscordOperations(null!, new BotConfiguration(), null!, null!, null!);
+        var creates = 0;
+        var failure = operations.AllocateNewChannelAsync<ulong, ulong>(_ => Task.FromResult(20UL), (_, _) =>
+        {
+            creates++;
+            throw PlacementError(status);
+        }, default);
+        if (rejected) Assert.ThrowsAsync<ChannelCreationNotSentException>(() => failure);
+        else Assert.ThrowsAsync<HttpException>(() => failure);
+        Assert.That(creates, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task ChannelCreationCanceledAfterPreparationDoesNotSubmitAndReleasesGate()
+    {
+        var operations = new DiscordOperations(null!, new BotConfiguration(), null!, null!, null!);
+        using var cancellation = new CancellationTokenSource();
+        var creates = 0;
+        var failure = operations.AllocateNewChannelAsync(_ =>
+        {
+            cancellation.Cancel();
+            return Task.FromResult(20UL);
+        }, (category, _) => { creates++; return Task.FromResult(category); }, cancellation.Token);
+        var error = Assert.ThrowsAsync<ChannelCreationNotSentException>(() => failure)!;
+        Assert.That(error.InnerException, Is.InstanceOf<OperationCanceledException>());
+        Assert.That(creates, Is.Zero);
+        Assert.That(await operations.AllocateNewChannelAsync(_ => Task.FromResult(30UL), (category, _) => Task.FromResult(category), default)
+            .WaitAsync(TimeSpan.FromSeconds(2)), Is.EqualTo(30UL));
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task OpeningMessageLookupReportsEveryAdvancingPageAndTerminalResult(bool found)
+    {
+        var ticketId = Guid.NewGuid();
+        var beforeIds = new List<ulong?>();
+        var reports = 0;
+        var page = 0;
+        var result = await DiscordOperations.HasOpeningMessageAsync(ticketId, 2, (before, _) =>
+        {
+            beforeIds.Add(before);
+            page++;
+            IReadOnlyCollection<IMessage> messages = page switch
+            {
+                1 => [OpeningHistoryMessage(500, 1, $"v1:close:{ticketId:D}")],
+                2 => [OpeningHistoryMessage(400, 2, $"v1:close:{Guid.NewGuid():D}")],
+                3 when found => [OpeningHistoryMessage(300, 2, $"v1:close:{ticketId:D}")],
+                _ => []
+            };
+            return Task.FromResult(messages);
+        }, default, () => reports++);
+        Assert.That(result, Is.EqualTo(found));
+        Assert.That(beforeIds, Is.EqualTo(new ulong?[] { null, 500, 400 }));
+        Assert.That(reports, Is.EqualTo(3), "Foreign authors and other tickets must not stop the advancing scan.");
+    }
+
+    [Test]
+    public void OpeningMessageLookupRejectsNonAdvancingHistory()
+    {
+        var reports = 0;
+        var ticketId = Guid.NewGuid();
+        Assert.ThrowsAsync<InvalidOperationException>(() => DiscordOperations.HasOpeningMessageAsync(ticketId, 2,
+            (_, _) => Task.FromResult<IReadOnlyCollection<IMessage>>([OpeningHistoryMessage(500, 1, "other")]),
+            default, () => reports++));
+        Assert.That(reports, Is.EqualTo(1), "Repeated data must not reset the inactivity watchdog.");
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void OpeningMessageLookupObservesCancellationBeforeAndAfterPageRequest(bool cancelDuringRequest)
+    {
+        using var cancellation = new CancellationTokenSource();
+        var requests = 0;
+        var reports = 0;
+        if (!cancelDuringRequest) cancellation.Cancel();
+        Assert.CatchAsync<OperationCanceledException>(() => DiscordOperations.HasOpeningMessageAsync(Guid.NewGuid(), 2,
+            (_, _) =>
+            {
+                requests++;
+                cancellation.Cancel();
+                return Task.FromResult<IReadOnlyCollection<IMessage>>([]);
+            }, cancellation.Token, () => reports++));
+        Assert.That(requests, Is.EqualTo(cancelDuringRequest ? 1 : 0));
+        Assert.That(reports, Is.Zero);
+    }
+
+    private static IMessage OpeningHistoryMessage(ulong id, ulong authorId, string closeId)
+    {
+        var author = DispatchProxy.Create<IUser, TranscriptPayloadProxy>();
+        ((TranscriptPayloadProxy)(object)author).Properties = new() { ["Id"] = authorId };
+        var message = DispatchProxy.Create<IMessage, TranscriptPayloadProxy>();
+        ((TranscriptPayloadProxy)(object)message).Properties = new()
+        {
+            ["Id"] = id, ["Author"] = author,
+            ["Components"] = new ComponentBuilder().WithButton("Close", closeId).Build().Components
+        };
+        return message;
+    }
+
+    [TestCase(TicketState.Creating)]
+    [TestCase(TicketState.Open)]
+    [TestCase(TicketState.Closing)]
+    [TestCase(TicketState.Closed)]
+    [TestCase(TicketState.Reopening)]
+    public void DisabledIntakePreflightUsesOnlyRetainedPanelDestinationsAndLog(TicketState state)
+    {
+        var config = new BotConfiguration
+        {
+            Tickets = new TicketOptions
+            {
+                Enabled = false, ClosedCategoryId = 30, LogChannelId = 40,
+                Panels =
+                [
+                    new TicketPanelOptions { Id = "support", ChannelId = 0, Label = "", PanelMessage = "{obsolete}", OpenCategoryIds = [20] },
+                    new TicketPanelOptions { Id = "SUPPORT", ChannelId = 999, OpenCategoryIds = [998] }
+                ]
+            }
+        };
+        var tickets = new[] { new Ticket(Guid.NewGuid(), "support", 5, 10, state, 1, DateTimeOffset.UnixEpoch) };
+        var permissions = new ChannelPermissions(viewChannel: true, sendMessages: true, manageChannel: true,
+            manageRoles: true, readMessageHistory: true, attachFiles: true);
+        (ulong Id, ChannelType Type, ChannelPermissions Permissions)[] channels =
+            [(20, ChannelType.Category, permissions), (30, ChannelType.Category, permissions), (40, ChannelType.Text, permissions)];
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateTicketChannels(config, tickets, channels));
+        Assert.That(TicketMaintenanceRequirements.RequiredPanels(config, tickets).Single().Id, Is.EqualTo("support"));
+        Assert.Throws<DiscordValidationException>(() => DiscordOperations.ValidateTicketChannels(config, tickets,
+            channels.Where(channel => channel.Id != 20).ToArray()));
+        config.Tickets.Enabled = true;
+        Assert.Throws<DiscordValidationException>(() => DiscordOperations.ValidateTicketChannels(config, tickets, channels));
+    }
+
+    [Test]
+    public void DeletingOnlyDisabledIntakePreflightNeedsNoPanelsOrCategoryDestinations()
+    {
+        var config = new BotConfiguration { Tickets = new TicketOptions { Enabled = false, LogChannelId = 40, Panels = [] } };
+        var tickets = new[] { new Ticket(Guid.NewGuid(), "obsolete", 5, 10, TicketState.Deleting, 1, DateTimeOffset.UnixEpoch) };
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateTicketChannels(config, tickets,
+            [(40, ChannelType.Text, new ChannelPermissions(viewChannel: true, sendMessages: true))]));
+        Assert.That(TicketMaintenanceRequirements.RequiredCategoryIds(config, tickets), Is.Empty);
+        Assert.Throws<DiscordValidationException>(() => DiscordOperations.ValidateTicketChannels(config, tickets, []));
+    }
+    [Test]
+    public void Privacy_DeniesForeignInheritedVisibilityAndPreservesOnlyConfiguredAccess()
+    {
+        var overwrites = DiscordOperations.BuildOverwrites(1, 2, 3, new ulong[] { 4 }, new[]
+        {
+            new Overwrite(5, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Allow)),
+            new Overwrite(6, PermissionTarget.User, new OverwritePermissions(viewChannel: PermValue.Allow))
+        }, true, true, true);
+        Assert.That(Find(overwrites, 1, PermissionTarget.Role).ViewChannel, Is.EqualTo(PermValue.Deny));
+        Assert.That(Find(overwrites, 5, PermissionTarget.Role).ViewChannel, Is.EqualTo(PermValue.Deny));
+        Assert.That(overwrites.Any(x => x.TargetId == 6), Is.False);
+        Assert.That(Find(overwrites, 4, PermissionTarget.Role).ViewChannel, Is.EqualTo(PermValue.Allow));
+        Assert.That(Find(overwrites, 4, PermissionTarget.Role).SendMessages, Is.EqualTo(PermValue.Allow));
+        Assert.That(Find(overwrites, 3, PermissionTarget.User).SendMessages, Is.EqualTo(PermValue.Allow));
+        Assert.That(Find(overwrites, 2, PermissionTarget.User).ManageChannel, Is.EqualTo(PermValue.Allow));
+        Assert.That(Find(overwrites, 2, PermissionTarget.User).ReadMessageHistory, Is.EqualTo(PermValue.Allow));
+        Assert.That(Find(overwrites, 4, PermissionTarget.Role).CreatePrivateThreads, Is.EqualTo(PermValue.Deny));
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void RequesterVisibility_IsExplicitAndMessageSendingCanBeDenied(bool requesterRead)
+    {
+        var overwrites = DiscordOperations.BuildOverwrites(1, 2, 3, new ulong[] { 4 }, [], requesterRead, false, false);
+        var requester = Find(overwrites, 3, PermissionTarget.User);
+        Assert.That(requester.ViewChannel, Is.EqualTo(requesterRead ? PermValue.Allow : PermValue.Deny));
+        Assert.That(requester.ReadMessageHistory, Is.EqualTo(requesterRead ? PermValue.Allow : PermValue.Deny));
+        Assert.That(requester.SendMessages, Is.EqualTo(PermValue.Deny));
+        Assert.That(requester.AddReactions, Is.EqualTo(PermValue.Deny));
+        var support = Find(overwrites, 4, PermissionTarget.Role);
+        Assert.That(support.ViewChannel, Is.EqualTo(PermValue.Allow));
+        Assert.That(support.SendMessages, Is.EqualTo(PermValue.Deny));
+        Assert.That(support.SendMessagesInThreads, Is.EqualTo(PermValue.Deny));
+        Assert.That(support.AttachFiles, Is.EqualTo(PermValue.Deny));
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task DeletionFreeze_HidesRequesterRegardlessOfClosedVisibilityAndRemovesForeignGrants(bool closedRequesterCanRead)
+    {
+        var ticket = new Ticket(Guid.NewGuid(), "support", 3, 10, TicketState.Deleting, 1, DateTimeOffset.UnixEpoch);
+        var existing = DiscordOperations.BuildOverwrites(1, 2, 3, [4], [], closedRequesterCanRead, false, true)
+            .Append(new Overwrite(5, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Allow)))
+            .Append(new Overwrite(6, PermissionTarget.User, new OverwritePermissions(viewChannel: PermValue.Allow))).ToArray();
+        var expected = DiscordOperations.BuildFrozenOverwrites(ticket, 1, 2, [4], existing);
+        IReadOnlyCollection<Overwrite> actual = existing;
+        var verified = false;
+        await DiscordOperations.SynchronizeTicketOverwritesAsync(10, expected, actual,
+            value => { actual = value; return Task.CompletedTask; },
+            () => { verified = true; return Task.FromResult(actual); });
+
+        var frozen = actual.ToArray();
+        Assert.That(verified, Is.True);
+        Assert.That(Find(frozen, 3, PermissionTarget.User).ViewChannel, Is.EqualTo(PermValue.Deny));
+        Assert.That(Find(frozen, 3, PermissionTarget.User).ReadMessageHistory, Is.EqualTo(PermValue.Deny));
+        Assert.That(Find(frozen, 3, PermissionTarget.User).SendMessages, Is.EqualTo(PermValue.Deny));
+        Assert.That(Find(frozen, 5, PermissionTarget.Role).ViewChannel, Is.EqualTo(PermValue.Deny));
+        Assert.That(frozen.Any(item => item.TargetId == 6), Is.False);
+        Assert.That(Find(frozen, 4, PermissionTarget.Role).ViewChannel, Is.EqualTo(PermValue.Allow));
+        Assert.That(Find(frozen, 4, PermissionTarget.Role).ReadMessageHistory, Is.EqualTo(PermValue.Allow));
+        Assert.That(Find(frozen, 4, PermissionTarget.Role).SendMessages, Is.EqualTo(PermValue.Deny));
+        Assert.That(Find(frozen, 2, PermissionTarget.User).ViewChannel, Is.EqualTo(PermValue.Allow));
+    }
+
+    [Test]
+    public void DeletionFreeze_RequesterMemberDenialOverridesSupportRoleVisibilityGrant()
+    {
+        var ticket = new Ticket(Guid.NewGuid(), "support", 3, 10, TicketState.Deleting, 1, DateTimeOffset.UnixEpoch);
+        var frozen = DiscordOperations.BuildFrozenOverwrites(ticket, 1, 2, [4], []);
+        // Discord applies everyone, combined role overwrites, then the member overwrite last.
+        var permissions = new GuildPermissions(viewChannel: true, readMessageHistory: true, manageMessages: true).RawValue;
+        foreach (var overwrite in new[]
+        {
+            Find(frozen, 1, PermissionTarget.Role),
+            Find(frozen, 4, PermissionTarget.Role),
+            Find(frozen, 3, PermissionTarget.User)
+        }) permissions = (permissions & ~overwrite.DenyValue) | overwrite.AllowValue;
+        Assert.That(new ChannelPermissions(permissions).ViewChannel, Is.False,
+            "The requester must remain hidden even when also holding a support role that allows channel visibility.");
+    }
+
+    [Test]
+    public void DeletionFreeze_UnappliedRequesterVisibilityDenialFailsReadBack()
+    {
+        var ticket = new Ticket(Guid.NewGuid(), "support", 3, 10, TicketState.Deleting, 1, DateTimeOffset.UnixEpoch);
+        var stale = DiscordOperations.BuildOverwrites(1, 2, 3, [4], [], true, false, false);
+        var frozen = DiscordOperations.BuildFrozenOverwrites(ticket, 1, 2, [4], stale);
+        Assert.ThrowsAsync<DiscordValidationException>(() => DiscordOperations.SynchronizeTicketOverwritesAsync(10, frozen, stale,
+            _ => Task.CompletedTask, () => Task.FromResult<IReadOnlyCollection<Overwrite>>(stale)));
+    }
+
+    [TestCase(TicketState.Open)]
+    [TestCase(TicketState.Closed)]
+    [TestCase(TicketState.Deleted)]
+    public void DeletionFreeze_RequiresDeletingState(TicketState state)
+    {
+        var ticket = new Ticket(Guid.NewGuid(), "support", 3, 10, state, 1, DateTimeOffset.UnixEpoch);
+        Assert.Throws<InvalidOperationException>(() => DiscordOperations.BuildFrozenOverwrites(ticket, 1, 2, [4], []));
+    }
+
+    [Test]
+    public void Privacy_FailsClosedWhenExplicitOverwriteCountExceedsDiscordLimit()
+    {
+        var inherited = Enumerable.Range(10, 100).Select(x => new Overwrite((ulong)x, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Allow)));
+        Assert.Throws<InvalidOperationException>(() => DiscordOperations.BuildOverwrites(1, 2, 3, new ulong[] { 4 }, inherited, true, true, true));
+    }
+
+    [TestCase(TicketState.Open, false)]
+    [TestCase(TicketState.Open, true)]
+    [TestCase(TicketState.Closed, false)]
+    [TestCase(TicketState.Closed, true)]
+    public async Task RetainedPermissions_ReplaceOldStaffAndApplyCurrentRequesterVisibility(TicketState state, bool requesterCanRead)
+    {
+        var ticket = new Ticket(Guid.NewGuid(), "support", 3, 10, state, 1, DateTimeOffset.UnixEpoch);
+        IReadOnlyCollection<Overwrite> actual = DiscordOperations.BuildOverwrites(1, 2, 3, [4], [],
+            requesterRead: !requesterCanRead, requesterWrite: state == TicketState.Open, supportWrite: true);
+        var expected = DiscordOperations.BuildRetainedOverwrites(ticket, 1, 2, [7], actual, requesterCanRead);
+        var updates = 0;
+
+        await DiscordOperations.SynchronizeTicketOverwritesAsync(10, expected, actual,
+            value => { updates++; actual = value; return Task.CompletedTask; },
+            () => Task.FromResult(actual));
+
+        var updated = actual.ToArray();
+        Assert.That(updates, Is.EqualTo(1));
+        Assert.That(Find(updated, 4, PermissionTarget.Role).ViewChannel, Is.EqualTo(PermValue.Deny));
+        Assert.That(Find(updated, 7, PermissionTarget.Role).ViewChannel, Is.EqualTo(PermValue.Allow));
+        Assert.That(Find(updated, 7, PermissionTarget.Role).SendMessages, Is.EqualTo(PermValue.Allow));
+        Assert.That(Find(updated, 3, PermissionTarget.User).ViewChannel,
+            Is.EqualTo(state == TicketState.Open || requesterCanRead ? PermValue.Allow : PermValue.Deny));
+        Assert.That(Find(updated, 3, PermissionTarget.User).SendMessages,
+            Is.EqualTo(state == TicketState.Open ? PermValue.Allow : PermValue.Deny));
+        Assert.That(Find(updated, 1, PermissionTarget.Role).ViewChannel, Is.EqualTo(PermValue.Deny));
+    }
+
+    [Test]
+    public async Task RetainedPermissions_AlreadyMatchingPolicyIsVerifiedWithoutAnotherMutation()
+    {
+        var expected = DiscordOperations.BuildOverwrites(1, 2, 3, [4], [], false, false, true);
+        var readBack = 0;
+        await DiscordOperations.SynchronizeTicketOverwritesAsync(10, expected, expected.Reverse().ToArray(),
+            _ => throw new AssertionException("Already matching overwrites must not be rewritten."),
+            () => { readBack++; return Task.FromResult<IReadOnlyCollection<Overwrite>>(expected); });
+        Assert.That(readBack, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void RetainedPermissions_RejectedOrUnappliedUpdatesFailVerification()
+    {
+        var stale = DiscordOperations.BuildOverwrites(1, 2, 3, [4], [], true, true, true);
+        var expected = DiscordOperations.BuildOverwrites(1, 2, 3, [7], stale, false, false, true);
+        var failure = Assert.ThrowsAsync<DiscordValidationException>(() => DiscordOperations.SynchronizeTicketOverwritesAsync(10, expected, stale,
+            _ => Task.CompletedTask, () => Task.FromResult<IReadOnlyCollection<Overwrite>>(stale)));
+        Assert.That(failure!.Message, Does.Contain("10"));
+        Assert.ThrowsAsync<InvalidOperationException>(() => DiscordOperations.SynchronizeTicketOverwritesAsync(10, expected, stale,
+            _ => Task.FromException(new InvalidOperationException("Discord denied the permission mutation.")),
+            () => throw new AssertionException("Failed updates must propagate immediately.")));
+    }
+
+    [TestCase(TicketState.Deleting)]
+    [TestCase(TicketState.Closing)]
+    [TestCase(TicketState.Reopening)]
+    [TestCase(TicketState.Deleted)]
+    public void RetainedPermissions_NeverRestoreWritesForUnstableOrDeletedTickets(TicketState state)
+    {
+        var ticket = new Ticket(Guid.NewGuid(), "support", 3, 10, state, 1, DateTimeOffset.UnixEpoch);
+        Assert.Throws<InvalidOperationException>(() => DiscordOperations.BuildRetainedOverwrites(ticket, 1, 2, [4], [], true));
+    }
+    [TestCase(5UL)]
+    [TestCase(null)]
+    public async Task Close_FullArchiveCategoryCompletesWithPrivateUncategorizedChannel(ulong? currentCategory)
+    {
+        var events = new List<string>();
+        var overwrites = DiscordOperations.BuildOverwrites(1, 2, 3, [4], [], false, false, true);
+        await DiscordOperations.CloseChannelPlacementAsync(77, currentCategory,
+            () => Task.FromResult(50),
+            () =>
+            {
+                Assert.That(Find(overwrites, 3, PermissionTarget.User).SendMessages, Is.EqualTo(PermValue.Deny));
+                Assert.That(Find(overwrites, 3, PermissionTarget.User).ViewChannel, Is.EqualTo(PermValue.Deny));
+                Assert.That(Find(overwrites, 1, PermissionTarget.Role).ViewChannel, Is.EqualTo(PermValue.Deny));
+                events.Add("closed");
+                return Task.CompletedTask;
+            },
+            destination =>
+            {
+                Assert.That(destination, Is.Null);
+                Assert.That(events[0], Is.EqualTo("closed"));
+                events.Add("uncategorized");
+                return Task.CompletedTask;
+            });
+        Assert.That(events, Is.EqualTo(currentCategory.HasValue ? new[] { "closed", "uncategorized" } : new[] { "closed" }));
+    }
+
+    [Test]
+    public async Task Close_AlreadyInFullArchiveCategoryDoesNotCountOrMoveAgain()
+    {
+        var closed = false;
+        await DiscordOperations.CloseChannelPlacementAsync(77, 77,
+            () => throw new AssertionException("A repeated close must not allocate a new category slot."),
+            () => { closed = true; return Task.CompletedTask; },
+            _ => throw new AssertionException("A repeated close must not move the channel."));
+        Assert.That(closed, Is.True);
+    }
+
+    [Test]
+    public async Task Close_CategoryFillingDuringMoveFallsBackAfterAccessIsRestricted()
+    {
+        var counts = 0;
+        var destinations = new List<ulong?>();
+        var closed = false;
+        await DiscordOperations.CloseChannelPlacementAsync(77, 5,
+            () => Task.FromResult(++counts == 1 ? 49 : 50),
+            () => { closed = true; return Task.CompletedTask; },
+            destination =>
+            {
+                Assert.That(closed, Is.True);
+                destinations.Add(destination);
+                return destination.HasValue ? Task.FromException(PlacementError()) : Task.CompletedTask;
+            });
+        Assert.That(counts, Is.EqualTo(2));
+        Assert.That(destinations, Is.EqualTo(new ulong?[] { 77, null }));
+    }
+
+    [TestCase(HttpStatusCode.Forbidden, "parent_id", 50)]
+    [TestCase(HttpStatusCode.BadRequest, "permission_overwrites", 50)]
+    [TestCase(HttpStatusCode.BadRequest, "parent_id", 49)]
+    public void Close_UnrelatedApiFailuresPropagateWithoutFallback(HttpStatusCode status, string errorPath, int freshCount)
+    {
+        var counts = 0;
+        var destinations = new List<ulong?>();
+        var failure = PlacementError(status, errorPath);
+        var actual = Assert.ThrowsAsync<HttpException>(() => DiscordOperations.CloseChannelPlacementAsync(77, 5,
+            () => Task.FromResult(++counts == 1 ? 49 : freshCount),
+            () => Task.CompletedTask,
+            destination => { destinations.Add(destination); return Task.FromException(failure); }));
+        Assert.That(actual, Is.SameAs(failure));
+        Assert.That(destinations, Is.EqualTo(new ulong?[] { 77 }));
+    }
+
+    [Test]
+    public void Close_AccessFailurePreventsCategoryMovement()
+    {
+        Assert.ThrowsAsync<InvalidOperationException>(() => DiscordOperations.CloseChannelPlacementAsync(77, 5,
+            () => throw new AssertionException("Capacity is checked only after access is restricted."),
+            () => Task.FromException(new InvalidOperationException("Permission update rejected.")),
+            _ => throw new AssertionException("Do not move while access remains open.")));
+    }
+
+    [TestCase(GuildPermission.Administrator)]
+    [TestCase(GuildPermission.ManageGuild)]
+    [TestCase(GuildPermission.ManageRoles)]
+    [TestCase(GuildPermission.ManageChannels)]
+    [TestCase(GuildPermission.KickMembers)]
+    [TestCase(GuildPermission.BanMembers)]
+    [TestCase(GuildPermission.ModerateMembers)]
+    [TestCase(GuildPermission.ManageWebhooks)]
+    [TestCase(GuildPermission.ManageMessages)]
+    [TestCase(GuildPermission.ManageThreads)]
+    [TestCase(GuildPermission.ViewAuditLog)]
+    [TestCase(GuildPermission.MentionEveryone)]
+    [TestCase(GuildPermission.ManageNicknames)]
+    [TestCase(GuildPermission.ManageEmojisAndStickers)]
+    [TestCase(GuildPermission.ManageEvents)]
+    [TestCase(GuildPermission.ViewGuildInsights)]
+    [TestCase(GuildPermission.MuteMembers)]
+    [TestCase(GuildPermission.DeafenMembers)]
+    [TestCase(GuildPermission.MoveMembers)]
+    [TestCase(GuildPermission.PrioritySpeaker)]
+    public void SelfSelectedFactionRoles_RejectNativeStaffPermissions(GuildPermission permission)
+    {
+        var ordinary = (ulong)(GuildPermission.ViewChannel | GuildPermission.SendMessages);
+        Assert.That(DiscordOperations.HasStaffPermissions(new GuildPermissions(ordinary | (ulong)permission)), Is.True);
+    }
+
+    [Test]
+    public void SelfSelectedFactionRoles_AllowOrdinaryCapabilitiesButRejectUnknownBits()
+    {
+        Assert.That(DiscordOperations.HasStaffPermissions(new GuildPermissions(0)), Is.False);
+        Assert.That(DiscordOperations.HasStaffPermissions(new GuildPermissions(
+            viewChannel: true, sendMessages: true, connect: true, speak: true, addReactions: true,
+            attachFiles: true, embedLinks: true, readMessageHistory: true, changeNickname: true)), Is.False);
+        Assert.That(DiscordOperations.HasStaffPermissions(new GuildPermissions(1UL << 63)), Is.True);
+    }
+
+    [TestCase(GuildPermission.ManageMessages)]
+    [TestCase(GuildPermission.ManageThreads)]
+    [TestCase(GuildPermission.ManageChannels)]
+    [TestCase(GuildPermission.ManageRoles)]
+    [TestCase(GuildPermission.ManageWebhooks)]
+    [TestCase(GuildPermission.MentionEveryone)]
+    [TestCase(GuildPermission.MuteMembers)]
+    [TestCase(GuildPermission.MoveMembers)]
+    public void SelfSelectedFactionRoles_RejectPrivilegedChannelOrCategoryOverwriteGrants(GuildPermission permission)
+    {
+        var ordinary = new OverwritePermissions(viewChannel: PermValue.Allow, sendMessages: PermValue.Allow);
+        var privileged = new OverwritePermissions((ulong)permission | ordinary.AllowValue, 0);
+        var overwrites = new (ulong, Overwrite)[]
+        {
+            (101, new Overwrite(42, PermissionTarget.Role, ordinary)),
+            (102, new Overwrite(42, PermissionTarget.Role, privileged))
+        };
+
+        Assert.That(() => DiscordOperations.ValidateFactionRoleOverwrites(42, overwrites),
+            Throws.TypeOf<DiscordValidationException>().With.Message.Contains("42").And.Message.Contains("102"));
+        // A grant on the category itself remains unsafe even before any child inherits it.
+        Assert.That(() => DiscordOperations.ValidateFactionRoleOverwrites(42, [(101UL, overwrites[1].Item2)]),
+            Throws.TypeOf<DiscordValidationException>().With.Message.Contains("101"));
+    }
+
+    [Test]
+    public void SelfSelectedFactionRoles_OverwriteValidationPreservesOrdinaryAccessAndIgnoresUnrelatedTargets()
+    {
+        var ordinary = new OverwritePermissions(viewChannel: PermValue.Allow, sendMessages: PermValue.Allow,
+            readMessageHistory: PermValue.Allow, attachFiles: PermValue.Allow,
+            createPublicThreads: PermValue.Allow, sendMessagesInThreads: PermValue.Allow,
+            manageMessages: PermValue.Deny, manageThreads: PermValue.Deny);
+        var privileged = new OverwritePermissions(manageMessages: PermValue.Allow, manageThreads: PermValue.Allow);
+
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateFactionRoleOverwrites(42,
+        [
+            (101UL, new Overwrite(42, PermissionTarget.Role, ordinary)),
+            (102UL, new Overwrite(43, PermissionTarget.Role, privileged)),
+            (103UL, new Overwrite(42, PermissionTarget.User, privileged))
+        ]));
+    }
+
+    [Test]
+    public void SelfSelectedFactionRoles_OverwriteValidationRejectsUnknownAllowBitsButNotDenials()
+    {
+        Assert.That(() => DiscordOperations.ValidateFactionRoleOverwrites(42,
+            [(101UL, new Overwrite(42, PermissionTarget.Role, new OverwritePermissions(1UL << 63, 0)))]),
+            Throws.TypeOf<DiscordValidationException>());
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateFactionRoleOverwrites(42,
+            [(101UL, new Overwrite(42, PermissionTarget.Role, new OverwritePermissions(0, 1UL << 63)))]));
+    }
+
+    [Test]
+    public void SelfSelectedFactionRoles_FreshOverwriteValidationRejectsGrantsAddedAfterStartup()
+    {
+        var current = new List<(ulong, Overwrite)>
+        {
+            (101, new Overwrite(42, PermissionTarget.Role, new OverwritePermissions(viewChannel: PermValue.Allow)))
+        };
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateFactionRoleOverwrites(42, current));
+        current.Add((102, new Overwrite(42, PermissionTarget.Role, new OverwritePermissions(manageThreads: PermValue.Allow))));
+        Assert.That(() => DiscordOperations.ValidateFactionRoleOverwrites(42, current),
+            Throws.TypeOf<DiscordValidationException>());
+        current.RemoveAt(1);
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateFactionRoleOverwrites(42, current));
+    }
+    [TestCase(false)]
+    [TestCase(true)]
+    public void Welcome_RejectsMissingOrForeignMentionChannelsEvenForDirectMessages(bool directMessage)
+    {
+        var configuration = new BotConfiguration
+        {
+            Welcome = new WelcomeOptions
+            {
+                Enabled = true, DirectMessage = directMessage, ChannelId = 10,
+                ChannelMentions = new() { ["rules"] = 99 }
+            }
+        };
+        var channels = new[] { (10UL, ChannelType.Text, new ChannelPermissions(viewChannel: true, sendMessages: true)) };
+        Assert.That(() => DiscordOperations.ValidateCommunityChannels(configuration, channels),
+            Throws.TypeOf<DiscordValidationException>().With.Message.Contains("99"));
+        configuration.Welcome.ChannelMentions["rules"] = 10;
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateCommunityChannels(configuration, channels));
+    }
+
+    [Test]
+    public void Welcome_MentionsNeedGuildExistenceWithoutBotPostingPermissions()
+    {
+        var configuration = new BotConfiguration
+        {
+            Welcome = new WelcomeOptions
+            {
+                Enabled = true, DirectMessage = true,
+                ChannelMentions = new() { ["rules"] = 11 }
+            }
+        };
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateCommunityChannels(configuration,
+            [(11UL, ChannelType.Text, new ChannelPermissions(0))]));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void Answers_CommandDeletionRequiresEffectivePermissionsThroughoutItsScope(bool restricted)
+    {
+        var answer = new QuickAnswerOptions { DeleteCommand = true, AllowedChannelIds = restricted ? [10, 11] : [] };
+        var configuration = new BotConfiguration { Answers = [answer] };
+        var ordinary = new ChannelPermissions(viewChannel: true, sendMessages: true);
+        var moderation = new ChannelPermissions(viewChannel: true, sendMessages: true, manageMessages: true);
+        var channels = new[] { (10UL, ChannelType.Text, moderation), (11UL, ChannelType.Text, ordinary) };
+        Assert.That(() => DiscordOperations.ValidateCommunityChannels(configuration, channels),
+            Throws.TypeOf<DiscordValidationException>().With.Message.Contains("11"));
+        channels[1] = (11UL, ChannelType.Text, moderation);
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateCommunityChannels(configuration, channels));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void Answers_OwnResponseDeletionDoesNotRequireModerationPermissions(bool restricted)
+    {
+        var configuration = new BotConfiguration
+        {
+            Answers = [new QuickAnswerOptions { DeleteResponseAfter = TimeSpan.FromSeconds(10), AllowedChannelIds = restricted ? [10] : [] }]
+        };
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateCommunityChannels(configuration,
+            [(10UL, ChannelType.Text, new ChannelPermissions(viewChannel: true, sendMessages: true))]));
+    }
+
+    [Test]
+    public void Answers_UnrestrictedScopeExcludesUnreadableReadOnlyAndUnsupportedChannels()
+    {
+        var configuration = new BotConfiguration { Answers = [new QuickAnswerOptions { DeleteCommand = true }] };
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateCommunityChannels(configuration,
+        [
+            (10UL, ChannelType.Text, new ChannelPermissions(viewChannel: true, sendMessages: true, manageMessages: true)),
+            (11UL, ChannelType.Text, new ChannelPermissions(sendMessages: true)),
+            (12UL, ChannelType.Text, new ChannelPermissions(viewChannel: true)),
+            (13UL, ChannelType.PublicThread, new ChannelPermissions(viewChannel: true, sendMessagesInThreads: true))
+        ]));
+        configuration.Answers[0].AllowedChannelIds = [12];
+        Assert.That(() => DiscordOperations.ValidateCommunityChannels(configuration,
+            [(12UL, ChannelType.Text, new ChannelPermissions(viewChannel: true))]), Throws.TypeOf<DiscordValidationException>());
+    }
+
+    [Test]
+    public void Answers_EmbedPermissionsAreRequiredWhenResponseHasEmbeds()
+    {
+        var answer = new QuickAnswerOptions { Embeds = [new AnswerEmbed { Description = "Help" }] };
+        var configuration = new BotConfiguration { Answers = [answer] };
+        var channels = new[] { (10UL, ChannelType.Text, new ChannelPermissions(viewChannel: true, sendMessages: true)) };
+        Assert.That(() => DiscordOperations.ValidateCommunityChannels(configuration, channels), Throws.TypeOf<DiscordValidationException>());
+        channels[0] = (10UL, ChannelType.Text, new ChannelPermissions(viewChannel: true, sendMessages: true, embedLinks: true));
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateCommunityChannels(configuration, channels));
+        answer.Enabled = false;
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateCommunityChannels(configuration,
+            [(10UL, ChannelType.Text, new ChannelPermissions(viewChannel: true, sendMessages: true))]));
+    }
+
+    [Test]
+    public void Factions_CommandDeletionRequiresEffectivePermissionsAcrossUsableTextChannels()
+    {
+        var configuration = new BotConfiguration { Factions = new FactionOptions { Enabled = true, DeleteCommand = true } };
+        var moderation = new ChannelPermissions(viewChannel: true, sendMessages: true, manageMessages: true);
+        var channels = new[]
+        {
+            (10UL, ChannelType.Text, moderation),
+            (11UL, ChannelType.Text, new ChannelPermissions(viewChannel: true, sendMessages: true)),
+            (12UL, ChannelType.Text, new ChannelPermissions(viewChannel: true)),
+            (13UL, ChannelType.PublicThread, new ChannelPermissions(viewChannel: true, sendMessagesInThreads: true))
+        };
+        Assert.That(() => DiscordOperations.ValidateCommunityChannels(configuration, channels),
+            Throws.TypeOf<DiscordValidationException>().With.Message.EqualTo("Command deletion requires Manage Messages in text channel 11."));
+        channels[1] = (11UL, ChannelType.Text, moderation);
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateCommunityChannels(configuration, channels));
+        configuration.Factions.Enabled = false;
+        channels[1] = (11UL, ChannelType.Text, new ChannelPermissions(viewChannel: true, sendMessages: true));
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateCommunityChannels(configuration, channels));
+    }
+
+    [Test]
+    public void Factions_OwnResponseDeletionDoesNotRequireModerationPermissions()
+    {
+        var configuration = new BotConfiguration { Factions = new FactionOptions { Enabled = true, DeleteResponse = true } };
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateCommunityChannels(configuration,
+            [(10UL, ChannelType.Text, new ChannelPermissions(viewChannel: true, sendMessages: true))]));
+    }
+
+    [Test]
+    public void TicketTextChannels_PlainMessagesAndControlsDoNotRequireEmbedLinks()
+    {
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateTextChannelPermissions(10,
+            new ChannelPermissions(viewChannel: true, sendMessages: true)));
+    }
+
+    [TestCase(false, true)]
+    [TestCase(true, false)]
+    public void TicketTextChannels_RequireVisibilityAndSendPermissions(bool view, bool send)
+    {
+        Assert.That(() => DiscordOperations.ValidateTextChannelPermissions(10,
+            new ChannelPermissions(viewChannel: view, sendMessages: send)),
+            Throws.TypeOf<DiscordValidationException>().With.Message.Contains("View Channel and Send Messages"));
+    }
+
+    [TestCase(TicketState.Creating)]
+    [TestCase(TicketState.Open)]
+    [TestCase(TicketState.Closing)]
+    [TestCase(TicketState.Closed)]
+    [TestCase(TicketState.Reopening)]
+    [TestCase(TicketState.Deleting)]
+    public void DisabledTicketing_RetainedChannelStatesStillRequireDiscordTicketCapabilities(TicketState state)
+    {
+        var configuration = new BotConfiguration { Tickets = new TicketOptions { Enabled = false } };
+        var retained = new Ticket(Guid.NewGuid(), "retained", 42, 123, state, 1, DateTimeOffset.UnixEpoch);
+        Assert.That(DiscordOperations.RequiresTicketCapabilities(configuration, [retained]), Is.True);
+    }
+
+    [Test]
+    public void DisabledTicketing_DeletedArchiveOnlyRecordsAndEmptyStoreNeedNoTicketCapabilities()
+    {
+        var configuration = new BotConfiguration { Tickets = new TicketOptions { Enabled = false } };
+        var retained = new Ticket(Guid.NewGuid(), "old-panel", 42, 123, TicketState.Deleted, 1, DateTimeOffset.UnixEpoch,
+            ArchivePath: "/archives/retained/transcript.html");
+        Assert.That(DiscordOperations.RequiresTicketCapabilities(configuration, [retained]), Is.False);
+        Assert.That(DiscordOperations.RequiresTicketCapabilities(configuration, []), Is.False);
+        configuration.Tickets.Enabled = true;
+        Assert.That(DiscordOperations.RequiresTicketCapabilities(configuration, []), Is.True, "New ticketing requires capabilities before any ticket exists.");
+    }
+
+    [Test]
+    public void DisabledTicketing_DeletingOnlyMaintenanceDoesNotRequireBypassRole()
+    {
+        var configuration = new BotConfiguration { Tickets = new TicketOptions { Enabled = false } };
+        var deleting = new Ticket(Guid.NewGuid(), "old-panel", 42, 123, TicketState.Deleting, 1, DateTimeOffset.UnixEpoch);
+        var closed = deleting with { State = TicketState.Closed };
+
+        Assert.That(TicketMaintenanceRequirements.RequiresBypassRoles(configuration, [deleting]), Is.False);
+        Assert.That(TicketMaintenanceRequirements.RequiresBypassRoles(configuration, [closed]), Is.True);
+        configuration.Tickets.Enabled = true;
+        Assert.That(TicketMaintenanceRequirements.RequiresBypassRoles(configuration, []), Is.True);
+    }
+
+    [Test]
+    public void DisabledTicketing_CapabilityPolicyUsesCurrentSnapshotAfterRetainedTicketDeletion()
+    {
+        var configuration = new BotConfiguration { Tickets = new TicketOptions { Enabled = false } };
+        var ticket = new Ticket(Guid.NewGuid(), "retained", 42, 123, TicketState.Closed, 1, DateTimeOffset.UnixEpoch);
+        var snapshot = new List<Ticket> { ticket };
+        Assert.That(DiscordOperations.RequiresTicketCapabilities(configuration, snapshot), Is.True);
+        snapshot[0] = ticket with { State = TicketState.Deleted, ArchivePath = "/archives/retained/transcript.html" };
+        Assert.That(DiscordOperations.RequiresTicketCapabilities(configuration, snapshot), Is.False);
+    }
+    [TestCase(ApplicationFlags.GatewayMessageContent)]
+    [TestCase(ApplicationFlags.GatewayMessageContentLimited)]
+    public void TicketTranscripts_RequireApplicationMessageContentCapability(ApplicationFlags flags)
+    {
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateTranscriptCapability(flags));
+        Assert.DoesNotThrow(() => DiscordOperations.ValidateTranscriptCapability(flags | ApplicationFlags.GatewayGuildMembersLimited));
+    }
+
+    [Test]
+    public void TicketTranscripts_RejectMissingApplicationMessageContentCapability()
+    {
+        Assert.That(() => DiscordOperations.ValidateTranscriptCapability(ApplicationFlags.GatewayGuildMembersLimited),
+            Throws.TypeOf<DiscordValidationException>().With.Message.Contains("Message Content Intent"));
+    }
+
+    [Test]
+    public void DeliveryNonce_IsDeterministicAndFitsDiscordsLimit()
+    {
+        var nonce = DiscordCommunityPoster.Nonce("welcome:3:1234");
+        Assert.That(nonce, Is.EqualTo(DiscordCommunityPoster.Nonce("welcome:3:1234")));
+        Assert.That(nonce.Length, Is.EqualTo(24));
+        Assert.That(nonce, Does.Match("^[A-F0-9]{24}$"));
+        Assert.That(DiscordCommunityPoster.Nonce("welcome:3:1235"), Is.Not.EqualTo(nonce));
+    }
+
+    [Test]
+    public async Task CommunityPoster_RetriesRateLimitWithSameEnforcedNonceAndNoMentions()
+    {
+        var handler = new RecordingHandler();
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        var message = new CommunityMessage("Welcome <@3>", [], DeliveryKey: "welcome:3:1234");
+        var id = await poster.SendAsync(10, message, CancellationToken.None);
+        Assert.That(id, Is.EqualTo(123UL));
+        Assert.That(handler.Bodies.Count, Is.EqualTo(2));
+        foreach (var body in handler.Bodies)
+        {
+            using var json = JsonDocument.Parse(body);
+            Assert.That(json.RootElement.GetProperty("nonce").GetString(), Is.EqualTo(DiscordCommunityPoster.Nonce(message.DeliveryKey!)));
+            Assert.That(json.RootElement.GetProperty("enforce_nonce").GetBoolean(), Is.True);
+            Assert.That(json.RootElement.GetProperty("allowed_mentions").GetProperty("parse").GetArrayLength(), Is.Zero);
+            Assert.That(json.RootElement.GetProperty("content").GetString(), Is.EqualTo(message.Content));
+        }
+    }
+
+    [Test]
+    public async Task TicketOpeningPosterUsesStableEnforcedNonceAndCloseButtonAcrossWorkerInstances()
+    {
+        var handler = new RecordingHandler();
+        using var http = new HttpClient(handler);
+        var ticketId = Guid.NewGuid();
+        var claims = 0;
+        using (var firstWorker = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System))
+            Assert.That(await firstWorker.SendTicketOpeningAsync(10, ticketId, "Opening <@3>", default,
+                _ => { claims++; return Task.CompletedTask; }), Is.EqualTo(123UL));
+        Assert.That(claims, Is.EqualTo(1), "A rejected rate-limit retry reuses the durable send claim.");
+        using (var nextWorker = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System))
+        {
+            Assert.That(await nextWorker.SendTicketOpeningAsync(10, ticketId, "Opening <@3>", default), Is.EqualTo(123UL));
+            await nextWorker.SendTicketOpeningAsync(10, Guid.NewGuid(), "Other opening", default);
+        }
+        Assert.That(handler.Bodies.Count, Is.EqualTo(4));
+        foreach (var body in handler.Bodies.Take(3))
+        {
+            using var json = JsonDocument.Parse(body);
+            Assert.Multiple(() =>
+            {
+                Assert.That(json.RootElement.GetProperty("nonce").GetString(), Is.EqualTo(DiscordCommunityPoster.Nonce($"ticket-opening:{ticketId:D}")));
+                Assert.That(json.RootElement.GetProperty("enforce_nonce").GetBoolean(), Is.True);
+                Assert.That(json.RootElement.GetProperty("allowed_mentions").GetProperty("parse").GetArrayLength(), Is.Zero);
+                Assert.That(json.RootElement.GetProperty("content").GetString(), Is.EqualTo("Opening <@3>"));
+                var row = json.RootElement.GetProperty("components")[0];
+                Assert.That(row.GetProperty("type").GetInt32(), Is.EqualTo(1));
+                var button = row.GetProperty("components")[0];
+                Assert.That(button.GetProperty("type").GetInt32(), Is.EqualTo(2));
+                Assert.That(button.GetProperty("style").GetInt32(), Is.EqualTo((int)ButtonStyle.Danger));
+                Assert.That(button.GetProperty("label").GetString(), Is.EqualTo("Close ticket"));
+                Assert.That(button.GetProperty("custom_id").GetString(), Is.EqualTo($"v1:close:{ticketId:D}"));
+            });
+        }
+        using var other = JsonDocument.Parse(handler.Bodies[3]);
+        Assert.That(other.RootElement.GetProperty("nonce").GetString(), Is.Not.EqualTo(DiscordCommunityPoster.Nonce($"ticket-opening:{ticketId:D}")));
+    }
+
+    [Test]
+    public async Task DeferredOpeningAcceptedBeforeCancellationBlocksHandoffResendUntilVisibleHistoryRecovers()
+    {
+        using var handler = new DeferredOpeningHandler();
+        using var http = new HttpClient(handler);
+        using var firstPoster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        using var nextPoster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        using var cancellation = new CancellationTokenSource();
+        var ticketId = Guid.NewGuid();
+        var claimed = false;
+        var claims = 0;
+        var visible = false;
+        var reports = 0;
+        Task ClaimOpening(CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            if (claimed) throw new InvalidOperationException("Opening send is unconfirmed; discovery pending.");
+            claimed = true;
+            claims++;
+            return Task.CompletedTask;
+        }
+        Task<IReadOnlyCollection<IMessage>> History(ulong? before, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            return Task.FromResult<IReadOnlyCollection<IMessage>>(visible ? [OpeningHistoryMessage(123, 2, $"v1:close:{ticketId:D}")] : []);
+        }
+        var first = DiscordOperations.EnsureOpeningMessageAsync(ticketId, 2, History,
+            ct => firstPoster.SendTicketOpeningAsync(10, ticketId, "Opening", ct, ClaimOpening), cancellation.Token, () => reports++);
+        try
+        {
+            await handler.Accepted.Task.WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(claimed, Is.True, "The durable claim precedes remote acceptance.");
+            cancellation.Cancel();
+            Assert.CatchAsync<OperationCanceledException>(() => first.WaitAsync(TimeSpan.FromSeconds(2)));
+            Assert.That(reports, Is.EqualTo(1), "A canceled send must not report completed posting progress.");
+            var recoveryError = Assert.ThrowsAsync<OpeningMessageNotSentException>(() => DiscordOperations.EnsureOpeningMessageAsync(ticketId, 2, History,
+                ct => nextPoster.SendTicketOpeningAsync(10, ticketId, "Opening", ct, ClaimOpening), default, () => reports++)
+                .WaitAsync(TimeSpan.FromSeconds(2)))!;
+            Assert.That(recoveryError.InnerException, Is.TypeOf<InvalidOperationException>());
+            Assert.That(handler.Bodies.Count, Is.EqualTo(1), "A new worker cannot resubmit while accepted content is absent from history.");
+            Assert.That(claims, Is.EqualTo(1));
+            visible = true;
+            await DiscordOperations.EnsureOpeningMessageAsync(ticketId, 2, History,
+                ct => nextPoster.SendTicketOpeningAsync(10, ticketId, "Opening", ct, ClaimOpening), default, () => reports++)
+                .WaitAsync(TimeSpan.FromSeconds(2));
+            Assert.That(handler.Bodies.Count, Is.EqualTo(1), "Visible opening controls complete recovery without another claim or POST.");
+            using var json = JsonDocument.Parse(handler.Bodies.Single());
+            Assert.That(json.RootElement.GetProperty("nonce").GetString(), Is.EqualTo(DiscordCommunityPoster.Nonce($"ticket-opening:{ticketId:D}")));
+            Assert.That(json.RootElement.GetProperty("enforce_nonce").GetBoolean(), Is.True);
+        }
+        finally
+        {
+            cancellation.Cancel();
+            try { await first.WaitAsync(TimeSpan.FromSeconds(2)); }
+            catch (OperationCanceledException) { }
+        }
+    }
+
+    [Test]
+    public void TicketOpeningLegacyOverloadsRequireDurableSendCallback()
+    {
+        var operations = new DiscordOperations(null!, new BotConfiguration(), null!, null!, null!);
+        var ticket = new Ticket(Guid.NewGuid(), "support", 3, 10, TicketState.Creating, 1, DateTimeOffset.UnixEpoch);
+        Assert.ThrowsAsync<NotSupportedException>(() => operations.OpenAsync(ticket, true, default));
+        Assert.ThrowsAsync<NotSupportedException>(() => operations.OpenAsync(ticket, true, default, static () => { }));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void TicketOpeningPosterDoesNotRetryAmbiguousTransportOrServerResponses(bool serverResponse)
+    {
+        using var handler = new ErrorResponseHandler(() => serverResponse
+            ? new HttpResponseMessage(HttpStatusCode.BadGateway) { Content = new StringContent("{}") }
+            : throw new HttpRequestException("Response lost after dispatch."));
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        var claims = 0;
+        Assert.ThrowsAsync<HttpRequestException>(() => poster.SendTicketOpeningAsync(10, Guid.NewGuid(), "Opening", default,
+            _ => { claims++; return Task.CompletedTask; }));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+        Assert.That(claims, Is.EqualTo(1));
+    }
+
+
+    [TestCase(HttpRequestError.NameResolutionError)]
+    [TestCase(HttpRequestError.ConnectionError)]
+    [TestCase(HttpRequestError.SecureConnectionError)]
+    public async Task OpeningConnectionSetupFailureProvesUnsentAndAllowsLaterRecovery(HttpRequestError error)
+    {
+        var unavailable = true;
+        var failure = new HttpRequestException(error, "Connection setup failed.");
+        using var handler = new ErrorResponseHandler(() => unavailable ? throw failure
+            : new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{\"id\":\"123\"}") });
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        var claims = 0;
+        var ticketId = Guid.NewGuid();
+        Task Claim(CancellationToken _) { claims++; return Task.CompletedTask; }
+        var proof = Assert.ThrowsAsync<OpeningMessageNotSentException>(() =>
+            poster.SendTicketOpeningAsync(10, ticketId, "Opening", default, Claim))!;
+        Assert.That(proof.InnerException, Is.SameAs(failure));
+        Assert.That(handler.Requests, Is.EqualTo(1), "A proven failure returns to durable recovery without an immediate replay.");
+        Assert.That(claims, Is.EqualTo(1));
+
+        unavailable = false;
+        Assert.That(await poster.SendTicketOpeningAsync(10, ticketId, "Opening", default, Claim)
+            .WaitAsync(TimeSpan.FromSeconds(2)), Is.EqualTo(123UL));
+        Assert.That(handler.Requests, Is.EqualTo(2));
+        Assert.That(claims, Is.EqualTo(2), "The sender gate is released and a new durable claim can be recorded.");
+    }
+
+    [TestCase(HttpRequestError.Unknown)]
+    [TestCase(HttpRequestError.HttpProtocolError)]
+    [TestCase(HttpRequestError.ExtendedConnectNotSupported)]
+    [TestCase(HttpRequestError.VersionNegotiationError)]
+    [TestCase(HttpRequestError.UserAuthenticationError)]
+    [TestCase(HttpRequestError.ProxyTunnelError)]
+    [TestCase(HttpRequestError.InvalidResponse)]
+    [TestCase(HttpRequestError.ResponseEnded)]
+    [TestCase(HttpRequestError.ConfigurationLimitExceeded)]
+    public void OpeningOtherTransportErrorsRemainAmbiguousWithoutReplay(HttpRequestError error)
+    {
+        var failure = new HttpRequestException(error, "Unconfirmed send outcome.");
+        using var handler = new ErrorResponseHandler(() => throw failure);
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        var observed = Assert.ThrowsAsync<HttpRequestException>(() =>
+            poster.SendTicketOpeningAsync(10, Guid.NewGuid(), "Opening", default))!;
+        Assert.That(observed, Is.SameAs(failure));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+    }
+
+    [TestCase(HttpRequestError.NameResolutionError)]
+    [TestCase(HttpRequestError.ConnectionError)]
+    [TestCase(HttpRequestError.SecureConnectionError)]
+    public void OpeningConnectionCodeWithHttpStatusRemainsAmbiguous(HttpRequestError error)
+    {
+        var failure = new HttpRequestException(error, "A response was received.", statusCode: HttpStatusCode.OK);
+        using var handler = new ErrorResponseHandler(() => throw failure);
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        Assert.That(Assert.ThrowsAsync<HttpRequestException>(() =>
+            poster.SendTicketOpeningAsync(10, Guid.NewGuid(), "Opening", default)), Is.SameAs(failure));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+    }
+
+    [TestCase(HttpRequestError.NameResolutionError)]
+    [TestCase(HttpRequestError.ConnectionError)]
+    [TestCase(HttpRequestError.SecureConnectionError)]
+    public void OpeningResponseBodyFailuresCannotReleaseTheSendFence(HttpRequestError error)
+    {
+        var failure = new HttpRequestException(error, "Response body read failed.");
+        using var stream = new CountedErrorStream(System.Text.Encoding.UTF8.GetBytes("{\"id\":\"123\"}"))
+            { BeforeRead = () => throw failure };
+        using var handler = new ErrorResponseHandler(() => new HttpResponseMessage(HttpStatusCode.OK)
+            { Content = new StreamContent(stream) });
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        var observed = Assert.ThrowsAsync<HttpRequestException>(() =>
+            poster.SendTicketOpeningAsync(10, Guid.NewGuid(), "Opening", default))!;
+        Assert.That(observed, Is.SameAs(failure), "Even a connection setup code cannot prove no send after a success response.");
+        Assert.That(handler.Requests, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void OpeningHttpClientTimeoutRemainsAmbiguousWithoutReplay()
+    {
+        using var handler = new DeferredOpeningHandler();
+        using var http = new HttpClient(handler) { Timeout = TimeSpan.FromMilliseconds(50) };
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        Assert.That(async () => await poster.SendTicketOpeningAsync(10, Guid.NewGuid(), "Opening", default),
+            Throws.InstanceOf<OperationCanceledException>());
+        Assert.That(handler.Bodies.Count, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task TicketOpeningCanceledAfterClaimBeforeDispatchProvesUnsentAndReleasesSenderGate()
+    {
+        using var handler = new ErrorResponseHandler(() => new HttpResponseMessage(HttpStatusCode.OK)
+            { Content = new StringContent("{\"id\":\"123\"}") });
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        using var cancellation = new CancellationTokenSource();
+        var claims = 0;
+        var error = Assert.ThrowsAsync<OpeningMessageNotSentException>(() => poster.SendTicketOpeningAsync(10, Guid.NewGuid(), "Opening", cancellation.Token,
+            _ => { claims++; cancellation.Cancel(); return Task.CompletedTask; }))!;
+        Assert.That(error.InnerException, Is.InstanceOf<OperationCanceledException>());
+        Assert.That(claims, Is.EqualTo(1));
+        Assert.That(handler.Requests, Is.Zero);
+        Assert.That(await poster.SendTicketOpeningAsync(10, Guid.NewGuid(), "Another opening", default).WaitAsync(TimeSpan.FromSeconds(2)), Is.EqualTo(123UL));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+    }
+
+    [TestCase(HttpStatusCode.BadRequest, true)]
+    [TestCase(HttpStatusCode.Unauthorized, true)]
+    [TestCase(HttpStatusCode.Forbidden, true)]
+    [TestCase(HttpStatusCode.NotFound, true)]
+    [TestCase(HttpStatusCode.MethodNotAllowed, true)]
+    [TestCase(HttpStatusCode.TooManyRequests, true)]
+    [TestCase(HttpStatusCode.Conflict, false)]
+    [TestCase(HttpStatusCode.RequestTimeout, false)]
+    [TestCase(HttpStatusCode.BadGateway, false)]
+    public void TicketOpeningOnlyProvenRejectionsPermitAnotherSubmission(HttpStatusCode status, bool rejected)
+    {
+        using var handler = new ErrorResponseHandler(() => new HttpResponseMessage(status)
+            { Content = new StringContent("{\"code\":50013,\"retry_after\":0}") });
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        var send = poster.SendTicketOpeningAsync(10, Guid.NewGuid(), "Opening", default);
+        if (rejected) Assert.ThrowsAsync<OpeningMessageNotSentException>(() => send);
+        else Assert.ThrowsAsync<HttpException>(() => send);
+        Assert.That(handler.Requests, Is.EqualTo(status == HttpStatusCode.TooManyRequests ? 4 : 1));
+    }
+
+    [TestCase(50007)]
+    [TestCase(50013)]
+    [TestCase(50001)]
+    [TestCase(50278)]
+    public void CommunityPosterPreservesNumericErrorCodeWithoutResponseOrToken(int code)
+    {
+        using var handler = new ErrorResponseHandler(() => new HttpResponseMessage(HttpStatusCode.Forbidden)
+        {
+            Content = new StringContent(JsonSerializer.Serialize(new { code, message = "private-response-marker" }))
+        });
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("private-token-marker", "Host=unused"), TimeProvider.System);
+        var exception = Assert.ThrowsAsync<HttpException>(() => poster.SendAsync(10, new("welcome", []), default))!;
+        Assert.Multiple(() =>
+        {
+            Assert.That(exception.HttpCode, Is.EqualTo(HttpStatusCode.Forbidden));
+            Assert.That(exception.DiscordCode, Is.EqualTo((DiscordErrorCode)code));
+            Assert.That(exception.ToString(), Does.Not.Contain("private-response-marker").And.Not.Contain("private-token-marker"));
+            Assert.That(exception.InnerException, Is.Null);
+            Assert.That(DiscordGateway.SafeError(exception), Is.EqualTo("Discord HTTP 403"));
+            Assert.That(handler.Requests, Is.EqualTo(1));
+        });
+    }
+
+    [TestCase("")]
+    [TestCase("<html>private-response-marker</html>")]
+    [TestCase("{}")]
+    [TestCase("null")]
+    [TestCase("[]")]
+    [TestCase("{\"code\":\"50007\"}")]
+    [TestCase("{\"code\":50007.5}")]
+    [TestCase("{\"code\":2147483648}")]
+    [TestCase("{\"code\":-1}")]
+    [TestCase("{\"code\":0}")]
+    [TestCase("{\"code\":true}")]
+    [TestCase("{\"code\":50007")]
+    public void CommunityPosterInvalidErrorCodeKeepsRetryableStatusWithoutResponseText(string body)
+    {
+        using var handler = new ErrorResponseHandler(() => new HttpResponseMessage(HttpStatusCode.Forbidden)
+            { Content = new StringContent(body) });
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("private-token-marker", "Host=unused"), TimeProvider.System);
+        var exception = Assert.ThrowsAsync<HttpRequestException>(() => poster.SendAsync(10, new("welcome", []), default))!;
+        Assert.That(exception.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
+        Assert.That(exception.Message, Is.EqualTo("Discord message creation failed."));
+        Assert.That(exception.ToString(), Does.Not.Contain("private-token-marker").And.Not.Contain("private-response-marker"));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void CommunityPosterBoundsErrorBodyWithOrWithoutContentLength(bool declaredLength)
+    {
+        var bytes = System.Text.Encoding.UTF8.GetBytes("{\"code\":50007,\"message\":\"" + new string('x', 100000) + "\"}");
+        using var stream = new CountedErrorStream(bytes);
+        using var handler = new ErrorResponseHandler(() =>
+        {
+            var content = new StreamContent(stream);
+            if (declaredLength) content.Headers.ContentLength = bytes.Length;
+            return new HttpResponseMessage(HttpStatusCode.Forbidden) { Content = content };
+        });
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        var exception = Assert.ThrowsAsync<HttpRequestException>(() => poster.SendAsync(10, new("welcome", []), default))!;
+        Assert.That(exception.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
+        Assert.That(stream.BytesRead, declaredLength ? Is.Zero : Is.LessThanOrEqualTo(8193));
+        Assert.That(stream.BytesRead, Is.LessThan(bytes.Length));
+        Assert.That(handler.Requests, Is.EqualTo(1));
+    }
+
+    [Test]
+    public async Task CommunityPosterErrorBodyCancellationPropagatesAndReleasesGate()
+    {
+        using var cancellation = new CancellationTokenSource();
+        using var stream = new CountedErrorStream(System.Text.Encoding.UTF8.GetBytes("{\"code\":50007}"))
+            { BeforeRead = () => cancellation.Cancel() };
+        var refused = true;
+        using var handler = new ErrorResponseHandler(() => refused
+            ? new HttpResponseMessage(HttpStatusCode.Forbidden) { Content = new StreamContent(stream) }
+            : new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{\"id\":\"123\"}") });
+        using var http = new HttpClient(handler);
+        using var poster = new DiscordCommunityPoster(http, new BotSecrets("fake-test-token", "Host=unused"), TimeProvider.System);
+        Assert.CatchAsync<OperationCanceledException>(() => poster.SendAsync(10, new("welcome", []), cancellation.Token));
+        refused = false;
+        Assert.That(await poster.SendAsync(10, new("welcome", []), default), Is.EqualTo(123UL));
+        Assert.That(handler.Requests, Is.EqualTo(2));
+    }
+
+    [Test]
+    public void Readiness_RequiresFreshNonfutureTimestamp()
+    {
+        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".ready");
+        var now = new DateTimeOffset(2026, 10, 3, 12, 0, 0, TimeSpan.Zero);
+        try
+        {
+            Assert.That(ReadinessMarker.IsHealthy(path, now), Is.False);
+            File.WriteAllText(path, (now - TimeSpan.FromSeconds(30)).ToString("O", CultureInfo.InvariantCulture));
+            Assert.That(ReadinessMarker.IsHealthy(path, now), Is.True);
+            File.WriteAllText(path, (now - TimeSpan.FromSeconds(91)).ToString("O", CultureInfo.InvariantCulture));
+            Assert.That(ReadinessMarker.IsHealthy(path, now), Is.False);
+            File.WriteAllText(path, (now + TimeSpan.FromSeconds(1)).ToString("O", CultureInfo.InvariantCulture));
+            Assert.That(ReadinessMarker.IsHealthy(path, now), Is.False);
+            File.WriteAllText(path, "invalid");
+            Assert.That(ReadinessMarker.IsHealthy(path, now), Is.False);
+        }
+        finally { if (File.Exists(path)) File.Delete(path); }
+    }
+
+    [Test]
+    public async Task ValidateCommand_DoesNotRequireCredentialsOrConnect()
+    {
+        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".json");
+        try
+        {
+            File.WriteAllText(path, "{\"guildId\":\"1\",\"tickets\":{\"enabled\":false},\"welcome\":{\"enabled\":false},\"factions\":{\"enabled\":false},\"answers\":[]}");
+            Assert.That(await Program.Main(["--config", path, "--validate"]), Is.Zero);
+        }
+        finally { if (File.Exists(path)) File.Delete(path); }
+    }
+
+    [Test]
+    public void GatewaySession_InitialHeartbeatCannotBypassStartupValidation()
+    {
+        var state = new GatewaySessionState();
+        Assert.That(state.ObserveHeartbeat(true), Is.Null);
+        Assert.That(state.IsReady(true), Is.False);
+        var validation = state.BeginValidation();
+        Assert.That(state.ObserveHeartbeat(true), Is.Null);
+        Assert.That(state.IsReady(true), Is.False);
+        Assert.That(state.CompleteValidation(validation, true), Is.True);
+        Assert.That(state.IsReady(true), Is.True);
+    }
+
+    [Test]
+    public void GatewaySession_ResumeHeartbeatRestoresAnAlreadyValidatedSession()
+    {
+        var state = new GatewaySessionState();
+        state.CompleteValidation(state.BeginValidation(), true);
+        state.Disconnect();
+        Assert.That(state.IsReady(true), Is.False);
+        Assert.That(state.ObserveHeartbeat(false), Is.Null);
+        Assert.That(state.IsReady(false), Is.False);
+        Assert.That(state.ObserveHeartbeat(true), Is.Null);
+        Assert.That(state.IsReady(true), Is.True);
+        Assert.That(state.IsReady(false), Is.False);
+    }
+
+    [Test]
+    public void GatewaySession_FreshReadyRequiresValidationAgain()
+    {
+        var state = new GatewaySessionState();
+        state.CompleteValidation(state.BeginValidation(), true);
+        state.Disconnect();
+        var fresh = state.BeginValidation();
+        Assert.That(state.ObserveHeartbeat(true), Is.Null);
+        Assert.That(state.IsReady(true), Is.False);
+        Assert.That(state.CompleteValidation(fresh, true), Is.True);
+        Assert.That(state.IsReady(true), Is.True);
+    }
+
+    [Test]
+    public void GatewaySession_DisconnectInvalidatesInFlightValidationAndResumeRechecksIt()
+    {
+        var state = new GatewaySessionState();
+        var interrupted = state.BeginValidation();
+        state.Disconnect();
+        Assert.That(state.IsCurrent(interrupted), Is.False);
+        Assert.That(state.CompleteValidation(interrupted, true), Is.False);
+        Assert.That(state.IsReady(true), Is.False);
+        var resumed = state.ObserveHeartbeat(true);
+        Assert.That(resumed, Is.Not.Null);
+        Assert.That(state.IsReady(true), Is.False);
+        Assert.That(state.ObserveHeartbeat(true), Is.Null);
+        Assert.That(state.CompleteValidation(resumed!.Value, true), Is.True);
+        Assert.That(state.IsReady(true), Is.True);
+    }
+
+    [Test]
+    public void GatewaySession_OldValidationCannotEnableANewerOrStoppedSession()
+    {
+        var state = new GatewaySessionState();
+        var old = state.BeginValidation();
+        var fresh = state.BeginValidation();
+        Assert.That(state.CompleteValidation(old, true), Is.False);
+        Assert.That(state.IsReady(true), Is.False);
+        state.Stop();
+        Assert.That(state.CompleteValidation(fresh, true), Is.False);
+        Assert.That(state.ObserveHeartbeat(true), Is.Null);
+        Assert.That(state.IsReady(true), Is.False);
+    }
+    [Test]
+    public void GatewaySession_ReadinessNotificationRequiresSuccessfulValidationAndFiresOncePerRecovery()
+    {
+        var state = new GatewaySessionState();
+        var notifications = 0;
+        state.ReadinessEstablished += () =>
+        {
+            Assert.That(state.IsReady(true), Is.True, "Maintenance notifications follow the ready state transition.");
+            notifications++;
+        };
+        state.ObserveHeartbeat(true);
+        Assert.That(notifications, Is.Zero);
+        var initial = state.BeginValidation();
+        state.ObserveHeartbeat(true);
+        Assert.That(notifications, Is.Zero);
+        Assert.That(state.CompleteValidation(initial, true), Is.True);
+        Assert.That(notifications, Is.EqualTo(1));
+        Assert.That(state.CompleteValidation(initial, true), Is.False);
+        Parallel.For(0, 10, _ => state.ObserveHeartbeat(true));
+        Assert.That(notifications, Is.EqualTo(1), "Ordinary heartbeat ACKs cannot start duplicate maintenance sweeps.");
+
+        state.Disconnect();
+        state.ObserveHeartbeat(false);
+        Assert.That(notifications, Is.EqualTo(1));
+        Parallel.For(0, 10, _ => state.ObserveHeartbeat(true));
+        Assert.That(notifications, Is.EqualTo(2), "A validated RESUMED session must wake maintenance exactly once.");
+
+        state.Disconnect();
+        var fresh = state.BeginValidation();
+        state.ObserveHeartbeat(true);
+        Assert.That(notifications, Is.EqualTo(2));
+        Assert.That(state.CompleteValidation(fresh, true), Is.True);
+        Assert.That(notifications, Is.EqualTo(3), "A fresh READY must validate before waking maintenance.");
+        state.Stop();
+        state.ObserveHeartbeat(true);
+        Assert.That(state.CompleteValidation(fresh, true), Is.False);
+        Assert.That(notifications, Is.EqualTo(3));
+    }
+
+    [Test]
+    public void GatewaySession_StaleOrDisconnectedValidationCannotNotifyMaintenance()
+    {
+        var state = new GatewaySessionState();
+        var notifications = 0;
+        state.ReadinessEstablished += () => notifications++;
+        var interrupted = state.BeginValidation();
+        state.Disconnect();
+        Assert.That(state.CompleteValidation(interrupted, true), Is.False);
+        Assert.That(notifications, Is.Zero);
+        var retry = state.ObserveHeartbeat(true);
+        Assert.That(retry, Is.Not.Null);
+        Assert.That(state.CompleteValidation(retry!.Value, false), Is.False);
+        Assert.That(notifications, Is.Zero);
+        retry = state.ObserveHeartbeat(true);
+        Assert.That(retry, Is.Not.Null);
+        Assert.That(state.CompleteValidation(retry!.Value, true), Is.True);
+        Assert.That(notifications, Is.EqualTo(1));
+    }
+    private static HttpException PlacementError(HttpStatusCode status = HttpStatusCode.BadRequest, string path = "parent_id")
+    {
+        // Discord.Net exposes structured errors read-only and constructs them internally.
+        var error = (DiscordJsonError)Activator.CreateInstance(typeof(DiscordJsonError),
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic, null,
+            [path, Array.Empty<DiscordError>()], null)!;
+        return new HttpException(status, null!, DiscordErrorCode.InvalidFormBody, "Test placement failure.", [error]);
+    }
+
+    private static OverwritePermissions Find(Overwrite[] overwrites, ulong id, PermissionTarget target) =>
+        overwrites.Single(x => x.TargetId == id && x.TargetType == target).Permissions;
+
+    private sealed class ErrorResponseHandler(Func<HttpResponseMessage> response) : HttpMessageHandler
+    {
+        public int Requests { get; private set; }
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            Requests++;
+            return Task.FromResult(response());
+        }
+    }
+
+    private sealed class RecordingRestClient : IRestClient
+    {
+        public List<string> Calls { get; } = [];
+        public Dictionary<string, string> Headers { get; } = [];
+        public CancellationToken Cancellation { get; private set; }
+        public bool Disposed { get; private set; }
+        public void SetHeader(string key, string value) => Headers[key] = value;
+        public void SetCancelToken(CancellationToken cancelToken) => Cancellation = cancelToken;
+        private Task<RestResponse> Record(string kind, string method, string endpoint)
+        {
+            Calls.Add($"{kind}:{method}:{endpoint}");
+            return Task.FromResult(new RestResponse(HttpStatusCode.OK, [], new MemoryStream()));
+        }
+        public Task<RestResponse> SendAsync(string method, string endpoint, CancellationToken cancelToken, bool headerOnly = false,
+            string? reason = null, IEnumerable<KeyValuePair<string, IEnumerable<string>>>? requestHeaders = null) => Record("empty", method, endpoint);
+        public Task<RestResponse> SendAsync(string method, string endpoint, string json, CancellationToken cancelToken, bool headerOnly = false,
+            string? reason = null, IEnumerable<KeyValuePair<string, IEnumerable<string>>>? requestHeaders = null) => Record("json", method, endpoint);
+        public Task<RestResponse> SendAsync(string method, string endpoint, IReadOnlyDictionary<string, object> multipartParams,
+            CancellationToken cancelToken, bool headerOnly = false, string? reason = null,
+            IEnumerable<KeyValuePair<string, IEnumerable<string>>>? requestHeaders = null) => Record("multipart", method, endpoint);
+        public void Dispose() => Disposed = true;
+    }
+
+    private sealed class InspectingChannelHandler(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> respond) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) =>
+            respond(request, cancellationToken);
+    }
+
+    private sealed class TransportFailureContent(HttpRequestException failure) : HttpContent
+    {
+        protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context) => Task.FromException(failure);
+        protected override bool TryComputeLength(out long length) { length = 0; return false; }
+    }
+
+    private sealed class CountedErrorStream(byte[] bytes) : MemoryStream(bytes)
+    {
+        public override bool CanSeek => false;
+        public int BytesRead { get; private set; }
+        public Action? BeforeRead { get; init; }
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken ct = default)
+        {
+            BeforeRead?.Invoke();
+            var read = await base.ReadAsync(buffer, ct);
+            BytesRead += read;
+            return read;
+        }
+    }
+
+    private sealed class RecordingHandler : HttpMessageHandler
+    {
+        public List<string> Bodies { get; } = [];
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            Assert.That(request.RequestUri?.AbsoluteUri, Is.EqualTo("https://discord.com/api/v10/channels/10/messages"));
+            Bodies.Add(await request.Content!.ReadAsStringAsync(ct));
+            return Bodies.Count == 1
+                ? new HttpResponseMessage(HttpStatusCode.TooManyRequests) { Content = new StringContent("{\"retry_after\":0,\"global\":false}") }
+                : new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{\"id\":\"123\"}") };
+        }
+    }
+
+    private sealed class DeferredOpeningHandler : HttpMessageHandler
+    {
+        public List<string> Bodies { get; } = [];
+        public TaskCompletionSource Accepted { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            Assert.That(request.RequestUri?.AbsoluteUri, Is.EqualTo("https://discord.com/api/v10/channels/10/messages"));
+            Bodies.Add(await request.Content!.ReadAsStringAsync(ct));
+            Accepted.TrySetResult();
+            await Task.Delay(Timeout.Infinite, ct);
+            throw new InvalidOperationException("The accepted response should have been canceled.");
+        }
+    }
+}

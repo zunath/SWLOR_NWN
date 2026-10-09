@@ -1,0 +1,386 @@
+{
+  "GuildId": 484936923341651971,
+  "Prefix": "?",
+  "AdministratorRoleIds": [],
+  "Tickets": {
+    "Enabled": false,
+    "Panels": [
+      {
+        "Id": "support",
+        "ChannelId": 0,
+        "OpenCategoryIds": [
+          0,
+          0
+        ],
+        "OpenLimit": 500,
+        "Label": "Open ticket",
+        "OpeningMessage": "",
+        "PanelMessage": ""
+      }
+    ],
+    "SupportRoleIds": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "BypassRoleIds": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "BypassMemberLimit": null,
+    "BypassPanelLimit": null,
+    "BypassGuildLimit": null,
+    "MemberLimit": 1,
+    "GuildLimit": 100,
+    "ClosedCategoryId": 0,
+    "LogChannelId": 0,
+    "CloseConfirmation": true,
+    "ClosedRequesterCanRead": true,
+    "CleanupDelay": "7.00:00:00",
+    "CleanupInterval": "00:05:00",
+    "ArchiveRetentionDays": 90,
+    "ArchiveDirectory": "/data/archives",
+    "CopyAttachments": true,
+    "MaxAttachmentBytes": 104857600,
+    "MaxTicketAttachmentBytes": 1073741824,
+    "MaxTranscriptContentBytes": 33554432
+  },
+  "Welcome": {
+    "Enabled": false,
+    "ChannelId": 0,
+    "Template": "Welcome to the party, {user}! Please visit our wiki at https://wiki.starwarsnwn.com/ to learn more about the project. Staff is on hand to help with any of your questions, too! You will find all important links in {#information} Please keep {#general} chat to SWLOR/Star Wars, but feel free to talk about any topics you so choose in the {#off-topic} channel. May the force be with you!",
+    "DirectMessage": false,
+    "ChannelMentions": {
+      "information": 0,
+      "general": 0,
+      "off-topic": 0
+    }
+  },
+  "Factions": {
+    "Enabled": false,
+    "Roles": [
+      {
+        "Name": "Faction - Cartel",
+        "RoleId": 0
+      },
+      {
+        "Name": "Faction - Free Fleet",
+        "RoleId": 0
+      },
+      {
+        "Name": "Faction - The Mandalorians",
+        "RoleId": 0
+      },
+      {
+        "Name": "Faction - The Republic",
+        "RoleId": 0
+      },
+      {
+        "Name": "Faction - Remnants",
+        "RoleId": 0
+      },
+      {
+        "Name": "Faction - Czerka",
+        "RoleId": 0
+      },
+      {
+        "Name": "Faction - Jedi Order",
+        "RoleId": 0
+      },
+      {
+        "Name": "Faction - The Legion",
+        "RoleId": 0
+      },
+      {
+        "Name": "Faction - Veles City Hall",
+        "RoleId": 0
+      },
+      {
+        "Name": "Faction - Republic Joint Comms",
+        "RoleId": 0
+      },
+      {
+        "Name": "Faction - The Underworld",
+        "RoleId": 0
+      },
+      {
+        "Name": "Faction - Sith Cultists",
+        "RoleId": 0
+      }
+    ],
+    "Exclusive": null,
+    "Behavior": null,
+    "DeleteCommand": false,
+    "DeleteResponse": false
+  },
+  "Answers": [
+    {
+      "Name": "design",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "weapon",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "delete",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "bug",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "nui",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "dm",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "faction",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "wiki",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "skills",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "damage",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "race",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "based",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "patreon",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "refund",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "rebuild",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "properties",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "dev",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "bible",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "ticket",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "spcap",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "rules",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "mastery",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "remnant",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    },
+    {
+      "Name": "jetpacks",
+      "Enabled": false,
+      "Responses": [],
+      "Embeds": [],
+      "AllowedRoleIds": [],
+      "AllowedChannelIds": [],
+      "Cooldown": "00:00:00",
+      "DeleteCommand": false,
+      "DeleteResponseAfter": null
+    }
+  ]
+}

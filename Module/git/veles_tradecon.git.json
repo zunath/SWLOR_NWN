@@ -70875,7 +70875,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "TreatVendor"
+          "value": "concourse_treat"
         },
         "WillNotBuy": {
           "type": "list",
@@ -71924,7 +71924,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "street_food"
+          "value": "concourse_food"
         },
         "WillNotBuy": {
           "type": "list",
@@ -74450,7 +74450,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "NIGHT_FLOWER_SHOP"
+          "value": "concourse_flower"
         },
         "WillNotBuy": {
           "type": "list",
@@ -76457,7 +76457,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "visc_smuggler"
+          "value": "concourse_goods"
         },
         "WillNotBuy": {
           "type": "list",

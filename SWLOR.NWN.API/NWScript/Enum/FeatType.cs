@@ -2429,5 +2429,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         ShockTrap = 2898,
         ForceBurst1 = 2899,
         DoublehandTrait = 2900,
+        BloodFrenzyBurst = 2901,
+        SoulAscensionBurst = 2902,
 }
 }

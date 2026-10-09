@@ -19,6 +19,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         {
             return new List<AbilityBehaviorCase>
             {
+                new()
+                {
+                    Feat = FeatType.BloodFrenzyBurst,
+                    Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatusEffects = new[] { typeof(BloodFrenzyStatusEffect) },
+                    ExpectsSTMCost = true,
+                    ExpectsRecast = true,
+                    VerifiesImmediateRecastRejection = true,
+                },
+
                 // HackingBlade was legacy pre-combat-upgrade content: the _22 migration refunds
                 // its perk from players and the Bible's Vibroblade tree replaced it (Rending
                 // Strike is the queued weapon ability). Its leftover ability definition

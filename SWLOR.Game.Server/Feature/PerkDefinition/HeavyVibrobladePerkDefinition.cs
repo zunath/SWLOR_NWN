@@ -56,7 +56,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AbsoluteDefense1)
-                .DroidAISlots(1)
                 .Description("For 45 seconds, party members within 5m including you take 15% less physical and Force damage and are immune to Knockdown and Dazed.")
                 .Price(6)
                 .RequirementSkill(SkillType.HeavyVibroblade, 50)
@@ -411,10 +410,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Soul Ascension")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.SoulAscensionTrait)
-                .Description("Defeating an enemy after spending HP on a Heavy Vibroblade Offense ability grants +8% Attack and heals you for 8% of physical damage dealt for 30 seconds.")
-                .IncreasesStat(StatType.HeavyVibrobladeOffenseSoulAscension, 1)
-                .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds, 30)
+                .GrantsFeat(FeatType.SoulAscensionBurst)
+                .Description("For 45 seconds, gain +20% Attack and heal for 8% of direct damage dealt. Costs 10% max HP. Works with any weapon.")
                 .Price(6)
                 .RequirementSkill(SkillType.HeavyVibroblade, 50)
                 .RequirementQuest(HeavyVibrobladeCapstoneQuestDefinition.SoulAscensionMasteryQuestId);

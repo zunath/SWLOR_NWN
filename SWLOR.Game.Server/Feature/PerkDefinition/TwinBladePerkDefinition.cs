@@ -238,7 +238,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TempestBloom1)
-                .DroidAISlots(1)
                 .Description("Deal weapon DMG + 25 to enemies within 5m. For 45 seconds, each hostile area ability that lands creates one immediate pulse for 8 physical DMG to enemies within 5m of its first struck target.")
                 .Price(6)
                 .RequirementSkill(SkillType.TwinBlade, 50)
@@ -436,7 +435,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RedBloom1)
-                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 20 to enemies within 5m. Bleeding enemies take +40 DMG and spread Hemorrhage for 30 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.TwinBlade, 50)

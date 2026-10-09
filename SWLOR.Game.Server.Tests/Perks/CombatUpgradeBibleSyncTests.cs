@@ -1323,7 +1323,14 @@ public class CombatUpgradeBibleSyncTests
                 failures.Add($"{expectedInstruction.Perk} level {expectedInstruction.Level} has multiple droid instruction UTIs: {string.Join(", ", matchingTemplates.Select(x => x.Resref).OrderBy(x => x))}.");
         }
 
-        enumRecipeTypes.Should().BeEquivalentTo(recipeTypes, "droid instruction recipe enum entries should match live recipe definitions");
+        recipeTypes.Should().BeSubsetOf(enumRecipeTypes);
+        bool IsRetiredCapstoneRecipe(string name) =>
+            Enum.TryParse<PerkType>(name["Instruction".Length..], out var perkType) &&
+            perks.TryGetValue(perkType, out var detail) &&
+            detail.PerkLevels.Values.All(level => level.DroidAISlots == 0) &&
+            detail.PerkLevels.Values.Any(level => level.Requirements.OfType<PerkRequirementQuest>().Any());
+        enumRecipeTypes.Except(recipeTypes).Where(name => !IsRetiredCapstoneRecipe(name)).Should().BeEmpty(
+            "retired capstone instruction recipe IDs remain reserved without registering recipes");
 
         foreach (var group in templates.GroupBy(x => x.Perk).OrderBy(x => x.Key))
         {
@@ -1502,7 +1509,7 @@ public class CombatUpgradeBibleSyncTests
         {
             foreach (var (level, perkLevel) in detail.PerkLevels.OrderBy(x => x.Key))
             {
-                if (perkLevel.GrantedFeats.Count <= 0 ||
+                if (perkLevel.DroidAISlots <= 0 || perkLevel.GrantedFeats.Count <= 0 ||
                     perkLevel.GrantedFeats.All(IsPassiveIconTraitFeat))
                     continue;
 

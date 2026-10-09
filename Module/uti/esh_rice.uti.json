@@ -1,0 +1,85 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 63
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 540
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 63
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Polished rice reclaimed from Neo-Crusader provisions. Used in Echani hotpot, claypot rice, and savory porridge."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Polished rice reclaimed from Neo-Crusader provisions. Used in Echani hotpot, claypot rice, and savory porridge."
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Eshan White Rice"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 142
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 64
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "esh_rice"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "esh_rice"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 142
+  }
+}

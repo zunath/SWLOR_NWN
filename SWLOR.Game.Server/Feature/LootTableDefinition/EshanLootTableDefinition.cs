@@ -10,26 +10,41 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         public Dictionary<string, LootTable> BuildLootTables()
         {
             _builder.Create("ESHAN_NEOCRUSADER")
+                .AddItem("esh_rice", 5, 3)
+                .AddItem("esh_greens", 5, 3)
+                .AddItem("esh_scallion", 5, 3)
+                .AddItem("esh_egg", 5, 3)
                 .AddItem("esh_mando_salv", 10, 2)
                 .AddGold(150, 5);
 
             _builder.Create("ESHAN_DIRE_WOLF")
+                .AddItem("esh_wolf_meat", 10, 3)
                 .AddItem("esh_wolf_pelt", 10, 2);
 
             _builder.Create("ESHAN_FROST_WOLF")
+                .AddItem("esh_wolf_meat", 10, 3)
                 .AddItem("esh_wolf_pelt", 10, 2)
                 .AddItem("esh_frost_fang", 4, 1);
 
             _builder.Create("ESHAN_DIRE_WOLF_ALPHA")
+                .AddItem("esh_wolf_meat", 10, 4)
                 .AddItem("esh_wolf_pelt", 10, 3)
                 .AddItem("esh_frost_fang", 10, 2);
 
             _builder.Create("ESHAN_THYRSIAN_EXILE")
+                .AddItem("esh_chili_oil", 5, 2)
+                .AddItem("esh_pickles", 5, 2)
+                .AddItem("esh_seeds", 5, 3)
                 .AddItem("esh_sun_insignia", 10, 1)
                 .AddItem("esh_mando_salv", 5, 2)
                 .AddGold(500, 10);
 
             _builder.Create("ESHAN_SCRAPYARD_SMUGGLER")
+                .AddItem("esh_fish", 5, 3)
+                .AddItem("esh_poultry", 5, 3)
+                .AddItem("esh_chili_oil", 3, 2)
+                .AddItem("esh_pickles", 3, 2)
+                .AddItem("esh_seeds", 3, 3)
                 .AddItem("elec_flawed", 5, 1)
                 .AddItem("elec_good", 5, 1)
                 .AddGold(250, 10);

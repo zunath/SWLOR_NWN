@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -32,9 +33,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override string CanApply(uint creature)
         {
-            return (_damagePercent <= 0 && _accuracyPercent <= 0) || _nameStrRef <= 0 || Icon == EffectIconType.Invalid
-                ? "Party Command requires bonuses, a name, and an icon."
-                : string.Empty;
+            if ((_damagePercent <= 0 && _accuracyPercent <= 0) || _nameStrRef <= 0 || Icon == EffectIconType.Invalid)
+                return "Party Command requires bonuses, a name, and an icon.";
+
+            var active = StatusEffect.GetStatusEffect<HostileAbilityPartyBuffStatusEffect>(creature);
+            if (active != null && (active._damagePercent > _damagePercent || active._accuracyPercent > _accuracyPercent))
+                return "A more powerful party command effect is active.";
+
+            return string.Empty;
         }
 
         public override IStatusEffect Clone()

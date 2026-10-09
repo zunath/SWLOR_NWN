@@ -134,6 +134,53 @@ public class LeadershipOffensivePartyBuffTests
         new HostileAbilityPartyBuffStatusEffect().CanApply(0).Should().NotBeEmpty();
     }
 
+    [TestCase(12, 10, 8, 0, false)]
+    [TestCase(15, 12, 10, 0, false)]
+    [TestCase(15, 12, 12, 10, false)]
+    [TestCase(12, 10, 15, 0, false)]
+    [TestCase(10, 0, 8, 0, false)]
+    [TestCase(8, 0, 8, 0, true)]
+    [TestCase(12, 10, 12, 10, true)]
+    [TestCase(8, 0, 12, 10, true)]
+    [TestCase(12, 10, 15, 12, true)]
+    public void PartyBuff_OnlyAllowsRefreshesThatPreserveOrIncreaseBothBonuses(int activeDamage, int activeAccuracy,
+        int incomingDamage, int incomingAccuracy, bool canRefresh)
+    {
+        const uint creature = 0xFFFFFFFC;
+        const uint firstLeader = 0xFFFFFFFE;
+        const uint secondLeader = 0xFFFFFFFD;
+        var creatureEffects = (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
+            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        var activeIcon = activeAccuracy > 0 ? EffectIconType.MarkTarget2StatusEffect : EffectIconType.MarkTarget1StatusEffect;
+        var active = new HostileAbilityPartyBuffStatusEffect(activeDamage, activeAccuracy, 16780505, activeIcon);
+        active.ApplyEffect(firstLeader, creature, 20);
+        var tracker = new CreatureStatusEffect();
+        tracker.Add(active);
+        creatureEffects[creature] = tracker;
+        try
+        {
+            var incomingIcon = incomingAccuracy > 0 ? EffectIconType.MarkTarget2StatusEffect : EffectIconType.MarkTarget1StatusEffect;
+            var incoming = new HostileAbilityPartyBuffStatusEffect(incomingDamage, incomingAccuracy, 16780505, incomingIcon);
+            incoming.ApplyEffect(secondLeader, creature, 30);
+            var originalTick = active.LastTickTime;
+
+            string.IsNullOrEmpty(incoming.CanApply(creature)).Should().Be(canRefresh);
+            string.IsNullOrEmpty(incoming.Clone().CanApply(creature)).Should().Be(canRefresh);
+            incoming.StackingType.Should().Be(StatusEffectStackType.Disabled, "accepted applications use the normal replacement and duration refresh");
+            StatusEffect.GetStatusEffect<HostileAbilityPartyBuffStatusEffect>(creature).Should().BeSameAs(active);
+            active.Source.Should().Be(firstLeader);
+            active.Icon.Should().Be(activeIcon);
+            active.DurationTicks.Should().Be(20);
+            active.LastTickTime.Should().Be(originalTick);
+            tracker.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(activeDamage);
+            tracker.StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(activeAccuracy);
+        }
+        finally
+        {
+            creatureEffects.Remove(creature);
+        }
+    }
+
     [Test]
     public void SharedImpactAndDirectDebuffPaths_UseTheSamePartyBuffGate()
     {

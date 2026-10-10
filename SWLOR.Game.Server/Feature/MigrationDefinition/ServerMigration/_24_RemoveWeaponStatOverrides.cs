@@ -11,9 +11,9 @@ using SWLOR.Game.Server.Service.SpaceService;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 
 /// <summary>Repairs saved weapons even when the previous item migration has already completed.</summary>
-public sealed class _23_RemoveWeaponStatOverrides : IServerMigration
+public sealed class _24_RemoveWeaponStatOverrides : IServerMigration
 {
-    public int Version => 23;
+    public int Version => 24;
     public MigrationExecutionType ExecutionType => MigrationExecutionType.PostCacheLoad;
 
     public void Migrate()
@@ -46,7 +46,7 @@ public sealed class _23_RemoveWeaponStatOverrides : IServerMigration
             DB.Set(ship);
             changed++;
         }
-        Log.Write(LogGroup.Migration, $"Migration #23: Removed player weapon stat overrides in {changed} stored records.", true);
+        Log.Write(LogGroup.Migration, $"Migration #{Version}: Removed player weapon stat overrides in {changed} stored records.", true);
     }
 
     private static List<T> SearchAll<T>() where T : EntityBase

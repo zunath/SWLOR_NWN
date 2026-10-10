@@ -4,6 +4,7 @@ using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
@@ -29,8 +30,18 @@ public class MigrationDataTests
         migrations.Where(migration => migration.Version == 22).Should().HaveCount(2);
         new _22_CombatSystemReplacement().ExecutionType.Should().Be(MigrationExecutionType.PostDatabaseLoad);
         new StoredItemSchemaMigration().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
-        new _23_RemoveWeaponStatOverrides().Version.Should().BeGreaterThan(22);
-        new _23_RemoveWeaponStatOverrides().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
+        new _24_RemoveWeaponStatOverrides().Version.Should().BeGreaterThan(new _23_RetireForceWeaponEnhancements().Version);
+        new _24_RemoveWeaponStatOverrides().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
+    }
+
+    [Test]
+    public void PlayerMigrationsHaveUniqueVersions()
+    {
+        var migrations = ServerAssembly.GetTypes()
+            .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IPlayerMigration).IsAssignableFrom(type))
+            .Select(type => (IPlayerMigration)Activator.CreateInstance(type)!).ToArray();
+        migrations.Select(migration => migration.Version).Should().OnlyHaveUniqueItems();
+        new _17_RemoveWeaponStatOverrides().Version.Should().BeGreaterThan(new _16_RetireForceWeaponEnhancements().Version);
     }
 
     [Test]

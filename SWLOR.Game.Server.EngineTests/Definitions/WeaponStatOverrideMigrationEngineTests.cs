@@ -31,7 +31,7 @@ public static partial class MigrationEngineTests
         {
             foreach (var weapon in new[] { equipped, carried, nested })
                 StampWeaponStatOverrides(weapon);
-            new _16_RemoveWeaponStatOverrides().Migrate(player);
+            new _17_RemoveWeaponStatOverrides().Migrate(player);
             foreach (var weapon in new[] { equipped, carried, nested })
                 AssertWeaponOverridesRemoved(ctx, weapon);
             ctx.AssertEqual(equipped, GetItemInSlot(InventorySlot.RightHand, player), "Weapon stays equipped");
@@ -146,7 +146,7 @@ public static partial class MigrationEngineTests
                 }
                 DB.Set(market);
                 DB.Set(category);
-                new _23_RemoveWeaponStatOverrides().Migrate();
+                new _24_RemoveWeaponStatOverrides().Migrate();
                 foreach (var record in records)
                 {
                     var repaired = DB.Get<InventoryItem>(record.Id);

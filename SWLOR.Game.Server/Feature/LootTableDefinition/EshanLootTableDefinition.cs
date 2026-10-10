@@ -31,6 +31,12 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("esh_wolf_pelt", 10, 3)
                 .AddItem("esh_frost_fang", 10, 2);
 
+            _builder.Create("ESHAN_GORAK_VESH_SHARD")
+                .AddItem("chiro_shard", 1, 1, true);
+
+            _builder.Create("ESHAN_GORAK_VESH_EMERALD")
+                .AddItem("emerald", 1, 1, true);
+
             _builder.Create("ESHAN_THYRSIAN_EXILE")
                 .AddItem("esh_chili_oil", 5, 2)
                 .AddItem("esh_pickles", 5, 2)

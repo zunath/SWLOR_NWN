@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             EshanWolfLine();
             EshanFrostLine();
             EshanAlphaHunt();
+            EshanIceboundHunt();
             EshanScoutScreen();
             EshanHunterTrap();
             EshanVanguardBreak();
@@ -67,6 +68,21 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddXPReward(11000)
                 .AddGoldReward(9000);
+        }
+
+        private void EshanIceboundHunt()
+        {
+            _builder.Create("eshan_icebound_hunt", "Hunt the Icebound")
+
+                .AddState()
+                .SetStateJournalText("Defeat Gorak Vesh, the Icebound, in the Silverwood Expanse, then report to Security Officer Talia Venn in Eshan City's Silver Gate District.")
+                .AddKillObjective(NPCGroupType.Eshan_GorakVesh, 1)
+
+                .AddState()
+                .SetStateJournalText("Gorak Vesh, the Icebound, is dead. Return to Security Officer Talia Venn in Eshan City's Silver Gate District.")
+
+                .AddXPReward(25000)
+                .AddGoldReward(22000);
         }
 
         private void EshanScoutScreen()

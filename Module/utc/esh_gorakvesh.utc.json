@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Apex Bite in Dathomir Tarn Jungle Preserve."
+    "value": "Chiro boss for Hunt the Icebound in Eshan's Silverwood Expanse."
   },
   "Con": {
     "type": "byte",
@@ -540,7 +540,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "ESHAN_DIRE_WOLF_ALPHA,100,1"
+          "value": "ESHAN_GORAK_VESH_SHARD,100,1"
         }
       },
       {
@@ -571,6 +571,21 @@
         "Value": {
           "type": "cexostring",
           "value": "ESHAN_MAP_RARES,5,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "ESHAN_GORAK_VESH_EMERALD,100,1"
         }
       }
     ]

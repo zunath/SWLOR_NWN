@@ -2169,7 +2169,221 @@
           ]
         },
         {
+          "ChoiceId": "reply-offer-11",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "eshan_icebound_hunt"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-remind-11",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "eshan_icebound_hunt",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-ready-11",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "eshan_icebound_hunt",
+                "2"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-done-11",
+          "Conditions": [
+            {
+              "Key": "condition-completed-quest",
+              "Arguments": [
+                "eshan_icebound_hunt"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
           "ChoiceId": "reply-exit",
+          "Conditions": []
+        }
+      ]
+    },
+    "offer-11": {
+      "Id": "offer-11",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Gorak Vesh, the Icebound, is stalking the Silverwood Expanse. This ancient chirodactyl is beyond an ordinary wolf hunt. Defeat it before it reaches the city approaches, then return to me.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-accept-11",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-decline-11",
+          "Conditions": []
+        }
+      ]
+    },
+    "remind-11": {
+      "Id": "remind-11",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Search the Silverwood Expanse for Gorak Vesh, the Icebound. Bring allies; this chirodactyl is a dangerous predator.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-return-remind-11",
+          "Conditions": []
+        }
+      ]
+    },
+    "ready-11": {
+      "Id": "ready-11",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The Icebound's roar has fallen silent. Tell me what happened in the Silverwood.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-turnin-11",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-return-ready-11",
+          "Conditions": []
+        }
+      ]
+    },
+    "done-11": {
+      "Id": "done-11",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "With Gorak Vesh defeated, the Silverwood roads are safer for our patrols.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-return-done-11",
+          "Conditions": []
+        }
+      ]
+    },
+    "accept-11": {
+      "Id": "accept-11",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Search the Silverwood Expanse for Gorak Vesh, the Icebound. Bring allies; this chirodactyl is a dangerous predator.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-return-11",
+          "Conditions": []
+        }
+      ]
+    },
+    "complete-11": {
+      "Id": "complete-11",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Gorak Vesh will threaten our patrols no longer. You've earned the city's bounty.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-return-complete-11",
           "Conditions": []
         }
       ]
@@ -5092,6 +5306,296 @@
       "Actions": [],
       "Next": [],
       "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-offer-11": {
+      "Id": "reply-offer-11",
+      "Text": {
+        "Text": "Hunt the Icebound",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "offer-11",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-remind-11": {
+      "Id": "reply-remind-11",
+      "Text": {
+        "Text": "Hunt the Icebound — review the assignment.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "remind-11",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-ready-11": {
+      "Id": "reply-ready-11",
+      "Text": {
+        "Text": "Hunt the Icebound — report success.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "ready-11",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-done-11": {
+      "Id": "reply-done-11",
+      "Text": {
+        "Text": "Hunt the Icebound — ask about the result.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "done-11",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-accept-11": {
+      "Id": "reply-accept-11",
+      "Text": {
+        "Text": "I'll hunt Gorak Vesh.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "eshan_icebound_hunt"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "accept-11",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-decline-11": {
+      "Id": "reply-decline-11",
+      "Text": {
+        "Text": "Not this assignment.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-hub",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-turnin-11": {
+      "Id": "reply-turnin-11",
+      "Text": {
+        "Text": "Gorak Vesh, the Icebound, is dead.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "eshan_icebound_hunt"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "complete-11",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-return-11": {
+      "Id": "reply-return-11",
+      "Text": {
+        "Text": "Show me the other security postings.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-hub",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-return-remind-11": {
+      "Id": "reply-return-remind-11",
+      "Text": {
+        "Text": "Show me the other security postings.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-hub",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-return-ready-11": {
+      "Id": "reply-return-ready-11",
+      "Text": {
+        "Text": "Show me the other security postings.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-hub",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-return-complete-11": {
+      "Id": "reply-return-complete-11",
+      "Text": {
+        "Text": "Show me the other security postings.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-hub",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-return-done-11": {
+      "Id": "reply-return-done-11",
+      "Text": {
+        "Text": "Show me the other security postings.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-hub",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
       "IsAutomatic": false
     }
   },

@@ -221,7 +221,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Queued damage cannot supply another hit with health it has already claimed.</summary>
         public static int GetRemainingDamageTargetHP(uint activator, uint target)
         {
-            if (!GetIsObjectValid(target))
+            if (!GetIsObjectValid(target) || GetPlotFlag(target))
                 return 0;
 
             var pendingDamage = GetTrackedAbilityImpact(activator)?.GetPendingDamage(target) ?? 0;

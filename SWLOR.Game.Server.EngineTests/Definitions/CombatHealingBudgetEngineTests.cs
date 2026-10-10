@@ -59,6 +59,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ObjectPlugin.SetCurrentHitPoints(target, 20);
             using (Combat.BeginDamageDerivedHealing(source, target))
                 ctx.AssertEqual(10, Combat.ApplyDamageDerivedHealing(source, 684, 50, true), "a 20-HP target supplies at most 10 HP of healing");
+
+            SetPlotFlag(target, true);
+            using (Combat.BeginDamageDerivedHealing(source, target))
+                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 50, true), "an invulnerable plot target cannot supply healing");
         }
 
         [EngineTest("Kill recovery shares a six-second allowance without suppressing other kill rewards", Category = "CombatHealing", TimeoutSeconds = 20f)]
@@ -180,6 +184,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static void Prepare(EngineTestContext ctx, uint creature, int maximumHP, int currentHP)
         {
             ctx.SuppressNPCNaturalRegen(creature);
+            SetPlotFlag(creature, false);
             Stat.SetNPCMaxHitPoints(creature, maximumHP, true);
             ObjectPlugin.SetCurrentHitPoints(creature, currentHP);
         }

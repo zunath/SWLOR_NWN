@@ -18,9 +18,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
 
         public override int[] BottomParts { get; } =
         {
-            215, 
-            315, 
-            115  
+            215,
+            315,
+            115
         };
     }
 }

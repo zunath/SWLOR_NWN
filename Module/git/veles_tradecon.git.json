@@ -10003,7 +10003,7 @@
         },
         "OnClosed": {
           "type": "resref",
-          "value": ""
+          "value": "door_relock_shut"
         },
         "OnDamaged": {
           "type": "resref",
@@ -10035,7 +10035,7 @@
         },
         "OnOpen": {
           "type": "resref",
-          "value": ""
+          "value": "door_relock_open"
         },
         "OnSpellCastAt": {
           "type": "resref",

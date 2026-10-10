@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service
             public DateTime LastBroadcastUtc { get; set; }
         }
 
-        private const string ShuttleInteriorResref = "starship1_int";
+        private const string ShuttleInteriorResref = "shuttle";
         private const string ShuttleFlightIdVariable = "SHUTTLE_FLIGHT_ID";
         private const string TerminalTag = "flights_terminal";
         private const string TerminalPlanetVariable = "CURRENT_LOCATION";

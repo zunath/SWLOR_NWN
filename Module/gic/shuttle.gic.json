@@ -334,6 +334,90 @@
           "type": "cexostring",
           "value": ""
         }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Invisible sitting point over the passenger seating, facing the central aisle."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Invisible sitting point over the passenger seating, facing the central aisle."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Invisible sitting point over the passenger seating, facing the central aisle."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Invisible sitting point over the passenger seating, facing the central aisle."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Invisible sitting point over the passenger seating, facing the central aisle."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Invisible sitting point over the passenger seating, facing the central aisle."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Invisible sitting point over the passenger seating, facing the central aisle."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Invisible sitting point over the passenger seating, facing the central aisle."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Invisible sitting point over the passenger seating, facing the central aisle."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Invisible sitting point over the passenger seating, facing the central aisle."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Invisible sitting point over the passenger seating, facing the central aisle."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Invisible sitting point over the passenger seating, facing the central aisle."
+        }
       }
     ]
   },
@@ -357,6 +441,13 @@
         "Comment": {
           "type": "cexostring",
           "value": ""
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Scheduled passenger shuttle boarding point."
         }
       }
     ]

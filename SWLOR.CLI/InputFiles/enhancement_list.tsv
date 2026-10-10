@@ -143,11 +143,11 @@ Weapon	Improved Meleenium II	imp_melee_2	15	Store	50	DMG	3	Physical
 Weapon	Improved Meleenium III	imp_melee_3	25	Store	60	DMG	4	Physical
 Weapon	Improved Meleenium IV	imp_melee_4	35	Store	70	DMG	5	Physical
 Weapon	Improved Meleenium V	imp_melee_5	45	Store	80	DMG	6	Physical
-Weapon	Improved Molytex I	imp_molytex_1	5	Store	40	DMG	1	Force
-Weapon	Improved Molytex II	imp_molytex_2	15	Store	50	DMG	2	Force
-Weapon	Improved Molytex III	imp_molytex_3	25	Store	60	DMG	3	Force
-Weapon	Improved Molytex IV	imp_molytex_4	35	Store	70	DMG	4	Force
-Weapon	Improved Molytex V	imp_molytex_5	45	Store	80	DMG	5	Force
+Weapon	Improved Molytex I	imp_molytex_1	5	Store	40	DMG	1
+Weapon	Improved Molytex II	imp_molytex_2	15	Store	50	DMG	2
+Weapon	Improved Molytex III	imp_molytex_3	25	Store	60	DMG	3
+Weapon	Improved Molytex IV	imp_molytex_4	35	Store	70	DMG	4
+Weapon	Improved Molytex V	imp_molytex_5	45	Store	80	DMG	5
 Weapon	Improved Laminasteel I	imp_lamina_1	5	Store	30	DMG	1	Poison
 Weapon	Improved Laminasteel II	imp_lamina_2	15	Store	40	DMG	2	Poison
 Weapon	Improved Laminasteel III	imp_lamina_3	25	Store	50	DMG	3	Poison

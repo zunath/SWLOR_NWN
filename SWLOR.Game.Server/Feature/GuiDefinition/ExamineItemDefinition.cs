@@ -27,6 +27,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 {
                                     body.AddRow(row =>
                                         row.AddLabel()
+                                            .BindText(model => model.Weight)
+                                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                            .SetHeight(26f));
+
+                                    body.AddRow(row =>
+                                        row.AddLabel()
                                             .SetText("Description")
                                             .SetHeight(26f));
 

@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class AbilityImpactVisualEffectTests
 {
     [Test]
-    public void EveryActiveAbilityRank_BindsItsOwnCompiledFiniteEffect()
+    public void EveryActiveAbilityRank_BindsItsDeclaredImpactEffect()
     {
         var root = FindRepositoryRoot();
         using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "design", "animations", "active-abilities.json")));
@@ -49,7 +49,9 @@ public class AbilityImpactVisualEffectTests
                 var feat = Enum.Parse<FeatType>(featName.GetString()!);
                 var matches = definitions.SelectMany(definition => built[definition]).Where(pair => pair.Key == feat).ToArray();
                 matches.Should().ContainSingle($"{id}/{feat} should resolve to one active definition");
-                matches.Single().Value.SuccessfulImpactVisualEffect.Should().Be(expected, $"{id}/{feat} must share its line's effect");
+                // Wrist Rocket restores the native missile and delayed fireball in its impact action.
+                var impactEffect = id == "WristRocket" ? VisualEffect.None : expected;
+                matches.Single().Value.SuccessfulImpactVisualEffect.Should().Be(impactEffect, $"{id}/{feat} must share its line's effect");
             }
 
             rows.Should().ContainKey((int)expected, $"{id} needs an installed visualeffects.2da row");

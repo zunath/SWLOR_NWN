@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
         public string ItemName { get; set; }
         public string Description { get; set; }
         public string ItemProperties { get; set; }
+        public int Weight { get; set; }
         public uint ItemObject { get; set; } = OBJECT_INVALID;
         public string ItemId { get; set; }
         public BaseItem ItemType { get; set; } = BaseItem.Invalid;
@@ -20,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
                 GetDescription(item, false, GetIdentified(item)),
                 GetIdentified(item) ? Service.Item.BuildItemPropertyString(item) : string.Empty)
         {
+            Weight = GetWeight(item);
             IsIdentified = GetIdentified(item);
             if (trackLiveItem)
             {

@@ -96,11 +96,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var area = Area.GetAreaByResref(dbPlayer.LocationAreaResref);
                 var position = Vector3(dbPlayer.LocationX, dbPlayer.LocationY, dbPlayer.LocationZ);
                 var location = Location(area, position, dbPlayer.LocationOrientation);
-                AssignCommand(player, () =>
-                {
-                    ClearAllActions();
-                    ActionJumpToLocation(location);
-                });
+                PersistentLocation.RestoreLocation(player, location);
             }
 
         }

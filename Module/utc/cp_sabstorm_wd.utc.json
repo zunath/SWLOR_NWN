@@ -6,7 +6,7 @@
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10010
+    "value": 10015
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Saber Storm in Dantooine Jedi Enclave Trial Halls."
+    "value": "A malfunctioning training construct in the sealed Dantooine Jedi Enclave Trial Halls. Its combat routines no longer obey the safety shutdown. Disable its chassis so the enclave can repair the training network."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Saber Storm in Dantooine Jedi Enclave Trial Halls."
+      "0": "A malfunctioning training construct in the sealed Dantooine Jedi Enclave Trial Halls. Its combat routines no longer obey the safety shutdown. Disable its chassis so the enclave can repair the training network."
     }
   },
   "Dex": {
@@ -350,7 +350,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1861
+          "value": 1858
         }
       },
       {
@@ -372,7 +372,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Saber Storm Warden"
+      "0": "Storm Gatekeeper Droid"
     }
   },
   "fortbonus": {
@@ -451,11 +451,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 4257
+    "value": 229
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 167
   },
   "refbonus": {
     "type": "short",
@@ -716,7 +716,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 448
+    "value": 910
   },
   "SpecAbilityList": {
     "type": "list",

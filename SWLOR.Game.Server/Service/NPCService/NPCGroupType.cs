@@ -180,35 +180,35 @@ namespace SWLOR.Game.Server.Service.NPCService
         Viscara_SystemicShutdown_InnerCircle = 85,
         [NPCGroup("Systemic Shutdown Master")]
         Viscara_SystemicShutdown_Master = 86,
-        [NPCGroup("Saber Storm Adepts")]
+        [NPCGroup("Storm Drill Droid")]
         Dantooine_SaberStorm_Adept = 87,
-        [NPCGroup("Saber Storm Specialists")]
+        [NPCGroup("Storm Duelist Droid")]
         Dantooine_SaberStorm_Specialist = 88,
-        [NPCGroup("Saber Storm Warden")]
+        [NPCGroup("Storm Gatekeeper Droid")]
         Dantooine_SaberStorm_Warden = 89,
-        [NPCGroup("Saber Storm Inner Circle")]
+        [NPCGroup("Storm Examiner Droid")]
         Dantooine_SaberStorm_InnerCircle = 90,
-        [NPCGroup("Saber Storm Master")]
+        [NPCGroup("Tempest Training Engine")]
         Dantooine_SaberStorm_Master = 91,
-        [NPCGroup("Guardian Master Adepts")]
+        [NPCGroup("Guardian Patrol Droid")]
         Dantooine_GuardianMaster_Adept = 92,
-        [NPCGroup("Guardian Master Specialists")]
+        [NPCGroup("Guardian Bulwark Droid")]
         Dantooine_GuardianMaster_Specialist = 93,
-        [NPCGroup("Guardian Master Warden")]
+        [NPCGroup("Guardian Gatekeeper Droid")]
         Dantooine_GuardianMaster_Warden = 94,
-        [NPCGroup("Guardian Master Inner Circle")]
+        [NPCGroup("Guardian Shield Droid")]
         Dantooine_GuardianMaster_InnerCircle = 95,
-        [NPCGroup("Guardian Master Paragon")]
+        [NPCGroup("Bastion Training Engine")]
         Dantooine_GuardianMaster_Paragon = 96,
-        [NPCGroup("Saber Cyclone Adepts")]
+        [NPCGroup("Cyclone Drill Droid")]
         Dantooine_SaberCyclone_Adept = 97,
-        [NPCGroup("Saber Cyclone Specialists")]
+        [NPCGroup("Cyclone Duelist Droid")]
         Dantooine_SaberCyclone_Specialist = 98,
-        [NPCGroup("Saber Cyclone Warden")]
+        [NPCGroup("Cyclone Gatekeeper Droid")]
         Dantooine_SaberCyclone_Warden = 99,
-        [NPCGroup("Saber Cyclone Inner Circle")]
+        [NPCGroup("Cyclone Examiner Droid")]
         Dantooine_SaberCyclone_InnerCircle = 100,
-        [NPCGroup("Saber Cyclone Master")]
+        [NPCGroup("Vortex Training Engine")]
         Dantooine_SaberCyclone_Master = 101,
         [NPCGroup("Absolute Defense Adepts")]
         Korriban_AbsoluteDefense_Adept = 102,
@@ -390,35 +390,35 @@ namespace SWLOR.Game.Server.Service.NPCService
         Hutlar_OverloadBarrage_InnerCircle = 190,
         [NPCGroup("Overload Barrage Master")]
         Hutlar_OverloadBarrage_Master = 191,
-        [NPCGroup("Last Stand of the Light Adepts")]
+        [NPCGroup("Crypt Raider")]
         Korriban_LastStandOfTheLight_Adept = 192,
-        [NPCGroup("Last Stand of the Light Specialists")]
+        [NPCGroup("Crypt Marauder")]
         Korriban_LastStandOfTheLight_Specialist = 193,
-        [NPCGroup("Last Stand of the Light Warden")]
+        [NPCGroup("Crypt Breach Captain")]
         Korriban_LastStandOfTheLight_Warden = 194,
-        [NPCGroup("Last Stand of the Light Inner Circle")]
+        [NPCGroup("Crypt Reaver")]
         Korriban_LastStandOfTheLight_InnerCircle = 195,
-        [NPCGroup("Last Stand of the Light Master")]
+        [NPCGroup("Crypt Expedition Leader")]
         Korriban_LastStandOfTheLight_Master = 196,
-        [NPCGroup("Hunger of the Dark Adepts")]
+        [NPCGroup("Vitae Reaver Initiate")]
         Korriban_HungerOfTheDark_Adept = 197,
-        [NPCGroup("Hunger of the Dark Specialists")]
+        [NPCGroup("Vitae Reaver Adept")]
         Korriban_HungerOfTheDark_Specialist = 198,
-        [NPCGroup("Hunger of the Dark Warden")]
+        [NPCGroup("Vitae Reaver Enforcer")]
         Korriban_HungerOfTheDark_Warden = 199,
-        [NPCGroup("Hunger of the Dark Inner Circle")]
+        [NPCGroup("Vitae Reaver Binder")]
         Korriban_HungerOfTheDark_InnerCircle = 200,
-        [NPCGroup("Hunger of the Dark Master")]
+        [NPCGroup("Vitae Reaver Chief")]
         Korriban_HungerOfTheDark_Master = 201,
-        [NPCGroup("Eclipse of Resolve Adepts")]
+        [NPCGroup("Umbral Raider Scout")]
         Korriban_EclipseOfResolve_Adept = 202,
-        [NPCGroup("Eclipse of Resolve Specialists")]
+        [NPCGroup("Umbral Raider Adept")]
         Korriban_EclipseOfResolve_Specialist = 203,
-        [NPCGroup("Eclipse of Resolve Warden")]
+        [NPCGroup("Umbral Raider Captain")]
         Korriban_EclipseOfResolve_Warden = 204,
-        [NPCGroup("Eclipse of Resolve Inner Circle")]
+        [NPCGroup("Umbral Raider Saboteur")]
         Korriban_EclipseOfResolve_InnerCircle = 205,
-        [NPCGroup("Eclipse of Resolve Master")]
+        [NPCGroup("Umbral Raider Commander")]
         Korriban_EclipseOfResolve_Master = 206,
         [NPCGroup("Killzone Beacon Adepts")]
         Viscara_KillzoneBeacon_Adept = 207,

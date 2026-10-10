@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Last Stand of the Light in Korriban Sith Crypt Depths."
+    "value": "A living tomb raider in the Korriban Sith Crypt Depths. This independent looting expedition attacks anyone who obstructs its theft of sealed relics. Its members have no authority from the Sith Academy."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Last Stand of the Light in Korriban Sith Crypt Depths."
+      "0": "A living tomb raider in the Korriban Sith Crypt Depths. This independent looting expedition attacks anyone who obstructs its theft of sealed relics. Its members have no authority from the Sith Academy."
     }
   },
   "Dex": {
@@ -351,7 +351,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Last Stand of the Light Adept"
+      "0": "Crypt Raider"
     }
   },
   "fortbonus": {

@@ -41,6 +41,29 @@ public class LootTableDefinitionTests
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
     }
 
+    [Test]
+    public void LootTables_NeverDropTrainingOrConstructedSabers()
+    {
+        var root = FindRepositoryRoot();
+        var forbidden = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var path in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "uti"), "*.uti.json"))
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(path));
+            if (document.RootElement.GetProperty("BaseItem").GetProperty("value").GetInt32()
+                is (int)SWLOR.NWN.API.NWScript.Enum.Item.BaseItem.Lightsaber
+                or (int)SWLOR.NWN.API.NWScript.Enum.Item.BaseItem.Saberstaff)
+                forbidden.Add(document.RootElement.GetProperty("TemplateResRef").GetProperty("value").GetString()!);
+        }
+
+        foreach (var definitionType in GetLootTableDefinitionTypes())
+        {
+            var tables = ((ILootTableDefinition)Activator.CreateInstance(definitionType)!).BuildLootTables();
+            foreach (var (tableId, table) in tables)
+                table.Select(item => item.Resref).Should().NotIntersectWith(forbidden,
+                    $"{tableId} must respect saber progression regardless of item name or rarity");
+        }
+    }
+
     private static IEnumerable<Type> GetLootTableDefinitionTypes()
     {
         return typeof(ILootTableDefinition)

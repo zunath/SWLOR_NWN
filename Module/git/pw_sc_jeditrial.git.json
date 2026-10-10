@@ -8914,7 +8914,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls - Saber Storm Master Spawn"
+            "0": "Dantooine Jedi Enclave Trial Halls - Tempest Training Engine Spawn"
           }
         },
         "MapNote": {
@@ -8985,7 +8985,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls - Guardian Master Paragon Spawn"
+            "0": "Dantooine Jedi Enclave Trial Halls - Bastion Training Engine Spawn"
           }
         },
         "MapNote": {
@@ -9056,7 +9056,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls - Saber Cyclone Master Spawn"
+            "0": "Dantooine Jedi Enclave Trial Halls - Vortex Training Engine Spawn"
           }
         },
         "MapNote": {

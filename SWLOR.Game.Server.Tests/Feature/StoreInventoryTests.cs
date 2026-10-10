@@ -123,6 +123,44 @@ public class StoreInventoryTests
     }
 
     [Test]
+    public void VelesOutfitters_SellTheCompleteAccessoryInventory()
+    {
+        var root = FindRepositoryRoot();
+        using var area = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "git", "veles_tradecon.git.json")));
+        var store = area.RootElement.GetProperty("StoreList").GetProperty("value").EnumerateArray()
+            .Single(store => GetWrappedString(store, "Tag") == "NIGHT_ACCESSORY_SHOP");
+        GetWrappedString(store, "ResRef").Should().Be("night_accessory");
+        var stock = ReadStoreItemData(store).ToArray();
+        var resrefs = stock.Select(item => GetWrappedString(item, "TemplateResRef")).ToArray();
+        resrefs.Should().HaveCount(74).And.OnlyHaveUniqueItems()
+            .And.BeEquivalentTo(ReadStoreBlueprintItems(root, "night_accessory"));
+        resrefs.Should().Contain(new[] { "night_cigar", "night_cigarette" });
+        foreach (var item in stock)
+        {
+            GetWrappedInt(item, "Infinite").Should().Be(1);
+            var resref = GetWrappedString(item, "TemplateResRef");
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", $"{resref}.uti.json")));
+            foreach (var field in new[] { "LocalizedName", "BaseItem", "Cost", "PropertiesList" })
+                JsonElement.DeepEquals(item.GetProperty(field), blueprint.RootElement.GetProperty(field)).Should()
+                    .BeTrue($"{resref} must retain its authored {field}");
+        }
+
+        foreach (var name in new[] { "Ressa Jellin", "Varko Jellin" })
+        {
+            var npc = area.RootElement.GetProperty("Creature List").GetProperty("value").EnumerateArray()
+                .Single(npc => npc.GetProperty("FirstName").GetProperty("value").GetProperty("0").GetString() == name);
+            GetWrappedString(npc, "Conversation").Should().Be("night_viscaccess");
+            GetWrappedString(npc, "ScriptDialogue").Should().Be("dialog_start");
+        }
+        using var conversation = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "ConversationData", "night_viscaccess.conversation.json")));
+        var storeActions = conversation.RootElement.GetProperty("Choices").EnumerateObject()
+            .SelectMany(choice => choice.Value.GetProperty("Actions").EnumerateArray())
+            .Where(action => action.GetProperty("Key").GetString() == "action-open-store").ToArray();
+        storeActions.Should().ContainSingle();
+        storeActions[0].GetProperty("Arguments")[0].GetString().Should().Be("NIGHT_ACCESSORY_SHOP");
+    }
+
+    [Test]
     public void PlacedPlanetaryGeneralStores_MatchBlueprintInventory()
     {
         var root = FindRepositoryRoot();

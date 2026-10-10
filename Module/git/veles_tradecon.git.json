@@ -72044,11 +72044,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A handheld datapad for displaying notes and information. This cosmetic accessory can be held in your hand for roleplay and grants no gameplay bonuses."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A handheld datapad for displaying notes and information. This cosmetic accessory can be held in your hand for roleplay and grants no gameplay bonuses."
+                      }
                     },
                     "Identified": {
                       "type": "byte",

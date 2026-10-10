@@ -9616,12 +9616,15 @@ namespace SWLOR.Game.Server.Service
                 creature,
                 StatType.QueuedWeaponAbilityActivationCriticalRateSkillType,
                 StatType.QueuedWeaponAbilityActivationCriticalRateSkillType));
-            return SkillTypeMatches(skillType, activationSkillType)
+            var idleHitChanceAdjustment = SkillTypeMatches(skillType, activationSkillType)
                 ? TemporaryStatModifier.GetStatAdjustment(
                     creature,
                     StatType.QueuedWeaponAbilityIdleHitChancePercentAdjustment,
                     StatType.QueuedWeaponAbilityActivationCriticalRateSkillType)
                 : 0;
+
+            // Queued abilities use the native weapon roll instead of TryResolveAbilityHit.
+            return GetPhysicalAndForceAbilityHitChanceAdjustment(creature, skillType) + idleHitChanceAdjustment;
         }
 
         public static void ClearQueuedWeaponAbilityActivationBonuses(uint creature)

@@ -14,6 +14,46 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class CombatPerkRegressionEngineTests
     {
+        [EngineTest("Focus Stim accuracy applies to queued weapon abilities", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
+        public static async Task FocusStimQueuedWeaponAccuracy(EngineTestContext ctx)
+        {
+            var attacker = ctx.SpawnCreature("nw_bandit001");
+            await ctx.WaitFrameAsync();
+            Prepare(ctx, attacker);
+
+            foreach (var rank in new[] { 1, 2 })
+            {
+                var bonus = rank == 1 ? 5 : 8;
+                IStatusEffect effect = rank == 1 ? new FocusStim1StatusEffect() : new FocusStim2StatusEffect();
+                ctx.AssertEqual(0, Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
+                    "Queued accuracy starts without a bonus or idle snapshot");
+                var accuracy = Stat.GetStatAdjustment(attacker, StatType.AccuracyPercentAdjustment);
+                ctx.Assert(StatusEffect.ApplyStatusEffect(attacker, attacker, effect, 120f), "Focus Stim applies");
+                ctx.AssertEqual(bonus, Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
+                    "Focus Stim affects the queued weapon roll without an idle snapshot");
+                ctx.AssertEqual(76 + bonus, Combat.CalculateHitRate(2, 0,
+                    Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade)),
+                    "Focus Stim adds percentage points to the queued hit chance");
+                ctx.AssertEqual(0, Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Mimicry),
+                    "Focus Stim excludes Mimicry");
+                ctx.AssertEqual(accuracy, Stat.GetStatAdjustment(attacker, StatType.AccuracyPercentAdjustment),
+                    "Focus Stim does not change ordinary attack accuracy");
+
+                TemporaryStatModifier.Replace(attacker, StatType.QueuedWeaponAbilityActivationCriticalRateSkillType,
+                    (int)SkillType.Vibroblade, 30f, StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
+                TemporaryStatModifier.Replace(attacker, StatType.QueuedWeaponAbilityIdleHitChancePercentAdjustment,
+                    3, 30f, StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
+                ctx.AssertEqual(bonus + 3, Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
+                    "Focus Stim stacks with the matching idle bonus");
+                ctx.AssertEqual(bonus, Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Rifle),
+                    "Focus Stim remains when the idle bonus belongs to another skill");
+                Combat.ClearQueuedWeaponAbilityActivationBonuses(attacker);
+                StatusEffect.RemoveAllStatusEffects(attacker);
+                ctx.AssertEqual(0, Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
+                    "Removing Focus Stim removes its accuracy bonus");
+            }
+        }
+
         [EngineTest("Blood Frenzy restores stamina at both ranks on bleeding targets", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
         public static async Task BloodFrenzyStamina(EngineTestContext ctx)
         {

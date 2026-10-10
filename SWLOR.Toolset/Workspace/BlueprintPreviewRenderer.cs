@@ -524,7 +524,8 @@ namespace SWLOR.Toolset.Workspace
                 // bitmap-only meshes must retain their authored bitmap even when an unrelated MTR
                 // happens to share its resref.
                 resolveMaterial,
-                mesh.ArmorPart);
+                mesh.ArmorPart,
+                mesh.TextureName);
         }
 
         private bool IsGeneratedTintMaterial(string surfaceName)

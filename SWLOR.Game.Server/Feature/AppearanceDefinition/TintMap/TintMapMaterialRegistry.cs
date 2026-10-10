@@ -37,31 +37,34 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         {
             var materials = new Dictionary<string, List<TintMapMaterialDefinition>>(StringComparer.OrdinalIgnoreCase);
 
-            for (var row = 0; row < Get2DARowCount(TintMap2DA); row++)
+            foreach (var table in new[] { TintMap2DA, "cloaktint" })
             {
-                var model = Get2DAString(TintMap2DA, "MODEL", row);
-                var material = Get2DAString(TintMap2DA, "MATERIAL", row);
-                var layerValues = Get2DAString(TintMap2DA, "LAYERS", row).Split(',', StringSplitOptions.RemoveEmptyEntries);
-                if (string.IsNullOrWhiteSpace(model) || string.IsNullOrWhiteSpace(material) || layerValues.Length == 0)
-                    continue;
-
-                var layers = new List<TintMapLayerType>();
-                foreach (var layerValue in layerValues)
+                for (var row = 0; row < Get2DARowCount(table); row++)
                 {
-                    if (int.TryParse(layerValue, out var value) && Enum.IsDefined(typeof(TintMapLayerType), value))
-                        layers.Add((TintMapLayerType)value);
+                    var model = Get2DAString(table, "MODEL", row);
+                    var material = Get2DAString(table, "MATERIAL", row);
+                    var layerValues = Get2DAString(table, "LAYERS", row).Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    if (string.IsNullOrWhiteSpace(model) || string.IsNullOrWhiteSpace(material) || layerValues.Length == 0)
+                        continue;
+
+                    var layers = new List<TintMapLayerType>();
+                    foreach (var layerValue in layerValues)
+                    {
+                        if (int.TryParse(layerValue, out var value) && Enum.IsDefined(typeof(TintMapLayerType), value))
+                            layers.Add((TintMapLayerType)value);
+                    }
+
+                    if (layers.Count == 0)
+                        continue;
+
+                    if (!materials.TryGetValue(model, out var modelMaterials))
+                    {
+                        modelMaterials = new List<TintMapMaterialDefinition>();
+                        materials[model] = modelMaterials;
+                    }
+
+                    modelMaterials.Add(new TintMapMaterialDefinition(material, material, layers.ToArray()));
                 }
-
-                if (layers.Count == 0)
-                    continue;
-
-                if (!materials.TryGetValue(model, out var modelMaterials))
-                {
-                    modelMaterials = new List<TintMapMaterialDefinition>();
-                    materials[model] = modelMaterials;
-                }
-
-                modelMaterials.Add(new TintMapMaterialDefinition(material, material, layers.ToArray()));
             }
 
             MaterialsByModel.Clear();

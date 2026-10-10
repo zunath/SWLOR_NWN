@@ -5,12 +5,23 @@ The generated tint materials share three fragment shaders in
 `fs_plt_hair_nm`. A change to palette lighting must cover all three, including
 materials shared by multiple models through `tintmap.2da`.
 
-The current item catalog includes helmet materials; weapons and dynamic cloaks
+The current item catalog includes helmet and cloak materials; weapons
 continue to use their native model/color choices. Hand-slot resolver support
 does not by itself introduce weapon tint assets. Before registering tintable
 weapons, provide distinct material identities or occurrence-specific rendering
 for independently colored copies of the same equipped model: creature material
 uniforms alone cannot distinguish identical main-hand and off-hand materials.
+
+Cloaks retain their native geometry, PLTs, inventory icons, and `.lod` sharing.
+Their mesh material is `cloaktint`; `cloaktint.2da` maps `cloakmodel.TEXTURE` to
+the original PLT layers and a tile in four checked-in BC5 atlases. The complete
+tint refresh writes `cloakTexture` after its single shader reset, then writes
+the normal palette/RGB rows. `fs_cloaktint` uses the same tint and lighting code
+as `fs_plt_tinter`, sampling only the selected tile. Native palette choices
+continue to update the inventory icon; custom RGB uses the existing item dye
+variables and survives editor reopening. The Toolset crops the same atlas tile
+for its viewport and thumbnails. `CloakTintAssets.py --check` validates the
+checked-in assets during a build; explicit authoring requires `--game-data`.
 
 ## Preserve the authored palette rows
 

@@ -442,6 +442,39 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void CloakAtlasPreview_PreservesPltLayersAcrossEveryAtlas()
+        {
+            var index = BuildHakOnlyIndex();
+            var material = MaterialResolver.TryParseMaterial(index, "cloaktint")!;
+            TintMapTextureRenderer.IsTintMapMaterial(material).Should().BeTrue();
+            foreach (var texture in new[] { 31, 32, 62, 64, 96, 107, 150 })
+            {
+                var source = SWLOR.NWN.Formats.Plt.PltReader.Read(Path.Combine(HaksDirectory, "sw_pt_cloak", $"cloak_{texture:000}.plt"));
+                var image = TintMapTextureRenderer.LoadTintMap(index, material, $"pfh0_cloak_{texture:000}")!;
+                image.Should().NotBeNull();
+                var scale = 512 / source.Width;
+                for (var pixel = 0; pixel < source.Pixels.Count; pixel += 37)
+                {
+                    var x = pixel % source.Width * scale;
+                    var y = 511 - pixel / source.Width * scale;
+                    (image.Pixels[(y * 512 + x) * 4 + 1] * 10 / 255).Should().Be(source.Pixels[pixel].Layer);
+                }
+            }
+            var cache = new PreviewTextureCache(index);
+            var colors = new Dictionary<string, int>
+            {
+                [TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Cloth1)] = new TintMapColor(230, 40, 10).ToStoredValue()
+            };
+            var crescent = cache.Get("cloaktint", tintMapOverrides: colors, textureName: "pmh0_cloak_062");
+            var hammer = cache.Get("cloaktint", tintMapOverrides: colors, textureName: "pmh0_cloak_074");
+            crescent.Should().NotBeNull();
+            hammer.Should().NotBeNull();
+            crescent!.Pixels.Should().NotEqual(hammer!.Pixels, "shared cloak material must retain distinct texture tiles");
+            Enumerable.Range(0, crescent.Pixels.Length / 4).Should().Contain(pixel =>
+                crescent.Pixels[pixel * 4] > 40 && crescent.Pixels[pixel * 4] > crescent.Pixels[pixel * 4 + 1] * 3);
+        }
+
+        [Test]
         public void PreviewTextureCache_TintMapMaterial_AppliesRgbOverride()
         {
             var index = BuildHakOnlyIndex();

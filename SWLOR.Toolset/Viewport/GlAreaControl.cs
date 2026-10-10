@@ -5276,7 +5276,7 @@ void main()
             }
 
             var resolveMaterial = hasMaterial || parsedMaterial != null;
-            var rawKey = (resolveMaterial ? "m|" : "t|") + surfaceName + _layerColorKey;
+            var rawKey = (resolveMaterial ? "m|" : "t|") + surfaceName + "|" + rawTextureName + _layerColorKey;
             if (_rawTextureCache.TryGetValue(rawKey, out var memo))
                 return memo;
 
@@ -5322,7 +5322,7 @@ void main()
                               TextureRenderPolicy.StandaloneEnvironmentMap
                             : cached.EnvironmentMapTexture),
                     isTintMap
-                        ? ResolveMapTexture(parsedMaterial!.GetTexture(7))
+                        ? ResolveTintMapTexture(parsedMaterial!, rawTextureName)
                         : 0,
                     isTintMap
                         ? ResolveMapTexture(parsedMaterial!.GetTexture(10))
@@ -5357,6 +5357,19 @@ void main()
         private static bool IsTintMapMaterial(MtrMaterial? material)
         {
             return TintMapTextureRenderer.IsTintMapMaterial(material);
+        }
+
+        private uint ResolveTintMapTexture(MtrMaterial material, string textureName)
+        {
+            if (!material.CustomShaders.Values.Any(shader => shader.Equals("fs_cloaktint", StringComparison.OrdinalIgnoreCase)))
+                return ResolveMapTexture(material.GetTexture(7));
+            var key = "cloak-tile|" + textureName;
+            if (_mapTextureCache.TryGetValue(key, out var cached))
+                return cached;
+            var image = TintMapTextureRenderer.LoadTintMap(ResourceIndex!, material, textureName);
+            var id = image == null ? 0u : UploadTexture(image.Width, image.Height, image.Pixels, key);
+            _mapTextureCache[key] = id;
+            return id;
         }
 
         private uint ResolveTintAlphaTexture(MtrMaterial? material)

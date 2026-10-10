@@ -152,6 +152,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             ApplyEquippedHelmetColors(creature, selections, resetShaderOverrides);
             if (resetShaderOverrides)
                 ResetMaterialShaderUniforms(creature);
+            CloakTintRenderer.Apply(creature, selections);
             var creatureLayers = new HashSet<TintMapLayerType>();
             foreach (var selection in selections)
             {

@@ -203,6 +203,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         /// </summary>
         public string OutcomeAssertionWaiverReason { get; set; }
 
+        public int MinimumTargetEnmityAfterImpact { get; set; }
+
         /// <summary>
         /// Free-text context for a reviewer: why assertions are relaxed, quirks observed
         /// in the definition, etc. Not used by the executor.

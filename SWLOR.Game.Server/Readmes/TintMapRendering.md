@@ -555,6 +555,18 @@ Preserve the engine's authored specular and roughness maps, material overrides,
 palette alpha, and hair cutouts. Disabling specularity globally or editing each
 NPC would hide the initialization error and remove intentional material detail.
 
+Match the engine's color-space ordering as well: blend the legacy reflection
+gray into the palette RGB **before** `ApplyColorSpace`, then perform the optional
+environment-map blend in linear space. Mixing gray into already-linear RGB
+brightens reflective palette colors when gamma correction is enabled, washing
+out dark hair and metal dyes (including female chest 304's two metal layers).
+`SWLOR_Haks/tools/TestTintPaletteLighting.py --game-data <NWN data directory>`
+compares diffuse and cached specular color against the installed engine's
+unmodified `SetupStandardShaderInputs`, using all native palette colors,
+shades, layers, shader qualities, lighting modes, and gamma settings. This
+shader-only correction requires rebuilding/deploying `sw_shader.hak` and a
+full client restart; the palette artwork and character colors stay unchanged.
+
 ## Compile against the engine's conditional declarations
 
 The base shader disables normal mapping but still samples `texUnit1` for

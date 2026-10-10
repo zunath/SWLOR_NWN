@@ -19,5 +19,16 @@ namespace SWLOR.Game.Server.Service.WeatherService
         }
 
         public void Invalidate() => Revision = 0;
+
+        public bool TryUpdate(WeatherPattern pattern, WeatherClimate climate,
+            int heatModifier, int humidityModifier, int windModifier, bool isNatural, WeatherStorm regionalStorm)
+        {
+            if (Revision == pattern.Revision) return false;
+
+            Conditions = WeatherConditions.CreateForArea(pattern.Heat, pattern.Humidity, pattern.Wind,
+                climate, heatModifier, humidityModifier, windModifier, isNatural, regionalStorm);
+            Revision = pattern.Revision;
+            return true;
+        }
     }
 }

@@ -33,7 +33,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceAlter, PerkType.ThrowRock)
                 .Name("Throw Rock")
-                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Hurls stone or loose debris with the Force up to 30m, dealing 22 physical DMG plus WIL/PER scaling to one target.")
@@ -189,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SereneFocusTrait)
-                .Description("Control powers that restore HP cause affected allies to restore 1 STM and 1 FP every 6 seconds for 30 seconds. This benefit does not trigger when you target yourself.")
+                .Description("Control powers that restore HP cause affected allies to restore 1 STM and 1 FP every 6 seconds for 30 seconds. Targeting yourself restores 1 FP every 6 seconds instead.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

@@ -82,6 +82,13 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // Native stealth does not interrupt our custom rest effect or its looping animation.
+            if (StatusEffect.HasStatusEffect<RestStatusEffect>(creature))
+            {
+                StatusEffect.RemoveStatusEffect<RestStatusEffect>(creature);
+                AssignCommand(creature, () => ClearAllActions());
+            }
+
             ClearVerdictsForTarget(creature);
             StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);
         }
@@ -218,6 +225,37 @@ namespace SWLOR.Game.Server.Service
             return ResolveDetection(observer, target, false);
         }
 
+        /// <summary>
+        /// Returns whether a creature has an invisibility effect.
+        /// </summary>
+        public static bool IsInvisible(uint creature)
+        {
+            return GetIsObjectValid(creature) &&
+                   HasEffect(creature, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility);
+        }
+
+        /// <summary>
+        /// Returns whether invisibility hides the target from the observer. See Invisibility and
+        /// True Seeing let the observer see through it. Listen detection is suppressed, so a hidden
+        /// target cannot be located by sound either.
+        /// </summary>
+        public static bool IsHiddenByInvisibility(uint observer, uint target)
+        {
+            return IsInvisible(target) &&
+                   !HasEffect(observer, EffectTypeScript.SeeInvisible, EffectTypeScript.TrueSeeing);
+        }
+
+        private static bool HasEffect(uint creature, params EffectTypeScript[] effectTypes)
+        {
+            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
+            {
+                if (effectTypes.Contains(GetEffectType(effect)))
+                    return true;
+            }
+
+            return false;
+        }
+
         [NWNEventHandler(ScriptName.OnDoListenDetectionBefore)]
         public static void SuppressListenDetection()
         {
@@ -251,8 +289,14 @@ namespace SWLOR.Game.Server.Service
 
             if (detected)
             {
-                ExitDetectedPlayerStealth(observer, target);
-                if (acquireAggroOnDetection)
+                // Hostility is judged from the observer's perspective. A friendly or neutral
+                // observer still sees the target (the verdict stays true), but only a hostile
+                // observer's success ends the target's stealth for everyone.
+                var hostile = GetIsEnemy(target, observer);
+
+                if (ShouldBreakStealthOnDetection(true, hostile))
+                    ExitDetectedPlayerStealth(observer, target);
+                if (acquireAggroOnDetection && hostile)
                     AI.TryAcquireAggroAfterDetection(observer, target);
             }
 
@@ -260,9 +304,17 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// A successful detection reveals a player to everyone by ending their stealth mode. NPC
-        /// stealth keeps the engine's observer-specific behavior so creature encounters are not
-        /// globally revealed when a single observer succeeds.
+        /// Only a successful detection by a hostile observer globally breaks stealth.
+        /// </summary>
+        public static bool ShouldBreakStealthOnDetection(bool detected, bool observerIsHostile)
+        {
+            return detected && observerIsHostile;
+        }
+
+        /// <summary>
+        /// A hostile observer's successful detection reveals a player to everyone by ending their
+        /// stealth mode. NPC stealth keeps the engine's observer-specific behavior so creature
+        /// encounters are not globally revealed when a single observer succeeds.
         /// </summary>
         private static void ExitDetectedPlayerStealth(uint observer, uint target)
         {

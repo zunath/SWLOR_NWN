@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .RequirementStamina(4)
                 .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.SnapRush, 46, 3)
-                .MimicryUtility();
+                .MimicryUtility()
+                .RemoveSourceOwnedStatusEffectOnPerkRefund(typeof(Hasten1StatusEffect));
 
             ConfigureSelfStatus(ability, typeof(Hasten1StatusEffect), 15f, 0, additionalAction: a => Stat.RestoreStamina(a, 10));
 

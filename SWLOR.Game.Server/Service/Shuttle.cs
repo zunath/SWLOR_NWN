@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Service
                 });
 
                 var destinationName = Planet.GetPlanetByType(destination).Name;
-                var transit = Time.GetTimeShortIntervals(TimeSpan.FromSeconds(transitSeconds), false);
+                var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(transitSeconds), false);
                 SendMessageToPC(player, $"You board the shuttle to {destinationName}. Estimated flight time: {transit}.");
             }
 
@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var next = ShuttleSchedule.GetNextDepartureUtc(origin, destination, now);
-            var wait = Time.GetTimeShortIntervals(next - now, false);
+            var wait = Time.GetTimeLongIntervals(next - now, false);
             var destinationName = Planet.GetPlanetByType(destination).Name;
             SendMessageToPC(player, ColorToken.Yellow($"You missed your shuttle to {destinationName}! Your ticket remains valid. The next shuttle departs in {wait} - be within {(int)BoardingRangeMeters} meters of the flights terminal."));
         }
@@ -247,7 +247,7 @@ namespace SWLOR.Game.Server.Service
                 _announcedBoardings[route] = next;
 
                 var destinationName = Planet.GetPlanetByType(route.Destination).Name;
-                var wait = Time.GetTimeShortIntervals(next - now, false);
+                var wait = Time.GetTimeLongIntervals(next - now, false);
                 foreach (var (playerId, ticketRoute) in _ticketHolders)
                 {
                     if (ticketRoute != route)
@@ -423,7 +423,7 @@ namespace SWLOR.Game.Server.Service
                 flight.LastBroadcastUtc = now;
 
                 var destinationName = Planet.GetPlanetByType(flight.Destination).Name;
-                var remaining = Time.GetTimeShortIntervals(flight.ArrivalUtc - now, false);
+                var remaining = Time.GetTimeLongIntervals(flight.ArrivalUtc - now, false);
 
                 // The status console announces the ETA to nearby passengers at talk volume.
                 var console = flight.Console;

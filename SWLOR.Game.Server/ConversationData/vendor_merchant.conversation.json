@@ -75,7 +75,7 @@
         {
           "Key": "action-open-store",
           "Arguments": [
-            "TreatVendor"
+            "concourse_treat"
           ]
         }
       ],

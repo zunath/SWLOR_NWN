@@ -20,11 +20,11 @@
       "ProjectSha256": "02402d36bdb225d1f9c80860ddd80d4c95f18ecfb488e8c5e2cf6bf637cab851"
     },
     {
-      "Id": "GuardingBond",
+      "Id": "GuardingBondStance",
       "InternalName": "sw_guardbond",
       "Category": "Beast Mastery",
       "Duration": 1.8,
-      "Project": "beast-mastery/GuardingBond.swlanim",
+      "Project": "beast-mastery/GuardingBondStance.swlanim",
       "SourceModel": "a_ba",
       "SourceAnimation": "pause1",
       "Profile": "Authored choreography: Inward chest command settles into a low protective hold signal; settle weight behind the protective command with a soft knee brace rather than a rigid standing arm",
@@ -34,14 +34,14 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "e1bda11965711de707d32b8527cfc83e8837aae7804bb989301b188a654c806f"
+      "ProjectSha256": "21e3dc4e5d7de7db9830268fa6d84af3874c14bb7aad9ce13056457f3810256a"
     },
     {
-      "Id": "PredatoryBond",
+      "Id": "PredatoryBondStance",
       "InternalName": "sw_predbond",
       "Category": "Beast Mastery",
       "Duration": 1.65,
-      "Project": "beast-mastery/PredatoryBond.swlanim",
+      "Project": "beast-mastery/PredatoryBondStance.swlanim",
       "SourceModel": "a_ba",
       "SourceAnimation": "pause1",
       "Profile": "Authored choreography: Assertive forward companion command with a sweeping advance signal; load the back hip before driving the advance command from the legs and settling the forward weight",
@@ -51,7 +51,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "9713e14ebb6eebe31e4e02396abfa04a5335dfb2150d94760f21fbfaf65fb95f"
+      "ProjectSha256": "6ea390ae6a46b09968c319e05a51b79b93a850ffc89511cf00392674fabb87d3"
     },
     {
       "Id": "ReviveBeast",
@@ -1465,11 +1465,11 @@
       "ProjectSha256": "c6414b84e50dc52cccec49983a0be3ba85de6f74fff0c15110226d3ea453f7e1"
     },
     {
-      "Id": "SoulDevourer",
+      "Id": "SoulDevourerStance",
       "InternalName": "sw_soul_devo",
       "Category": "Heavy Vibroblade",
       "Duration": 3.05,
-      "Project": "heavy-vibroblade/SoulDevourer.swlanim",
+      "Project": "heavy-vibroblade/SoulDevourerStance.swlanim",
       "SourceModel": "a_ba",
       "SourceAnimation": "pause1 \u002B 2hreadyr \u002B 2hclosel \u002B 2hslashl",
       "Profile": "Authored choreography: Sink into a low hungry two-handed draw, pause with the blade down and rise deliberately into an aggressive shoulder-high guard",
@@ -1479,7 +1479,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "29d3ddbefc75fb2a9689b5b8bf6cd40ed4d3d96dd09d791d47054b28f064a66d"
+      "ProjectSha256": "e7d85f4dc47e24f591ec26f086582bbfe6b74b5c4ec12f120582c1ee1d5481c2"
     },
     {
       "Id": "SoulStorm",
@@ -2094,11 +2094,11 @@
       "ProjectSha256": "b3eb51d864c33174d57e696ad3d8021bc5e032afd79ed2683f5585656ed11896"
     },
     {
-      "Id": "ApexCollapseTechnique",
+      "Id": "ApexCollapseStanceTechnique",
       "InternalName": "sw_apex_coll",
       "Category": "Mimicry",
       "Duration": 2.65,
-      "Project": "mimicry/ApexCollapseTechnique.swlanim",
+      "Project": "mimicry/ApexCollapseStanceTechnique.swlanim",
       "SourceModel": "a_ba",
       "SourceAnimation": "pause1 \u002B nwreadyr",
       "Profile": "Authored choreography: Open a deliberately exposed predatory guard, pull the arms wide and lean into an aggressive challenge; expose the guard over a low planted base and lean the challenge through the hips before gathering again",
@@ -2108,7 +2108,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "8afc15fc38d9ff85b36b011f970bd76c2ddacfbe1ff69656ab80bbd45a34baf0"
+      "ProjectSha256": "dcc8691a437c9e1cf2184f2d403a15dce2a14db394a3c5191c8106f32e42b2af"
     },
     {
       "Id": "ArcPulseTechnique",
@@ -3012,11 +3012,11 @@
       "ProjectSha256": "00962386af7d8cc9fc3eba52e48fd63fe8a81d1f1cac35534ea31cae25e64010"
     },
     {
-      "Id": "SustainBurnTechnique",
+      "Id": "SustainBurnStanceTechnique",
       "InternalName": "sw_sust_burn",
       "Category": "Mimicry",
       "Duration": 2.65,
-      "Project": "mimicry/SustainBurnTechnique.swlanim",
+      "Project": "mimicry/SustainBurnStanceTechnique.swlanim",
       "SourceModel": "a_ba",
       "SourceAnimation": "pause1 \u002B nwreadyr",
       "Profile": "Authored choreography: Touch a coating at the belt and wipe it along the held weapon arm before settling into an envenomed guard; remain stable while coating the weapon arm, then settle body weight into the envenomed fighting guard",
@@ -3026,7 +3026,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "f7e1628ef9e091ed04de2b273398850cf90c7a9eb7be216febd5de9bc2c393ff"
+      "ProjectSha256": "e251aa4c97b2c25db0c1718b10726ef581e1a3970d0a0c8d4367fa02b2f69bcb"
     },
     {
       "Id": "TailSweepTechnique",
@@ -3216,11 +3216,11 @@
       "ProjectSha256": "fefa9966ef121653eaa930d8b84460db245071d5569a0c8d8a60139d5b4354f2"
     },
     {
-      "Id": "WardenWallTechnique",
+      "Id": "WardenWallStanceTechnique",
       "InternalName": "sw_ward_wall",
       "Category": "Mimicry",
       "Duration": 3.15,
-      "Project": "mimicry/WardenWallTechnique.swlanim",
+      "Project": "mimicry/WardenWallStanceTechnique.swlanim",
       "SourceModel": "a_ba",
       "SourceAnimation": "pause1",
       "Profile": "Authored choreography: Raise a high outward-facing ward from the waist and hold a wide upright protective wall; raise the wall with the legs, then root its sustained protective hold in a firm knee brace",
@@ -3230,7 +3230,7 @@
       "Procedural": false,
       "Status": "Draft: in-game visual review required",
       "Reference": "",
-      "ProjectSha256": "139e2e8e688278b579660c61f3f756e8d40ecbcb9e9040c69e403a352a05dc55"
+      "ProjectSha256": "5be6c7a76bf32e37a2240ac375e14b61d93b63706a86c430f9b9e14b298fed81"
     },
     {
       "Id": "WillFractureTechnique",

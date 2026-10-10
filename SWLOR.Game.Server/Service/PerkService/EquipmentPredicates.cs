@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -6,6 +7,13 @@ namespace SWLOR.Game.Server.Service.PerkService
 {
     public static class EquipmentPredicates
     {
+        public static bool HasSingleWeapon(uint creature)
+        {
+            var weapon = GetItemInSlot(InventorySlot.RightHand, creature);
+            return GetIsObjectValid(weapon) && WeaponDamage.IsSingleWeaponType(GetBaseItemType(weapon)) &&
+                   !GetIsObjectValid(GetItemInSlot(InventorySlot.LeftHand, creature));
+        }
+
         public static bool HasMainHandLightsaber(uint creature)
         {
             return HasItemInSlot(creature, InventorySlot.RightHand, Item.LightsaberBaseItemTypes);
@@ -50,8 +58,19 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         public static bool HasDualWield(uint creature)
         {
-            return HasItemInSlot(creature, InventorySlot.RightHand, Item.WeaponBaseItemTypes) &&
-                   HasItemInSlot(creature, InventorySlot.LeftHand, Item.WeaponBaseItemTypes);
+            var mainHand = GetItemInSlot(InventorySlot.RightHand, creature);
+            var offHand = GetOffhandAttackWeapon(creature);
+            return GetIsObjectValid(mainHand) && Item.IsAttackWeaponType(GetBaseItemType(mainHand)) &&
+                   GetIsObjectValid(offHand) && Item.IsAttackWeaponType(GetBaseItemType(offHand));
+        }
+
+        /// <summary>Returns the second striking end of a double weapon, or a separate left-hand item.</summary>
+        public static uint GetOffhandAttackWeapon(uint creature)
+        {
+            var mainHand = GetItemInSlot(InventorySlot.RightHand, creature);
+            return GetIsObjectValid(mainHand) && Item.IsDoubleWeaponType(GetBaseItemType(mainHand))
+                ? mainHand
+                : GetItemInSlot(InventorySlot.LeftHand, creature);
         }
 
         public static bool HasMainHandVibroknife(uint creature)

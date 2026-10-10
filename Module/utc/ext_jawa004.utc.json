@@ -164,7 +164,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 65
+    "value": 50
   },
   "DecayTime": {
     "type": "dword",
@@ -177,7 +177,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "2": "Les ninjas Jawa sont aussi loufoques que leur crÃ©ateur. Prenez garde Ã  vous !"
+      "0": "A small, hooded Jawa peers out from beneath its robes, ready to strike at intruders."
     }
   },
   "Dex": {
@@ -412,7 +412,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 65
+    "value": 50
   },
   "Int": {
     "type": "byte",
@@ -470,7 +470,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 65
+    "value": 50
   },
   "NaturalAC": {
     "type": "byte",

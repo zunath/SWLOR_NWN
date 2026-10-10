@@ -2,11 +2,31 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class PlayerNameRecognitionTests
 {
+    [Test]
+    public void DMExamine_ExposesRealAccountAndDescriptorOnlyToStaff()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature",
+            "GuiDefinition", "ViewModel", "DMPlayerExamineViewModel.cs"));
+        var examine = ExtractMethod(source, "public static void ExaminePlayer()");
+        var initialize = ExtractMethod(source, "protected override void Initialize(DMPlayerExaminePayload initialPayload)");
+        var details = ExtractMethod(source, "private void LoadTargetDetails()");
+
+        examine.Should().Contain("if (!GetIsDM(dm) && !GetIsDMPossessed(dm))");
+        examine.IndexOf("return;", StringComparison.Ordinal).Should()
+            .BeLessThan(examine.IndexOf("Gui.TogglePlayerWindow", StringComparison.Ordinal));
+        initialize.Should().Contain("_accountName = GetPCPlayerName(initialPayload.Target);");
+        initialize.Should().Contain("Disguise.GetDisplayDescriptor(initialPayload.Target)");
+        details.Should().Contain("AccountName = $\"Account: {_accountName}\";");
+        details.Should().Contain("Descriptor = $\"Descriptor: {_descriptor}\";");
+    }
+
     [Test]
     public void PlayerNameOverrides_ObfuscateCommunityNameWhenEnabled()
     {
@@ -57,6 +77,11 @@ public class PlayerNameRecognitionTests
         var playerMethod = ExtractMethod(source, "private static void ApplyNameOverridesForPlayer(uint player)");
         var dmObserverMethod = ExtractMethod(source, "private static void ApplyNameOverridesForDMObserver(uint dm)");
         var trueNameMethod = ExtractMethod(source, "private static void ApplyTrueNameOverride(uint observer, uint target)");
+
+        // NWNX ignores staff overrides unless DM participation is enabled at startup.
+        var environment = File.ReadAllLines(Path.Combine(root.FullName, "SWLOR.Game.Server", "Docker", "swlor.env"));
+        environment.Should().Contain("NWNX_RENAME_ALLOW_DM=true");
+        environment.Should().Contain("NWNX_RENAME_OVERWRITE_DISPLAY_NAME=false");
 
         enterMethod.Should().Contain("if (GetIsDM(player))");
         enterMethod.Should().Contain("ApplyNameOverridesForDMObserver(player);");
@@ -675,7 +700,7 @@ public class PlayerNameRecognitionTests
         disguiseSource.Should().Contain("dbPlayer.UnallocatedXP -= amount");
         disguiseSource.Should().Contain("new RPXPRefreshEvent()");
         disguiseSource.Should().Contain("new DisguiseChangedRefreshEvent()");
-        dmChatCommandSource.Should().Contain(".Description(\"Resets a player's ability, disguise, and perk refund cooldowns.\")");
+        new DMChatCommand().BuildChatCommands()["resetcooldowns"].Description.Should().Contain("disguise");
         dmChatCommandSource.Should().Contain("AbilityCooldownVisual.ClearAllRecastDelays(target);");
         dmChatCommandSource.Should().Contain("Disguise.ResetActivationCooldowns(target);");
 

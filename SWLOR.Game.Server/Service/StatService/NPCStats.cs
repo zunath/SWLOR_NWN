@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Service.StatService
     {
         public int Level { get; set; }
         public int Attack { get; set; }
+        public int Accuracy { get; set; }
         public int ForceAttack { get; set; }
         public int Evasion { get; set; }
         public int CombatReadiness { get; set; }

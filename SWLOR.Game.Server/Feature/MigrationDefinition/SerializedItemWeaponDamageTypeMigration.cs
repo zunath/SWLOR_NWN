@@ -27,8 +27,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             new(SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes, new[] { 5, 9, 14, 18, 22 }, new[] { 5, 8, 12, 16, 19 }),
             new(SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes, new[] { 8, 16, 29, 37, 43 }, new[] { 8, 15, 27, 34, 40 }),
             new(SWLOR.Game.Server.Service.Item.SpearBaseItemTypes, new[] { 8, 16, 29, 37, 43 }, new[] { 7, 14, 25, 32, 38 }),
-            new(SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, new[] { 8, 13, 18, 22, 27 }, new[] { 7, 12, 16, 20, 25 }),
-            new(SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, new[] { 8, 13, 18, 22, 27 }, new[] { 7, 12, 16, 20, 25 }),
+            new(SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, new[] { 8, 13, 18, 22, 27 }, new[] { 5, 9, 13, 17, 21 }),
+            new(SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, new[] { 8, 13, 18, 22, 27 }, new[] { 5, 9, 13, 17, 21 }),
             new(SWLOR.Game.Server.Service.Item.KatarBaseItemTypes, new[] { 8, 10, 13, 15, 19 }, new[] { 7, 9, 11, 13, 16 }),
             new(SWLOR.Game.Server.Service.Item.StaffBaseItemTypes, new[] { 6, 10, 15, 19, 24 }, new[] { 5, 9, 13, 17, 21 }),
             new(SWLOR.Game.Server.Service.Item.PistolBaseItemTypes, new[] { 6, 10, 15, 19, 24 }, new[] { 5, 9, 13, 16, 20 }),
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         {
             ["t_longsword"] = ItemPropertyAttackDelay.Delay230,
             ["t_katar"] = ItemPropertyAttackDelay.Delay220,
-            ["t_twinblade"] = ItemPropertyAttackDelay.Delay290,
+            ["t_twinblade"] = ItemPropertyAttackDelay.Delay230,
             ["t_knife"] = ItemPropertyAttackDelay.Delay220,
             ["t_staff"] = ItemPropertyAttackDelay.Delay270,
             ["t_rifle"] = ItemPropertyAttackDelay.Delay300,
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             ["t_electroblade"] = ItemPropertyAttackDelay.Delay240,
             ["t_spear"] = ItemPropertyAttackDelay.Delay280,
             ["t_shuriken"] = ItemPropertyAttackDelay.Delay220,
-            ["t_twin_elec"] = ItemPropertyAttackDelay.Delay290,
+            ["t_twin_elec"] = ItemPropertyAttackDelay.Delay240,
 
             ["byyskwarriorswor"] = ItemPropertyAttackDelay.Delay220,
             ["sith_blade"] = ItemPropertyAttackDelay.Delay220,
@@ -147,7 +147,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             }
         }
 
-        public static bool MigrateObject(uint obj)
+        public static bool MigrateObject(uint obj) => MigrateObjectContents(obj, doubleWeaponsOnly: false);
+
+        public static bool MigrateDoubleWeapons(uint obj) => MigrateObjectContents(obj, doubleWeaponsOnly: true);
+
+        private static bool MigrateObjectContents(uint obj, bool doubleWeaponsOnly)
         {
             if (!GetIsObjectValid(obj))
                 return false;
@@ -156,29 +160,34 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             var objectType = GetObjectType(obj);
 
             if (objectType == ObjectType.Item)
-                wasMigrated |= MigrateItem(obj);
+            {
+                if (!doubleWeaponsOnly || SWLOR.Game.Server.Service.Item.IsDoubleWeaponType(GetBaseItemType(obj)))
+                    wasMigrated |= MigrateItem(obj);
+                else
+                    wasMigrated |= MigrateConstructedDroidLocalVariable(obj);
+            }
             else if (objectType == ObjectType.Creature)
-                wasMigrated |= MigrateEquippedItems(obj);
+                wasMigrated |= MigrateEquippedItems(obj, doubleWeaponsOnly);
 
             if (GetHasInventory(obj))
             {
                 for (var item = GetFirstItemInInventory(obj); GetIsObjectValid(item); item = GetNextItemInInventory(obj))
                 {
-                    wasMigrated |= MigrateObject(item);
+                    wasMigrated |= MigrateObjectContents(item, doubleWeaponsOnly);
                 }
             }
 
             return wasMigrated;
         }
 
-        private static bool MigrateEquippedItems(uint creature)
+        private static bool MigrateEquippedItems(uint creature, bool doubleWeaponsOnly)
         {
             var wasMigrated = false;
 
             for (var index = 0; index < NumberOfInventorySlots; index++)
             {
                 var item = GetItemInSlot((InventorySlot)index, creature);
-                wasMigrated |= MigrateObject(item);
+                wasMigrated |= MigrateObjectContents(item, doubleWeaponsOnly);
             }
 
             return wasMigrated;
@@ -192,12 +201,22 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (!WeaponBaseItemTypes.Contains(baseItem))
                 return wasMigrated;
 
+            // NPC double weapons retain their explicit budgets: two ends share
+            // twice the previous single-end interval, preserving damage per second.
+            var isDoubleWeapon = SWLOR.Game.Server.Service.Item.IsDoubleWeaponType(baseItem);
+            if (isDoubleWeapon && SWLOR.Game.Server.Service.Item.IsEconomyRestricted(item))
+                return wasMigrated;
+
             var hasTargetWeaponDelay = HasTargetWeaponDelay(item);
+            var rebaseDoubleWeapon = isDoubleWeapon && !hasTargetWeaponDelay && HasCanonicalDamage(item);
             wasMigrated |= MigrateWeaponItem(item);
-            if (!hasTargetWeaponDelay)
+            if (rebaseDoubleWeapon)
+                wasMigrated |= RebaseDoubleWeaponDamage(item);
+            else if (!hasTargetWeaponDelay)
                 wasMigrated |= MigrateWeaponDamageAmountItem(item);
 
             wasMigrated |= MigrateWeaponDelayItem(item);
+            wasMigrated |= BasicVibrobladeCompatibility.Normalize(item);
             return wasMigrated;
         }
 
@@ -254,6 +273,47 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                     ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)damageType), AddItemPropertyPolicy.IgnoreExisting);
             }
 
+            return true;
+        }
+
+        private static bool HasCanonicalDamage(uint item)
+        {
+            var foundDamage = false;
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) != ItemPropertyType.DMG)
+                    continue;
+                var subType = GetItemPropertySubType(ip);
+                if (subType != -1 && subType != 0 && subType != ushort.MaxValue)
+                    return false;
+                foundDamage = true;
+            }
+            return foundDamage;
+        }
+
+        private static bool RebaseDoubleWeaponDamage(uint item)
+        {
+            var tier = GetLocalInt(item, "SABER_TIER");
+            var properties = new List<ItemProperty>();
+            var damage = 0;
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.DMG)
+                {
+                    properties.Add(ip);
+                    damage += GetItemPropertyCostTableValue(ip);
+                }
+                else if (tier <= 0 && GetItemPropertyType(ip) == ItemPropertyType.RequiresSkill)
+                    tier = GetItemPropertyCostTableValue(ip) / 10 + 1;
+            }
+            if (properties.Count == 0)
+                return false;
+            var targetDamage = DoubleWeaponRecalibration.CalculateDamage(GetResRef(item), tier, damage);
+            if (properties.Count == 1 && damage == targetDamage)
+                return false;
+            foreach (var property in properties)
+                MigrationObject.RemoveProperty(item, property);
+            MigrationObject.AddProperty(item, ItemPropertyCustom(ItemPropertyType.DMG, -1, targetDamage), AddItemPropertyPolicy.ReplaceExisting);
             return true;
         }
 

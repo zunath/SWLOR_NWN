@@ -446,6 +446,21 @@ namespace SWLOR.Game.Server.Service
             recipeDetails.Add(string.Empty);
             recipeDetailColors.Add(GuiColor.Green);
 
+            if (detail.EffectLines.Count > 0)
+            {
+                recipeDetails.Add("[EFFECT]");
+                recipeDetailColors.Add(GuiColor.Cyan);
+
+                foreach (var line in detail.EffectLines)
+                {
+                    recipeDetails.Add(line);
+                    recipeDetailColors.Add(GuiColor.White);
+                }
+
+                recipeDetails.Add(string.Empty);
+                recipeDetailColors.Add(GuiColor.White);
+            }
+
             recipeDetails.Add("[PROPERTIES]");
             recipeDetailColors.Add(GuiColor.Cyan);
             var tempStorage = GetObjectByTag("TEMP_ITEM_STORAGE");
@@ -629,7 +644,7 @@ namespace SWLOR.Game.Server.Service
                 case EnhancementSubType.Perception: // Perception
                     return ItemPropertyAbilityBonus(AbilityType.Perception, amount);
                 case EnhancementSubType.Accuracy: // Accuracy
-                    return ItemPropertyAttackBonus(amount);
+                    return ItemPropertyCustom(ItemPropertyType.Accuracy, -1, amount);
                 case EnhancementSubType.CombatReadiness: // Combat Readiness
                     return ItemPropertyCustom(ItemPropertyType.CombatReadiness, -1, amount);
                 case EnhancementSubType.StructureBonus: // Structure Bonus

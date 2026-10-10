@@ -63,11 +63,19 @@ row parameter. Atlas coordinates occupy [0,1). Custom values occupy [1,4),
 using the two float exponent ranges' 2^24 distinct values. All three shaders
 decode this value before lighting. They multiply RGB by a neutral reference
 row's luminance curve, normalized at shade128, preserving shading without
-importing a preset's hue or reflection mask. The Toolset uses the same shading
-formula. Preset lookup and authored colors are unchanged.
+importing a preset's hue. Metal1 and Metal2 retain that neutral metal row's
+shade-dependent environment coverage: PLT-only armor relies on this alpha for
+its reflection and specularity. Other RGB layers stay opaque. Authored normal,
+specular and roughness maps still pass through standard material lighting.
+The Toolset viewport uses the same RGB shading and metal coverage. Preset
+lookup and authored colors are unchanged.
 
-Run `TestTintRgb.py --game-data <NWN data directory>` for GPU RGB checks and
-`TestTintShaderMaterials.py` for native engine shader/MTR and preset parity.
+Run `TestTintRgb.py --game-data <NWN data directory>` for GPU RGB and metal
+material checks. `TestTintShaderMaterials.py` validates native engine shader/MTR
+and preset parity, including the RGB metal coverage curve at every shade.
+`python -B -m unittest discover -s tools/tests -p test_toolset_tint_shader.py`
+draws the Toolset's production desktop and ES shader pairs on Windows, checking
+RGB/preset coverage and lit metal reflection without normal or specular maps.
 `TintMapShaderColorTests` exhaustively checks every RGB byte combination;
 the native AppearanceEditor tests cover scalar storage, drafts, reopening,
 inheritance and preset reset. Shader changes require rebuilding sw_shader.hak
@@ -85,8 +93,9 @@ and custom-mode publications after an RGB edit.
 
 The 89.8193.37-17 client does not replay creature material overrides onto the
 separate robe and worn helmet attachments. Its ordinary body and head receive
-those records. Worn helmets receive exact RGB when the effective material rows
-are also published on the equipped helmet item. Robes use the body-root path
+those records. Publishing rows on the equipped helmet item alone does not
+update its worn attachment. Tintable helmets use the head path described below,
+and robes use the body-root path
 described below. A successful server-side creature-row test alone therefore
 does not establish that an attachment received its colors.
 
@@ -114,7 +123,7 @@ the original palette resources themselves. The GPU regression checks every
 color and shade against the original palette RGBA, including this distinction.
 
 The native scheme carries palette IDs; explicit material rows carry exact RGB.
-Worn helmets support both without changing their native dye fields. Unsupported
+Helmet render heads receive those rows without changing native dye fields. Unsupported
 robe/body combinations retain the nearest-preset compatibility projection for
 persisted RGB, with RGB editing disabled and presets available. Preserve those
 robes' authored palette values separately from projected values so reset restores
@@ -143,18 +152,62 @@ The server can correctly publish `helm_114` rows while the helmet still uses its
 positive row-zero MTR defaults, producing the reported tan crest. The generated
 `helm_114.plt` control restores its native scheme; negative MTR defaults select
 that scheme. The normal/specular textures and full-resolution BC5 mask remain
-unchanged. Explicit item material rows support exact RGB on both worn and
-dropped helmets. A complete helmet refresh resets the item's old rows once,
+unchanged. Explicit item material rows support exact RGB on dropped helmets.
+A complete helmet refresh resets the item's old rows once,
 then writes every effective layer, including the wearer's skin and hair colors.
 
 The generator applies the native fallback across the helmet catalog, proving
 each native named subtree and isolating shared materials used by ordinary heads.
-The editor keeps RGB enabled for worn helmets. Both preset and RGB edits publish
-the item's effective rows; reset clears the stored custom color and publishes
-the authored dye. The native palette fields are never replaced by an approximation.
+`GenerateHelmetRgbModels.py --apply` copies every helmet registered in `tintmap.2da`
+into compiled `p<gender><race>0_head1NNN` resources: head 1000 + NNN for `helm_NNN`,
+for both genders of every playable body race (`BODY_RACES`: `h`, `e`, `o`, `d`, `z`).
+The rule is the mapping; no table records it. Only fixed-size model/root name fields
+change; geometry, controllers, skin bindings, materials and raw vertex data stay
+exact. The tint generator excludes these derived heads from material-scope inference
+and audits their exact source bytes.
+
+The 89.8193.37-17 client resolves a head as `p<gender><race>0_head<id>` for any
+phenotype (phenotype.2da `DefaultPhenoType` is 0), but never falls back across race
+or gender: a wearer without a matching resource renders headless. Each playable
+species' appearance.2da `RACE` letter therefore needs both genders; most species use
+`h`, Bothan/Rodian/Wookiee use `e`, Cathar `o`, Ewok/Ugnaught `d`, Droid `z`.
+`HelmetTintTests` fails when a species in `RacialAppearanceRegistry` uses a letter
+the generator does not cover.
+
+The native helmet slot scales the helmet by appearance.2da `HELMET_SCALE_M/F`; a head
+does not. While projected, `HelmetModelRenderer` sets the creature-head visual transform
+to the creature's own head size times that helmet scale, and restores the head size
+when the helmet hides or is removed. The captured head size is runtime state. All head
+size reads and writes (appearance editor, `/headscale`, login, space exit) go through
+`HelmetModelRenderer.GetHeadScale`/`SetHeadScale` so the saved head size never includes
+the helmet scale.
+
+For parts appearances, `HelmetModelRenderer` selects this head in the replicated
+creature appearance and suppresses the separate helmet there, but only when the
+wearer's head resource exists. It also sets the helmet's native hidden-when-equipped
+flag. Full creature updates (login, area entry, an object coming into view) send the
+worn helmet from the inventory unless that flag is set, and the replicated head item is
+not part of that message, so without it every client attaches the native helmet over
+the tinted head. `CNWSCreature::UpdateAppearanceForEquippedItems` honors the same flag.
+A `HELMET_RENDER_HEAD_HIDDEN` local marks a flag set only for this projection, so read
+and write the owner's show/hide choice through `HelmetModelRenderer.IsShownByOwner` and
+`SetShownByOwner`, never through `GetHiddenWhenEquipped`/`SetHiddenWhenEquipped`.
+Unequipping or losing support releases the flag. The native stats head, equipped item
+and palette fields remain unchanged. The existing creature material publication
+now reaches the visible helmet geometry through the client's head replay path.
+Hiding or unequipping the helmet restores the canonical head; non-parts appearances
+and any body race without generated heads keep the native helmet. The editor offers
+RGB only where the head path renders; other wearers keep preset colors. Presets and RGB
+publish the effective rows, and reset restores the authored dye without a
+nearest-palette approximation.
+
+Run `GenerateHelmetRgbModels.py --check` and `TestHelmetRgbModels.py` after
+changing helmet geometry or registration. Rebuild `sw_pt_head.hak`, deploy it with
+the server assembly, and restart the client to reload its cached models.
 
 `TintMapEngineTests.ShuttlePilotRefreshInstallsAuthoredRows` checks the placed
-NPC's helmet/chest rows and exact equipped-item RGB/reset behavior in NWN. The GPU harness
+NPC's replicated render head, canonical head, equipped-item identity,
+visibility restoration, unchanged native dyes and exact RGB/reset rows in NWN. The GPU harness
 compares the actual helmet BC5 material with native versus scripted dyes and
 requires the old row-zero defaults to produce a different result. These checks
 do not attach a game client to the test server; verify the pilot in a fresh
@@ -167,9 +220,13 @@ checks the running module's native HAK list to catch that deployment failure.
 
 ## Exact RGB on robes
 
-`RobeModelRenderer` uses `roberender.2da` to select a generated body root when
-the worn robe has an effective RGB override. The body root contains the robe's
-geometry and therefore receives the same material scalars as other body parts.
+`RobeModelRenderer` uses `roberender.2da` to select a generated body root for
+every worn robe the catalog supports, whether or not it has an RGB override.
+Palette-only robes receive their palette rows through the same material
+scalars. The body root contains the robe's geometry and therefore receives the
+same material scalars as other body parts. The separate native robe attachment
+animates its own skeleton and can drift from the body, so it is used only for
+robes without a generated root (large and mounted bodies).
 Robe choices must have an actual MDL for the wearer's gender, race and original
 body phenotype. `RobeAppearance` checks the module's resource search space, which
 includes native models without RGB materials. The shared style list alone is not
@@ -203,6 +260,36 @@ receives its own private animation path. This avoids inheriting a body's missing
 hands through an incomplete robe skeleton or replacing body bind transforms
 with the robe's transforms. It applies across the catalog, with no robe-number
 exceptions or opt-in conversion list.
+
+A garment's copies of the wearer's skeleton joints (`rootdummy`, `torso_g`,
+`pelvis_g`, neck, head, arms, hands, legs and feet) are bound as static children
+of the matching body bone. Their local transform is computed from both bind
+poses, so each joint keeps the garment's authored world bind and its native
+inverse skin binds unchanged. They carry no animation tracks of their own.
+Independent cloth helpers stay beneath them and keep their authored curves.
+
+Do not copy body tracks onto garment joints instead. The engine keeps channels
+that a clip omits from the previous clip: `custom1start`/`custom1lp` (Point
+and the carrier for every authored ability animation), the talk clips that
+holocom holograms play, greeting, salute, read and drink all rotate `rootdummy`
+without positioning it. A mirrored garment root that reset itself to bind while
+the body kept a seated, kneeling or knocked-down root offset left the whole robe
+standing 0.7m-1m away from its wearer. Layered overlays and runtime animation
+replacements likewise drive only the body's own subtree. Binding to the real
+bone makes that separation impossible. `validate_garment_body_motion` fails a
+build in which any garment wearer joint is not a child of its body bone or has
+its own controllers, and `TestSharedRobeFamilies` replays sitting then pointing
+with latched channels against compiled models.
+
+`tools/AlignRobeAnimations.py --game-data "<NWN data>" --apply` repairs the
+ordinary robe parents before RGB generation. It aligns common clips to the
+current body chain, preserves cloth helper motion and geometry, and rebuilds
+descendants against their updated parent part IDs. Unchanged binary descendants
+receive only ID remapping, including private ID collisions and local tracks;
+their geometry, controllers, pointers, and inverse bindings remain unchanged.
+Missing legacy robe parents
+fall back to the canonical body. Every output must pass mesh, hierarchy, and
+skin-binding checks before the batch replaces HAK sources.
 
 The compiler matches part IDs against its immediate parent. The generator
 checks the compiled IDs, not only ASCII joint names. Native inherited tracks
@@ -247,6 +334,14 @@ requires exact generated source, compiler, immediate compiled parent, validation
 code, original inverse-bind source, canonical body, and owned output hashes. An
 edited source, output, compiler, or validator invalidates the corresponding proof.
 Whole-chain body-pose checks still run during generation even when models are reused.
+Staging `compilations.json` records compilation-only checkpoints for interrupted
+builds. They require matching source, compiler, parent, original binding data,
+canonical body, postprocessors, and output bytes. Resumed compilations still run
+every current validation and receive no validated cache record until those pass.
+Large dummy banks are exported in bounded, independent validation chunks. Their
+joined compiled bytes must match the complete bank, and their native exports
+must preserve the full ordered animation inventory and common geometry. This
+avoids the legacy exporter's poor performance on very large unsplit banks.
 Each shared bridge source is generated once, then its model-name token is replaced
 for the allocated resource; controller curves are not regenerated a second time.
 The September 2026 corpus measured 4.3 seconds for an unchanged `--apply`, compared
@@ -265,8 +360,8 @@ includes an actual compiled rotated mesh, its skinned vertex positions, and a
 scan of the complete robe catalog; preserving old inverse-bind bytes alone is
 not sufficient to prove correct placement.
 
-Robe 236's torso coverings (`coat_top` / `coat_top2`) are ordinary rigid meshes.
-The legacy versions used dangly meshes despite having zero constraints on every
+Robe 236's torso coverings (`coat_top` / `coat_top2`) originally used dangly
+meshes despite having zero constraints on every
 vertex, sending an immobile panel through the cloth-physics renderer. A September
 16 report showed that panel displaced above the hood; skeleton and inverse-bind
 checks alone did not cover that renderer path. The correction keeps the authored
@@ -282,6 +377,43 @@ refreshes owned resource hashes and drops affected cached build proofs. Run
 to check all native and RGB variants. In-game confirmation is still required for
 the reported displacement after deploying the updated `sw_pt_robe` and
 `sw_pt_root` HAKs.
+
+A subsequent player report after that update still showed the upper robe
+displaced after movement or a skill. The torso covering, hood (`hood002`) and
+belt (`beltjr`) now use skin meshes with a single full torso weight, matching the
+bone-following renderer used by the sleeves and skirt. Their rigid shapes,
+materials, local transforms, animation IDs and existing sleeve/skirt inverse
+bindings are preserved. New panel inverse binds are calculated from the compiled
+world transforms rather than relying on the legacy compiler's calculation.
+This covers all 24 native and RGB models across eight body families.
+Run `SWLOR_Haks/tools/BindRobePanels.py --robe 236 --panel coat_top --panel coat_top2
+--panel hood002 --panel beltjr --game-data "<NWN data>" --apply` to reproduce the
+repair. `python -B -m unittest discover -s SWLOR_Haks/tools -p "TestBoundRobePanels.py"`
+checks all 72 panel bindings and compiled vertex placement through movement,
+skills and idle. Rebuild `sw_pt_robe` and `sw_pt_root`; confirmation of the native
+client's animation transitions remains an in-game check.
+
+The catalog audit extends this treatment to every visible static attachment
+under a body bone, including nested belts, chest ornaments and leg coverings.
+It scans all 7,171 native attachments and RGB roots by mesh flags and hierarchy,
+without a robe-number or mesh-name repair list. A September 30 pass bound 696
+additional models across 33 robe styles. Moving cloth and independently animated
+attachments retain their authored motion; invisible skeleton meshes are excluded.
+Constant animation reset tracks count as static only when every controller value
+matches the attachment's own bind pose. A different reset remains animated.
+Duplicate visible leaves are renamed only after checking animation and skin-bone
+references. Scaled static geometry is baked into the skin vertices, with inverse
+translations divided by the bone's bind scale, preserving its world shape.
+ASCII attachments without existing skins can be compiled and round-trip validated
+as a binding reference; ASCII models with existing skins fail closed because their
+authored inverse binds have no compiled preservation reference.
+Run `BindRobePanels.py --all --game-data "<NWN data>" --apply` from
+`SWLOR_Haks/tools` to validate and repair new matching attachments, or use
+`--all --audit --game-data "<NWN data>"` for a read-only corpus check. The audit
+returns a failing exit code when matching unbound geometry remains. The catalog
+regression checks every attachment and every vertex of body-bound child skins
+through sampled bone translation, rotation and scale changes. Both
+`sw_pt_robe` and `sw_pt_root` must be rebuilt after a repair.
 
 `animation_bridges` in `RobeRgbModels.json` preserves stable shared parent names.
 The manifest records generator/source/output hashes, pose coverage, and any
@@ -422,6 +554,18 @@ fragment specular lighting still compile.
 Preserve the engine's authored specular and roughness maps, material overrides,
 palette alpha, and hair cutouts. Disabling specularity globally or editing each
 NPC would hide the initialization error and remove intentional material detail.
+
+Match the engine's color-space ordering as well: blend the legacy reflection
+gray into the palette RGB **before** `ApplyColorSpace`, then perform the optional
+environment-map blend in linear space. Mixing gray into already-linear RGB
+brightens reflective palette colors when gamma correction is enabled, washing
+out dark hair and metal dyes (including female chest 304's two metal layers).
+`SWLOR_Haks/tools/TestTintPaletteLighting.py --game-data <NWN data directory>`
+compares diffuse and cached specular color against the installed engine's
+unmodified `SetupStandardShaderInputs`, using all native palette colors,
+shades, layers, shader qualities, lighting modes, and gamma settings. This
+shader-only correction requires rebuilding/deploying `sw_shader.hak` and a
+full client restart; the palette artwork and character colors stay unchanged.
 
 ## Compile against the engine's conditional declarations
 

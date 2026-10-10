@@ -67,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             // Attack
             dbPlayer.Attack = 0;
+            dbPlayer.Accuracy = 0;
             dbPlayer.ForceAttack = 0;
             dbPlayer.CombatReadiness = 0;
 

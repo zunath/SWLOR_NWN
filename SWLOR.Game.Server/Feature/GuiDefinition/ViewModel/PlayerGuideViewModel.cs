@@ -283,7 +283,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private static IReadOnlyList<PlayerGuideTopic> BuildTopics()
         {
-            return new List<PlayerGuideTopic>
+            var topics = new List<PlayerGuideTopic>
             {
                 new(
                     "Common Questions",
@@ -350,6 +350,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             "Using /name <label> on another player saves a private label only your character can see. It does not rename the other character, and no other player sees the label you entered. The label can be a name your character was told, a nickname, or what your character believes that presented identity is called; it does not have to be the truth. Use /forgetname on the character to remove only your private label."),
                         new ArticleBlock("Your Public Description",
                             "An unrecognized player character appears as a gray public description. Use /name <description> on yourself to set the gray text shown to players who have not saved a label for your current identity. This does not change your real character name. Labels and public descriptions are limited to 64 characters and cannot include color codes."),
+                        new ArticleBlock("Introducing Yourself",
+                            "Use /introduce <name> to offer a name or alias to players within 20 meters who can see you. They receive a chat notice and can use /introductions to Remember or Dismiss it. Nothing is saved without their approval, and replacing an existing private label requires confirmation. Introductions belong to your current identity, expire after 10 minutes, and become unavailable if you disconnect or change identity. The command has a 5-minute cooldown that persists across reconnects. Repeating a pending name does not send another notice."),
                         new ArticleBlock("Example",
                             "A masked character uses the public description 'Tall Armored Human.' Mira saves the private label 'Red Coat,' so only Mira sees Red Coat. Jax has not saved a label, so Jax still sees Tall Armored Human in gray. Neither player renamed the masked character. If the mask is a disguise, labels saved for the character's normal identity remain separate."),
                         new ArticleBlock("Emotes and Languages",
@@ -357,7 +359,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("OOC and Speech Restrictions",
                             "Text after // or (( is treated as out-of-character and is not translated through the language system. Dead characters cannot speak, and the Shout channel remains staff-only."),
                         new ArticleBlock("Useful Chat Commands",
-                            "Use /help to browse commands, /dice to open the dice bag, /bug to report a problem, /resetwindows to restore window positions, /save for a manual character save, and /stuck only as an emergency escape when trapped on a map. /stuck has a 30 minute cooldown.")
+                            "Use /introduce <name> to offer a name or alias to nearby players, and /introductions to review names offered to you. /introduce has a 5-minute cooldown. Use /help to browse commands, /dice to open the dice bag, /bug to report a problem, /resetwindows to restore window positions, and /stuck only as an emergency escape when trapped on a map. /stuck has a 30 minute cooldown.")
                     },
                     new[]
                     {
@@ -367,6 +369,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Can another player rename my character?", "No. They can only save a private label visible to their own character."),
                         new QuestionAnswer("Can two players see different names for the same character?", "Yes. Each character keeps their own private labels."),
                         new QuestionAnswer("Does /name reveal someone's real identity?", "No. It records what your character believes or calls the currently presented identity."),
+                        new QuestionAnswer("How do introductions work?", "Use /introduce <name> to offer a name or alias to players within 20 meters who can see you. It has a 5-minute cooldown that persists across reconnects. Recipients use /introductions to choose Remember or Dismiss. Replacing an existing private label requires confirmation; ignoring or dismissing the offer changes nothing. An introduction does not prove the name is true."),
                         new QuestionAnswer("How do I label another player?", "Type /name <label>, then click that player character. Use /forgetname and click them again to remove only your private label. Target yourself with /name to set your gray public description."),
                         new QuestionAnswer("How do I change languages?", "Use /language help, then /language <alias>. Wookiees remain in Shyriiwook."),
                         new QuestionAnswer("How do languages improve?", "Listening to partially understood non-Basic speech can grant language XP over time."),
@@ -454,12 +457,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("When can I buy?", "When the next rank exists, requirements pass, and you have enough SP."),
                         new QuestionAnswer("What are beast perks?", "A Perks window mode that uses the active beast's SP and level.")
                     },
-                    new[] { "Force Affinity", "Perk Refunds", "Skills", "Abilities", "Skill Decay" }),
+                    new[] { StatusEffectGuideTopics.TopicName, "Force Affinity", "Perk Refunds", "Skills", "Abilities", "Skill Decay", "Lightsaber Combat Styles", "Pistol Combat Styles" }),
 
                 new(
                     "Force Affinity",
                     "Combat",
-                    "How Light, Dark, and Universal Force powers change—and are changed by—your affinity.",
+                    "How Light, Dark, and Universal Force powers change - and are changed by - your affinity.",
                     "Light, Dark, and Universal powers",
                     new[]
                     {
@@ -470,7 +473,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Magnitude",
                             "Each point toward a power's side increases that power's damage, healing, shields, regeneration, or drain magnitude by 5 percent. Each point toward the opposing side reduces it by 5 percent. The multiplier is limited to 50 percent at full opposition and 150 percent at full alignment."),
                         new ArticleBlock("Hit Chance",
-                            "Affinity also changes the hit chance of detrimental Light and Dark Force powers. At +10 Light, Light powers gain +5% hit chance and Dark powers suffer -5%. At -10 Dark, Dark powers gain +5% and Light powers suffer -5%. The final chance shown in the combat log already includes this adjustment."),
+                            "Affinity also changes the hit chance of detrimental Light and Dark Force powers. Divide affinity toward the power's side by two and round down to a whole percentage point: +3 matching affinity grants +1 percentage point, while 3 points toward the opposing side applies -2 percentage points. At +10 Light, Light powers gain +5% hit chance and Dark powers suffer -5%. At -10 Dark, Dark powers gain +5% and Light powers suffer -5%. These are percentage-point adjustments: a 70% chance with a +5 adjustment becomes 75%. The final chance shown in the combat log already includes this adjustment."),
                         new ArticleBlock("Universal Powers and Durations",
                             "Universal Force powers use their normal Willpower scaling but neither gain nor lose magnitude or hit chance from affinity. Force Affinity does not change effect duration. Status resistance and explicit duration modifiers can still change a duration."),
                         new ArticleBlock("Example: +6 Light",
@@ -561,7 +564,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("What is Recast?", "The cooldown seconds shown in the ability description."),
                         new QuestionAnswer("Why can't I use it yet?", "Its cooldown or shared cooldown group still has time remaining.")
                     },
-                    new[] { "Perks", "Attributes", "Combat Basics", "Mimicry & Techniques", "Useful Windows", "Common Questions" }),
+                    new[] { StatusEffectGuideTopics.TopicName, "Perks", "Attributes", "Combat Basics", "Mimicry & Techniques", "Useful Windows", "Common Questions" }),
 
                 new(
                     "Mimicry & Techniques",
@@ -694,7 +697,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Critical Hits",
                             "Critical Rate raises your chance to critically hit, while Critical Damage makes critical hits stronger. The target's Vitality can affect the final critical chance."),
                         new ArticleBlock("Deflection and Guard",
-                            $"Melee Deflection can negate hostile melee weapon auto-attacks, and Ranged Deflection can negate hostile ranged weapon auto-attacks. Both require a weapon and no shield. Shield Deflection covers both melee and ranged weapon auto-attacks and completely replaces weapon deflection while a shield is equipped; the chances never stack or roll in sequence. Deflection does not work against activated combat abilities or Force powers, and only one deflection attempt can occur in an incoming combat round. Guard is a separate damage-stage outcome that reduces incoming physical damage by {Combat.BaseGuardDamageReductionPercent} to {Combat.MaximumGuardDamageReductionPercent} percent and increases enmity."),
+                            $"Melee Deflection can negate hostile melee weapon auto-attacks, and Ranged Deflection can negate hostile ranged weapon auto-attacks. Both require a weapon and no shield. Shield Deflection covers both melee and ranged weapon auto-attacks and completely replaces weapon deflection while a shield is equipped; the chances never stack or roll in sequence. Deflection does not work against activated combat abilities or Force powers. Each incoming weapon auto-attack gets its own deflection attempt, including both hands when dual wielding. Guard is a separate damage-stage outcome that reduces incoming physical damage by {Combat.BaseGuardDamageReductionPercent} to {Combat.MaximumGuardDamageReductionPercent} percent and increases enmity."),
                         new ArticleBlock("Combat Readiness",
                             "Combat Readiness increases activated ability damage, healing, and temporary HP. It does not reduce cooldowns.")
                     },
@@ -705,7 +708,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Are deflection and guard the same?", "No. Deflection can stop a hostile weapon auto-attack from landing, while Guard reduces physical damage after the hit."),
                         new QuestionAnswer("Does readiness lower cooldowns?", "No. Combat Readiness improves activated ability damage, healing, and temporary HP.")
                     },
-                    new[] { "Abilities", "Attributes", "Skills", "Death & Recovery", "Espionage", "Useful Windows" }),
+                    new[] { StatusEffectGuideTopics.TopicName, "Abilities", "Attributes", "Skills", "Death & Recovery", "Espionage", "Lightsaber Combat Styles", "Force Combat Styles", "Useful Windows" }),
 
                 new(
                     "Espionage",
@@ -717,13 +720,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Character Requirement",
                             "Espionage perks are for Standard characters and use the Espionage skill. Their branches cover infiltration and back attacks, slicing and poisoncraft, traps, disguises, and utility."),
                         new ArticleBlock("Starting at Rank 0",
-                            "Choose Stealth I, Poisoncraft I, Slicing I, or Trapcraft I in the Perks window. All four are available at Espionage rank 0. You can train with your chosen activity without buying the other starter perks. Craft at the Espionage Workbench beside the market terminal in Veles Shops; its map marker shows the location."),
+                            "Choose Stealth I, Poisoncraft I, Slicing I, or Trapcraft I in the Perks window. All four are available at Espionage rank 0. You can train with your chosen activity without buying the other starter perks. Craft at a marked Espionage Workbench beside a market terminal in Veles Shops."),
                         new ArticleBlock("Stealth and Back Attacks",
                             "Stealth is activated out of combat and drains STM while maintained. Hostile actions break stealth. Back Attack bonuses require attacking from behind the target, so position matters."),
-                        new ArticleBlock("Slicing Lockboxes and Terminals",
-                            "Right-click a lockbox and choose Activate Item, or use a world terminal. Rotate or swap circuit tiles to connect the entry to the core before trace runs out. Lockpicking and Perception add trace. Tier 1 terminals can be found in the Viscaran Wildlands, CZ-220 maintenance level, and Abandoned Nano Station. Slicing II-V unlock at Espionage ranks 22, 30, 42, and 48. Each tier awards XP until the next unlock; tier 5 trains to 50."),
+                        new ArticleBlock("Slicing Lockboxes and Sealed Crates",
+                            "Right-click a lockbox and choose Activate Item, or use a Sealed Field Crate to slice its electronic lock. Rotate or swap circuit tiles to connect the entry to the core before trace runs out. Lockpicking and Perception add trace. Tier 1 crates can be found in the Viscaran Wildlands, CZ-220 maintenance level, and Abandoned Nano Station. Slicing II-V unlock at Espionage ranks 22, 30, 42, and 48. Each tier awards XP until the next unlock; tier 5 trains to 50."),
                         new ArticleBlock("Slicing Supplies and Failure",
-                            "Consumables are optional. The Veles General Store sells tier 1 Copper Trace Fuses, Ratchet Bypass Pins, and Continuity Samplers. Select supplies inside the slicing window. Advanced tools come from slicing rewards; higher-tier trace fuses are crafted by engineers. Cancelling before commitment is free. After a move or information-tool use, aborting counts as failure. The first lockbox failure cannot destroy it; later failures can. Terminals are shared and respawn after 45-75 minutes."),
+                            "Consumables are optional. The Veles General Store sells tier 1 Copper Trace Fuses, Ratchet Bypass Pins, and Continuity Samplers. Select supplies inside the slicing window. Advanced tools come from slicing rewards; higher-tier trace fuses are crafted by engineers. Cancelling before commitment is free. After a move or information-tool use, aborting counts as failure. The first lockbox failure cannot destroy it; later failures can. Field crates are shared and respawn after 45-75 minutes."),
                         new ArticleBlock("Poisoncraft",
                             "Start with Venom Coating I: 3 Kath Hound Blood and 2 Viscaran Rosemary. Recipe level 3 means crafting difficulty; its required Espionage rank is 0. Poisoncraft II-V unlock at ranks 15, 28, 40, and 48. Each coating recipe trains to the next unlock, with tier 5 training to 50. Right-click a vial, choose Activate Item, and select a melee or thrown weapon in your inventory. Anyone can apply coatings; energy blades cannot be coated."),
                         new ArticleBlock("Trapcraft",
@@ -738,7 +741,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Who can use espionage perks?", "Standard characters who meet the relevant Espionage skill and perk requirements."),
                         new QuestionAnswer("Do I need stealth to learn poisons or slicing?", "No. Poisoncraft I, Slicing I, and Trapcraft I each start at rank 0 and can train independently."),
                         new QuestionAnswer("Why did my recipe or slicing tier stop giving XP?", "You reached the next tier's unlock rank. Purchase that tier's perk and use its recipes or targets to continue training."),
-                        new QuestionAnswer("Where do I craft poisons and snares?", "At the marked Espionage Workbench beside the market terminal in Veles Shops."),
+                        new QuestionAnswer("Where do I craft poisons and snares?", "At a marked Espionage Workbench beside a market terminal in Veles Shops."),
                         new QuestionAnswer("How many traps can I place?", "One by default; Trap Management increases your active-trap limit."),
                         new QuestionAnswer("What breaks stealth?", "Hostile actions break stealth, and maintaining it continuously drains STM.")
                     },
@@ -1155,9 +1158,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     new[] { "Common Questions", "Skills", "Perks", "Mimicry & Techniques", "Training Store", "Quests & Key Items", "Communication", "Disguises" })
             };
+
+            topics.Add(StatusEffectGuideTopics.Create());
+            topics.AddRange(CombatStyleGuideTopics.Create());
+            return topics;
         }
 
-        private sealed class PlayerGuideTopic
+        internal sealed class PlayerGuideTopic
         {
             public string Name { get; }
             public string Category { get; }
@@ -1186,7 +1193,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        private sealed class ArticleBlock
+        internal sealed class ArticleBlock
         {
             public string Title { get; }
             public string Body { get; }
@@ -1198,7 +1205,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        private sealed class QuestionAnswer
+        internal sealed class QuestionAnswer
         {
             public string Question { get; }
             public string Answer { get; }

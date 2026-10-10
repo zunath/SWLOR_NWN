@@ -45,6 +45,7 @@ namespace SWLOR.Toolset.Domain.Editors.Items
 
             // Combat.
             Add(ItemStatGroup.Combat, "Attack", 111, costTableId: 45);
+            Add(ItemStatGroup.Combat, "Accuracy", 142, costTableId: 45);
             Add(ItemStatGroup.Combat, "Force Attack", 112, costTableId: 45);
             Add(ItemStatGroup.Combat, "DMG", 93, costTableId: 34);
             Add(ItemStatGroup.Combat, "Delay", 98, costTableId: 52);
@@ -82,7 +83,7 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             Add(ItemStatGroup.Bonuses, "Increased Price", 126, costTableId: 49);
 
             // Droid. DroidStat (121) carries every one of iprp_droidstat's 31 labeled rows - the
-            // ability/resistance/tier block (2-20) and the weapon-skill block (115-126). DroidPartType
+            // ability/resistance/tier block (2-11, 16-24) and the weapon-skill block (115-126). DroidPartType
             // (122, iprp_droidpart, 1-5 subs) and DroidInstruction (123, iprp_droidperk, 40 subs) are
             // multi-subtype and are catalogued only in ItemMultiEntryCatalog; DroidPersonality (124)
             // has no per-subtype expansion asked of this pass and stays flat.
@@ -91,8 +92,8 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             {
                 (2, "Tier"), (3, "AI Slots"), (4, "HP"), (5, "STM"), (6, "MGT"), (7, "PER"),
                 (8, "VIT"), (9, "WIL"), (10, "AGI"), (11, "SOC"),
-                (12, "Fire Resistance"), (13, "Poison Resistance"), (14, "Electrical Resistance"),
-                (15, "Ice Resistance"), (16, "Mind Resistance"), (17, "Mobility Resistance"),
+                (21, "Fire Resistance"), (22, "Poison Resistance"), (23, "Electrical Resistance"),
+                (24, "Ice Resistance"), (16, "Mind Resistance"), (17, "Mobility Resistance"),
                 (18, "Trauma Resistance"), (19, "Disruption Resistance"), (20, "Armor"),
                 (115, "Vibroblade"), (116, "Vibroknife"), (117, "Lightsaber"), (118, "Heavy Vibro"),
                 (119, "Spear"), (120, "Twin Blade"), (121, "Saberstaff"), (122, "Katar"),

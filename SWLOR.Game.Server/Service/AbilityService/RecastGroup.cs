@@ -276,8 +276,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         SystemicShutdown = 191,
         [RecastGroup("Soul Strike", "Soul Strike", true)]
         SoulStrike = 192,
-        [RecastGroup("Soul Devourer", "Soul Devour", true)]
-        SoulDevourer = 194,
+        [RecastGroup("Soul Devourer Stance", "Soul Dev. St.", true)]
+        SoulDevourerStance = 194,
         [RecastGroup("Soul Storm", "Soul Storm", true)]
         SoulStorm = 196,
         [RecastGroup("Bastion Stance", "Bastion St.", true)]
@@ -762,8 +762,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         FieldTool = 467,
         [RecastGroup("Overload", "Overload", true)]
         Overload = 483,
-        [RecastGroup("Apex Collapse", "Apex Collapse", true)]
-        ApexCollapse = 484,
+        [RecastGroup("Apex Collapse Stance", "Apex Coll. St.", true)]
+        ApexCollapseStance = 484,
         [RecastGroup("Brace Breaker", "Brace Breaker", true)]
         BraceBreaker = 485,
         [RecastGroup("Crossfire Drill", "Crossfire", true)]
@@ -808,8 +808,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         SignalSnare = 505,
         [RecastGroup("Snap Rush", "Snap Rush", true)]
         SnapRush = 506,
-        [RecastGroup("Sustain Burn", "Sustain Burn", true)]
-        SustainBurn = 507,
+        [RecastGroup("Sustain Burn Stance", "Sust. Burn St.", true)]
+        SustainBurnStance = 507,
         [RecastGroup("Warden Clamp", "Warden Clamp", true)]
         WardenClamp = 508,
         [RecastGroup("Warden Mark", "Warden Mark", true)]
@@ -822,8 +822,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         WardenRend = 512,
         [RecastGroup("Warden Sweep", "Warden Sweep", true)]
         WardenSweep = 513,
-        [RecastGroup("Warden Wall", "Warden Wall", true)]
-        WardenWall = 514,
+        [RecastGroup("Warden Wall Stance", "Wardn Wall St.", true)]
+        WardenWallStance = 514,
         [RecastGroup("Will Fracture", "Will Fracture", true)]
         WillFracture = 515,
 
@@ -841,6 +841,70 @@ namespace SWLOR.Game.Server.Service.AbilityService
 
         [RecastGroup("Shock Trap", "Shock Trap", true)]
         ShockTrap = 520,
+
+        [RecastGroup("Introduction", "Introduction", false)]
+        Introduction = 521,
+
+        [RecastGroup("High Slot 1", "High Slot 1", true)]
+        ShipModule1 = 554,
+
+        [RecastGroup("High Slot 2", "High Slot 2", true)]
+        ShipModule2 = 555,
+
+        [RecastGroup("High Slot 3", "High Slot 3", true)]
+        ShipModule3 = 556,
+
+        [RecastGroup("High Slot 4", "High Slot 4", true)]
+        ShipModule4 = 557,
+
+        [RecastGroup("High Slot 5", "High Slot 5", true)]
+        ShipModule5 = 558,
+
+        [RecastGroup("High Slot 6", "High Slot 6", true)]
+        ShipModule6 = 559,
+
+        [RecastGroup("High Slot 7", "High Slot 7", true)]
+        ShipModule7 = 560,
+
+        [RecastGroup("High Slot 8", "High Slot 8", true)]
+        ShipModule8 = 561,
+
+        [RecastGroup("High Slot 9", "High Slot 9", true)]
+        ShipModule9 = 562,
+
+        [RecastGroup("High Slot 10", "High Slot 10", true)]
+        ShipModule10 = 563,
+
+        [RecastGroup("Low Slot 1", "Low Slot 1", true)]
+        ShipModule11 = 564,
+
+        [RecastGroup("Low Slot 2", "Low Slot 2", true)]
+        ShipModule12 = 565,
+
+        [RecastGroup("Low Slot 3", "Low Slot 3", true)]
+        ShipModule13 = 566,
+
+        [RecastGroup("Low Slot 4", "Low Slot 4", true)]
+        ShipModule14 = 567,
+
+        [RecastGroup("Low Slot 5", "Low Slot 5", true)]
+        ShipModule15 = 568,
+
+        [RecastGroup("Low Slot 6", "Low Slot 6", true)]
+        ShipModule16 = 569,
+
+        [RecastGroup("Low Slot 7", "Low Slot 7", true)]
+        ShipModule17 = 570,
+
+        [RecastGroup("Low Slot 8", "Low Slot 8", true)]
+        ShipModule18 = 571,
+
+        [RecastGroup("Low Slot 9", "Low Slot 9", true)]
+        ShipModule19 = 572,
+
+        [RecastGroup("Low Slot 10", "Low Slot 10", true)]
+        ShipModule20 = 573,
+
     }
 
     public class RecastGroupAttribute : Attribute

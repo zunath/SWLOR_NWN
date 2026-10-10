@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             }
         }
 
-        public static void Refresh(uint creature, uint item)
+        public static void Refresh(uint creature, uint item, bool resetShaderOverrides = true)
         {
             if (!GetIsObjectValid(creature) || !GetIsObjectValid(item))
                 return;
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             }
 
             server.SetForceUpdate();
-            TintMapService.ApplyCurrentColors(creature);
+            TintMapService.ApplyCurrentColors(creature, resetShaderOverrides);
             Droid.UpdateEquippedItemSnapshot(creature, item);
 
             if (refreshedClient && GetIsPC(creature))

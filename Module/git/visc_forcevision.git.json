@@ -45,9 +45,7 @@
   },
   "Creature List": {
     "type": "list",
-    "value": [
-
-    ]
+    "value": []
   },
   "Door List": {
     "type": "list",
@@ -7703,9 +7701,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -7936,9 +7932,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -8169,9 +8163,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -8402,9 +8394,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",

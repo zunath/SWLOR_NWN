@@ -1607,11 +1607,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 33
+                      "value": 48
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 10
+                      "value": 100
                     },
                     "Param1": {
                       "type": "byte",
@@ -1623,11 +1623,11 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 100
+                      "value": 131
                     },
                     "Subtype": {
                       "type": "word",
-                      "value": 91
+                      "value": 46
                     }
                   },
                   {
@@ -2880,11 +2880,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 33
+                      "value": 48
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 3
+                      "value": 20
                     },
                     "Param1": {
                       "type": "byte",
@@ -2896,11 +2896,11 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 100
+                      "value": 131
                     },
                     "Subtype": {
                       "type": "word",
-                      "value": 91
+                      "value": 46
                     }
                   },
                   {
@@ -4057,11 +4057,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 33
+                      "value": 48
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 25
+                      "value": 100
                     },
                     "Param1": {
                       "type": "byte",
@@ -4073,7 +4073,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 100
+                      "value": 131
                     },
                     "Subtype": {
                       "type": "word",
@@ -23074,7 +23074,7 @@
           "id": 14717,
           "type": "cexolocstring",
           "value": {
-            "0": "Welcome to Star Wars: Legends of the Old Republic!\n\nWe're extremely happy you've stopped in to try our server out. We'll keep this brief so you can get in-game as quickly as possible.\n\nHere are a few things you should know:\n\n1.) Press 'C' or open your character sheet to access important options.\n\n2.) You can purchase some starting items from the vendor in the northern part of this area.\n\n3.) You can customize your character appearance from the 'Appearance' button in your character sheet.\n\n4.) We log ALL chat messages, including tells, to our database for auditing purposes. By continuing to play here you agree to allow your conversations to be stored.\n\n\nIf you need more information about our unique gameplay please visit our website at https://www.starwarsnwn.com/\n\nIf you need further help please visit our Discord channel: https://discord.gg/MyQAM6m\n\n\nMay the Force be with you!"
+            "0": "Welcome to Star Wars: Legends of the Old Republic!\n\nWe're extremely happy you've stopped in to try our server out. We'll keep this brief so you can get in-game as quickly as possible.\n\nHere are a few things you should know:\n\n1.) Press 'C' or open your character sheet to access important options.\n\n2.) You can purchase some starting items from the vendor in the northern part of this area.\n\n3.) You can customize your character appearance from the 'Appearance' button in your character sheet.\n\n4.) We log ALL chat messages, including tells, to our database for auditing purposes. By continuing to play here you agree to allow your conversations to be stored.\n\n\nIf you need more information about our unique gameplay please visit our website at https://www.starwarsnwn.com/\n\nIf you need further help please visit our Discord channel: https://discord.gg/MyQAM6m\n\n\nMay the Force be with you!\n\n== Names and Introductions ==\n\nUntil you name another player, you see their gray public description.\n\nType /name <label>, then click another player, to save a private name or nickname that only you see. Example: /name Mira.\n\nTo set your own gray public description, type /name <description>, then click yourself. Example: /name A Weathered Human.\n\nType /introduce <name> to offer a name or alias to visible players within 20m. Example: /introduce Mira. This command has a 5-minute cooldown.\n\nUse /introductions to review offered names and choose Remember or Dismiss. An introduction saves no name until the recipient chooses Remember."
           }
         },
         "DisarmDC": {

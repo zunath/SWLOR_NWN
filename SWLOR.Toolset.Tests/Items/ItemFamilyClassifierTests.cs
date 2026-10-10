@@ -31,6 +31,7 @@ namespace SWLOR.Toolset.Tests.Items
         [TestCase(1, "longsword", 2, ItemFamily.MeleeWeapon)]
         [TestCase(111, "Whip", 2, ItemFamily.MeleeWeapon)]
         [TestCase(11, "pistol", 2, ItemFamily.RangedWeapon)]
+        [TestCase(61, "pistol_native_sling", 2, ItemFamily.RangedWeapon)]
         [TestCase(514, "legacy_smallarms", 2, ItemFamily.RangedWeapon)]
         [TestCase(14, "smallshield", 2, ItemFamily.Shield)]
         [TestCase(56, "largeshield", 2, ItemFamily.Shield)]

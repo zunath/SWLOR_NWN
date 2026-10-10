@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
         private void Longswords()
         {
-            // Basic Longsword
+            // Basic Vibroblade LS
             _builder.Create(RecipeType.BasicLongsword, SkillType.Smithery)
                 .Category(RecipeCategoryType.Longsword)
                 .Resref("b_longsword")

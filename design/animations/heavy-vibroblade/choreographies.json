@@ -720,7 +720,7 @@
     ]
   },
   {
-    "Id": "SoulDevourer",
+    "Id": "SoulDevourerStance",
     "Description": "Sink into a low hungry two-handed draw, pause with the blade down and rise deliberately into an aggressive shoulder-high guard",
     "Duration": 3.05,
     "Beats": [

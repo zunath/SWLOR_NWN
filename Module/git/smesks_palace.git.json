@@ -13420,11 +13420,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 33
+                      "value": 48
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 0
+                      "value": 100
                     },
                     "Param1": {
                       "type": "byte",
@@ -13436,7 +13436,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 100
+                      "value": 131
                     },
                     "Subtype": {
                       "type": "word",
@@ -15632,7 +15632,7 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 45
                     },
                     "CostValue": {
                       "type": "word",
@@ -15648,7 +15648,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
+                      "value": 142
                     },
                     "Subtype": {
                       "type": "word",
@@ -16644,11 +16644,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 33
+                      "value": 48
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 0
+                      "value": 100
                     },
                     "Param1": {
                       "type": "byte",
@@ -16660,7 +16660,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 100
+                      "value": 131
                     },
                     "Subtype": {
                       "type": "word",
@@ -18148,7 +18148,7 @@
         },
         "CurrentHitPoints": {
           "type": "short",
-          "value": 65
+          "value": 50
         },
         "DecayTime": {
           "type": "dword",
@@ -18360,11 +18360,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 33
+                      "value": 48
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 0
+                      "value": 100
                     },
                     "Param1": {
                       "type": "byte",
@@ -18376,7 +18376,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 100
+                      "value": 131
                     },
                     "Subtype": {
                       "type": "word",
@@ -18496,6 +18496,26 @@
               "ZPosition": {
                 "type": "float",
                 "value": -1.0
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               }
             },
             {
@@ -18597,6 +18617,37 @@
                     },
                     "CostTable": {
                       "type": "byte",
+                      "value": 34
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 7
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
                       "value": 52
                     },
                     "CostValue": {
@@ -18636,7 +18687,7 @@
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "rifle_npc"
+                "value": "humanpirate_wp"
               },
               "xModelPart1": {
                 "type": "word",
@@ -18669,6 +18720,26 @@
               "ZPosition": {
                 "type": "float",
                 "value": 0.0
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               }
             },
             {
@@ -18732,7 +18803,39 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": []
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 26
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 39
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 82
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 125
+                    }
+                  }
+                ]
               },
               "StackSize": {
                 "type": "word",
@@ -18879,7 +18982,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 65
+                      "value": 50
                     },
                     "Param1": {
                       "type": "byte",
@@ -19491,6 +19594,20 @@
                 "type": "word",
                 "value": 46
               }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1850
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1851
+              }
             }
           ]
         },
@@ -19514,7 +19631,7 @@
         },
         "HitPoints": {
           "type": "short",
-          "value": 65
+          "value": 50
         },
         "Int": {
           "type": "byte",
@@ -19603,7 +19720,7 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 45
                     },
                     "CostValue": {
                       "type": "word",
@@ -19619,7 +19736,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
+                      "value": 142
                     },
                     "Subtype": {
                       "type": "word",
@@ -19827,7 +19944,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 65
+          "value": 50
         },
         "NaturalAC": {
           "type": "byte",
@@ -23158,11 +23275,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 33
+                      "value": 48
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 0
+                      "value": 100
                     },
                     "Param1": {
                       "type": "byte",
@@ -23174,7 +23291,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 100
+                      "value": 131
                     },
                     "Subtype": {
                       "type": "word",
@@ -24361,7 +24478,7 @@
         },
         "CurrentHitPoints": {
           "type": "short",
-          "value": 54
+          "value": 41
         },
         "DecayTime": {
           "type": "dword",
@@ -24573,11 +24690,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 33
+                      "value": 48
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 0
+                      "value": 100
                     },
                     "Param1": {
                       "type": "byte",
@@ -24589,7 +24706,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 100
+                      "value": 131
                     },
                     "Subtype": {
                       "type": "word",
@@ -24709,6 +24826,26 @@
               "ZPosition": {
                 "type": "float",
                 "value": -1.0
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               }
             },
             {
@@ -24810,6 +24947,37 @@
                     },
                     "CostTable": {
                       "type": "byte",
+                      "value": 34
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 6
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
                       "value": 52
                     },
                     "CostValue": {
@@ -24849,7 +25017,7 @@
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "rifle_npc"
+                "value": "rodianpirate_wp"
               },
               "xModelPart1": {
                 "type": "word",
@@ -24882,6 +25050,26 @@
               "ZPosition": {
                 "type": "float",
                 "value": 0.0
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               }
             },
             {
@@ -24945,7 +25133,39 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": []
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 26
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 39
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 82
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 125
+                    }
+                  }
+                ]
               },
               "StackSize": {
                 "type": "word",
@@ -25092,7 +25312,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 54
+                      "value": 41
                     },
                     "Param1": {
                       "type": "byte",
@@ -25697,6 +25917,20 @@
                 "type": "word",
                 "value": 46
               }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1850
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1851
+              }
             }
           ]
         },
@@ -25720,7 +25954,7 @@
         },
         "HitPoints": {
           "type": "short",
-          "value": 54
+          "value": 41
         },
         "Int": {
           "type": "byte",
@@ -25809,7 +26043,7 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 45
                     },
                     "CostValue": {
                       "type": "word",
@@ -25825,7 +26059,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
+                      "value": 142
                     },
                     "Subtype": {
                       "type": "word",
@@ -26033,7 +26267,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 54
+          "value": 41
         },
         "NaturalAC": {
           "type": "byte",
@@ -27344,7 +27578,7 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 45
                     },
                     "CostValue": {
                       "type": "word",
@@ -27360,7 +27594,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
+                      "value": 142
                     },
                     "Subtype": {
                       "type": "word",
@@ -28772,7 +29006,7 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 45
                     },
                     "CostValue": {
                       "type": "word",
@@ -28788,7 +29022,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
+                      "value": 142
                     },
                     "Subtype": {
                       "type": "word",
@@ -31456,11 +31690,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 33
+                      "value": 48
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 0
+                      "value": 100
                     },
                     "Param1": {
                       "type": "byte",
@@ -31472,7 +31706,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 100
+                      "value": 131
                     },
                     "Subtype": {
                       "type": "word",
@@ -31592,6 +31826,26 @@
               "ZPosition": {
                 "type": "float",
                 "value": -1.0
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               }
             },
             {
@@ -31693,6 +31947,37 @@
                     },
                     "CostTable": {
                       "type": "byte",
+                      "value": 34
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 7
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
                       "value": 52
                     },
                     "CostValue": {
@@ -31732,7 +32017,7 @@
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "rifle_npc"
+                "value": "weequaypirate_wp"
               },
               "xModelPart1": {
                 "type": "word",
@@ -31765,6 +32050,26 @@
               "ZPosition": {
                 "type": "float",
                 "value": 0.0
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               }
             },
             {
@@ -31828,7 +32133,39 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": []
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 26
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 39
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 82
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 125
+                    }
+                  }
+                ]
               },
               "StackSize": {
                 "type": "word",
@@ -32587,6 +32924,20 @@
                 "type": "word",
                 "value": 46
               }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1843
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1769
+              }
             }
           ]
         },
@@ -32610,7 +32961,7 @@
         },
         "HitPoints": {
           "type": "short",
-          "value": 62
+          "value": 65
         },
         "Int": {
           "type": "byte",
@@ -32699,7 +33050,7 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 2
+                      "value": 45
                     },
                     "CostValue": {
                       "type": "word",
@@ -32715,7 +33066,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
+                      "value": 142
                     },
                     "Subtype": {
                       "type": "word",
@@ -32923,7 +33274,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 59
+          "value": 62
         },
         "NaturalAC": {
           "type": "byte",
@@ -100507,7 +100858,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An ale brewed by the Gamorrean's using a secret recipe. Hard hitting and taste's like shit but guaranteed to get you drunk fast."
                       }
                     },
                     "Identified": {
@@ -100615,7 +100966,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Created by a coruscant local, this ale tastes sweet and is easy to drink. "
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -100722,7 +101075,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A bitter white wine that is popular along side a bantha steak."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -100830,7 +101185,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A shot of liquor that is infused with a small portion of bacta. Guaranteed to get one drunk and feeling healthier at the same time."
                       }
                     },
                     "Identified": {
@@ -100939,7 +101294,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A simple cigar. Light it up and have a puff."
                       }
                     },
                     "Identified": {
@@ -101048,7 +101403,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A cigarette. Bad for the body bud good for the nerves."
                       }
                     },
                     "Identified": {
@@ -101156,7 +101511,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A beautiful red wine brewed on Corellia. It's sweet taste comes from the raspberry's that are infused inside."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -101264,7 +101621,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Not even the bartenders know what goes into these drinks. All they know is it comes in a giant metal barrel and tastes delicious."
                       }
                     },
                     "Identified": {
@@ -101372,7 +101729,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A drink that resembles a reactor core if you look down into the drink. It's quite better but goes down easy."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -101480,7 +101839,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Bantha milk, vodka and dark chocolate make up sith spit. Tastes good and easy to make, a staple in most bars."
                       }
                     },
                     "Identified": {
@@ -101589,7 +101948,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A cider made primaly from citrus fruit gathered somewhere on viscara. "
                       }
                     },
                     "Identified": {
@@ -101698,7 +102057,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Orange with a bit of lime for those that don't want to drink alcohol but still wanna look cool. *Thumbs up*"
                       }
                     },
                     "Identified": {
@@ -101807,7 +102166,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A drink that's contents are still unknown, but when drunken, makes the consumer want to get naked and dance."
                       }
                     },
                     "Identified": {
@@ -101915,7 +102274,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A teal-colored, bubbly wine that is produced on the planet of Alderaan and served across the galaxy."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -102022,7 +102383,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "An ale created by trandoshan prisoners in a toilet on Coruscant. Now brewed professionally and sold across the galaxy but no one but trandoshans can stomach it."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -102130,7 +102493,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A glass of high quality H20. This used to be named \"Simply Pilgrim\" but the bars went back to the original name of water."
                       }
                     },
                     "Identified": {
@@ -102238,7 +102601,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "White Wampa is simply vodka, milk and snow. Often served on Hoth at large gatherings, but can be served in bars using shaved ice instead of snow."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -102345,7 +102710,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A double shot of malt whisky with several ice cubes. This drink is a delicacy all throughout the galaxy and only the sophisticated drink such a perfect drink."
+                      }
                     },
                     "Identified": {
                       "type": "byte",

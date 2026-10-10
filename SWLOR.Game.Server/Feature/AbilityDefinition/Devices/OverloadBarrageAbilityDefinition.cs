@@ -16,6 +16,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public sealed class OverloadBarrageAbilityDefinition : IAbilityListDefinition
     {
+        private const int BurstBaseDamage = 22;
+        private const int StrikeBaseDamage = 32;
+        private const int SonicBaseDamage = 18;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -63,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 SkillType.Devices,
-                18,
+                BurstBaseDamage,
                 duration,
                 typeof(BurnStatusEffect),
                 CombatImpactAreaShape.Sphere,
@@ -86,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 SkillType.Devices,
-                20,
+                StrikeBaseDamage,
                 3,
                 typeof(KnockdownStatusEffect),
                 false,
@@ -105,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 SkillType.Devices,
-                18,
+                SonicBaseDamage,
                 duration,
                 typeof(SonicBurst3StatusEffect),
                 CombatImpactAreaShape.Sphere,

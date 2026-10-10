@@ -17,6 +17,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using HoloCom = SWLOR.Game.Server.Service.HoloCom;
 using Player = SWLOR.Game.Server.Entity.Player;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -28,7 +29,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             Char();
             CDKey();
-            Save();
             Skills();
             EndCall();
             Recipes();
@@ -45,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Follow();
             SetKnownName();
             ForgetKnownName();
+            Introductions();
             ChangeDescription();
             OrderCompanion();
             ResetWindows();
@@ -101,18 +102,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     var cdKey = GetPCPublicCDKey(user);
                     SendMessageToPC(user, "Your public CD Key is: " + cdKey);
-                });
-        }
-
-        private void Save()
-        {
-            _builder.Create("save")
-                .Description("Manually saves your character. Your character also saves automatically every few minutes.")
-                .Permissions(AuthorizationLevel.Player)
-                .Action((user, target, location, args) =>
-                {
-                    ExportSingleCharacter(user);
-                    SendMessageToPC(user, "Character saved successfully.");
                 });
         }
 
@@ -473,8 +462,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     dbPlayer.HeadAppearanceScale = newScale;
                     DB.Set(dbPlayer);
 
-                    SetObjectVisualTransform(user, ObjectVisualTransform.Scale, newScale,
-                        nScope: ObjectVisualTransformDataScopeType.CreatureHead);
+                    HelmetModelRenderer.SetHeadScale(user, newScale);
 
                     SendMessageToPC(user, $"Head Size: {newScale:0.##}");
                 });
@@ -581,14 +569,19 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var name = PlayerName.SanitizeKnownName(rawName);
                     if (target == user)
                     {
+                        var previousDescriptor = PlayerDescriptor.GetUnknownDisplayName(user);
                         PlayerDescriptor.SetUnknownDisplayName(user, name);
 
                         Log.WriteStructured(
                             LogGroup.PlayerName,
-                            "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} TargetPlayerId={TargetPlayerId} Name={Name}",
+                            "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} ObserverName={ObserverName} TargetPlayerId={TargetPlayerId} TargetName={TargetName} IdentityKey={IdentityKey} PreviousName={PreviousName} Name={Name}",
                             "unknown-name-set",
                             GetObjectUUID(user),
+                            PlayerName.GetAuditName(user),
                             GetObjectUUID(target),
+                            PlayerName.GetAuditName(target),
+                            GetObjectUUID(target),
+                            previousDescriptor,
                             name);
                         SendMessageToPC(user, ColorToken.Green($"Public description set to '{name}'. Players who have not labeled your current identity will see this in gray."));
                         return;
@@ -601,17 +594,39 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
+                    var previousName = PlayerName.TryGetKnownName(user, target, out var knownName)
+                        ? knownName
+                        : string.Empty;
+                    var identityKey = Disguise.GetIdentityKey(target);
                     PlayerName.SetKnownName(user, target, name);
 
                     Log.WriteStructured(
                         LogGroup.PlayerName,
-                        "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} TargetPlayerId={TargetPlayerId} Name={Name}",
+                        "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} ObserverName={ObserverName} TargetPlayerId={TargetPlayerId} TargetName={TargetName} IdentityKey={IdentityKey} PreviousName={PreviousName} Name={Name}",
                         "name-set",
                         GetObjectUUID(user),
+                        PlayerName.GetAuditName(user),
                         GetObjectUUID(target),
+                        PlayerName.GetAuditName(target),
+                        identityKey,
+                        previousName,
                         name);
                     SendMessageToPC(user, ColorToken.Green($"Private label saved as '{name}'. Only you can see this label."));
                 });
+        }
+
+        private void Introductions()
+        {
+            _builder.Create("introduce")
+                .Description("Offers a name or alias to visible players within 20m. They choose whether to remember it.")
+                .Permissions(AuthorizationLevel.All)
+                .Validate((user, args) => PlayerIntroduction.ValidateIntroduction(user, string.Join(" ", args)))
+                .Action((user, target, location, args) => PlayerIntroduction.Introduce(user, string.Join(" ", args)));
+
+            _builder.Create("introductions", "intro")
+                .Description("Review nearby introductions. Remembering a name requires your approval.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) => Gui.TogglePlayerWindow(user, GuiWindowType.Introductions));
         }
 
         private void ForgetKnownName()
@@ -634,13 +649,22 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
+                    var previousName = PlayerName.TryGetKnownName(user, target, out var knownName)
+                        ? knownName
+                        : string.Empty;
+                    var identityKey = Disguise.GetIdentityKey(target);
                     PlayerName.ForgetKnownName(user, target);
                     Log.WriteStructured(
                         LogGroup.PlayerName,
-                        "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} TargetPlayerId={TargetPlayerId}",
+                        "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} ObserverName={ObserverName} TargetPlayerId={TargetPlayerId} TargetName={TargetName} IdentityKey={IdentityKey} PreviousName={PreviousName} Name={Name}",
                         "name-forget",
                         GetObjectUUID(user),
-                        GetObjectUUID(target));
+                        PlayerName.GetAuditName(user),
+                        GetObjectUUID(target),
+                        PlayerName.GetAuditName(target),
+                        identityKey,
+                        previousName,
+                        string.Empty);
                     SendMessageToPC(user, ColorToken.Green("Private label removed. This changes only what you see."));
                 });
         }

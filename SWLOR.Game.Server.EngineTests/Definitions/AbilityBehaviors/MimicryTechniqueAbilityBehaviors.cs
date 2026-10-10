@@ -20,15 +20,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
     /// guard returns 0 unconditionally - these are genuine control-only techniques with no damage,
     /// not an oversight. ExpectsTargetDamage is only set true where baseDamage is actually positive.
     ///
-    /// Mimicry-wide activation note (see also MimicryUtilityAbilityBehaviors and
-    /// MimicryTraitAbilityBehaviors): a technique's FeatType has no CustomValidation, RequirementItem,
-    /// or other gate tied to Service/Mimicry.cs's learned/equipped/slot-budget state - that DB
-    /// bookkeeping only gates the player-facing Equip/Unequip UI flow (Mimicry.CanEquip). Once a
-    /// creature holds the feat (or, as here, TryUseAbility is invoked directly without ever granting
-    /// it - CanUseAbility never checks GetHasFeat), it activates exactly like any other perk-active
-    /// ability. NPC perk level also defaults to max (Perk.GetPerkLevel's creature branch), so no
-    /// ctx.SetNPCPerkLevel(caster, PerkType.CombatAnalyzer, ...) call is needed for the Level(1)
-    /// requirement every technique declares.
+    /// The executor uses a persisted player build and equips each learned technique through
+    /// Mimicry. Activation therefore exercises the real learned/equipped gates and resource path.
     /// </summary>
     public class MimicryTechniqueAbilityBehaviors : IAbilityBehaviorSource
     {

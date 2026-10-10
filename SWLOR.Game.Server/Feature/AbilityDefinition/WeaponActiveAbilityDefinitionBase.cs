@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature;
@@ -125,6 +126,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int RestoreStaminaIfMinimumTargetsHit { get; init; }
             public int StaminaRestoreMinimumTargets { get; init; }
             public int RestoreFPAfterImpact { get; init; }
+
+            /// <summary>
+            /// FP restored once per cast when the caster's Ranged Deflection negated a ranged
+            /// weapon auto-attack within
+            /// <see cref="RestoreFPAfterRangedDeflectionWindowSeconds"/>. This is deliberately a
+            /// per-cast payload rather than a per-hit one: an authored "restore N FP" on an area
+            /// ability must not pay out once per struck target.
+            /// </summary>
+            public int RestoreFPAfterRangedDeflection { get; init; }
+
+            /// <summary>Deflection lookback window for <see cref="RestoreFPAfterRangedDeflection"/>.</summary>
+            public int RestoreFPAfterRangedDeflectionWindowSeconds { get; init; }
             public int RestoreStaminaIfAllHitsLand { get; init; }
             public int RestoreFPIfAllHitsLand { get; init; }
             public int RestoreStaminaIfAnyCriticalHit { get; init; }
@@ -479,7 +492,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
 
                 if (RestoreStaminaOnHit > 0)
-                    Stat.RestoreStamina(activator, RestoreStaminaOnHit);
+                    Combat.RestoreAbilityHitStamina(activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability, RestoreStaminaOnHit);
                 if (RestoreFPOnHit > 0)
                 {
                     if (Stat.RestoreFP(activator, RestoreFPOnHit) > 0)
@@ -616,7 +629,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (RestoreStaminaIfMinimumTargetsHit > 0 && StaminaRestoreMinimumTargets > 0 &&
                     (summary?.ImpactedTargetCount ?? 0) >= StaminaRestoreMinimumTargets)
                 {
-                    Stat.RestoreStamina(activator, RestoreStaminaIfMinimumTargetsHit);
+                    Combat.RestoreAbilityHitStamina(activator, summary.Ability, RestoreStaminaIfMinimumTargetsHit);
                 }
             }
 
@@ -645,6 +658,35 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         durationSeconds);
                 }
 
+                // Keyed off landing the cone, not off dealing damage: a target that resists the
+                // hit down to zero still counts as struck, and the authored restore does not
+                // depend on damage. This has to run before the damage-only early return.
+                if (RestoreFPAfterRangedDeflection > 0 &&
+                    RestoreFPAfterRangedDeflectionWindowSeconds > 0 &&
+                    (summary?.ImpactedTargetCount ?? 0) > 0 &&
+                    Combat.HasRecentDeflection(
+                        activator,
+                        DeflectionSource.Ranged,
+                        RestoreFPAfterRangedDeflectionWindowSeconds))
+                {
+                    if (Stat.RestoreFP(activator, RestoreFPAfterRangedDeflection) > 0)
+                        Combat.ApplyAbilityRestoredFPEffects(activator);
+                }
+
+                if (RestoreStaminaIfAnyCriticalHit > 0 && (summary?.CriticalHitCount ?? 0) > 0)
+                {
+                    var restored = Combat.RestoreAbilityHitStamina(activator, summary.Ability, RestoreStaminaIfAnyCriticalHit,
+                        sendFeedback: string.IsNullOrWhiteSpace(RestoreStaminaIfAnyCriticalHitFeedbackLabel));
+                    if (restored > 0 &&
+                        GetIsPC(activator) &&
+                        !string.IsNullOrWhiteSpace(RestoreStaminaIfAnyCriticalHitFeedbackLabel))
+                    {
+                        PlayerFeedback.ShowDiagnosticFloatingText(
+                            ColorToken.Combat($"{RestoreStaminaIfAnyCriticalHitFeedbackLabel} restored {restored} STM"),
+                            activator,
+                            false);
+                    }
+                }
                 if (totalDamage <= 0)
                 {
                     if ((summary?.ImpactedTargetCount ?? 0) > 0)
@@ -661,21 +703,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
 
                 if (RestoreStaminaAfterImpact > 0)
-                    Stat.RestoreStamina(activator, RestoreStaminaAfterImpact);
-                if (RestoreStaminaIfAnyCriticalHit > 0 && (summary?.CriticalHitCount ?? 0) > 0)
-                {
-                    var restored = Stat.RestoreStamina(activator, RestoreStaminaIfAnyCriticalHit,
-                        sendFeedback: string.IsNullOrWhiteSpace(RestoreStaminaIfAnyCriticalHitFeedbackLabel));
-                    if (restored > 0 &&
-                        GetIsPC(activator) &&
-                        !string.IsNullOrWhiteSpace(RestoreStaminaIfAnyCriticalHitFeedbackLabel))
-                    {
-                        PlayerFeedback.ShowDiagnosticFloatingText(
-                            ColorToken.Combat($"{RestoreStaminaIfAnyCriticalHitFeedbackLabel} restored {restored} STM"),
-                            activator,
-                            false);
-                    }
-                }
+                    Combat.RestoreAbilityHitStamina(activator, summary?.Ability, RestoreStaminaAfterImpact);
                 if (RestoreFPAfterImpact > 0)
                 {
                     if (Stat.RestoreFP(activator, RestoreFPAfterImpact) > 0)
@@ -684,7 +712,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (HitCount > 1 && successfulHitCount >= HitCount)
                 {
                     if (RestoreStaminaIfAllHitsLand > 0)
-                        Stat.RestoreStamina(activator, RestoreStaminaIfAllHitsLand);
+                        Combat.RestoreAbilityHitStamina(activator, summary?.Ability, RestoreStaminaIfAllHitsLand);
                     if (RestoreFPIfAllHitsLand > 0)
                     {
                         if (Stat.RestoreFP(activator, RestoreFPIfAllHitsLand) > 0)
@@ -777,6 +805,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     EffectInvisibility(InvisibilityType.Normal),
                     activator,
                     SelfInvisibilityDurationSeconds);
+                Enmity.ReevaluateEnemyAttackTargets(activator);
             }
 
             private void ApplyNearbyPartyStatus(uint activator)
@@ -1160,16 +1189,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (SelfEnmityPercentIfRecentWardHit != 0 &&
                     WardBondStatusEffect.HasRecentWardHit(activator, target, window))
                 {
-                    ReplaceTemporary(activator, StatType.EnmityPercentAdjustment, SelfEnmityPercentIfRecentWardHit, SelfEnmityDurationSecondsIfRecentWardHit);
+                    StatusEffect.ApplyStatusEffect(activator, target,
+                        new ChallengeEnmityStatusEffect(SelfEnmityPercentIfRecentWardHit), SelfEnmityDurationSecondsIfRecentWardHit);
                 }
 
                 if (SelfEnmityPercentIfTargetRecentlyDamagedActivator != 0 &&
                     Combat.HasRecentDamageTarget(target, activator, window))
                 {
-                    ReplaceTemporary(
-                        activator,
-                        StatType.EnmityPercentAdjustment,
-                        SelfEnmityPercentIfTargetRecentlyDamagedActivator,
+                    StatusEffect.ApplyStatusEffect(activator, target,
+                        new ChallengeEnmityStatusEffect(SelfEnmityPercentIfTargetRecentlyDamagedActivator),
                         SelfEnmityDurationSecondsIfTargetRecentlyDamagedActivator);
                 }
             }
@@ -2101,17 +2129,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
 
             var location = GetLocation(activator);
-            var creature = GetFirstObjectInShape(Shape.Sphere, 5f, location, true);
-
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, 5f, location, true))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (creature != activator && Party.IsInParty(activator, creature))
                 {
                     if (StatusEffect.ApplyStatusEffect(activator, creature, statusEffectFactory(), duration, CombatDamageType.Physical))
                         Ability.PlaySuccessfulImpactVisualEffect(activator, creature);
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, 5f, location, true);
             }
         }
 
@@ -2133,10 +2161,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(areaVisualEffect), location);
             }
 
-            var creature = GetFirstObjectInShape(Shape.Sphere, 5f, location, true);
-
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, 5f, location, true))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (GetIsReactionTypeHostile(creature, activator))
                 {
                     if (targetVisualEffect != VisualEffect.None)
@@ -2154,7 +2183,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     }
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, 5f, location, true);
             }
         }
 

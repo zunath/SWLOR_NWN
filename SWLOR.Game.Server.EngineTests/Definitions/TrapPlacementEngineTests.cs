@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -17,6 +19,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         [EngineTest("Failed ability trap placement preserves traps at capacity", Category = "TrapPlacement")]
         public static Task FailedAbilityPlacement(EngineTestContext ctx) => VerifyReplacement(ctx, false);
+
+        [EngineTest("Ability traps allow walking through their deployed model", Category = "TrapPlacement")]
+        public static Task AbilityTrapPassability(EngineTestContext ctx) => VerifyPassability(ctx, false);
+
+        [EngineTest("Concealed kit traps allow walking through their deployed model", Category = "TrapPlacement")]
+        public static Task KitTrapPassability(EngineTestContext ctx) => VerifyPassability(ctx, true);
 
         private static async Task VerifyReplacement(EngineTestContext ctx, bool kit)
         {
@@ -75,6 +83,96 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ? Traps.TryPlaceKitTrap(owner, location, 1)
             : Traps.TryPlaceTrap(owner, location, 14, CombatDamageType.Physical, typeof(BleedStatusEffect), 30,
                 VisualEffect.Vfx_Com_Blood_Spark_Medium, VisualEffect.Vfx_Dur_Aura_Pulse_Orange_White);
+
+        private static async Task VerifyPassability(EngineTestContext ctx, bool kit)
+        {
+            var owner = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            var area = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp
+                .GetGameObject(owner).AsNWSCreature().GetArea();
+            var location = FindClearLocation(ctx, area);
+            var position = GetPositionFromLocation(location);
+            var marker = OBJECT_INVALID;
+            var control = OBJECT_INVALID;
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                {
+                    ctx.Assert(Place(owner, location, kit), "The trap is placed on an unobstructed crossing");
+                    marker = Markers(ctx.Arena).Single();
+                    ctx.Track(marker);
+                    var appearance = ObjectPlugin.GetAppearance(marker);
+                    ctx.AssertEqual("sw_traprig", Get2DAString("placeables", "ModelName", appearance),
+                        "The engine loads the trap-only model from its appearance row");
+                    using var mesh = new global::NWN.Native.API.CNWPlaceableSurfaceMesh();
+                    using var model = new global::NWN.Native.API.CResRef("sw_traprig");
+                    ctx.Assert(mesh.LoadWalkMesh(model) != 0, "The engine successfully parses the trap walkmesh");
+                    ctx.AssertEqual(0, mesh.m_nTriangles, "The loaded trap walkmesh has no blocking triangles");
+                    ctx.Assert(Math.Abs(mesh.m_pvActionPoints[0].y - 0.567337f) < 0.001f,
+                        "The walkmesh retains its original use point for disarming kits");
+                });
+                await ctx.WaitFrameAsync();
+
+                foreach (var alongX in new[] { true, false })
+                {
+                    ctx.AssertEqual(1, WalkingLine(area, position, alongX),
+                        "The deployed trap leaves the direct walking line clear");
+                    var start = Vector3(position.X - (alongX ? 2f : 0f), position.Y - (alongX ? 0f : 2f), position.Z);
+                    ObjectPlugin.SetPosition(owner, start);
+                    AssignCommand(owner, () =>
+                    {
+                        ClearAllActions();
+                        ActionMoveToLocation(location, true);
+                    });
+                    await ctx.WaitUntilAsync(() => GetDistanceBetween(owner, marker) < 0.2f,
+                        5f, "the owner to walk into the center of the deployed trap");
+                    var destination = Location(ctx.Arena,
+                        Vector3(position.X + (alongX ? 2f : 0f), position.Y + (alongX ? 0f : 2f), position.Z), 0f);
+                    AssignCommand(owner, () =>
+                    {
+                        ClearAllActions();
+                        ActionMoveToLocation(destination, true);
+                    });
+                    await ctx.WaitUntilAsync(() => GetDistanceBetweenLocations(GetLocation(owner), destination) < 0.2f,
+                        5f, "the owner to walk across the deployed trap");
+                }
+
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                {
+                    control = CreateObject(ObjectType.Placeable, "_mdrn_pl_emitter", location, false,
+                        "engine_trap_collision_control");
+                    ctx.Assert(GetIsObjectValid(control), "The unchanged emitter control is created at the same crossing");
+                    ctx.Track(control);
+                });
+                await ctx.WaitFrameAsync();
+                foreach (var alongX in new[] { true, false })
+                    ctx.Assert(WalkingLine(area, position, alongX) != 1,
+                        "The original emitter blocks the same direct walking line");
+                ctx.SetResultDetail("The engine loads sw_traprig with zero collision triangles and its kit use point. The owner walks into and across the deployed trap on both axes; the original emitter blocks both control lines.");
+            }
+            finally
+            {
+                if (GetIsObjectValid(control)) DestroyObject(control);
+                await ctx.ExecuteInCreatureContextAsync(owner, () => Traps.ClearTraps(owner));
+            }
+        }
+
+        private static Location FindClearLocation(EngineTestContext ctx, global::NWN.Native.API.CNWSArea area)
+        {
+            foreach (var x in new[] { 0f, -3f, 3f, -6f, 6f })
+            foreach (var y in new[] { 0f, -3f, 3f, -6f, 6f })
+            {
+                var location = ctx.GetArenaLocation(x, y);
+                var position = GetPositionFromLocation(location);
+                if (WalkingLine(area, position, true) == 1 && WalkingLine(area, position, false) == 1)
+                    return location;
+            }
+            throw new InvalidOperationException("The arena has no unobstructed crossing for the collision control.");
+        }
+
+        private static int WalkingLine(global::NWN.Native.API.CNWSArea area, Vector3 position, bool alongX) =>
+            area.TestDirectLine(position.X - (alongX ? 2f : 0f), position.Y - (alongX ? 0f : 2f),
+                position.X + (alongX ? 2f : 0f), position.Y + (alongX ? 0f : 2f), 0.5f, 1f, 1);
 
         private static List<uint> Markers(uint area)
         {

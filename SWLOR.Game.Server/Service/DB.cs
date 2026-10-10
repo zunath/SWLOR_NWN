@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NRediSearch;
@@ -49,17 +49,15 @@ namespace SWLOR.Game.Server.Service
             var options = new ConfigurationOptions
             {
                 AbortOnConnectFail = false,
+                // NRediSearch decodes search results using the RESP2 array layout.
+                Protocol = RedisProtocol.Resp2,
                 EndPoints = { _appSettings.RedisIPAddress }
             };
 
             _multiplexer = ConnectionMultiplexer.Connect(options);
 
             Console.WriteLine($"Waiting for database connection. If this takes longer than 10 minutes, there's a problem.");
-            while (!_multiplexer.IsConnected)
-            {
-                // Spin
-                Thread.Sleep(100);
-            }
+            DBStartupWait.Until(() => _multiplexer.IsConnected, "database connection", TimeSpan.FromMinutes(10));
             Console.WriteLine($"Database connection established.");
 
             LoadEntities();
@@ -169,27 +167,24 @@ namespace SWLOR.Game.Server.Service
 
         private static void WaitForReindexing(Type type)
         {
-            string indexing;
-
             Console.WriteLine($"Waiting for Redis to complete indexing of: {type}");
-            do
+            DBStartupWait.Until(() =>
             {
-                Thread.Sleep(100);
-
                 try
                 {
                     // If there is a lot of data or the machine is slow, this command can time out.
                     // Ignore when this happens and retry the command in 100ms.
                     var info = _searchClientsByType[type].GetInfo();
-                    indexing = info["percent_indexed"];
+                    return double.TryParse(info["percent_indexed"], NumberStyles.Float,
+                        CultureInfo.InvariantCulture, out var indexed) && indexed >= 1d;
                 }
                 catch (Exception ex)
                 {
-                    indexing = "0";
                     Console.WriteLine($"Error during indexing: {ex.ToMessageAndCompleteStacktrace()}");
+                    return false;
                 }
 
-            } while (indexing != "1");
+            }, $"Redis index {type.Name}", TimeSpan.FromMinutes(10));
         }
 
         /// <summary>
@@ -370,7 +365,7 @@ namespace SWLOR.Game.Server.Service
         public static IEnumerable<T> Search<T>(DBQuery<T> query)
             where T: EntityBase
         {
-            var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery());
+            var result = SearchIndex(query);
 
             foreach (var doc in result.Documents)
             {
@@ -389,7 +384,7 @@ namespace SWLOR.Game.Server.Service
         public static IEnumerable<string> SearchRawJson<T>(DBQuery<T> query)
             where T: EntityBase
         {
-            var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery());
+            var result = SearchIndex(query);
 
             foreach (var doc in result.Documents)
             {
@@ -409,9 +404,18 @@ namespace SWLOR.Game.Server.Service
         public static long SearchCount<T>(DBQuery<T> query)
             where T: EntityBase
         {
-            var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery(true));
+            var result = SearchIndex(query, true);
 
             return result.TotalResults;
+        }
+
+        private static SearchResult SearchIndex<T>(DBQuery<T> query, bool countsOnly = false)
+            where T: EntityBase
+        {
+            var client = _searchClientsByType[typeof(T)];
+            var searchQuery = query.BuildQuery(countsOnly);
+            // Retry the read itself, never the caller's settlement/refund workflow or its writes.
+            return DBSearchRetry.Execute(() => client.Search(searchQuery), typeof(T).Name);
         }
     }
 }

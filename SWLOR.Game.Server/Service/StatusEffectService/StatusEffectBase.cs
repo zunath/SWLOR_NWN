@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -10,10 +11,13 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         private bool _isPermanent;
         private int _durationTicks;
         private DateTime _lastRun;
+        private float _durationAdjustmentSeconds;
         private readonly HashSet<string> _nativeEffectTagSuffixes = new();
 
         public string Id { get; }
         public uint Source { get; private set; }
+        /// <inheritdoc />
+        public AbilityDetail OriginatingAbility { get; set; }
         public virtual StatusEffectActivationType ActivationType => StatusEffectActivationType.Tick;
         public virtual StatusEffectSourceType SourceType => StatusEffectSourceType.Normal;
         public abstract string Name { get; }
@@ -30,6 +34,8 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         public ResistanceType AppliedResistanceType { get; private set; }
         public virtual float Frequency => 1f;
         public int DurationTicks => _durationTicks;
+        public DateTime LastTickTime => _lastRun;
+        public virtual bool PreservesTickScheduleOnRefresh => false;
         public virtual bool PersistsOnLogout => true;
         public virtual bool IsRemovedOnJobChange => true;
         protected bool IsBeingReplaced { get; private set; }
@@ -64,17 +70,23 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             AppliedResistanceType = type;
         }
 
-        public void ApplyEffect(uint source, uint creature, int durationTicks)
+        public void ApplyEffect(uint source, uint creature, int durationTicks, float durationSeconds = 0f, DateTime? tickAnchor = null)
         {
-            if (durationTicks < 0)
-                _isPermanent = true;
+            _isPermanent = durationTicks < 0;
 
-            _lastRun = DateTime.UtcNow;
+            _lastRun = tickAnchor ?? DateTime.UtcNow;
             _durationTicks = durationTicks;
+            if (!_isPermanent && durationSeconds > 0f)
+            {
+                _durationAdjustmentSeconds = durationSeconds - durationTicks * Math.Max(1f, Frequency);
+                if (tickAnchor.HasValue)
+                    SetDurationSeconds(durationSeconds);
+            }
             Source = source;
             Apply(creature, durationTicks);
         }
 
+        /// <summary>Updates a reconnected creature's handle without changing the granting ability.</summary>
         public void ReassignSource(uint source)
         {
             Source = source;
@@ -84,7 +96,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         {
             if (_isPermanent)
                 return -1f;
-            return (float)Math.Max(0d, _durationTicks * Math.Max(1f, Frequency) -
+            return (float)Math.Max(0d, _durationTicks * Math.Max(1f, Frequency) + _durationAdjustmentSeconds -
                 Math.Max(0d, (currentTime - _lastRun).TotalSeconds));
         }
 
@@ -105,6 +117,21 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             _durationTicks = (Categories & StatusEffectCategory.HardCrowdControl) != 0
                 ? Math.Min(_durationTicks, ticks)
                 : ticks;
+            _durationAdjustmentSeconds = 0f;
+        }
+
+        public void SetDurationSeconds(float seconds)
+        {
+            if (_isPermanent || IsFlaggedForRemoval || seconds <= 0f)
+                return;
+
+            if ((Categories & StatusEffectCategory.HardCrowdControl) != 0)
+                seconds = Math.Min(seconds, GetRemainingDurationSeconds(DateTime.UtcNow));
+
+            var durationFromTickAnchor = seconds + (float)Math.Max(0d, (DateTime.UtcNow - _lastRun).TotalSeconds);
+            var frequency = Math.Max(1f, Frequency);
+            _durationTicks = Math.Max(1, (int)Math.Ceiling(durationFromTickAnchor / frequency));
+            _durationAdjustmentSeconds = durationFromTickAnchor - _durationTicks * frequency;
         }
 
         protected virtual void Reapply(uint creature) { }
@@ -140,7 +167,19 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         public void TickEffect(uint creature)
         {
             var currentTime = DateTime.UtcNow;
-            if ((currentTime - _lastRun).TotalSeconds < Frequency)
+            var frequency = Math.Max(1f, Frequency);
+            var elapsedSeconds = (currentTime - _lastRun).TotalSeconds;
+            var secondsUntilExpiration = _durationTicks * frequency + _durationAdjustmentSeconds;
+            // A fractional final interval extends the debuff, but cannot grant a premature damage tick.
+            if (!_isPermanent && secondsUntilExpiration < frequency && elapsedSeconds >= secondsUntilExpiration)
+            {
+                _durationTicks = 0;
+                IsFlaggedForRemoval = true;
+                WasNaturallyExpired = true;
+                SecondsSinceNaturalExpiration = (float)Math.Max(0d, elapsedSeconds - secondsUntilExpiration);
+                return;
+            }
+            if (elapsedSeconds < frequency)
             {
                 return;
             }
@@ -172,7 +211,17 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             var frequency = Math.Max(1f, Frequency);
             var elapsedSeconds = (currentTime - _lastRun).TotalSeconds;
             var elapsedTicks = (int)Math.Floor(elapsedSeconds / frequency);
-            var secondsUntilExpiration = _durationTicks * frequency;
+            var secondsUntilExpiration = _durationTicks * frequency + _durationAdjustmentSeconds;
+
+            if (elapsedSeconds >= secondsUntilExpiration)
+            {
+                SecondsSinceNaturalExpiration = (float)Math.Max(0d, elapsedSeconds - secondsUntilExpiration);
+                _durationTicks = 0;
+                _lastRun = currentTime;
+                IsFlaggedForRemoval = true;
+                WasNaturallyExpired = true;
+                return;
+            }
 
             if (elapsedTicks <= 0)
                 return;
@@ -180,14 +229,6 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             _durationTicks -= elapsedTicks;
             _lastRun = _lastRun.AddSeconds(elapsedTicks * frequency);
 
-            if (_durationTicks > 0)
-                return;
-
-            SecondsSinceNaturalExpiration = (float)Math.Max(0d, elapsedSeconds - secondsUntilExpiration);
-            _durationTicks = 0;
-            _lastRun = currentTime;
-            IsFlaggedForRemoval = true;
-            WasNaturallyExpired = true;
         }
 
         protected virtual void OnHit(uint creature, uint target, int damage) { }
@@ -251,7 +292,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         {
             return durationTicks < 0
                 ? 0f
-                : Math.Max(0.1f, durationTicks * Frequency);
+                : Math.Max(0.1f, GetRemainingDurationSeconds(DateTime.UtcNow));
         }
 
         protected Effect TagNativeEffect(Effect effect, string tagSuffix = null)

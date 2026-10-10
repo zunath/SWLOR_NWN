@@ -257,7 +257,7 @@ def weapon_damage(template: str, tier: int) -> int:
         "fld_pistol": [7, 15, 27, 34, 40], "fld_knife": [6, 14, 25, 32, 38],
         "fld_spear": [8, 16, 28, 35, 41], "fld_rifle": [9, 17, 29, 36, 42],
         "fld_staff": [7, 15, 27, 34, 40], "fld_katar": [7, 15, 27, 34, 40],
-        "fld_twinblade": [8, 16, 28, 35, 41], "fld_shuriken": [6, 14, 25, 32, 38],
+        "fld_twinblade": [7, 10, 14, 18, 22], "fld_shuriken": [6, 14, 25, 32, 38],
         "fld_greatsword": [9, 16, 28, 35, 41],
     }
     return budgets[template][tier - 1]
@@ -421,8 +421,8 @@ def make_foods_and_concentrates() -> None:
     for resref, name, tier in CONCENTRATES:
         description = (
             f"A concentrated tier {tier} venom formula. One vial applies 10 charges and snapshots an additional "
-            f"{tier * 10}% Poison Bonus potency when applied to a melee or thrown weapon."
-            " Right-click this item in your inventory and choose Activate Item and select a melee or thrown weapon in your own inventory."
+            f"{tier * 10}% Poison Bonus potency when applied to a weapon."
+            " Right-click this item in your inventory and choose Activate Item and select a weapon in your own inventory."
             " One vial is consumed after the coating is applied. Anyone can use a coating; Poisoncraft is required to craft it."
         )
         item = configure_item(poison_template, resref, name, description)
@@ -452,13 +452,15 @@ def make_structures() -> None:
 
 def make_world_terminals() -> None:
     template = load(UTP / "holonetterminal.utp.json")
+    crate_appearance = load(UTP / "_mdrn_pl_crgc1m.utp.json")["Appearance"]["value"]
     for tier in range(1, 6):
         resref = f"slice_term_{tier}"
         terminal = copy.deepcopy(template)
         terminal["TemplateResRef"]["value"] = resref
         terminal["Tag"]["value"] = "SlicingTerminal"
-        set_loc(terminal["LocName"], "Sealed Field Terminal")
-        set_loc(terminal["Description"], "A neutral field terminal with a sealed local cache. Its security tier is not externally marked.")
+        terminal["Appearance"]["value"] = crate_appearance
+        set_loc(terminal["LocName"], "Sealed Field Crate")
+        set_loc(terminal["Description"], "A sealed cargo crate with an electronic lock. Its security tier is not externally marked.")
         terminal["OnUsed"]["value"] = "slice_terminal"
         terminal["Plot"]["value"] = 1
         terminal["Useable"]["value"] = 1

@@ -173,7 +173,7 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "leather_tunic_1"
+          "value": "worker_outfit"
         }
       }
     ]

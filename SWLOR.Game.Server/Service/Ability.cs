@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Starts impact tracking and defers pending damage bonuses until a damaging payload,
-        /// retaining any activation-marker snapshots for the impact flash decision.
+        /// retaining activation-marker snapshots for the impact footprint and flash decision.
         /// </summary>
         public static void BeginAbilityImpact(
             uint activator,
@@ -119,8 +119,8 @@ namespace SWLOR.Game.Server.Service
                 activationAreaTelegraphs: activationAreaTelegraphs, sequence: sequence);
             var trackedImpact = GetTrackedAbilityImpact(activator);
             trackedImpact.TriggeringWeaponDamage = GetIsObjectValid(triggeringWeapon)
-                ? Item.GetDMG(triggeringWeapon)
-                : null;
+                ? WeaponDamage.GetEffectiveDMG(activator, triggeringWeapon)
+                : trackedImpact.TriggeringWeaponDamage;
             trackedImpact.ResolveDamageBonuses = () =>
             {
                 var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
@@ -173,7 +173,8 @@ namespace SWLOR.Game.Server.Service
             IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null,
             AbilityImpactSequence sequence = null,
             TrackedAbilityImpact sequenceOwner = null,
-            bool resolveDamageBonusesFromOwner = false)
+            bool resolveDamageBonusesFromOwner = false,
+            int? triggeringWeaponDamage = null)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -191,7 +192,9 @@ namespace SWLOR.Game.Server.Service
                 sequence)
             {
                 SequenceOwner = sequenceOwner?.SequenceOwner ?? sequenceOwner,
-                TriggeringWeaponDamage = sequenceOwner?.TriggeringWeaponDamage
+                TriggeringWeaponDamage = triggeringWeaponDamage ?? sequenceOwner?.TriggeringWeaponDamage ?? Combat.GetCombatImpactWeaponDamage(
+                    activator, Combat.GetAbilitySkillType(activator, ability),
+                    ability.ActivationType == AbilityActivationType.Weapon && ability.SkillType == SkillType.BeastMastery)
             };
             if (resolveDamageBonusesFromOwner && sequenceOwner != null)
             {
@@ -213,6 +216,20 @@ namespace SWLOR.Game.Server.Service
         public static AbilityImpactSequence GetAbilityImpactSequence(uint activator)
         {
             return GetTrackedAbilityImpact(activator)?.Sequence;
+        }
+
+        /// <summary>
+        /// Native current HP includes temporary HP. Subtract queued damage so another hit
+        /// cannot draw healing from health already claimed by an earlier impact.
+        /// </summary>
+        public static int GetRemainingDamageTargetHP(uint activator, uint target)
+        {
+            if (!GetIsObjectValid(target) || GetPlotFlag(target))
+                return 0;
+
+            var pendingDamage = GetTrackedAbilityImpact(activator)?.GetPendingDamage(target) ?? 0;
+            var currentHP = GetCurrentHitPoints(target);
+            return Combat.CalculateDamageEligibleForHealing(currentHP, currentHP, pendingDamage);
         }
 
         /// <summary>
@@ -263,8 +280,8 @@ namespace SWLOR.Game.Server.Service
                     return;
 
                 var previousImpact = GetTrackedAbilityImpact(activator);
-                BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence);
-                GetTrackedAbilityImpact(activator).TriggeringWeaponDamage = originatingImpact.TriggeringWeaponDamage;
+                BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence,
+                    triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage);
                 GetTrackedAbilityImpact(activator).CopyRepeatedDamageBonusesFrom(originatingImpact);
                 var completed = false;
                 try
@@ -282,6 +299,65 @@ namespace SWLOR.Game.Server.Service
                     if (previousImpact != null)
                         _trackedAbilityImpacts[activator] = previousImpact;
                 }
+            };
+        }
+
+        public static Func<int, Action<T>> CaptureRepeatedAbilityImpactBatch<T>(
+            uint activator, Action<T> impactAction, int baseDamage = 0)
+        {
+            ArgumentNullException.ThrowIfNull(impactAction);
+            PrepareCombatImpactDamageBonuses(activator, baseDamage);
+            var originatingImpact = GetTrackedAbilityImpact(activator);
+
+            return count =>
+            {
+                TrackedAbilityImpact batchImpact = null;
+                var batch = new AbilityImpactBatch<T>(count, (payload, isFinalImpact) =>
+                {
+                    if (originatingImpact == null)
+                    {
+                        impactAction(payload);
+                        return;
+                    }
+
+                    if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
+                        return;
+
+                    var previousImpact = GetTrackedAbilityImpact(activator);
+                    try
+                    {
+                        if (batchImpact == null)
+                        {
+                            BeginAbilityImpact(activator, originatingImpact.Ability, 0, 0,
+                                countsAsAttackAttempt: false, sequence: originatingImpact.Sequence,
+                                triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage);
+                            batchImpact = GetTrackedAbilityImpact(activator);
+                            batchImpact.CopyRepeatedDamageBonusesFrom(originatingImpact);
+                        }
+                        else
+                        {
+                            _trackedAbilityImpacts[activator] = batchImpact;
+                        }
+
+                        impactAction(payload);
+                        _trackedAbilityImpacts.Remove(activator);
+                        batchImpact.FlushDamageEffects(activator);
+                        originatingImpact.CompleteRepeatedDamageBonusImpact(batchImpact.Summary.ImpactedTargetCount > 0);
+                        if (isFinalImpact)
+                        {
+                            _trackedAbilityImpacts[activator] = batchImpact;
+                            var summary = EndAbilityImpact(activator);
+                            Combat.ApplyAbilityImpactEffects(activator, summary);
+                        }
+                    }
+                    finally
+                    {
+                        _trackedAbilityImpacts.Remove(activator);
+                        if (previousImpact != null)
+                            _trackedAbilityImpacts[activator] = previousImpact;
+                    }
+                });
+                return batch.Apply;
             };
         }
 
@@ -489,9 +565,10 @@ namespace SWLOR.Game.Server.Service
             return amount;
         }
 
-        public static void ApplyHostileAbilityEnmity(uint activator, uint target, int damage = 0)
+        public static void ApplyHostileAbilityEnmity(uint activator, uint target, int bonus = 0)
         {
-            var amount = HostileAbilityBaseEnmity + Math.Max(0, damage);
+            // Damage is credited once by the actual damage event, including resistance and absorption.
+            var amount = HostileAbilityBaseEnmity + Math.Max(0, bonus);
             Enmity.ModifyEnmity(activator, target, amount);
         }
 
@@ -708,6 +785,7 @@ namespace SWLOR.Game.Server.Service
             var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(activator, ability.RecastGroup);
             if (isOnRecast)
             {
+                PlayerFeedback.ShowCooldownFloatingText(activator, ability.Name, timeToWait);
                 return Deny($"This ability can be used in {timeToWait}.");
             }
 
@@ -1339,23 +1417,26 @@ namespace SWLOR.Game.Server.Service
             bool resolvesHit = true,
             bool canCritical = true,
             bool useUnscaledDamage = false,
-            Action<uint> beforeImpact = null)
+            Action<uint> beforeImpact = null,
+            bool isAreaImpact = false)
         {
             PrepareCombatImpactDamageBonuses(activator, baseDamage);
             var totalDamage = 0;
-            RecordAbilityImpactShape(activator, skillType, isArea);
+            RecordAbilityImpactShape(activator, skillType, isArea || isAreaImpact);
 
             if (isArea)
             {
                 var center = GetIsObjectValid(target) ? GetLocation(target) : targetLocation;
-                var creature = GetFirstObjectInShape(Shape.Sphere, 5.0f, center, true);
                 var creatures = new List<uint>();
-                while (GetIsObjectValid(creature))
+
+                foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, 5.0f, center, true))
                 {
+                    if (!GetIsObjectValid(creature))
+                        continue;
+
                     if (HasAbilityLineOfSight(activator, creature))
                         creatures.Add(creature);
 
-                    creature = GetNextObjectInShape(Shape.Sphere, 5.0f, center, true);
                 }
 
                 if (areaVisualEffect != VisualEffect.None &&
@@ -1479,6 +1560,9 @@ namespace SWLOR.Game.Server.Service
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var backOffsetOrigin = trackedImpact?.Ability.Targeting?.Flags
                 .HasFlag(AbilityTargetingFlags.BackOffsetOrigin) == true;
+            var geometry = ResolveCombatImpactGeometry(
+                activator, target, targetLocation, shape, lengthOrRadius, width, centerOnActivator, backOffsetOrigin,
+                trackedImpact?.ActivationAreaTelegraphs);
 
             if (telegraphDuration <= 0f)
             {
@@ -1488,29 +1572,18 @@ namespace SWLOR.Game.Server.Service
                 // the actual impact geometry with the activation marker before suppressing a redraw.
                 ShowAreaImpactFlash(
                     activator,
-                    target,
-                    targetLocation,
-                    shape,
-                    lengthOrRadius,
-                    width,
-                    centerOnActivator,
+                    geometry,
                     impactFlashDuration,
-                    backOffsetOrigin,
-                    trackedImpact?.ActivationAreaTelegraphs);
+                    trackedImpact?.Ability.ImpactDelay > 0f ? null : trackedImpact?.ActivationAreaTelegraphs);
 
                 var totalDamage = ApplyCombatImpactInShape(
                     activator,
-                    target,
-                    targetLocation,
+                    geometry,
                     skillType,
                     baseDamage,
                     duration,
                     statusEffect,
-                    shape,
-                    lengthOrRadius,
-                    width,
                     additionalStatusEffects,
-                    centerOnActivator,
                     statusEffectFactory,
                     damageType,
                     statusResistanceType,
@@ -1533,8 +1606,7 @@ namespace SWLOR.Game.Server.Service
                     sendsNoTargetMessage,
                     resolvesHit,
                     canCritical,
-                    useUnscaledDamage,
-                    backOffsetOrigin);
+                    useUnscaledDamage);
                 if (playImpactAnimation)
                     PlayCombatImpactAnimation(activator, impactAnimation);
 
@@ -1544,21 +1616,9 @@ namespace SWLOR.Game.Server.Service
                 return totalDamage;
             }
 
-            var impactRotation = GetImpactRotationRadians(activator, target, targetLocation);
-            var directionalOrigin = CombatImpactShapeGeometry.ResolveOrigin(
-                GetPosition(activator),
-                impactRotation,
-                shape,
-                backOffsetOrigin);
-            var adjustedLength = CombatImpactShapeGeometry.ResolveLength(
-                shape,
-                lengthOrRadius,
-                backOffsetOrigin);
             var areaVisualLocation = Location(
-                GetArea(activator),
-                shape == CombatImpactAreaShape.Sphere
-                    ? GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator)
-                    : directionalOrigin,
+                geometry.Area,
+                geometry.Position,
                 0f);
             var deferredNextAbilityDamageBonus =
                 (trackedImpact?.NextAbilityDamageBonus ?? 0) -
@@ -1608,7 +1668,7 @@ namespace SWLOR.Game.Server.Service
                     Telegraph.CreateSphereTelegraph(
                         activator,
                         GetPositionFromLocation(areaVisualLocation),
-                        lengthOrRadius,
+                        geometry.Size.X,
                         telegraphDuration,
                         true,
                         action);
@@ -1616,10 +1676,10 @@ namespace SWLOR.Game.Server.Service
                 case CombatImpactAreaShape.Cone:
                     Telegraph.CreateConeTelegraph(
                         activator,
-                        directionalOrigin,
-                        impactRotation,
-                        adjustedLength,
-                        width > 0f ? width : adjustedLength,
+                        geometry.Position,
+                        geometry.Rotation,
+                        geometry.Size.X,
+                        geometry.Size.Y,
                         telegraphDuration,
                         true,
                         action);
@@ -1627,10 +1687,10 @@ namespace SWLOR.Game.Server.Service
                 case CombatImpactAreaShape.Line:
                     Telegraph.CreateLineTelegraph(
                         activator,
-                        directionalOrigin,
-                        impactRotation,
-                        adjustedLength,
-                        width > 0f ? width : 2.0f,
+                        geometry.Position,
+                        geometry.Rotation,
+                        geometry.Size.X,
+                        geometry.Size.Y,
                         telegraphDuration,
                         true,
                         action);
@@ -1654,75 +1714,36 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void ShowAreaImpactFlash(
             uint activator,
-            uint target,
-            Location targetLocation,
-            CombatImpactAreaShape shape,
-            float lengthOrRadius,
-            float width,
-            bool centerOnActivator,
+            TelegraphGeometry geometry,
             float flashDuration,
-            bool backOffsetOrigin,
             IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs)
         {
-            if (flashDuration <= 0f || lengthOrRadius <= 0f)
+            if (flashDuration <= 0f || geometry.Size.X <= 0f)
                 return;
-
-            var rotation = GetImpactRotationRadians(activator, target, targetLocation);
-            var directionalOrigin = CombatImpactShapeGeometry.ResolveOrigin(
-                GetPosition(activator),
-                rotation,
-                shape,
-                backOffsetOrigin);
-            var adjustedLength = CombatImpactShapeGeometry.ResolveLength(
-                shape,
-                lengthOrRadius,
-                backOffsetOrigin);
-
-            var telegraphType = shape switch
-            {
-                CombatImpactAreaShape.Sphere => TelegraphType.Sphere,
-                CombatImpactAreaShape.Cone => TelegraphType.Cone,
-                CombatImpactAreaShape.Line => TelegraphType.Line,
-                _ => TelegraphType.None
-            };
-            if (telegraphType == TelegraphType.None)
+            if (geometry.Shape == TelegraphType.None)
                 return;
-
-            var position = shape == CombatImpactAreaShape.Sphere
-                ? GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator)
-                : directionalOrigin;
-            var size = shape == CombatImpactAreaShape.Sphere
-                ? new System.Numerics.Vector2(lengthOrRadius, lengthOrRadius)
-                : new System.Numerics.Vector2(adjustedLength,
-                    width > 0f ? width : shape == CombatImpactAreaShape.Cone ? adjustedLength : 2.0f);
-            var geometry = new TelegraphGeometry(GetArea(activator), telegraphType, position, size, rotation);
             if (!Telegraph.ShouldShowImpactFlash(geometry, activationAreaTelegraphs))
                 return;
 
             Telegraph.CreateTelegraph(
                 activator,
-                position,
-                shape == CombatImpactAreaShape.Sphere ? 0f : rotation,
-                size,
+                geometry.Position,
+                geometry.Shape == TelegraphType.Sphere ? 0f : geometry.Rotation,
+                geometry.Size,
                 flashDuration,
                 true,
-                telegraphType,
+                geometry.Shape,
                 null);
         }
 
         private static int ApplyCombatImpactInShape(
             uint activator,
-            uint target,
-            Location targetLocation,
+            TelegraphGeometry geometry,
             SkillType skillType,
             int baseDamage,
             int duration,
             Type statusEffect,
-            CombatImpactAreaShape shape,
-            float lengthOrRadius,
-            float width,
             IEnumerable<Type> additionalStatusEffects,
-            bool centerOnActivator,
             Func<IStatusEffect> statusEffectFactory,
             CombatDamageType damageType,
             ResistanceType statusResistanceType,
@@ -1745,21 +1766,12 @@ namespace SWLOR.Game.Server.Service
             bool sendsNoTargetMessage,
             bool resolvesHit,
             bool canCritical,
-            bool useUnscaledDamage,
-            bool backOffsetOrigin)
+            bool useUnscaledDamage)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
-            var origin = GetCombatImpactShapeOrigin(activator, target, targetLocation, shape, centerOnActivator);
-            var creatures = GetHostileCreaturesInCombatImpactShape(
-                    activator,
-                    target,
-                    targetLocation,
-                    shape,
-                    lengthOrRadius,
-                    width,
-                    centerOnActivator,
-                    backOffsetOrigin)
+            var origin = Location(geometry.Area, geometry.Position, 0f);
+            var creatures = GetHostileCreaturesInCombatImpactShape(activator, geometry)
                 .Where(creature => HasAbilityLineOfSight(activator, creature))
                 .ToList();
 
@@ -2087,6 +2099,14 @@ namespace SWLOR.Game.Server.Service
                 : GetLocation(activator);
         }
 
+        public static IReadOnlyList<uint> GetHostileTargetsInSphere(uint activator, Location location, float radius)
+        {
+            return GetHostileCreaturesInCombatImpactShape(
+                    activator, OBJECT_INVALID, location, CombatImpactAreaShape.Sphere, radius, 0f, false, false)
+                .Where(creature => HasAbilityLineOfSight(activator, creature))
+                .ToList();
+        }
+
         private static IEnumerable<uint> GetHostileCreaturesInCombatImpactShape(
             uint activator,
             uint target,
@@ -2096,6 +2116,22 @@ namespace SWLOR.Game.Server.Service
             float width,
             bool centerOnActivator,
             bool backOffsetOrigin)
+        {
+            return GetHostileCreaturesInCombatImpactShape(activator,
+                ResolveCombatImpactGeometry(activator, target, targetLocation, shape, lengthOrRadius, width,
+                    centerOnActivator, backOffsetOrigin));
+        }
+
+        private static TelegraphGeometry ResolveCombatImpactGeometry(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            CombatImpactAreaShape shape,
+            float lengthOrRadius,
+            float width,
+            bool centerOnActivator,
+            bool backOffsetOrigin,
+            IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null)
         {
             var origin = GetCombatImpactShapeOrigin(activator, target, targetLocation, shape, centerOnActivator);
             var rotation = GetImpactRotationRadians(activator, target, targetLocation);
@@ -2108,20 +2144,43 @@ namespace SWLOR.Game.Server.Service
                 shape,
                 lengthOrRadius,
                 backOffsetOrigin);
-            var maxDistance = GetCombatImpactShapeSearchRadius(shape, adjustedLength, width);
-            var candidates = GetAliveCreaturesInArea(GetAreaFromLocation(origin))
+            var telegraphType = shape switch
+            {
+                CombatImpactAreaShape.Sphere => TelegraphType.Sphere,
+                CombatImpactAreaShape.Cone => TelegraphType.Cone,
+                CombatImpactAreaShape.Line => TelegraphType.Line,
+                _ => throw new ArgumentOutOfRangeException(nameof(shape), shape, null)
+            };
+            var size = new System.Numerics.Vector2(adjustedLength,
+                shape == CombatImpactAreaShape.Sphere ? adjustedLength :
+                width > 0f ? width : shape == CombatImpactAreaShape.Cone ? adjustedLength : 2f);
+            var impact = new TelegraphGeometry(GetAreaFromLocation(origin), telegraphType, originPosition, size, rotation);
+            return Telegraph.ResolveImpactGeometry(impact, activationAreaTelegraphs);
+        }
+
+        private static IEnumerable<uint> GetHostileCreaturesInCombatImpactShape(uint activator, TelegraphGeometry geometry)
+        {
+            var shape = geometry.Shape switch
+            {
+                TelegraphType.Sphere => CombatImpactAreaShape.Sphere,
+                TelegraphType.Cone => CombatImpactAreaShape.Cone,
+                TelegraphType.Line => CombatImpactAreaShape.Line,
+                _ => throw new ArgumentOutOfRangeException(nameof(geometry), geometry.Shape, null)
+            };
+            var maxDistance = GetCombatImpactShapeSearchRadius(shape, geometry.Size.X, geometry.Size.Y);
+            var candidates = GetAliveCreaturesInArea(geometry.Area)
                 .Select(creature => new
                 {
                     Creature = creature,
                     Position = GetPosition(creature)
                 })
-                .Where(candidate => GetHorizontalDistance(candidate.Position, originPosition) <= maxDistance)
-                .OrderBy(candidate => GetHorizontalDistance(candidate.Position, originPosition));
+                .Where(candidate => GetHorizontalDistance(candidate.Position, geometry.Position) <= maxDistance)
+                .OrderBy(candidate => GetHorizontalDistance(candidate.Position, geometry.Position));
 
             foreach (var candidate in candidates)
             {
                 if (GetIsReactionTypeHostile(candidate.Creature, activator) &&
-                    IsPositionInCombatImpactShape(candidate.Position, originPosition, rotation, shape, adjustedLength, width))
+                    IsPositionInCombatImpactShape(candidate.Position, geometry.Position, geometry.Rotation, shape, geometry.Size.X, geometry.Size.Y))
                 {
                     yield return candidate.Creature;
                 }
@@ -2315,7 +2374,7 @@ namespace SWLOR.Game.Server.Service
             DamageType? effectDamageType = null,
             bool firstHostileAbilityHitDamageBonusApplied = false)
         {
-            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator);
+            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
             var trackedImpact = GetTrackedAbilityImpact(activator);
 
             // Register the combat point before applying damage. A lethal hit resolves the target's
@@ -2364,7 +2423,7 @@ namespace SWLOR.Game.Server.Service
             ApplyHostileAbilityEnmity(
                 activator,
                 target,
-                damage + Math.Max(0, enmityBonus) + Math.Max(0, trackedImpact?.NextAttackEnmityBonus ?? 0));
+                Math.Max(0, enmityBonus) + Math.Max(0, trackedImpact?.NextAttackEnmityBonus ?? 0));
 
             var statusApplied = ApplyCombatImpactStatusEffect(
                 activator,
@@ -2375,7 +2434,8 @@ namespace SWLOR.Game.Server.Service
                 additionalStatusEffects,
                 statusEffectFactory,
                 statusResistanceType,
-                damageType);
+                damageType,
+                out var appliedStatusCategories);
             if (statusApplied)
             {
                 ApplyDarkForceCastConversion(activator, target);
@@ -2394,7 +2454,8 @@ namespace SWLOR.Game.Server.Service
                 statusEffect,
                 additionalStatusEffects,
                 firstHostileAbilityHitDamageBonusApplied,
-                trackedImpact == null || trackedImpact.Summary.ImpactedTargetCount == 0);
+                trackedImpact == null || trackedImpact.Summary.ImpactedTargetCount == 0,
+                appliedStatusCategories);
 
             if (damage > 0 || statusApplied)
             {
@@ -2436,7 +2497,7 @@ namespace SWLOR.Game.Server.Service
             bool canCritical = true,
             bool useUnscaledDamage = false)
         {
-            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator);
+            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
             var trackedImpact = GetTrackedAbilityImpact(activator);
             Combat.TrackHostileAbilityActivity(activator);
             Combat.TrackHostileDefensiveCombatEntryActivity(target, activator);
@@ -2450,9 +2511,6 @@ namespace SWLOR.Game.Server.Service
                 activator,
                 skillType,
                 appliedStatusCategories);
-            var skillLevelOverride = usesNPCStatScaling
-                ? GetNPCAbilityScalingRank(activator, skillType, damageType, damageAbility)
-                : -1;
             var shouldResolveHit = resolvesHit && ShouldResolveCombatImpactHit(trackedImpact);
             var hitRate = 100;
             if (shouldResolveHit &&
@@ -2463,7 +2521,10 @@ namespace SWLOR.Game.Server.Service
                     perkType,
                     out hitRate,
                     hitChancePercentAdjustment + statusCategoryHitChanceAdjustment,
-                    skillLevelOverride,
+                    // -1 keeps NPC ability accuracy on the creature's own level, matching what its
+                    // auto-attacks use. GetNPCAbilityScalingRank stays on the damage path only:
+                    // feeding it here made a level 40 enemy resolve ability accuracy as rank 11.
+                    -1,
                     damageAbility))
             {
                 SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 4, hitRate);
@@ -3026,8 +3087,12 @@ namespace SWLOR.Game.Server.Service
             var attackStat = ability == AbilityType.Invalid
                 ? 0
                 : GetAbilityScore(activator, ability);
+            // The creature's own level, matching what its auto-attacks use. The derived scaling
+            // rank still contributes the flat damage term above, but feeding it here collapsed the
+            // 2 x level component of Attack -- a level 50 enemy resolved ability damage as though
+            // it were rank ~16, cutting the attack/defense ratio to roughly half of intended.
             var attack = Stat.GetAttack(
-                scalingRank,
+                npcStats.Level,
                 attackStat,
                 GetNPCAbilityOffenseBonus(npcStats, skillType, damageType) + Stat.GetStatAdjustment(activator, StatType.Attack));
             attack = ApplyNPCAbilitySourceAttackModifiers(activator, skillType, attack);
@@ -3186,8 +3251,10 @@ namespace SWLOR.Game.Server.Service
             IEnumerable<Type> additionalStatusEffects,
             Func<IStatusEffect> statusEffectFactory,
             ResistanceType statusResistanceType,
-            CombatDamageType sourceDamageType)
+            CombatDamageType sourceDamageType,
+            out StatusEffectCategory appliedStatusCategories)
         {
+            appliedStatusCategories = StatusEffectCategory.None;
             var hasAdditionalStatusEffects = additionalStatusEffects?.Any(x => x != null) ?? false;
             if (duration <= 0 || (statusEffect == null && statusEffectFactory == null && !hasAdditionalStatusEffects))
                 return false;
@@ -3202,15 +3269,31 @@ namespace SWLOR.Game.Server.Service
 
             var statusApplied = false;
             if (statusEffectFactory != null)
-                statusApplied |= ApplyCombatImpactTrackedStatusEffect(activator, target, statusEffectFactory, duration, statusResistanceType, sourceDamageType);
+            {
+                var applied = ApplyCombatImpactTrackedStatusEffect(
+                    activator, target, statusEffectFactory, duration, statusResistanceType, sourceDamageType, out var categories);
+                statusApplied |= applied;
+                if (applied)
+                    appliedStatusCategories |= categories;
+            }
             else if (statusEffect != null)
-                statusApplied |= ApplyCombatImpactTrackedStatusEffect(activator, target, statusEffect, duration, statusResistanceType, sourceDamageType);
+            {
+                var applied = ApplyCombatImpactTrackedStatusEffect(
+                    activator, target, statusEffect, duration, statusResistanceType, sourceDamageType, out var categories);
+                statusApplied |= applied;
+                if (applied)
+                    appliedStatusCategories |= categories;
+            }
 
             if (additionalStatusEffects != null)
             {
                 foreach (var additionalStatusEffect in additionalStatusEffects.Where(x => x != null && x != statusEffect).Distinct())
                 {
-                    statusApplied |= ApplyCombatImpactTrackedStatusEffect(activator, target, additionalStatusEffect, duration, statusResistanceType, sourceDamageType);
+                    var applied = ApplyCombatImpactTrackedStatusEffect(
+                        activator, target, additionalStatusEffect, duration, statusResistanceType, sourceDamageType, out var categories);
+                    statusApplied |= applied;
+                    if (applied)
+                        appliedStatusCategories |= categories;
                 }
             }
 
@@ -3249,11 +3332,16 @@ namespace SWLOR.Game.Server.Service
             Type type,
             float duration,
             ResistanceType statusResistanceType,
-            CombatDamageType sourceDamageType)
+            CombatDamageType sourceDamageType,
+            out StatusEffectCategory appliedCategories)
         {
-            return Resistance.IsValidResistanceType(statusResistanceType)
+            var applied = Resistance.IsValidResistanceType(statusResistanceType)
                 ? StatusEffect.ApplyStatusEffect(activator, target, type, duration, statusResistanceType)
                 : StatusEffect.ApplyStatusEffect(activator, target, type, duration, sourceDamageType);
+            appliedCategories = applied
+                ? StatusEffect.GetStatusEffect(target, type, activator)?.Categories ?? StatusEffectCategory.None
+                : StatusEffectCategory.None;
+            return applied;
         }
 
         private static bool ApplyCombatImpactTrackedStatusEffect(
@@ -3262,15 +3350,21 @@ namespace SWLOR.Game.Server.Service
             Func<IStatusEffect> statusEffectFactory,
             float duration,
             ResistanceType statusResistanceType,
-            CombatDamageType sourceDamageType)
+            CombatDamageType sourceDamageType,
+            out StatusEffectCategory appliedCategories)
         {
             var statusEffect = statusEffectFactory?.Invoke();
             if (statusEffect == null)
+            {
+                appliedCategories = StatusEffectCategory.None;
                 return false;
+            }
 
-            return Resistance.IsValidResistanceType(statusResistanceType)
+            var applied = Resistance.IsValidResistanceType(statusResistanceType)
                 ? StatusEffect.ApplyStatusEffect(activator, target, statusEffect, duration, statusResistanceType)
                 : StatusEffect.ApplyStatusEffect(activator, target, statusEffect, duration, sourceDamageType);
+            appliedCategories = applied ? statusEffect.Categories : StatusEffectCategory.None;
+            return applied;
         }
 
         private static AbilityType GetCombatImpactDamageAbility(
@@ -3512,6 +3606,7 @@ namespace SWLOR.Game.Server.Service
                 ActivationAreaTelegraphs = activationAreaTelegraphs;
                 Summary = new AbilityImpactSummary
                 {
+                    Ability = ability,
                     SkillType = ability.SkillType,
                     IsAreaAbility = ability.IsAreaAbility,
                     IsSingleTargetAbility = ability.IsSingleTargetAbility
@@ -3588,6 +3683,11 @@ namespace SWLOR.Game.Server.Service
             public void QueueDamageEffect(uint target, int damage, DamageType damageType)
             {
                 QueueDamageEffect(target, damage, damageType, CombatDamageType.Invalid);
+            }
+
+            public int GetPendingDamage(uint target)
+            {
+                return _pendingDamageEffects.Where(effect => effect.Target == target).Sum(effect => effect.Damage);
             }
 
             public void QueueDirectDamageEffect(

@@ -18,10 +18,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
     ///   Reward in part 2) have CustomValidation that requires GetIsPC(activator) - these are
     ///   PLAYER abilities that operate on the player's associate beast via
     ///   GetAssociate(AssociateType.Henchman, activator) + BeastMastery.IsPlayerBeast, which in
-    ///   turn require a live Player/Beast DB record (dbPlayer.ActiveBeastId). The harness has no
-    ///   way to spawn a controllable PC, so these are unreachable here; no local variable (e.g.
-    ///   BEAST_TYPE) can substitute because the outer GetIsPC(activator) check on the ACTIVATOR
-    ///   (the would-be player, not the beast) fails first.
+    ///   turn require a live Player/Beast DB record (dbPlayer.ActiveBeastId). These cases use
+    ///   PlayerBeastAbilityEngineTests with native player identity and persisted ownership.
     /// - BeastMastery.IsPlayerBeast reads a "BEAST_TYPE" local plus GetMaster() being a valid PC;
     ///   Perk.GetPerkLevel falls back to the generic-creature branch (PERK_LEVEL_{id} local, or
     ///   the perk's max level if unset) for any creature that isn't a PC/droid/player-beast, so a
@@ -60,8 +58,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Target = AbilityTargetKind.HostileCreature,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    OutcomeAssertionWaiverReason = "The impact only changes the private enmity table and plays a VFX; the harness has no read-only enmity observation seam.",
-                    Notes = "ApplyGoad only modifies enmity + plays a VFX; no trackable status effect or damage.",
+                    MinimumTargetEnmityAfterImpact = 400,
+                    Notes = "Verifies generated threat; target switching is covered by TankEnmityEngineTests.",
                 },
                 new()
                 {
@@ -170,7 +168,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.CallBeast,
                     Target = AbilityTargetKind.Self,
-                    SkipReason = "CustomValidation requires GetIsPC(activator) and a Player DB record with ActiveBeastId set; the harness spawns a plain NPC, not a controllable PC.",
+                    RequiresPlayerBeastFixture = true,
+                    ExpectsRecast = true,
                 },
 
                 // ClawAbilityDefinition - hostile damage + unconditional BleedStatusEffect.
@@ -420,14 +419,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     VerifiesImmediateRecastRejection = true,
                 },
 
-                // GuardingBondAbilityDefinition - PLAYER-only toggle: ValidateBeast requires
+                // GuardingBondStanceAbilityDefinition - PLAYER-only toggle: ValidateBeast requires
                 // GetIsPC(activator) (fresh actor has no status effect yet, so the toggle-off
                 // early-return doesn't apply) then BeastMastery.IsPlayerBeast on the associate.
                 new()
                 {
-                    Feat = FeatType.GuardingBond,
+                    Feat = FeatType.GuardingBondStance,
                     Target = AbilityTargetKind.Self,
-                    SkipReason = "ValidateBeast requires GetIsPC(activator) plus a live player-beast associate (BeastMastery.IsPlayerBeast); unreachable for a plain spawned NPC.",
+                    RequiresPlayerBeastFixture = true,
+                    ExpectsRecast = true,
                 },
 
                 // GuardingRoarAbilityDefinition - self-centered area (always centerOnActivator);

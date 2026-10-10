@@ -48639,7 +48639,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Viscara - Wildwoods North"
           }
         },
         "MapNote": {
@@ -48652,31 +48652,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "V_WW_Warocas"
+          "value": "VISCARA_WILDWOODS_NORTH"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spawn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_NORTH"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -48767,6 +48747,21 @@
   "VarTable": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "CREATURE_SPAWN_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_WILDWOODS_NORTH"
+        }
+      },
       {
         "__struct_id": 0,
         "Name": {

@@ -1,0 +1,49 @@
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
+using SWLOR.NWN.API.NWScript.Enum;
+
+namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
+{
+    /// <summary>
+    /// Warden Wall stance: while active, hardens the wielder's defenses and radiates the same
+    /// hardening to allies within <see cref="AuraRadius"/> meters via a periodic aura tick
+    /// (<see cref="WardenWallStanceAuraStatusEffect"/>). A Mimicry defensive stance.
+    /// </summary>
+    public sealed class WardenWallStanceStatusEffect : StatusEffectBase
+    {
+        private const float AuraRadius = 10.0f;
+        private const float AuraBuffDurationSeconds = 9.0f;
+
+        public override string Name => "Warden Wall Stance";
+        public override EffectIconType Icon => EffectIconType.WardenWallStanceStatusEffect;
+        public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
+        public override float Frequency => 6f;
+
+        public override IStatusEffect Clone()
+        {
+            return new WardenWallStanceStatusEffect();
+        }
+
+        protected override void Apply(uint creature, int durationTicks)
+        {
+            StatGroup.Stats[StatType.DamageEnmityPercentAdjustment] = 100;
+            StatGroup.Stats[StatType.PhysicalAndForceDefenseAuraPercentAdjustment] = 10;
+        }
+
+        protected override void Tick(uint creature)
+        {
+            // Radiate the wall to nearby allies. The buff outlives the tick interval slightly so
+            // allies who stay in range keep it continuously; leaving range lets it lapse.
+            foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(
+                         creature, GetLocation(creature), AuraRadius, includeActivator: false))
+            {
+                StatusEffect.ApplyStatusEffect(creature, ally, new WardenWallStanceAuraStatusEffect
+                {
+                    OriginatingAbility = OriginatingAbility
+                }, AuraBuffDurationSeconds);
+            }
+        }
+    }
+}

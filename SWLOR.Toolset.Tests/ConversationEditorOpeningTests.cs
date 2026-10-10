@@ -67,15 +67,15 @@ public sealed class ConversationEditorOpeningTests
                 Path.Combine(dialogDirectory, id + ".dlg.json")))
             .ToArray();
 
-        routes.Should().HaveCount(341);
+        routes.Should().HaveCount(343);
         routes.Should().NotContain(route => route.Kind == ConversationEditorRouteKind.Missing);
         routes.Should().OnlyContain(route => route.OpensEditor,
             "every authored conversation shown in Module Contents must open an editor");
-        routes.Count(route => route.Kind == ConversationEditorRouteKind.NuiGraph).Should().Be(340);
+        routes.Count(route => route.Kind == ConversationEditorRouteKind.NuiGraph).Should().Be(341);
         routes.Where(route => route.Kind == ConversationEditorRouteKind.LegacyException)
-            .Should().ContainSingle()
-            .Which.Path.Should().EndWith("dmfi_universal.dlg.json",
-                "DMFI intentionally keeps its native wand-driven conversation path");
+            .Select(route => Path.GetFileName(route.Path))
+            .Should().BeEquivalentTo(new[] { "dmfi_universal.dlg.json", "x0_skill_ctrap.dlg.json" },
+                "DMFI and the empty crafting override must stay on their native paths");
     }
 
     [Test]
@@ -116,7 +116,7 @@ public sealed class ConversationEditorOpeningTests
     }
 
     [Test]
-    public void OnlyDmfiRequiresTheLegacyEditor()
+    public void OnlyDmfiAndCraftingOverrideRequireTheLegacyEditor()
     {
         var graphDirectory = Path.Combine(
             CorpusLocator.RepositoryRoot,
@@ -130,8 +130,8 @@ public sealed class ConversationEditorOpeningTests
                 graphDirectory,
                 Path.GetFileName(path)[..^".dlg.json".Length] + ".conversation.json")))
             .Select(Path.GetFileName)
-            .Should().Equal(new[] { "dmfi_universal.dlg.json" },
-                "DMFI is the only approved native conversation");
+            .Should().BeEquivalentTo(new[] { "dmfi_universal.dlg.json", "x0_skill_ctrap.dlg.json" },
+                "DMFI and the empty base-game crafting override must remain native resources");
     }
 
     [Test]

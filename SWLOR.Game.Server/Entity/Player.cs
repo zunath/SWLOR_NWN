@@ -163,6 +163,7 @@ namespace SWLOR.Game.Server.Entity
         public string CitizenPropertyId { get; set; }
         public int PropertyOwedTaxes { get; set; }
         public int Attack { get; set; }
+        public int Accuracy { get; set; }
         public int ForceAttack { get; set; }
         public int Evasion { get; set; }
         public int Stealth { get; set; }
@@ -211,6 +212,8 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<CurrencyType, int> Currencies { get; set; }
         public float AppearanceScale { get; set; }
         public float HeadAppearanceScale { get; set; }
+        // Null means no tint snapshot exists yet; an empty snapshot records cleared RGB overrides.
+        public Dictionary<string, int> CreatureTintOverrides { get; set; }
     }
 
     public class MapPin
@@ -258,6 +261,7 @@ namespace SWLOR.Game.Server.Entity
         public bool? ShowOwnDescriptor { get; set; }
         public bool? ScrambleAccountName { get; set; }
         public bool? DisplayCommsOutOfRangeWarnings { get; set; }
+        public bool DisplayCooldownFloatingText { get; set; }
 
         // When enabled, Stamina and FP are shown as thin bars overlaid on the character portrait
         // instead of the standalone HP/STM/FP window docked in the lower-right corner.

@@ -20,6 +20,122 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class CombatAttackDelayTests
 {
+    [TestCase(true, false, 5)]
+    [TestCase(false, true, 6)]
+    [TestCase(true, true, 5)]
+    public void TemporaryNoDelayAtMinimumDelay_GrantsTheMatchingHandAnExtraRoll(bool main, bool off, int expected)
+    {
+        const uint attacker = 0x7F000025;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            var delay = Combat.MinimumAttackDelayMilliseconds;
+            Combat.ConsumeAttacksPerSwing(attacker, delay, delay, true, delay, 0, 0, 2,
+                temporaryNoDelayBudget: new LimitedAttackTimingBudget(1, main, off)).Should().Be(expected,
+                "an off-hand proc cannot be spent on the odd extra main-hand roll");
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
+    [Test]
+    public void TemporaryOffHandNoDelay_IsNotCappedByAnExpiringHasteEffect()
+    {
+        const uint attacker = 0x7F000026;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            var delay = Combat.MinimumAttackDelayMilliseconds;
+            Combat.ConsumeAttacksPerSwing(attacker, delay, delay, true, delay, 1, 0, 2,
+                limitedReductionBudget: new LimitedAttackTimingBudget(1, false, true),
+                temporaryNoDelayBudget: new LimitedAttackTimingBudget(1, false, true)).Should().Be(6);
+            Combat.ConsumeAttacksPerSwing(attacker, delay, delay, false, delay, 0, 0, 2).Should().Be(4,
+                "expiring haste must not restore fractional progress already spent by the temporary bonus");
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    public void MixedDualWieldHaste_CountsOnlyTheMatchingHandAndKeepsItsDebt(bool main, bool off)
+    {
+        const uint attacker = 0x7F000023;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            Combat.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 4, 0, 2,
+                new LimitedAttackTimingBudget(4, main, off)).Should().Be(2);
+            Combat.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 3, 0, 2,
+                new LimitedAttackTimingBudget(3, main, off)).Should().Be(4,
+                "the first pair spent only one charge, so fractional accelerated progress remains available");
+            Combat.ConsumeAttacksPerSwing(attacker, 1000, 1750, false, 1750, 1, 0, 2,
+                new LimitedAttackTimingBudget(1, main, off)).Should().Be(main ? 2 : 3);
+            Combat.ConsumeAttacksPerSwing(attacker, 1750, 1750, false, 1750, 0, 0, 2)
+                .Should().Be(2, "acceleration ends when the matching hand spends its last charge");
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
+    [TestCase(true, false, 3)]
+    [TestCase(false, true, 4)]
+    [TestCase(true, true, 3)]
+    public void ScopedNoDelay_GrantsAnExtraRollToTheMatchingHand(bool main, bool off, int expected)
+    {
+        const uint attacker = 0x7F000024;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            Combat.ConsumeAttacksPerSwing(attacker, 584, 1750, true, 1750, 0, 1, 2,
+                limitedNoDelayBudget: new LimitedAttackTimingBudget(1, main, off)).Should().Be(expected);
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
+    [TestCase(3500, 2)]
+    [TestCase(1750, 2)]
+    [TestCase(875, 4)]
+    public void DualWieldCycles_ScheduleBothHandsOnTheSharedTimer(int delay, int expected)
+    {
+        const uint attacker = 0x7F000020;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            Combat.ConsumeAttacksPerSwing(attacker, delay, delay, false, delay, 0, 0, 2)
+                .Should().Be(expected);
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
+    [TestCase(1, 2)]
+    [TestCase(2, 2)]
+    [TestCase(3, 3)]
+    [TestCase(4, 4)]
+    public void DualWieldLimitedHaste_CapsActualWeaponRolls(int charges, int expected)
+    {
+        const uint attacker = 0x7F000021;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            Combat.ConsumeAttacksPerSwing(attacker, 750, 1750, false, 1750, charges, 0, 2)
+                .Should().Be(expected, "baseline hands remain available but haste cannot double its charged rolls");
+            var next = Combat.ConsumeAttacksPerSwing(attacker, 1750, 1750, false, 1750, 0, 0, 2);
+            next.Should().Be(2, "expired acceleration must not leak into the next cycle");
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
+    [Test]
+    public void DualWieldFinalNoDelayCharge_GrantsOneExtraRollInsteadOfAnExtraPair()
+    {
+        const uint attacker = 0x7F000022;
+        Combat.ClearAttackSwingDebt(attacker);
+        try
+        {
+            Combat.ConsumeAttacksPerSwing(attacker, 584, 1750, true, 1750, 0, 1, 2)
+                .Should().Be(3);
+        }
+        finally { Combat.ClearAttackSwingDebt(attacker); }
+    }
+
     [Test]
     public void CalculateAttackDelayMilliseconds_UsesSingleWeaponDelay()
     {
@@ -126,11 +242,11 @@ public class CombatAttackDelayTests
     }
 
     [Test]
-    public void CalculateEffectiveAttackDelay_ClampsReducedDualWieldDelayToAbsoluteMinimum()
+    public void CalculateEffectiveAttackDelay_DualWieldPreservesItsRateAdvantageAtTheSingleWeaponFloor()
     {
         var delay = Combat.CalculateAttackDelayMilliseconds(210, 210, 45, 30);
 
-        Combat.CalculateEffectiveAttackDelay(delay).Should().Be(Combat.MinimumAttackDelayMilliseconds);
+        Combat.CalculateEffectiveAttackDelay(delay).Should().Be(818);
     }
 
     [Test]
@@ -978,7 +1094,7 @@ public class CombatAttackDelayTests
         weaponDelayMigrationSource.Should().Contain("[\"t_knife\"] = ItemPropertyAttackDelay.Delay220");
         weaponDelayMigrationSource.Should().Contain("[\"t_shuriken\"] = ItemPropertyAttackDelay.Delay220");
         weaponDelayMigrationSource.Should().Contain("[\"t_rifle\"] = ItemPropertyAttackDelay.Delay300");
-        weaponDelayMigrationSource.Should().Contain("[\"t_twinblade\"] = ItemPropertyAttackDelay.Delay290");
+        weaponDelayMigrationSource.Should().Contain("[\"t_twinblade\"] = ItemPropertyAttackDelay.Delay230");
         weaponDelayMigrationSource.Should().Contain("[\"byyskwarriorswor\"] = ItemPropertyAttackDelay.Delay220");
         weaponDelayMigrationSource.Should().Contain("[\"sith_blade\"] = ItemPropertyAttackDelay.Delay220");
         weaponDelayMigrationSource.Should().Contain("[\"wswss002\"] = ItemPropertyAttackDelay.Delay220");
@@ -1050,7 +1166,7 @@ public class CombatAttackDelayTests
         var delays = new Dictionary<int, ItemPropertyAttackDelay>();
         AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes, ItemPropertyAttackDelay.Delay230);
         AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.KatarBaseItemTypes, ItemPropertyAttackDelay.Delay220);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, ItemPropertyAttackDelay.Delay290);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, ItemPropertyAttackDelay.Delay230);
         AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes, ItemPropertyAttackDelay.Delay220);
         AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.StaffBaseItemTypes, ItemPropertyAttackDelay.Delay270);
         AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.RifleBaseItemTypes, ItemPropertyAttackDelay.Delay300);
@@ -1059,7 +1175,7 @@ public class CombatAttackDelayTests
         AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.LightsaberBaseItemTypes, ItemPropertyAttackDelay.Delay240);
         AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SpearBaseItemTypes, ItemPropertyAttackDelay.Delay280);
         AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes, ItemPropertyAttackDelay.Delay220);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, ItemPropertyAttackDelay.Delay290);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, ItemPropertyAttackDelay.Delay240);
         AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.CreatureBaseItemTypes, ItemPropertyAttackDelay.Delay240);
 
         return delays;
@@ -1097,7 +1213,7 @@ public class CombatAttackDelayTests
         string file,
         string path,
         ICollection<string> findings,
-        Action<int, JsonElement, string, ICollection<string>> inspectItemDelay)
+        Action<int, JsonElement, bool, string, ICollection<string>> inspectItemDelay)
     {
         switch (element.ValueKind)
         {
@@ -1105,7 +1221,12 @@ public class CombatAttackDelayTests
                 if (TryGetWrappedInt(element, "BaseItem", out var baseItem) &&
                     TryGetWrappedValue(element, "PropertiesList", out var propertiesList))
                 {
-                    inspectItemDelay(baseItem, propertiesList, $"{file}:{path}", findings);
+                    inspectItemDelay(
+                        baseItem,
+                        propertiesList,
+                        IsEconomyRestrictedJsonItem(element, baseItem),
+                        $"{file}:{path}",
+                        findings);
                 }
 
                 foreach (var property in element.EnumerateObject())
@@ -1135,6 +1256,7 @@ public class CombatAttackDelayTests
     private static void InspectWeaponDelay(
         int baseItem,
         JsonElement propertiesList,
+        bool isEconomyRestricted,
         string findingPath,
         ICollection<string> findings)
     {
@@ -1142,6 +1264,13 @@ public class CombatAttackDelayTests
             return;
 
         var delayCosts = GetDelayCostValues(propertiesList).ToList();
+        if (isEconomyRestricted &&
+            Item.IsDoubleWeaponType((BaseItem)baseItem) &&
+            delayCosts.Count == 1 && delayCosts[0] == 29)
+        {
+            return;
+        }
+
         if (delayCosts.Count == 0)
         {
             findings.Add($"{findingPath} missing weapon Delay");
@@ -1155,6 +1284,7 @@ public class CombatAttackDelayTests
     private static void InspectShieldDelay(
         int baseItem,
         JsonElement propertiesList,
+        bool isEconomyRestricted,
         string findingPath,
         ICollection<string> findings)
     {
@@ -1206,5 +1336,38 @@ public class CombatAttackDelayTests
         return TryGetWrappedValue(element, propertyName, out var wrapperValue) &&
                wrapperValue.ValueKind == JsonValueKind.Number &&
                wrapperValue.TryGetInt32(out value);
+    }
+
+    private static bool IsEconomyRestrictedJsonItem(JsonElement item, int baseItem)
+    {
+        string name = null;
+        if (TryGetWrappedValue(item, "LocalizedName", out var localizedName) &&
+            localizedName.ValueKind == JsonValueKind.Object)
+        {
+            name = localizedName.EnumerateObject()
+                .Select(property => property.Value.ValueKind == JsonValueKind.String
+                    ? property.Value.GetString()
+                    : null)
+                .FirstOrDefault(value => !string.IsNullOrWhiteSpace(value));
+        }
+
+        var noEconomy = false;
+        if (TryGetWrappedValue(item, "VarTable", out var variables) &&
+            variables.ValueKind == JsonValueKind.Array)
+        {
+            noEconomy = variables.EnumerateArray().Any(variable =>
+                TryGetWrappedValue(variable, "Name", out var variableName) &&
+                variableName.ValueKind == JsonValueKind.String &&
+                string.Equals(variableName.GetString(), Item.NoEconomyVariable, StringComparison.Ordinal) &&
+                TryGetWrappedInt(variable, "Type", out var variableType) && variableType == 1 &&
+                TryGetWrappedInt(variable, "Value", out var variableValue) && variableValue == 1);
+        }
+
+        // Embedded items without a name or explicit NO_ECONOMY metadata do not qualify for
+        // the exception. Keep the broad corpus check fail-closed for player weapons.
+        if (name == null && !noEconomy)
+            return false;
+
+        return Item.IsEconomyRestricted((BaseItem)baseItem, name, noEconomy, hasInventoryIcon: true);
     }
 }

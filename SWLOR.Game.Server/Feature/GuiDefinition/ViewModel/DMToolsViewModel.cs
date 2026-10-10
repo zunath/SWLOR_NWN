@@ -828,13 +828,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private static float NormalizeFacing(float facing)
         {
-            while (facing >= 360f)
-                facing -= 360f;
-
-            while (facing < 0f)
-                facing += 360f;
-
-            return facing;
+            return GameMath.NormalizeDegrees(facing);
         }
 
         private void AdjustFacing(float facing)

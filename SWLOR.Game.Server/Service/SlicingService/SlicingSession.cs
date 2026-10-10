@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
             if (source == SlicingSourceType.Lockbox && GetItemPossessor(target) != player)
                 return "The lockbox must remain in your inventory.";
             if (source == SlicingSourceType.Terminal && GetDistanceBetween(player, target) > 5f)
-                return "You are too far away from the terminal.";
+                return "You are too far away from the crate.";
 
             return string.Empty;
         }
@@ -444,7 +444,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
             if (session.Source == SlicingSourceType.Lockbox && GetItemPossessor(session.Target) != player)
                 return "The lockbox must remain in your inventory.";
             if (session.Source == SlicingSourceType.Terminal && GetDistanceBetween(player, session.Target) > 5f)
-                return "You are too far away from the terminal.";
+                return "You are too far away from the crate.";
             if (session.PrimedToolItem != OBJECT_INVALID &&
                 (!GetIsObjectValid(session.PrimedToolItem) || GetItemPossessor(session.PrimedToolItem) != player))
             {

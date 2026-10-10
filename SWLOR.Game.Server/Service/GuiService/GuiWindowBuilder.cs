@@ -200,6 +200,7 @@ namespace SWLOR.Game.Server.Service.GuiService
                     _activeWindow.Geometry,
                     new Dictionary<string, Json>(),
                     layoutFindings,
+                    new Dictionary<string, string>(),
                     () =>
                     {
                         var dataModelInstance = Activator.CreateInstance<T>();
@@ -213,9 +214,11 @@ namespace SWLOR.Game.Server.Service.GuiService
             }
 
             var partialViews = new Dictionary<string, Json>();
+            var partialViewLayouts = new Dictionary<string, string>();
             foreach (var (key, partial) in _activeWindow.PartialViews)
             {
                 partialViews[key] = partial.ToJson();
+                partialViewLayouts[key] = JsonDump(partialViews[key]);
             }
 
             var json = _activeWindow.Build();
@@ -232,14 +235,14 @@ namespace SWLOR.Game.Server.Service.GuiService
                     "[NUI JSON] window={WindowId} root={RootJson}",
                     windowId,
                     JsonDump(json));
-                foreach (var (partialName, partialJson) in partialViews)
+                foreach (var (partialName, partialJson) in partialViewLayouts)
                 {
                     Log.WriteStructured(
                         LogGroup.Server,
                         "[NUI JSON] window={WindowId} partial={PartialName} json={PartialJson}",
                         windowId,
                         partialName,
-                        JsonDump(partialJson));
+                        partialJson);
                 }
             }
 
@@ -252,6 +255,7 @@ namespace SWLOR.Game.Server.Service.GuiService
                 _activeWindow.Geometry,
                 partialViews,
                 layoutFindings,
+                partialViewLayouts,
                 () =>
             {
                 var dataModelInstance = Activator.CreateInstance<T>();

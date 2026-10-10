@@ -203,6 +203,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         /// </summary>
         public string OutcomeAssertionWaiverReason { get; set; }
 
+        public int MinimumTargetEnmityAfterImpact { get; set; }
+
         /// <summary>
         /// Free-text context for a reviewer: why assertions are relaxed, quirks observed
         /// in the definition, etc. Not used by the executor.
@@ -215,5 +217,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         /// the coverage ratchet still counts it as declared. Burn these down over time.
         /// </summary>
         public string SkipReason { get; set; }
+        public bool RequiresPlayerBeastFixture { get; set; }
     }
 }

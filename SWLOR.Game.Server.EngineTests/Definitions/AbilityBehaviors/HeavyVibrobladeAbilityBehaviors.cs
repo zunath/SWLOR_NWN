@@ -19,6 +19,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         {
             return new List<AbilityBehaviorCase>
             {
+                new()
+                {
+                    Feat = FeatType.SoulAscensionBurst,
+                    Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatusEffects = new[] { typeof(SoulAscensionBurstStatusEffect) },
+                    ExpectsRecast = true,
+                    VerifiesImmediateRecastRejection = true,
+                },
+
                 // AbsoluteDefenseAbilityDefinition - capstone party buff; solo caster falls back to self.
                 new()
                 {
@@ -149,12 +158,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Notes = "Spends activator HP (SacrificeHitPoints) in addition to stamina.",
                 },
 
-                // SoulDevourerAbilityDefinition - manually-built self stance toggle; no stamina cost.
+                // SoulDevourerStanceAbilityDefinition - manually-built self stance toggle; no stamina cost.
                 new()
                 {
-                    Feat = FeatType.SoulDevourer1,
+                    Feat = FeatType.SoulDevourerStance1,
                     Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(SoulDevourerStatusEffect) },
+                    ExpectedActivatorStatusEffects = new[] { typeof(SoulDevourerStanceStatusEffect) },
                     ExpectsRecast = true,
                 },
 

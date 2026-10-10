@@ -3702,6 +3702,13 @@
           "type": "cexostring",
           "value": ""
         }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Training terminal beside the clinic reception east wall."
+        }
       }
     ]
   },

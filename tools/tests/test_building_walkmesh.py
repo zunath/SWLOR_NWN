@@ -75,6 +75,14 @@ def intersections(vertices, faces, start, end):
     return hits
 
 
+def roof_height_at(vertices, faces, x, y):
+    """Highest surface at XY, including steps and domes rather than model max Z."""
+    bottom = min(v[2] for v in vertices) - 1
+    top = max(v[2] for v in vertices) + 1
+    hits = intersections(vertices, faces, (x, y, bottom), (x, y, top))
+    return bottom + max(hits) * (top - bottom) if hits else None
+
+
 def assert_closed_mesh(test, vertices, faces, material):
     test.assertTrue(all(math.isfinite(value) for vertex in vertices for value in vertex))
     edges, directed = Counter(), Counter()
@@ -277,7 +285,7 @@ class VelesBuildingWalkmeshAuditTests(unittest.TestCase):
             if name not in self.meshes:
                 continue
             vertices, faces = self.meshes[name]
-            bottom, top = min(v[2] for v in vertices), max(v[2] for v in vertices)
+            bottom = min(v[2] for v in vertices)
             caps = [f for f in faces if all(abs(vertices[i][2]-bottom) < 1e-8 for i in f[:3])]
             # Sample the concave footprint's triangle interiors, including wings
             # and projecting columns, rather than assuming the model origin is solid.
@@ -291,15 +299,21 @@ class VelesBuildingWalkmeshAuditTests(unittest.TestCase):
                 if ground is None:
                     continue
                 z = ground - instance["Z"]["value"]
+                # A building's highest ornament is not the height of every wing.
+                # Full-footprint prisms previously buried the cantina terraces.
+                local_roof = roof_height_at(vertices, faces, x, y)
+                self.assertIsNotNone(local_roof)
                 endpoint = (max(v[0] for v in vertices)+25.123, max(v[1] for v in vertices)+23.789, z)
                 with self.subTest(model=name, world=(wx, wy, ground)):
                     hits = intersections(vertices, faces, (x, y, z), endpoint)
-                    if bottom + .001 < z < top - .001:
+                    if bottom + .001 < z < local_roof - .001:
                         self.assertEqual(len(hits) % 2, 1, "Wall volume must intersect the terrain's walking plane")
                         checked += 1
                         elevated += ground > 10
-                    elif z > top + .001:
-                        self.assertFalse(hits, "Walkable terrain above a submerged model's roof must remain clear")
+                    elif z > local_roof + .001:
+                        # A ray from a clear lower roof may pass through a taller
+                        # roof further away, but must enter and leave it in pairs.
+                        self.assertEqual(len(hits) % 2, 0, "Terrain above the local roof must remain clear")
                         above_roof += 1
         self.assertGreater(checked, 100)
         self.assertGreater(elevated, 10)
@@ -343,6 +357,111 @@ class VelesBuildingWalkmeshAuditTests(unittest.TestCase):
                                   (2.187, -6.56, 47.43, 52), (5.4714, -10.93675, 51.46, 52)):
             with self.subTest(clear_column=(x, y)):
                 self.assertFalse(intersections(vertices, faces, (x, y, bottom), (x, y, top)))
+
+
+class VelesCantinaRoofWalkmeshTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.area = json.loads((ROOT / "Module/git/veles_exterior.git.json").read_text())
+        rows = two_da("placeables")
+        meshes = {name: read_mesh(PWK.parent / (name + ".pwk")) for name in REPAIRED_ROOFS}
+        cls.buildings = []
+        for instance in cls.area["Placeable List"]["value"]:
+            name = rows[instance["Appearance"]["value"]]["ModelName"].lower()
+            if name in meshes:
+                cls.buildings.append((name, instance, *meshes[name]))
+        cls.floor = VelesFloor()
+
+    @staticmethod
+    def local(instance, point):
+        x, y, z = point
+        angle = instance["Bearing"]["value"]
+        dx, dy = x - instance["X"]["value"], y - instance["Y"]["value"]
+        return (dx * math.cos(angle) + dy * math.sin(angle),
+                -dx * math.sin(angle) + dy * math.cos(angle), z - instance["Z"]["value"])
+
+    def assert_clear(self, point):
+        self.assertAlmostEqual(self.floor.height_at(*point[:2]), point[2], places=3)
+        for name, instance, vertices, faces in self.buildings:
+            x, y, z = self.local(instance, point)
+            if not all(min(v[d] for v in vertices) <= p <= max(v[d] for v in vertices)
+                       for d, p in enumerate((x, y, z))):
+                continue
+            with self.subTest(model=name, point=point):
+                endpoint = (max(v[0] for v in vertices)+25.123, max(v[1] for v in vertices)+23.789, z)
+                self.assertEqual(len(intersections(vertices, faces, (x, y, z), endpoint)) % 2, 0,
+                                 "Landing or walking point is inside building collision")
+
+    def test_stepped_roofs_keep_lower_wings_clear_and_upper_structures_solid(self):
+        # Independent heights measured from the visible MDL roofs. Hidden shadow
+        # boxes are not collision geometry; nor is the entire footprint a tower.
+        samples = {
+            "swc_blg_corhis01": ((0, 6, 13.58), (1.18, 0, 15.56)),
+            "swc_blg_corhis03": ((-7, -8.5, 15.33), (-3.89, -4.29, 17.27),
+                                (2.1, -14.5, 13.58)),
+            "swc_blg_corhis04": ((6, -5, 14.45), (0.15, 3.72, 22.68),
+                                (-2.56, -11.16, 18.93)),
+        }
+        for name, probes in samples.items():
+            vertices, faces = read_mesh(PWK.parent / (name + ".pwk"))
+            for x, y, expected in probes:
+                with self.subTest(model=name, point=(x, y)):
+                    self.assertAlmostEqual(roof_height_at(vertices, faces, x, y), expected, delta=.01)
+                    for z, inside in ((expected - .05, 1), (expected + .05, 0)):
+                        endpoint = (30.123, 26.789, z)
+                        self.assertEqual(len(intersections(vertices, faces, (x, y, z), endpoint)) % 2, inside)
+
+    def test_cantina_beacons_and_landings_are_linked_and_clear(self):
+        tags = ("viscara_cantinaroofentrance", "viscara_cantinaroofexit", "Exit_Veles_CantinaRoof_Ka")
+        for tag in tags:
+            waypoints = [p for p in self.area["WaypointList"]["value"] if p["Tag"]["value"] == tag]
+            self.assertEqual(len(waypoints), 1, tag)
+            point = tuple(waypoints[0][axis + "Position"]["value"] for axis in "XYZ")
+            # Allow the player's body, not just the waypoint's exact centre.
+            for dx, dy in ((0, 0), (.35, 0), (-.35, 0), (0, .35), (0, -.35)):
+                self.assert_clear((point[0]+dx, point[1]+dy, point[2]))
+        for tag in tags[:2]:
+            devices = [p for p in self.area["Placeable List"]["value"]
+                       if any(v["Name"]["value"] == "DESTINATION" and v["Value"]["value"] == tag
+                              for v in p.get("VarTable", {}).get("value", []))]
+            self.assertEqual(len(devices), 1, tag)
+            device = devices[0]
+            self.assertEqual(device["OnUsed"]["value"], "teleport")
+            self.assertEqual(device["Useable"]["value"], 1)
+            self.assertEqual(device["Static"]["value"], 0)
+            self.assert_clear(tuple(device[axis]["value"] for axis in "XYZ"))
+
+    def test_rooftop_routes_are_clear_in_both_directions(self):
+        # Door/rug to north seating, south landing to seating, and the connecting
+        # terrace. Routes skirt the visible domes rather than removing them.
+        routes = (
+            ((57.38, 75), (60, 75), (63, 75), (65, 78), (72, 78)),
+            ((52.704, 55.983), (55, 55), (55, 52), (50, 50), (47, 48)),
+            ((55, 55), (60, 56), (62, 60), (62, 70), (63, 75)),
+        )
+        for route in routes:
+            for start, end in zip(route, route[1:]):
+                for step in range(11):
+                    self.assert_clear(tuple(start[d]+(end[d]-start[d])*step/10 for d in (0, 1)) + (15.2,))
+                for name, instance, vertices, faces in self.buildings:
+                    a, b = self.local(instance, (*start, 15.2)), self.local(instance, (*end, 15.2))
+                    with self.subTest(model=name, segment=(start, end)):
+                        self.assertFalse(intersections(vertices, faces, a, b))
+                        self.assertFalse(intersections(vertices, faces, b, a))
+
+    def test_outside_beacon_has_a_clear_street_approach(self):
+        device = next(p for p in self.area["Placeable List"]["value"]
+                      if any(v["Name"]["value"] == "DESTINATION"
+                             and v["Value"]["value"] == "viscara_cantinaroofexit"
+                             for v in p.get("VarTable", {}).get("value", [])))
+        x, y, z = (device[axis]["value"] for axis in "XYZ")
+        for step in range(11):
+            for dx in (-.35, 0, .35):
+                self.assert_clear((x+dx, y-2+step*.2, z))
+        for _, instance, vertices, faces in self.buildings:
+            self.assertFalse(intersections(vertices, faces,
+                                           self.local(instance, (x, y-2, z)),
+                                           self.local(instance, (x, y, z))))
 
 
 if __name__ == "__main__":

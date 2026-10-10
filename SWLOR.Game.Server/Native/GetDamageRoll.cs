@@ -83,7 +83,9 @@ namespace SWLOR.Game.Server.Native
                 var damageFlags = attackerStats.m_pBaseCreature.GetDamageFlags();
                 var pCombatRound = attacker.m_pcCombatRound;
                 var pAttackData = pCombatRound.GetAttack(pCombatRound.m_nCurrentAttack);
-                var weapon = pCombatRound.GetCurrentAttackWeapon(bOffHand);
+                // GetDamageRoll receives a boolean; GetCurrentAttackWeapon expects a weapon
+                // attack type (2 = off-hand, 0 = infer the current attack, including natural weapons).
+                var weapon = pCombatRound.GetCurrentAttackWeapon(bOffHand != 0 ? 2 : 0);
 
                 var attackType = attacker.GetRangeWeaponEquipped() == 1 ? (uint)AttackType.Ranged : (uint)AttackType.Melee;
 
@@ -119,6 +121,9 @@ namespace SWLOR.Game.Server.Native
                 LogDamageCalculation(attackerStat, damageProfile);
 
                 // Apply combat mode bonuses
+                if (weapon != null && damageProfile.HasItemDamage)
+                    damageProfile = new WeaponDamageProfile(damageProfile.DamageType,
+                        WeaponDamage.GetEffectiveDMG(attacker.m_idSelf, weapon.m_idSelf, damageProfile.Damage));
                 damageProfile = ApplyCombatModeBonus(attacker, damageProfile);
                 damageProfile = ApplyMightModifierDamageBonus(attacker, weapon, damageProfile);
 
@@ -144,7 +149,7 @@ namespace SWLOR.Game.Server.Native
 
                 if (isLandedAttack)
                 {
-                    using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(attacker.m_idSelf);
+                    using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(attacker.m_idSelf, defender.m_idSelf);
 
                     if (defender.m_nObjectType == (int)ObjectType.Creature)
                     {
@@ -221,7 +226,7 @@ namespace SWLOR.Game.Server.Native
             totalDamage = 0;
 
             if (targetObject.m_nObjectType == (int)ObjectType.Creature &&
-                UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType))
+                UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType, attacker.m_pcCombatRound.m_nCurrentAttack))
             {
                 Combat.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);
                 return physicalDamage;
@@ -296,7 +301,7 @@ namespace SWLOR.Game.Server.Native
                 return damageProfile;
 
             // Weapon abilities apply their own combat impact and suppress the auto-attack; do not convert/charge them.
-            if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType))
+            if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack))
                 return damageProfile;
 
             var fpCost = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.StanceHostileAutoAttackFPCost);
@@ -309,7 +314,7 @@ namespace SWLOR.Game.Server.Native
                 Stat.ReduceFP(attacker.m_idSelf, fpCost);
             }
 
-            return new WeaponDamageProfile(CombatDamageType.Force, damageProfile.Damage);
+            return new WeaponDamageProfile(CombatDamageType.Force, damageProfile.Damage, damageProfile.HasItemDamage);
         }
 
         private static WeaponDamageProfile ExtractWeaponDamageProfile(CNWSItem weapon)
@@ -342,7 +347,7 @@ namespace SWLOR.Game.Server.Native
             // the unarmed/default physical fallback instead of manufacturing elemental damage.
             if (!hasDamageProperty)
             {
-                return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage);
+                return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage, false);
             }
 
             return new WeaponDamageProfile(damageType, damage);
@@ -422,9 +427,9 @@ namespace SWLOR.Game.Server.Native
             switch (attacker?.m_nCombatMode)
             {
                 case PowerAttackMode:
-                    return new WeaponDamageProfile(damageProfile.DamageType, damageProfile.Damage + PowerAttackDamageBonus);
+                    return new WeaponDamageProfile(damageProfile.DamageType, damageProfile.Damage + PowerAttackDamageBonus, damageProfile.HasItemDamage);
                 case ImprovedPowerAttackMode:
-                    return new WeaponDamageProfile(damageProfile.DamageType, damageProfile.Damage + ImprovedPowerAttackDamageBonus);
+                    return new WeaponDamageProfile(damageProfile.DamageType, damageProfile.Damage + ImprovedPowerAttackDamageBonus, damageProfile.HasItemDamage);
                 default:
                     return damageProfile;
             }
@@ -448,7 +453,7 @@ namespace SWLOR.Game.Server.Native
             if (multiplier <= 0)
                 return damageProfile;
 
-            return new WeaponDamageProfile(damageProfile.DamageType, damageProfile.Damage + mightModifier * multiplier);
+            return new WeaponDamageProfile(damageProfile.DamageType, damageProfile.Damage + mightModifier * multiplier, damageProfile.HasItemDamage);
         }
 
         private static int CalculateTargetSpecificDamage(void* pTarget, CNWSCreature attacker,
@@ -632,11 +637,13 @@ namespace SWLOR.Game.Server.Native
         {
             public CombatDamageType DamageType { get; }
             public int Damage { get; }
+            public bool HasItemDamage { get; }
 
-            public WeaponDamageProfile(CombatDamageType damageType, int damage)
+            public WeaponDamageProfile(CombatDamageType damageType, int damage, bool hasItemDamage = true)
             {
                 DamageType = damageType;
                 Damage = damage;
+                HasItemDamage = hasItemDamage;
             }
         }
 

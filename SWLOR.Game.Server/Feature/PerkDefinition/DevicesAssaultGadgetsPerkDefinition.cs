@@ -35,14 +35,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Flamethrower")
 
                 .AddPerkLevel()
-                .Description("Deals 16 fire DMG plus PER scaling to hostile targets in a 6m x 5m cone.")
+                .Description("Deals gadget DMG + 6 fire DMG plus PER scaling to hostile targets in a 6m x 5m cone.")
                 .Price(2)
                 .RequirementCharacterType(CharacterType.Standard)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.Flamethrower1)
 
                 .AddPerkLevel()
-                .Description("Deals 28 fire DMG plus PER scaling to hostile targets in a 6m x 5m cone and attempts to inflict Burn for 12 seconds.")
+                .Description("Deals gadget DMG + 12 fire DMG plus PER scaling to hostile targets in a 6m x 5m cone and attempts to inflict Burn for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 15)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Flamethrower2)
 
                 .AddPerkLevel()
-                .Description("Deals 42 fire DMG plus PER scaling to hostile targets in a 6m x 5m cone and attempts to inflict Burn for 12 seconds.")
+                .Description("Deals gadget DMG + 18 fire DMG plus PER scaling to hostile targets in a 6m x 5m cone and attempts to inflict Burn for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 35)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Wrist Rocket")
 
                 .AddPerkLevel()
-                .Description("Deals 20 fire DMG plus PER scaling to one target.")
+                .Description("Deals gadget DMG + 10 fire DMG plus PER scaling to one target.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 5)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WristRocket1)
 
                 .AddPerkLevel()
-                .Description("Deals 34 fire DMG plus PER scaling to one target and knocks down for 2 seconds.")
+                .Description("Deals gadget DMG + 20 fire DMG plus PER scaling to one target and knocks down for 2 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 25)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WristRocket2)
 
                 .AddPerkLevel()
-                .Description("Deals 48 fire DMG plus PER scaling to one target and knocks down for 3 seconds.")
+                .Description("Deals gadget DMG + 32 fire DMG plus PER scaling to one target and knocks down for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 40)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Sonic Burst")
 
                 .AddPerkLevel()
-                .Description("Deals 10 sonic DMG to hostile targets within 5m and interrupts activation.")
+                .Description("Deals gadget DMG + 10 sonic DMG plus PER scaling to hostile targets within 5m and interrupts activation.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 8)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SonicBurst1)
 
                 .AddPerkLevel()
-                .Description("Deals 14 sonic DMG to hostile targets within 5m, interrupts activation, and reduces Accuracy by 6% for 30 seconds.")
+                .Description("Deals gadget DMG + 14 sonic DMG plus PER scaling to hostile targets within 5m, interrupts activation, and reduces Accuracy by 6% for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 28)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SonicBurst2)
 
                 .AddPerkLevel()
-                .Description("Deals 18 sonic DMG to hostile targets within 5m, interrupts activation, and reduces Accuracy by 10% for 30 seconds.")
+                .Description("Deals gadget DMG + 18 sonic DMG plus PER scaling to hostile targets within 5m, interrupts activation, and reduces Accuracy by 10% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 42)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Arc Projector")
 
                 .AddPerkLevel()
-                .Description("Projects a focused electrical arc up to 15m, dealing 22 electrical DMG plus PER scaling to one target.")
+                .Description("Projects a focused electrical arc up to 15m, dealing gadget DMG + 12 electrical DMG plus PER scaling to one target.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 12)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ArcProjector1)
 
                 .AddPerkLevel()
-                .Description("Projects a stronger electrical arc up to 15m, dealing 40 electrical DMG plus PER scaling to one target.")
+                .Description("Projects a stronger electrical arc up to 15m, dealing gadget DMG + 24 electrical DMG plus PER scaling to one target.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 30)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ArcProjector2)
 
                 .AddPerkLevel()
-                .Description("Projects an overcharged electrical arc up to 15m, dealing 60 electrical DMG plus PER scaling to one target.")
+                .Description("Projects an overcharged electrical arc up to 15m, dealing gadget DMG + 36 electrical DMG plus PER scaling to one target.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Ion Lance")
 
                 .AddPerkLevel()
-                .Description("Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 16 electrical DMG plus PER scaling to hostile targets in the line.")
+                .Description("Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing gadget DMG + 10 electrical DMG plus PER scaling to hostile targets in the line.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 15)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.IonLance1)
 
                 .AddPerkLevel()
-                .Description("Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 30 electrical DMG plus PER scaling to hostile targets in the line.")
+                .Description("Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing gadget DMG + 20 electrical DMG plus PER scaling to hostile targets in the line.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 32)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.IonLance2)
 
                 .AddPerkLevel()
-                .Description("Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 44 electrical DMG plus PER scaling to hostile targets in the line.")
+                .Description("Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing gadget DMG + 30 electrical DMG plus PER scaling to hostile targets in the line.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 48)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Rail Dart")
 
                 .AddPerkLevel()
-                .Description("Fires a dart that deals 18 physical DMG plus PER scaling and attempts to inflict Bleed for 12 seconds.")
+                .Description("Fires a dart that deals gadget DMG + 10 physical DMG plus PER scaling and attempts to inflict Bleed for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 18)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -207,7 +207,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RailDart1)
 
                 .AddPerkLevel()
-                .Description("Fires a dart that deals 34 physical DMG plus PER scaling and attempts to inflict Bleed for 12 seconds.")
+                .Description("Fires a dart that deals gadget DMG + 20 physical DMG plus PER scaling and attempts to inflict Bleed for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 38)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RailDart2)
 
                 .AddPerkLevel()
-                .Description("Fires a dart that deals 48 physical DMG plus PER scaling and attempts to inflict Bleed for 12 seconds.")
+                .Description("Fires a dart that deals gadget DMG + 30 physical DMG plus PER scaling and attempts to inflict Bleed for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 44)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -243,7 +243,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Cryo Sprayer")
 
                 .AddPerkLevel()
-                .Description("Deals 25 ice DMG plus PER scaling to hostile targets in a 6m x 5m cone and slows their movement for 30 seconds.")
+                .Description("Deals gadget DMG + 10 ice DMG plus PER scaling to hostile targets in a 6m x 5m cone and slows their movement for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 30)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -257,11 +257,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Overload Barrage")
 
                 .AddPerkLevel()
-                .Description("Unleashes three attacks at your primary target's location: a 42 fire DMG 5m burst plus Burn for 45 seconds, a 48 fire DMG single-target hit plus 3-second Knockdown, and a 24 sonic DMG 5m burst that interrupts activation and reduces Accuracy by 10% for 45 seconds.")
+                .Description("Unleashes three attacks at your primary target's location: a 5m burst for gadget DMG + 22 fire DMG plus Burn for 45 seconds, a single-target hit for gadget DMG + 32 fire DMG plus 3-second Knockdown, and a 5m burst for gadget DMG + 18 sonic DMG that interrupts activation and reduces Accuracy by 10% for 45 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)
-                .DroidAISlots(1)
                 .GrantsFeat(FeatType.OverloadBarrage1)
                 .RequirementQuest(DevicesCapstoneQuestDefinition.OverloadBarrageMasteryQuestId);
         }

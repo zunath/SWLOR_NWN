@@ -1,139 +1,105 @@
 # Agent Rules
 
-This file is the shared rule set for all coding agents. Codex reads it natively; Claude Code imports it through `CLAUDE.md`. Keep cross-agent rules here rather than in agent-specific files.
+This is the shared rule set for every coding agent. Codex reads it directly; Claude Code imports it through `CLAUDE.md`. Put cross-agent rules here, never in an agent-specific file.
 
-## Agent Skills
+Keep this file short. Codex stops reading project instructions at 32 KiB, and every line here competes for attention on every task. Put deep, topic-specific rules in `SWLOR.Game.Server/Readmes/` and add a one-line "read X before Y" pointer here.
 
-- Agent skills are canonical in `.codex/skills/` and mirrored to `.claude/skills/` so both Codex and Claude Code discover them. The `agents/openai.yaml` files are Codex-only interface metadata and are not mirrored.
-- Edit skills only in `.codex/skills/`. Never hand-edit `.claude/skills/`.
-- After adding, changing, or deleting any skill file, run `powershell -ExecutionPolicy Bypass -File tools/SyncAgentSkills.ps1` to refresh the mirror. Use `-CheckOnly` to verify sync without writing.
-- Keep skill instructions and descriptions agent-neutral: write "Use when adding a beast...", not "Use when Codex/Claude needs to...".
+## Project
 
-## Read-Only Areas
+SWLOR (Star Wars: Legends of the Old Republic) is a live Neverwinter Nights: Enhanced Edition persistent world. Server logic is C# on .NET 10, hosted through NWNX DotNet. Changes reach real players.
 
-- The Unified solution (`C:\Projects\unified`) is read-only reference material. Do not make changes to it.
+- `SWLOR.Game.Server/` - the game server. `Core/` wraps NWScript and NWNX, `Service/` holds the static game services (`Combat`, `Stat`, `Ability`, `Perk`, `Quest`, ...), `Entity/` holds Redis-persisted data models, `Feature/` holds content definitions built with builders (abilities, perks, items, recipes, quests, GUI windows, spawns), `ConversationData/` holds dialogue graphs, `Readmes/` holds system docs.
+- `SWLOR.Game.Server.Tests/` - NUnit tests for pure logic and data. `SWLOR.Game.Server.EngineTests/` - `[EngineTest]` tests that run inside a live server; see `SWLOR.Game.Server/Readmes/EngineTesting.md`.
+- `SWLOR.Toolset*/`, `SWLOR.NWN.Formats*/` - the module editor and NWN file-format libraries. `SWLOR.CLI/`, `SWLOR.Runner/`, `SWLOR.Web/`, `SWLOR.Admin/`, `SWLOR.BackgroundServices/` - tooling and supporting apps.
+- `Module/` - module content as JSON (areas, blueprints, stores). `SWLOR_Haks/` - git submodule with 2DAs, TLK, models, textures, icons. `design/bible/` - Design Bible workbooks, the source of truth for balance and descriptions. `tools/` - generators and audit scripts.
 
-## Pull Requests and Submodules
+Before writing code in an unfamiliar area, find two or three existing examples of the same kind of thing and follow them. Never call a method you have not confirmed exists; search for it first.
 
-- When a parent-repository pull request changes a git submodule pointer, publishing is not complete until every modified submodule also has its own pull request. Push the submodule branch, open its companion pull request against the branch corresponding to the parent pull request's base branch, and link the parent and companion pull requests in both descriptions. Do not treat a pushed submodule branch by itself as a complete handoff.
+## How to Work
 
-## Background Processes
+- **Do what was asked, all of it, and nothing else.** Work every item in a request until it is fixed and verified. If one item is genuinely blocked, say why for that item and finish the rest. Do not change shared code, unrelated systems, or behavior the user did not mention without asking first.
+- **Check instead of assuming.** If a fact can be looked up in the repo (a path, a stat cap, a column, an enum value, an existing helper, how a similar feature works), look it up. Do not guess and do not fill gaps with plausible-sounding values.
+- **Ask only for real decisions.** When a choice genuinely belongs to the user, ask once with a recommended option. When there is an obvious conventional choice, take it and mention it.
+- **Do not loop.** If the same approach fails twice, stop and change approach or report the blocker with the evidence. Do not retry the same command or edit hoping for a different result.
+- **Deploy steps are not code problems.** Module JSON changes need a module repack; 2DA, TLK, model, and icon changes need a hak rebuild; C# needs a server deploy. When a committed fix just has not been deployed, say which step is missing instead of coding a workaround.
+- **Replace by adding, not repurposing.** When a stat, item property, 2DA row, TLK string, or enum value needs replacing, add a new one and leave the old definition untouched (hide it from builders only if asked).
+- **Report honestly.** "Done" means built, tested, and verified. If something failed, was skipped, or was not verified, say so plainly with the reason.
 
-- Do not start background jobs, watchers, dev servers, publish tasks, or long-lived helper processes unless the user explicitly asks for them or they are strictly required for the current task. Prefer foreground commands with bounded timeouts. If a long-lived process is necessary, record what was started, track its PID when available, stop it before handing off, and report the cleanup. Do not use `Start-Process`, shell backgrounding, persistent REPL helpers, or detached commands to continue work after the turn unless the user has explicitly approved that behavior.
+## Response Style
 
-## Conversations
+- Keep responses short and direct. Lead with the result.
+- No preamble, no restating the request, no closing summary, no recap of a diff the user can read.
+- Do not narrate steps, tools, or reasoning that did not change the outcome. Report what the user needs to act on.
+- Plain language. No marketing tone, filler adjectives, enthusiasm, or praise.
+- Prefer a short paragraph or a few bullets. Use a table only to compare several values across several rows.
+- When the user asks for an explanation (new skills, perk structure, design changes), give it; terse does not mean omitting what was asked for.
 
-- Authored gameplay dialogue lives only in `SWLOR.Game.Server/ConversationData/*.conversation.json`. Edit these graphs directly; never create duplicate DLG sources or regenerate existing graphs from legacy files.
-- `Module/dlg/dmfi_universal.dlg.json` is the sole native module exception because DMFI wands call it through NWN. Legacy-format test fixtures are frozen import/editor samples, not gameplay sources.
-- Preserve NPC `Conversation` IDs and route graph interactions through `dialog_start`. The module resref identifies a SWLOR graph without requiring a DLG resource. Follow `SWLOR.Game.Server/Readmes/Conversations.md`.
+## Git and Pull Requests
 
-## Chat Commands
+- Start each request on a new feature branch from up-to-date `origin/master` unless the user names a different base. Never commit directly to `master`, and never mix one request's work into another request's branch.
+- Before handing off, `git status` must be clean: no stray local edits, generated files, or scratch files left in the repo. Put scratch files in a temp directory outside the repo.
+- Use one branch and one pull request per request. Add follow-ups as new commits on the same branch. Open a second pull request only for a required submodule companion. Separate branches that edit the Design Bible `.xlsx` cannot be merged.
+- When a parent pull request changes a submodule pointer (usually `SWLOR_Haks`), push the submodule branch, open its companion pull request against the branch matching the parent's base, and link the two pull requests in both descriptions. A pushed submodule branch alone is not a complete handoff.
+- Addressing review findings means **resolving the review threads**, not just replying. After the fix is pushed, or after replying with a concrete reason the finding does not apply, resolve each thread with `gh api graphql` and the `resolveReviewThread` mutation. This applies to bot reviewers (CodeRabbit, Codex connector) too. Before calling pull request work done, confirm zero unresolved threads on the parent and every companion pull request.
 
-- Player-facing chat commands must use `.Permissions(AuthorizationLevel.All)`, not `AuthorizationLevel.Player` alone, unless the command is deliberately meant to exclude DMs/Admins. `AuthorizationLevel.Player`-only silently fails for DM-possessed or DM-authorization accounts with the same generic "Invalid chat command" message used for unregistered commands, which makes it look like the command was never wired up instead of a permissions gap.
+## Build and Test
 
-## Tests
+- Always pass `-p:RunPostBuildEvent=Never` when building. Without it, building `SWLOR.Game.Server` runs a slow deploy to the local NWN install.
+- Build once, then run only the relevant tests without rebuilding:
+  - `dotnet build SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj -p:RunPostBuildEvent=Never`
+  - `dotnet test SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj --no-build --filter "FullyQualifiedName~<TestClass>|FullyQualifiedName~<OtherTestClass>"`
+- Never run the full unfiltered suite unless the user asks or the change is genuinely broad (shared services, combat/stat infrastructure, enum or 2DA-wide edits, generator output). A localized change is verified by the tests that guard it. Say which test filters you ran.
+- Many tests read `SWLOR_Haks`. In a git worktree the submodule may be uninitialized or a stale plain copy; check `git submodule status` before treating 2DA, TLK, or icon test failures as real.
+- Some tests rewrite tracked files as a side effect (for example `CombatUpgradeBibleImplementationReview.csv`). Review that diff; do not commit it by accident.
+- Do not start background jobs, watchers, dev servers, or detached processes unless the user asks or the task strictly requires one. Use foreground commands with bounded timeouts. If a long-lived process is necessary, track its PID, stop it before handing off, and report the cleanup.
+- Deploy tooling: `Module\PackModule.cmd` repacks the module and `SWLOR_Haks\BuildHaks.cmd` rebuilds haks (needs `nwn_erf` on PATH). The user normally runs these. Run the server locally with `dotnet run --project SWLOR.Runner`.
+- Do not add task-specific README files or writeups for routine work unless the user asks. Implementation notes and validation results go in the pull request description.
 
-- Building or testing `SWLOR.Game.Server` fires a Windows post-build deploy (`SWLOR.CLI.exe -o`) that is slow and unnecessary for verification. Always skip it by passing `-p:RunPostBuildEvent=Never` on builds, and use a build-once/test-many flow.
-- Build a single time, then run only the relevant tests without rebuilding: `dotnet build SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj -p:RunPostBuildEvent=Never`, followed by `dotnet test --no-build --filter "FullyQualifiedName~<RelevantTestClass>"`. Use `|` to combine multiple filters.
-- Only run the full unfiltered suite (`dotnet test` with no `--filter`) when a change is broad enough to plausibly affect unrelated systems, or as a final pre-handoff check — not after every edit.
+## Code Conventions
 
-## Naming
-
-- Do not use internal initiative, milestone, or phase labels such as `CombatUpgrade` in production code identifiers, filenames, namespaces, classes, methods, or comments. Use domain terms that describe gameplay behavior, such as ability targeting, ability effects, Leadership, Devices, or the specific system being changed.
-
-## Toolset Option Lists
-
-- Builder-facing dropdowns, galleries, and searchable choice lists must never expose raw 2DA placeholder or sentinel rows such as `DELETED`, `USER`, `UNUSED`, `INVALID*`, `Bio_reserved`, `cep_reserved`, `Padding`, or numbered `NULL` slots. Route generic 2DA options through `TwoDaChoicePolicy`, declare table-specific required columns in `TwoDaLookupTables`, and fail closed when the metadata needed to prove a row is valid is unavailable. Add corpus or focused regression coverage whenever a new 2DA-backed option source is introduced.
+- New code puts one type per file, in a folder that matches its namespace and feature.
+- `[NWNEventHandler]` and `ExecuteScript` script names are constants in `SWLOR.Game.Server/Core/ScriptName.cs`, never inline string literals.
+- `DB.Search` returns at most 50 rows when the query has no `AddPaging`. Any query meant to load a complete set must call `AddPaging(<cap>, 0)`.
+- Do not use internal initiative, milestone, or phase labels (such as `CombatUpgrade`) in new identifiers, filenames, namespaces, or comments. Use domain terms that describe the gameplay system.
+- When an ability applies `EffectDamage` with `ApplyEffectToObject`, wrap it in `AssignCommand(source, () => ApplyEffectToObject(...))` so the damage appears in the player's combat log.
+- Player-facing chat commands use `.Permissions(AuthorizationLevel.All)`. `AuthorizationLevel.Player` alone silently rejects DM and admin accounts with the generic "Invalid chat command" message.
+- Builder-facing toolset dropdowns and pickers must never show 2DA placeholder rows (`DELETED`, `USER`, `UNUSED`, `INVALID*`, `Padding`, numbered `NULL` slots, and similar). Route 2DA options through `TwoDaChoicePolicy`, declare required columns in `TwoDaLookupTables`, fail closed when validity cannot be proven, and add regression coverage for each new 2DA-backed option source.
 
 ## Stat-Driven Gameplay
 
-- Shared combat, ability, and status-effect infrastructure must not special-case specific perk types or perk-specific status-effect classes to unlock gameplay behavior. Model perk-driven behavior as `StatType` adjustments, then have shared systems read those stats. Direct perk checks are only appropriate for ownership, unlock, purchase, UI, or progression gates.
-- `StatType` classification, polarity, or category decisions must be declared with `StatTypeAttribute` on the enum entry. Do not add large `if`/`switch` lists elsewhere to infer stat meaning; shared systems should read the enum metadata instead.
-- Attack Deflection, Shield Deflection, and Guard are separate combat mechanics. Attack Deflection and Shield Deflection are attack-roll outcomes that negate the hit and do not stack with each other; Guard is a damage-stage outcome that reduces damage and increases enmity. Do not implement one by reusing the state, stats, logs, or triggers of another.
+- Shared combat, ability, and status-effect code must not special-case specific perks or perk-specific status-effect classes. Model perk-driven behavior as `StatType` adjustments that shared systems read. Direct perk checks are only for ownership, unlock, purchase, UI, or progression gates.
+- Declare `StatType` classification, polarity, and category with `StatTypeAttribute` on the enum entry, not with `if`/`switch` lists elsewhere.
+- Attack Deflection, Shield Deflection, and Guard are separate mechanics. Attack and Shield Deflection are attack-roll outcomes that negate the hit and do not stack with each other. Guard is a damage-stage outcome that reduces damage and raises enmity. Never implement one with another's state, stats, logs, or triggers.
 
-## NPC Hit Point Budgets
+## Content Rules
 
-- A stat skin's `NPCHP` is the NPC's final maximum HP budget. NWN stores `HitPoints` as base HP, then derives maximum HP by applying the Constitution modifier (SWLOR Vitality) once per class level, Toughness once per level, and 20 HP for each Epic Toughness feat. Do not set UTC `HitPoints` directly to `NPCHP`: set `CurrentHitPoints` and `MaxHitPoints` to `NPCHP`, and set `HitPoints` to `NPCHP` minus those native bonuses.
-- Apply runtime NPC HP budgets through `Stat.SetNPCMaxHitPoints` only, after the raw Vitality score has been finalized. `ObjectPlugin.SetMaxHitPoints` writes native base HP and therefore must not receive an `NPCHP` final budget directly.
-- After adding or restatting NPCHP-backed creatures, run `powershell -ExecutionPolicy Bypass -File tools/NormalizeNpcHitPoints.ps1`. Use `-CheckOnly` in audits. `NPCEnemyBalanceAuditTests.AllNpcHpBudgets_AccountForNativeVitalityAndToughnessRules` protects the complete corpus.
-
-## Player Identity
-
-- Player-facing surfaces must use the `PlayerName` service instead of raw player names. For live player objects, use `PlayerName.GetDisplayName(observer, target)` or `PlayerName.GetColoredDisplayName(observer, target)`. For offline/persisted player records, use `PlayerName.GetDisplayNameByPlayerId(observer, playerId, fallbackName)`.
-- Do not expose raw `GetName(player)`, `Player.Name`, `dbPlayer.Name`, `GetPCPlayerName`, public CD keys, or account names in ordinary player-facing UI, dialogs, nearby broadcasts, combat/status logs, HoloNet-style broadcasts, market/civic/property lists, or generated public object names.
-- Unnamed player characters use a stable unknown display descriptor. Blank descriptors are generated once from the persisted original appearance/species and base stats during migration or login, and fall back to a generic humanoid descriptor if species or stats cannot be resolved. Descriptor generation, descriptor persistence, and descriptor fallback lookup belong in the `PlayerDescriptor` service; `PlayerName` should consume descriptors while remaining responsible for observer-specific name resolution. Self-targeted `/name` replaces that descriptor and permanently discards the generated one.
-- Self-targeted `/name` sets the player's unknown display description. This remains an unnamed/unknown identity and must continue to render with the unknown gray name token. If the observer has not named the target, show only the gray descriptor. If the observer has named the target, show the assigned name plus the gray descriptor in brackets by default, such as `Joe Blow [A Seedy Individual]`; non-DM players may hide descriptors for named targets in Settings, in which case they see only their assigned name. Staff observers should always see the canonical character name plus the gray descriptor in brackets, such as `Joe Smith [A Seedy Individual]`.
-- `/name` input is limited to 64 characters and must reject player-entered color tokens. Color styling for known, unknown, and staff-facing name displays is controlled by the `PlayerName` service.
-- Property and ship permission management is a narrow exception because it grants persistent access to real character records. These screens may search canonical character names as well as observer-known names, and should display `PlayerName.GetKnownNameOrFallbackByPlayerId(observer, playerId, fallbackName)` so fake/known names are preserved when present and canonical names are available when no known name exists.
-- Server logs and audit trails must retain raw/canonical player identity for moderation and traceability. Raw/canonical player identity is also acceptable for DM/admin-only tools, persisted ownership fields, and messages shown only to that same player. Public custom names deliberately entered by players, such as renamed properties or droids, may remain visible.
-
-## Economy-Restricted Items
-
-- Player-facing item search and economy surfaces (quest contract objective search, and any future market-style blueprint pickers) must not show NPC-only, creature, or internal items. `Item.IsEconomyRestricted` is the single source of truth; `Cache.IsItemSearchableByResref` consumes it. Never hardcode resref lists to exclude items — extend the shared classifier or flag the blueprint.
-- Creature-equipment base item types (creature weapons and `CreatureItem` "stat skins") and items whose name carries the reserved `[NPC]`/`(NPC` prefix are excluded automatically, as are blueprints with no real inventory icon.
-- For an NPC-only item that a normal player item is otherwise indistinguishable from — a real base type, a real icon, and no `[NPC]` name (e.g. the "Specialist" NPC weapons, "Republic Special Forces Rifle") — set the `NO_ECONOMY` local variable to `1` on the blueprint. This is the explicit opt-out the runtime classifier reads. Prefer this over broadening name/base-type heuristics, which risk hiding legitimate player items.
-- If a genuinely new NPC naming convention or creature base type is introduced, update the pattern/base-type set in `Item.IsEconomyRestricted` (not a resref list). `EconomyRestrictedItemTests` guards that every `[NPC]`/`(NPC` blueprint stays covered; keep it green.
-- Any item blueprint that players cannot obtain through some source must carry the `NO_ECONOMY` flag. `EconomyObtainabilityCoverageTests` enforces this: it scans every `uti` blueprint, subtracts every obtainable source (loot, stores, placed containers, recipe outputs/components, refining, fishing, quest rewards via `AddItemReward`, training store, starting gear, and `CreateItemOnObject`/`CopyItemAndModify` literals), and requires the remainder (excluding creature/`[NPC]` items the runtime already handles) to be flagged. When it fails on a new item, either wire the item to a real player source or run `python tools/FlagNpcEconomyItems.py` to stamp it. New flags require a module repack on deploy. If you add a genuinely new item-acquisition mechanism, extend the obtainable extraction in both the tool and the test.
+- **Conversations:** authored dialogue lives only in `SWLOR.Game.Server/ConversationData/*.conversation.json`. Edit those graphs directly; never create DLG sources or regenerate graphs from legacy files. `Module/dlg/dmfi_universal.dlg.json` and the empty `Module/dlg/x0_skill_ctrap.dlg.json` base-game crafting override are the native exceptions. Preserve NPC `Conversation` IDs and route through `dialog_start`. Read `SWLOR.Game.Server/Readmes/Conversations.md` first.
+- **Player identity:** player-facing surfaces never show raw character names, account names, or CD keys; they go through the `PlayerName` service. Read `SWLOR.Game.Server/Readmes/PlayerIdentity.md` before touching any surface that displays a player.
+- **Economy-restricted items:** NPC-only and unobtainable items must stay out of player search and economy surfaces. `Item.IsEconomyRestricted` is the only classifier; never hardcode resref lists. Read `SWLOR.Game.Server/Readmes/EconomyRestrictedItems.md` before adding item blueprints or item pickers.
+- **NPC hit points:** a stat skin's `NPCHP` is the final maximum HP. Never write it to UTC `HitPoints` or pass it to `ObjectPlugin.SetMaxHitPoints`; NWN adds Vitality, Toughness, and Epic Toughness on top. Set `CurrentHitPoints`/`MaxHitPoints` to `NPCHP` and `HitPoints` to `NPCHP` minus those bonuses, apply runtime budgets only through `Stat.SetNPCMaxHitPoints` after Vitality is final, and run `powershell -ExecutionPolicy Bypass -File tools/NormalizeNpcHitPoints.ps1` after adding or restatting creatures.
+- **Rebuild-era changes:** do not write one-off migrations just to remove or refund deleted perks, blueprints, or skills; the planned full character rebuild handles character-build data.
 
 ## Design Bible
 
-- Follow `SWLOR.Game.Server/Readmes/DesignBibleWorkbookRules.md` when editing any Design Bible workbook.
-- Never edit a Design Bible workbook with `openpyxl` (or any library that rewrites the whole workbook without recalculating formulas). It discards the cached formula-result values on every formula cell: the perk sync tests still pass (text tabs have no formulas), but formula-backed tabs silently lose their cached numbers and break tests such as `NPCEnemyBalanceAuditTests`. These workbooks are Google Sheets exports that store text as inline strings, so edit the target cells surgically at the zip/XML level (cells look like `<c r="G31" s="..." t="inlineStr"><is><t>TEXT</t></is></c>`) and repackage copying every other zip entry byte-for-byte, so untouched sheets keep their cached values. The `tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible` formatter preserves caches and is safe to run afterward.
-- After editing `design/bible/SWLOR Design Bible - Combat Upgrade.xlsx`, run `powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible` to refresh `SWLOR.Game.Server/Readmes/CombatUpgradeBiblePerkManifest.csv` and `SWLOR.Game.Server/Readmes/CombatUpgradePerkAudit.csv` from the local workbook.
+- Read `SWLOR.Game.Server/Readmes/DesignBibleWorkbookRules.md` before editing any Design Bible workbook.
+- Never edit a workbook with `openpyxl` or any library that rewrites the whole file. It drops cached formula results and silently breaks formula-backed tabs and tests such as `NPCEnemyBalanceAuditTests`. Edit target cells at the zip/XML level (`<c r="G31" s="..." t="inlineStr"><is><t>TEXT</t></is></c>`) and copy every other zip entry byte-for-byte.
+- After editing `design/bible/SWLOR Design Bible - Combat Upgrade.xlsx`, run `powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible`.
 
-## Full Rebuild Changes
+## TLK and 2DA
 
-- For rebuild-era changes covered by a planned full character rebuild, do not add one-off player migrations solely to remove or refund deleted perks, blueprints, skills, or similar character-build data. Rely on the full rebuild path unless the change affects persistent data that survives rebuild or server/world state outside character builds.
-- Until the combat-upgrade migration set ships, fold additional combat-upgrade migration work into the existing in-flight combat-upgrade migrations instead of adding new numbered migration files. Add new numbered migrations only after the prior migration version has shipped, or when a change must run separately because of execution timing.
+- New custom TLK strings take the first empty slot or gap in `SWLOR_Haks/sw_tlk/sw_tlk.tlk.json` before appending at the end. Regenerate `sw_tlk.tlk` after editing the JSON.
+- 2DA references to custom TLK entries use `16777216 + tlkId` (entry `50003` is `16827219`). Raw IDs are only valid for base-game `dialog.tlk`. When moving or adding an entry, update every reference.
+- `RecastGroup` short names are player-facing and at most 14 characters. Choose a meaningful label; never auto-truncate, and make generators fail when one is missing.
 
-## TLK Entries
+## Abilities
 
-- New custom TLK strings must use a pre-existing empty TLK slot or gap before appending new IDs at the end of `SWLOR_Haks/sw_tlk/sw_tlk.tlk.json`.
-- NWN custom TLK references in 2DA files use `16777216 + tlkId`. When moving or adding a TLK entry, update every 2DA/reference to the matching custom strref.
-- After editing `sw_tlk.tlk.json`, regenerate `sw_tlk.tlk` before building or handing off the change.
+- Each distinct ability gets its own `*AbilityDefinition.cs` file and matching `IAbilityListDefinition` class named for it. Ranks of one ability share its file; unrelated abilities never share a file.
+- Targeting metadata is declared on the ability definition through the builder, never in separate per-ability lists.
+- Only single-target hostile casts and **aimed** areas ("in a line", "in a cone") show a target cursor. Queued weapon abilities and **self-centered** areas ("enemies within Nm") use `TARGETSELF=1` with `HostileFeat` cleared and never call `RequiresTarget()`. Every rank of an area ability needs its own `spells.2da` row and `Spell` value, never `Spell.Invalid`. Read `SWLOR.Game.Server/Readmes/AbilityTargeting.md` before adding or changing an active ability; `AreaAbilityTargetingTests` enforces it.
+- **Icons:** read `SWLOR.Game.Server/Readmes/IconStandards.md` first. Icon resrefs are meaningful abbreviations within 16 characters, with no hash or generator suffixes. After changing an icon referenced by `feat.2da` or `spells.2da`, run `powershell -ExecutionPolicy Bypass -File tools/GenerateCooldownIcons.ps1 -Force` (ImageMagick output only). After changing any gameplay icon or manifest entry, run `powershell -ExecutionPolicy Bypass -File tools/UpdateGameplayIconStandards.ps1 -AuditOnly` and fix every failure.
+- **VFX:** choose perk, ability, status-effect, trap, and creature VFX from `SWLOR.Game.Server/Readmes/VisualEffectSelection.md` and `VisualEffectReference.csv` by gameplay moment, colors, and location, not by constant name. Use the CSV `CSharpEnum` value: `BEAM` with `EffectBeam`, `FNF` for location bursts, `IMP`/`COM` for impacts, `DUR` for persistent auras, `EYES` only when the eye cue is intended.
 
-## Recast Groups
+## Agent Skills and Read-Only Areas
 
-- `RecastGroup` short names are player-facing and limited to 14 characters. Never auto-truncate or use partial-word fragments; choose a meaningful short label and make generators/scripts fail if one is missing.
-
-## Ability Definitions
-
-- Each distinct gameplay ability must have its own `*AbilityDefinition.cs` file and matching `IAbilityListDefinition` class named for that ability. Do not group unrelated abilities into broad definition files such as creature, combat, NPC, or package-level collections. Multiple ranks of the same ability may live in that ability's own definition file.
-- Ability-specific targeting metadata must be declared through the ability definition builder/detail pattern. Do not maintain separate explicit production lists of abilities for targeting behavior; shared targeting systems should consume the cached ability definitions.
-- An active ability presents a manual target cursor only when it is a single-target hostile *cast* or an **aimed** area. Queued weapon abilities (fire on the wearer's next landed auto-attack) and **self-centered** area abilities must NOT prompt for a target: in `feat.2da` they use `TARGETSELF=1` with `HostileFeat` cleared, and in C# they must not call `RequiresTarget()` (`ConfigureWeaponAbility` already skips it for `IsQueuedWeaponAbility`).
-- **Aimed vs self-centered is decided by the area's shape, and the shape must match the Design Bible wording.** An ability whose Bible description says "in a line" or "in a cone" is *aimed*: the player chooses the direction, so it needs a cursor. An ability that damages "enemies within Nm" (naming only a radius) is *self-centered*: it always originates on the caster and needs no cursor.
-- `RequiresTarget()` means a real target object is mandatory; it is not a cursor flag. Ground- or direction-aimed areas must declare targeting metadata and use `AbilityDetail.RequiresLocationTarget`, while leaving `RequiresTarget` false so empty-ground casts work. An area whose Bible explicitly requires a selected creature may call `RequiresTarget()`, but the builder must never infer that requirement from shape alone. `CanUseAbility` validates location targets separately and applies `MaxRange` only when the definition explicitly calls `HasMaxRange`—the default 5m object range must never become an implicit area-placement limit.
-
-  | Bible wording | `AbilityTargetingShapeType` | Cursor | `feat.2da` | C# targeting spell |
-  |---|---|---|---|---|
-  | "in a line" | `Rect` (sizeX = length, sizeY = width) | yes | `TARGETSELF` blank, `HostileFeat=1` | real `Spell`, **per rank** |
-  | "in a cone" | `Cone` (sizeX = length, sizeY = width) | yes | `TARGETSELF` blank, `HostileFeat=1` | real `Spell`, **per rank** |
-  | "to enemies within Nm" | `Sphere` (sizeX = radius, sizeY = `0`) | no | `TARGETSELF=1`, `HostileFeat` blank | real `Spell`, **per rank** |
-
-  **State the size in the description.** The generator reads the numbers out of the Bible line — "in an 8m x 2.5m line" and "enemies within 3m" produce those exact sizes — and only falls back to an archetype default when the line names none. A description that omits its size silently inherits a default that may not be what you intended.
-
-  Two traps in that parsing, both of which shipped bugs before:
-  - A radius area is recognised by the **noun**, not by "within Nm" alone: "enemies within 5m", "all targets within 6m" and "hostile targets within 5m" are areas. A bare "within Nm" is not, because the Bible also uses it for an ally buff ("allies within 5m"), a leash range ("while within 20m") and a placement range ("a field within 15m"). The singular form is also excluded — "one enemy within 5m" is a reach check, not a shape.
-  - A `line`/`cone` is only recognised in the "in a line" form or immediately after a stated size ("8m x 2.5m line"). A bare mention of the word does not count, because "anchors a defensive line" is a radius buff. Matching the literal phrase alone used to miss the sized form entirely and infer a self-centered Sphere for an aimed line — losing the cursor.
-
-  `Earthshatter I/II` is the reference implementation for an aimed line.
-- **Every rank of an area ability needs its own `spells.2da` row and its own `Spell` enum value.** Never leave `Spell.Invalid` on a rank that declares a real `AbilityTargetingShapeType`. The two failure modes differ, and only one of them is loud:
-  - Targeting metadata that *exists* but carries `Spell.Invalid` is rejected at load — `AbilityTargeting.ValidateTargeting` throws `InvalidOperationException`.
-  - Passing `Spell.Invalid` to `ConfigureWeaponAbility` never reaches that check, because `ApplyTargetingMetadata` skips building targeting metadata at all. The ability ends up with no `Targeting`, so it silently loses both its cursor and its ground area marker with nothing thrown or logged. This is how several ranks shipped broken, and it is what `AreaAbilityTargetingTests` guards.
-- `tools/GenerateWeaponArchetypeImplementation.py` encodes the table above, and `SWLOR.Game.Server.Tests/Perks/AreaAbilityTargetingTests.cs` enforces it by reflecting over every `IAbilityListDefinition` and cross-checking `feat.2da`. Keep that test green rather than adding explicit per-ability lists. After changing any of this, rebuild the haks and repack the module so the change deploys.
-
-## Ability Icons
-
-- Before adding, changing, generating, or renaming ability, feat, spell, or status-effect icons, read `SWLOR.Game.Server/Readmes/IconStandards.md` and follow it as the source of truth for artwork, semantic category, rank badges, and resource naming.
-- Gameplay icon resrefs must be short, meaningful abbreviations within NWN's 16-character resource limit. Do not use opaque hash, collision, or generator suffixes such as random-looking letters or digits after the meaningful abbreviation.
-- After adding or changing an ability icon referenced by `SWLOR_Haks/sw_2da/feat.2da` or `SWLOR_Haks/sw_2da/spells.2da`, run `powershell -ExecutionPolicy Bypass -File tools/GenerateCooldownIcons.ps1 -Force` to regenerate the `pr0_` through `pr5_` cooldown icon variants. This script must use ImageMagick output; do not replace it with a custom TGA writer.
-- After adding, changing, generating, or renaming any gameplay icon manifest entry or gameplay icon resource, run `powershell -ExecutionPolicy Bypass -File tools/UpdateGameplayIconStandards.ps1 -AuditOnly` and fix every failure before handing off the work.
-
-## Ability VFX
-
-- Before choosing or changing perk, ability, status-effect, trap, or scripted creature VFX, consult `SWLOR.Game.Server/Readmes/VisualEffectSelection.md` and `SWLOR.Game.Server/Readmes/VisualEffectReference.csv`. Pick VFX by gameplay moment, visual group, colors, location, and screenshot reference rather than by constant name alone.
-- Use the CSV `CSharpEnum` value in C# code. Use `BEAM` entries with `EffectBeam`, `FNF` entries for location/area bursts, `IMP` or `COM` entries for target impact feedback, `DUR` entries for persistent auras or field markers, and `EYES` entries only when the eye/head cue is the intended player-facing signal.
-
-## Ability Damage
-
-- When an ability applies `EffectDamage` with `ApplyEffectToObject`, wrap that call in `AssignCommand(source, () => ApplyEffectToObject(...))` using the damage source as the command object so the damage appears in the player's combat log.
+- Skills live in `.codex/skills/` and are mirrored to `.claude/skills/`. Edit only `.codex/skills/`, then run `powershell -ExecutionPolicy Bypass -File tools/SyncAgentSkills.ps1` (`-CheckOnly` to verify). `agents/openai.yaml` files are Codex-only and not mirrored. Keep skill text agent-neutral.
+- The Unified solution (`C:\Projects\unified`) is read-only reference material. Never change it.

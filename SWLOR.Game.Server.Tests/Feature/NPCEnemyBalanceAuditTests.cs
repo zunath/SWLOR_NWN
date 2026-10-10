@@ -114,26 +114,31 @@ public class NPCEnemyBalanceAuditTests
 
     private static readonly ExpectedEnemy[] ExpectedAlternateEnemies =
     {
-        new("man_ranger_2", "mando_rgr_skin", "npc_mando_rifle", 13, 199, 11, 19, 11, 16, 16, 29, 7, 9, 0, 5, 4, 4, 24, 30),
+        new("man_ranger_2", "mando_rgr_skin", "npc_mando_rifle", 13, 151, 11, 19, 11, 16, 16, 29, 7, 9, 0, 5, 4, 4, 18, 30),
         new("man_warrior_2", "mando_war_skin", "npc_mando_blade", 14, 203, 11, 16, 20, 11, 16, 21, 27, 5, 7, 4, 3, 7, 20, 23),
-        new("v_raivor2", "raivor_skin", "raivor_c_claw", 14, 238, 20, 11, 11, 16, 16, 35, 6, 9, 0, 2, 6, 4, 27, 24),
-        new("v_flesheater2", "flesheater_skin", "vellen_claw", 17, 291, 21, 12, 12, 17, 17, 40, 7, 10, 0, 3, 7, 5, 31, 24),
-        new("s_app_m", "s_app_hide", "s_app_electro", 24, 363, 14, 20, 25, 14, 20, 32, 42, 9, 11, 6, 7, 11, 16, 24),
-        new("ecoterr_2", "ecoter_hide", "npc_eco_rifle", 27, 490, 27, 15, 15, 22, 22, 59, 10, 14, 0, 5, 11, 9, 46, 30),
-        new("byysk_guard002", "hu_byyskgua_hide", "vbyyskguardsword", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("v_raivor2", "raivor_skin", "raivor_c_claw", 14, 152, 20, 16, 11, 16, 16, 35, 6, 9, 0, 2, 6, 4, 17, 24),
+        new("v_flesheater2", "flesheater_skin", "vellen_claw", 17, 186, 21, 17, 12, 17, 17, 40, 7, 10, 0, 3, 7, 5, 20, 24),
+        new("s_app_m", "s_app_hide", "s_app_electro", 24, 333, 14, 20, 25, 14, 20, 32, 42, 9, 11, 6, 7, 11, 15, 24),
+        new("ecoterr_2", "ecoter_hide", "npc_eco_rifle", 27, 272, 27, 22, 15, 22, 22, 59, 10, 14, 0, 5, 11, 9, 26, 30),
+        new("byysk_guard002", "hu_byyskgua_hide", "vbyyskguardsword", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
     };
 
     private static readonly ExpectedEnemy[] ExpectedBloodFrenzyEnemies =
     {
-        new("bf_scavenger", "bf_scv_skin", "bf_scv_wp", 50, 1085, 40, 22, 22, 32, 32, 101, 18, 22, 0, 10, 19, 17, 81, 23),
-        new("bf_pulsedroid", "bf_pulse_skin", "bf_pulse_wp", 50, 977, 22, 40, 22, 32, 32, 88, 22, 22, 0, 13, 17, 17, 78, 30),
-        new("bf_duelist", "bf_duel_skin", "bf_duel_wp", 50, 1573, 41, 23, 23, 33, 33, 121, 21, 23, 1, 10, 20, 18, 88, 23),
-        new("bf_butcher", "stimbruis_skin", "stimbruis_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("bf_kess", "frenzmaster_skin", "frenzmaster_wp", 50, 5425, 43, 25, 25, 35, 35, 253, 44, 25, 3, 11, 22, 20, 102, 23),
+        new("bf_scavenger", "bf_scv_skin", "bf_scv_wp", 50, 418, 40, 32, 22, 32, 32, 101, 18, 22, 0, 8, 19, 17, 31, 23),
+        new("bf_pulsedroid", "bf_pulse_skin", "bf_pulse_wp", 50, 447, 22, 40, 22, 32, 32, 88, 22, 22, 0, 8, 17, 17, 35, 30),
+        new("bf_duelist", "bf_duel_skin", "bf_duel_wp", 50, 1573, 41, 33, 23, 33, 33, 121, 21, 23, 1, 10, 70, 40, 88, 23),
+        new("bf_butcher", "stimbruis_skin", "stimbruis_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("bf_kess", "frenzmaster_skin", "frenzmaster_wp", 50, 5425, 43, 35, 25, 35, 35, 253, 44, 25, 3, 11, 72, 42, 102, 23),
     };
 
     private static readonly ExpectedEnemy OldScarExpectedEnemy =
-        new("oldscar_kath", "oldscar_k_sk", "oldscar_k_wp", 4, 193, 16, 10, 10, 14, 14, 25, 4, 8, 2, 1, 5, 3, 13, 24);
+        new("oldscar_kath", "oldscar_k_sk", "oldscar_k_wp", 4, 193, 16, 14, 10, 14, 14, 25, 4, 8, 2, 1, 5, 3, 13, 24);
+
+    // Dathomir world boss: shares DATHOMIR_GROTTOS_BOSS with the Rancor and Dark Side Adept, so it uses
+    // the level 50 Boss Melee preset with the premium Loot Boss modifier.
+    private static readonly ExpectedEnemy ChirodactylExpectedEnemy =
+        new("vdathchirodac", "chirodactyl_sk", "chirodactyl_wp", 50, 16275, 43, 35, 25, 35, 35, 506, 88, 40, 18, 2, 92, 62, 77, 24);
 
     private static readonly ExpectedEnemy StormplumeExpectedEnemy =
         new("stormplume", "stormplume_sk", "stormplume_wp", 4, 164, 10, 14, 16, 10, 14, 15, 19, 4, 6, 3, 2, 6, 10, 24);
@@ -143,62 +148,81 @@ public class NPCEnemyBalanceAuditTests
         new("soot_rusk", "soot_rusk_sk", "soot_rusk_wp", 6, 230, 11, 18, 11, 15, 15, 26, 7, 9, 2, 5, 4, 4, 16, 30),
         new("nara_venn", "nara_venn_sk", "nara_venn_wp", 6, 230, 11, 18, 11, 15, 15, 26, 7, 9, 2, 5, 4, 4, 16, 25),
         new("silkshade", "silkshade_sk", "silkshade_wp", 7, 259, 11, 18, 11, 15, 15, 29, 7, 9, 2, 5, 4, 4, 17, 24),
-        new("mossback", "mossback_sk", "mossback_wp", 12, 461, 21, 13, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
+        new("mossback", "mossback_sk", "mossback_wp", 12, 461, 21, 18, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
         new("tarn_kyric", "tarn_kyric_sk", "tarn_kyric_wp", 14, 483, 13, 22, 13, 18, 18, 46, 11, 11, 2, 6, 6, 6, 29, 22),
         new("varo_skeld", "varo_skeld_sk", "varo_skeld_wp", 14, 483, 13, 22, 13, 18, 18, 46, 11, 11, 2, 6, 6, 6, 29, 30),
         new("harrek_voss", "harrek_voss_sk", "harrek_voss_wp", 14, 483, 13, 22, 13, 18, 18, 46, 11, 11, 2, 6, 6, 6, 29, 23),
-        new("greyspine", "greyspine_sk", "greyspine_wp", 12, 461, 21, 13, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
+        new("greyspine", "greyspine_sk", "greyspine_wp", 12, 461, 21, 18, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
         new("maw_ghal", "maw_ghal_sk", "maw_ghal_wp", 17, 557, 14, 19, 23, 14, 19, 37, 48, 8, 10, 6, 6, 10, 27, 24),
-        new("redtail_kor", "redtail_kor_sk", "redtail_kor_wp", 14, 536, 22, 13, 13, 18, 18, 52, 9, 11, 2, 3, 8, 6, 31, 24),
+        new("redtail_kor", "redtail_kor_sk", "redtail_kor_wp", 14, 536, 22, 18, 13, 18, 18, 52, 9, 11, 2, 3, 8, 6, 31, 24),
         new("shardeye", "shardeye_sk", "shardeye_wp", 10, 350, 12, 20, 12, 16, 16, 36, 9, 10, 2, 6, 5, 5, 22, 24),
-        new("rootcoil", "rootcoil_sk", "rootcoil_wp", 12, 461, 21, 13, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
-        new("mirevein", "mirevein_sk", "mirevein_wp", 12, 461, 21, 13, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
-        new("vrix7", "pulsemarks_skin", "pulsemarks_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 30),
+        new("rootcoil", "rootcoil_sk", "rootcoil_wp", 12, 461, 21, 18, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
+        new("mirevein", "mirevein_sk", "mirevein_wp", 12, 461, 21, 18, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
+        new("vrix7", "pulsemarks_skin", "pulsemarks_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 30),
         new("ashwing", "ashwing_sk", "ashwing_wp", 2, 114, 10, 13, 16, 10, 13, 12, 15, 3, 5, 3, 1, 5, 7, 24),
-        new("reefmaw", "reefmaw_sk", "reefmaw_wp", 27, 1103, 29, 17, 17, 24, 24, 88, 15, 16, 2, 6, 13, 11, 53, 24),
+        new("reefmaw", "reefmaw_sk", "reefmaw_wp", 27, 1103, 29, 24, 17, 24, 24, 88, 15, 16, 2, 6, 13, 11, 53, 24),
         new("sable_quarr", "sableq_sk", "sableq_wp", 29, 1082, 18, 30, 18, 25, 25, 82, 20, 17, 2, 9, 12, 12, 54, 30),
         new("kael_drox", "kaeldrox_sk", "kaeldrox_wp", 33, 1270, 19, 32, 19, 27, 27, 91, 23, 18, 2, 10, 13, 13, 61, 22),
         new("inkveil", "inkveil_sk", "inkveil_wp2", 31, 1109, 18, 25, 31, 18, 25, 60, 78, 13, 15, 9, 11, 15, 23, 24),
         new("glassjaw", "glassjaw_sk", "glassjaw_wp2", 30, 1128, 18, 31, 18, 25, 25, 84, 21, 17, 2, 10, 12, 12, 28, 24),
-        new("bulwark", "bulwark_sk", "bulwark_wp", 50, 3296, 34, 24, 34, 42, 24, 139, 46, 21, 2, 9, 25, 22, 76, 23),
-        new("slagborn", "slagborn_sk", "slagborn_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("demolisherzr9", "demolisherzr9_sk", "demolisherzr9_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("overwatch", "overwatch_sk", "overwatch_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("blastbreaker", "blastbreaker_sk", "blastbreaker_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("suppressor", "suppressor_sk", "suppressor_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("ironjaw", "ironjaw_sk", "ironjaw_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("quickdraw", "quickdraw_sk", "quickdraw_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("hexcaller", "hexcaller_sk", "hexcaller_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("grottoalpha", "grottoalpha_sk", "grottoalpha_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 24),
-        new("spinequill", "spinequill_sk", "spinequill_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 24),
-        new("ritestalker", "ritestalker_sk", "ritestalker_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 24),
-        new("invictus", "invictus_sk", "invictus_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("ruptorvane", "ruptorvane_sk", "ruptorvane_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("blackoutwrd", "blackoutwrd_sk", "blackoutwrd_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("sabraetrial", "sabraetrial_sk", "sabraetrial_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("enclavesentl", "enclavesentl_sk", "enclavesentl_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("cycloneadpt", "cycloneadpt_sk", "cycloneadpt_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("forgewright", "forgewright_sk", "forgewright_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("flameweaver", "flameweaver_sk", "flameweaver_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("banecaller", "banecaller_sk", "banecaller_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("canyonbulwrk", "canyonbulwrk_sk", "canyonbulwrk_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("dunedeadeye", "dunedeadeye_sk", "dunedeadeye_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("deadhandzeph", "deadhandzeph_sk", "deadhandzeph_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("flurrychamp", "flurrychamp_sk", "flurrychamp_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("thermlancer", "thermlancer_sk", "thermlancer_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("barrieroverse", "barrieroverse_sk", "barrieroverse_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("cryptwarden", "cryptwarden_sk", "cryptwarden_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("markahunger", "markahunger_sk", "markahunger_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("eclipseshade", "eclipseshade_sk", "eclipseshade_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("bunkerbreak", "bunkerbreak_sk", "bunkerbreak_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("beaconmarks", "beaconmarks_sk", "beaconmarks_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("decurioncmd", "decurioncmd_sk", "decurioncmd_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("triagewarden", "triagewarden_sk", "triagewarden_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("chemslinger", "chemslinger_sk", "chemslinger_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
-        new("conduitmatrn", "conduitmatrn_sk", "conduitmatrn_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
-        new("tarnapexmaw", "tarnapexmaw_sk", "tarnapexmaw_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 24),
-        new("quillstalker", "quillstalker_sk", "quillstalker_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 24),
-        new("rhydelalpha", "rhydelalpha_sk", "rhydelalpha_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 24),
+        new("bulwark", "bulwark_sk", "bulwark_wp", 50, 3296, 34, 34, 34, 42, 24, 139, 46, 21, 2, 9, 75, 44, 76, 23),
+        new("slagborn", "slagborn_sk", "slagborn_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("demolisherzr9", "demolisherzr9_sk", "demolisherzr9_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("overwatch", "overwatch_sk", "overwatch_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("blastbreaker", "blastbreaker_sk", "blastbreaker_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("suppressor", "suppressor_sk", "suppressor_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("ironjaw", "ironjaw_sk", "ironjaw_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("quickdraw", "quickdraw_sk", "quickdraw_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("hexcaller", "hexcaller_sk", "hexcaller_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("grottoalpha", "grottoalpha_sk", "grottoalpha_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 24),
+        new("spinequill", "spinequill_sk", "spinequill_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 24),
+        new("ritestalker", "ritestalker_sk", "ritestalker_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 24),
+        new("invictus", "invictus_sk", "invictus_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("ruptorvane", "ruptorvane_sk", "ruptorvane_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("blackoutwrd", "blackoutwrd_sk", "blackoutwrd_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("sabraetrial", "sabraetrial_sk", "sabraetrial_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("enclavesentl", "enclavesentl_sk", "enclavesentl_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("cycloneadpt", "cycloneadpt_sk", "cycloneadpt_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("forgewright", "forgewright_sk", "forgewright_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("flameweaver", "flameweaver_sk", "flameweaver_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("banecaller", "banecaller_sk", "banecaller_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("canyonbulwrk", "canyonbulwrk_sk", "canyonbulwrk_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("dunedeadeye", "dunedeadeye_sk", "dunedeadeye_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("deadhandzeph", "deadhandzeph_sk", "deadhandzeph_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("flurrychamp", "flurrychamp_sk", "flurrychamp_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("thermlancer", "thermlancer_sk", "thermlancer_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("barrieroverse", "barrieroverse_sk", "barrieroverse_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("cryptwarden", "cryptwarden_sk", "cryptwarden_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("markahunger", "markahunger_sk", "markahunger_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("eclipseshade", "eclipseshade_sk", "eclipseshade_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("bunkerbreak", "bunkerbreak_sk", "bunkerbreak_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("beaconmarks", "beaconmarks_sk", "beaconmarks_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("decurioncmd", "decurioncmd_sk", "decurioncmd_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("triagewarden", "triagewarden_sk", "triagewarden_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
+        new("chemslinger", "chemslinger_sk", "chemslinger_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("conduitmatrn", "conduitmatrn_sk", "conduitmatrn_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
+        new("tarnapexmaw", "tarnapexmaw_sk", "tarnapexmaw_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 24),
+        new("quillstalker", "quillstalker_sk", "quillstalker_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 24),
+        new("rhydelalpha", "rhydelalpha_sk", "rhydelalpha_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 24),
+        new("tuskchampion", "tuskchampion_sk", "tuskchampion_wp", 41, 1867, 36, 30, 21, 30, 30, 127, 22, 21, 2, 9, 23, 18, 78, 27),
+        new("tusklongeye", "tusklongeye_sk", "tusklongeye_wp", 41, 1680, 21, 36, 21, 30, 30, 110, 28, 21, 2, 12, 21, 18, 74, 30),
+        new("tuskwarcaller", "tuskwarcaller_sk", "tuskwarcaller_wp", 41, 1587, 21, 30, 36, 21, 30, 77, 99, 17, 19, 11, 20, 21, 59, 27),
+    };
+
+    // Tatooine Tusken cave boss: level 45 Boss Melee Humanoid with a gaderffii (staff delay).
+    private static readonly ExpectedEnemy TuskenWarlordExpectedEnemy =
+        new("tuskwarlord", "tuskwarlord_sk", "tuskwarlord_wp", 45, 4698, 40, 33, 24, 33, 33, 230, 40, 23, 3, 10, 45, 29, 92, 27);
+
+    private static readonly IReadOnlyDictionary<ResistanceType, int> TuskenWarlordExpectedResistances = new Dictionary<ResistanceType, int>
+    {
+        [ResistanceType.Fire] = 11,
+        [ResistanceType.Poison] = -5,
+        [ResistanceType.Electrical] = 11,
+        [ResistanceType.Ice] = 11,
+        [ResistanceType.Mind] = -5,
+        [ResistanceType.Mobility] = 11,
+        [ResistanceType.Trauma] = 12,
+        [ResistanceType.Disruption] = 11,
     };
 
     private static readonly IReadOnlyDictionary<ResistanceType, int> OldScarExpectedResistances = new Dictionary<ResistanceType, int>
@@ -248,9 +272,9 @@ public class NPCEnemyBalanceAuditTests
             ["kael_drox"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 15, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 15, [ResistanceType.Ice] = 15, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 15, [ResistanceType.Trauma] = 17, [ResistanceType.Disruption] = 15 },
             ["inkveil"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 17, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 19, [ResistanceType.Trauma] = 21, [ResistanceType.Disruption] = -10 },
             ["glassjaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 16, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 18, [ResistanceType.Trauma] = 20, [ResistanceType.Disruption] = -10 },
-            ["bulwark"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
-            ["slagborn"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
-            ["demolisherzr9"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
+            ["bulwark"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 100, [ResistanceType.Disruption] = -15 },
+            ["slagborn"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 100, [ResistanceType.Disruption] = -15 },
+            ["demolisherzr9"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 100, [ResistanceType.Disruption] = -15 },
             ["overwatch"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
             ["blastbreaker"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
             ["suppressor"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
@@ -287,6 +311,9 @@ public class NPCEnemyBalanceAuditTests
             ["tarnapexmaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 13, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 14, [ResistanceType.Trauma] = 15, [ResistanceType.Disruption] = -10 },
             ["quillstalker"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 13, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 14, [ResistanceType.Trauma] = 15, [ResistanceType.Disruption] = -10 },
             ["rhydelalpha"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 13, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 14, [ResistanceType.Trauma] = 15, [ResistanceType.Disruption] = -10 },
+            ["tuskchampion"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 9, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 9, [ResistanceType.Ice] = 9, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 9, [ResistanceType.Trauma] = 10, [ResistanceType.Disruption] = 9 },
+            ["tusklongeye"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 9, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 9, [ResistanceType.Ice] = 9, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 9, [ResistanceType.Trauma] = 10, [ResistanceType.Disruption] = 9 },
+            ["tuskwarcaller"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 9, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 9, [ResistanceType.Ice] = 9, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 9, [ResistanceType.Trauma] = 10, [ResistanceType.Disruption] = 9 },
         };
 
     private static readonly IReadOnlyDictionary<string, FeatType[]> ExpectedBloodFrenzyAbilityPackages = new Dictionary<string, FeatType[]>
@@ -359,6 +386,9 @@ public class NPCEnemyBalanceAuditTests
         ["tarnapexmaw"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
         ["quillstalker"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
         ["rhydelalpha"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["tuskchampion"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["tusklongeye"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["tuskwarcaller"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
     };
 
     private static readonly IReadOnlyDictionary<string, string> ExpectedDroidEnemySkins = new Dictionary<string, string>
@@ -393,25 +423,25 @@ public class NPCEnemyBalanceAuditTests
 
     private static readonly ExpectedDualWieldDamage[] ExpectedDualWieldDamageTotals =
     {
-        new("s_app", 38),
-        new("byysk_warrior", 43),
+        new("s_app", 35),
+        new("korr_frostbind", 35),
+        new("s_app_m", 29),
+        new("byysk_warrior", 33),
         new("vdathguard", 81),
         new("vkorrdunmarauder", 73),
         new("byysk_champion", 89),
-        new("vnpcswar3", 59),
+        new("vnpcswar3", 28),
     };
 
     private static readonly ExpectedRuntimeWeaponDamage[] ExpectedRestoredFastCadenceNormalDamage =
     {
-        new("vdathtribal", "kwitribal_wp", 67),
-        new("vnpcssorc4", "sithsorc4_wp", 69),
-        new("qion_hive_tunnel", "qiontunneler_wp", 31),
-        new("qion_hive_tunnel", "qiontunneler_wp2", 30),
-        new("vkorrdun1sword", "sithguardmel_wp", 85),
-        new("vdathchirodac", "chirodactyl_wp", 41),
-        new("vdathchirodac", "chirodactyl_wp2", 40),
-        new("korr_wraid", "wraid_wp", 35),
-        new("ww_kinrath", "wwkinrath_wp", 15),
+        new("vdathtribal", "kwitribal_wp", 34),
+        new("vnpcssorc4", "sithsorc4_wp", 44),
+        new("qion_hive_tunnel", "qiontunneler_wp", 19),
+        new("qion_hive_tunnel", "qiontunneler_wp2", 18),
+        new("vkorrdun1sword", "sithguardmel_wp", 39),
+        new("korr_wraid", "wraid_wp", 22),
+        new("ww_kinrath", "wwkinrath_wp", 12),
     };
 
     [Test]
@@ -716,9 +746,9 @@ public class NPCEnemyBalanceAuditTests
         var root = FindRepositoryRoot();
         var targets = new[]
         {
-            new { Resref = "vdathswampland", Skin = "junglebug_sk", Level = 40, HP = 683, Agility = 28, Evasion = 10, EffectiveEvasion = 126 },
-            new { Resref = "vdathpurbole", Skin = "purbole_sk", Level = 41, HP = 705, Agility = 28, Evasion = 10, EffectiveEvasion = 128 },
-            new { Resref = "vdathtribal", Skin = "kwitribal_sk", Level = 43, HP = 795, Agility = 29, Evasion = 11, EffectiveEvasion = 134 },
+            new { Resref = "vdathswampland", Skin = "junglebug_sk", Level = 40, HP = 474, Agility = 28, Evasion = 8, EffectiveEvasion = 124 },
+            new { Resref = "vdathpurbole", Skin = "purbole_sk", Level = 41, HP = 482, Agility = 28, Evasion = 8, EffectiveEvasion = 126 },
+            new { Resref = "vdathtribal", Skin = "kwitribal_sk", Level = 43, HP = 401, Agility = 29, Evasion = 8, EffectiveEvasion = 131 },
             new { Resref = "vdathguard", Skin = "kwiguardian_sk", Level = 45, HP = 1902, Agility = 32, Evasion = 13, EffectiveEvasion = 143 },
         };
 
@@ -814,6 +844,92 @@ public class NPCEnemyBalanceAuditTests
                 .Should()
                 .Be(expectedValue, $"{resistanceType} should match Old Scar's level 4 Elite Beast package");
         }
+    }
+
+    [Test]
+    public void Chirodactyl_UsesDathomirWorldBossStats()
+    {
+        var root = FindRepositoryRoot();
+        var expected = ChirodactylExpectedEnemy;
+        using var utc = ReadJson(root, "Module", "utc", $"{expected.Resref}.utc.json");
+        using var skin = ReadJson(root, "Module", "uti", $"{expected.SkinResref}.uti.json");
+        using var leftClaw = ReadJson(root, "Module", "uti", "chirodactyl_wp.uti.json");
+        using var rightClaw = ReadJson(root, "Module", "uti", "chirodactyl_wp2.uti.json");
+
+        GetEquippedResref(utc.RootElement, CreatureArmorSlot).Should().Be(expected.SkinResref);
+        GetEquippedResref(utc.RootElement, CreatureLeftSlot).Should().Be("chirodactyl_wp");
+        GetEquippedResref(utc.RootElement, CreatureWeaponSlot).Should().Be("chirodactyl_wp2");
+
+        AssertCreatureHitPoints(utc.RootElement, expected);
+        AssertCreatureAttributes(utc.RootElement, expected);
+        AssertSkinCombatStats(skin.RootElement, expected);
+
+        (GetItemPropertyCost(leftClaw.RootElement, ItemPropertyDMG).GetValueOrDefault() +
+         GetItemPropertyCost(rightClaw.RootElement, ItemPropertyDMG).GetValueOrDefault())
+            .Should()
+            .Be(153, "the two Chirodactyl claws should split the premium Loot Boss DMG budget");
+        GetItemPropertyCost(leftClaw.RootElement, ItemPropertyDelay).Should().Be(expected.WeaponDelay);
+        GetItemPropertyCost(rightClaw.RootElement, ItemPropertyDelay).Should().Be(expected.WeaponDelay);
+
+        var expectedFeatIds = new[]
+        {
+            (int)FeatType.MaulingBite,
+            (int)FeatType.BonecrusherBite,
+            (int)FeatType.TailSweep,
+            (int)FeatType.TerrifyingBellow,
+            (int)FeatType.ChitinGuard,
+            (int)FeatType.RupturingQuake,
+        };
+        GetCreatureFeats(utc.RootElement)
+            .Should()
+            .Contain(expectedFeatIds, "the Chirodactyl should use the Boss Melee package from the World NPCs Bible");
+    }
+
+    [Test]
+    public void TuskenWarlord_UsesBossMeleeBibleStats()
+    {
+        var root = FindRepositoryRoot();
+        var expected = TuskenWarlordExpectedEnemy;
+        using var utc = ReadJson(root, "Module", "utc", $"{expected.Resref}.utc.json");
+        using var skin = ReadJson(root, "Module", "uti", $"{expected.SkinResref}.uti.json");
+        using var weapon = ReadJson(root, "Module", "uti", $"{expected.WeaponResref}.uti.json");
+
+        GetString(utc.RootElement, "Tag").Should().Be(expected.Resref);
+        GetString(utc.RootElement, "TemplateResRef").Should().Be(expected.Resref);
+        GetEquippedResref(utc.RootElement, RightHandSlot).Should().Be(expected.WeaponResref);
+        GetEquippedResref(utc.RootElement, CreatureArmorSlot).Should().Be(expected.SkinResref);
+
+        AssertCreatureHitPoints(utc.RootElement, expected);
+        AssertCreatureAttributes(utc.RootElement, expected);
+        AssertSkinCombatStats(skin.RootElement, expected);
+        AssertWeaponStats(weapon.RootElement, expected);
+
+        foreach (var (resistanceType, expectedValue) in TuskenWarlordExpectedResistances)
+        {
+            var rawCostValue = GetItemPropertyCost(skin.RootElement, ItemPropertyResistance, (int)resistanceType);
+            rawCostValue.Should().NotBeNull($"the Tusken Warlord should define {resistanceType} resistance");
+            Resistance.DecodeItemPropertyCostTableValue(rawCostValue!.Value)
+                .Should()
+                .Be(expectedValue, $"{resistanceType} should match the level 45 Boss Humanoid package");
+        }
+
+        var expectedFeatIds = new[]
+        {
+            (int)FeatType.MaulingBite,
+            (int)FeatType.BonecrusherBite,
+            (int)FeatType.TailSweep,
+            (int)FeatType.TerrifyingBellow,
+            (int)FeatType.ChitinGuard,
+            (int)FeatType.RupturingQuake,
+        };
+        var creatureFeats = GetCreatureFeats(utc.RootElement);
+        creatureFeats.Should().Contain(expectedFeatIds, "the Tusken Warlord should use the Boss Melee package");
+        creatureFeats
+            .Intersect(ResistanceThreatFeats.Keys)
+            .Should()
+            .BeEquivalentTo(
+                expectedFeatIds.Intersect(ResistanceThreatFeats.Keys),
+                "the Tusken Warlord should not inherit the Tusken Elite's resistance-pressure abilities");
     }
 
     [Test]
@@ -1040,6 +1156,7 @@ public class NPCEnemyBalanceAuditTests
 
         var failures = new List<string>();
         var requirementsByTechnique = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        var sourceNameByTechnique = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         var mimicryLastRow = mimicry
             .Descendants(ns + "row")
             .Select(row => int.Parse(row.Attribute("r")!.Value, CultureInfo.InvariantCulture))
@@ -1054,7 +1171,14 @@ public class NPCEnemyBalanceAuditTests
             }
 
             var technique = GetWorkbookCellText(mimicry, sharedStrings, $"C{row}");
-            if (!sourcesByTechnique.TryGetValue(technique, out var sources) || sources.Count == 0)
+
+            // Stance techniques carry a " Stance" suffix that the creature ability they mimic does not,
+            // so match them back to the World NPCs ability list by the creature ability's own name.
+            var sourceName = technique.EndsWith(" Stance", StringComparison.OrdinalIgnoreCase)
+                ? technique[..^" Stance".Length]
+                : technique;
+            sourceNameByTechnique[technique] = sourceName;
+            if (!sourcesByTechnique.TryGetValue(sourceName, out var sources) || sources.Count == 0)
             {
                 failures.Add($"{technique}: no player-accessible source is listed in World NPCs Existing Abilities (AQ).");
                 continue;
@@ -1104,7 +1228,7 @@ public class NPCEnemyBalanceAuditTests
             {
                 Technique = entry.Key,
                 Requirement = entry.Value,
-                EarliestSourceLevel = sourcesByTechnique[entry.Key].Min(source => source.Level),
+                EarliestSourceLevel = sourcesByTechnique[sourceNameByTechnique[entry.Key]].Min(source => source.Level),
             })
             .Where(entry => entry.EarliestSourceLevel < 50)
             .GroupBy(entry => entry.EarliestSourceLevel)
@@ -1121,7 +1245,7 @@ public class NPCEnemyBalanceAuditTests
 
         foreach (var entry in requirementsByTechnique)
         {
-            var earliestLevel = sourcesByTechnique[entry.Key].Min(source => source.Level);
+            var earliestLevel = sourcesByTechnique[sourceNameByTechnique[entry.Key]].Min(source => source.Level);
             if (earliestLevel < 50)
                 continue;
 
@@ -1292,13 +1416,18 @@ public class NPCEnemyBalanceAuditTests
             .Should()
             .Be("decimal", "resistance adjustments should be first-class numeric cells rather than text notes");
 
+        var lastWeaponDelayRow = weaponDelays.Descendants(ns + "row")
+            .Where(row => row.Elements(ns + "c").Any(cell =>
+                cell.Attribute("r")?.Value.StartsWith("D", StringComparison.Ordinal) == true &&
+                cell.Element(ns + "v") != null))
+            .Max(row => int.Parse(row.Attribute("r")!.Value, CultureInfo.InvariantCulture));
         weaponDelays
             .Descendants(ns + "autoFilter")
             .Single()
             .Attribute("ref")?
             .Value
             .Should()
-            .Be("$A$1:$E$442", "the weapon-delay lookup rows should be filterable");
+            .Be($"$A$1:$E${lastWeaponDelayRow}", "every weapon-delay source row should be filterable");
 
         GetWorkbookCellText(weaponDelays, sharedStrings, "A8").Should().Be("bf_scavenger");
         GetWorkbookCellNumber(weaponDelays, sharedStrings, "D8").Should().Be(230m);
@@ -1353,7 +1482,8 @@ public class NPCEnemyBalanceAuditTests
                 var abilityPackage = GetWorkbookCellText(worksheet, sharedStrings, $"AP{row}");
                 abilityPackage.Should().NotBeNullOrWhiteSpace();
                 GetWorkbookCellText(worksheet, sharedStrings, $"AQ{row}").Should().Be(abilityPackage);
-                GetWorkbookCellText(worksheet, sharedStrings, $"AR{row}").Should().Contain(line.DisplayName);
+                GetWorkbookCellText(worksheet, sharedStrings, $"B{row}")
+                    .Should().Contain(line.DisplayName, "the enemy-name column identifies its capstone line");
 
                 if (step == 4)
                 {

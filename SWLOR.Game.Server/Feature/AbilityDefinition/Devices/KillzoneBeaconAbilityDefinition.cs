@@ -68,7 +68,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 VisualEffect.Vfx_Com_Chunk_Red_Small,
                 markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Red_Blue,
                 markerVisualEffectScale: 4.8f,
-                appliesBeaconPulseBonuses: true);
+                appliesBeaconPulseBonuses: true,
+                projectileVisualEffect: VisualEffect.Mirv_StarWars_Bolt2);
 
             DeviceAbilityEffects.ScheduleAreaHostilePulses(
                 activator,
@@ -81,9 +82,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 CapstoneAbility.ActiveDurationSeconds,
                 CombatDamageType.Electrical,
                 VisualEffect.Vfx_Imp_Lightning_M,
-                VisualEffect.Vfx_Imp_Mirv_Electric,
                 appliesBeaconPulseBonuses: true,
-                showAreaIndicator: false);
+                showAreaIndicator: false,
+                beamVisualEffect: VisualEffect.Vfx_Beam_Silent_Lightning);
         }
 
     }

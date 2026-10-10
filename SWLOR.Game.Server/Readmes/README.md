@@ -55,18 +55,6 @@ Guidance and generated reference data for choosing NWN visual effects for perks,
 - **Ability implementation patterns** for activation, target, area, marker, and beam visuals
 - **VisualEffectReference.csv** with C# enum names, NWScript constants, visual tags, colors, locations, source pages, and screenshot URLs
 
-### [CombatUpgradeImplementationStatus.md](CombatUpgradeImplementationStatus.md)
-Current combat-upgrade status, latest audit results, verification notes, and remaining release-validation work.
-
-### [CombatUpgradeImplementationPlan.md](CombatUpgradeImplementationPlan.md)
-Combat-upgrade implementation scope, acceptance criteria, generated audit artifact notes, and follow-up work.
-
-### [CombatUpgradeMigration.md](CombatUpgradeMigration.md)
-Migration notes for forced rebuild, perk refunds/removals, defense/resistance data movement, and item-property cleanup.
-
-### [CapstoneQuestLinePlan.md](CapstoneQuestLinePlan.md)
-Plan rules and follow-up tasks for locking level 50 capstone perks behind quest lines, including spawn placement constraints for high-level quest enemies.
-
 ### [PlayerRecognitionAndDisguisesPlan.md](PlayerRecognitionAndDisguisesPlan.md)
 Plan for observer-specific known names, long-running-world migration, combat-log considerations, and a follow-up disguise system.
 

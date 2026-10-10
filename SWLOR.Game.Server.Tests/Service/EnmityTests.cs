@@ -18,6 +18,7 @@ public class EnmityTests
         CreatureToEnemies().Clear();
         ProximityEnmityAmounts().Clear();
         AttackCommandTimes().Clear();
+        GetField<Dictionary<uint, uint>>("_attackCommandTargets").Clear();
     }
 
     [TearDown]
@@ -27,6 +28,43 @@ public class EnmityTests
         CreatureToEnemies().Clear();
         ProximityEnmityAmounts().Clear();
         AttackCommandTimes().Clear();
+        GetField<Dictionary<uint, uint>>("_attackCommandTargets").Clear();
+    }
+
+    [Test]
+    public void ShouldIssueAttackCommand_ReplacesAnApproachWhenTheLeaderChanges()
+    {
+        ShouldIssueAttackCommand(OBJECT_INVALID, 2, ActionType.MoveToPoint, false,
+            commandIssuedAt: DateTime.UtcNow, pendingTarget: 1).Should().BeTrue();
+        ShouldIssueAttackCommand(OBJECT_INVALID, 1, ActionType.MoveToPoint, false,
+            commandIssuedAt: DateTime.UtcNow, pendingTarget: 1).Should().BeFalse();
+        ShouldIssueAttackCommand(2, 1, ActionType.AttackObject, false,
+            commandIssuedAt: DateTime.UtcNow, pendingTarget: 1).Should().BeFalse();
+        ShouldIssueAttackCommand(OBJECT_INVALID, 2, ActionType.MoveToPoint, true,
+            commandIssuedAt: DateTime.UtcNow, pendingTarget: 1).Should().BeFalse();
+    }
+
+    [Test]
+    public void IsThreatSecured_RequiresLeadingTheNextHighestByTheSecureMargin()
+    {
+        const uint enemy = 100;
+        const uint beast = 1;
+        const uint player = 2;
+
+        Enmity.IsThreatSecured(enemy, beast).Should().BeFalse();
+
+        EnemyEnmityTables()[enemy] = new Dictionary<uint, int> { [beast] = 500 };
+        Enmity.IsThreatSecured(enemy, beast).Should().BeTrue();
+
+        EnemyEnmityTables()[enemy][player] = 450;
+        Enmity.IsThreatSecured(enemy, beast).Should().BeFalse();
+
+        EnemyEnmityTables()[enemy][player] = 400;
+        Enmity.IsThreatSecured(enemy, beast).Should().BeTrue();
+
+        EnemyEnmityTables()[enemy][player] = 900;
+        Enmity.IsThreatSecured(enemy, beast).Should().BeFalse();
+        Enmity.IsThreatSecured(enemy, player).Should().BeTrue();
     }
 
     [Test]
@@ -552,7 +590,8 @@ public class EnmityTests
         bool shouldRecoverStaleAttack = false,
         DateTime? now = null,
         DateTime? commandIssuedAt = null,
-        float recoverySeconds = 6f)
+        float recoverySeconds = 6f,
+        uint pendingTarget = OBJECT_INVALID)
     {
         return (bool)typeof(Enmity)
             .GetMethod("ShouldIssueAttackCommand", BindingFlags.Static | BindingFlags.NonPublic)!
@@ -565,7 +604,8 @@ public class EnmityTests
                 shouldRecoverStaleAttack,
                 now ?? DateTime.UtcNow,
                 commandIssuedAt,
-                recoverySeconds
+                recoverySeconds,
+                pendingTarget
             })!;
     }
 

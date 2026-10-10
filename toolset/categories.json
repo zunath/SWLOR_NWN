@@ -148,7 +148,8 @@
                 "veles_shops",
                 "visc_sewer_depth",
                 "pw_sc_velescmd",
-                "pw_sc_velesannx"
+                "pw_sc_velesannx",
+                "veles_tradecon"
               ]
             },
             {
@@ -1081,6 +1082,7 @@
               "name": "Veles",
               "members": [
                 "cleanwatertube",
+                "concoursedroid",
                 "czerka_concierge",
                 "czerkapatrol",
                 "czerkasoda",
@@ -1170,6 +1172,7 @@
             "talgarmeyne",
             "tristan_talyron",
             "veles_thug1",
+            "vendor",
             "wf_droid",
             "wf_engineer"
           ]
@@ -2456,6 +2459,10 @@
                 "ext_tusken_tr001",
                 "tusken_elite1",
                 "tusken_elite2",
+                "tuskchampion",
+                "tusklongeye",
+                "tuskwarcaller",
+                "tuskwarlord",
                 "ext_tusken_tr003",
                 "tusken_melee",
                 "womprat"
@@ -9899,6 +9906,26 @@
                     "deadhandzephdb",
                     "deadhandzephcm",
                     "bp_deadhandzeph",
+                    "gaffi_bracer",
+                    "hide_warbelt",
+                    "sun_bantha_hide",
+                    "bp_hidecuirass",
+                    "hide_cuirass",
+                    "dunescout_boots",
+                    "dunescout_glove",
+                    "cycler_scope",
+                    "bp_scopecap",
+                    "scopewright_cap",
+                    "ritual_beads",
+                    "sandcall_wraps",
+                    "bone_fetish",
+                    "bp_windmantle",
+                    "windcall_mantle",
+                    "sandstorm_gaffi",
+                    "warband_legs",
+                    "bone_totem",
+                    "bp_warbandhelm",
+                    "warband_helm",
                     "flurrychampcr",
                     "flurrychampda",
                     "flurrychampdb",
@@ -20050,6 +20077,7 @@
                 "tat_sandworm001",
                 "tat_sandworm",
                 "tat_tusken_elite",
+                "tat_tuskwarlord",
                 "tat_tuskspwn",
                 "womprat_spwn",
                 "tattworldboss",

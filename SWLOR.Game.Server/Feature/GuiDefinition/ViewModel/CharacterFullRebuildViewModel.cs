@@ -111,16 +111,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        /// <summary>
+        /// Selects an allowed character type and refreshes skills using the last loaded type,
+        /// including client updates that have already replaced the bound selection.
+        /// </summary>
         public int CharacterType
         {
             get => Get<int>();
             set
             {
                 var normalizedValue = NormalizeCharacterType(value);
-                var changed = CharacterType != normalizedValue;
                 Set(normalizedValue);
                 SelectedCharacterTypeName = GetCharacterTypeName(normalizedValue);
-                if (changed && _skillsLoaded)
+                // Client binding updates store CharacterType before invoking this setter.
+                // Compare against the type used to build the list, not the bound value.
+                if (_skillsLoaded && _loadedSkillCharacterType != SelectedSkillCharacterType)
                 {
                     LoadSkills();
                     RecalculateAvailableSkillPoints();
@@ -208,6 +213,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly List<SkillType> _skills = new();
         private readonly List<int> _skillDistributionPoints = new();
         private bool _skillsLoaded;
+        private Enumeration.CharacterType _loadedSkillCharacterType;
 
         private Enumeration.CharacterType SelectedSkillCharacterType => CharacterType == 1
             ? Enumeration.CharacterType.ForceSensitive
@@ -274,6 +280,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SetCharacterType(GetClassByPosition(1, Player) == ClassType.ForceSensitive ? 1 : 0);
         }
 
+        /// <summary>
+        /// Resets attribute allocations and refreshes editing availability from the current player state.
+        /// </summary>
         private void ResetControls()
         {
             var playerId = GetObjectUUID(Player);
@@ -327,6 +336,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.CharacterType);
         }
 
+        /// <summary>
+        /// Rebuilds the selected type's skill list, retaining shared allocations and dropping unavailable skills.
+        /// </summary>
         private void LoadSkills()
         {
             var availableSkills = Skill.GetActiveContributingSkills()
@@ -349,6 +361,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SkillNames = skills;
             SkillTooltips = tooltips;
+            _loadedSkillCharacterType = SelectedSkillCharacterType;
             _skillsLoaded = true;
         }
 
@@ -358,13 +371,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RemainingAbilityPoints = $"Attributes - {_remainingAbilityPoints} Points Remaining";
         }
 
-        private void RecalculateAvailableSkillPoints()
+        /// <summary>
+        /// Reads the player's current earned skill-point budget; XP can arrive while the window is open.
+        /// </summary>
+        protected virtual int GetCurrentSkillPointBudget()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            return DB.Get<Player>(playerId).TotalSPAcquired;
+        }
 
-            _remainingSkillPoints = dbPlayer.TotalSPAcquired - _skillDistributionPoints.Sum();
+        /// <summary>
+        /// Refreshes the displayed balance against the live budget and the current allocations.
+        /// </summary>
+        private void RecalculateAvailableSkillPoints()
+        {
+            _remainingSkillPoints = GetCurrentSkillPointBudget() - _skillDistributionPoints.Sum();
             RemainingSkillPoints = $"Skills - {_remainingSkillPoints} Points Remaining";
+        }
+
+        /// <summary>
+        /// Refreshes the skill budget before save validation so newly earned points must be distributed.
+        /// </summary>
+        private bool HasUnallocatedPoints()
+        {
+            RecalculateAvailableSkillPoints();
+            return _remainingAbilityPoints > 0 || _remainingSkillPoints > 0;
         }
 
         public Action OnClickResetEverything() => () =>
@@ -725,6 +756,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
 
 
+        /// <summary>
+        /// Requests confirmation, then validates the current budget and character restrictions before saving.
+        /// </summary>
         public Action OnClickSave() => () =>
         {
             ShowModal($"Are you sure you'd like to save these changes?", () =>
@@ -734,7 +768,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 CharacterType = selectedCharacterType;
                 var selectedClassType = GetCharacterClassType(selectedCharacterType);
 
-                if (_remainingAbilityPoints > 0 || _remainingSkillPoints > 0)
+                if (HasUnallocatedPoints())
                 {
                     FloatingTextStringOnCreature(ColorToken.Red("Please distribute all ability points and skill points first. Resize the window if needed."), Player, false);
                     return;

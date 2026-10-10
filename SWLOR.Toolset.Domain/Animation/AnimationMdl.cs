@@ -11,6 +11,18 @@ public static class AnimationMdl
 {
     public const int MaximumFileBytes = 64 * 1024 * 1024;
 
+    /// <summary>
+    /// The skeleton every wearer owns. Its bone offsets and scales belong to the
+    /// appearance, never to an inherited clip, so exports keep rotations only here.
+    /// Part attachment dummies (rootdummy, head, lhand, rhand, lforearm, impact,
+    /// garment nodes) are not bones and may still carry authored translation.
+    /// </summary>
+    public static readonly IReadOnlySet<string> WearerBones =
+        new HashSet<string>(new[] { "torso_g", "pelvis_g", "neck_g", "head_g" }
+            .Concat(new[] { "l", "r" }.SelectMany(side =>
+                new[] { "bicep", "forearm", "hand", "thigh", "shin", "foot" }.Select(bone => side + bone + "_g"))),
+            StringComparer.OrdinalIgnoreCase);
+
     /// <summary>Bounds the source file before allocating or decoding its animation text.</summary>
     public static async Task<AnimationProject> ImportFileAsync(string path, AnimationProject rig) =>
         Import(await AnimationSourceFile.ReadTextAsync(path, MaximumFileBytes, "Animation MDL"), rig);
@@ -67,8 +79,11 @@ public static class AnimationMdl
             var scales = keys.All(k => k.Pose[joint].Scale == keys[0].Pose[joint].Scale) ? keys[..1] : keys;
             // Inherited controllers replace the wearer's own bind values. Even a single
             // constant key can change bone length on another race/phenotype and remain
-            // latched when native idle only animates rotation. Omit unchanged bind channels.
-            if (positions.Any(key => Vector3.Distance(key.Pose[joint].Position, bone.Rest.Position) > .000001f))
+            // latched when native idle only animates rotation. Omit unchanged bind
+            // channels, and never key a skeleton bone's offset or scale at all: those
+            // belong to the appearance, and native clips animate bone rotation only.
+            var skeleton = WearerBones.Contains(bone.Name);
+            if (!skeleton && positions.Any(key => Vector3.Distance(key.Pose[joint].Position, bone.Rest.Position) > .000001f))
             {
                 text.AppendLine($"    positionkey {positions.Length}");
                 foreach (var key in positions)
@@ -80,7 +95,7 @@ public static class AnimationMdl
                 // Axis-angle is in radians in Aurora, not Euler angles or degrees.
                 text.AppendLine($"      {F(key.Time)} {AxisAngle(key.Pose[joint].Orientation)}");
             }
-            if (scales.Any(key => Math.Abs(key.Pose[joint].Scale - bone.Rest.Scale) > .000001f))
+            if (!skeleton && scales.Any(key => Math.Abs(key.Pose[joint].Scale - bone.Rest.Scale) > .000001f))
             {
                 text.AppendLine($"    scalekey {scales.Length}");
                 foreach (var key in scales) text.AppendLine($"      {F(key.Time)} {F(key.Pose[joint].Scale)}");

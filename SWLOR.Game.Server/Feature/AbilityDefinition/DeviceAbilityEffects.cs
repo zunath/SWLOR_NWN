@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -22,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private const float FieldEngineerVisualMinimumDurationSeconds = 0.1f;
         private const string FieldEngineerPulseMarkerResref = "_mdrn_pl_emitter";
         private const string FieldEngineerPulseMarkerTag = "field_engineer_pulse_marker";
+        private const string BeaconShotSound = "cb_sh_blstrfire1";
 
         private static readonly Dictionary<uint, List<FieldEngineerPulseEmitter>> _activeFieldEngineerPulseEmitters = new();
 
@@ -44,7 +46,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 bool isAreaPulse,
                 bool appliesBeaconPulseBonuses,
                 bool showAreaIndicator,
-                VisualEffect projectileVisualEffect = VisualEffect.None)
+                VisualEffect projectileVisualEffect = VisualEffect.None,
+                VisualEffect beamVisualEffect = VisualEffect.None)
             {
                 Activator = activator;
                 Location = location;
@@ -63,12 +66,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 AppliesBeaconPulseBonuses = appliesBeaconPulseBonuses;
                 ShowAreaIndicator = showAreaIndicator;
                 ProjectileVisualEffect = projectileVisualEffect;
+                BeamVisualEffect = beamVisualEffect;
                 MarkerObject = OBJECT_INVALID;
                 AreaIndicatorId = string.Empty;
-                if (IsAreaPulse)
+                if (IsAreaPulse && !HasShotVisual)
                 {
                     ApplyPulse = Ability.CaptureRepeatedAbilityImpact(activator,
                         () => ApplyAreaHostilePulse(this), baseDamage: baseDamage);
+                }
+                else if (IsAreaPulse)
+                {
+                    CreateAreaImpactBatch = Ability.CaptureRepeatedAbilityImpactBatch<uint>(activator,
+                        target => ApplySingleHostilePulseImpact(this, target), baseDamage: baseDamage);
+                    ApplyPulse = () => ApplyAreaHostileShots(this);
                 }
                 else
                 {
@@ -95,10 +105,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public bool AppliesBeaconPulseBonuses { get; }
             public bool ShowAreaIndicator { get; }
             public VisualEffect ProjectileVisualEffect { get; }
+            public VisualEffect BeamVisualEffect { get; }
+            public bool HasShotVisual => ProjectileVisualEffect != VisualEffect.None || BeamVisualEffect != VisualEffect.None;
             public uint MarkerObject { get; set; }
             public string AreaIndicatorId { get; set; }
             public Action ApplyPulse { get; }
             public Action<uint> ApplyTargetImpact { get; }
+            public Func<int, Action<uint>> CreateAreaImpactBatch { get; }
             public int PendingProjectileImpacts { get; set; }
         }
 
@@ -151,9 +164,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (!revealsHidden && (evasionPenalty <= 0 || durationSeconds <= 0))
                 return;
 
-            var creature = GetFirstObjectInShape(Shape.Sphere, radius, location, true);
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, radius, location, true))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (GetIsReactionTypeHostile(creature, activator))
                 {
                     if (revealsHidden)
@@ -172,7 +187,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     }
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, radius, location, true);
             }
         }
 
@@ -268,12 +282,43 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         public static Func<uint, int> GetAssaultGadgetBaseDamageAdjustment(uint activator)
         {
-            var adjustment = CalculateAssaultGadgetWeaponDamageEquivalent(
-                Skill.GetCreatureSkillRank(activator, SkillType.Devices));
+            var adjustment = GetAssaultGadgetWeaponDamageEquivalent(activator);
 
             return adjustment == 0
                 ? null
                 : _ => adjustment;
+        }
+
+        /// <summary>
+        /// Gadget DMG: the weapon-DMG equivalent every Assault Gadget adds to its base damage, scaled by Devices rank.
+        /// </summary>
+        public static int GetAssaultGadgetWeaponDamageEquivalent(uint creature)
+        {
+            var isPlayer = GetIsPC(creature) && !GetIsDM(creature);
+            if (isPlayer)
+            {
+                return CalculateAssaultGadgetWeaponDamageEquivalent(
+                    ResolveAssaultGadgetDevicesRank(true, Skill.GetCreatureSkillRank(creature, SkillType.Devices), null, 0));
+            }
+
+            var npcStats = Stat.GetNPCStats(creature);
+            int? npcDevicesRank = npcStats.Skills.TryGetValue(SkillType.Devices, out var rank) ? rank : null;
+            return CalculateAssaultGadgetWeaponDamageEquivalent(
+                ResolveAssaultGadgetDevicesRank(false, 0, npcDevicesRank, npcStats.Level));
+        }
+
+        /// <summary>
+        /// Droids and NPCs have no Devices skill (droid controllers cannot carry one), so their
+        /// Devices skill on the skin is used when present and their level otherwise, the same
+        /// fallback NPC Attack and ability damage bonuses use. Without it every droid would be
+        /// stuck at the minimum Gadget DMG regardless of tier.
+        /// </summary>
+        public static int ResolveAssaultGadgetDevicesRank(bool isPlayer, int playerDevicesRank, int? npcDevicesRank, int npcLevel)
+        {
+            if (isPlayer)
+                return playerDevicesRank;
+
+            return npcDevicesRank ?? npcLevel;
         }
 
         public static int CalculateAssaultGadgetWeaponDamageEquivalent(int devicesRank)
@@ -311,7 +356,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect markerVisualEffect = VisualEffect.None,
             float markerVisualEffectScale = 1f,
             bool showAreaIndicator = true,
-            VisualEffect projectileVisualEffect = VisualEffect.None)
+            VisualEffect projectileVisualEffect = VisualEffect.None,
+            VisualEffect beamVisualEffect = VisualEffect.None)
         {
             TrackFieldEngineerPulseEmitter(new FieldEngineerPulseEmitter(
                 activator,
@@ -330,7 +376,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 false,
                 true,
                 showAreaIndicator,
-                projectileVisualEffect));
+                projectileVisualEffect,
+                beamVisualEffect));
         }
 
         public static void ScheduleAreaHostilePulses(
@@ -348,7 +395,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect markerVisualEffect = VisualEffect.None,
             float markerVisualEffectScale = 1f,
             bool appliesBeaconPulseBonuses = false,
-            bool showAreaIndicator = true)
+            bool showAreaIndicator = true,
+            VisualEffect projectileVisualEffect = VisualEffect.None,
+            VisualEffect beamVisualEffect = VisualEffect.None)
         {
             TrackFieldEngineerPulseEmitter(new FieldEngineerPulseEmitter(
                 activator,
@@ -366,7 +415,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 markerVisualEffectScale,
                 true,
                 appliesBeaconPulseBonuses,
-                showAreaIndicator));
+                showAreaIndicator,
+                projectileVisualEffect,
+                beamVisualEffect));
         }
 
         public static uint CreateTemporaryFieldEngineerMarker(
@@ -533,6 +584,45 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (!GetIsObjectValid(target))
                 return;
 
+            FireFieldEngineerShot(emitter, target, emitter.ApplyTargetImpact);
+        }
+
+        private static void ApplyAreaHostileShots(FieldEngineerPulseEmitter emitter)
+        {
+            var radius = emitter.AppliesBeaconPulseBonuses
+                ? ApplyBeaconPulseRangeBonus(emitter.Activator, emitter.Radius)
+                : emitter.Radius;
+            ApplyDiagnosticSweep(emitter.Activator, emitter.Location, radius);
+
+            var targets = Ability.GetHostileTargetsInSphere(emitter.Activator, emitter.Location, radius);
+            if (targets.Count == 0)
+                return;
+
+            var applyImpact = emitter.CreateAreaImpactBatch(targets.Count);
+            foreach (var shotTarget in targets)
+                FireFieldEngineerShot(emitter, shotTarget, applyImpact);
+        }
+
+        private static void FireFieldEngineerShot(FieldEngineerPulseEmitter emitter, uint target, Action<uint> applyImpact)
+        {
+            if (!IsSingleHostilePulseTargetValid(emitter, target))
+            {
+                applyImpact(target);
+                return;
+            }
+
+            if (emitter.BeamVisualEffect != VisualEffect.None && GetIsObjectValid(emitter.MarkerObject))
+            {
+                emitter.PendingProjectileImpacts++;
+                AssignCommand(emitter.MarkerObject, () =>
+                {
+                    PlaySound("ksfx_ion_ray");
+                    ApplyEffectToObject(DurationType.Temporary,
+                        EffectBeam(emitter.BeamVisualEffect, emitter.MarkerObject, BodyNode.Chest), target, 0.3f);
+                });
+                AssignCommand(GetModule(), () => DelayCommand(0.3f, () => CompleteFieldEngineerProjectile(emitter)));
+            }
+
             if (emitter.ProjectileVisualEffect != VisualEffect.None && GetIsObjectValid(emitter.MarkerObject))
             {
                 emitter.PendingProjectileImpacts++;
@@ -541,11 +631,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 {
                     if (!IsSingleHostilePulseTargetValid(emitter, target))
                     {
-                        CompleteFieldEngineerProjectile(emitter);
+                        try
+                        {
+                            applyImpact(target);
+                        }
+                        finally
+                        {
+                            CompleteFieldEngineerProjectile(emitter);
+                        }
                         return;
                     }
 
                     var travelSeconds = GetFieldEngineerProjectileTravelSeconds(GetDistanceBetween(emitter.MarkerObject, target));
+                    PlaySound(BeaconShotSound);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(emitter.ProjectileVisualEffect), target);
 
                     // The module owns the callback so caster/marker removal cannot cancel cleanup.
@@ -553,7 +651,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     {
                         try
                         {
-                            emitter.ApplyTargetImpact(target);
+                            applyImpact(target);
                         }
                         finally
                         {
@@ -564,7 +662,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 return;
             }
 
-            emitter.ApplyTargetImpact(target);
+            applyImpact(target);
         }
 
         private static float GetFieldEngineerProjectileTravelSeconds(float distanceMeters)
@@ -602,7 +700,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (emitter.AreaVisualEffect != VisualEffect.None)
                 ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(emitter.AreaVisualEffect), emitter.Location);
 
-            var damageBonus = Stat.GetStatAdjustment(emitter.Activator, StatType.BeaconPulseDamagePercentAdjustment);
+            var damageBonus = emitter.AppliesBeaconPulseBonuses
+                ? Stat.GetStatAdjustment(emitter.Activator, StatType.BeaconPulseDamagePercentAdjustment)
+                : 0;
             var damagePercentAdjustment = damageBonus == 0
                 ? null
                 : new Func<uint, int>(_ => damageBonus);
@@ -622,8 +722,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 damagePercentAdjustment: damagePercentAdjustment,
                 playImpactAnimation: false,
                 combatImpactDamageAbility: AbilityType.Perception,
-                resolvesHit: false,
-                canCritical: false);
+                resolvesHit: !emitter.AppliesBeaconPulseBonuses,
+                canCritical: !emitter.AppliesBeaconPulseBonuses,
+                isAreaImpact: emitter.IsAreaPulse);
         }
 
         private static void ApplyAreaHostilePulse(FieldEngineerPulseEmitter emitter)
@@ -671,14 +772,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static void ApplyFieldEngineerPulseEmitterVisual(FieldEngineerPulseEmitter emitter)
         {
-            if (emitter.MarkerVisualEffect == VisualEffect.None ||
+            if ((emitter.MarkerVisualEffect == VisualEffect.None && !emitter.HasShotVisual) ||
                 !GetIsObjectValid(GetAreaFromLocation(emitter.Location)))
             {
                 return;
             }
 
             EnsureFieldEngineerPulseEmitterMarker(emitter);
-            if (GetIsObjectValid(emitter.MarkerObject))
+            if (GetIsObjectValid(emitter.MarkerObject) || emitter.MarkerVisualEffect == VisualEffect.None)
                 return;
 
             var refreshDuration = Math.Min(
@@ -695,7 +796,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static void EnsureFieldEngineerPulseEmitterMarker(FieldEngineerPulseEmitter emitter)
         {
-            if (emitter.MarkerVisualEffect == VisualEffect.None ||
+            if ((emitter.MarkerVisualEffect == VisualEffect.None && !emitter.HasShotVisual) ||
                 GetIsObjectValid(emitter.MarkerObject) ||
                 !GetIsObjectValid(GetAreaFromLocation(emitter.Location)))
             {
@@ -713,6 +814,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             SetPlotFlag(marker, true);
             emitter.MarkerObject = marker;
+
+            if (emitter.MarkerVisualEffect == VisualEffect.None)
+                return;
 
             ApplyEffectToObject(
                 DurationType.Permanent,
@@ -763,10 +867,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             var nearestCreature = OBJECT_INVALID;
             var nearestDistance = float.MaxValue;
-            var creature = GetFirstObjectInShape(Shape.Sphere, radius, location, true, ObjectType.Creature);
-
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, radius, location, true, ObjectType.Creature))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (!GetIsDead(creature) &&
                     GetCurrentHitPoints(creature) > 0 &&
                     GetIsReactionTypeHostile(creature, activator))
@@ -779,7 +884,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     }
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, radius, location, true, ObjectType.Creature);
             }
 
             return nearestCreature;

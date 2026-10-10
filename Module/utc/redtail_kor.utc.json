@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 13
+    "value": 18
   },
   "Disarmable": {
     "type": "byte",
@@ -195,7 +195,7 @@
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 3
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",

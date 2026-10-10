@@ -24,7 +24,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<PerkRefundCooldownResetRefreshEvent>
     {
         private const int ItemsPerPage = 30;
-        private const int AutoAddHotBarSlots = 11;
+        // The first hotbar row is F1 through F12, which is slot indices 0 through 11.
+        private const int AutoAddHotBarSlots = 12;
         private const int TotalHotBarSlots = 36;
         private int _pages;
         private bool _initialLoadDone;
@@ -457,7 +458,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadForceAffinityDetails(Player dbPlayer)
         {
-            IsForceAffinityVisible = IsInMyPerksMode &&
+            // Shown while browsing as well as in My Perks: affinity decides whether an opposing
+            // power lands at half strength, so players need it before they spend SP, not after.
+            IsForceAffinityVisible = !IsInBeastPerksMode &&
                                      dbPlayer.CharacterType == CharacterType.ForceSensitive;
             if (!IsForceAffinityVisible)
             {
@@ -702,16 +705,61 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (currentUpgrade != null)
             {
-                selectedDetails += $"Current (rank {rank}):\n" + currentUpgrade.Description + "\n\n";
+                selectedDetails += $"Current (rank {rank}):\n" + BuildAbilityCostText(currentUpgrade) +
+                                   currentUpgrade.Description + "\n\n";
             }
 
             if (nextUpgrade != null)
             {
                 selectedDetails += $"Next Upgrade (rank {rank + 1}) - {nextUpgrade.Price} SP:\n" +
-                                   nextUpgrade.Description + "\n\n";
+                                   BuildAbilityCostText(nextUpgrade) + nextUpgrade.Description + "\n\n";
             }
 
+            selectedDetails += BuildStatusEffectPerkDetailText(detail, currentUpgrade, nextUpgrade);
             return selectedDetails;
+        }
+
+        private static string BuildAbilityCostText(PerkLevel level)
+        {
+            var abilities = level.GrantedFeats
+                .Where(Ability.IsFeatRegistered)
+                .Select(Ability.GetAbilityDetail)
+                .ToList();
+            var text = string.Empty;
+            foreach (var ability in abilities)
+            {
+                var fp = ability.Requirements.OfType<AbilityRequirementFP>().Sum(x => x.RequiredFP);
+                var stamina = ability.Requirements.OfType<AbilityRequirementStamina>().Sum(x => x.RequiredSTM);
+                // Match the base costs and recast shown in the native ability tooltip.
+                var recast = ability.RecastDelay?.Invoke(OBJECT_INVALID) ?? 0f;
+                if (abilities.Count > 1)
+                    text += ability.Name + "\n";
+                text += $"FP: {fp}\nSTM: {stamina}\nRecast: {recast:0.#}s\n";
+            }
+            return text;
+        }
+
+        private static string BuildStatusEffectPerkDetailText(PerkDetail detail, PerkLevel currentUpgrade, PerkLevel nextUpgrade)
+        {
+            var descriptions = string.Join(" ", detail.Description, currentUpgrade?.Description, nextUpgrade?.Description);
+            var refersToControl = descriptions.Contains("control effect", StringComparison.OrdinalIgnoreCase) ||
+                                  descriptions.Contains("controlled", StringComparison.OrdinalIgnoreCase);
+            var refersToHarmful = descriptions.Contains("harmful effect", StringComparison.OrdinalIgnoreCase) ||
+                                  descriptions.Contains("harmful status", StringComparison.OrdinalIgnoreCase);
+            if (!refersToControl && !refersToHarmful)
+                return string.Empty;
+
+            var text = string.Empty;
+            if (refersToControl)
+            {
+                text += "Control effects: " + StatusEffectGuideTopics.ControlEffects.Replace(";", ",") + ".\n" +
+                        "All control effects also count as harmful effects. Conditions saying 'you applied' require your own effect.\n";
+            }
+            if (refersToHarmful)
+            {
+                text += "Harmful effects include control effects, damage over time, and other debuffs. A specific cleanse may only remove the effects it names.\n";
+            }
+            return text + "Full definitions in Player Guide: " + StatusEffectGuideTopics.TopicName + ".\n";
         }
 
         private string BuildForceAffinityPerkDetailText(PerkDetail detail)

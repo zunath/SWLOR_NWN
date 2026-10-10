@@ -75,7 +75,7 @@
         {
           "Key": "action-open-store",
           "Arguments": [
-            "veles_street_food"
+            "concourse_food"
           ]
         }
       ],

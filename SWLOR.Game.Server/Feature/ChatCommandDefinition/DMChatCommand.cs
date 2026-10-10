@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -817,7 +819,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void ResetAbilityRecastTimers()
         {
             _builder.Create("resetcooldown", "resetcooldowns")
-                .Description("Resets a player's ability, disguise, and perk refund cooldowns.")
+                .Description("Resets a player's ability, disguise, introduction, and perk refund cooldowns.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
@@ -1135,7 +1137,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     return string.Empty;
                 })
-                .Action(async (user, target, location, args) =>
+                .Action((user, target, location, args) =>
                 {
                     var message = string.Join(" ", args);
                     var url = _appSettings.DMShoutWebhookUrl;
@@ -1146,22 +1148,32 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var authorName = $"{GetName(user)} ({GetPCPlayerName(user)}) [{GetPCPublicCDKey(user)}]";
                     if (!string.IsNullOrWhiteSpace(url))
                     {
-                        try
-                        {
-                            var enqueued = await BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 15105570);
-                            if (!enqueued)
-                            {
-                                Log.Write(LogGroup.Error, "Failed to queue DM shout Discord webhook.");
-                                SendMessageToPC(user, ColorToken.Red("ERROR: Unable to queue DM shout Discord webhook. Please notify an admin."));
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Write(LogGroup.Error, $"Failed to queue DM shout Discord webhook. {ex}");
-                            SendMessageToPC(user, ColorToken.Red("ERROR: Unable to queue DM shout Discord webhook. Please notify an admin."));
-                        }
+                        _ = SendDMShoutWebhookAsync(user, url, authorName, message);
                     }
                 });
+        }
+
+        private static async Task SendDMShoutWebhookAsync(uint user, string url, string authorName, string message)
+        {
+            try
+            {
+                var userId = GetObjectUUID(user);
+                var enqueued = await BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 15105570);
+                await NwTask.SwitchToMainThread();
+
+                if (!GetIsObjectValid(user) || !GetIsPC(user) || GetObjectUUID(user) != userId)
+                    return;
+
+                if (!enqueued)
+                {
+                    Log.Write(LogGroup.Error, "Failed to queue DM shout Discord webhook.");
+                    SendMessageToPC(user, ColorToken.Red("ERROR: Unable to queue DM shout Discord webhook. Please notify an admin."));
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError(ex, "DM shout Discord webhook submission failed.");
+            }
         }
 
         private void SetScale()

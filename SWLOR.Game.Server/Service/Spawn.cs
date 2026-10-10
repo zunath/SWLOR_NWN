@@ -658,7 +658,10 @@ namespace SWLOR.Game.Server.Service
                 SetEventScript(spawn, EventScript.Creature_OnDamaged, "x2_def_ondamage");
                 SetEventScript(spawn, EventScript.Creature_OnDeath, "x2_def_ondeath");
                 SetEventScript(spawn, EventScript.Creature_OnDisturbed, "x2_def_ondisturb");
-                SetEventScript(spawn, EventScript.Creature_OnHeartbeat, "x2_def_heartbeat");
+                // Static service NPCs may opt directly into the managed heartbeat,
+                // avoiding the stock ambient-AI script while retaining SWLOR behavior.
+                if (GetEventScript(spawn, EventScript.Creature_OnHeartbeat) != ScriptName.OnCreatureHeartbeatAfter)
+                    SetEventScript(spawn, EventScript.Creature_OnHeartbeat, "x2_def_heartbeat");
                 SetEventScript(spawn, EventScript.Creature_OnNotice, "x2_def_percept");
                 SetEventScript(spawn, EventScript.Creature_OnMeleeAttacked, "x2_def_attacked");
                 SetEventScript(spawn, EventScript.Creature_OnRested, "x2_def_rested");

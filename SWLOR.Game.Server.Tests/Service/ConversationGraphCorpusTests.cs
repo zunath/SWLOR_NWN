@@ -21,10 +21,12 @@ public sealed class ConversationGraphCorpusTests
                            name.EndsWith(".conversation.json", StringComparison.OrdinalIgnoreCase))
             .ToArray();
 
-        resources.Should().HaveCount(342,
-            "all active authored graphs must be embedded; retired quest dialogues and native DMFI are excluded");
+        resources.Should().HaveCount(341,
+            "all active authored graphs must be embedded; retired dialogues and native DMFI/crafting resources are excluded");
         resources.Should().NotContain(resource =>
             resource.EndsWith(".dmfi_universal.conversation.json", StringComparison.OrdinalIgnoreCase));
+        resources.Should().NotContain(resource =>
+            resource.EndsWith(".x0_skill_ctrap.conversation.json", StringComparison.OrdinalIgnoreCase));
         foreach (var resource in resources)
         {
             using var stream = assembly.GetManifestResourceStream(resource);

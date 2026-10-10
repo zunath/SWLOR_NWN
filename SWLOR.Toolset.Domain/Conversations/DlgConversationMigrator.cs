@@ -55,7 +55,9 @@ public static class DlgConversationMigrator
         StringComparer.OrdinalIgnoreCase)
         {
             ["dmfi_universal"] =
-                "DMFI wands launch and restart this conversation through native ActionStartConversation calls."
+                "DMFI wands launch and restart this conversation through native ActionStartConversation calls.",
+            ["x0_skill_ctrap"] =
+                "The engine requires this empty native DLG override to disable the base-game Craft Skills menu."
         };
 
     // These old one-off scripts are no longer present in the module. Only scripts whose complete

@@ -16,7 +16,7 @@ public class EshanGorakVeshTests
     private const string QuestId = "eshan_icebound_hunt";
 
     [Test]
-    public void BossLoot_GuaranteesOneShardAndEmeraldWithoutWolfDrops()
+    public void BossLoot_GuaranteesOneShardEmeraldAndUniqueHideWithoutWolfDrops()
     {
         using var creature = ReadJson("Module", "utc", "esh_gorakvesh.utc.json");
         var tables = new EshanLootTableDefinition().BuildLootTables();
@@ -29,7 +29,7 @@ public class EshanGorakVeshTests
             .ToArray();
 
         rolls.Select(roll => roll[0]).Should().OnlyHaveUniqueItems();
-        foreach (var resref in new[] { "chiro_shard", "emerald" })
+        foreach (var resref in new[] { "chiro_shard", "emerald", "esh_gorak_hide" })
         {
             var roll = rolls.Single(candidate => tables[candidate[0]].Any(item => item.Resref == resref));
             roll[1].Should().Be("100");

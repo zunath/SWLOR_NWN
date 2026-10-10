@@ -37,6 +37,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("ESHAN_GORAK_VESH_EMERALD")
                 .AddItem("emerald", 1, 1, true);
 
+            _builder.Create("ESHAN_GORAK_VESH_HIDE")
+                .AddItem("esh_gorak_hide", 1, 1, true);
+
             _builder.Create("ESHAN_THYRSIAN_EXILE")
                 .AddItem("esh_chili_oil", 5, 2)
                 .AddItem("esh_pickles", 5, 2)

@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Service
             int baseFP;
 
             // Players
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 if (dbPlayer == null)
                 {
@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Service
             int baseStamina;
 
             // Players
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 if (dbPlayer == null)
                 {
@@ -338,18 +338,20 @@ namespace SWLOR.Game.Server.Service
             amount = ApplyFPRestoreAdjustment(creature, amount);
             if (amount <= 0) return 0;
 
-            var maxFP = GetMaxFP(creature);
+            var isPlayer = GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
+            if (isPlayer)
+            {
+                dbPlayer ??= DB.Get<Player>(GetObjectUUID(creature));
+                // A status timer can run before the character's persisted data is available.
+                if (dbPlayer == null) return 0;
+            }
+
+            var maxFP = GetMaxFP(creature, dbPlayer);
             var restored = 0;
 
             // Players
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (isPlayer)
             {
-                var playerId = GetObjectUUID(creature);
-                if (dbPlayer == null)
-                {
-                    dbPlayer = DB.Get<Player>(playerId);
-                }
-
                 var current = dbPlayer.FP;
                 dbPlayer.FP = Math.Min(maxFP, current + amount);
                 restored = Math.Max(0, dbPlayer.FP - current);
@@ -427,18 +429,20 @@ namespace SWLOR.Game.Server.Service
         {
             if (amount <= 0) return 0;
 
-            var maxSTM = GetMaxStamina(creature);
+            var isPlayer = GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
+            if (isPlayer)
+            {
+                dbPlayer ??= DB.Get<Player>(GetObjectUUID(creature));
+                // A status timer can run before the character's persisted data is available.
+                if (dbPlayer == null) return 0;
+            }
+
+            var maxSTM = GetMaxStamina(creature, dbPlayer);
             var restored = 0;
 
             // Players
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (isPlayer)
             {
-                var playerId = GetObjectUUID(creature);
-                if (dbPlayer == null)
-                {
-                    dbPlayer = DB.Get<Player>(playerId);
-                }
-
                 var current = dbPlayer.Stamina;
                 dbPlayer.Stamina = Math.Min(maxSTM, current + amount);
                 restored = Math.Max(0, dbPlayer.Stamina - current);

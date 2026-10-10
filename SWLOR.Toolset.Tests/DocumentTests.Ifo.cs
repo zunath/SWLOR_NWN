@@ -30,13 +30,15 @@ namespace SWLOR.Toolset.Tests
             var entreeSouth = areaResRefs.IndexOf("anchor_entreesud");
             entreeNorth.Should().BeGreaterThanOrEqualTo(0);
             entreeSouth.Should().Be(entreeNorth + 1);
-            document.HakList.Should().HaveCount(119);
+            document.HakList.Should().HaveCount(121);
             document.HakNames[0].Should().Be("sw_2da");
             document.HakNames[1].Should().Be("sw_ability");
             document.HakNames.Should().Contain("sw_tint_mtr");
             document.HakNames.Should().Contain("sw_tint0");
             document.HakNames.Should().Contain("sw_tint1");
             document.HakNames.Should().Contain("sw_tint2");
+            document.HakNames.Should().Contain("sw_neck_f0");
+            document.HakNames.Should().Contain("sw_neck_f1");
         }
 
         [Test]

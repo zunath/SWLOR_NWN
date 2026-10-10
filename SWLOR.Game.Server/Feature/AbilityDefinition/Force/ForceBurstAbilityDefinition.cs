@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.TelegraphService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -76,12 +77,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             Location targetLocation,
             int baseDamage)
         {
-            AssignCommand(activator, () =>
-            {
-                if (GetIsObjectValid(target))
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_Fireball), target);
-            });
-
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
@@ -98,11 +93,31 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.VFX_IMP_KIN_L,
                 afterSuccessfulHit: creature =>
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Silence), creature));
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Silence), creature),
+                onGeometryResolved: geometry => PlayCentralVisuals(activator, geometry));
+        }
 
-            ApplyWindPulse(target);
-            DelayCommand(0.1f, () => ApplyWindPulse(target));
-            DelayCommand(0.2f, () => ApplyWindPulse(target));
+        private static void PlayCentralVisuals(uint activator, TelegraphGeometry geometry)
+        {
+            // MIRV needs an object endpoint; keep it at the warned sphere center.
+            var center = Location(geometry.Area, geometry.Position, 0f);
+            var visualAnchor = CreateObject(ObjectType.Placeable, "plc_invisobj", center);
+            if (!GetIsObjectValid(visualAnchor))
+                return;
+
+            SetPlotFlag(visualAnchor, true);
+            SetUseableFlag(visualAnchor, false);
+            DestroyObject(visualAnchor, 3f);
+
+            AssignCommand(activator, () =>
+            {
+                if (GetIsObjectValid(visualAnchor))
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_Fireball), visualAnchor);
+            });
+
+            ApplyWindPulse(visualAnchor);
+            DelayCommand(0.1f, () => ApplyWindPulse(visualAnchor));
+            DelayCommand(0.2f, () => ApplyWindPulse(visualAnchor));
         }
 
         private static void ApplyWindPulse(uint target)

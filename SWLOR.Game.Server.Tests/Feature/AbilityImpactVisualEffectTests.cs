@@ -106,8 +106,16 @@ public class AbilityImpactVisualEffectTests
         burst.Should().Contain("afterSuccessfulHit: creature =>");
         burst.Should().Contain("EffectVisualEffect(VisualEffect.Vfx_Imp_Silence)");
         burst.Should().Contain("EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Wind)");
-        burst.Should().Contain("DelayCommand(0.1f, () => ApplyWindPulse(target))");
-        burst.Should().Contain("DelayCommand(0.2f, () => ApplyWindPulse(target))");
+        burst.Should().Contain("onGeometryResolved: geometry => PlayCentralVisuals(activator, geometry)");
+        burst.Should().Contain("Location(geometry.Area, geometry.Position, 0f)");
+        burst.Should().Contain("CreateObject(ObjectType.Placeable, \"plc_invisobj\", center)");
+        burst.Should().Contain("EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_Fireball), visualAnchor)");
+        burst.Should().Contain("ApplyWindPulse(visualAnchor);");
+        burst.Should().Contain("DelayCommand(0.1f, () => ApplyWindPulse(visualAnchor))");
+        burst.Should().Contain("DelayCommand(0.2f, () => ApplyWindPulse(visualAnchor))");
+        burst.Should().Contain("DestroyObject(visualAnchor, 3f)");
+        burst.Should().NotContain("ApplyWindPulse(target)");
+        burst.Should().NotContain("EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_Fireball), target)");
 
         var lance = File.ReadAllText(Path.Combine(root,
             "SWLOR.Game.Server/Feature/AbilityDefinition/Force/RadiantLanceAbilityDefinition.cs"));

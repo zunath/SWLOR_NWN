@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -22,6 +23,73 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class TankEnmityEngineTests
     {
+        private static uint _nestedHealingTarget = OBJECT_INVALID;
+        private static uint[] _nestedHealers = Array.Empty<uint>();
+        private static int _nestedHealingDepth;
+
+        [NWNEventHandler(ScriptName.OnHealBefore)]
+        public static void TriggerNestedHealing()
+        {
+            if (_nestedHealingDepth >= _nestedHealers.Length ||
+                StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID")) != _nestedHealingTarget)
+                return;
+
+            var source = _nestedHealers[_nestedHealingDepth++];
+            try
+            {
+                ApplyEffectToObject(DurationType.Instant, SetEffectCreator(EffectHeal(100), source), _nestedHealingTarget);
+            }
+            finally
+            {
+                _nestedHealingDepth--;
+            }
+        }
+
+        [EngineTest("Nested healing credits each actual healer without counting descendant overheal", Category = "TankEnmity", TimeoutSeconds = 30f)]
+        public static async Task NestedHealingAccounting(EngineTestContext ctx)
+        {
+            var target = Spawn(ctx, 0f);
+            var outer = Spawn(ctx, -1f);
+            var middle = Spawn(ctx, -1.5f);
+            var inner = Spawn(ctx, -2f);
+            var enemy = Spawn(ctx, 1f);
+            ctx.MakeHostile(enemy);
+            SetAILevel(enemy, AILevel.High);
+            foreach (var actor in new[] { target, outer, middle, inner, enemy })
+                ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), actor, 60f);
+            await ctx.WaitFrameAsync();
+            try
+            {
+                foreach (var missingHP in new[] { 100, 500 })
+                {
+                    await ctx.ExecuteInCreatureContextAsync(outer, () =>
+                    {
+                        Enmity.ClearEnmityTable(enemy);
+                        Enmity.ModifyEnmity(target, enemy, 100);
+                        var before = GetMaxHitPoints(target) - missingHP;
+                        ObjectPlugin.SetCurrentHitPoints(target, before);
+                        _nestedHealingTarget = target;
+                        _nestedHealers = new[] { middle, inner };
+                        ApplyEffectToObject(DurationType.Instant, EffectHeal(100), target);
+                        _nestedHealingTarget = OBJECT_INVALID;
+                        _nestedHealers = Array.Empty<uint>();
+                        ctx.AssertEqual(before + Math.Min(missingHP, 300), GetCurrentHitPoints(target), "All three native heal effects resolve");
+                        var table = Enmity.GetEnmityTable(enemy);
+                        ctx.AssertEqual(50, table.GetValueOrDefault(inner), "Innermost healer owns its restored HP");
+                        var expected = missingHP == 100 ? 0 : 50;
+                        ctx.AssertEqual(expected, table.GetValueOrDefault(middle), "Middle healer excludes its descendant's healing");
+                        ctx.AssertEqual(expected, table.GetValueOrDefault(outer), "Outer healer excludes every descendant's healing");
+                    });
+                }
+            }
+            finally
+            {
+                _nestedHealingTarget = OBJECT_INVALID;
+                _nestedHealers = Array.Empty<uint>();
+                _nestedHealingDepth = 0;
+            }
+        }
+
         [EngineTest("Taunts recover accumulated threat and NPCs continue attacking the new tank", Category = "TankEnmity", TimeoutSeconds = 90f)]
         public static async Task ProvokeRecoversAndSwaps(EngineTestContext ctx)
         {

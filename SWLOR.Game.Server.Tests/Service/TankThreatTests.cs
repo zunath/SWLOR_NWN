@@ -51,6 +51,13 @@ public class TankThreatTests
     public void HealingThreatUsesOnlyRestoredHealth(int requested, int before, int after, int expected)
         => Enmity.CalculateHealingEnmity(requested, before, after).Should().Be(expected);
 
+    [TestCase(100, 100, 200, 100L, 0)]
+    [TestCase(100, 100, 400, 200L, 50)]
+    [TestCase(100, 100, 220, 100L, 10)]
+    [TestCase(100, 0, 200, 100L, 0)]
+    public void HealingThreatExcludesAllNestedHealthGains(int requested, int before, int after, long nested, int expected)
+        => Enmity.CalculateHealingEnmity(requested, before, after, nested).Should().Be(expected);
+
     [TestCase(typeof(BastionStanceStatusEffect), -20, 20)]
     [TestCase(typeof(DefensiveStanceStatusEffect), -20, 30)]
     [TestCase(typeof(ImmovableStanceStatusEffect), -25, 30)]
@@ -102,7 +109,7 @@ public class TankThreatTests
             "SWLOR.Game.Server.Feature.AbilityDefinition." + definitionName)!;
         var ability = ((IAbilityListDefinition)Activator.CreateInstance(definitionType)!).BuildAbilities()[feat];
         var stamina = ability.Requirements.OfType<AbilityRequirementStamina>().Sum(requirement => requirement.RequiredSTM);
-        (stamina * usesPerMinute).Should().BeLessThanOrEqualTo(12, "MGT 20 supplies 12 STM/min without gear or consumables");
+        (stamina * usesPerMinute).Should().BeLessThanOrEqualTo(12, "the low-use floor spends at most 12 of MGT 20's 30 STM/min");
         (usesPerMinute * ability.RecastDelay(1)).Should().BeLessThanOrEqualTo(60);
         var attack = Stat.GetAttack(50, 20, 0);
         var tankAttack = attack * (100 + stance.StatGroup.Stats[StatType.AttackPercentAdjustment]) / 100;

@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         // Healing events can nest when healing riders fire. Pair each before/after observation.
-        private static readonly Dictionary<uint, Stack<(uint Source, int HitPoints)>> _healingHitPoints = new();
+        private static readonly Dictionary<uint, Stack<(uint Source, int HitPoints, long NestedHealing)>> _healingHitPoints = new();
 
         [NWNEventHandler(ScriptName.OnHealBefore)]
         public static void HealingStarted()
@@ -60,8 +60,8 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(target))
                 return;
             if (!_healingHitPoints.TryGetValue(target, out var values))
-                _healingHitPoints[target] = values = new Stack<(uint, int)>();
-            values.Push((OBJECT_SELF, GetCurrentHitPoints(target)));
+                _healingHitPoints[target] = values = new Stack<(uint, int, long)>();
+            values.Push((OBJECT_SELF, GetCurrentHitPoints(target), 0));
         }
 
         [NWNEventHandler(ScriptName.OnHealAfter)]
@@ -76,9 +76,11 @@ namespace SWLOR.Game.Server.Service
             var currentHP = GetCurrentHitPoints(target);
             if (values.Count > 0)
             {
-                // Exclude nested healing even when its creator is a different creature.
+                // Propagate the child's entire HP gain, including its descendants.
+                // Preserve the original HP so nested healing cannot turn a resurrection into a heal.
                 var parent = values.Pop();
-                values.Push((parent.Source, parent.HitPoints + Math.Max(0, currentHP - previousHP)));
+                values.Push((parent.Source, parent.HitPoints,
+                    parent.NestedHealing + Math.Max(0L, (long)currentHP - previousHP)));
             }
             if (values.Count == 0)
                 _healingHitPoints.Remove(target);
@@ -87,7 +89,7 @@ namespace SWLOR.Game.Server.Service
             if (!int.TryParse(EventsPlugin.GetEventData("HEAL_AMOUNT"), out var requested))
                 return;
 
-            var amount = CalculateHealingEnmity(requested, previousHP, currentHP);
+            var amount = CalculateHealingEnmity(requested, previousHP, currentHP, observation.NestedHealing);
             if (amount <= 0 || !GetIsObjectValid(source))
                 return;
             foreach (var enemy in GetEnmityTowardsAllEnemies(target).Keys)
@@ -97,11 +99,12 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static int CalculateHealingEnmity(int requested, int previousHP, int currentHP)
+        public static int CalculateHealingEnmity(int requested, int previousHP, int currentHP, long nestedHealing = 0)
         {
             if (previousHP <= 0)
                 return 0;
-            var restored = Math.Min(Math.Max(0, requested), Math.Max(0L, (long)currentHP - previousHP));
+            var restored = Math.Min(Math.Max(0, requested),
+                Math.Max(0L, (long)currentHP - previousHP - Math.Max(0, nestedHealing)));
             return (int)(restored / 2);
         }
 

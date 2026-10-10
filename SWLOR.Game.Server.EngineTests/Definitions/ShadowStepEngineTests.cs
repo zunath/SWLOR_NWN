@@ -54,8 +54,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var evasionBeforeCast = Stat.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment);
 
                 // Drive the impact directly. The activation pipeline is covered by the Espionage
-                // behavior cases; an NPC's post-activation attack resume clears its action queue
-                // and can drop the queued jump, which a player's resume never does.
+                // behavior cases; isolate the target-facing and arrival-stun assertions here.
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
                 {
                     ClearAllActions(true);
@@ -96,6 +95,53 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally
             {
                 Combat.SetAutoAttackHitResolutionOverride(null);
+            }
+        }
+
+        [EngineTest("Shadow Step teleports behind the target while idle and while attacking at both ranks", Category = "ShadowStep", TimeoutSeconds = 60f)]
+        public static async Task TeleportsBehindTargetDuringMelee(EngineTestContext ctx)
+        {
+            var arena = await QuietArena.CreateAsync(ctx);
+            var abilities = new ShadowStepAbilityDefinition().BuildAbilities();
+            foreach (var feat in new[] { FeatType.ShadowStep1, FeatType.ShadowStep2 })
+            foreach (var attacking in new[] { false, true })
+            {
+                var activator = arena.Spawn("nw_bandit001", 8f, 90f);
+                var target = arena.Spawn("nw_bandit001", 9.5f, 270f);
+                await ctx.WaitFrameAsync();
+                foreach (var creature in new[] { activator, target })
+                {
+                    SetAILevel(creature, AILevel.VeryLow);
+                    Stat.SetNPCMaxHitPoints(creature, 1000, true);
+                }
+                ctx.MakeHostile(target);
+
+                if (attacking)
+                {
+                    AssignCommand(activator, () => ActionAttack(target));
+                    await ctx.WaitUntilAsync(() => GetCurrentAction(activator) == ActionType.AttackObject,
+                        5f, "the activator to be attacking in melee before Shadow Step");
+                    ctx.Assert(GetDistanceBetween(activator, target) < 2f, "The attack starts in melee range");
+                }
+
+                await ctx.ExecuteInCreatureContextAsync(activator, () =>
+                {
+                    // Exercise the impact with a live attack still on the native action queue.
+                    // Check before yielding so combat resumption cannot mask a delayed jump.
+                    var position = GetPosition(target);
+                    var radians = GetFacing(target) * Math.PI / 180.0;
+                    var destination = Location(GetArea(target), Vector3(
+                        position.X - (float)Math.Cos(radians) * 1.5f,
+                        position.Y - (float)Math.Sin(radians) * 1.5f,
+                        position.Z), GetFacing(target));
+                    abilities[feat].ImpactAction(activator, target, abilities[feat].AbilityLevel, GetLocation(target));
+                    ctx.Assert(GetDistanceBetweenLocations(GetLocation(activator), destination) < 0.5f,
+                        $"{feat} must teleport behind its target immediately (attacking={attacking})");
+                });
+
+                DestroyObject(activator);
+                DestroyObject(target);
+                await ctx.WaitFrameAsync();
             }
         }
 

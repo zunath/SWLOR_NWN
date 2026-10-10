@@ -82,29 +82,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Unsummon), activator);
             AssignCommand(activator, () =>
             {
-                ActionJumpToLocation(destination);
-                ActionDoCommand(() =>
-                {
-                    if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) ||
-                        GetIsDead(activator) || GetIsDead(target) || GetArea(activator) != GetArea(target))
-                        return;
+                // An ongoing attack can block queued jumps indefinitely. Complete the
+                // teleport and arrival effects before the ability pipeline resumes combat.
+                ClearAllActions();
+                JumpToLocation(destination);
+                if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) ||
+                    GetIsDead(activator) || GetIsDead(target) || GetArea(activator) != GetArea(target))
+                    return;
 
-                    AssignCommand(activator, () => SetFacingPoint(GetPosition(target)));
-                    if (GetArea(activator) == GetAreaFromLocation(destination) &&
-                        GetDistanceBetweenLocations(GetLocation(activator), destination) < 2f)
+                SetFacingPoint(GetPosition(target));
+                if (GetArea(activator) == GetAreaFromLocation(destination) &&
+                    GetDistanceBetweenLocations(GetLocation(activator), destination) < 2f)
+                {
+                    playArrivalVisual(activator);
+                    if (GetIsReactionTypeHostile(target, activator))
                     {
-                        playArrivalVisual(activator);
-                        if (GetIsReactionTypeHostile(target, activator))
-                        {
-                            // A target fighting the activator turns toward the new position before the
-                            // arrival action runs. Turn it back so the stun holds it facing away.
-                            SetFacing(targetFacing, target);
-                            StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect),
-                                StunDurationSeconds, CombatDamageType.Physical);
-                        }
+                        // Keep an engaged target facing away when the stun freezes it.
+                        SetFacing(targetFacing, target);
+                        StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect),
+                            StunDurationSeconds, CombatDamageType.Physical);
                     }
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Unsummon), activator);
-                });
+                }
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Unsummon), activator);
             });
 
             TemporaryStatModifier.Replace(

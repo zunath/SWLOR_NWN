@@ -310,7 +310,8 @@ public class CombatDamageTests
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
             @"GetRangedAbilityLongRangeHitChanceAdjustment\(\s*attacker.m_idSelf,\s*defender.m_idSelf,\s*abilitySkillType\)").Should().BeTrue();
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
-            @"GetQueuedWeaponAbilityActivationHitChanceAdjustment\(\s*attacker.m_idSelf,\s*abilitySkillType\)").Should().BeTrue();
+            @"queuedAbility == null \? 0 : Combat\.GetQueuedWeaponAbilityActivationHitChanceAdjustment\(\s*attacker.m_idSelf,\s*abilitySkillType\)")
+            .Should().BeTrue("ability accuracy must not affect ordinary weapon attacks");
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
             @"StoreQueuedWeaponAbilityCriticalRateBonus\(\s*attacker.m_idSelf,\s*abilitySkillType,").Should().BeTrue();
         attackSource.Should().Contain("Combat.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType)");

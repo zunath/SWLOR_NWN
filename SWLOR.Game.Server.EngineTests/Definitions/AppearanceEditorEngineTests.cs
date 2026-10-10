@@ -10,6 +10,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -25,6 +26,53 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     public static class AppearanceEditorEngineTests
     {
         private sealed record ArmorSnapshot(uint Item, int[] Models, int[] Colors, int[] Markers, int[] Projections);
+
+        [EngineTest("Body customization updates exposed hands and biceps while preserving clothing", Category = "BodyCustomization", TimeoutSeconds = 30f)]
+        public static async Task ExposedBodyPartsFollowEditorSelections(EngineTestContext ctx)
+        {
+            var civilian = await SpawnCivilianAsync(ctx);
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
+                var outfit = GetItemInSlot(InventorySlot.Chest, civilian);
+                var weight = GetWeight(outfit);
+                var armorClass = GetItemACValue(outfit);
+                var editor = BindWithoutClient(civilian);
+                foreach (var (part, category, models) in new[]
+                {
+                    (SWLOR.NWN.API.NWScript.Enum.Creature.CreaturePart.LeftHand, 11, new[] { 258, 259, 260, 261, 262, 263, 1 }),
+                    (SWLOR.NWN.API.NWScript.Enum.Creature.CreaturePart.RightHand, 5, new[] { 258, 259, 260, 261, 262, 263, 1 }),
+                    (SWLOR.NWN.API.NWScript.Enum.Creature.CreaturePart.LeftBicep, 9, new[] { 251, 1 }),
+                    (SWLOR.NWN.API.NWScript.Enum.Creature.CreaturePart.RightBicep, 3, new[] { 251, 1 })
+                })
+                {
+                    SetCreatureBodyPart(part, 1, civilian);
+                    EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)part, 1);
+                    editor.SelectedPartCategoryIndex = category;
+                    InvokePrivate(editor, "LoadBodyParts");
+                    foreach (var model in models)
+                    {
+                        editor.SelectedPartIndex = editor.PartOptions.ToList().IndexOf($"Part #{model}");
+                        ctx.Assert(editor.SelectedPartIndex >= 0, $"{part} offers {model}");
+                        InvokePrivate(editor, "LoadBodyPart");
+                        ctx.AssertEqual(model, GetCreatureBodyPart(part, civilian), $"{part} saves {model}");
+                        ctx.AssertEqual(model, GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)part),
+                            $"{part} exposed outfit follows {model}");
+                    }
+
+                    EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)part, 151);
+                    BodyPartAppearance.Set(part, models[0], civilian);
+                    ctx.AssertEqual(151, GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)part),
+                        $"{part} retains a separate glove or sleeve");
+                    EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)part, 0);
+                    BodyPartAppearance.Set(part, 1, civilian);
+                    ctx.AssertEqual(0, GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)part),
+                        $"{part} retains native model inheritance");
+                }
+                ctx.AssertEqual(outfit, GetItemInSlot(InventorySlot.Chest, civilian), "Outfit remains equipped");
+                ctx.AssertEqual(weight, GetWeight(outfit), "Body edits preserve outfit weight");
+                ctx.AssertEqual(armorClass, GetItemACValue(outfit), "Body edits preserve outfit armor class");
+            });
+        }
 
         [EngineTest("Head scaling validates input and saves independently of body height", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
         public static async Task HeadScalePersistenceAndCancellation(EngineTestContext ctx)

@@ -1,6 +1,6 @@
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance
 {
-    public class KelDorRacialAppearanceDefinition : RacialAppearanceBaseDefinition
+    public class KelDorRacialAppearanceDefinition : HumanModelRacialAppearanceBaseDefinition
     {
         public override float MaximumScale { get; } = 1.2f;
         public override int[] MaleHeads { get; } = { 223,224,225,226,227,228,229,233,234 };

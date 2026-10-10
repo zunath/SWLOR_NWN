@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
     /// GFF scalar payloads remain raw bytes so names, effects and unknown fields
     /// do not pass through text or gameplay-model conversions.
     /// </summary>
-    internal sealed class StoredObjectData
+    internal sealed partial class StoredObjectData
     {
         internal const string IdentityMarkerPrefix = "MIGRATION_IDENTITY_";
         internal const string EquipmentMarkerPrefix = "MIGRATION_EQUIPMENT_";

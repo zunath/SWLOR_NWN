@@ -419,6 +419,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Weapon Enhancement - Force Damage I
 			_builder.Create(RecipeType.WeaponEnhancementDMGForce1, SkillType.Engineering)
+				.Inactive()
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_for1")
 				.Level(8)
@@ -1683,6 +1684,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Weapon Enhancement - Force Damage II
 			_builder.Create(RecipeType.WeaponEnhancementDMGForce2, SkillType.Engineering)
+				.Inactive()
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_for2")
 				.Level(28)
@@ -2947,6 +2949,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Weapon Enhancement - Force Damage III
 			_builder.Create(RecipeType.WeaponEnhancementDMGForce3, SkillType.Engineering)
+				.Inactive()
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_for3")
 				.Level(48)

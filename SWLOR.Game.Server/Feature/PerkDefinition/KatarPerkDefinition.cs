@@ -243,7 +243,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.IronWallStance1)
                 .DroidAISlots(1)
-                .Description("While active, grants +25% Defense, +20% Force Defense, and +30% Enmity generation, but reduces Attack by 25%.")
+                .Description("While active, grants +25% Defense, +20% Force Defense, and +30% Enmity generation, but reduces Attack by 25%. You generate +100% threat from damage dealt, before general Enmity modifiers.")
                 .Price(5)
                 .RequirementSkill(SkillType.Katar, 40);
         }

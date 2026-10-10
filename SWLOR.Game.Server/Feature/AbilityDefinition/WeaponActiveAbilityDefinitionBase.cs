@@ -1189,16 +1189,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (SelfEnmityPercentIfRecentWardHit != 0 &&
                     WardBondStatusEffect.HasRecentWardHit(activator, target, window))
                 {
-                    ReplaceTemporary(activator, StatType.EnmityPercentAdjustment, SelfEnmityPercentIfRecentWardHit, SelfEnmityDurationSecondsIfRecentWardHit);
+                    StatusEffect.ApplyStatusEffect(activator, target,
+                        new ChallengeEnmityStatusEffect(SelfEnmityPercentIfRecentWardHit), SelfEnmityDurationSecondsIfRecentWardHit);
                 }
 
                 if (SelfEnmityPercentIfTargetRecentlyDamagedActivator != 0 &&
                     Combat.HasRecentDamageTarget(target, activator, window))
                 {
-                    ReplaceTemporary(
-                        activator,
-                        StatType.EnmityPercentAdjustment,
-                        SelfEnmityPercentIfTargetRecentlyDamagedActivator,
+                    StatusEffect.ApplyStatusEffect(activator, target,
+                        new ChallengeEnmityStatusEffect(SelfEnmityPercentIfTargetRecentlyDamagedActivator),
                         SelfEnmityDurationSecondsIfTargetRecentlyDamagedActivator);
                 }
             }

@@ -88,7 +88,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 return;
 
             var enmity = Stat.ScaleEffect(700, GetAbilityScore(activator, AbilityType.Vitality));
-            Enmity.ModifyEnmity(activator, target, enmity);
+            if (!Enmity.TryTaunt(activator, target, enmity))
+                return;
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Odd), target);
         }
 

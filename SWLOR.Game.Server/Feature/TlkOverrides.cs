@@ -101,7 +101,6 @@ namespace SWLOR.Game.Server.Feature
             SetTlkOverride(62490, "Lost <CUSTOM0> credits");
 
             SetTlkOverride(10303, "[Comms] ");
-            SetTlkOverride(66751, "Disabled");
             SetTlkOverride(66755, "Comms");
 
             SetTlkOverride(83393, "Poison"); // Acid

@@ -65,14 +65,15 @@ namespace SWLOR.Game.Server.Service
         }
 
         [NWNEventHandler(ScriptName.OnModuleEnter)]
-        public static void ApplyDMShoutChannelName()
+        public static void ApplyShoutChannelName()
         {
             var player = GetEnteringObject();
-            if (!GetIsDM(player) && !GetIsDMPossessed(player))
+            var isDM = GetIsDM(player) || GetIsDMPossessed(player);
+            if (!GetIsPC(player) && !isDM)
                 return;
 
-            // The global "Disabled" label applies to players; staff retain native Shout.
-            PlayerPlugin.SetTlkOverride(player, 66751, "Shout");
+            // Keep this per-client; a global override would also label DM Shout as disabled.
+            PlayerPlugin.SetTlkOverride(player, 66751, isDM ? "Shout" : "Disabled");
         }
 
         /// <summary>

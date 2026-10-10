@@ -307,14 +307,40 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _selectedTabId = tabId;
             _topToggles.SyncTo(tabId, value => TopTabId = value);
             _bottomToggles.SyncTo(tabId, value => BottomTabId = value);
-            Tabs.Select(this, PartialView, tabId);
+            Tabs.Select(this, PartialView, tabId, onAfterApply: RefreshTabInputs);
         }
 
-        protected override void OnModalClosedRestore() => Tabs.Select(this, PartialView, _selectedTabId);
+        protected override void OnModalClosedRestore() =>
+            Tabs.Select(this, PartialView, _selectedTabId, onAfterApply: RefreshTabInputs);
+
+        private void RefreshTabInputs()
+        {
+            // Watched inputs are not replayed by the root-layout swap. Republish without
+            // invoking their setters, which would reload the filtered data.
+            OnPropertyChanged(nameof(TopTabId));
+            OnPropertyChanged(nameof(BottomTabId));
+            switch (_selectedTabId)
+            {
+                case 1:
+                    OnPropertyChanged(nameof(SelectedSkillCategoryId));
+                    OnPropertyChanged(nameof(SkillSearchText));
+                    break;
+                case 2:
+                    OnPropertyChanged(nameof(SelectedPerkCategoryId));
+                    OnPropertyChanged(nameof(SelectedPerkSortOrderId));
+                    OnPropertyChanged(nameof(SelectedPerkStatusId));
+                    OnPropertyChanged(nameof(PerkSearchText));
+                    break;
+                case 4:
+                    OnPropertyChanged(nameof(ActiveNoteName));
+                    OnPropertyChanged(nameof(ActiveNoteDetail));
+                    break;
+            }
+        }
 
         private void LoadTargetDetails()
         {
-            Name = PlayerName.GetDisplayName(Player, _target);
+            Name = UtilPlugin.StripColors(PlayerName.GetDisplayName(Player, _target));
             Description = GetDescription(_target);
             PortraitResref = GetPortraitResRef(_target) + "l";
             CharacterType = GetClassByPosition(1, _target) == ClassType.ForceSensitive
@@ -456,7 +482,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         private string GetEffectSourceName(uint source) => GetIsObjectValid(source)
-            ? PlayerName.GetDisplayName(Player, source) : "Unknown";
+            ? UtilPlugin.StripColors(PlayerName.GetDisplayName(Player, source)) : "Unknown";
 
         private static bool IsManagedEffectTag(string tag, HashSet<string> statusIds) =>
             statusIds.Contains(tag) || statusIds.Any(id => tag.StartsWith(id + ":Native:", StringComparison.Ordinal));

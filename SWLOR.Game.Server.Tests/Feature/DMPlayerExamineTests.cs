@@ -11,6 +11,41 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class DMPlayerExamineTests
 {
+    [TestCase(0, 2, 1, "")]
+    [TestCase(7, 3, 2, "shield")]
+    public void PerkControls_RepublishCurrentCriteriaWithoutReloadingOrResettingThem(
+        int category, int sortOrder, int status, string search)
+    {
+        var model = new DMPlayerExamineViewModel
+        {
+            TopTabId = 2,
+            BottomTabId = -1,
+            SelectedPerkCategoryId = category,
+            SelectedPerkSortOrderId = sortOrder,
+            SelectedPerkStatusId = status,
+            PerkSearchText = search
+        };
+        typeof(DMPlayerExamineViewModel).GetField("_selectedTabId", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(model, 2);
+        typeof(DMPlayerExamineViewModel).GetField("_initialized", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(model, true);
+        var notifications = new List<string>();
+        model.PropertyChanged += (_, change) => notifications.Add(change.PropertyName!);
+
+        typeof(DMPlayerExamineViewModel).GetMethod("RefreshTabInputs", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .Invoke(model, null);
+
+        notifications.Should().BeEquivalentTo(new[]
+        {
+            nameof(model.TopTabId), nameof(model.BottomTabId), nameof(model.SelectedPerkCategoryId),
+            nameof(model.SelectedPerkSortOrderId), nameof(model.SelectedPerkStatusId), nameof(model.PerkSearchText)
+        });
+        model.SelectedPerkCategoryId.Should().Be(category);
+        model.SelectedPerkSortOrderId.Should().Be(sortOrder);
+        model.SelectedPerkStatusId.Should().Be(status);
+        model.PerkSearchText.Should().Be(search);
+    }
+
     [Test]
     public void Skills_CombineCategoryAndSearch_UsingTheTargetsCharacterType()
     {

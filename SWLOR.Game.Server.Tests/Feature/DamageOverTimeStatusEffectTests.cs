@@ -205,6 +205,29 @@ public class DamageOverTimeStatusEffectTests
     }
 
     [Test]
+    public void EveryDamagingStatusTick_DeclaresItsEngineDamageType()
+    {
+        var root = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition");
+        var examined = 0;
+        foreach (var file in Directory.EnumerateFiles(root, "*.cs"))
+        {
+            var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(file)).GetRoot();
+            foreach (var method in syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
+                         .Where(method => method.Identifier.Text == "Tick"))
+            {
+                foreach (var call in method.DescendantNodes().OfType<InvocationExpressionSyntax>()
+                             .Where(call => call.Expression.ToString() == "EffectDamage"))
+                {
+                    examined++;
+                    call.ArgumentList.Arguments.Count.Should().BeGreaterThanOrEqualTo(2,
+                        Path.GetFileName(file) + " must not silently turn periodic damage into Force damage");
+                }
+            }
+        }
+        examined.Should().BeGreaterThanOrEqualTo(10);
+    }
+
+    [Test]
     public void AutoAttackSplash_DefersDamageEventsUntilTheNativeAttackReturns()
     {
         var file = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "Combat.cs");
@@ -220,7 +243,8 @@ public class DamageOverTimeStatusEffectTests
                     "splash hits must not re-enter GetDamageRoll or overwrite the original attack's damage source");
     }
 
-    [TestCase("BleedStatusEffect.cs", "EffectDamage(damageAmount)")]
+    [TestCase("BleedStatusEffect.cs", "EffectDamage(damageAmount, CombatDamageType.Physical.GetNWScriptDamageType())")]
+    [TestCase("FragmentationStatusEffect.cs", "EffectDamage(amount, CombatDamageType.Physical.GetNWScriptDamageType())")]
     [TestCase("DiseaseStatusEffect.cs", "EffectDamage(damage, CombatDamageType.Poison.GetNWScriptDamageType())")]
     [TestCase("FreezingStatusEffect.cs", "EffectDamage(damage, CombatDamageType.Ice.GetNWScriptDamageType())")]
     [TestCase("ShockStatusEffect.cs", "EffectDamage(amount, DamageType.Electrical)")]
@@ -229,7 +253,7 @@ public class DamageOverTimeStatusEffectTests
     {
         var source = ReadStatusEffectSource(fileName);
 
-        source.Should().Contain("var source = GetIsObjectValid(Source) ? Source : creature;");
+        source.Should().Contain("? Source : creature;");
         source.Should().Contain($"AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, {effectDamageCall}, creature))");
     }
 

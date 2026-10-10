@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.TelegraphService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -83,7 +84,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(feat, PerkType.RadiantLance)
-                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_RadiantLance)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.None)
+                .DisplaysVisualEffectOnDamage(VisualEffect.Vfx_Imp_Sunstrike)
                 .UsesAuthoredAnimationAtImpact()
                 .Name(name)
                 .Level(level)
@@ -102,14 +104,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     LineWidthMeters,
                     AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .HasImpactAction((activator, target, _, targetLocation) =>
-                    ApplyRadiantLance(activator, target, targetLocation, baseDamage))
+                    ApplyRadiantLance(activator, target, targetLocation, baseDamage, level))
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementFP(fp);
         }
 
-        private static void ApplyRadiantLance(uint activator, uint target, Location targetLocation, int baseDamage)
+        private static void ApplyRadiantLance(uint activator, uint target, Location targetLocation, int baseDamage, int level)
         {
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
@@ -125,8 +127,39 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 LineWidthMeters,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
-                areaVisualEffect: VisualEffect.None);
+                targetVisualEffect: VisualEffect.None,
+                areaVisualEffect: VisualEffect.None,
+                onGeometryResolved: geometry =>
+                {
+                    if (level == 3)
+                        LaunchRadiantLance(activator, geometry);
+                });
+        }
+
+        private static System.Numerics.Vector3 GetProjectileEndpoint(TelegraphGeometry geometry)
+        {
+            return geometry.Position + new System.Numerics.Vector3(
+                (float)Math.Cos(geometry.Rotation) * geometry.Size.X,
+                (float)Math.Sin(geometry.Rotation) * geometry.Size.X, 0f);
+        }
+
+        private static void LaunchRadiantLance(uint activator, TelegraphGeometry geometry)
+        {
+            var endLocation = Location(geometry.Area, GetProjectileEndpoint(geometry), 0f);
+
+            // Always show the full damage line, even when the selected creature is nearer.
+            var projectileTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", endLocation);
+            if (!GetIsObjectValid(projectileTarget))
+                return;
+
+            SetPlotFlag(projectileTarget, true);
+            SetUseableFlag(projectileTarget, false);
+            DestroyObject(projectileTarget, 3f);
+
+            AssignCommand(activator, () => ApplyEffectToObject(
+                DurationType.Instant,
+                EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_BoltGlory),
+                projectileTarget));
         }
     }
 }

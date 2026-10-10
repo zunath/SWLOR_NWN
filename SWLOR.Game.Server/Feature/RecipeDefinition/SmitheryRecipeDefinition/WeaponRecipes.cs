@@ -1167,8 +1167,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(6)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_veldite", 1)
-                .Component("wood", 1);
+                .Component("ref_veldite", 2)
+                .Component("wood", 2)
+                .Component("lth_ruined", 1);
 
             // Veteran Knife
             _builder.Create(RecipeType.VeteranKnife, SkillType.Smithery)
@@ -1177,8 +1178,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(16)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_scordspar", 1)
-                .Component("fine_wood", 1);
+                .Component("ref_scordspar", 2)
+                .Component("fine_wood", 2)
+                .Component("lth_flawed", 1);
 
             // Prime Knife
             _builder.Create(RecipeType.PrimeKnife, SkillType.Smithery)
@@ -1187,8 +1189,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(26)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_plagionite", 1)
-                .Component("ancient_wood", 1);
+                .Component("ref_plagionite", 2)
+                .Component("ancient_wood", 2)
+                .Component("lth_good", 1);
 
             // Ascendant Knife
             _builder.Create(RecipeType.AscendantKnife, SkillType.Smithery)
@@ -1197,8 +1200,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(36)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_keromber", 1)
-                .Component("aracia_wood", 1);
+                .Component("ref_keromber", 2)
+                .Component("aracia_wood", 2)
+                .Component("lth_imperfect", 1);
 
         }
 
@@ -1211,8 +1215,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(9)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_veldite", 3)
-                .Component("wood", 2);
+                .Component("ref_veldite", 5)
+                .Component("wood", 3)
+                .Component("lth_ruined", 2);
 
             // Veteran Longsword
             _builder.Create(RecipeType.VeteranLongsword, SkillType.Smithery)
@@ -1221,8 +1226,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(19)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_scordspar", 3)
-                .Component("fine_wood", 2);
+                .Component("ref_scordspar", 5)
+                .Component("fine_wood", 3)
+                .Component("lth_flawed", 2);
 
             // Prime Longsword
             _builder.Create(RecipeType.PrimeLongsword, SkillType.Smithery)
@@ -1231,8 +1237,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(29)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_plagionite", 3)
-                .Component("ancient_wood", 2);
+                .Component("ref_plagionite", 5)
+                .Component("ancient_wood", 3)
+                .Component("lth_good", 2);
 
             // Ascendant Longsword
             _builder.Create(RecipeType.AscendantLongsword, SkillType.Smithery)
@@ -1241,8 +1248,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(39)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_keromber", 3)
-                .Component("aracia_wood", 2);
+                .Component("ref_keromber", 5)
+                .Component("aracia_wood", 3)
+                .Component("lth_imperfect", 2);
 
         }
 
@@ -1255,8 +1263,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(11)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("elec_ruined", 4)
-                .Component("ref_veldite", 2);
+                .Component("elec_ruined", 6)
+                .Component("ref_veldite", 3)
+                .Component("jade", 2);
 
             // Veteran Electroblade
             _builder.Create(RecipeType.VeteranElectroblade, SkillType.Smithery)
@@ -1265,8 +1274,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(21)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("elec_flawed", 4)
-                .Component("ref_scordspar", 2);
+                .Component("elec_flawed", 6)
+                .Component("ref_scordspar", 3)
+                .Component("agate", 2);
 
             // Prime Electroblade
             _builder.Create(RecipeType.PrimeElectroblade, SkillType.Smithery)
@@ -1275,8 +1285,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(31)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("elec_good", 4)
-                .Component("ref_plagionite", 2);
+                .Component("elec_good", 6)
+                .Component("ref_plagionite", 3)
+                .Component("citrine", 2);
 
             // Ascendant Electroblade
             _builder.Create(RecipeType.AscendantElectroblade, SkillType.Smithery)
@@ -1285,8 +1296,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(41)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("elec_imperfect", 4)
-                .Component("ref_keromber", 2);
+                .Component("elec_imperfect", 6)
+                .Component("ref_keromber", 3)
+                .Component("ruby", 2);
 
 // Field Training Saber
             _builder.Create(RecipeType.FieldTrainingSaber, SkillType.Smithery)
@@ -1296,9 +1308,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("jade", 4)
-                .Component("ref_veldite", 2)
-                .Component("elec_ruined", 3);
+                .Component("jade", 6)
+                .Component("ref_veldite", 3)
+                .Component("elec_ruined", 5)
+                .Component("fiberp_ruined", 2);
 
             // Veteran Training Saber
             _builder.Create(RecipeType.VeteranTrainingSaber, SkillType.Smithery)
@@ -1308,9 +1321,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("agate", 4)
-                .Component("ref_scordspar", 2)
-                .Component("elec_flawed", 3);
+                .Component("agate", 6)
+                .Component("ref_scordspar", 3)
+                .Component("elec_flawed", 5)
+                .Component("fiberp_flawed", 2);
 
             // Prime Training Saber
             _builder.Create(RecipeType.PrimeTrainingSaber, SkillType.Smithery)
@@ -1320,9 +1334,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("citrine", 4)
-                .Component("ref_plagionite", 2)
-                .Component("elec_good", 3);
+                .Component("citrine", 6)
+                .Component("ref_plagionite", 3)
+                .Component("elec_good", 5)
+                .Component("fiberp_good", 2);
 
             // Ascendant Training Saber
             _builder.Create(RecipeType.AscendantTrainingSaber, SkillType.Smithery)
@@ -1332,9 +1347,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ruby", 4)
-                .Component("ref_keromber", 2)
-                .Component("elec_imperfect", 3);
+                .Component("ruby", 6)
+                .Component("ref_keromber", 3)
+                .Component("elec_imperfect", 5)
+                .Component("fiberp_imperfect", 2);
 
         }
 
@@ -1347,8 +1363,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(13)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_veldite", 5)
-                .Component("wood", 3);
+                .Component("ref_veldite", 8)
+                .Component("wood", 5)
+                .Component("lth_ruined", 3);
 
             // Veteran Great Sword
             _builder.Create(RecipeType.VeteranGreatSword, SkillType.Smithery)
@@ -1357,8 +1374,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(23)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_scordspar", 5)
-                .Component("fine_wood", 3);
+                .Component("ref_scordspar", 8)
+                .Component("fine_wood", 5)
+                .Component("lth_flawed", 3);
 
             // Prime Great Sword
             _builder.Create(RecipeType.PrimeGreatSword, SkillType.Smithery)
@@ -1367,8 +1385,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(33)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_plagionite", 5)
-                .Component("ancient_wood", 3);
+                .Component("ref_plagionite", 8)
+                .Component("ancient_wood", 5)
+                .Component("lth_good", 3);
 
             // Ascendant Great Sword
             _builder.Create(RecipeType.AscendantGreatSword, SkillType.Smithery)
@@ -1377,8 +1396,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(43)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_keromber", 5)
-                .Component("aracia_wood", 3);
+                .Component("ref_keromber", 8)
+                .Component("aracia_wood", 5)
+                .Component("lth_imperfect", 3);
 
         }
 
@@ -1391,8 +1411,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(12)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_veldite", 4)
-                .Component("wood", 2);
+                .Component("ref_veldite", 6)
+                .Component("wood", 3)
+                .Component("lth_ruined", 2);
 
             // Veteran Spear
             _builder.Create(RecipeType.VeteranSpear, SkillType.Smithery)
@@ -1401,8 +1422,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(22)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_scordspar", 4)
-                .Component("fine_wood", 2);
+                .Component("ref_scordspar", 6)
+                .Component("fine_wood", 3)
+                .Component("lth_flawed", 2);
 
             // Prime Spear
             _builder.Create(RecipeType.PrimeSpear, SkillType.Smithery)
@@ -1411,8 +1433,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(32)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_plagionite", 4)
-                .Component("ancient_wood", 2);
+                .Component("ref_plagionite", 6)
+                .Component("ancient_wood", 3)
+                .Component("lth_good", 2);
 
             // Ascendant Spear
             _builder.Create(RecipeType.AscendantSpear, SkillType.Smithery)
@@ -1421,8 +1444,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(42)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_keromber", 4)
-                .Component("aracia_wood", 2);
+                .Component("ref_keromber", 6)
+                .Component("aracia_wood", 3)
+                .Component("lth_imperfect", 2);
 
         }
 
@@ -1435,8 +1459,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(13)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_veldite", 3)
-                .Component("wood", 2);
+                .Component("ref_veldite", 5)
+                .Component("wood", 3)
+                .Component("lth_ruined", 3);
 
             // Veteran Twin Blade
             _builder.Create(RecipeType.VeteranTwinBlade, SkillType.Smithery)
@@ -1445,8 +1470,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(23)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_scordspar", 3)
-                .Component("fine_wood", 2);
+                .Component("ref_scordspar", 5)
+                .Component("fine_wood", 3)
+                .Component("lth_flawed", 3);
 
             // Prime Twin Blade
             _builder.Create(RecipeType.PrimeTwinBlade, SkillType.Smithery)
@@ -1455,8 +1481,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(33)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_plagionite", 3)
-                .Component("ancient_wood", 2);
+                .Component("ref_plagionite", 5)
+                .Component("ancient_wood", 3)
+                .Component("lth_good", 3);
 
             // Ascendant Twin Blade
             _builder.Create(RecipeType.AscendantTwinBlade, SkillType.Smithery)
@@ -1465,8 +1492,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(43)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_keromber", 3)
-                .Component("aracia_wood", 2);
+                .Component("ref_keromber", 5)
+                .Component("aracia_wood", 3)
+                .Component("lth_imperfect", 3);
 
         }
 
@@ -1479,8 +1507,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(12)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("elec_ruined", 5)
-                .Component("ref_veldite", 3);
+                .Component("elec_ruined", 8)
+                .Component("ref_veldite", 5)
+                .Component("jade", 3);
 
             // Veteran Twin Electroblade
             _builder.Create(RecipeType.VeteranTwinElectroblade, SkillType.Smithery)
@@ -1489,8 +1518,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(22)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("elec_flawed", 5)
-                .Component("ref_scordspar", 3);
+                .Component("elec_flawed", 8)
+                .Component("ref_scordspar", 5)
+                .Component("agate", 3);
 
             // Prime Twin Electroblade
             _builder.Create(RecipeType.PrimeTwinElectroblade, SkillType.Smithery)
@@ -1499,8 +1529,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(32)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("elec_good", 5)
-                .Component("ref_plagionite", 3);
+                .Component("elec_good", 8)
+                .Component("ref_plagionite", 5)
+                .Component("citrine", 3);
 
             // Ascendant Twin Electroblade
             _builder.Create(RecipeType.AscendantTwinElectroblade, SkillType.Smithery)
@@ -1509,8 +1540,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(42)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("elec_imperfect", 5)
-                .Component("ref_keromber", 3);
+                .Component("elec_imperfect", 8)
+                .Component("ref_keromber", 5)
+                .Component("ruby", 3);
 
 // Field Training Saberstaff
             _builder.Create(RecipeType.FieldTrainingSaberstaff, SkillType.Smithery)
@@ -1520,9 +1552,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("jade", 5)
-                .Component("ref_veldite", 3)
-                .Component("elec_ruined", 4);
+                .Component("jade", 8)
+                .Component("ref_veldite", 5)
+                .Component("elec_ruined", 6)
+                .Component("fiberp_ruined", 3);
 
             // Veteran Training Saberstaff
             _builder.Create(RecipeType.VeteranTrainingSaberstaff, SkillType.Smithery)
@@ -1532,9 +1565,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("agate", 5)
-                .Component("ref_scordspar", 3)
-                .Component("elec_flawed", 4);
+                .Component("agate", 8)
+                .Component("ref_scordspar", 5)
+                .Component("elec_flawed", 6)
+                .Component("fiberp_flawed", 3);
 
             // Prime Training Saberstaff
             _builder.Create(RecipeType.PrimeTrainingSaberstaff, SkillType.Smithery)
@@ -1544,9 +1578,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("citrine", 5)
-                .Component("ref_plagionite", 3)
-                .Component("elec_good", 4);
+                .Component("citrine", 8)
+                .Component("ref_plagionite", 5)
+                .Component("elec_good", 6)
+                .Component("fiberp_good", 3);
 
             // Ascendant Training Saberstaff
             _builder.Create(RecipeType.AscendantTrainingSaberstaff, SkillType.Smithery)
@@ -1556,9 +1591,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ruby", 5)
-                .Component("ref_keromber", 3)
-                .Component("elec_imperfect", 4);
+                .Component("ruby", 8)
+                .Component("ref_keromber", 5)
+                .Component("elec_imperfect", 6)
+                .Component("fiberp_imperfect", 3);
 
         }
 
@@ -1571,8 +1607,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(8)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_veldite", 2)
-                .Component("wood", 1);
+                .Component("ref_veldite", 3)
+                .Component("wood", 2)
+                .Component("lth_ruined", 1);
 
             // Veteran Katar
             _builder.Create(RecipeType.VeteranKatar, SkillType.Smithery)
@@ -1581,8 +1618,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(18)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_scordspar", 2)
-                .Component("fine_wood", 1);
+                .Component("ref_scordspar", 3)
+                .Component("fine_wood", 2)
+                .Component("lth_flawed", 1);
 
             // Prime Katar
             _builder.Create(RecipeType.PrimeKatar, SkillType.Smithery)
@@ -1591,8 +1629,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(28)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_plagionite", 2)
-                .Component("ancient_wood", 1);
+                .Component("ref_plagionite", 3)
+                .Component("ancient_wood", 2)
+                .Component("lth_good", 1);
 
             // Ascendant Katar
             _builder.Create(RecipeType.AscendantKatar, SkillType.Smithery)
@@ -1601,8 +1640,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(38)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_keromber", 2)
-                .Component("aracia_wood", 1);
+                .Component("ref_keromber", 3)
+                .Component("aracia_wood", 2)
+                .Component("lth_imperfect", 1);
 
         }
 
@@ -1615,8 +1655,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(10)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_veldite", 3)
-                .Component("wood", 2);
+                .Component("ref_veldite", 5)
+                .Component("wood", 3)
+                .Component("lth_ruined", 2);
 
             // Veteran Staff
             _builder.Create(RecipeType.VeteranStaff, SkillType.Smithery)
@@ -1625,8 +1666,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(20)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_scordspar", 3)
-                .Component("fine_wood", 2);
+                .Component("ref_scordspar", 5)
+                .Component("fine_wood", 3)
+                .Component("lth_flawed", 2);
 
             // Prime Staff
             _builder.Create(RecipeType.PrimeStaff, SkillType.Smithery)
@@ -1635,8 +1677,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(30)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_plagionite", 3)
-                .Component("ancient_wood", 2);
+                .Component("ref_plagionite", 5)
+                .Component("ancient_wood", 3)
+                .Component("lth_good", 2);
 
             // Ascendant Staff
             _builder.Create(RecipeType.AscendantStaff, SkillType.Smithery)
@@ -1645,8 +1688,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(40)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_keromber", 3)
-                .Component("aracia_wood", 2);
+                .Component("ref_keromber", 5)
+                .Component("aracia_wood", 3)
+                .Component("lth_imperfect", 2);
 
         }
 
@@ -1659,8 +1703,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(11)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_veldite", 4)
-                .Component("elec_ruined", 2);
+                .Component("ref_veldite", 6)
+                .Component("elec_ruined", 3)
+                .Component("jade", 1);
 
             // Veteran Pistol
             _builder.Create(RecipeType.VeteranPistol, SkillType.Smithery)
@@ -1669,8 +1714,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(21)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_scordspar", 4)
-                .Component("elec_flawed", 2);
+                .Component("ref_scordspar", 6)
+                .Component("elec_flawed", 3)
+                .Component("agate", 1);
 
             // Prime Pistol
             _builder.Create(RecipeType.PrimePistol, SkillType.Smithery)
@@ -1679,8 +1725,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(31)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_plagionite", 4)
-                .Component("elec_good", 2);
+                .Component("ref_plagionite", 6)
+                .Component("elec_good", 3)
+                .Component("citrine", 1);
 
             // Ascendant Pistol
             _builder.Create(RecipeType.AscendantPistol, SkillType.Smithery)
@@ -1689,8 +1736,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(41)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_keromber", 4)
-                .Component("elec_imperfect", 2);
+                .Component("ref_keromber", 6)
+                .Component("elec_imperfect", 3)
+                .Component("ruby", 1);
 
         }
 
@@ -1703,8 +1751,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(7)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_veldite", 2)
-                .Component("wood", 1);
+                .Component("ref_veldite", 3)
+                .Component("wood", 2)
+                .Component("lth_ruined", 1);
 
             // Veteran Shuriken
             _builder.Create(RecipeType.VeteranShuriken, SkillType.Smithery)
@@ -1713,8 +1762,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(17)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_scordspar", 2)
-                .Component("fine_wood", 1);
+                .Component("ref_scordspar", 3)
+                .Component("fine_wood", 2)
+                .Component("lth_flawed", 1);
 
             // Prime Shuriken
             _builder.Create(RecipeType.PrimeShuriken, SkillType.Smithery)
@@ -1723,8 +1773,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(27)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_plagionite", 2)
-                .Component("ancient_wood", 1);
+                .Component("ref_plagionite", 3)
+                .Component("ancient_wood", 2)
+                .Component("lth_good", 1);
 
             // Ascendant Shuriken
             _builder.Create(RecipeType.AscendantShuriken, SkillType.Smithery)
@@ -1733,8 +1784,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(37)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_keromber", 2)
-                .Component("aracia_wood", 1);
+                .Component("ref_keromber", 3)
+                .Component("aracia_wood", 2)
+                .Component("lth_imperfect", 1);
 
         }
 
@@ -1747,8 +1799,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(14)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
-                .Component("ref_veldite", 5)
-                .Component("elec_ruined", 3);
+                .Component("ref_veldite", 8)
+                .Component("elec_ruined", 5)
+                .Component("jade", 2);
 
             // Veteran Rifle
             _builder.Create(RecipeType.VeteranRifle, SkillType.Smithery)
@@ -1757,8 +1810,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(24)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_scordspar", 5)
-                .Component("elec_flawed", 3);
+                .Component("ref_scordspar", 8)
+                .Component("elec_flawed", 5)
+                .Component("agate", 2);
 
             // Prime Rifle
             _builder.Create(RecipeType.PrimeRifle, SkillType.Smithery)
@@ -1767,8 +1821,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(34)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_plagionite", 5)
-                .Component("elec_good", 3);
+                .Component("ref_plagionite", 8)
+                .Component("elec_good", 5)
+                .Component("citrine", 2);
 
             // Ascendant Rifle
             _builder.Create(RecipeType.AscendantRifle, SkillType.Smithery)
@@ -1777,8 +1832,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(44)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_keromber", 5)
-                .Component("elec_imperfect", 3);
+                .Component("ref_keromber", 8)
+                .Component("elec_imperfect", 5)
+                .Component("ruby", 2);
 
         }
 

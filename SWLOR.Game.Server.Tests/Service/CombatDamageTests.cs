@@ -895,7 +895,6 @@ public class CombatDamageTests
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "AbilityEffectScaling.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "FirstAidTreatmentAdjustments.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "MedKitAbilityDefinition.cs"),
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "ForceDrainAbilityDefinition.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Beastmaster", "InnervateAbilityDefinition.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Beastmaster", "RewardAbilityDefinition.cs"),
         };
@@ -913,10 +912,18 @@ public class CombatDamageTests
             "HeavyVibroblade",
             "HeavyVibrobladeActiveAbilityDefinitionBase.cs"));
         heavyVibrobladeSource.Should().Contain("Combat.ApplyDamageDerivedHealing(");
-        heavyVibrobladeSource.Should().Contain("applyCombatReadiness: true");
-        File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"))
-            .Should()
-            .Contain("Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(creature, amount)");
+        heavyVibrobladeSource.Should().Contain("isActivatedHealing: true");
+        var damageHealing = ExtractMethod(File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs")),
+            "public static int ApplyDamageDerivedHealing(");
+        damageHealing.Should().NotContain("ApplyCombatReadiness",
+            "damage-derived healing already inherits Combat Readiness through its damage");
+        var forceDrain = File.ReadAllText(Path.Combine(root.FullName,
+            "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "ForceDrainAbilityDefinition.cs"));
+        forceDrain.Should().Contain("Combat.BeginDamageDerivedHealing(activator, target)");
+        forceDrain.Should().Contain("Combat.ApplyDamageDerivedHealing(");
+        forceDrain.Should().NotContain("EffectHeal(");
+        forceDrain.Should().NotContain("ApplyCombatReadinessToActivatedAbilityMagnitude");
 
         var directScaledHealingSources = new[]
         {

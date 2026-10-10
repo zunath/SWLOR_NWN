@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -89,6 +90,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<string> PerkDescriptions { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public string PortraitResref { get => Get<string>(); set => Set(value); }
         public string Health { get => Get<string>(); set => Set(value); }
+        public string FP { get => Get<string>(); set => Set(value); }
+        public string STM { get => Get<string>(); set => Set(value); }
         public string AlignmentText { get => Get<string>(); set => Set(value); }
         public string Experience { get => Get<string>(); set => Set(value); }
         public GuiBindingList<string> EffectNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
@@ -321,7 +324,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             TrueName = GetName(_target);
             AccountName = GetPCPlayerName(_target);
             PublicCDKey = GetPCPublicCDKey(_target);
-            Health = $"{GetCurrentHitPoints(_target):N0} / {GetMaxHitPoints(_target):N0} HP";
+            var currentHP = ObjectPlugin.GetCurrentHitPoints(_target) + TemporaryHitPointEffects.GetRemaining(_target);
+            Health = $"{currentHP:N0} / {GetMaxHitPoints(_target):N0}";
+            FP = GetClassByPosition(1, _target) == ClassType.Standard
+                ? "0 / 0"
+                : $"{Math.Max(0, Stat.GetCurrentFP(_target)):N0} / {Math.Max(0, Stat.GetMaxFP(_target)):N0}";
+            STM = $"{Math.Max(0, Stat.GetCurrentStamina(_target)):N0} / {Math.Max(0, Stat.GetMaxStamina(_target)):N0}";
             var lawChaos = GetAlignmentLawChaos(_target);
             var goodEvil = GetAlignmentGoodEvil(_target);
             AlignmentText = lawChaos == Alignment.Neutral && goodEvil == Alignment.Neutral

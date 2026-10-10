@@ -145,13 +145,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             col.AddRow(row =>
             {
-                row.SetHeight(160f);
+                row.SetHeight(216f);
                 row.AddImage().BindResref(model => model.PortraitResref)
                     .SetWidth(112f).SetHeight(152f).SetAspect(NuiAspect.Fit);
                 row.AddColumn(details =>
                 {
                     AddDetailRow(details, "Type", model => model.CharacterType);
-                    AddDetailRow(details, "Health", model => model.Health);
+                    AddDetailRow(details, "HP", model => model.Health);
+                    AddDetailRow(details, "FP", model => model.FP);
+                    AddDetailRow(details, "STM", model => model.STM);
                     AddDetailRow(details, "Alignment", model => model.AlignmentText);
                     AddDetailRow(details, "Experience", model => model.Experience);
                     AddDetailRow(details, "Credits", model => model.Credits);
@@ -163,7 +165,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             AddDetailRow(col, "Public CD key", model => model.PublicCDKey);
             col.AddRow(r => r.AddLabel().SetText("Description").SetHeight(20f)
                 .SetHorizontalAlign(NuiHorizontalAlign.Left));
-            col.AddRow(r => r.AddText().BindText(model => model.Description).SetHeight(160f));
+            col.AddRow(r => r.AddText().BindText(model => model.Description).SetHeight(96f));
         });
 
         private static void AddDetailRow(GuiColumn<DMPlayerExamineViewModel> col, string label,

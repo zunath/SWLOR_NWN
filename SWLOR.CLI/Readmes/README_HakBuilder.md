@@ -5,16 +5,6 @@ The HakBuilder tool compiles NWN hak files from source directories. It includes 
 
 ## Configuration Options
 
-### BeforeBuild
-Optional commands run before validating or deleting any HAK/TLK build outputs.
-Each entry has `Command`, an `Arguments` array, and `OutputDirectories` for
-generated HAK inputs. Paths are relative to the configuration's working directory.
-A failed command stops the HAK build and preserves the previous archives.
-The deploy command allows these generated directories to be absent on a clean
-checkout, while still skipping deployment when ordinary source inputs are missing.
-The repository configuration uses this to generate the ignored female neck
-binding variants automatically; Python with NumPy must be available on PATH.
-
 ### EnableChecksumChecking
 - **Type**: `boolean`
 - **Default**: `true`
@@ -49,4 +39,4 @@ binding variants automatically; Python with NumPy must be available on PATH.
 
 ## Backward Compatibility
 
-The `EnableChecksumChecking` property defaults to `true`, ensuring existing configurations continue to work without modification.
+The `EnableChecksumChecking` property defaults to `true`, ensuring existing configurations continue to work without modification. 

@@ -323,14 +323,13 @@ resources in `sw_neck_f0` and `sw_neck_f1` remap each skin slot, node-to-bone ma
 inverse bind and bone constant to the original named body joint. Authored mesh
 data and original phenotype-zero resources stay unchanged. Both HAK configs
 and the module HAK list mount these banks; each stays below the 2 GiB budget.
-The two model banks and `tools/NeckBindings.json` are ignored build outputs.
-Both `BuildHaks.cmd` and the CLI HAK/deploy commands prepare them automatically
-with `python -B tools/GenerateNeckBindings.py --ensure` (Python with NumPy is
-required). Valid outputs are reused; missing or stale outputs are regenerated
-and audited in staging before replacing the banks. Original neck sources stay
-in `sw_pt_neck`. Generation validates every binding and preserved mesh byte;
-`--check` verifies input hashes, complete variant coverage, output hashes and
-archive sizes. Run `python -B -m unittest discover -s tools -p
+After changing female wearer roots or neck sources, run
+`python -B tools/GenerateNeckBindings.py --output-root . --check` from
+`SWLOR_Haks`. For changed inputs, generate into an empty staging directory with
+`--output-root "<staging>"`, then install its two banks and
+`tools/NeckBindings.json`. Generation validates every binding and preserved
+mesh byte; `--check` verifies input hashes, complete variant coverage, output
+hashes and archive sizes. Run `python -B -m unittest discover -s tools -p
 "TestNeckBindings.py"` for focused regression coverage. Rebuild both neck HAKs
 and repack the module when deploying them.
 Splitting archives preserves model bytes and supermodel references; it does not

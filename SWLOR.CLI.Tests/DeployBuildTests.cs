@@ -111,58 +111,6 @@ public sealed class DeployBuildTests
         Directory.Exists(Path.Combine(_root, "debugserver")).Should().BeFalse();
     }
 
-    [Test]
-    public async Task MissingGeneratedInputsArePreparedBeforePackagingAndRefreshedAfterChanges()
-    {
-        ConfigureGenerator("from pathlib import Path\nimport sys\n" +
-            "target = Path(sys.argv[2])\ntarget.mkdir(parents=True, exist_ok=True)\n" +
-            "(target / 'test.mdl').write_bytes(Path(sys.argv[1]).read_bytes())\n");
-        var first = await Deploy();
-        first.ExitCode.Should().Be(0, first.Output);
-        first.Output.Should().NotContain("Skipping HAK/TLK deployment");
-        var archive = Path.Combine(_root, "debugserver/hak/test.hak");
-        var previousHash = SHA256.HashData(File.ReadAllBytes(archive));
-        File.ReadAllText(Path.Combine(_root, "generated assets/test.mdl")).Should().Be("first model");
-
-        File.WriteAllText(Path.Combine(_root, "assets/test.mdl"), "updated authored model");
-        var second = await Deploy();
-        second.ExitCode.Should().Be(0, second.Output);
-        File.ReadAllText(Path.Combine(_root, "generated assets/test.mdl")).Should().Be("updated authored model");
-        SHA256.HashData(File.ReadAllBytes(archive)).Should().NotEqual(previousHash);
-    }
-
-    [Test]
-    public async Task FailedGeneratorPreservesExistingArchivesAndTlk()
-    {
-        var initial = await Deploy();
-        initial.ExitCode.Should().Be(0, initial.Output);
-        var archive = Path.Combine(_root, "debugserver/hak/test.hak");
-        var previous = File.ReadAllBytes(archive);
-        ConfigureGenerator("raise SystemExit('intentional generation failure')\n");
-
-        var result = await Deploy();
-
-        result.ExitCode.Should().NotBe(0);
-        result.Output.Should().Contain("intentional generation failure");
-        File.ReadAllBytes(archive).Should().Equal(previous);
-        File.ReadAllText(Path.Combine(_root, "debugserver/tlk/test.tlk")).Should().Be("tlk fixture");
-    }
-
-    private void ConfigureGenerator(string script)
-    {
-        File.WriteAllText(Path.Combine(_root, "generate assets.py"), script);
-        File.WriteAllText(Path.Combine(_root, "Build/hakbuilder.json"), JsonSerializer.Serialize(new
-        {
-            TlkPath = "../test.tlk", OutputPath = "../debugserver/", EnableChecksumChecking = true,
-            BeforeBuild = new[] { new
-            {
-                Command = "python", Arguments = new[] { "-B", "../generate assets.py", "../assets/test.mdl", "../generated assets" },
-                OutputDirectories = new[] { "../generated assets" }
-            } },
-            HakList = new[] { new { Name = "test", Path = "../generated assets/", CompileModels = false } }
-        }));
-    }
-
     private async Task<(int ExitCode, string Output)> Deploy()
     {
         var info = new ProcessStartInfo("dotnet")

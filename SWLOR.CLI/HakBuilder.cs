@@ -29,8 +29,6 @@ namespace SWLOR.CLI
             _haksToProcess = _config.HakList
                 .Where(hak => hak != null && !string.IsNullOrWhiteSpace(hak.Name))
                 .ToList();
-            foreach (var step in _config.BeforeBuild)
-                RunProcess(step.Command, step.Arguments.ToArray());
             // Validate every input before deleting any previous HAK or TLK.
             foreach (var hak in _haksToProcess)
                 ValidateArchiveSize(hak.Name, Directory.EnumerateFiles(hak.Path, "*", SearchOption.AllDirectories)

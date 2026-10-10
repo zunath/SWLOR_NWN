@@ -69,15 +69,10 @@ namespace SWLOR.CLI
         private void BuildHaks()
         {
             var config = _hakBuilder.GetConfig();
-            var generatedInputs = config.BeforeBuild
-                .SelectMany(step => step.OutputDirectories)
-                .Select(path => Path.TrimEndingDirectorySeparator(Path.GetFullPath(path)))
-                .ToHashSet(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
             var missingInputs = config.HakList
                 .Where(hak => hak != null && !string.IsNullOrWhiteSpace(hak.Name))
                 .Select(hak => hak.Path)
-                .Where(path => !Directory.Exists(path) &&
-                               !generatedInputs.Contains(Path.TrimEndingDirectorySeparator(Path.GetFullPath(path))))
+                .Where(path => !Directory.Exists(path))
                 .ToList();
             if (!File.Exists(config.TlkPath))
                 missingInputs.Add(config.TlkPath);

@@ -1458,16 +1458,12 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(target))
                 return;
 
-            var appliedDamage = ApplyTriggeredDamage(
+            ApplyTriggeredDamage(
                 attacker,
                 target,
                 cycleDamage,
                 CombatDamageType.Physical,
                 skillType);
-            if (appliedDamage <= 0)
-                return;
-
-            Enmity.ModifyEnmity(attacker, target, appliedDamage);
         }
 
         private static void ApplySourceStatusAutoAttackCycleDamage(uint attacker, uint defender, SkillType skillType)
@@ -1511,11 +1507,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _sourceStatusAutoAttackCycleCounts[key] = 0;
-            var appliedDamage = ApplyTriggeredDamage(attacker, defender, damage, damageType, skillType);
-            if (appliedDamage > 0)
-            {
-                Enmity.ModifyEnmity(attacker, defender, appliedDamage);
-            }
+            ApplyTriggeredDamage(attacker, defender, damage, damageType, skillType);
         }
 
         public static int CalculateAutoAttackProcDamage(IEnumerable<StatAdjustmentSource> sources, Func<int> roll)

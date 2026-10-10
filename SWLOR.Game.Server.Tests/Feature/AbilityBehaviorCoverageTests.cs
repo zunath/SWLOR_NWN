@@ -90,6 +90,7 @@ namespace SWLOR.Game.Server.Tests.Feature
                    behaviorCase.ExpectedTargetStatAdjustments.Count > 0 ||
                    behaviorCase.ExpectedRemovedTargetStatusEffects.Length > 0 ||
                    behaviorCase.ExpectsTargetDamage ||
+                   behaviorCase.MinimumTargetEnmityAfterImpact > 0 ||
                    behaviorCase.ExpectsTargetRevived ||
                    behaviorCase.ExpectsActivatorTemporaryHP ||
                    behaviorCase.ExpectsTargetTemporaryHP ||

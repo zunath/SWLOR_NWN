@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string FP { get => Get<string>(); set => Set(value); }
         public string STM { get => Get<string>(); set => Set(value); }
         public string AlignmentText { get => Get<string>(); set => Set(value); }
-        public string Experience { get => Get<string>(); set => Set(value); }
+        public string RPXP { get => Get<string>(); set => Set(value); }
         public GuiBindingList<string> EffectNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<string> EffectDurations { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<string> EffectSources { get => Get<GuiBindingList<string>>(); set => Set(value); }
@@ -334,7 +334,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var goodEvil = GetAlignmentGoodEvil(_target);
             AlignmentText = lawChaos == Alignment.Neutral && goodEvil == Alignment.Neutral
                 ? "Neutral" : $"{lawChaos} {goodEvil}";
-            Experience = GetXP(_target).ToString("N0");
+            var dbPlayer = DB.Get<Player>(_playerId);
+            RPXP = dbPlayer?.UnallocatedXP.ToString("N0") ?? "N/A";
         }
 
         private void LoadTargetSkills()

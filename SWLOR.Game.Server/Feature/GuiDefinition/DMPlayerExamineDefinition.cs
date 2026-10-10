@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     AddDetailRow(details, "FP", model => model.FP);
                     AddDetailRow(details, "STM", model => model.STM);
                     AddDetailRow(details, "Alignment", model => model.AlignmentText);
-                    AddDetailRow(details, "Experience", model => model.Experience);
+                    AddDetailRow(details, "RP XP", model => model.RPXP);
                     AddDetailRow(details, "Credits", model => model.Credits);
                 });
             });

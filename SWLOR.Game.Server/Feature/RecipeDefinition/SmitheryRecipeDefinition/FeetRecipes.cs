@@ -470,8 +470,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(10)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_veldite", 3)
-                .Component("fiberp_ruined", 2);
+                .Component("ref_veldite", 5)
+                .Component("fiberp_ruined", 3)
+                .Component("lth_ruined", 2);
 
             // Mystic Boots
             _builder.Create(RecipeType.MysticBoots, SkillType.Smithery)
@@ -480,8 +481,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(10)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_ruined", 3)
-                .Component("fiberp_ruined", 2);
+                .Component("lth_ruined", 5)
+                .Component("fiberp_ruined", 3)
+                .Component("jade", 2);
 
             // Vanguard Boots
             _builder.Create(RecipeType.VanguardBoots, SkillType.Smithery)
@@ -490,8 +492,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(10)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("lth_ruined", 3)
-                .Component("fiberp_ruined", 2);
+                .Component("lth_ruined", 5)
+                .Component("fiberp_ruined", 3)
+                .Component("elec_ruined", 2);
         }
 
         private void Tier2A()
@@ -503,8 +506,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(20)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_scordspar", 3)
-                .Component("fiberp_flawed", 2);
+                .Component("ref_scordspar", 5)
+                .Component("fiberp_flawed", 3)
+                .Component("lth_flawed", 2);
 
             // Oracle Boots
             _builder.Create(RecipeType.OracleBoots, SkillType.Smithery)
@@ -513,8 +517,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(20)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_flawed", 3)
-                .Component("fiberp_flawed", 2);
+                .Component("lth_flawed", 5)
+                .Component("fiberp_flawed", 3)
+                .Component("agate", 2);
 
             // Onslaught Boots
             _builder.Create(RecipeType.OnslaughtBoots, SkillType.Smithery)
@@ -523,8 +528,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(20)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_flawed", 3)
-                .Component("fiberp_flawed", 2);
+                .Component("lth_flawed", 5)
+                .Component("fiberp_flawed", 3)
+                .Component("elec_flawed", 2);
         }
 
         private void Tier3A()
@@ -536,8 +542,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(30)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_plagionite", 3)
-                .Component("fiberp_good", 2);
+                .Component("ref_plagionite", 5)
+                .Component("fiberp_good", 3)
+                .Component("lth_good", 2);
 
             // Arcanist Boots
             _builder.Create(RecipeType.ArcanistBoots, SkillType.Smithery)
@@ -546,8 +553,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(30)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_good", 3)
-                .Component("fiberp_good", 2);
+                .Component("lth_good", 5)
+                .Component("fiberp_good", 3)
+                .Component("citrine", 2);
 
             // Maverick Boots
             _builder.Create(RecipeType.MaverickBoots, SkillType.Smithery)
@@ -556,8 +564,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(30)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_good", 3)
-                .Component("fiberp_good", 2);
+                .Component("lth_good", 5)
+                .Component("fiberp_good", 3)
+                .Component("elec_good", 2);
         }
 
         private void Tier4A()
@@ -569,8 +578,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(40)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_keromber", 3)
-                .Component("fiberp_imperfect", 2);
+                .Component("ref_keromber", 5)
+                .Component("fiberp_imperfect", 3)
+                .Component("lth_imperfect", 2);
 
             // Luminary Boots
             _builder.Create(RecipeType.LuminaryBoots, SkillType.Smithery)
@@ -579,8 +589,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(40)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_imperfect", 3)
-                .Component("fiberp_imperfect", 2);
+                .Component("lth_imperfect", 5)
+                .Component("fiberp_imperfect", 3)
+                .Component("ruby", 2);
 
             // Apex Boots
             _builder.Create(RecipeType.ApexBoots, SkillType.Smithery)
@@ -589,8 +600,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(40)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_imperfect", 3)
-                .Component("fiberp_imperfect", 2);
+                .Component("lth_imperfect", 5)
+                .Component("fiberp_imperfect", 3)
+                .Component("elec_imperfect", 2);
         }
 
 }

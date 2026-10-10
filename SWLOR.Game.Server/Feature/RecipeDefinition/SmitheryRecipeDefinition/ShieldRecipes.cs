@@ -96,8 +96,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(11)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_veldite", 4)
-                .Component("wood", 2);
+                .Component("ref_veldite", 6)
+                .Component("wood", 3)
+                .Component("fiberp_ruined", 2);
 
             // Bastion Shield
             _builder.Create(RecipeType.BastionShield, SkillType.Smithery)
@@ -106,8 +107,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(21)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_scordspar", 4)
-                .Component("fine_wood", 2);
+                .Component("ref_scordspar", 6)
+                .Component("fine_wood", 3)
+                .Component("fiberp_flawed", 2);
 
             // Sentinel Shield
             _builder.Create(RecipeType.SentinelShield, SkillType.Smithery)
@@ -116,8 +118,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(31)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_plagionite", 4)
-                .Component("ancient_wood", 2);
+                .Component("ref_plagionite", 6)
+                .Component("ancient_wood", 3)
+                .Component("fiberp_good", 2);
 
             // Aegis Shield
             _builder.Create(RecipeType.AegisShield, SkillType.Smithery)
@@ -126,8 +129,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(41)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_keromber", 4)
-                .Component("aracia_wood", 2);
+                .Component("ref_keromber", 6)
+                .Component("aracia_wood", 3)
+                .Component("fiberp_imperfect", 2);
 
         }
 

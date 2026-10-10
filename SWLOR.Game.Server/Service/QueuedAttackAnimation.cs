@@ -20,6 +20,8 @@ public static class QueuedAttackAnimation
         if (clip != null) Playback.Begin(creature, clip);
     }
 
+    public static bool IsActive(uint creature) => !string.IsNullOrEmpty(GetLocalString(creature, TokenVariable));
+
     public static void Stop(uint creature) => Playback.Stop(creature);
 
     private sealed class NativeRuntime : INamedAnimationRuntime

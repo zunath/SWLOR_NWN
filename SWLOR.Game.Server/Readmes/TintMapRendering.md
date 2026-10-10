@@ -251,6 +251,14 @@ references, bind transforms, and native inverse skin binds are preserved.
 Duplicate legacy nodes are removed or renamed only after checking actual binary
 bone references and child/animation relationships.
 
+Generated robe phenotypes also need their own native cloak geometry resources.
+After changing the robe or cloak catalog, run
+`python -B SWLOR_Haks/tools/GenerateRobeCloakModels.py --game-data <installed-game-data-directory>`.
+The generator retains canonical cloak geometry, materials, skin binds and animation
+parents, changing only the model and root names. `BuildHaks.cmd` checks the output
+manifest before packaging. Changing a robe phenotype also refreshes the equipped
+cloak after the body update, including when returning to the base body.
+
 `RobeSkeleton.py` generates shared animation parents for every converted model,
 including custom coats and robes with different joint hierarchies. Body and
 robe tracks have separate native part IDs. Ordinary body clips retain their

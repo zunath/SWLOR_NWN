@@ -64,6 +64,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
 
                 var appearance = lastUpdate.m_cAppearance;
                 var handItem = appearance.m_oidLeftHandItem == item || appearance.m_oidRightHandItem == item;
+                var cloakItem = appearance.m_oidCloakItem == item;
                 var changed = false;
                 if (appearance.m_oidHeadItem == item)
                 {
@@ -96,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                 // Match NWNX_Item_SetItemAppearance's observer refresh, including hands.
                 // Only the client's cached item is discarded; ownership and equipment stay put.
                 message.SendServerPlayerItemUpdate_DestroyItem(player, item);
-                if (handItem)
+                if (handItem || cloakItem)
                 {
                     // The inventory GUI tracks equipment independently of creature appearance.
                     // After destroying the client's item, also resend its inventory-slot add.

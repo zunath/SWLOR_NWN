@@ -639,7 +639,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 910
+    "value": 908
   },
   "SpecAbilityList": {
     "type": "list",

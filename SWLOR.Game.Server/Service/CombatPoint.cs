@@ -138,7 +138,8 @@ namespace SWLOR.Game.Server.Service
                             {
                                 var adjXP = baseXP * (cp / totalCatCP);
                                 adjXP += adjXP * areaBonus;
-                                Skill.GiveSkillXP(player, skillType, (int)adjXP);
+                                Skill.GiveSkillXP(player, skillType, (int)adjXP,
+                                    xpMessageSource: skillType == SkillType.Mimicry ? npc : OBJECT_INVALID);
                             }
                         }
                         else

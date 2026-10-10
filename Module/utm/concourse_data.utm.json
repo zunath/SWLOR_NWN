@@ -1,0 +1,120 @@
+{
+  "__data_type": "UTM ",
+  "BlackMarket": {
+    "type": "byte",
+    "value": 0
+  },
+  "BM_MarkDown": {
+    "type": "int",
+    "value": 25
+  },
+  "IdentifyPrice": {
+    "type": "int",
+    "value": 100
+  },
+  "LocName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Datapad Store"
+    }
+  },
+  "MarkDown": {
+    "type": "int",
+    "value": 40
+  },
+  "MarkUp": {
+    "type": "int",
+    "value": 100
+  },
+  "MaxBuyPrice": {
+    "type": "int",
+    "value": -1
+  },
+  "OnOpenStore": {
+    "type": "resref",
+    "value": "on_open_store"
+  },
+  "OnStoreClosed": {
+    "type": "resref",
+    "value": "on_close_store"
+  },
+  "ResRef": {
+    "type": "resref",
+    "value": "concourse_data"
+  },
+  "StoreGold": {
+    "type": "int",
+    "value": -1
+  },
+  "StoreList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0
+      },
+      {
+        "__struct_id": 4
+      },
+      {
+        "__struct_id": 2
+      },
+      {
+        "__struct_id": 3,
+        "ItemList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "handdatapad"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            }
+          ]
+        }
+      },
+      {
+        "__struct_id": 1
+      }
+    ]
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "DataStore"
+  },
+  "WillNotBuy": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 97869,
+        "BaseItem": {
+          "type": "int",
+          "value": 511
+        }
+      },
+      {
+        "__struct_id": 97869,
+        "BaseItem": {
+          "type": "int",
+          "value": 512
+        }
+      }
+    ]
+  },
+  "WillOnlyBuy": {
+    "type": "list",
+    "value": []
+  }
+}

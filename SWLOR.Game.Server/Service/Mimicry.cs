@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -47,6 +48,9 @@ namespace SWLOR.Game.Server.Service
         // In-memory witness tracker: npc -> playerId -> technique feats witnessed but not yet learned.
         private static readonly Dictionary<uint, Dictionary<string, HashSet<FeatType>>> _witnesses = new();
 
+        // Observation is passive: keep its credit out of the combat points used to share active skill XP.
+        private static readonly Dictionary<uint, HashSet<string>> _analysisObservers = new();
+
         private static bool _witnessSweepScheduled;
 
         private const float WitnessRadius = 15.0f;
@@ -57,7 +61,9 @@ namespace SWLOR.Game.Server.Service
         private const int OverclockedAnalyzerSlotBonus = 2;
         private const int ResonancePotencyPerTechnique = 5;
         private const int ResonancePotencyCap = 20;
-        private const int AnalysisCombatPointsPerWitness = 1;
+        private const int AnalysisXPPercent = 5;
+        private const int MaximumAnalysisXPPerCreature = 30;
+        private static readonly int MaximumMimicryRank = SkillType.Mimicry.GetAttribute<SkillType, SkillAttribute>().MaxRank;
 
         private const int BaseLearnChancePercent = 20;
         private const int LearnChancePerRankDelta = 2;
@@ -278,7 +284,7 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsDM(nearby))
                 {
                     TryRecordWitness(activator, nearby, techniqueFeat, techniqueDetail);
-                    TryAwardAnalysisCombatPoint(activator, nearby);
+                    TryRecordAnalysis(activator, nearby);
                 }
             }
         }
@@ -297,17 +303,10 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Records a witness entry for a player/technique pair, if they qualify and haven't already
-        /// been recorded. Sends the "recording" floating text exactly once per (npc, player, technique).
+        /// Records one analysis credit per player and creature, including already learned techniques.
+        /// The observer must already be participating in combat. Observation never adds combat points.
         /// </summary>
-        /// <summary>
-        /// Grants a Mimicry combat point toward a creature when a player with the Combat Analyzer
-        /// witnesses it use a technique, provided the player is already engaged with it (has earned
-        /// combat points against it). The point converts to Mimicry XP when the creature dies, giving
-        /// an ongoing analysis-driven leveling source alongside learning and using techniques. Unlike
-        /// witness recording, this keeps paying out after the technique has already been learned.
-        /// </summary>
-        private static void TryAwardAnalysisCombatPoint(uint npc, uint player)
+        private static void TryRecordAnalysis(uint npc, uint player)
         {
             if (Perk.GetPerkLevel(player, PerkType.CombatAnalyzer) < 1)
                 return;
@@ -315,9 +314,77 @@ namespace SWLOR.Game.Server.Service
             if (!CombatPoint.HasCombatPoints(player, npc))
                 return;
 
-            CombatPoint.AddCombatPoint(player, npc, SkillType.Mimicry, AnalysisCombatPointsPerWitness);
+            if (!_analysisObservers.TryGetValue(npc, out var observers))
+            {
+                observers = new HashSet<string>();
+                _analysisObservers[npc] = observers;
+            }
+
+            observers.Add(GetObjectUUID(player));
         }
 
+        /// <summary>
+        /// Pays observation XP only after the normal kill payout has validated participation,
+        /// survival, area, and distance. Consuming the credit prevents repeat event payouts.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnCombatPointXPDistribute)]
+        public static void CombatPointXPDistributed()
+        {
+            var player = OBJECT_SELF;
+            var npc = StringToObject(EventsPlugin.GetEventData("NPC"));
+            if (!_analysisObservers.TryGetValue(npc, out var observers) ||
+                !observers.Remove(GetObjectUUID(player)))
+                return;
+
+            if (observers.Count == 0)
+                _analysisObservers.Remove(npc);
+
+            if (Perk.GetPerkLevel(player, PerkType.CombatAnalyzer) < 1)
+                return;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            var xp = CalculateAnalysisXP(Stat.GetNPCStats(npc).Level, dbPlayer.Skills[SkillType.Mimicry].Rank);
+            if (xp > 0)
+            {
+                // No area or character XP bonuses: this passive reward must stay within its cap.
+                Skill.GiveSkillXP(player, SkillType.Mimicry, xp, ignoreBonuses: true, xpMessageSource: npc);
+            }
+        }
+
+        /// <summary>
+        /// Observation grants 5% of rank-relative kill XP, capped at 30 before normal penalties.
+        /// Trivial enemies and mastered Mimicry grant no observation XP.
+        /// </summary>
+        public static int CalculateAnalysisXP(int npcLevel, int mimicryRank)
+        {
+            if (mimicryRank >= MaximumMimicryRank)
+                return 0;
+
+            return Math.Min(MaximumAnalysisXPPerCreature,
+                Skill.GetDeltaXP(npcLevel - mimicryRank) * AnalysisXPPercent / 100);
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        [NWNEventHandler(ScriptName.OnAreaExit)]
+        public static void ClearAnalysisOnPlayerExit()
+        {
+            var player = GetExitingObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            foreach (var (npc, observers) in _analysisObservers.ToArray())
+            {
+                observers.Remove(playerId);
+                if (observers.Count == 0)
+                    _analysisObservers.Remove(npc);
+            }
+        }
+
+        /// <summary>
+        /// Records a witness entry for a player/technique pair, if they qualify and haven't already
+        /// been recorded. Sends the "recording" floating text exactly once per (npc, player, technique).
+        /// </summary>
         private static void TryRecordWitness(uint npc, uint player, FeatType techniqueFeat, AbilityDetail techniqueDetail)
         {
             if (Perk.GetPerkLevel(player, PerkType.CombatAnalyzer) < 1)
@@ -386,9 +453,6 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void SweepStaleWitnesses()
         {
-            if (_witnesses.Count <= 0)
-                return;
-
             var staleCreatures = new List<uint>();
             foreach (var npc in _witnesses.Keys)
             {
@@ -399,6 +463,14 @@ namespace SWLOR.Game.Server.Service
             foreach (var npc in staleCreatures)
             {
                 _witnesses.Remove(npc);
+            }
+
+            // Ineligible observers receive no combat payout event. Reclaim their credit after death
+            // as well as despawn, without depending on creature-death handler ordering.
+            foreach (var npc in _analysisObservers.Keys.ToArray())
+            {
+                if (!GetIsObjectValid(npc) || GetIsDead(npc))
+                    _analysisObservers.Remove(npc);
             }
         }
 
@@ -461,7 +533,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var detail in learnedDetails)
             {
                 SendMessageToPC(player, ColorToken.Green($"You learned the technique: {detail.Name}!"));
-                Skill.GiveSkillXP(player, SkillType.Mimicry, LearnTechniqueXP);
+                Skill.GiveSkillXP(player, SkillType.Mimicry, LearnTechniqueXP, xpMessageSource: npc);
 
                 Log.WriteStructured(
                     LogGroup.Mimicry,

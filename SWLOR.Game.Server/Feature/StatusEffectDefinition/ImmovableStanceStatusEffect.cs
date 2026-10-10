@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public ImmovableStanceStatusEffect()
         {
+            StatGroup.Stats[StatType.DamageEnmityPercentAdjustment] = 100;
             StatGroup.Stats[StatType.EnmityPercentAdjustment] = 30;
             StatGroup.Stats[StatType.MobilityResistance] = 8;
             StatGroup.Stats[StatType.AttackPercentAdjustment] = -25;

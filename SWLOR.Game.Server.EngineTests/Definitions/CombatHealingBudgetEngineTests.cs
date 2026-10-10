@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -25,17 +26,50 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             using (Combat.BeginDamageDerivedHealing(source, target))
             {
-                ctx.AssertEqual(30, Combat.ApplyDamageDerivedHealing(source, 684, 25), "critical passive is capped after healing bonuses");
+                ctx.AssertEqual(60, Combat.ApplyDamageDerivedHealing(source, 684, 25), "critical passive is capped after healing bonuses");
                 ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 8), "another passive cannot refill the same hit");
                 ctx.AssertEqual(150, Combat.ApplyDamageDerivedHealing(source, 684, 40, true), "active drain keeps its separate allowance");
                 ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 40, true), "one hit cannot repeat the active allowance");
             }
-            ctx.AssertEqual(181, GetCurrentHitPoints(source), "combined spike heals 180 HP");
+            ctx.AssertEqual(211, GetCurrentHitPoints(source), "combined spike heals 210 HP");
 
+            for (var i = 0; i < 3; i++)
+            {
+                using (Combat.BeginDamageDerivedHealing(source, target))
+                    ctx.AssertEqual(60, Combat.ApplyDamageDerivedHealing(source, 684, 25), "subsequent hits use the remaining rolling allowance");
+            }
             using (Combat.BeginDamageDerivedHealing(source, target))
-                ctx.AssertEqual(30, Combat.ApplyDamageDerivedHealing(source, 684, 25), "next hit uses the remaining rolling allowance");
-            using (Combat.BeginDamageDerivedHealing(source, target))
-                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 25), "third hit cannot exceed 60 HP within six seconds");
+                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 25), "fifth hit cannot exceed 240 HP within six seconds");
+        }
+
+        [EngineTest("Soul Ascension preserves ordinary stacked lifesteal sustain", Category = "CombatHealing", TimeoutSeconds = 20f)]
+        public static async Task StackedSustain(EngineTestContext ctx)
+        {
+            var baseline = ctx.SpawnCreature("civilian", 1f);
+            var ascended = ctx.SpawnCreature("civilian", 2f);
+            var target = ctx.SpawnCreature("civilian", 3f);
+            await ctx.DelaySecondsAsync(1f);
+            Prepare(ctx, baseline, 1000, 1);
+            Prepare(ctx, ascended, 1000, 1);
+            Prepare(ctx, target, 1000, 1000);
+            foreach (var source in new[] { baseline, ascended })
+            {
+                TemporaryStatModifier.Add(source, StatType.LowHPDamageDealtHPRestoreThresholdPercent, 40, 30f);
+                TemporaryStatModifier.Add(source, StatType.LowHPDamageDealtHPPercentRestore, 8, 30f);
+            }
+            ctx.Assert(StatusEffect.ApplyStatusEffect(ascended, ascended, typeof(SoulAscensionBurstStatusEffect), 45f),
+                "Soul Ascension applies its real lifesteal buff");
+            for (var i = 0; i < 6; i++)
+            {
+                foreach (var source in new[] { baseline, ascended })
+                {
+                    using (Combat.BeginDamageDerivedHealing(source, target))
+                        Combat.ApplyDamageDealtEffects(source, target, 250, SkillType.HeavyVibroblade,
+                            CombatDamageType.Physical, isAbilityDamage: true);
+                }
+            }
+            ctx.AssertEqual(121, GetCurrentHitPoints(baseline), "six ordinary hits retain the full 120 HP of 8% lifesteal");
+            ctx.AssertEqual(241, GetCurrentHitPoints(ascended), "Soul Ascension doubles recovery to 240 HP across the same hits");
         }
 
         [EngineTest("Lifesteal excludes overkill and overhealing does not spend recovery budgets", Category = "CombatHealing", TimeoutSeconds = 20f)]
@@ -54,7 +88,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(1, Combat.ApplyDamageDerivedHealing(source, 684, 25), "only the missing HP spends allowance");
             ObjectPlugin.SetCurrentHitPoints(source, 1);
             using (Combat.BeginDamageDerivedHealing(source, target))
-                ctx.AssertEqual(30, Combat.ApplyDamageDerivedHealing(source, 684, 25), "next hit retains its per-hit allowance");
+                ctx.AssertEqual(60, Combat.ApplyDamageDerivedHealing(source, 684, 25), "next hit retains its per-hit allowance");
 
             ObjectPlugin.SetCurrentHitPoints(target, 20);
             using (Combat.BeginDamageDerivedHealing(source, target))
@@ -136,7 +170,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task AreaHealing(EngineTestContext ctx)
         {
             var source = ctx.SpawnCreature("civilian", 1f);
-            var targets = new uint[10];
+            var targets = new uint[20];
             for (var i = 0; i < targets.Length; i++)
                 targets[i] = ctx.SpawnCreature("civilian", 3f + i);
             await ctx.DelaySecondsAsync(1f);
@@ -155,7 +189,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 });
             }
             finally { Ability.EndAbilityImpact(source); }
-            ctx.AssertEqual(61, GetCurrentHitPoints(source), "ten targets share 60 HP of passive healing");
+            ctx.AssertEqual(241, GetCurrentHitPoints(source), "twenty targets share 240 HP of passive healing");
         }
 
         [EngineTest("Repeated queued impacts cannot heal from the same overkill health twice", Category = "CombatHealing", TimeoutSeconds = 20f)]

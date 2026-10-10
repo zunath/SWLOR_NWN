@@ -40,8 +40,8 @@ namespace SWLOR.Game.Server.Service
         public const int MaximumCriticalRate = 50;
         public const int MaximumDamageDerivedHealingPercentPerHit = 50;
         public const int MaximumActivatedDamageHealingMaxHPPercent = 15;
-        public const int MaximumPassiveDamageHealingMaxHPPercentPerHit = 3;
-        public const int MaximumPassiveDamageHealingMaxHPPercentPerWindow = 6;
+        public const int MaximumPassiveDamageHealingMaxHPPercentPerHit = 6;
+        public const int MaximumPassiveDamageHealingMaxHPPercentPerWindow = 24;
         public const int MaximumDefeatedEnemyHealingMaxHPPercentPerWindow = 12;
         public const int CombatHealingWindowSeconds = 6;
         public const int MaximumCriticalDamagePercentAdjustment = 200;

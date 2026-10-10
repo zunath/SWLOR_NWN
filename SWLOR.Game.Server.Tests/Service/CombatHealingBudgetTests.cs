@@ -20,7 +20,7 @@ public class CombatHealingBudgetTests
                 total += budget.Take(Combat.CalculateMaxHPHealingBudget(1000,
                     Combat.MaximumPassiveDamageHealingMaxHPPercentPerWindow), 24, now.AddMilliseconds(i));
 
-            total.Should().Be(60);
+            total.Should().Be(240);
         }
     }
 
@@ -55,7 +55,7 @@ public class CombatHealingBudgetTests
         var now = DateTime.UtcNow;
         var passive = NewWindow();
         var kills = NewWindow();
-        passive.Take(60, 1000, now).Should().Be(60);
+        passive.Take(240, 1000, now).Should().Be(240);
         kills.Take(120, 1000, now).Should().Be(120);
         new AbilityImpactSequence().TakeDamageDerivedHealing(1000, 500).Should().Be(150);
     }

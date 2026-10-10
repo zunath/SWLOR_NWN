@@ -316,6 +316,22 @@ configs and the module HAK list must mount these packages. This avoids packing
 the whole expanded bridge library into a single archive exceeding 2 GiB.
 The CLI rejects HAK inputs reaching that conservative compatibility budget,
 including archive tables, before deleting any previous build outputs.
+Female human neck skins (also used by Twi'lek females) store traversal indices
+into the wearer skeleton. Robe adapter nodes shift those indices, so a fallback
+neck can follow a forearm or leg instead of the head or torso. Generated neck
+resources in `sw_neck_f0` and `sw_neck_f1` remap each skin slot, node-to-bone map,
+inverse bind and bone constant to the original named body joint. Authored mesh
+data and original phenotype-zero resources stay unchanged. Both HAK configs
+and the module HAK list mount these banks; each stays below the 2 GiB budget.
+After changing female wearer roots or neck sources, run
+`python -B tools/GenerateNeckBindings.py --output-root . --check` from
+`SWLOR_Haks`. For changed inputs, generate into an empty staging directory with
+`--output-root "<staging>"`, then install its two banks and
+`tools/NeckBindings.json`. Generation validates every binding and preserved
+mesh byte; `--check` verifies input hashes, complete variant coverage, output
+hashes and archive sizes. Run `python -B -m unittest discover -s tools -p
+"TestNeckBindings.py"` for focused regression coverage. Rebuild both neck HAKs
+and repack the module when deploying them.
 Splitting archives preserves model bytes and supermodel references; it does not
 reduce the total inherited animation data or establish in-game load performance.
 Ordinary separate robes can inherit animation from their phenotype supermodel.

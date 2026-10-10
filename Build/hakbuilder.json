@@ -109,6 +109,16 @@
       "CompileModels": false
     },
     {
+      "Name": "sw_neck_f0",
+      "Path": "../SWLOR_Haks/sw_neck_f0/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_neck_f1",
+      "Path": "../SWLOR_Haks/sw_neck_f1/",
+      "CompileModels": false
+    },
+    {
       "Name": "sw_pt_pelvis",
       "Path": "../SWLOR_Haks/sw_pt_pelvis/",
       "CompileModels": false

@@ -67,10 +67,35 @@ public class StanceStatusEffectTests
         }
     }
 
-    [Test]
-    public void BlazingSpikes_UsesExclusiveStanceSourceType()
+    [TestCase(typeof(BlazingSpikesStatusEffect), typeof(CycloneStanceStatusEffect))]
+    [TestCase(typeof(CycloneStanceStatusEffect), typeof(BlazingSpikesStatusEffect))]
+    public void BlazingSpikesAndCycloneStance_CoexistInEitherActivationOrder(Type firstType, Type secondType)
     {
-        new BlazingSpikesStatusEffect().SourceType.Should().Be(StatusEffectSourceType.Stance);
+        AddActiveEffect(Player, (IStatusEffect)Activator.CreateInstance(firstType)!);
+
+        StatusEffect.RemoveOtherStanceStatuses(Player, secondType, removeNativeEffect: false);
+        AddActiveEffect(Player, (IStatusEffect)Activator.CreateInstance(secondType)!);
+
+        StatusEffect.GetCreatureStatusEffects(Player).GetAllEffects().Select(effect => effect.GetType())
+            .Should().BeEquivalentTo(new[] { firstType, secondType });
+
+        StatusEffect.RemoveStatusEffect(Player, typeof(BlazingSpikesStatusEffect), sendsWornOffMessage: false, removeNativeEffect: false);
+
+        StatusEffect.GetCreatureStatusEffects(Player).GetAllEffects().Should().ContainSingle()
+            .Which.Should().BeOfType<CycloneStanceStatusEffect>("deactivating Blazing Spikes must preserve the stance");
+    }
+
+    [Test]
+    public void SwitchingStances_PreservesBlazingSpikes()
+    {
+        AddActiveEffect(Player, new BlazingSpikesStatusEffect());
+        AddActiveEffect(Player, new TestStanceAStatusEffect());
+
+        StatusEffect.RemoveOtherStanceStatuses(Player, typeof(TestStanceBStatusEffect), removeNativeEffect: false);
+        AddActiveEffect(Player, new TestStanceBStatusEffect());
+
+        StatusEffect.GetCreatureStatusEffects(Player).GetAllEffects().Select(effect => effect.GetType())
+            .Should().BeEquivalentTo(new[] { typeof(BlazingSpikesStatusEffect), typeof(TestStanceBStatusEffect) });
     }
 
     [Test]

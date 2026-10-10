@@ -22,11 +22,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             int Rank(PerkType type) => ranks.TryGetValue(type, out var rank) ? rank : 0;
 
             var filtered = perks.Where(x =>
+                    (x.Value.IsActive && x.Value.GroupType == PerkGroupType.Player) || Rank(x.Key) > 0)
+                .Where(x =>
                 (category == 0 || (int)x.Value.Category == category) && Matches(x.Value.Name, search))
                 .Where(x => status switch
                 {
                     1 => Rank(x.Key) > 0,
-                    2 => canBuy(x.Value, Rank(x.Key)),
+                    2 => x.Value.IsActive && x.Value.GroupType == PerkGroupType.Player && canBuy(x.Value, Rank(x.Key)),
                     3 => Rank(x.Key) > 0 && Rank(x.Key) >= x.Value.PerkLevels.Count,
                     _ => true
                 });

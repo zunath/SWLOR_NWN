@@ -77,6 +77,22 @@ public class DMPlayerExamineTests
             .Select(x => x.Value.Name).Should().Equal("Beta", "Alpha", "Gamma");
     }
 
+    [Test]
+    public void RetiredOwnedPerks_RemainInspectableWithoutBecomingBuyable()
+    {
+        var perks = Perks();
+        perks[PerkType.AlphaRhythm].IsActive = false;
+        perks[PerkType.Antitoxin].IsActive = false;
+        var ranks = new Dictionary<PerkType, int> { [PerkType.AlphaRhythm] = 1 };
+
+        DMPlayerExamineListFilter.Perks(perks, ranks, 0, "", 0, 0, (_, _) => true)
+            .Select(x => x.Value.Name).Should().Equal("Alpha", "Gamma");
+        DMPlayerExamineListFilter.Perks(perks, ranks, 0, "", 1, 0, (_, _) => true)
+            .Select(x => x.Value.Name).Should().Equal("Alpha");
+        DMPlayerExamineListFilter.Perks(perks, ranks, 0, "", 2, 0, (_, _) => true)
+            .Select(x => x.Value.Name).Should().Equal("Gamma");
+    }
+
     [TestCase("status-id", true)]
     [TestCase("status-id:Native:Slow", true)]
     [TestCase("other-id:Native:Slow", false)]
@@ -113,6 +129,7 @@ public class DMPlayerExamineTests
     {
         Name = name,
         Category = category,
+        IsActive = true,
         PerkLevels = new Dictionary<int, PerkLevel>
         {
             [1] = new() { Requirements = new List<IPerkRequirement> { new PerkRequirementSkill(SkillType.Armor, firstRank) } },

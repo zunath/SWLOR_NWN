@@ -246,7 +246,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 skillCategories.Add(new GuiComboEntry(detail.Name, (int)type));
             SkillCategories = skillCategories;
             var perkCategories = new GuiBindingList<GuiComboEntry> { new("All Categories", 0) };
-            foreach (var (type, detail) in Perk.GetAllActivePerkCategories(PerkGroupType.Player))
+            var categories = Perk.GetAllActivePerkCategories(PerkGroupType.Player);
+            var dbPlayer = DB.Get<Player>(_playerId);
+            if (dbPlayer != null)
+            {
+                foreach (var type in dbPlayer.Perks.Keys)
+                {
+                    if (Perk.TryGetPerkDetails(type, out var detail))
+                        categories[detail.Category] = Perk.GetPerkCategoryDetails(detail.Category);
+                }
+            }
+            foreach (var (type, detail) in categories.OrderBy(x => x.Value.Name, StringComparer.OrdinalIgnoreCase))
                 perkCategories.Add(new GuiComboEntry(detail.Name, (int)type));
             PerkCategories = perkCategories;
 
@@ -339,7 +349,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     detail.PerkLevels.TryGetValue(rank + 1, out var next) && dbPlayer.UnallocatedSP >= next.Price &&
                     next.Requirements.All(requirement => string.IsNullOrWhiteSpace(requirement.CheckRequirements(_target)));
 
-                var perks = DMPlayerExamineListFilter.Perks(Perk.GetAllActivePerks(PerkGroupType.Player),
+                var perks = DMPlayerExamineListFilter.Perks(Perk.GetAllPerks(),
                     dbPlayer.Perks, SelectedPerkCategoryId, PerkSearchText, SelectedPerkStatusId,
                     SelectedPerkSortOrderId, CanBuy);
                 foreach (var (type, detail) in perks)

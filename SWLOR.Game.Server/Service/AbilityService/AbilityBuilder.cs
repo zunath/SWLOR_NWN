@@ -389,6 +389,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        /// <summary>Sets the impact visual applied only when the recipient receives positive damage.</summary>
+        public AbilityBuilder DisplaysVisualEffectOnDamage(VisualEffect visualEffect)
+        {
+            _activeAbility.DamageImpactVisualEffect = visualEffect;
+            return this;
+        }
+
         /// <summary>Sets the finite receipt burst used after a recipient is successfully affected.</summary>
         public AbilityBuilder DisplaysVisualEffectOnSuccessfulImpact(VisualEffect visualEffect)
         {

@@ -7,6 +7,29 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class DoublehandStanceTests
 {
+    [TestCase(2, 2, false, true, false)]
+    [TestCase(1, 1, false, true, false)]
+    [TestCase(2, 0, false, true, true)]
+    [TestCase(2, 2, true, true, true)]
+    [TestCase(0, 2, true, true, true)]
+    [TestCase(0, 0, true, false, false)]
+    public void RefreshDoesNotReplayEmoteWithoutTransition(int desired, int applied, bool toggle, bool supported, bool expected)
+    {
+        DoublehandStance.ShouldPlayTransition(desired, applied, toggle, supported).Should().Be(expected);
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void GripPreferenceSurvivesSettingsSerialization(bool enabled)
+    {
+        var settings = new SWLOR.Game.Server.Entity.PlayerSettings { AlternateGripEnabled = enabled };
+        var saved = Newtonsoft.Json.JsonConvert.SerializeObject(settings);
+        Newtonsoft.Json.JsonConvert.DeserializeObject<SWLOR.Game.Server.Entity.PlayerSettings>(saved)
+            .AlternateGripEnabled.Should().Be(enabled);
+        Newtonsoft.Json.JsonConvert.DeserializeObject<SWLOR.Game.Server.Entity.PlayerSettings>("{}")
+            .AlternateGripEnabled.Should().BeFalse();
+    }
+
     [TestCase(BaseItem.Lightsaber, 1)]
     [TestCase(BaseItem.Saberstaff, 2)]
     [TestCase(BaseItem.Longsword, 1)]

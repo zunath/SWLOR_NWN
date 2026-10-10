@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -15,13 +16,20 @@ public static class DoublehandStance
     public static void Initialize(uint player)
     {
         if (!GetIsPC(player) || GetIsDM(player)) return;
+        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+        SetLocalBool(player, EnabledVariable, dbPlayer?.Settings?.AlternateGripEnabled ?? false);
         Refresh(player, true);
     }
 
     public static void Toggle(uint player)
     {
         if (!GetIsPC(player) || GetIsDead(player)) return;
+        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+        if (dbPlayer == null) return;
         var enabled = !GetLocalBool(player, EnabledVariable);
+        dbPlayer.Settings ??= new PlayerSettings();
+        dbPlayer.Settings.AlternateGripEnabled = enabled;
+        DB.Set(dbPlayer);
         SetLocalBool(player, EnabledVariable, enabled);
         Refresh(player, true, playTransition: true);
         SendMessageToPC(player, enabled
@@ -44,9 +52,8 @@ public static class DoublehandStance
         ApplyTransition(desired, applied, forceRefresh,
             (source, destination) => ReplaceObjectAnimation(creature, source, destination));
         SetLocalInt(creature, ModeVariable, desired);
-        if ((desired == 2 && (applied != desired || forceRefresh)) ||
-            (playTransition && GetIsObjectValid(right) &&
-             GetMode(true, GetBaseItemType(right), false) != 0))
+        if (ShouldPlayTransition(desired, applied, playTransition,
+                GetIsObjectValid(right) && GetMode(true, GetBaseItemType(right), false) != 0))
         {
             AssignCommand(creature, () =>
             {
@@ -86,6 +93,10 @@ public static class DoublehandStance
             });
         }
     }
+
+    /// <summary>Replays the stance gesture only for a new two-handed mode or an explicit toggle.</summary>
+    public static bool ShouldPlayTransition(int desired, int applied, bool explicitToggle, bool supportedWeapon) =>
+        (desired == 2 && applied != desired) || (explicitToggle && supportedWeapon);
 
     public static int GetMode(bool enabled, BaseItem? rightHand, bool hasOffhand) =>
         !enabled || hasOffhand ? 0 : rightHand switch

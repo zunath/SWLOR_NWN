@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -96,13 +97,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             if (!GetIsObjectValid(GetAreaFromLocation(location)) && GetIsObjectValid(GetAreaFromLocation(targetLocation)))
                 location = targetLocation;
 
-            var creature = GetFirstObjectInShape(Shape.Sphere, radius, location, true);
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, radius, location, true))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (creature != activator && GetIsReactionTypeHostile(creature, activator))
                     yield return creature;
 
-                creature = GetNextObjectInShape(Shape.Sphere, radius, location, true);
             }
         }
 

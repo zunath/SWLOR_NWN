@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -114,10 +115,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
             }
 
             var location = GetLocation(activator);
-            var creature = GetFirstObjectInShape(Shape.Sphere, 5f, location, true);
-
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, 5f, location, true))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (creature != activator && Party.IsInParty(activator, creature))
                 {
                     if (StatusEffect.ApplyStatusEffect(activator, creature, type, duration))
@@ -125,7 +127,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                     ApplyVisualEffect(creature, visualEffect);
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, 5f, location, true);
             }
         }
 
@@ -145,16 +146,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
             }
 
             var location = GetLocation(activator);
-            var creature = GetFirstObjectInShape(Shape.Sphere, 5f, location, true);
-
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, 5f, location, true))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (creature != activator && Party.IsInParty(activator, creature))
                 {
                     Ability.ApplyTemporaryImmunity(creature, duration, immunity);
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, 5f, location, true);
             }
         }
     }

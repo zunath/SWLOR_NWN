@@ -947,101 +947,7 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 5
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 65
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 20
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 5
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 65
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 20
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 1
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 5
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 65
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 20
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 2
-                    }
-                  }
-                ]
+                "value": []
               },
               "StackSize": {
                 "type": "word",
@@ -1154,6 +1060,26 @@
               "ZPosition": {
                 "type": "float",
                 "value": -1.0
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               }
             },
             {
@@ -1452,6 +1378,26 @@
               "ZPosition": {
                 "type": "float",
                 "value": 0.0
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               }
             },
             {
@@ -2260,6 +2206,27 @@
                 "type": "word",
                 "value": 144
               }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1824
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1768
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1754
+              }
             }
           ]
         },
@@ -2283,7 +2250,7 @@
         },
         "HitPoints": {
           "type": "short",
-          "value": 352
+          "value": 292
         },
         "Int": {
           "type": "byte",
@@ -2597,7 +2564,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 412
+          "value": 352
         },
         "NaturalAC": {
           "type": "byte",
@@ -3663,7 +3630,7 @@
         },
         "ScriptHeartbeat": {
           "type": "resref",
-          "value": "x2_def_heartbeat"
+          "value": "crea_hb_aft"
         },
         "ScriptOnBlocked": {
           "type": "resref",
@@ -5747,11 +5714,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 33
+                      "value": 48
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 2
+                      "value": 10
                     },
                     "Param1": {
                       "type": "byte",
@@ -5763,11 +5730,11 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 100
+                      "value": 131
                     },
                     "Subtype": {
                       "type": "word",
-                      "value": 111
+                      "value": 6
                     }
                   }
                 ]
@@ -92114,7 +92081,7 @@
                     }
                   },
                   {
-                    "__struct_id": 22,
+                    "__struct_id": 21,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -92273,7 +92240,7 @@
                     }
                   },
                   {
-                    "__struct_id": 23,
+                    "__struct_id": 21,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -92432,7 +92399,7 @@
                     }
                   },
                   {
-                    "__struct_id": 24,
+                    "__struct_id": 22,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -92523,7 +92490,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 8
+                      "value": 4
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -92591,7 +92558,7 @@
                     }
                   },
                   {
-                    "__struct_id": 25,
+                    "__struct_id": 22,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -92682,11 +92649,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 6
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 10
+                      "value": 8
                     },
                     "StackSize": {
                       "type": "word",
@@ -92750,7 +92717,7 @@
                     }
                   },
                   {
-                    "__struct_id": 26,
+                    "__struct_id": 22,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -92841,11 +92808,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 2
+                      "value": 8
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 10
+                      "value": 8
                     },
                     "StackSize": {
                       "type": "word",
@@ -92909,7 +92876,7 @@
                     }
                   },
                   {
-                    "__struct_id": 27,
+                    "__struct_id": 22,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -93000,11 +92967,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 4
+                      "value": 0
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 10
+                      "value": 9
                     },
                     "StackSize": {
                       "type": "word",
@@ -93068,7 +93035,7 @@
                     }
                   },
                   {
-                    "__struct_id": 28,
+                    "__struct_id": 23,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -93163,7 +93130,7 @@
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 10
+                      "value": 8
                     },
                     "StackSize": {
                       "type": "word",
@@ -93227,7 +93194,7 @@
                     }
                   },
                   {
-                    "__struct_id": 29,
+                    "__struct_id": 23,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -93322,7 +93289,7 @@
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 10
+                      "value": 8
                     },
                     "StackSize": {
                       "type": "word",
@@ -93386,7 +93353,7 @@
                     }
                   },
                   {
-                    "__struct_id": 30,
+                    "__struct_id": 24,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -93477,11 +93444,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 8
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 12
+                      "value": 8
                     },
                     "StackSize": {
                       "type": "word",
@@ -93545,7 +93512,7 @@
                     }
                   },
                   {
-                    "__struct_id": 31,
+                    "__struct_id": 24,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -93636,11 +93603,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 2
+                      "value": 0
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 12
+                      "value": 9
                     },
                     "StackSize": {
                       "type": "word",
@@ -93704,7 +93671,7 @@
                     }
                   },
                   {
-                    "__struct_id": 32,
+                    "__struct_id": 24,
                     "AddCost": {
                       "type": "dword",
                       "value": 10000
@@ -93795,11 +93762,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 4
+                      "value": 2
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 12
+                      "value": 9
                     },
                     "StackSize": {
                       "type": "word",
@@ -104843,7 +104810,7 @@
                     }
                   },
                   {
-                    "__struct_id": 22,
+                    "__struct_id": 21,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -105002,7 +104969,7 @@
                     }
                   },
                   {
-                    "__struct_id": 23,
+                    "__struct_id": 21,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -105161,7 +105128,7 @@
                     }
                   },
                   {
-                    "__struct_id": 24,
+                    "__struct_id": 22,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -105252,7 +105219,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 8
+                      "value": 4
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -105320,7 +105287,7 @@
                     }
                   },
                   {
-                    "__struct_id": 25,
+                    "__struct_id": 22,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -105411,11 +105378,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 6
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 10
+                      "value": 8
                     },
                     "StackSize": {
                       "type": "word",
@@ -105479,7 +105446,7 @@
                     }
                   },
                   {
-                    "__struct_id": 26,
+                    "__struct_id": 22,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -105570,11 +105537,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 2
+                      "value": 8
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 10
+                      "value": 8
                     },
                     "StackSize": {
                       "type": "word",
@@ -105638,7 +105605,7 @@
                     }
                   },
                   {
-                    "__struct_id": 27,
+                    "__struct_id": 22,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -105729,11 +105696,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 4
+                      "value": 0
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 10
+                      "value": 9
                     },
                     "StackSize": {
                       "type": "word",
@@ -105797,7 +105764,7 @@
                     }
                   },
                   {
-                    "__struct_id": 28,
+                    "__struct_id": 23,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -105892,7 +105859,7 @@
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 10
+                      "value": 8
                     },
                     "StackSize": {
                       "type": "word",
@@ -105956,7 +105923,7 @@
                     }
                   },
                   {
-                    "__struct_id": 29,
+                    "__struct_id": 23,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -106051,7 +106018,7 @@
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 10
+                      "value": 8
                     },
                     "StackSize": {
                       "type": "word",
@@ -106115,7 +106082,7 @@
                     }
                   },
                   {
-                    "__struct_id": 30,
+                    "__struct_id": 24,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -106206,11 +106173,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 8
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 12
+                      "value": 8
                     },
                     "StackSize": {
                       "type": "word",
@@ -106274,7 +106241,7 @@
                     }
                   },
                   {
-                    "__struct_id": 31,
+                    "__struct_id": 24,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -106365,11 +106332,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 2
+                      "value": 0
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 12
+                      "value": 9
                     },
                     "StackSize": {
                       "type": "word",
@@ -106433,7 +106400,7 @@
                     }
                   },
                   {
-                    "__struct_id": 32,
+                    "__struct_id": 24,
                     "AddCost": {
                       "type": "dword",
                       "value": 30000
@@ -106524,11 +106491,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 4
+                      "value": 2
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 12
+                      "value": 9
                     },
                     "StackSize": {
                       "type": "word",
@@ -115450,7 +115417,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This can be placed inside refineries to power them for a short time."
                       }
                     },
                     "Identified": {
@@ -115559,7 +115526,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This can be placed inside refineries to power them for a short time."
                       }
                     },
                     "Identified": {
@@ -125022,7 +124989,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This can be placed inside refineries to power them for a short time."
                       }
                     },
                     "Identified": {
@@ -125131,7 +125098,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This can be placed inside refineries to power them for a short time."
                       }
                     },
                     "Identified": {
@@ -134161,7 +134128,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This can be placed inside refineries to power them for a short time."
                       }
                     },
                     "Identified": {
@@ -134270,7 +134237,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This can be placed inside refineries to power them for a short time."
                       }
                     },
                     "Identified": {
@@ -143826,7 +143793,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This can be placed inside refineries to power them for a short time."
                       }
                     },
                     "Identified": {
@@ -143935,7 +143902,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This can be placed inside refineries to power them for a short time."
                       }
                     },
                     "Identified": {
@@ -153213,7 +153180,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This can be placed inside refineries to power them for a short time."
                       }
                     },
                     "Identified": {
@@ -153322,7 +153289,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "This can be placed inside refineries to power them for a short time."
                       }
                     },
                     "Identified": {
@@ -171641,7 +171608,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Medical Supplies are required to use many of the First Aid perks."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -171781,7 +171750,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Medical Supplies are required to use many of the First Aid perks."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -171922,7 +171893,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Stim Packs are required for many of the First Aid perks."
                       }
                     },
                     "Identified": {
@@ -172064,7 +172035,7 @@
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Stim Packs are required for many of the First Aid perks."
                       }
                     },
                     "Identified": {

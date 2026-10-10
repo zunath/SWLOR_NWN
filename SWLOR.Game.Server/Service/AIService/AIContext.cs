@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service.CompanionControlService;
@@ -55,6 +56,19 @@ namespace SWLOR.Game.Server.Service.AIService
             }
         }
 
+        /// <summary>
+        /// Resolves <see cref="CurrentEnmityTarget"/> to the highest-enmity creature this NPC can
+        /// attack, skipping creatures hidden by invisibility, so its decisions never aim at a target
+        /// it cannot see. Live trigger processing calls this because the check reads creature effects.
+        /// </summary>
+        public void UseAttackableEnmityTarget()
+        {
+            _currentEnmityTargetLoaded = true;
+            _currentEnmityTarget = CompanionControl.IsRegisteredCompanion(Self)
+                ? CompanionControl.PeekAuthorizedTarget(Self)
+                : Enmity.GetHighestEnmityAttackTarget(Self);
+        }
+
         public uint Master => GetMaster(Self);
 
         public int SelfHealthPercent => _selfHealthPercent ??= GetHealthPercent(Self);
@@ -98,22 +112,29 @@ namespace SWLOR.Game.Server.Service.AIService
 
         public int CountHostilesNearTarget(float radius)
         {
+            return CountHostilesNearTarget(radius, null);
+        }
+
+        public int CountHostilesNearTarget(float radius, Func<uint, bool> predicate)
+        {
             var origin = GetIsObjectValid(EvaluatedTarget)
                 ? GetLocation(EvaluatedTarget)
                 : GetLocation(Self);
 
             var count = 0;
-            var creature = GetFirstObjectInShape(Shape.Sphere, radius, origin, true, ObjectType.Creature);
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, radius, origin, true, ObjectType.Creature))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (creature != Self &&
                     GetIsEnemy(creature, Self) &&
-                    GetCurrentHitPoints(creature) > 0)
+                    GetCurrentHitPoints(creature) > 0 &&
+                    (predicate == null || predicate(creature)))
                 {
                     count++;
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, radius, origin, true, ObjectType.Creature);
             }
 
             return count;

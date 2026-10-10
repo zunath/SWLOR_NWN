@@ -22,7 +22,7 @@ using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Space
+    public static partial class Space
     {
         public const int MaxRegisteredShips = 10;
 
@@ -637,6 +637,9 @@ namespace SWLOR.Game.Server.Service
                 var feat = HighSlotToFeat(slot);
                 ApplyShipModuleFeat(player, shipModuleDetail, feat);
             }
+            foreach (var (slot, shipModule) in dbPlayerShip.Status.LowPowerModules)
+                ApplyShipModuleFeat(player, _shipModules[shipModule.ItemTag], LowSlotToFeat(slot));
+            RestoreShipModuleRecasts(player);
         }
 
         /// <summary>
@@ -784,6 +787,7 @@ namespace SWLOR.Game.Server.Service
             if(!_playersInSpace.Contains(player))
                 _playersInSpace.Add(player);
 
+            RestoreShipModuleRecasts(player);
             ExecuteScript("space_enter", player);
         }
 
@@ -892,6 +896,13 @@ namespace SWLOR.Game.Server.Service
             }
 
             SetCreatureAppearanceType(player, appearance);
+
+            // The ship model leaves the previous visual transform behind; restore the character's own height.
+            var scale = dbPlayer.AppearanceScale <= 0f ? 1.0f : dbPlayer.AppearanceScale;
+            SetObjectVisualTransform(player, ObjectVisualTransform.Scale, scale);
+            var headScale = dbPlayer.HeadAppearanceScale <= 0f ? 1.0f : dbPlayer.HeadAppearanceScale;
+            HelmetModelRenderer.SetHeadScale(player, headScale);
+
             // Reapply material colors after the client rebuilds the character model.
             TintMapService.QueueRefresh(player);
         }
@@ -917,6 +928,7 @@ namespace SWLOR.Game.Server.Service
             Stat.ApplyCreatureMovementRate(player);
             Enmity.RemoveCreatureEnmity(player);
 
+            ClearShipModuleRecasts(player, dbPlayer);
             // Save the ship's hot bar and unassign the active ship Id.
             dbShip.PlayerHotBars[playerId] = CreaturePlugin.SerializeQuickbar(player);
             dbPlayer.ActiveShipId = Guid.Empty.ToString();
@@ -1071,8 +1083,20 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExamineShipModuleItem()
         {
-            var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
+            ApplyShipModuleExamineDetails(StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID")));
+        }
 
+        /// <summary>
+        /// Applies ship and ship module examine details to an item.
+        /// </summary>
+        public static void ApplyExamineDetails(uint item)
+        {
+            ApplyShipModuleExamineDetails(item);
+            ApplyShipExamineDetails(item);
+        }
+
+        private static void ApplyShipModuleExamineDetails(uint item)
+        {
             // Must be an item
             if (GetObjectType(item) != ObjectType.Item) return;
 
@@ -1104,8 +1128,11 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExamineShipItem()
         {
-            var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
+            ApplyShipExamineDetails(StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID")));
+        }
 
+        private static void ApplyShipExamineDetails(uint item)
+        {
             // Must be an item
             if (GetObjectType(item) != ObjectType.Item) return;
 
@@ -1128,11 +1155,15 @@ namespace SWLOR.Game.Server.Service
         public static void HandleShipModuleFeats()
         {
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
+            ActivateShipModule(OBJECT_SELF, feat);
+        }
 
+        /// <summary>Validates and activates the fitted module, then publishes its paid hardware deadline through the regular recast display.</summary>
+        public static void ActivateShipModule(uint activator, FeatType feat)
+        {
             if (!ShipModuleFeats.ContainsKey(feat)) return;
-
-            var activator = OBJECT_SELF;
             var activatorShipStatus = GetShipStatus(activator);
+            if (activatorShipStatus == null) return;
             var slotNumber = GetFeatSlotNumber(feat);
             ShipStatus.ShipStatusModule shipModule;
 
@@ -1227,6 +1258,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var recastSeconds = shipModuleDetails.CalculateRecastAction(activator, activatorShipStatus, shipModule.ModuleBonus);
                 var recastTimer = now.AddSeconds(recastSeconds);
+                shipModule.RecastStartedAt = now;
                 shipModule.RecastTime = recastTimer;
                 activatorShipStatus.GlobalRecast = now.AddSeconds(2f);
             }
@@ -1246,6 +1278,7 @@ namespace SWLOR.Game.Server.Service
                 dbShip.Status = activatorShipStatus;
 
                 DB.Set(dbShip);
+                ApplyShipModuleRecast(activator, ShipModuleFeats[feat], shipModule, activatorShipStatus);
                 ExecuteScript("pc_target_upd", activator);
             }
 
@@ -1828,8 +1861,12 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleDeath)]
         public static void ApplyDeath()
         {
-            var creature = GetLastPlayerDied();
+            ApplyDeath(GetLastPlayerDied());
+        }
 
+        /// <summary>Applies the existing ship destruction and pilot cleanup to the specified creature.</summary>
+        public static void ApplyDeath(uint creature)
+        {
             if (!IsPlayerInSpaceMode(creature))
                 return;
 
@@ -1906,6 +1943,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 _shipClones.Remove(dbPlayer.ActiveShipId);
+                ClearShipModuleRecasts(creature, dbPlayer);
                 dbPlayer.ActiveShipId = Guid.Empty.ToString();
 
                 // Removing the current position of the ship will automatically send it back to the last dock it was at.
@@ -1918,6 +1956,10 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(dbProperty);
                 DB.Set(dbPlayerShip);
                 DB.Set(dbPlayer);
+
+                // The pilot is no longer in space mode; stop tracking them and refresh space-dependent UI.
+                _playersInSpace.Remove(creature);
+                ExecuteScript("space_exit", creature);
 
                 // Murder everyone inside the ship's instance.
                 if (Property.TryGetLoadedInstance(dbPlayerShip.PropertyId, out var instance))

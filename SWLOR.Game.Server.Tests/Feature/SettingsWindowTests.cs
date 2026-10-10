@@ -1,5 +1,7 @@
 using FluentAssertions;
+using Newtonsoft.Json;
 using NUnit.Framework;
+using SWLOR.Game.Server.Entity;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -128,6 +130,48 @@ public class SettingsWindowTests
         loadChatView.Should().NotContain("DisplayCommsOutOfRangeWarnings");
         viewModelSource.Should().Contain(
             "dbPlayer.Settings.DisplayCommsOutOfRangeWarnings = DisplayCommsOutOfRangeWarnings;");
+    }
+
+    [Test]
+    public void CooldownFloatingText_DefaultsOffForNewAndLegacySettings_AndPersistsWhenEnabled()
+    {
+        var defaults = new PlayerSettings();
+        defaults.DisplayCooldownFloatingText.Should().BeFalse();
+
+        var legacy = JsonConvert.DeserializeObject<PlayerSettings>("{\"DisplayAchievementNotification\":true}");
+        legacy.Should().NotBeNull();
+        legacy!.DisplayCooldownFloatingText.Should().BeFalse();
+
+        var enabled = JsonConvert.DeserializeObject<PlayerSettings>(
+            JsonConvert.SerializeObject(new PlayerSettings { DisplayCooldownFloatingText = true }));
+        enabled.Should().NotBeNull();
+        enabled!.DisplayCooldownFloatingText.Should().BeTrue();
+
+        var root = FindRepositoryRoot();
+        var playerSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Entity", "Player.cs"));
+        var (definitionSource, viewModelSource) = LoadSettingsSources();
+        var generalPartial = ExtractSection(
+            definitionSource,
+            ".DefinePartialView(SettingsViewModel.GeneralPartial",
+            ".DefinePartialView(SettingsViewModel.IdentityPartial");
+        var initializeMethod = ExtractMethod(viewModelSource, "protected override void Initialize", "private void LoadGeneralView");
+        var loadGeneralView = ExtractMethod(viewModelSource, "private void LoadGeneralView", "private void LoadIdentityView");
+        var saveMethod = ExtractMethod(viewModelSource, "public Action OnSave()", "public Action OnCancel()");
+
+        playerSource.Should().Contain("public bool DisplayCooldownFloatingText { get; set; }");
+        generalPartial.Should().Contain(".SetText(\"Cooldown Floating Text\")");
+        generalPartial.Should().Contain("at most once every two seconds. Off by default.");
+        generalPartial.Should().Contain(".BindIsChecked(model => model.DisplayCooldownFloatingText)");
+        initializeMethod.Should().Contain("LoadGeneralView();");
+        var initialLoadIndex = initializeMethod.IndexOf("LoadGeneralView();", StringComparison.Ordinal);
+        var watchIndex = initializeMethod.IndexOf(
+            "WatchOnClient(model => model.DisplayCooldownFloatingText);",
+            StringComparison.Ordinal);
+        initialLoadIndex.Should().BeGreaterThanOrEqualTo(0);
+        watchIndex.Should().BeGreaterThan(initialLoadIndex);
+        loadGeneralView.Should().Contain("DisplayCooldownFloatingText = dbPlayer.Settings.DisplayCooldownFloatingText;");
+        saveMethod.Should().Contain("dbPlayer.Settings.DisplayCooldownFloatingText = DisplayCooldownFloatingText;");
+        viewModelSource.Should().Contain("OnPropertyChanged(nameof(DisplayCooldownFloatingText));");
     }
 
     private static string ExtractSection(string source, string startMarker, string endMarker)

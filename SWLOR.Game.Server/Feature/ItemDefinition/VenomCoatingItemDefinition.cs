@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.LogService;
@@ -17,8 +18,9 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         public const string PoisonCoatingChargesVariable = "POISON_COATING_CHARGES";
         public const string PoisonCoatingPotencyVariable = "POISON_COATING_POTENCY";
 
-        private const int BaseCharges = 20;
-        private const int ConcentratedCharges = 10;
+        public const int BaseCharges = 20;
+        public const int ConcentratedCharges = 10;
+        public const int ConcentratedDamageBonusPercent = 50;
 
         private static readonly Dictionary<int, string> _tierLabels = new()
         {
@@ -65,17 +67,9 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     var baseItemType = GetBaseItemType(target);
 
-                    if (Item.LightsaberBaseItemTypes.Contains(baseItemType) ||
-                        Item.SaberstaffBaseItemTypes.Contains(baseItemType))
+                    if (!CanCoatWeapon(baseItemType))
                     {
-                        return "The coating will not adhere to an energy blade.";
-                    }
-
-                    if (!Item.WeaponBaseItemTypes.Contains(baseItemType) ||
-                        Item.PistolBaseItemTypes.Contains(baseItemType) ||
-                        Item.RifleBaseItemTypes.Contains(baseItemType))
-                    {
-                        return "Only melee or thrown weapons can be coated in venom.";
+                        return "Select a weapon to coat in venom.";
                     }
 
                     var existingTier = GetLocalInt(target, PoisonCoatingTierVariable);
@@ -88,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 })
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    var potency = Stat.GetStatAdjustment(user, StatType.PoisonBonus) + (concentrated ? tier * 10 : 0);
+                    var potency = Stat.GetStatAdjustment(user, StatType.PoisonBonus) + (concentrated ? ConcentratedDamageBonusPercent : 0);
                     var coatingDurationBonus = Stat.GetStatAdjustment(user, StatType.PoisonCoatingDurationPercent);
                     var charges = concentrated ? ConcentratedCharges : CalculateCharges(coatingDurationBonus);
 
@@ -102,6 +96,30 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         $"Player '{GetName(user)}' ({GetObjectUUID(user)}) applied Tier {_tierLabels[tier]}{(concentrated ? " concentrated" : string.Empty)} venom coating to '{GetName(target)}' (potency {potency}, {charges} charges).");
                     SendMessageToPC(user, $"You coat {GetName(target)} in Tier {_tierLabels[tier]}{(concentrated ? " concentrated" : string.Empty)} venom. ({charges} charges)");
                 });
+        }
+
+        /// <summary>
+        /// Short lines describing a coating's Venom for the recipe details window.
+        /// </summary>
+        public static List<string> BuildEffectSummary(int tier, bool concentrated)
+        {
+            var lines = new List<string>
+            {
+                $"{Poisons.GetCoatingVenomDamagePerTick(tier)} poison damage every {VenomStatusEffect.TickIntervalSeconds}s"
+            };
+
+            if (concentrated)
+                lines.Add($"+{ConcentratedDamageBonusPercent}% Venom damage");
+
+            lines.Add($"Venom lasts {Poisons.GetVenomDurationSeconds(tier):0}s");
+            lines.Add($"{(concentrated ? ConcentratedCharges : BaseCharges)} charges, 1 use per {Poisons.InternalCooldownSeconds}s");
+
+            return lines;
+        }
+
+        public static bool CanCoatWeapon(BaseItem baseItemType)
+        {
+            return Item.WeaponBaseItemTypes.Contains(baseItemType);
         }
 
         public static int CalculateCharges(int coatingDurationBonusPercent)

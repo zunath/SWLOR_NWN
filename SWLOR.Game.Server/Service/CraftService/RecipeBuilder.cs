@@ -88,6 +88,18 @@ namespace SWLOR.Game.Server.Service.CraftService
         }
 
         /// <summary>
+        /// Adds short lines describing what the crafted item does, shown in the recipe details.
+        /// Use this for items whose effect is not visible from their item properties.
+        /// </summary>
+        /// <param name="lines">The effect lines to display.</param>
+        /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder EffectDescription(IEnumerable<string> lines)
+        {
+            _activeRecipe.EffectLines.AddRange(lines);
+            return this;
+        }
+
+        /// <summary>
         /// Sets the number of enhancement slots available to a recipe.
         /// If called twice, the latest one will replace the previous one.
         /// </summary>

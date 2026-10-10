@@ -3,6 +3,7 @@
 #   - only starts the two services actually needed to run tests (redis, swlor-server)
 #   - gives redis a tmpfs data dir so every run starts against a FRESH, empty database
 #     instead of reusing ${PWD-.}/redis from a normal dev environment
+#   - defers RediSearch GC cleanup, which crashes this module build under test churn
 #   - has no restart policies, so a container exit (pass or fail) is final and observable
 #   - overrides the swlor.env defaults needed to run non-interactively:
 #       SWLOR_ENGINE_TESTS_ENABLED / SWLOR_ENVIRONMENT to turn the suite on,
@@ -23,9 +24,35 @@
 services:
     redis:
         hostname: redis
+        # Exercise the same Redis/module versions used by persistent deployments.
         image: redislabs/redismod:latest
         tmpfs:
             - /data
+        # The image's default module list, plus a RediSearch GC threshold no test run
+        # reaches. This RediSearch build's fork GC leaves a numeric range with a NULL
+        # cardinality array once every entry in it is deleted, and the next value added
+        # there segfaults Redis (NumericRange_Add). Player fixtures create and delete
+        # their records case after case, which empties those ranges during sweeps.
+        # The database is a throwaway tmpfs, so skipping GC cleanup costs nothing.
+        command:
+            - --loadmodule
+            - /usr/lib/redis/modules/redisai.so
+            - --loadmodule
+            - /usr/lib/redis/modules/redisearch.so
+            - FORK_GC_CLEAN_THRESHOLD
+            - "100000000"
+            - --loadmodule
+            - /usr/lib/redis/modules/redisgraph.so
+            - --loadmodule
+            - /usr/lib/redis/modules/redistimeseries.so
+            - --loadmodule
+            - /usr/lib/redis/modules/rejson.so
+            - --loadmodule
+            - /usr/lib/redis/modules/redisbloom.so
+            - --loadmodule
+            - /usr/lib/redis/modules/redisgears.so
+            - Plugin
+            - /var/opt/redislabs/modules/rg/plugin/gears_python.so
 
     swlor-server:
         hostname: nwnx-server

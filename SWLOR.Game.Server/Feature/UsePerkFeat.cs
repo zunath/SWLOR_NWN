@@ -16,6 +16,7 @@ using SWLOR.Game.Server.Service.TelegraphService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -70,7 +71,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (!GetIsPC(activator))
             {
-                var enmityTarget = Enmity.GetHighestEnmityTarget(activator);
+                var enmityTarget = Enmity.GetHighestEnmityAttackTarget(activator);
                 if (GetIsObjectValid(enmityTarget))
                     return enmityTarget;
 
@@ -122,11 +123,16 @@ namespace SWLOR.Game.Server.Feature
             }
 
             if (!GetIsPC(activator) && !GetIsPC(GetMaster(activator)))
-                target = Enmity.GetHighestEnmityTarget(activator);
+                target = Enmity.GetHighestEnmityAttackTarget(activator);
 
             if (!GetIsObjectValid(target) ||
                 GetCurrentHitPoints(target) <= 0 ||
                 GetArea(activator) != GetArea(target))
+                return;
+
+            // Attacking ends invisibility. An activator that is invisible once its ability resolves,
+            // such as from an ability that grants invisibility, keeps it instead of swinging again.
+            if (Stealth.IsInvisible(activator))
                 return;
 
             if (!GetIsPC(activator))
@@ -432,7 +438,24 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            AssignCommand(activator, () => PlaySound(soundResref));
+            // PlaySound is queued as an action on the activator, so it is dropped by the
+            // ClearAllActions/animation/attack-resume actions around an ability. Send the
+            // sound straight to each nearby player instead.
+            const float HearingRange = 30f;
+
+            if (GetIsPC(activator))
+                PlayerPlugin.PlaySound(activator, soundResref, activator);
+
+            var nth = 1;
+            var nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, activator, nth);
+            while (GetIsObjectValid(nearby) && GetDistanceBetween(activator, nearby) <= HearingRange)
+            {
+                if (nearby != activator)
+                    PlayerPlugin.PlaySound(nearby, soundResref, activator);
+
+                nth++;
+                nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, activator, nth);
+            }
         }
 
         /// <summary>
@@ -637,7 +660,7 @@ namespace SWLOR.Game.Server.Feature
 
             /// <summary>
             /// Completes or cancels a finished activation, retaining its marker snapshots
-            /// for an immediate impact while separately delayed impacts receive a fresh flash.
+            /// for the impact footprint, including impacts with a separate delay.
             /// </summary>
             void CompleteActivation(
                 string activationId,
@@ -714,7 +737,7 @@ namespace SWLOR.Game.Server.Feature
 
                 /// <summary>
                 /// Executes the validated impact and resumes combat, reusing activation
-                /// geometry only when no separate impact delay elapsed.
+                /// geometry so the impact cannot follow a target that dodged the warning.
                 /// </summary>
                 void ResolveImpact()
                 {
@@ -724,8 +747,7 @@ namespace SWLOR.Game.Server.Feature
                         feat,
                         ability,
                         targetLocation,
-                        activationAreaTelegraphs:
-                            ability.ImpactDelay <= 0f ? activationAreaTelegraphs : null);
+                        activationAreaTelegraphs);
                     // NPCs must clear their combat state before reattacking. Queue that reset
                     // after the authored clip, so it cannot erase the animation at impact.
                     if (AbilityAnimationBinding.ActivationClip(ability, activator) != null && !GetIsPC(activator))

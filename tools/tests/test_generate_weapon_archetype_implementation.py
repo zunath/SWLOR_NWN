@@ -1,4 +1,5 @@
 import importlib.util
+import csv
 import json
 import tempfile
 import unittest
@@ -14,6 +15,33 @@ SPEC.loader.exec_module(GENERATOR)
 
 
 class GeneratedWeaponTargetingTests(unittest.TestCase):
+    def test_regeneration_preserves_weapon_independent_attack_triggers(self):
+        expected = {
+            "Propagation": "SourceStatusAutoAttackCycleSkillType",
+            "Payload Pouch": "AutoAttackSplashSkillType",
+            "Steady Aim": "OpeningAutoAttackSkillType",
+            "Dead Center": "OpeningAutoAttackSkillType",
+            "Fast Strikes": "CriticalNextAutoAttackNoDelaySkillType",
+            "Reload Tempo": "CriticalHitLimitedHasteTriggerSkillType",
+            "Spotter's Rhythm": "SameTargetPressureBuildSkillType",
+        }
+        with GENERATOR.MANIFEST.open(encoding="utf-8-sig", newline="") as source:
+            rows = {row["PerkName"]: row for row in csv.DictReader(source)}
+        for name, stat in expected.items():
+            with self.subTest(perk=name):
+                stats = dict(GENERATOR.description_stat_entries(rows[name], name))
+                self.assertEqual("(int)SkillType.Invalid", stats[stat])
+        shadow = dict(GENERATOR.exact_weapon_stance_stat_entries(rows["Shadowflow Stance"], "Shadowflow Stance"))
+        self.assertEqual("(int)SkillType.Invalid", shadow["AutoAttackHamstringSkillType"])
+        last_word = dict(GENERATOR.profile_property_lines(rows["Last Word"], 1, None))
+        self.assertEqual("(int)SkillType.Invalid", last_word["TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType"])
+        for name, stat, magnitude in [
+                ("Rundown III", "MeleeRepeatedTargetDamageBonusMax", "15"),
+                ("Sustained Fire III", "RangedRepeatedTargetDamageBonusMax", "15")]:
+            base, _ = GENERATOR.base_and_level(name)
+            stats = dict(GENERATOR.description_stat_entries(rows[name], base))
+            self.assertEqual(magnitude, stats[stat])
+
     def test_regeneration_preserves_steel_shoulder_ally_only_target_selection(self):
         rows = [row for row in GENERATOR.read_manifest()
                 if row["PerkName"] in {"Steel Shoulder", "Gambler Stance"}]
@@ -34,7 +62,7 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             self.assertIn(".HasAIScore(AIScore.SelfBuff<GuardingStatusEffect>(1))", steel_shoulder)
             self.assertNotIn(".HasAITarget", gambler_stance)
 
-    def test_regeneration_preserves_weapon_instruction_costs_and_force_exclusions(self):
+    def test_regeneration_preserves_weapon_instruction_costs_and_force_and_capstone_exclusions(self):
         rows = GENERATOR.read_manifest()
         _, feats = GENERATOR.parse_enum_values(ROOT / "SWLOR.NWN.API/NWScript/Enum/FeatType.cs")
         with tempfile.TemporaryDirectory() as folder:
@@ -48,6 +76,7 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
                 expected = [GENERATOR.base_and_level(row["PerkName"])[1]
                             for row in rows if row["Tab"] == tab
                             and row["Type"] in GENERATOR.ACTIVE_TYPES
+                            and row["Type"] != "Capstone"
                             and row["CharacterType"] != "Force"]
                 import re
                 actual = [int(rank) for rank in re.findall(r"\.DroidAISlots\((\d+)\)", source)]
@@ -283,7 +312,7 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         self.assertEqual("(int)SkillType.Rifle", stats["IdleSkillAbilitySkillType"])
         self.assertEqual("3", stats["IdleSkillAbilityRequiredIdleSeconds"])
         self.assertEqual("15", stats["IdleSkillAbilityCriticalDamagePercentAdjustment"])
-        self.assertEqual("(int)SkillType.Rifle", stats["OpeningAutoAttackSkillType"])
+        self.assertEqual("(int)SkillType.Invalid", stats["OpeningAutoAttackSkillType"])
         self.assertEqual("3", stats["OpeningAutoAttackIdleSeconds"])
         self.assertEqual("15", stats["OpeningAutoAttackCriticalDamagePercentAdjustment"])
 

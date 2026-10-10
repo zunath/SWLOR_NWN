@@ -121,7 +121,7 @@ public class ConversationArchitectureTests
     }
 
     [Test]
-    public void OnlyDmfiRemainsNativeAndNoGraphHasADuplicateDlgSource()
+    public void OnlyDmfiAndCraftingOverrideRemainNativeAndNoGraphHasADuplicateDlgSource()
     {
         var root = FindRepositoryRoot().FullName;
         var graphDirectory = Path.Combine(root, "SWLOR.Game.Server", "ConversationData");
@@ -134,10 +134,28 @@ public class ConversationArchitectureTests
             .Select(path => Path.GetFileName(path)[..^".dlg.json".Length])
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        authoredIds.Should().BeEquivalentTo(new[] { "dmfi_universal" },
-            "DMFI intentionally keeps its native wand-driven conversation path");
+        authoredIds.Should().BeEquivalentTo(new[] { "dmfi_universal", "x0_skill_ctrap" },
+            "DMFI uses native conversations and the empty crafting override must shadow the base-game DLG");
         graphIds.Should().NotBeEmpty("SWLOR graphs are the authored gameplay conversations");
         graphIds.Intersect(authoredIds).Should().BeEmpty("each conversation must have one source of truth");
+    }
+
+    [Test]
+    public void NativeCraftingOverride_HasNoDialogueOrScripts()
+    {
+        var path = Path.Combine(FindRepositoryRoot().FullName, "Module", "dlg", "x0_skill_ctrap.dlg.json");
+        var dialog = JObject.Parse(File.ReadAllText(path));
+
+        dialog["__data_type"]!.Value<string>().Should().Be("DLG ");
+        foreach (var field in new[] { "StartingList", "EntryList", "ReplyList" })
+        {
+            dialog[field]!["type"]!.Value<string>().Should().Be("list");
+            dialog[field]!["value"]!.Should().BeOfType<JArray>().Which.Should().BeEmpty(
+                "the engine must find the override without opening the default crafting menu");
+        }
+        foreach (var field in new[] { "EndConversation", "EndConverAbort" })
+            dialog[field]!["value"]!.Value<string>().Should().BeEmpty(
+                "closing the disabled menu must not execute base-game crafting scripts");
     }
 
     [Test]

@@ -31,18 +31,16 @@ def validate_fabrication(shops, exterior):
         return matches[0]
 
     def in_workshop(x, y):
-        # Northern workshop floor, east of the wall/door at x=70. The previous
-        # arrival at (52.39, 95) was in reception, with no fabrication terminals.
+        # Northern workshop floor, east of the wall/door at x=70.
         return 71 <= x <= 89 and 101 <= y <= 109
 
     arrival = tagged(shops, "WaypointList", "Enter_Veles_Fabrication")
     x, y, z = [value(arrival, key) for key in ["XPosition", "YPosition", "ZPosition"]]
-    assert in_workshop(x, y), "Fabrication entry must land in the workshop, not reception."
-    assert value(arrival, "HasMapNote") == value(arrival, "MapNoteEnabled") == 1
-    assert value(arrival, "MapNote")["0"] == "Fabrication Workshop"
+    assert x < 69.5 and not in_workshop(x, y), "Fabrication entry must land in reception, not the workshop."
+    assert value(arrival, "HasMapNote") == 0
     entries = [o for o in value(exterior, "Placeable List") if value(o, "OnUsed") == "teleport"
                and value(local(o, "DESTINATION"), "Value") == value(arrival, "Tag")]
-    assert len(entries) == 1, "The exterior Fabrication entrance must target this workshop."
+    assert len(entries) == 1, "The exterior Fabrication entrance must target reception."
     assert value(entries[0], "Useable") == 1 and value(entries[0], "Static") == 0
 
     stations = [o for o in value(shops, "Placeable List") if value(o, "Tag") == "fabrication_term"]
@@ -53,22 +51,15 @@ def validate_fabrication(shops, exterior):
         skill = local(station, "CRAFTING_SKILL_TYPE_ID")
         assert value(skill, "Type") == 1 and value(skill, "Value") == 10  # SkillType.Fabrication
         assert in_workshop(value(station, "X"), value(station, "Y"))
-        assert math.hypot(x - value(station, "X"), y - value(station, "Y")) <= 7
-        assert abs(z - value(station, "Z")) < 0.1
 
-    workshop_exit = tagged(shops, "Placeable List", "fabrication_exit")
-    assert in_workshop(value(workshop_exit, "X"), value(workshop_exit, "Y"))
-    assert 0.75 <= math.hypot(x - value(workshop_exit, "X"), y - value(workshop_exit, "Y")) <= 3
-    assert abs(z - value(workshop_exit, "Z")) < 0.1
-    assert value(workshop_exit, "LocName")["0"] == "[Exit] Veles"
-    assert value(workshop_exit, "OnUsed") == "teleport"
-    assert value(workshop_exit, "Useable") == 1 and value(workshop_exit, "Static") == 0
-    assert value(workshop_exit, "Plot") == 1
-    destination = local(workshop_exit, "DESTINATION")
-    assert value(destination, "Type") == 3 and value(destination, "Value") == "Exit_Veles_Fabrication_Ka"
-    party_flag = local(workshop_exit, "TELEPORT_PARTY_MEMBERS")
-    assert value(party_flag, "Type") == 1 and value(party_flag, "Value") == 0
-    outside = tagged(exterior, "WaypointList", value(destination, "Value"))
+    # Reception's exit is the only way back to Veles.
+    exits = [o for o in value(shops, "Placeable List") if value(o, "OnUsed") == "teleport"
+             and any(value(v, "Name") == "DESTINATION" for v in value(o, "VarTable") or [])
+             and value(local(o, "DESTINATION"), "Value") == "Exit_Veles_Fabrication_Ka"]
+    assert len(exits) == 1, "Fabrication must have exactly one exit to Veles."
+    assert math.hypot(x - value(exits[0], "X"), y - value(exits[0], "Y")) <= 3
+    assert value(exits[0], "Useable") == 1 and value(exits[0], "Static") == 0
+    outside = tagged(exterior, "WaypointList", "Exit_Veles_Fabrication_Ka")
     assert math.hypot(value(outside, "XPosition") - value(entries[0], "X"),
                       value(outside, "YPosition") - value(entries[0], "Y")) <= 3
 
@@ -92,7 +83,7 @@ def validate():
     assert sum(value(a, "Area_Name") == "veles_exterior" for a in value(module, "Mod_Area_list")) == 1
     assert len(value(area, "Tile_List")) == value(area, "Width") * value(area, "Height")
     assert value(area, "Tileset") == value(read("Module/are/velesinterior.are.json"), "Tileset")
-    for area_name in ["veles_tradecon", "veles_exterior", "veles_shops"]:
+    for area_name in ["veles_tradecon", "veles_exterior", "veles_shops", "veles_sheriff"]:
         placed = read(f"Module/git/{area_name}.git.json")
         comments = read(f"Module/gic/{area_name}.gic.json")
         for collection, entries in placed.items():
@@ -103,6 +94,21 @@ def validate():
                         "Bearing", "XOrientation", "YOrientation"}
     def gameplay(obj):
         return {key: item for key, item in obj.items() if key not in placement_fields}
+
+    # These services belong in the guild halls and clinic, outside the concourse.
+    service_resrefs = {"espionage_bench", "mkt_visc_term", "qcontract_board", "train_terminal"}
+    assert not any(value(o, "TemplateResRef") in service_resrefs for o in value(interior, "Placeable List"))
+    assert not any(value(o, "Tag") == "WP_CONCOURSE_ESP" for o in value(interior, "WaypointList"))
+    shops = read("Module/git/veles_shops.git.json")
+    for resref in service_resrefs - {"train_terminal"}:
+        assert any(value(o, "TemplateResRef") == resref for o in value(shops, "Placeable List")), resref
+    clinic = read("Module/git/veles_sheriff.git.json")
+    terminals = [o for o in value(clinic, "Placeable List") if value(o, "TemplateResRef") == "train_terminal"]
+    assert len(terminals) == 1, "The Veles clinic must provide a training terminal."
+    terminal, = terminals
+    blueprint = read("Module/utp/train_terminal.utp.json")
+    for field in ["Appearance", "Conversation", "OnUsed", "Useable", "Static"]:
+        assert value(terminal, field) == value(blueprint, field), field
 
     for entry in manifest["placements"]:
         source = read(f"Module/git/{entry['area']}.git.json")
@@ -181,7 +187,11 @@ def validate():
         assert value(outside_landing, "XPosition") < value(barrier, "X") - 2
     for door in [outside_door, warehouse_door]:
         assert value(door, "LinkedToFlags") == 2
-        assert value(door, "Plot") == 1 and value(door, "Locked") == 0 and value(door, "Lockable") == 0
+        assert value(door, "Plot") == 1
+    assert value(outside_door, "Locked") == value(outside_door, "Lockable") == value(outside_door, "KeyRequired") == 0
+    assert value(warehouse_door, "Locked") == value(warehouse_door, "Lockable") == value(warehouse_door, "KeyRequired") == 1
+    assert value(warehouse_door, "KeyName") == value(read("Module/uti/key_smuggler01.uti.json"), "Tag") == "Key_Smuggler_1"
+    assert value(warehouse_door, "AutoRemoveKey") == 0, "The Smuggler keycard must remain reusable."
     closed_lift = tagged(interior, "Door List", "concourse_closed_lift")
     assert value(closed_lift, "Locked") == 1 and value(closed_lift, "Plot") == 1
     assert value(closed_lift, "KeyRequired") == 1 and value(closed_lift, "LinkedToFlags") == 0
@@ -262,7 +272,7 @@ def validate():
     assert value(datapad_items[0], "Infinite") == 1
     check_items(interior)
     validate_fabrication(read("Module/git/veles_shops.git.json"), exterior)
-    print("Veles: concourse registration, travel, conversations, stores, inventory, and Fabrication workshop access passed.")
+    print("Veles: concourse registration, travel, conversations, stores, inventory, guild/clinic services, and Fabrication workshop access passed.")
 
 
 if __name__ == "__main__":

@@ -125,8 +125,8 @@ public class NPCEnemyBalanceAuditTests
 
     private static readonly ExpectedEnemy[] ExpectedBloodFrenzyEnemies =
     {
-        new("bf_scavenger", "bf_scv_skin", "bf_scv_wp", 50, 418, 40, 32, 22, 32, 32, 101, 18, 22, 0, 10, 19, 17, 31, 23),
-        new("bf_pulsedroid", "bf_pulse_skin", "bf_pulse_wp", 50, 447, 22, 40, 22, 32, 32, 88, 22, 22, 0, 13, 17, 17, 35, 30),
+        new("bf_scavenger", "bf_scv_skin", "bf_scv_wp", 50, 418, 40, 32, 22, 32, 32, 101, 18, 22, 0, 8, 19, 17, 31, 23),
+        new("bf_pulsedroid", "bf_pulse_skin", "bf_pulse_wp", 50, 447, 22, 40, 22, 32, 32, 88, 22, 22, 0, 8, 17, 17, 35, 30),
         new("bf_duelist", "bf_duel_skin", "bf_duel_wp", 50, 1573, 41, 33, 23, 33, 33, 121, 21, 23, 1, 10, 70, 40, 88, 23),
         new("bf_butcher", "stimbruis_skin", "stimbruis_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
         new("bf_kess", "frenzmaster_skin", "frenzmaster_wp", 50, 5425, 43, 35, 25, 35, 35, 253, 44, 25, 3, 11, 72, 42, 102, 23),
@@ -136,9 +136,9 @@ public class NPCEnemyBalanceAuditTests
         new("oldscar_kath", "oldscar_k_sk", "oldscar_k_wp", 4, 193, 16, 14, 10, 14, 14, 25, 4, 8, 2, 1, 5, 3, 13, 24);
 
     // Dathomir world boss: shares DATHOMIR_GROTTOS_BOSS with the Rancor and Dark Side Adept, so it uses
-    // the level 50 Boss Melee preset. The two different claws split the preset DMG (102).
+    // the level 50 Boss Melee preset with the premium Loot Boss modifier.
     private static readonly ExpectedEnemy ChirodactylExpectedEnemy =
-        new("vdathchirodac", "chirodactyl_sk", "chirodactyl_wp", 50, 5425, 43, 35, 25, 35, 35, 253, 44, 25, 3, 11, 72, 42, 51, 24);
+        new("vdathchirodac", "chirodactyl_sk", "chirodactyl_wp", 50, 16275, 43, 35, 25, 35, 35, 506, 88, 40, 18, 2, 92, 62, 77, 24);
 
     private static readonly ExpectedEnemy StormplumeExpectedEnemy =
         new("stormplume", "stormplume_sk", "stormplume_wp", 4, 164, 10, 14, 16, 10, 14, 15, 19, 4, 6, 3, 2, 6, 10, 24);
@@ -272,9 +272,9 @@ public class NPCEnemyBalanceAuditTests
             ["kael_drox"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 15, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 15, [ResistanceType.Ice] = 15, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 15, [ResistanceType.Trauma] = 17, [ResistanceType.Disruption] = 15 },
             ["inkveil"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 17, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 19, [ResistanceType.Trauma] = 21, [ResistanceType.Disruption] = -10 },
             ["glassjaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 16, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 18, [ResistanceType.Trauma] = 20, [ResistanceType.Disruption] = -10 },
-            ["bulwark"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
-            ["slagborn"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
-            ["demolisherzr9"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
+            ["bulwark"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 100, [ResistanceType.Disruption] = -15 },
+            ["slagborn"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 100, [ResistanceType.Disruption] = -15 },
+            ["demolisherzr9"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 100, [ResistanceType.Disruption] = -15 },
             ["overwatch"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
             ["blastbreaker"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
             ["suppressor"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
@@ -423,7 +423,9 @@ public class NPCEnemyBalanceAuditTests
 
     private static readonly ExpectedDualWieldDamage[] ExpectedDualWieldDamageTotals =
     {
-        new("s_app", 36),
+        new("s_app", 35),
+        new("korr_frostbind", 35),
+        new("s_app_m", 29),
         new("byysk_warrior", 33),
         new("vdathguard", 81),
         new("vkorrdunmarauder", 73),
@@ -744,9 +746,9 @@ public class NPCEnemyBalanceAuditTests
         var root = FindRepositoryRoot();
         var targets = new[]
         {
-            new { Resref = "vdathswampland", Skin = "junglebug_sk", Level = 40, HP = 474, Agility = 28, Evasion = 10, EffectiveEvasion = 126 },
-            new { Resref = "vdathpurbole", Skin = "purbole_sk", Level = 41, HP = 482, Agility = 28, Evasion = 10, EffectiveEvasion = 128 },
-            new { Resref = "vdathtribal", Skin = "kwitribal_sk", Level = 43, HP = 401, Agility = 29, Evasion = 11, EffectiveEvasion = 134 },
+            new { Resref = "vdathswampland", Skin = "junglebug_sk", Level = 40, HP = 474, Agility = 28, Evasion = 8, EffectiveEvasion = 124 },
+            new { Resref = "vdathpurbole", Skin = "purbole_sk", Level = 41, HP = 482, Agility = 28, Evasion = 8, EffectiveEvasion = 126 },
+            new { Resref = "vdathtribal", Skin = "kwitribal_sk", Level = 43, HP = 401, Agility = 29, Evasion = 8, EffectiveEvasion = 131 },
             new { Resref = "vdathguard", Skin = "kwiguardian_sk", Level = 45, HP = 1902, Agility = 32, Evasion = 13, EffectiveEvasion = 143 },
         };
 
@@ -865,7 +867,7 @@ public class NPCEnemyBalanceAuditTests
         (GetItemPropertyCost(leftClaw.RootElement, ItemPropertyDMG).GetValueOrDefault() +
          GetItemPropertyCost(rightClaw.RootElement, ItemPropertyDMG).GetValueOrDefault())
             .Should()
-            .Be(102, "the two Chirodactyl claws should split the level 50 Boss Melee DMG");
+            .Be(153, "the two Chirodactyl claws should split the premium Loot Boss DMG budget");
         GetItemPropertyCost(leftClaw.RootElement, ItemPropertyDelay).Should().Be(expected.WeaponDelay);
         GetItemPropertyCost(rightClaw.RootElement, ItemPropertyDelay).Should().Be(expected.WeaponDelay);
 
@@ -1414,13 +1416,18 @@ public class NPCEnemyBalanceAuditTests
             .Should()
             .Be("decimal", "resistance adjustments should be first-class numeric cells rather than text notes");
 
+        var lastWeaponDelayRow = weaponDelays.Descendants(ns + "row")
+            .Where(row => row.Elements(ns + "c").Any(cell =>
+                cell.Attribute("r")?.Value.StartsWith("D", StringComparison.Ordinal) == true &&
+                cell.Element(ns + "v") != null))
+            .Max(row => int.Parse(row.Attribute("r")!.Value, CultureInfo.InvariantCulture));
         weaponDelays
             .Descendants(ns + "autoFilter")
             .Single()
             .Attribute("ref")?
             .Value
             .Should()
-            .Be("$A$1:$E$442", "the weapon-delay lookup rows should be filterable");
+            .Be($"$A$1:$E${lastWeaponDelayRow}", "every weapon-delay source row should be filterable");
 
         GetWorkbookCellText(weaponDelays, sharedStrings, "A8").Should().Be("bf_scavenger");
         GetWorkbookCellNumber(weaponDelays, sharedStrings, "D8").Should().Be(230m);
@@ -1475,7 +1482,8 @@ public class NPCEnemyBalanceAuditTests
                 var abilityPackage = GetWorkbookCellText(worksheet, sharedStrings, $"AP{row}");
                 abilityPackage.Should().NotBeNullOrWhiteSpace();
                 GetWorkbookCellText(worksheet, sharedStrings, $"AQ{row}").Should().Be(abilityPackage);
-                GetWorkbookCellText(worksheet, sharedStrings, $"AR{row}").Should().Contain(line.DisplayName);
+                GetWorkbookCellText(worksheet, sharedStrings, $"B{row}")
+                    .Should().Contain(line.DisplayName, "the enemy-name column identifies its capstone line");
 
                 if (step == 4)
                 {

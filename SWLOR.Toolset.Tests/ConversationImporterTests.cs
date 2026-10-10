@@ -74,6 +74,22 @@ public sealed class ConversationImporterTests
         File.Exists(destination).Should().BeFalse();
     }
 
+    [Test]
+    public void Import_LeavesCraftingOverrideOnItsNativePath()
+    {
+        var source = Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "x0_skill_ctrap.dlg.json");
+        var destination = Path.Combine(_directory, "x0_skill_ctrap.conversation.json");
+        var document = DlgDocument.Load(source);
+        document.Openings.Should().BeEmpty();
+        document.Entries.Should().BeEmpty();
+        document.Replies.Should().BeEmpty();
+        DlgDocument.Parse(document.ToBytes()).Openings.Should().BeEmpty();
+
+        var import = () => ConversationImporter.Import(source, destination);
+        import.Should().Throw<InvalidDataException>().WithMessage("*empty native DLG override*");
+        File.Exists(destination).Should().BeFalse();
+    }
+
     [TestCase(DlgNodeKind.Entry)]
     [TestCase(DlgNodeKind.Reply)]
     public void Import_RejectsRetiredFirstRitesScriptWithoutCreatingAFile(DlgNodeKind kind)

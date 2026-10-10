@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Feature
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
             if (itemType == BaseItem.Helmet)
             {
-                SetHiddenWhenEquipped(item, !dbPlayer.Settings.ShowHelmet);
+                HelmetModelRenderer.SetShownByOwner(item, dbPlayer.Settings.ShowHelmet);
             }
             else if (itemType == BaseItem.Cloak)
             {

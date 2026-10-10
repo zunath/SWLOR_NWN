@@ -103,8 +103,8 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(limitedHaste, StatType.AttackDelayReductionPercent, 0);
 
         var deadMansHandStatus = new DeadMansHandStatusEffect();
-        AssertStatusStat(deadMansHandStatus, StatType.RangedCriticalRatePercentAdjustment, 20);
-        AssertStatusStat(deadMansHandStatus, StatType.RangedAttackNoDelay, 1);
+        AssertStatusStat(deadMansHandStatus, StatType.WeaponCriticalRatePercentAdjustment, 20);
+        AssertStatusStat(deadMansHandStatus, StatType.WeaponAttackNoDelay, 1);
 
         var deadMansHand = new DeadMansHandAbilityDefinition().BuildAbilities()[FeatType.DeadMansHand1];
         deadMansHand.IsHostileAbility.Should().BeTrue();
@@ -172,7 +172,7 @@ public class GeneratedWeaponPerkBehaviorTests
         var combat = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         combat.Should().Contain("High Noon +{adjustment}% critical damage");
         combat.Should().Contain("Next ranged ability +{currentTotal}% Critical Rate");
-        combat.Should().Contain("Ranged attack +{criticalRate}% Critical Rate");
+        combat.Should().Contain("Attack +{criticalRate}% Critical Rate");
         combat.Should().Contain("new CriticalRateStackTrackerStatusEffect(");
         combat.Should().Contain("new AttackCycleTrackerStatusEffect(");
         combat.Should().NotContain("new DeadeyeReloadStatusEffect(");
@@ -220,12 +220,12 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var deadMansHandStatus = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "DeadMansHandStatusEffect.cs"));
-        deadMansHandStatus.Should().Contain("Combat.IsRangedWeaponSkill(skillType)");
-        deadMansHandStatus.Should().Contain("StatType.RangedAttackNoDelay");
+        deadMansHandStatus.Should().Contain("Combat.IsWeaponSkillType(skillType)");
+        deadMansHandStatus.Should().Contain("StatType.WeaponAttackNoDelay");
         deadMansHandStatus.Should().Contain("ILimitedAttackNoDelayStatusEffect");
         deadMansHandStatus.Should().NotContain("Combat.GrantNextAutoAttackNoDelay(");
         deadMansHandStatus.Should().NotContain("Combat.GetEquippedWeaponSkillType(attacker)",
-            "the no-delay stat must follow every ranged skill rather than the initially equipped weapon");
+            "the no-delay stat must follow every weapon skill rather than the initially equipped weapon");
 
         var tagIn = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Katar", "TagInAbilityDefinition.cs"));
@@ -579,7 +579,7 @@ public class GeneratedWeaponPerkBehaviorTests
             "CreepingTerrorAbilityDefinition.cs"));
         creepingTerrorSource.Should().Contain("Ability.CaptureRepeatedAbilityImpact(activator,",
             "periodic field pulses are effects, not new attack attempts");
-        abilitySource.Should().Contain("BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence)",
+        abilitySource.Should().Contain("BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence,",
             "recurring impacts must not consume a new activation's pending attack bonuses");
 
         var statusEffectSource = File.ReadAllText(Path.Combine(
@@ -595,7 +595,7 @@ public class GeneratedWeaponPerkBehaviorTests
             "Feature",
             "StatusEffectDefinition",
             "DeadMansHandStatusEffect.cs"));
-        deadMansHandSource.Should().Contain("StatType.RangedAttackNoDelay");
+        deadMansHandSource.Should().Contain("StatType.WeaponAttackNoDelay");
         deadMansHandSource.Should().Contain("ILimitedAttackNoDelayStatusEffect");
 
         var attackHookSource = File.ReadAllText(Path.Combine(
@@ -610,8 +610,8 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var combatSource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
-        combatSource.Should().Contain("if (isFirstSuccessfulTarget)");
-        combatSource.Should().Contain("ApplyLeadershipVanguardImpactRiders(activator)");
+        combatSource.Should().Contain("sequence.TryTriggerPartyBuff()");
+        combatSource.Should().Contain("ApplyHostileAbilityPartyBuff(activator, ability, damage, statusApplied)");
 
         var generatedWeaponSource = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -823,7 +823,6 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("VibroknifePerkDefinition.cs", StatType.HostileAbilityHitNextAutoAttackNoDelayAllSkills, "1");
 
         AssertSourceStat("HeavyVibrobladePerkDefinition.cs", StatType.HeavyVibrobladeOffenseEssenceHunter, "1");
-        AssertSourceStat("HeavyVibrobladePerkDefinition.cs", StatType.HeavyVibrobladeOffenseSoulAscension, "1");
         AssertSourceStat("HeavyVibrobladePerkDefinition.cs", StatType.HeavyVibrobladeDefenseDamageDealtHPPercentRestore, "1");
 
         AssertSourceStat("RiflePerkDefinition.cs", StatType.IdleSkillAbilitySkillType, "(int)SkillType.Rifle");
@@ -831,7 +830,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("RiflePerkDefinition.cs", StatType.IdleSkillAbilityHitChancePercentAdjustment, "8");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.IdleSkillAbilityCriticalDamagePercentAdjustment, "15");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.OpeningAutoAttackCriticalDamagePercentAdjustment, "15");
-        AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureBuildSkillType, "(int)SkillType.Rifle");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureBuildSkillType, "(int)SkillType.Invalid");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureBuildSeconds, "12");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureGraceSeconds, "6");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureReadyDurationSeconds, "9");
@@ -990,7 +989,7 @@ public class GeneratedWeaponPerkBehaviorTests
         end.Should().BeGreaterThan(start);
 
         var spottersRhythm = source[start..end];
-        spottersRhythm.Should().Contain("After maintaining Rifle fire on the same target for 12 seconds");
+        spottersRhythm.Should().Contain("After maintaining weapon hits on the same target for 12 seconds");
         spottersRhythm.Should().Contain("gain Spotter's Rhythm for 9 seconds");
         spottersRhythm.Should().Contain("hostile weapon ability against that target");
         spottersRhythm.Should().Contain("StatType.SameTargetPressureBuildSkillType");
@@ -1007,7 +1006,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(assassins, StatType.AttackPercentAdjustment, -10);
 
         var shadowflow = new ShadowflowStanceStatusEffect();
-        AssertStatusStat(shadowflow, StatType.AutoAttackHamstringSkillType, (int)SkillType.Vibroknife);
+        AssertStatusStat(shadowflow, StatType.AutoAttackHamstringSkillType, (int)SkillType.Invalid);
         AssertStatusStat(shadowflow, StatType.AutoAttackHamstringDurationSeconds, 18);
         AssertStatusStat(shadowflow, StatType.DefensePercentAdjustment, -20);
 
@@ -1027,7 +1026,7 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var suppression = new SuppressionStanceStatusEffect();
         AssertStatusStat(suppression, StatType.RangedHitSuppressionStackDurationSeconds, 30);
-        AssertStatusStat(suppression, StatType.RangedCriticalDamagePercentAdjustment, -10);
+        AssertStatusStat(suppression, StatType.WeaponCriticalDamagePercentAdjustment, -10);
 
         var gambler = new GamblerStanceStatusEffect();
         AssertStatusStat(gambler, StatType.CriticalRatePercentAdjustment, 12);
@@ -1352,7 +1351,7 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.AbilityUsedRangedDeflectionStatusEffectIcon)
             .Should().Be(StatTypeCategory.NonBeneficial);
-        Stat.GetStatTypeCategory(StatType.RangedCriticalRatePercentAdjustment)
+        Stat.GetStatTypeCategory(StatType.WeaponCriticalRatePercentAdjustment)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.CriticalHitLimitedHastePercentAdjustment)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
@@ -1743,7 +1742,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Vibroblade", "RiotBladeAbilityDefinition.cs", "FeatType.RiotBlade4");
         AssertAbilitySourceContains(root, "HeavyVibroblade", "HeavyVibrobladeActiveAbilityDefinitionBase.cs", "ApplyEssenceHunter");
         AssertAbilitySourceContains(root, "HeavyVibroblade", "SoulBurstAbilityDefinition.cs", "afterSuccessfulHit");
-        AssertAbilitySourceContains(root, "Pistol", "LastWordAbilityDefinition.cs", "TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType = (int)SkillType.Pistol");
+        AssertAbilitySourceContains(root, "Pistol", "LastWordAbilityDefinition.cs", "TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType = (int)SkillType.Invalid");
         AssertAbilitySourceContains(root, "Rifle", "SuppressingShotAbilityDefinition.cs", "ApplySuppressionStackOnHit = true");
         AssertAbilitySourceContains(root, "Rifle", "SuppressiveLineAbilityDefinition.cs", "SuppressionDisorientedRequiredStacks = 2");
         AssertAbilitySourceContains(root, "Rifle", "KillBoxAbilityDefinition.cs", "StatusEffectFactory = () => new KillBoxStatusEffect(0, 3)");

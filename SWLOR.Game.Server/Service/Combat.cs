@@ -147,6 +147,7 @@ namespace SWLOR.Game.Server.Service
             public DateTime SpentAt { get; init; }
             public int NonCriticalRangedAbilityStaminaCost { get; set; }
             public bool StaminaRestoreApplied { get; set; }
+            public int HitStaminaRefunded { get; set; }
             public int DeferredImpactCount { get; set; }
         }
 
@@ -538,14 +539,14 @@ namespace SWLOR.Game.Server.Service
 
         private static int GetSkillCriticalDamagePercentAdjustment(uint attacker, SkillType skillType)
         {
-            if (IsRangedWeaponSkill(skillType))
-                return Stat.GetStatAdjustment(attacker, StatType.RangedCriticalDamagePercentAdjustment);
-
-            return skillType switch
+            var adjustment = IsWeaponSkillType(skillType)
+                ? Stat.GetStatAdjustment(attacker, StatType.WeaponCriticalDamagePercentAdjustment)
+                : 0;
+            return adjustment + (skillType switch
             {
                 SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalDamagePercentAdjustment),
                 _ => 0
-            };
+            });
         }
 
         public static int GetSkillCriticalRatePercentAdjustment(uint attacker, SkillType skillType)
@@ -556,8 +557,8 @@ namespace SWLOR.Game.Server.Service
                 _ => 0
             };
 
-            if (IsRangedWeaponSkill(skillType))
-                adjustment += Stat.GetStatAdjustment(attacker, StatType.RangedCriticalRatePercentAdjustment);
+            if (IsWeaponSkillType(skillType))
+                adjustment += Stat.GetStatAdjustment(attacker, StatType.WeaponCriticalRatePercentAdjustment);
 
             adjustment += GetLowHPCriticalRateAdjustment(attacker);
             return adjustment;
@@ -1213,11 +1214,17 @@ namespace SWLOR.Game.Server.Service
                 damage += nextAutoAttackBonus;
             }
 
+            var guaranteedStaminaRestore = Stat.GetStatAdjustment(attacker, StatType.AutoAttackHitStaminaRestore);
+            if (guaranteedStaminaRestore > 0)
+            {
+                RestoreAbilityHitStamina(attacker, guaranteedStaminaRestore);
+            }
+
             var staminaRestoreChance = Stat.GetStatAdjustment(attacker, StatType.AutoAttackStaminaRestoreChance);
             var staminaRestore = Stat.GetStatAdjustment(attacker, StatType.AutoAttackStaminaRestore);
             if (staminaRestoreChance > 0 && staminaRestore > 0 && Random.D100(1) <= staminaRestoreChance)
             {
-                Stat.RestoreStamina(attacker, staminaRestore);
+                RestoreAbilityHitStamina(attacker, staminaRestore);
             }
 
             var fpRestore = Stat.GetStatAdjustment(attacker, StatType.AutoAttackFPRestore);
@@ -1311,7 +1318,7 @@ namespace SWLOR.Game.Server.Service
             if (!TryUseStatTrigger(attacker, StatType.FirstCombatAttackStaminaRestore, cooldownSeconds))
                 return;
 
-            Stat.RestoreStamina(attacker, staminaRestore);
+            RestoreAbilityHitStamina(attacker, staminaRestore);
         }
 
         private static void ApplyAutoAttackHamstringEffect(
@@ -1325,7 +1332,7 @@ namespace SWLOR.Game.Server.Service
 
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.AutoAttackHamstringSkillType));
             var duration = Stat.GetStatAdjustment(attacker, StatType.AutoAttackHamstringDurationSeconds);
-            if (!SkillTypeMatches(skillType, requiredSkillType) || duration <= 0)
+            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType) || duration <= 0)
                 return;
 
             StatusEffect.ApplyStatusEffect(
@@ -1397,7 +1404,7 @@ namespace SWLOR.Game.Server.Service
 
         private static int ConsumeMeleeAutoAttackCycleDamageBonus(uint attacker, SkillType skillType)
         {
-            if (!IsMeleeWeaponSkill(skillType))
+            if (!IsWeaponSkillType(skillType))
                 return 0;
 
             var requiredCount = Stat.GetStatAdjustment(attacker, StatType.MeleeAutoAttackCycleRequiredCount);
@@ -1451,16 +1458,12 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(target))
                 return;
 
-            var appliedDamage = ApplyTriggeredDamage(
+            ApplyTriggeredDamage(
                 attacker,
                 target,
                 cycleDamage,
                 CombatDamageType.Physical,
                 skillType);
-            if (appliedDamage <= 0)
-                return;
-
-            Enmity.ModifyEnmity(attacker, target, appliedDamage);
         }
 
         private static void ApplySourceStatusAutoAttackCycleDamage(uint attacker, uint defender, SkillType skillType)
@@ -1484,7 +1487,7 @@ namespace SWLOR.Game.Server.Service
                 attacker,
                 StatType.SourceStatusAutoAttackCycleDamageType));
             var key = (attacker, defender, requiredCategory);
-            if (!SkillTypeMatches(skillType, requiredSkillType) ||
+            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType) ||
                 requiredCategory == 0 ||
                 requiredCount <= 0 ||
                 damage <= 0 ||
@@ -1504,11 +1507,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _sourceStatusAutoAttackCycleCounts[key] = 0;
-            var appliedDamage = ApplyTriggeredDamage(attacker, defender, damage, damageType, skillType);
-            if (appliedDamage > 0)
-            {
-                Enmity.ModifyEnmity(attacker, defender, appliedDamage);
-            }
+            ApplyTriggeredDamage(attacker, defender, damage, damageType, skillType);
         }
 
         public static int CalculateAutoAttackProcDamage(IEnumerable<StatAdjustmentSource> sources, Func<int> roll)
@@ -1561,9 +1560,9 @@ namespace SWLOR.Game.Server.Service
 
         public static bool CanTriggerAutoAttackSplash(StatAdjustmentSource source, SkillType skillType)
         {
-            return source[StatType.AutoAttackSplashDamage] > 0 && source[StatType.AutoAttackSplashChance] > 0 &&
+            return IsWeaponSkillType(skillType) && source[StatType.AutoAttackSplashDamage] > 0 && source[StatType.AutoAttackSplashChance] > 0 &&
                    source[StatType.AutoAttackSplashRadiusMeters] > 0 && source[StatType.AutoAttackSplashMaximumTargets] > 1 &&
-                   SkillTypeMatches(skillType, GetSkillTypeFromStat(source[StatType.AutoAttackSplashSkillType]));
+                   SkillTypeMatchesOrGlobal(skillType, GetSkillTypeFromStat(source[StatType.AutoAttackSplashSkillType]));
         }
 
         public static uint[] SelectAutoAttackSplashSecondaryTargets(IEnumerable<uint> candidates, uint primaryTarget, int maximumTotalTargets)
@@ -1767,7 +1766,7 @@ namespace SWLOR.Game.Server.Service
             ApplyBleedingTargetStaminaRestoreChannel(
                 attacker,
                 skillType,
-                requiredSkillType,
+                isAbilityDamage ? requiredSkillType : SkillType.Invalid,
                 StatType.SkillDamageBleedingTargetStaminaRestoreChance,
                 StatType.SkillDamageBleedingTargetStaminaRestore,
                 StatType.SkillDamageBleedingTargetStaminaRestoreCooldownSeconds);
@@ -1811,7 +1810,7 @@ namespace SWLOR.Game.Server.Service
             if (!TryUseStatTrigger(attacker, restoreStat, cooldown))
                 return;
 
-            Stat.RestoreStamina(attacker, staminaRestore);
+            RestoreAbilityHitStamina(attacker, staminaRestore);
         }
 
         private static void ApplyDamageDealtForceErosionEffect(
@@ -1918,7 +1917,7 @@ namespace SWLOR.Game.Server.Service
             var staminaCooldown = Stat.GetStatAdjustment(attacker, StatType.SideAttackStaminaRestoreCooldownSeconds);
             if (staminaRestore > 0 && TryUseStatTrigger(attacker, StatType.SideAttackStaminaRestore, staminaCooldown))
             {
-                Stat.RestoreStamina(attacker, staminaRestore);
+                RestoreAbilityHitStamina(attacker, staminaRestore);
             }
 
             var delayReduction = Stat.GetStatAdjustment(attacker, StatType.SideAttackDelayReductionPercent);
@@ -1949,7 +1948,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            Stat.RestoreStamina(attacker, staminaRestore);
+            RestoreAbilityHitStamina(attacker, staminaRestore);
         }
 
         private static void ApplyDamageDealtAttackDelayReduction(uint attacker, SkillType skillType)
@@ -2002,8 +2001,7 @@ namespace SWLOR.Game.Server.Service
 
         private static bool IsMatchingBackAttack(uint attacker, uint defender, SkillType skillType)
         {
-            return skillType != SkillType.Invalid &&
-                   !IsRangedWeaponSkill(skillType) &&
+            return IsWeaponSkillType(skillType) &&
                    IsAttackerBehindTarget(attacker, defender);
         }
 
@@ -2116,7 +2114,7 @@ namespace SWLOR.Game.Server.Service
                 SkillTypeMatches(skillType, staminaRestoreSkillType) &&
                 TryUseStatTrigger(attacker, StatType.CriticalStaminaRestore, staminaRestoreCooldown))
             {
-                Stat.RestoreStamina(attacker, staminaRestore);
+                RestoreAbilityHitStamina(attacker, staminaRestore);
             }
 
             ApplyCriticalNextAbilityDamageBonus(attacker, skillType);
@@ -2130,13 +2128,13 @@ namespace SWLOR.Game.Server.Service
             var poisonedTargetStaminaRestore = Stat.GetStatAdjustment(attacker, StatType.CriticalPoisonedTargetStaminaRestore);
             if (poisonedTargetStaminaRestore > 0 && StatusEffect.HasStatusEffect(defender, typeof(PoisonStatusEffect)))
             {
-                Stat.RestoreStamina(attacker, poisonedTargetStaminaRestore);
+                RestoreAbilityHitStamina(attacker, poisonedTargetStaminaRestore);
             }
 
             var markedTargetStaminaRestore = Stat.GetStatAdjustment(attacker, StatType.CriticalMarkedTargetStaminaRestore);
             if (markedTargetStaminaRestore > 0 && StatusEffect.HasStatusEffect(defender, typeof(MarkingTossStatusEffect), attacker))
             {
-                Stat.RestoreStamina(attacker, markedTargetStaminaRestore);
+                RestoreAbilityHitStamina(attacker, markedTargetStaminaRestore);
             }
 
             var targetFPLossPercent = Stat.GetStatAdjustment(attacker, StatType.CriticalTargetFPLossPercentOfDamage);
@@ -2348,7 +2346,7 @@ namespace SWLOR.Game.Server.Service
             if (count >= requiredCount)
             {
                 _criticalHitSequenceStates.Remove(attacker);
-                Stat.RestoreStamina(attacker, staminaRestore);
+                RestoreAbilityHitStamina(attacker, staminaRestore);
                 return;
             }
 
@@ -2406,7 +2404,7 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyCriticalHitLimitedHaste(uint attacker, SkillType skillType)
         {
             var triggerSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.CriticalHitLimitedHasteTriggerSkillType));
-            if (!SkillTypeMatches(skillType, triggerSkillType))
+            if (!SkillTypeMatchesOrGlobal(skillType, triggerSkillType))
                 return;
 
             var hastePercent = Stat.GetStatAdjustment(attacker, StatType.CriticalHitLimitedHastePercentAdjustment);
@@ -2438,18 +2436,21 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyCriticalNextAutoAttackNoDelay(uint attacker, SkillType skillType)
         {
             var triggerSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.CriticalNextAutoAttackNoDelayTriggerSkillType));
-            if (!SkillTypeMatches(skillType, triggerSkillType))
+            if (!SkillTypeMatchesOrGlobal(skillType, triggerSkillType))
                 return;
 
             var noDelaySkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.CriticalNextAutoAttackNoDelaySkillType));
             var duration = Stat.GetStatAdjustment(attacker, StatType.CriticalNextAutoAttackNoDelayDurationSeconds);
             var cooldown = Stat.GetStatAdjustment(attacker, StatType.CriticalNextAutoAttackNoDelayCooldownSeconds);
-            if (noDelaySkillType == SkillType.Invalid || duration <= 0)
+            if (duration <= 0)
                 return;
 
             if (TryUseStatTrigger(attacker, StatType.CriticalNextAutoAttackNoDelaySkillType, cooldown))
             {
-                GrantNextAutoAttackNoDelay(attacker, noDelaySkillType, duration);
+                if (noDelaySkillType == SkillType.Invalid)
+                    GrantNextAutoAttackNoDelay(attacker, duration);
+                else
+                    GrantNextAutoAttackNoDelay(attacker, noDelaySkillType, duration);
             }
         }
 
@@ -2462,7 +2463,7 @@ namespace SWLOR.Game.Server.Service
 
             if (Random.D100(1) <= chance)
             {
-                Stat.RestoreStamina(attacker, staminaRestore);
+                RestoreAbilityHitStamina(attacker, staminaRestore);
             }
         }
 
@@ -2846,9 +2847,11 @@ namespace SWLOR.Game.Server.Service
             var originLocation = GetLocation(origin);
             var nearest = OBJECT_INVALID;
             var nearestDistance = float.MaxValue;
-            var creature = GetFirstObjectInShape(Shape.Sphere, radius, originLocation, true);
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, radius, originLocation, true))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (creature != excludedTarget &&
                     GetIsReactionTypeHostile(creature, source) &&
                     !GetIsDead(creature))
@@ -2861,7 +2864,6 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, radius, originLocation, true);
             }
 
             return nearest;
@@ -3315,11 +3317,11 @@ namespace SWLOR.Game.Server.Service
 
         public static int PrepareOpeningAutoAttack(uint attacker, SkillType skillType)
         {
-            if (!GetIsObjectValid(attacker) || skillType == SkillType.Invalid)
+            if (!GetIsObjectValid(attacker) || !IsWeaponSkillType(skillType))
                 return 0;
 
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.OpeningAutoAttackSkillType));
-            if (!SkillTypeMatches(skillType, requiredSkillType))
+            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType))
                 return 0;
 
             var idleSeconds = Stat.GetStatAdjustment(attacker, StatType.OpeningAutoAttackIdleSeconds);
@@ -3414,7 +3416,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int PrepareAutoAttackCycleCriticalRate(uint attacker, SkillType skillType)
         {
-            if (!GetIsObjectValid(attacker) || skillType == SkillType.Invalid)
+            if (!GetIsObjectValid(attacker) || !IsWeaponSkillType(skillType))
                 return 0;
 
             var requiredCount = Stat.GetStatAdjustment(attacker, StatType.RangedAutoAttackCycleCriticalRateRequiredCount);
@@ -3424,9 +3426,6 @@ namespace SWLOR.Game.Server.Service
                 ClearAutoAttackCycleCriticalRateTracker(attacker);
                 return 0;
             }
-
-            if (!IsRangedWeaponSkill(skillType))
-                return 0;
 
             _autoAttackCycleCriticalCounts.TryGetValue(attacker, out var count);
             count++;
@@ -3440,7 +3439,7 @@ namespace SWLOR.Game.Server.Service
                     attacker,
                     attacker,
                     new AttackCycleTrackerStatusEffect(
-                        $"Ranged attack cycle: {Math.Min(count, requiredCount)}/{requiredCount}",
+                        $"Attack cycle: {Math.Min(count, requiredCount)}/{requiredCount}",
                         trackerIcon),
                     count >= requiredCount ? 3f : 0f);
             }
@@ -3452,7 +3451,7 @@ namespace SWLOR.Game.Server.Service
 
             _autoAttackCycleCriticalCounts[attacker] = 0;
             PlayerFeedback.ShowDiagnosticFloatingText(
-                ColorToken.Combat($"Ranged attack +{criticalRate}% Critical Rate"),
+                ColorToken.Combat($"Attack +{criticalRate}% Critical Rate"),
                 attacker,
                 false);
             return criticalRate;
@@ -3647,7 +3646,10 @@ namespace SWLOR.Game.Server.Service
                 creature,
                 StatType.AvoidedAttackNextAutoAttackNoDelayDurationSeconds);
 
-            GrantNextAutoAttackNoDelay(creature, skillType, duration);
+            if (skillType == SkillType.Invalid)
+                GrantNextAutoAttackNoDelay(creature, duration);
+            else
+                GrantNextAutoAttackNoDelay(creature, skillType, duration);
         }
 
         public static void ApplyMeleeDamageTakenEffects(uint defender, uint attacker)
@@ -3892,14 +3894,11 @@ namespace SWLOR.Game.Server.Service
                 applied = true;
             }
 
-            var target = GetFirstObjectInShape(
-                Shape.Sphere,
-                radius,
-                location,
-                true,
-                SWLOR.NWN.API.NWScript.Enum.ObjectType.Creature);
-            while (GetIsObjectValid(target))
+            foreach (var target in ObjectSnapshot.InShape(Shape.Sphere, radius, location, true, SWLOR.NWN.API.NWScript.Enum.ObjectType.Creature))
             {
+                if (!GetIsObjectValid(target))
+                    continue;
+
                 if (target != originalAttacker &&
                     !GetIsDead(target) &&
                     GetCurrentHitPoints(target) > 0 &&
@@ -3913,12 +3912,6 @@ namespace SWLOR.Game.Server.Service
                     applied = true;
                 }
 
-                target = GetNextObjectInShape(
-                    Shape.Sphere,
-                    radius,
-                    location,
-                    true,
-                    SWLOR.NWN.API.NWScript.Enum.ObjectType.Creature);
             }
 
             if (applied && GetIsPC(defender))
@@ -4328,9 +4321,11 @@ namespace SWLOR.Game.Server.Service
             var category = (StatusEffectCategory)categoryValue;
             var count = 0;
             var location = GetLocation(creature);
-            var target = GetFirstObjectInShape(Shape.Sphere, radius, location, true);
-            while (GetIsObjectValid(target))
+            foreach (var target in ObjectSnapshot.InShape(Shape.Sphere, radius, location, true))
             {
+                if (!GetIsObjectValid(target))
+                    continue;
+
                 if (target != creature &&
                     GetIsReactionTypeHostile(target, creature) &&
                     StatusEffect.HasStatusEffectCategory(target, category))
@@ -4338,7 +4333,6 @@ namespace SWLOR.Game.Server.Service
                     count++;
                 }
 
-                target = GetNextObjectInShape(Shape.Sphere, radius, location, true);
             }
 
             var adjustment = count * percentPerTarget;
@@ -4699,7 +4693,7 @@ namespace SWLOR.Game.Server.Service
                 attacker,
                 StatType.MeleeRepeatedTargetDamageStatusEffectIcon));
             if (isAbilityDamage ||
-                !IsMeleeWeaponSkill(skillType) ||
+                !IsWeaponSkillType(skillType) ||
                 bonusPerHit <= 0 ||
                 maxBonus <= 0)
             {
@@ -4724,11 +4718,8 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Cross-skill ranged sibling of the melee modifier above: "each consecutive ranged hit"
-        /// builds and benefits regardless of which ranged weapon dealt it, so switching from rifle
-        /// to pistol keeps the stacks instead of clearing them. Unlike the melee variant, ability
-        /// hits count too - the wording is "hit", not "attack" - and stacks expire on their own
-        /// timer.
+        /// Consecutive weapon hits build this independent damage stack with any weapon family.
+        /// Ability hits count too, and stacks expire on their own timer.
         /// </summary>
         private static int ApplyRangedRepeatedTargetDamageModifier(
             uint attacker,
@@ -4742,14 +4733,18 @@ namespace SWLOR.Game.Server.Service
             var bonusPerHit = Stat.GetStatAdjustment(attacker, StatType.RangedRepeatedTargetDamageBonusPerHit);
             var maxBonus = Stat.GetStatAdjustment(attacker, StatType.RangedRepeatedTargetDamageBonusMax);
             var durationSeconds = Stat.GetStatAdjustment(attacker, StatType.RangedRepeatedTargetDamageDurationSeconds);
-            if (!IsRangedWeaponSkill(skillType) ||
-                bonusPerHit <= 0 ||
+            if (bonusPerHit <= 0 ||
                 maxBonus <= 0 ||
                 durationSeconds <= 0)
             {
                 ClearRangedRepeatedTargetDamageTracker(attacker);
                 return damage;
             }
+
+            // Non-weapon damage (device pulses, Force powers) neither builds nor breaks the
+            // weapon-hit streak, so it leaves the stack untouched.
+            if (!IsWeaponSkillType(skillType))
+                return damage;
 
             var now = DateTime.UtcNow;
             if (!_rangedRepeatedTargetDamageStates.TryGetValue(attacker, out var state) ||
@@ -4801,8 +4796,7 @@ namespace SWLOR.Game.Server.Service
             var graceSeconds = Stat.GetStatAdjustment(attacker, StatType.SameTargetPressureGraceSeconds);
             var readyDurationSeconds = Stat.GetStatAdjustment(attacker, StatType.SameTargetPressureReadyDurationSeconds);
             var damageBonus = Stat.GetStatAdjustment(attacker, StatType.SameTargetPressureWeaponAbilityDamageBonus);
-            if (buildSkillType == SkillType.Invalid ||
-                buildSeconds <= 0 ||
+            if (buildSeconds <= 0 ||
                 graceSeconds <= 0 ||
                 readyDurationSeconds <= 0 ||
                 damageBonus <= 0)
@@ -4824,7 +4818,7 @@ namespace SWLOR.Game.Server.Service
             if (!IsWeaponSkillType(skillType))
                 return;
 
-            if (!SkillTypeMatches(skillType, buildSkillType))
+            if (!SkillTypeMatchesOrGlobal(skillType, buildSkillType))
             {
                 if (state != null && state.Target != defender)
                     ClearSameTargetPressureState(attacker);
@@ -5730,10 +5724,13 @@ namespace SWLOR.Game.Server.Service
             Type primaryStatusEffect,
             IEnumerable<Type> additionalStatusEffects,
             bool firstHostileAbilityHitDamageBonusApplied,
-            bool isFirstSuccessfulTarget)
+            bool isFirstSuccessfulTarget,
+            StatusEffectCategory appliedStatusCategories)
         {
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
                 return;
+
+            ApplyHostileAbilityPartyBuff(activator, ability, damage, statusApplied);
 
             if (firstHostileAbilityHitDamageBonusApplied)
                 ApplyFirstHostileAbilityHitCount(activator, ability);
@@ -5757,9 +5754,7 @@ namespace SWLOR.Game.Server.Service
             ApplyStatusAppliedEffects(
                 activator,
                 target,
-                statusApplied,
-                primaryStatusEffect,
-                additionalStatusEffects);
+                appliedStatusCategories);
             ApplyAbilityTargetStatusEffects(activator, target, ability);
             ApplyRangedAbilityHitNearTargetEffects(activator, target, ability, skillType);
             ApplyCostlyAbilityHitEffects(activator, target, ability, skillType);
@@ -5801,7 +5796,7 @@ namespace SWLOR.Game.Server.Service
                 !costState.StaminaRestoreApplied &&
                 SkillTypeMatchesOrGlobal(skillType, staminaRestoreSkillType))
             {
-                Stat.RestoreStamina(activator, staminaRestore);
+                RestoreAbilityHitStamina(activator, ability, staminaRestore);
                 costState.StaminaRestoreApplied = true;
             }
 
@@ -5901,7 +5896,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _sameTargetHostileAbilityHitCounts[key] = 0;
-            Stat.RestoreStamina(activator, staminaRestore);
+            RestoreAbilityHitStamina(activator, ability, staminaRestore);
         }
 
         private static void ApplyHostileAbilityHitNextAutoAttackNoDelay(
@@ -5953,10 +5948,6 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case SkillType.Katar:
                     ApplyKatarVenomCurrentImpactRiders(activator, target);
-                    break;
-                case SkillType.Leadership:
-                    if (isFirstSuccessfulTarget)
-                        ApplyLeadershipVanguardImpactRiders(activator);
                     break;
                 case SkillType.Lightsaber:
                     ApplyLightsaberOffenseImpactRiders(activator, target, ability);
@@ -6433,7 +6424,7 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType,
             CombatDamageType damageType)
         {
-            if (!IsRangedWeaponSkill(skillType))
+            if (!IsWeaponSkillType(skillType))
                 return;
 
             var chance = Stat.GetStatAdjustment(attacker, StatType.AutoAttackSuppressionStackChance);
@@ -6461,7 +6452,7 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType,
             CombatDamageType damageType)
         {
-            if (!IsRangedWeaponSkill(skillType))
+            if (!IsWeaponSkillType(skillType))
                 return;
 
             var duration = Stat.GetStatAdjustment(attacker, StatType.RangedHitSuppressionStackDurationSeconds);
@@ -6472,7 +6463,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // A Kill Box belongs to its caster, but its suppression trigger belongs to every
-            // ranged attacker hitting a marked target. Use the caster as the status source so
+            // weapon attacker hitting a marked target. Use the caster as the status source so
             // Containment Net and the evasion rider remain source-owned.
             foreach (var killBox in StatusEffect.GetCreatureStatusEffects(defender)
                          .GetAllEffects()
@@ -7100,7 +7091,7 @@ namespace SWLOR.Game.Server.Service
 
             if (stacks >= maxStacks)
             {
-                Stat.RestoreStamina(attacker, 2);
+                RestoreAbilityHitStamina(attacker, 2);
             }
         }
 
@@ -7117,21 +7108,43 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void ApplyLeadershipVanguardImpactRiders(uint activator)
+        internal static bool IsSuccessfulHostileAbilityImpact(AbilityDetail ability, int damage, bool statusApplied)
         {
-            var rank = Stat.GetStatAdjustment(activator, StatType.LeadershipVanguardMarkTargetRank);
-            if (rank <= 0)
+            return ability?.IsHostileAbility == true && (damage > 0 || statusApplied);
+        }
+
+        public static void ApplyHostileAbilityPartyBuff(uint activator, AbilityDetail ability, int damage, bool statusApplied)
+        {
+            if (!IsSuccessfulHostileAbilityImpact(ability, damage, statusApplied))
                 return;
 
+            var baseDamage = Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffDamagePercent);
+            var baseAccuracy = Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffAccuracyPercent);
+            var baseDuration = Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffDurationSeconds);
+            var cooldown = Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffCooldownSeconds);
+            var nameStrRef = Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffNameStrRef);
+            var icon = (EffectIconType)Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffIcon);
+            if ((baseDamage <= 0 && baseAccuracy <= 0) || baseDuration <= 0 || cooldown <= 0 ||
+                nameStrRef <= 0 || icon == EffectIconType.Invalid)
+                return;
+
+            var sequence = Ability.GetAbilityImpactSequence(activator);
+            if (sequence != null && !sequence.TryTriggerPartyBuff())
+                return;
+            if (!TryUseStatTrigger(activator, StatType.HostileAbilityPartyBuffDamagePercent, cooldown))
+                return;
+
+            var damagePercent = AbilityEffectScaling.ScaleValueBySourceSocial(activator, baseDamage,
+                Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffMaximumDamagePercent));
+            var accuracyPercent = AbilityEffectScaling.ScaleValueBySourceSocial(activator, baseAccuracy,
+                Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffMaximumAccuracyPercent));
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
-            var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, 30f);
-            var statusEffectType = rank >= 2
-                ? typeof(MarkTarget2StatusEffect)
-                : typeof(MarkTarget1StatusEffect);
+            var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, baseDuration);
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, activator, true, radius))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, statusEffectType, duration);
+                StatusEffect.ApplyStatusEffect(activator, friendly,
+                    new HostileAbilityPartyBuffStatusEffect(damagePercent, accuracyPercent, nameStrRef, icon), duration);
             }
         }
 
@@ -7381,18 +7394,13 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyStatusAppliedEffects(
             uint activator,
             uint target,
-            bool statusApplied,
-            Type primaryStatusEffect,
-            IEnumerable<Type> additionalStatusEffects)
+            StatusEffectCategory appliedStatusCategories)
         {
-            if (!statusApplied)
-                return;
-
             var requiredCategory = GetStatusEffectCategoryFromStat(Stat.GetStatAdjustment(
                 activator,
                 StatType.StatusAppliedRequiredCategory));
             if (requiredCategory == 0 ||
-                !AbilityAppliedAnyStatusCategory(primaryStatusEffect, additionalStatusEffects, requiredCategory))
+                (appliedStatusCategories & requiredCategory) == 0)
             {
                 return;
             }
@@ -7464,7 +7472,7 @@ namespace SWLOR.Game.Server.Service
 
             var staminaRestore = Stat.GetStatAdjustment(activator, StatType.StatusAppliedSelfStaminaRestore);
             if (staminaRestore > 0)
-                Stat.RestoreStamina(activator, staminaRestore);
+                RestoreAbilityHitStamina(activator, staminaRestore);
         }
 
         private static void ApplyStatusAppliedTargetEffects(uint activator, uint target)
@@ -8219,7 +8227,7 @@ namespace SWLOR.Game.Server.Service
             if (Stat.GetStatAdjustment(activator, StatType.ForcePrecognition) > 0 &&
                 TryUseStatTrigger(activator, StatType.ForcePrecognition, 12))
             {
-                StatusEffect.ApplyStatusEffect(activator, activator, typeof(PrecognitionStatusEffect), 30f);
+                StatusEffect.ApplyStatusEffect(activator, activator, typeof(DangerSenseStatusEffect), 30f);
             }
 
             if (Stat.GetStatAdjustment(activator, StatType.ForceConvergence) > 0 &&
@@ -8521,14 +8529,13 @@ namespace SWLOR.Game.Server.Service
         private static uint GetRelevantSkillWeapon(uint creature, SkillType skillType)
         {
             var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
-            if (GetIsObjectValid(rightHand) &&
-                (skillType == SkillType.Invalid ||
-                 Skill.GetSkillTypeByBaseItem((BaseItem)GetBaseItemType(rightHand)) == skillType ||
-                 skillType == SkillType.Force))
+            // The ability skill determines progression and scaling, never weapon eligibility.
+            // A different weapon family must still supply its accuracy properties and base stats.
+            if (IsAbilityWeapon(rightHand))
                 return rightHand;
 
             var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
-            if (GetIsObjectValid(leftHand))
+            if (IsAbilityWeapon(leftHand))
                 return leftHand;
 
             // Creature-weapon NPCs carry nothing in either hand, so without this fallback their
@@ -8682,7 +8689,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int ConsumeSuppressionRangedAttackAccuracyAdjustment(uint attacker, uint defender, SkillType skillType)
         {
-            if (!IsRangedWeaponSkill(skillType))
+            if (!IsWeaponSkillType(skillType))
                 return 0;
 
             var now = DateTime.UtcNow;
@@ -8927,8 +8934,8 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var skillType = GetAbilitySkillType(creature, ability);
-            var hasRangedStatusNoDelay = IsRangedWeaponSkill(skillType) &&
-                                         Stat.GetStatAdjustment(creature, StatType.RangedAttackNoDelay) > 0;
+            var hasRangedStatusNoDelay = IsWeaponSkillType(skillType) &&
+                                         Stat.GetStatAdjustment(creature, StatType.WeaponAttackNoDelay) > 0;
             if (hasRangedStatusNoDelay)
                 return 100;
 
@@ -8978,8 +8985,8 @@ namespace SWLOR.Game.Server.Service
             if (IsAttackDelayReductionSuppressed(creature))
                 return false;
 
-            if (IsRangedWeaponSkill(skillType) &&
-                Stat.GetStatAdjustment(creature, StatType.RangedAttackNoDelay) > 0)
+            if (IsWeaponSkillType(skillType) &&
+                Stat.GetStatAdjustment(creature, StatType.WeaponAttackNoDelay) > 0)
             {
                 return true;
             }
@@ -9014,8 +9021,8 @@ namespace SWLOR.Game.Server.Service
             if (IsAttackDelayReductionSuppressed(creature))
                 return false;
 
-            var appliesToRangedStatus = IsRangedWeaponSkill(skillType) &&
-                                        Stat.GetStatAdjustment(creature, StatType.RangedAttackNoDelay) > 0;
+            var appliesToRangedStatus = IsWeaponSkillType(skillType) &&
+                                        Stat.GetStatAdjustment(creature, StatType.WeaponAttackNoDelay) > 0;
             var appliesToAllSkills = TemporaryStatModifier.GetStatAdjustment(
                 creature,
                 StatType.NextAutoAttackNoDelayAllSkills,
@@ -9601,12 +9608,15 @@ namespace SWLOR.Game.Server.Service
                 creature,
                 StatType.QueuedWeaponAbilityActivationCriticalRateSkillType,
                 StatType.QueuedWeaponAbilityActivationCriticalRateSkillType));
-            return SkillTypeMatches(skillType, activationSkillType)
+            var idleHitChanceAdjustment = SkillTypeMatches(skillType, activationSkillType)
                 ? TemporaryStatModifier.GetStatAdjustment(
                     creature,
                     StatType.QueuedWeaponAbilityIdleHitChancePercentAdjustment,
                     StatType.QueuedWeaponAbilityActivationCriticalRateSkillType)
                 : 0;
+
+            // Queued abilities use the native weapon roll instead of TryResolveAbilityHit.
+            return GetPhysicalAndForceAbilityHitChanceAdjustment(creature, skillType) + idleHitChanceAdjustment;
         }
 
         public static void ClearQueuedWeaponAbilityActivationBonuses(uint creature)
@@ -10084,6 +10094,35 @@ namespace SWLOR.Game.Server.Service
             _abilityStaminaCosts.Remove(key);
             state = null;
             return false;
+        }
+
+        /// <summary>Hit rewards share the actual activation's stamina spend, retaining at least
+        /// one stamina of cost. FP-funded abilities and explicit recovery actions keep their payouts.</summary>
+        public static int RestoreAbilityHitStamina(uint creature, AbilityDetail ability, int requested, bool sendFeedback = true)
+        {
+            if (requested <= 0)
+                return 0;
+
+            if (ability?.IsHostileAbility != true ||
+                !ability.Requirements.OfType<AbilityRequirementStamina>().Any())
+                return Stat.RestoreStamina(creature, requested, sendFeedback: sendFeedback);
+
+            if (!TryGetAbilityStaminaCostState(creature, ability, out var state))
+                return 0;
+
+            var amount = CalculateAbilityHitStaminaRestore(state.Cost, state.HitStaminaRefunded, requested);
+            state.HitStaminaRefunded += amount;
+            return amount > 0 ? Stat.RestoreStamina(creature, amount, sendFeedback: sendFeedback) : 0;
+        }
+
+        private static int RestoreAbilityHitStamina(uint creature, int requested)
+        {
+            return RestoreAbilityHitStamina(creature, Ability.GetActiveAbilityImpactSummary(creature)?.Ability, requested);
+        }
+
+        public static int CalculateAbilityHitStaminaRestore(int cost, int refunded, int requested)
+        {
+            return Math.Clamp(requested, 0, Math.Max(0, cost - 1 - Math.Max(0, refunded)));
         }
 
         public static void DeferAbilityStaminaCostContext(uint creature, AbilityDetail ability)
@@ -10988,7 +11027,7 @@ namespace SWLOR.Game.Server.Service
             var staminaRestore = Stat.GetStatAdjustment(activator, StatType.ThrowingAreaAbilityMinTargetsStaminaRestore);
             if (staminaThreshold > 0 && staminaRestore > 0 && summary.ImpactedTargetCount >= staminaThreshold)
             {
-                Stat.RestoreStamina(activator, staminaRestore);
+                RestoreAbilityHitStamina(activator, summary.Ability, staminaRestore);
             }
 
             var attackPerTarget = Stat.GetStatAdjustment(activator, StatType.ThrowingAreaAbilityAttackPercentPerTarget);
@@ -11020,7 +11059,7 @@ namespace SWLOR.Game.Server.Service
                     ApplyAbilityRestoredFPEffects(activator);
 
                 var restoredStamina = staminaRestore > 0
-                    ? Stat.RestoreStamina(activator, staminaRestore)
+                    ? RestoreAbilityHitStamina(activator, summary.Ability, staminaRestore)
                     : 0;
 
                 if (restoredFP > 0 && restoredStamina > 0)
@@ -11075,7 +11114,7 @@ namespace SWLOR.Game.Server.Service
                 staminaRestore > 0 &&
                 summary.ImpactedTargetCount >= minimumTargets)
             {
-                Stat.RestoreStamina(activator, staminaRestore);
+                RestoreAbilityHitStamina(activator, summary.Ability, staminaRestore);
             }
         }
 
@@ -11090,7 +11129,7 @@ namespace SWLOR.Game.Server.Service
                 var perTarget = source[StatType.AreaHitStaminaRestorePerTarget];
                 var maximum = source[StatType.AreaHitStaminaRestoreMaximum];
                 if (perTarget > 0 && maximum > 0)
-                    Stat.RestoreStamina(activator, Math.Min(maximum, perTarget * summary.ImpactedTargetCount));
+                    RestoreAbilityHitStamina(activator, summary.Ability, Math.Min(maximum, perTarget * summary.ImpactedTargetCount));
             }
         }
 
@@ -11351,7 +11390,7 @@ namespace SWLOR.Game.Server.Service
 
             var weapon = GetCombatImpactWeapon(activator, skillType, usesQueuedNaturalWeapon, requireMatchingSkill);
             return GetIsObjectValid(weapon)
-                ? Item.GetDMG(weapon)
+                ? WeaponDamage.GetEffectiveDMG(activator, weapon)
                 : 0;
         }
 
@@ -12028,13 +12067,11 @@ namespace SWLOR.Game.Server.Service
         public static int CalculateAttackDelay(uint attacker, int attackDelayReductionAdjustment)
         {
             var rightHand = GetItemInSlot(InventorySlot.RightHand, attacker);
-            var leftHand = GetItemInSlot(InventorySlot.LeftHand, attacker);
+            var leftHand = EquipmentPredicates.GetOffhandAttackWeapon(attacker);
 
             var rightHandDelay = GetWeaponDelay(rightHand);
-            var leftHandDelay = ApplyOffhandAttackDelayReduction(attacker, GetWeaponDelay(leftHand));
-
-            var delay = CalculateEquippedWeaponDelayUnits(rightHandDelay, leftHandDelay);
-            if (delay == 0)
+            var leftHandDelay = GetWeaponDelay(leftHand);
+            if (rightHandDelay == 0 && leftHandDelay == 0)
             {
                 var creatureRight = GetItemInSlot(InventorySlot.CreatureRight, attacker);
                 var creatureLeft = GetItemInSlot(InventorySlot.CreatureLeft, attacker);
@@ -12047,20 +12084,20 @@ namespace SWLOR.Game.Server.Service
                     GetWeaponDelay(creatureBite)
                 };
 
-                delay = creatureDelays
+                rightHandDelay = creatureDelays
                     .Where(creatureDelay => creatureDelay > 0)
                     .DefaultIfEmpty(0)
                     .Min();
             }
 
-            var finalDelay = ConvertAttackDelayUnitsToMilliseconds(delay);
             var reductionPercentage = Math.Clamp(
                 Stat.GetStatAdjustment(attacker, StatType.AttackDelayReductionPercent) +
                 attackDelayReductionAdjustment,
                 -MaximumAttackDelayAdjustmentPercent,
                 MaximumAttackDelayAdjustmentPercent);
 
-            return ApplyAttackDelayReduction(finalDelay, reductionPercentage);
+            return CalculateAttackDelayMilliseconds(rightHandDelay, leftHandDelay, reductionPercentage,
+                CalculateOffhandAttackDelayReduction(attacker));
         }
 
         /// <summary>
@@ -12077,16 +12114,32 @@ namespace SWLOR.Game.Server.Service
             int attackDelayReductionPercent,
             int offhandAttackDelayReductionPercent)
         {
-            attackDelayReductionPercent = Math.Min(attackDelayReductionPercent, MaximumAttackDelayAdjustmentPercent);
+            attackDelayReductionPercent = Math.Clamp(attackDelayReductionPercent,
+                -MaximumAttackDelayAdjustmentPercent, MaximumAttackDelayAdjustmentPercent);
             offhandAttackDelayReductionPercent = Math.Min(
                 Math.Max(offhandAttackDelayReductionPercent, 0),
                 MaximumAttackDelayAdjustmentPercent);
-            leftHandDelayUnits = ApplyPercentReduction(leftHandDelayUnits, offhandAttackDelayReductionPercent);
-
-            var delayUnits = CalculateEquippedWeaponDelayUnits(rightHandDelayUnits, leftHandDelayUnits);
+            var reducedOffhand = ApplyPercentReduction(leftHandDelayUnits, offhandAttackDelayReductionPercent);
+            var delayUnits = CalculateEquippedWeaponDelayUnits(rightHandDelayUnits, reducedOffhand);
             var delayMilliseconds = ConvertAttackDelayUnitsToMilliseconds(delayUnits);
+            if (delayMilliseconds <= 0)
+                return 0;
+            if (rightHandDelayUnits <= 0 || leftHandDelayUnits <= 0)
+                return Math.Max(BaseAttackDelayMilliseconds + MinimumAttackDelayMilliseconds,
+                    ApplyAttackDelayReduction(delayMilliseconds, attackDelayReductionPercent));
 
-            return ApplyAttackDelayReduction(delayMilliseconds, attackDelayReductionPercent);
+            // Use both unreduced hands as the haste reference so hand order and off-hand
+            // specialization cannot change the acceleration factor. Pay the baseline once.
+            var referenceRawDelay = (ConvertAttackDelayUnitsToMilliseconds(rightHandDelayUnits) +
+                                     ConvertAttackDelayUnitsToMilliseconds(leftHandDelayUnits)) / 2;
+            var referenceDelay = Math.Max(MinimumAttackDelayMilliseconds,
+                referenceRawDelay - BaseAttackDelayMilliseconds);
+            var hastedReferenceDelay = Math.Max(MinimumAttackDelayMilliseconds,
+                ApplyAttackDelayReduction(referenceRawDelay, attackDelayReductionPercent) - BaseAttackDelayMilliseconds);
+            var pairedDelay = Math.Max(MinimumAttackDelayMilliseconds, delayMilliseconds - BaseAttackDelayMilliseconds);
+            var adjustedPairedDelay = Math.Max(MinimumAttackDelayMilliseconds,
+                (int)Math.Round(pairedDelay * (hastedReferenceDelay / (double)referenceDelay), MidpointRounding.AwayFromZero));
+            return BaseAttackDelayMilliseconds + adjustedPairedDelay;
         }
 
         /// <summary>
@@ -12354,15 +12407,6 @@ namespace SWLOR.Game.Server.Service
         {
             _attackSwingDebts.Remove(attacker);
             _attackSwingDebtsWithoutLimitedReduction.Remove(attacker);
-        }
-
-        private static int ApplyOffhandAttackDelayReduction(uint attacker, int offhandDelay)
-        {
-            if (offhandDelay <= 0)
-                return offhandDelay;
-
-            var reductionPercentage = CalculateOffhandAttackDelayReduction(attacker);
-            return ApplyPercentReduction(offhandDelay, reductionPercentage);
         }
 
         private static int CalculateEquippedWeaponDelayUnits(int rightHandDelay, int leftHandDelay)

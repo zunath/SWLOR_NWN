@@ -25,7 +25,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .HasRecastDelay(RecastGroup.WardenSweep, 30f)
                 .UsesImmediateAuthoredAnimation()
                 .MimicryTechnique(FeatType.WardenSweep, 48, 3)
-                .MimicryUtility();
+                .MimicryUtility()
+                .RemoveSourceOwnedStatusEffectOnPerkRefund(typeof(WardenSweepStatusEffect));
 
             ConfigureSelfStatus(ability, typeof(WardenSweepStatusEffect), 30f, 10);
 

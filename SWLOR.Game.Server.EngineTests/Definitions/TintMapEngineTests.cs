@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using AppearanceType = SWLOR.NWN.API.NWScript.Enum.AppearanceType;
+using ObjectVisualTransform = SWLOR.NWN.API.NWScript.Enum.ObjectVisualTransform;
 using CreaturePart = SWLOR.NWN.API.NWScript.Enum.Creature.CreaturePart;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using ItemAppearanceType = SWLOR.NWN.API.NWScript.Enum.Item.ItemAppearanceType;
@@ -48,10 +50,29 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(249, GetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso), "Pilot chest model");
             var originalHelmetColors = ReadArmorColors(helmet);
             var originalArmorColors = ReadArmorColors(armor);
+            var nativePilot = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(pilot);
+            var originalHead = nativePilot.m_pStats.m_nHeadVariation;
             await RunAssignedAsync(ctx, GetArea(pilot), () => TintMapService.QueueRefresh(pilot));
             await ctx.WaitUntilAsync(() => ReadNativeRows(ctx, pilot).Any(row => row.Material == "helm_114"),
                 5f, "the queued pilot tint refresh");
             var rows = ReadNativeRows(ctx, pilot);
+            ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation,
+                "Helmet114 geometry must render through the head which receives creature material rows.");
+            ctx.AssertEqual(OBJECT_INVALID, nativePilot.m_cAppearance.m_oidHeadItem,
+                "The separate native helmet is suppressed in the replicated appearance.");
+            // Full creature updates send the worn helmet from the inventory unless it is natively hidden.
+            ctx.AssertEqual(1, GetHiddenWhenEquipped(helmet), "The native helmet attachment is hidden from clients.");
+            ctx.Assert(HelmetModelRenderer.IsShownByOwner(helmet), "The owner still shows the helmet.");
+            // The server rebuilds the replicated equipment before every client appearance update.
+            nativePilot.UpdateAppearanceForEquippedItems();
+            ctx.AssertEqual(OBJECT_INVALID, nativePilot.m_cAppearance.m_oidHeadItem,
+                "The native equipment refresh sent to observers keeps the helmet on its render head.");
+            ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation,
+                "The native equipment refresh keeps the render head.");
+            ctx.AssertEqual(originalHead, nativePilot.m_pStats.m_nHeadVariation, "Canonical head remains unchanged.");
+            ctx.AssertEqual((int)originalHead, GetCreatureBodyPart(CreaturePart.Head, pilot),
+                "Appearance editing and persistence still read the canonical head through NWScript.");
+            ctx.AssertEqual(helmet, GetItemInSlot(InventorySlot.Head, pilot), "Helmet remains equipped.");
             AssertNoResetRecords(ctx, rows);
             AssertNativeRow(ctx, rows, "helm_114", "rowcloth1", (704f + 135f + 0.5f) / 2048f);
             AssertNativeRow(ctx, rows, "helm_114", "rowleath1", (880f + 23f + 0.5f) / 2048f);
@@ -61,7 +82,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(originalArmorColors.SequenceEqual(ReadArmorColors(armor)), "Untinted armor palette fields remain authored.");
 
             var selection = TintMapModelResolver.GetCurrentSelections(pilot).Single(s => s.Material.Resref == "helm_114");
-            ctx.Assert(RobeModelRenderer.SupportsRgb(selection), "Helmet RGB editing must remain available.");
+            ctx.Assert(RobeModelRenderer.SupportsRgb(selection) && HelmetModelRenderer.SupportsRgb(selection),
+                "Helmet RGB editing must remain available for a human wearer.");
             var color = new TintMapColor(17, 83, 209);
             var layer = TintMapLayerType.Cloth1;
             var channel = (int)AppearanceArmorColor.Cloth1;
@@ -80,8 +102,89 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AssertNativeRow(ctx, ReadNativeRows(ctx, helmet), "helm_114", "rowcloth1", (704f + 135f + 0.5f) / 2048f);
                 AssertProjectionCleared(ctx, helmet, channel);
             });
+            await RunAssignedAsync(ctx, pilot, () =>
+            {
+                foreach (var dyeLayer in selection.Material.Layers)
+                {
+                    var rgb = new TintMapColor(17, 27, 203);
+                    try
+                    {
+                        TintMapService.SetGlobalItemCustomColor(pilot, new[] { selection }, dyeLayer, rgb, helmet);
+                        AssertNativeRgb(ctx, pilot, "helm_114", dyeLayer, rgb);
+                        AssertNativeRgb(ctx, helmet, "helm_114", dyeLayer, rgb);
+                        ctx.Assert(originalHelmetColors.SequenceEqual(ReadArmorColors(helmet)), "RGB never approximates native dyes.");
+                        ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation, "Picker retains the tintable render path.");
+                    }
+                    finally
+                    {
+                        TintMapService.ResetGlobalItemCustomColor(pilot, new[] { selection }, dyeLayer);
+                    }
+                }
+                try
+                {
+                    HelmetModelRenderer.SetShownByOwner(helmet, false);
+                    TintMapService.RefreshAfterColorChange(pilot);
+                    ctx.AssertEqual(originalHead, nativePilot.m_cAppearance.m_nHeadVariation, "Hide helmet restores the canonical head.");
+                    ctx.AssertEqual(1, GetHiddenWhenEquipped(helmet), "Rendering honors the user's hidden flag.");
+                    ctx.Assert(!HelmetModelRenderer.IsShownByOwner(helmet), "The owner's hide choice is kept.");
+                }
+                finally
+                {
+                    HelmetModelRenderer.SetShownByOwner(helmet, true);
+                    TintMapService.RefreshAfterColorChange(pilot);
+                }
+                ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation, "Show helmet restores the render head.");
+                ctx.AssertEqual(1, GetHiddenWhenEquipped(helmet), "Show helmet hides the native attachment again.");
+
+                // The head path carries the native per-species helmet scale on top of the
+                // creature's own head size, and restores that head size when the helmet hides.
+                const float pilotHelmetScale = 0.85f; // appearance.2da HELMET_SCALE_F, human
+                ctx.Assert(Math.Abs(GetObjectVisualTransform(pilot, ObjectVisualTransform.Scale,
+                        nScope: ObjectVisualTransformDataScopeType.CreatureHead) - pilotHelmetScale) < 0.001f,
+                    "The render head carries the female human helmet scale.");
+                HelmetModelRenderer.SetHeadScale(pilot, 1.1f);
+                ctx.Assert(Math.Abs(HelmetModelRenderer.GetHeadScale(pilot) - 1.1f) < 0.001f,
+                    "Head size reads back as the creature's own value while projected.");
+                ctx.Assert(Math.Abs(GetObjectVisualTransform(pilot, ObjectVisualTransform.Scale,
+                        nScope: ObjectVisualTransformDataScopeType.CreatureHead) - 1.1f * pilotHelmetScale) < 0.001f,
+                    "A head size change while projected keeps the helmet scale.");
+                HelmetModelRenderer.SetShownByOwner(helmet, false);
+                TintMapService.RefreshAfterColorChange(pilot);
+                ctx.Assert(Math.Abs(GetObjectVisualTransform(pilot, ObjectVisualTransform.Scale,
+                        nScope: ObjectVisualTransformDataScopeType.CreatureHead) - 1.1f) < 0.001f,
+                    "Hiding the helmet restores the creature's own head size.");
+                HelmetModelRenderer.SetShownByOwner(helmet, true);
+                HelmetModelRenderer.SetHeadScale(pilot, 1f);
+                TintMapService.RefreshAfterColorChange(pilot);
+
+                // Head models never fall back across race: a wearer without a generated head for
+                // its race keeps the native helmet (presets only) instead of rendering headless.
+                var originalAppearance = GetAppearanceType(pilot);
+                try
+                {
+                    SetCreatureAppearanceType(pilot, AppearanceType.Gnome);
+                    TintMapService.RefreshAfterColorChange(pilot);
+                    ctx.AssertEqual(nativePilot.m_pStats.m_nHeadVariation, nativePilot.m_cAppearance.m_nHeadVariation,
+                        "A race without generated helmet heads keeps its canonical head.");
+                    ctx.AssertEqual(helmet, nativePilot.m_cAppearance.m_oidHeadItem,
+                        "A race without generated helmet heads keeps the native helmet attachment.");
+                    ctx.AssertEqual(0, GetHiddenWhenEquipped(helmet),
+                        "The native helmet is visible to clients again where it cannot render through the head.");
+                    ctx.Assert(!HelmetModelRenderer.SupportsRgb(TintMapModelResolver.GetCurrentSelections(pilot)
+                            .Single(s => s.Material.Resref == "helm_114")),
+                        "RGB is unavailable where the helmet cannot render through the head.");
+                }
+                finally
+                {
+                    SetCreatureAppearanceType(pilot, originalAppearance);
+                    TintMapService.RefreshAfterColorChange(pilot);
+                }
+                ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation, "Restoring the race restores the render head.");
+            });
+            await ctx.DelaySecondsAsync(0.5f);
+            ctx.AssertEqual((ushort)1114, nativePilot.m_cAppearance.m_nHeadVariation, "Appearance projection survives native server updates.");
             ctx.Assert(originalArmorColors.SequenceEqual(ReadArmorColors(armor)), "Helmet RGB never changes armor dyes.");
-            ctx.SetResultDetail("Placed pilot retains authored helmet114 and chest249 dyes after a queued refresh. Server state only; client rendering is not attached.");
+            ctx.SetResultDetail("Helmet114 renders through replicated head1114, keeping its canonical head, equipped item and native dyes; exact picker RGB reaches every used layer and visibility restores the original head. Server state only; client rendering is not attached.");
         }
 
         [EngineTest("Tint NPC spawn installs authored hair and clothing rows", Category = "Tint", TimeoutSeconds = 30f)]
@@ -183,6 +286,159 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetResultDetail($"Three dress-color edit/reset cycles preserved all {originalRows.Count} native rows with no type-zero reset records; unrelated skin, hair, tattoos and clothing stayed unchanged.");
         }
 
+        [EngineTest("Player hair and gear tint edits preserve unrelated material overrides", Category = "Tint", TimeoutSeconds = 30f)]
+        public static async Task PlayerTintEditsPreserveMaterialOverrides(EngineTestContext ctx)
+        {
+            var civilian = await SpawnCivilianAsync(ctx);
+            var hairSelection = TintMapModelResolver.GetCurrentSelections(civilian)
+                .First(selection => selection.GetPaletteSource(TintMapLayerType.Hair) == civilian &&
+                                    selection.Material.Layers.Contains(TintMapLayerType.Hair));
+            var hairColor = new TintMapColor(203, 41, 171);
+            var hairState = TintMapVariable.GetCreatureColorStateName(TintMapLayerType.Hair);
+            var hairMaterialState = TintMapVariable.GetName(hairSelection.Material.Resref, TintMapLayerType.Hair);
+            var unrelatedCreatureUniform = 0.625f;
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
+                TintMapService.ApplyCurrentColors(civilian);
+                SetMaterialShaderUniformVec4(civilian, string.Empty, "textureContrast", unrelatedCreatureUniform);
+                TintMapService.SetCreatureCustomColor(
+                    civilian,
+                    TintMapModelResolver.GetCurrentSelections(civilian),
+                    TintMapLayerType.Hair,
+                    hairColor);
+
+                ctx.AssertEqual(hairColor.ToStoredValue(), GetLocalInt(civilian, hairState),
+                    "The semantic hair color remains stored on the player creature");
+                ctx.AssertEqual(hairColor.ToStoredValue(), GetLocalInt(civilian, hairMaterialState),
+                    "The active hair material retains the persisted custom color");
+                TintMapService.CarryStoredCreatureCustomColors(civilian);
+
+                var rows = ReadNativeRows(ctx, civilian);
+                AssertNoResetRecords(ctx, rows);
+                AssertNativeRow(ctx, rows, string.Empty, "texturecontrast", unrelatedCreatureUniform);
+                AssertNativeRgb(ctx, civilian, string.Empty, TintMapLayerType.Hair, hairColor);
+            });
+
+            var pilot = GetObjectByTag("novapilot");
+            ctx.Assert(GetIsObjectValid(pilot), "The starter-area Shuttle Pilot must exist for the worn-gear check.");
+            var helmet = GetItemInSlot(InventorySlot.Head, pilot);
+            var helmetSelection = TintMapModelResolver.GetCurrentSelections(pilot)
+                .Single(selection => selection.IsWornHelmet && selection.Material.Resref == "helm_114");
+            const float unrelatedHelmetUniform = 0.375f;
+            await RunAssignedAsync(ctx, pilot, () =>
+            {
+                TintMapService.ApplyCurrentColors(pilot);
+                SetMaterialShaderUniformVec4(helmet, "helm_114", "metalShine", unrelatedHelmetUniform);
+                TintMapService.SetColor(
+                    pilot,
+                    helmetSelection,
+                    TintMapLayerType.Cloth1,
+                    new TintMapColor(19, 88, 201));
+                EquippedItemAppearance.Refresh(pilot, helmet, resetShaderOverrides: false);
+
+                var rows = ReadNativeRows(ctx, helmet);
+                AssertNoResetRecords(ctx, rows);
+                AssertNativeRow(ctx, rows, "helm_114", "metalshine", unrelatedHelmetUniform);
+            });
+
+            ctx.SetResultDetail("Hair custom color storage and spawn-style restoration retained its exact RGB, while hair and worn-helmet picker edits, including the equipment appearance refresh, preserved unrelated shader uniform values without reset records.");
+        }
+
+        [EngineTest("Saved player hair and gear tints survive reload and repeated entry refreshes", Category = "Tint", TimeoutSeconds = 45f)]
+        public static async Task SavedPlayerTintStateSurvivesReload(EngineTestContext ctx)
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var player = fixture.Creature;
+            var outfit = GetItemInSlot(InventorySlot.Chest, player);
+            ctx.Assert(GetIsObjectValid(outfit), "The saved player fixture must retain its equipped outfit.");
+            var selections = TintMapModelResolver.GetCurrentSelections(player);
+            var hairSelection = selections.First(selection =>
+                selection.GetPaletteSource(TintMapLayerType.Hair) == player &&
+                selection.Material.Layers.Contains(TintMapLayerType.Hair));
+            var hairColor = new TintMapColor(211, 43, 167);
+            var gearColor = new TintMapColor(31, 192, 86);
+            const int hairPalette = 47;
+            const int clothPalette = 88;
+            var serialized = string.Empty;
+
+            await RunAssignedAsync(ctx, player, () =>
+            {
+                SetColor(player, ColorChannel.Hair, hairPalette);
+                ItemPlugin.SetItemAppearance(
+                    outfit,
+                    ItemAppearanceType.ArmorColor,
+                    (int)AppearanceArmorColor.Cloth1,
+                    clothPalette,
+                    updateCreatureAppearance: true);
+                TintMapService.SetCreatureCustomColor(
+                    player,
+                    selections,
+                    TintMapLayerType.Hair,
+                    hairColor);
+                TintMapService.SetGlobalItemCustomColor(
+                    player,
+                    selections,
+                    TintMapLayerType.Cloth1,
+                    gearColor,
+                    outfit);
+                serialized = ObjectPlugin.Serialize(player);
+            });
+
+            var reloaded = OBJECT_INVALID;
+            await ctx.ExecuteInCreatureContextAsync(player, () => reloaded = ObjectPlugin.Deserialize(serialized));
+            ctx.Assert(GetIsObjectValid(reloaded), "The saved player export must deserialize.");
+            ctx.Track(reloaded);
+            ObjectPlugin.AddToArea(reloaded, ctx.Arena, GetPositionFromLocation(ctx.GetArenaLocation(0.5f, 0f)));
+            await ctx.WaitFrameAsync();
+
+            var reloadedOutfit = GetItemInSlot(InventorySlot.Chest, reloaded);
+            ctx.Assert(GetIsObjectValid(reloadedOutfit), "Reload must retain the equipped outfit instance.");
+            ctx.AssertEqual(hairPalette, GetColor(reloaded, ColorChannel.Hair),
+                "The native hair preset is saved in the player appearance");
+            ctx.AssertEqual(clothPalette,
+                GetItemAppearance(reloadedOutfit, ItemAppearanceType.ArmorColor, (int)AppearanceArmorColor.Cloth1),
+                "The native gear dye is saved in the item appearance");
+            ctx.AssertEqual(hairColor.ToStoredValue(),
+                GetLocalInt(reloaded, TintMapVariable.GetCreatureColorStateName(TintMapLayerType.Hair)),
+                "The exact custom hair color is saved with the player creature");
+            ctx.AssertEqual(gearColor.ToStoredValue(),
+                GetLocalInt(reloadedOutfit, TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Cloth1)),
+                "The exact custom gear color is saved with the equipped item");
+            await RunAssignedAsync(ctx, reloaded, () =>
+                SetMaterialShaderUniformVec4(reloaded, string.Empty, "textureContrast", 0.625f));
+
+            for (var pass = 0; pass < 2; pass++)
+            {
+                await RunAssignedAsync(ctx, reloaded, () =>
+                {
+                    // These are the same full color application and delayed spawn refresh
+                    // used by module entry and player spawn after a saved character is loaded.
+                    TintMapService.ApplyCurrentColors(reloaded, resetShaderOverrides: false);
+                    TintMapService.QueueRefresh(reloaded, resetShaderOverrides: false);
+                });
+                await ctx.DelaySecondsAsync(0.5f);
+            }
+
+            await RunAssignedAsync(ctx, reloaded, () =>
+            {
+                var reloadedSelections = TintMapModelResolver.GetCurrentSelections(reloaded);
+                var reloadedHair = reloadedSelections.First(selection =>
+                    selection.GetPaletteSource(TintMapLayerType.Hair) == reloaded &&
+                    selection.Material.Layers.Contains(TintMapLayerType.Hair));
+                ctx.AssertEqual(hairColor, TintMapService.GetEffectiveDisplayColor(
+                    reloaded, reloadedHair, TintMapLayerType.Hair), "Custom hair RGB after repeated entry refreshes");
+                ctx.AssertEqual(gearColor, TintMapService.GetEffectiveDisplayColor(
+                    reloaded, reloadedSelections.First(selection =>
+                        selection.GetPaletteSource(TintMapLayerType.Cloth1) == reloadedOutfit &&
+                        selection.Material.Layers.Contains(TintMapLayerType.Cloth1)), TintMapLayerType.Cloth1),
+                    "Custom gear RGB after repeated entry refreshes");
+                AssertNoResetRecords(ctx, ReadNativeRows(ctx, reloaded));
+                AssertNativeRow(ctx, ReadNativeRows(ctx, reloaded), string.Empty, "texturecontrast", 0.625f);
+            });
+
+            ctx.SetResultDetail("Native hair/cloth palette IDs, exact custom RGB locals, equipped item tint state, and an unrelated material override survived object export/import and two module-entry/player-spawn-style refresh passes.");
+        }
+
         [EngineTest("Tint Rodian bounty hunter feet and shins use authored leather dye", Category = "Tint", TimeoutSeconds = 30f)]
         public static async Task RodianEquipmentFallbacksInstallAuthoredLeatherRows(EngineTestContext ctx)
         {
@@ -220,7 +476,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual("E", Get2DAString("appearance", "RACE", (int)GetAppearanceType(hunter)),
                         "Placed bounty hunter model race");
                     ctx.AssertEqual(0, (int)GetGender(hunter), "Placed bounty hunter model gender");
-                    ctx.AssertEqual(0, (int)GetPhenoType(hunter), "Placed bounty hunter model phenotype");
+                    // The authored robe renders through its generated root; materials resolve against the base body.
+                    ctx.AssertEqual(0, RobeModelRenderer.GetBasePhenotype(hunter), "Placed bounty hunter base phenotype");
                     var outfit = GetItemInSlot(InventorySlot.Chest, hunter);
                     ctx.AssertEqual("bountyhuntdred", GetResRef(outfit), "Bounty hunter outfit blueprint");
                     ctx.AssertEqual(23,
@@ -260,7 +517,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 });
             }
 
-            ctx.SetResultDetail("Race E male phenotype 0 resolved both feet 247 and shins 249 to canonical human materials; two refreshes installed all four leather2=23 rows without reset records. Server state only; no client renderer is attached.");
+            ctx.SetResultDetail("Race E male base phenotype 0 (robe on its generated root) resolved both feet 247 and shins 249 to canonical human materials; two refreshes installed all four leather2=23 rows without reset records. Server state only; no client renderer is attached.");
         }
 
         [EngineTest("Tint native robe palette preserves authored colors and restores custom edits", Category = "Tint", TimeoutSeconds = 30f)]

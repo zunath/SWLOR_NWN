@@ -26,6 +26,9 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnModulePreload)]
         public static void OnModulePreload()
         {
+            // Stored item migrations run in the cache events below. Install the
+            // legacy property conversion before any of those native item loads.
+            Native.LegacyItemProperties.RegisterHook();
             var serverConfig = DB.Get<ModuleCache>("SWLOR_CACHE") ?? new ModuleCache();
 
             Console.WriteLine("Hooking all module events.");
@@ -541,13 +544,14 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent(
                 "NWNX_ON_BROADCAST_SAFE_PROJECTILE_BEFORE",
                 ScriptName.OnBroadcastSafeProjectileBefore);
+            // NWNX ignores additions until the whitelist has been enabled.
+            EventsPlugin.ToggleIDWhitelist("NWNX_ON_BROADCAST_SAFE_PROJECTILE_TYPE", true);
             foreach (var projectileType in WeaponProjectileTypes)
             {
                 EventsPlugin.AddIDToWhitelist(
                     "NWNX_ON_BROADCAST_SAFE_PROJECTILE_TYPE",
                     (int)projectileType);
             }
-            EventsPlugin.ToggleIDWhitelist("NWNX_ON_BROADCAST_SAFE_PROJECTILE_TYPE", true);
 
             // RunScript Debug Events
             EventsPlugin.SubscribeEvent("NWNX_ON_DEBUG_RUN_SCRIPT_BEFORE", ScriptName.OnDebugRunScriptBefore);

@@ -2,7 +2,7 @@
 
 `SWLOR.Game.Server/ConversationData/*.conversation.json` is the sole source of authored gameplay dialogue. The server embeds these graphs, and the SWLOR Toolset creates and edits them directly. They are not generated build output. Do not recreate matching files in `Module/dlg` or regenerate existing graphs from a legacy DLG.
 
-The only native module conversation is `Module/dlg/dmfi_universal.dlg.json`. DMFI wands start and restart it with native `ActionStartConversation` calls, so it remains packed with the module. Other SWLOR conversations require no physical DLG resource.
+The native module resources are `Module/dlg/dmfi_universal.dlg.json` and the empty `Module/dlg/x0_skill_ctrap.dlg.json` override. The engine opens `x0_skill_ctrap` directly for its default Craft Skills menu; it must remain a physical DLG with no entries, replies, starting links, or end scripts to suppress base-game crafting. A NUI graph cannot override that engine resource. DMFI wands start and restart it with native `ActionStartConversation` calls, so it remains packed with the module. Other SWLOR conversations require no physical DLG resource.
 
 ## Editing and wiring
 

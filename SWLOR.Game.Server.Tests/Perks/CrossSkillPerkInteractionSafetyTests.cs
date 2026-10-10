@@ -134,6 +134,24 @@ public class CrossSkillPerkInteractionSafetyTests
     }
 
     [Test]
+    public void StatusAppliedCategoryRiders_OnlyCountCategoriesFromSuccessfulApplications()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = Read(root, "SWLOR.Game.Server", "Service", "Ability.cs");
+        var applyImpactStatus = ExtractMethod(abilitySource, "private static bool ApplyCombatImpactStatusEffect(");
+        applyImpactStatus.Should().Contain("out StatusEffectCategory appliedStatusCategories");
+        applyImpactStatus.Should().Contain("if (applied)");
+        applyImpactStatus.Should().Contain("appliedStatusCategories |= categories;");
+        abilitySource.Should().Contain("StatusEffect.GetStatusEffect(target, type, activator)?.Categories");
+
+        var combatSource = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var applyStatusRider = ExtractMethod(combatSource, "private static void ApplyStatusAppliedEffects(");
+        applyStatusRider.Should().Contain("(appliedStatusCategories & requiredCategory) == 0");
+        applyStatusRider.Should().NotContain("AbilityAppliedAnyStatusCategory",
+            "declared-but-rejected status types must not satisfy a successful-application rider");
+    }
+
+    [Test]
     public void SecondaryDamage_CannotReenterDirectDamageProcOrReflectionChains()
     {
         var root = FindRepositoryRoot();

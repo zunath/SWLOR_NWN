@@ -1,6 +1,7 @@
 using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -19,7 +20,10 @@ namespace SWLOR.Game.Server.Service
         public const string CoatingPotencyVariable = "POISON_COATING_POTENCY";
 
         private const string NextApplyVariable = "POISON_COATING_NEXT_APPLY";
-        private const int InternalCooldownSeconds = 6;
+        public const int InternalCooldownSeconds = 6;
+
+        // Venom damage per tick a coating deals by tier, before the applier's Poison Bonus.
+        private static readonly int[] CoatingVenomDamageByTier = { 8, 12, 16, 21, 26 };
         private static readonly DateTime _epoch = new(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         [NWNEventHandler(ScriptName.OnSWLORDamage)]
@@ -46,8 +50,19 @@ namespace SWLOR.Game.Server.Service
             var tier = GetLocalInt(weapon, CoatingTierVariable);
             var potency = GetLocalInt(weapon, CoatingPotencyVariable);
             var durationSeconds = GetVenomDurationSeconds(tier);
+            var damagePerTick = GetCoatingVenomDamagePerTick(tier);
 
-            StatusEffect.ApplyStatusEffect(attacker, defender, new VenomStatusEffect(potency), durationSeconds);
+            // Refresh the existing instance so attacks near the six-second boundary cannot
+            // continually replace Venom before its first damage tick.
+            var venom = StatusEffect.GetStatusEffect(defender, typeof(VenomStatusEffect), attacker) as VenomStatusEffect;
+            var applied = venom != null && !venom.IsFlaggedForRemoval
+                ? StatusEffect.RefreshStatusEffectDuration(defender, typeof(VenomStatusEffect), attacker, durationSeconds)
+                : StatusEffect.ApplyStatusEffect(attacker, defender, new VenomStatusEffect(potency, damagePerTick), durationSeconds);
+            if (applied)
+            {
+                venom?.UpdatePotency(damagePerTick, potency);
+                CombatPoint.AddCombatPoint(attacker, defender, SkillType.Espionage);
+            }
 
             var charges = GetLocalInt(weapon, CoatingChargesVariable) - 1;
             if (charges > 0)
@@ -60,6 +75,11 @@ namespace SWLOR.Game.Server.Service
             DeleteLocalInt(weapon, CoatingChargesVariable);
             DeleteLocalInt(weapon, CoatingPotencyVariable);
             SendMessageToPC(attacker, $"The venom coating on {GetName(weapon)} has worn off.");
+        }
+
+        public static int GetCoatingVenomDamagePerTick(int tier)
+        {
+            return CoatingVenomDamageByTier[Math.Clamp(tier, 1, CoatingVenomDamageByTier.Length) - 1];
         }
 
         public static float GetVenomDurationSeconds(int tier)

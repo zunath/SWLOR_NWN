@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
@@ -38,44 +40,61 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            ShowModal("Are you sure you want to submit this broadcast?", async () =>
+            ShowModal("Are you sure you want to submit this broadcast?", () => { _ = SubmitBroadcastAsync(message); });
+        };
+
+        private async Task SubmitBroadcastAsync(string message)
+        {
+            var player = Player;
+            try
             {
                 var url = _appSettings.HoloNetWebhookUrl;
 
                 if (string.IsNullOrWhiteSpace(url))
                 {
-                    SendMessageToPC(Player, ColorToken.Red("ERROR: Unable to send the HoloNet broadcast because server admin has not specified the 'SWLOR_HOLONET_WEBHOOK_URL' environment variable."));
+                    SendMessageToPC(player, ColorToken.Red("ERROR: Unable to send the HoloNet broadcast because server admin has not specified the 'SWLOR_HOLONET_WEBHOOK_URL' environment variable."));
                     return;
                 }
 
-                if (GetGold(Player) < BroadcastPrice)
+                if (GetGold(player) < BroadcastPrice)
                 {
-                    SendMessageToPC(Player, ColorToken.Red("Insufficient credits to make this HoloNet broadcast."));
+                    SendMessageToPC(player, ColorToken.Red("Insufficient credits to make this HoloNet broadcast."));
                     return;
                 }
 
-                var auditAuthorName = $"{GetName(Player)} ({GetPCPlayerName(Player)}) [{GetPCPublicCDKey(Player)}]";
-                AssignCommand(Player, () => TakeGoldFromCreature(BroadcastPrice, Player, true));
+                var auditAuthorName = $"{PlayerName.GetAuditName(player)} ({GetPCPlayerName(player)}) [{GetPCPublicCDKey(player)}]";
+                AssignCommand(player, () => TakeGoldFromCreature(BroadcastPrice, player, true));
 
-                if (!await BackgroundJob.EnqueueDiscordWebhook(url, "HoloNet Broadcast", message, 3447003))
+                var playerId = GetObjectUUID(player);
+                var enqueued = await BackgroundJob.EnqueueDiscordWebhook(url, "HoloNet Broadcast", message, 3447003);
+                await NwTask.SwitchToMainThread();
+
+                if (!GetIsObjectValid(player) || !GetIsPC(player) || GetObjectUUID(player) != playerId)
+                    return;
+
+                if (!enqueued)
                 {
-                    AssignCommand(Player, () => GiveGoldToCreature(Player, BroadcastPrice));
-                    SendMessageToPC(Player, ColorToken.Red("ERROR: Unable to queue HoloNet broadcast. Please notify a DM."));
+                    AssignCommand(player, () => GiveGoldToCreature(player, BroadcastPrice));
+                    SendMessageToPC(player, ColorToken.Red("ERROR: Unable to queue HoloNet broadcast. Please notify a DM."));
                     return;
                 }
 
                 Log.Write(LogGroup.Chat, $"{auditAuthorName} submitted HoloNet broadcast: {message}");
 
-                SendMessageToPC(Player, "HoloNet message broadcasted!");
-                Gui.TogglePlayerWindow(Player, GuiWindowType.HoloNet);
+                SendMessageToPC(player, "HoloNet message broadcasted!");
+                Gui.ClosePlayerWindow(player, GuiWindowType.HoloNet);
 
                 for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
                 {
-                    var displayName = PlayerName.GetChatDisplayName(onlinePlayer, Player);
+                    var displayName = PlayerName.GetChatDisplayName(onlinePlayer, player);
                     SendMessageToPC(onlinePlayer, ColorToken.Custom(displayName + " broadcasts a new HoloNet message: ", 0, 180, 255) + ColorToken.White(message));
                 }
-            });
-        };
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError(ex, "HoloNet broadcast submission failed.");
+            }
+        }
 
         public Action OnClickCancel() => () =>
         {

@@ -357,7 +357,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         PowerCell2StatusEffect = 353,
         PowerCell3StatusEffect = 354,
         PowerSurgeStatusEffect = 355,
-        PrecognitionStatusEffect = 356,
+        DangerSenseStatusEffect = 356,
         PredatorsMark1StatusEffect = 357,
         PredatoryBondStanceBeastStatusEffect = 358,
         PredatoryBondStanceStatusEffect = 359,
@@ -476,6 +476,9 @@ namespace SWLOR.NWN.API.NWScript.Enum
         CleanseOrder1StatusEffect = 473,
         DeadeyeReloadStatusEffect = 474,
         LuckyChamberStatusEffect = 475,
+        BloodFrenzyStatusEffect = 476,
+        SoulAscensionBurstStatusEffect = 477,
+        ChallengeEnmityStatusEffect = 478,
         // End custom status effect icons
     }
 }

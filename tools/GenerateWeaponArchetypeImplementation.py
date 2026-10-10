@@ -310,6 +310,16 @@ def max_range_for_row(row, skill):
         if range_match:
             return float(range_match.group(1))
 
+    if (
+        skill not in RANGED_COMBAT_IMPACT_SKILLS
+        and row["Type"] in {"Combat", "Capstone"}
+        and not is_friendly_target_active(row["Description"])
+        and not is_self_only_active(row["Description"])
+        and not is_area(row["Description"])
+        and not is_queued_weapon_active(row)
+    ):
+        return 7.0
+
     return MAX_RANGE_BY_SKILL.get(skill, 0.0)
 
 FEAT_COLUMN_WIDTHS = [
@@ -988,7 +998,7 @@ def parse_cooldown(description, default=0):
 
 def critical_damage_stat(tab):
     if tab in {"Pistol", "Rifle", "Throwing"}:
-        return "RangedCriticalDamagePercentAdjustment"
+        return "WeaponCriticalDamagePercentAdjustment"
     if tab == "Staff":
         return "StaffCriticalDamagePercentAdjustment"
     return "CriticalDamagePercentAdjustment"
@@ -1112,7 +1122,7 @@ def description_stat_entries(row, base):
         add_stat(stats, "HostileAbilityHitNextAutoAttackNoDelayDurationSeconds", parse_duration(description) or 30)
     if base == "Propagation":
         add_stat(stats, "SourceStatusAutoAttackCycleRequiredCategory", status_category_expression("Venom"))
-        add_stat(stats, "SourceStatusAutoAttackCycleSkillType", skill_expr)
+        add_stat(stats, "SourceStatusAutoAttackCycleSkillType", "(int)SkillType.Invalid")
         add_stat(stats, "SourceStatusAutoAttackCycleRequiredCount", first_int(r"Every (\d+) auto-attack", description) or 3)
         add_stat(stats, "SourceStatusAutoAttackCycleDamage", parse_count(r"additional \+(\d+)(?: Poison)? DMG", description))
         add_stat(stats, "SourceStatusAutoAttackCycleDamageType", "(int)CombatDamageType.Poison")
@@ -1142,7 +1152,7 @@ def description_stat_entries(row, base):
     if base == "Payload Pouch":
         add_stat(stats, "AutoAttackSplashChance", parse_count(r"(\d+)% chance", description))
         add_stat(stats, "AutoAttackSplashDamage", parse_count(r"deal (\d+) Physical DMG", description))
-        add_stat(stats, "AutoAttackSplashSkillType", skill_expr)
+        add_stat(stats, "AutoAttackSplashSkillType", "(int)SkillType.Invalid")
         add_stat(stats, "AutoAttackSplashRadiusMeters", parse_count(r"within (\d+)m", description))
         splash_targets = re.search(r"up to (\d+|one|two|three|four|five|six|seven|eight|nine|ten) other enemies", description, re.IGNORECASE)
         if not splash_targets:
@@ -1179,9 +1189,8 @@ def description_stat_entries(row, base):
         add_stat(stats, "RepeatedTargetDamagePercentPerHit", max(1, maximum // 5))
         add_stat(stats, "RepeatedTargetDamagePercentMax", maximum)
 
-    if "consecutive ranged hit against the same target" in lowered:
-        # "ranged hit" is cross-skill: any ranged weapon builds and benefits, so this uses the
-        # class-gated Ranged* family rather than the exact-skill generic one.
+    if base == "Sustained Fire":
+        # Keep an independent stack channel from Rundown; both accept every weapon family.
         damage = parse_count(r"grants \+(\d+) DMG", description)
         stacks = parse_count(r"up to (\d+) stacks", description)
         if not stacks and "five stacks" in lowered:
@@ -1190,7 +1199,7 @@ def description_stat_entries(row, base):
         add_stat(stats, "RangedRepeatedTargetDamageBonusMax", damage * (stacks or 5))
         add_stat(stats, "RangedRepeatedTargetDamageDurationSeconds", parse_count(r"expire after (\d+) seconds", description))
 
-    if "consecutive melee attack against the same target" in lowered:
+    if base == "Rundown":
         damage = parse_count(r"giving \+(\d+) DMG", description)
         stacks = parse_count(r"up to (\d+) stacks", description)
         if not stacks and "five stacks" in lowered:
@@ -1531,7 +1540,7 @@ def description_stat_entries(row, base):
         add_stat(stats, "RangedAbilityHitNearTargetStatusEffectCleanseTypes", "(int)StatusEffectCleanseType.TreatmentKit1")
         add_stat(stats, "RangedAbilityHitNearTargetStatusEffectResistanceType", "(int)ResistanceType.Trauma")
     if base == "Lucky Chamber":
-        # "Every fourth ranged attack" is cross-skill ranged, mirroring the melee cycle family.
+        # Every fourth auto-attack counts, regardless of weapon family.
         add_stat(stats, "RangedAutoAttackCycleCriticalRateRequiredCount", 4)
         add_stat(stats, "RangedAutoAttackCycleCriticalRatePercentAdjustment", parse_percent(r"gains \+(\d+)% Critical Rate", description))
         add_stat(stats, "RangedAutoAttackCycleCriticalRateTrackerEffectIconType", "(int)EffectIconType.LuckyChamberStatusEffect")
@@ -1545,13 +1554,13 @@ def description_stat_entries(row, base):
         add_stat(stats, "CriticalDamageHighHPTargetThresholdPercent", parse_percent(r"above (\d+)% HP", description))
         add_stat(stats, "CriticalDamageHighHPTargetPercentAdjustment", parse_percent(r"deal \+(\d+)% damage", description))
     if base == "Reload Tempo":
-        add_stat(stats, "CriticalHitLimitedHasteTriggerSkillType", skill_expr)
+        add_stat(stats, "CriticalHitLimitedHasteTriggerSkillType", "(int)SkillType.Invalid")
         add_stat(stats, "CriticalHitLimitedHastePercentAdjustment", parse_percent(r"gain \+(\d+)% Haste", description))
         add_stat(stats, "CriticalHitLimitedHasteDurationSeconds", parse_duration(description) or 30)
         add_stat(stats, "CriticalHitLimitedHasteAttackCount", 2)
         add_stat(stats, "CriticalHitLimitedHasteStatusEffectIcon", "(int)EffectIconType.ReloadTempoStatusEffect")
     if base == "Spotter's Rhythm":
-        add_stat(stats, "SameTargetPressureBuildSkillType", skill_expr)
+        add_stat(stats, "SameTargetPressureBuildSkillType", "(int)SkillType.Invalid")
         add_stat(stats, "SameTargetPressureBuildSeconds", parse_count(r"same target for (\d+) seconds", description) or 12)
         add_stat(stats, "SameTargetPressureGraceSeconds", 6)
         add_stat(stats, "SameTargetPressureReadyDurationSeconds", parse_count(r"gain Spotter's Rhythm for (\d+) seconds", description) or 9)
@@ -1575,7 +1584,7 @@ def description_stat_entries(row, base):
         add_stat(stats, f"{idle_skill_stat_prefix}SkillType", skill_expr)
         add_stat(stats, f"{idle_skill_stat_prefix}RequiredIdleSeconds", parse_count(r"After (\d+) seconds without attacking", description) or 3)
         add_stat(stats, f"{idle_skill_stat_prefix}CriticalDamagePercentAdjustment", parse_percent(r"deals \+(\d+)% damage", description))
-        add_stat(stats, "OpeningAutoAttackSkillType", skill_expr)
+        add_stat(stats, "OpeningAutoAttackSkillType", "(int)SkillType.Invalid")
         add_stat(stats, "OpeningAutoAttackIdleSeconds", parse_count(r"After (\d+) seconds without attacking", description) or 3)
         add_stat(stats, "OpeningAutoAttackCriticalDamagePercentAdjustment", parse_percent(r"deals \+(\d+)% damage", description))
     if base == "Shrapnel Casing":
@@ -1732,16 +1741,16 @@ def description_stat_entries(row, base):
         add_stat(stats, "CriticalStaminaRestoreSkillType", skill_expr)
         add_stat(stats, "CriticalStaminaRestore", parse_count(r"restore (\d+) STM", description))
     if "After landing a critical hit" in description and "quickened" in lowered:
-        add_stat(stats, "CriticalNextAutoAttackNoDelayTriggerSkillType", skill_expr)
-        add_stat(stats, "CriticalNextAutoAttackNoDelaySkillType", skill_expr)
+        add_stat(stats, "CriticalNextAutoAttackNoDelayTriggerSkillType", "(int)SkillType.Invalid")
+        add_stat(stats, "CriticalNextAutoAttackNoDelaySkillType", "(int)SkillType.Invalid")
         add_stat(stats, "CriticalNextAutoAttackNoDelayDurationSeconds", parse_duration(description) or 30)
     if "After landing a critical hit" in description and "gain" in lowered and "Haste" in description:
         add_stat(stats, "CriticalHitSelfHastePercentAdjustment", parse_percent(r"\+(\d+)% Haste", description))
         add_stat(stats, "CriticalHitSelfHasteDurationSeconds", parse_duration(description) or 30)
 
     if "After 3 seconds without attacking" in description:
-        if "ranged attack" in lowered and "hostile ranged ability" not in lowered:
-            add_stat(stats, "OpeningAutoAttackSkillType", skill_expr)
+        if base == "Steady Aim":
+            add_stat(stats, "OpeningAutoAttackSkillType", "(int)SkillType.Invalid")
             add_stat(stats, "OpeningAutoAttackDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
             add_stat(stats, "OpeningAutoAttackIdleSeconds", 3)
         else:
@@ -1824,7 +1833,7 @@ def exact_weapon_stance_stat_entries(row, base):
         return list(stats.items())
 
     if base == "Shadowflow Stance":
-        add_stat(stats, "AutoAttackHamstringSkillType", skill_expr)
+        add_stat(stats, "AutoAttackHamstringSkillType", "(int)SkillType.Invalid")
         add_stat(stats, "AutoAttackHamstringDurationSeconds", parse_duration(description) or 18)
         add_stat(stats, "DefensePercentAdjustment", f"-{parse_percent(r'(?:Defense is reduced|Defense is reduced by|reduces Defense) by (\d+)%', description)}")
         return list(stats.items())
@@ -1926,7 +1935,7 @@ def exact_weapon_stance_stat_entries(row, base):
         add_stat(stats, "AttackDelayReductionPercent", parse_percent(r"\+(\d+)% Haste", description))
         add_stat(stats, "RangedHitSuppressionStackDurationSeconds", parse_duration(description) or 30)
         add_stat(stats, "RangedHitSuppressionStackEvasionPenaltyPercent", 0)
-        add_stat(stats, "RangedCriticalDamagePercentAdjustment", f"-{parse_percent(r'critical damage is reduced by (\d+)%', description)}")
+        add_stat(stats, "WeaponCriticalDamagePercentAdjustment", f"-{parse_percent(r'critical damage is reduced by (\d+)%', description)}")
         return list(stats.items())
 
     if base == "Sniper Stance":
@@ -1952,8 +1961,12 @@ def stance_stat_entries(row):
     skill_expr = skill_type_expression(row)
     base, _ = base_and_level(row["PerkName"])
     exact_stats = exact_weapon_stance_stat_entries(row, base)
+    damage_enmity = parse_percent(r"\+(\d+)% threat from damage dealt", description)
     if exact_stats is not None:
+        if damage_enmity:
+            exact_stats.append(("DamageEnmityPercentAdjustment", damage_enmity))
         return exact_stats
+    add_stat(stats, "DamageEnmityPercentAdjustment", damage_enmity)
 
     add_stat(stats, "AttackPercentAdjustment", parse_percent(r"\+(\d+)% Attack", description))
     add_stat(stats, "ForceAttackPercentAdjustment", parse_percent(r"\+(\d+)% Force Attack", description))
@@ -2605,16 +2618,16 @@ def profile_property_lines(row, level, primary_status):
             add_profile_property("TemporaryHighFPAndStaminaAbilityDamageBonus", high_resource_bonus.group(2))
     if "evading an attack refreshes Snap Roll" in description:
         add_profile_property("TemporaryAvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds", "30")
-        add_profile_property("TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType", skill_type_expression(row))
+        add_profile_property("TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType", "(int)SkillType.Invalid")
         add_profile_property("TemporaryAvoidedAttackNextAutoAttackNoDelayDurationSeconds", "30")
         add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(parse_duration(description) or 45))
-    if "ranged hits add Suppression stacks" in description and base != "Kill Box":
+    if ("ranged hits add Suppression stacks" in description or "weapon hits add Suppression stacks" in description) and base != "Kill Box":
         add_profile_property(
             "TemporaryRangedHitSuppressionStackDurationSeconds",
             str(parse_count(r"stacks lasting (\d+) seconds", description) or 30))
         add_profile_property("TemporaryRangedHitSuppressionStackEvasionPenaltyPercent", "0")
     suppression_evasion_penalty_adjustment = 0
-    if "ranged hits add Suppression stacks" in description or base == "Kill Box":
+    if ("ranged hits add Suppression stacks" in description or "weapon hits add Suppression stacks" in description) or base == "Kill Box":
         suppression_evasion_penalty_adjustment = parse_count(r"additional (\d+)%", description) or 0
         add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(parse_duration(description) or 45))
     if base == "Kill Box":
@@ -3353,7 +3366,7 @@ def generate_perk_definitions(rows, perk_values, feat_values):
                 lines.append("                .AddPerkLevel()")
                 if row["Type"] in ACTIVE_TYPES:
                     lines.append(f"                .GrantsFeat(FeatType.{choose_active_feat(row, feat_values)})")
-                    if row["CharacterType"] != "Force":
+                    if row["CharacterType"] != "Force" and row["Type"] != "Capstone":
                         lines.append(f"                .DroidAISlots({level})")
                 elif index == 0:
                     trait_feat = choose_trait_feat(base, feat_values)

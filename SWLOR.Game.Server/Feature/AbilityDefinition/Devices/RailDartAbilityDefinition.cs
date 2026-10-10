@@ -16,6 +16,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public sealed class RailDartAbilityDefinition : IAbilityListDefinition
     {
+        private const int Rank1BaseDamage = 10;
+        private const int Rank2BaseDamage = 20;
+        private const int Rank3BaseDamage = 30;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -103,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 SkillType.Devices,
-                12,
+                Rank1BaseDamage,
                 12,
                 typeof(BleedStatusEffect),
                 false,
@@ -124,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 SkillType.Devices,
-                16,
+                Rank2BaseDamage,
                 12,
                 typeof(BleedStatusEffect),
                 false,
@@ -145,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 SkillType.Devices,
-                20,
+                Rank3BaseDamage,
                 12,
                 typeof(BleedStatusEffect),
                 false,

@@ -243,7 +243,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.IronWallStance1)
                 .DroidAISlots(1)
-                .Description("While active, grants +25% Defense, +20% Force Defense, and +30% Enmity generation, but reduces Attack by 25%.")
+                .Description("While active, grants +25% Defense, +20% Force Defense, and +30% Enmity generation, but reduces Attack by 25%. You generate +100% threat from damage dealt, before general Enmity modifiers.")
                 .Price(5)
                 .RequirementSkill(SkillType.Katar, 40);
         }
@@ -271,7 +271,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AdamantineGuard1)
-                .DroidAISlots(1)
                 .Description("For 45 seconds, gain +25 Guard. Guarded hits reduce damage by an additional 20% and generate 75% more enmity.")
                 .Price(6)
                 .RequirementSkill(SkillType.Katar, 50)
@@ -471,7 +470,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ScrapheapLockdown1)
-                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 25 to enemies within 5m of you. Enemies hit suffer Dazed and Hamstring for 30 seconds. Affects up to 5 enemies.")
                 .Price(6)
                 .RequirementSkill(SkillType.Katar, 50)

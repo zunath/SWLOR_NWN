@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         };
         private static readonly Dictionary<int, int> _saberstaffDamage = new()
         {
-            [1] = 7, [2] = 11, [3] = 15, [4] = 19, [5] = 25, [ChiroTier] = 29
+            [1] = 5, [2] = 9, [3] = 13, [4] = 17, [5] = 21, [ChiroTier] = 24
         };
 
         private static readonly Dictionary<int, int> _requiredSkill = new()

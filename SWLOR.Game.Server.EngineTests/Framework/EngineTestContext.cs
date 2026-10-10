@@ -155,12 +155,26 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         }
 
         /// <summary>
-        /// Sets an NPC's current FP and Stamina pools. NPC max FP/STM come from skin item
-        /// properties (zero for stock blueprints) plus stat adjustments, and both spawn
-        /// initialization and heartbeat regen clamp the current-value locals to that max -
-        /// so the max is raised via temporary stat modifiers first, then the pools are set.
-        /// Call this AFTER the creature's spawn scripts have run (one frame after spawning),
-        /// or spawn initialization will overwrite the pools with the unraised max.
+        /// Sets player or NPC resource pools through their respective persistence paths.
+        /// </summary>
+        public void SetResources(uint creature, int fp, int stamina)
+        {
+            if (GetIsPC(creature))
+            {
+                var record = DB.Get<Entity.Player>(GetObjectUUID(creature));
+                record.MaxFP = fp;
+                record.MaxStamina = stamina;
+                record.FP = fp;
+                record.Stamina = stamina;
+                DB.Set(record);
+                return;
+            }
+            SetNPCResources(creature, fp, stamina);
+        }
+
+        /// <summary>
+        /// Raises an NPC's effective maximum pools before setting current FP and Stamina.
+        /// Call after spawn initialization, which otherwise overwrites these pools.
         /// </summary>
         public void SetNPCResources(uint npc, int fp, int stamina)
         {

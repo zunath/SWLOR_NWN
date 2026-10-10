@@ -31,6 +31,80 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static readonly List<(uint Weapon, CombatDamageType Type, DateTime Time)> _hits = new();
         private static readonly List<uint> _itemHits = new();
 
+        [EngineTest("Twinblade commanded attacks use both ends with Dual Wield delay reduction", Category = "DoubleWeapon", TimeoutSeconds = 30f)]
+        public static Task TwinbladeAttackCadence(EngineTestContext ctx) => AssertDoubleWeaponAttackCadence(ctx, "b_twinblade");
+
+        [EngineTest("Saberstaff commanded attacks use both ends with Dual Wield delay reduction", Category = "DoubleWeapon", TimeoutSeconds = 30f)]
+        public static Task SaberstaffAttackCadence(EngineTestContext ctx) => AssertDoubleWeaponAttackCadence(ctx, "trn_saberstaff_1");
+
+        private static async Task AssertDoubleWeaponAttackCadence(EngineTestContext ctx, string resref)
+        {
+            var attacker = ctx.SpawnCreature("nw_bandit001", -0.5f);
+            var target = ctx.SpawnCreature("nw_rat001", 1f);
+            await ctx.WaitFrameAsync();
+            var weapon = await ctx.EquipItemAsync(attacker, resref, InventorySlot.RightHand);
+            var rawDelay = 0;
+            var effectiveDelay = 0;
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+                {
+                    ConfigureWeapon(weapon, CombatDamageType.Ice);
+                    ctx.SuppressNPCNaturalRegen(target);
+                    Stat.SetNPCMaxHitPoints(target, 20000, true);
+                    ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
+                    TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 60f);
+                    ctx.MakeHostile(target);
+                    ctx.Assert(!GetIsObjectValid(GetItemInSlot(InventorySlot.LeftHand, attacker)), "A double weapon has no separately equipped left-hand weapon");
+                    ctx.Assert(EquipmentPredicates.HasDualWield(attacker), "Double weapons are eligible for Dual Wield");
+                    ctx.AssertEqual(weapon, EquipmentPredicates.GetOffhandAttackWeapon(attacker), "The second striking end is the same equipped item");
+                    var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attacker).AsNWSCreature();
+                    ctx.AssertEqual(weapon, native.m_pcCombatRound.GetCurrentAttackWeapon(2)?.m_idSelf ?? OBJECT_INVALID,
+                        "The native off-hand roll selects the double weapon, not unarmed damage");
+                    var delayUnits = 0;
+                    for (var ip = GetFirstItemProperty(weapon); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(weapon))
+                        if (GetItemPropertyType(ip) == ItemPropertyType.Delay)
+                            delayUnits += GetItemPropertyCostTableValue(ip) * 10;
+                    rawDelay = Combat.CalculateAttackDelay(attacker);
+                    ctx.AssertEqual(Combat.CalculateAttackDelayMilliseconds(delayUnits, delayUnits, 0, 0), rawDelay,
+                        "Both ends pay the same paired-weapon delay budget as two separate weapons");
+                    ctx.SetNPCPerkLevel(attacker, PerkType.DualWield, 3);
+                    ctx.AssertEqual(30, Combat.CalculateOffhandAttackDelayReduction(attacker), "Dual Wield III applies to the second end");
+                    var masteredDelay = Combat.CalculateAttackDelay(attacker);
+                    ctx.Assert(masteredDelay < rawDelay, "Dual Wield III improves the shared cycle cadence");
+                    ctx.AssertEqual(Combat.CalculateAttackDelayMilliseconds(delayUnits, delayUnits, 0, 30), masteredDelay,
+                        "The perk reduces only the second end's delay");
+                    rawDelay = masteredDelay;
+                    effectiveDelay = Combat.CalculateEffectiveAttackDelay(rawDelay);
+                    ctx.Assert(effectiveDelay > Combat.BaseAttackDelayMilliseconds, "The ordinary fixture does not batch hasted rolls");
+                });
+                await ctx.WaitFrameAsync();
+                _observedAttacker = attacker;
+                _hits.Clear();
+                Combat.SetAutoAttackHitResolutionOverride(true);
+                AssignCommand(attacker, () => ActionAttack(target));
+                await ctx.WaitUntilAsync(() => _hits.Count > 0, 5f, "the first double-weapon attack");
+                var firstHit = _hits[0].Time;
+                await ctx.WaitUntilAsync(() => _hits.Count >= 2, 3f, "the second striking end");
+                ctx.AssertEqual(weapon, _hits[0].Weapon, "The first end uses the equipped double weapon");
+                ctx.AssertEqual(weapon, _hits[1].Weapon, "The second end uses that item's full weapon profile");
+                ctx.Assert((_hits[1].Time - firstHit).TotalMilliseconds >= 1000,
+                    $"The second real damage roll waits for the first swing and its ready transition (observed {(_hits[1].Time - firstHit).TotalMilliseconds:0}ms, cycle {effectiveDelay}ms)");
+                await ctx.DelaySecondsAsync(Math.Max(0f, effectiveDelay / 1000f - 1.5f));
+                ctx.AssertEqual(2, _hits.Count, "Only the two budgeted rolls occur inside the first ordinary delay cycle");
+                await ctx.WaitUntilAsync(() => _hits.Count >= 3, 5f, "the next double-weapon cycle");
+                var gap = (_hits[2].Time - firstHit).TotalMilliseconds;
+                ctx.Assert(gap >= effectiveDelay - 100, "The next cycle waits for the paired delay gate");
+                ctx.Log($"{resref}: two rolls per cycle; raw delay {rawDelay}ms, effective delay {effectiveDelay}ms, observed cycle gap {gap:0}ms.");
+            }
+            finally
+            {
+                AssignCommand(attacker, () => ClearAllActions());
+                WeaponAttackCycle.CancelPendingHand(attacker);
+                ResetObservation();
+            }
+        }
+
         [EngineTest("Dual wield commanded animation sequence delivers main then off before the next cycle", Category = "DualWield", TimeoutSeconds = 60f)]
         public static Task CommandedAnimationSequence(EngineTestContext ctx) => AssertCommandedAnimationSequence(ctx, 23);
 
@@ -659,9 +733,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(mainScriptBaseline + 5, Stat.GetAccuracy(attacker, main, AbilityType.Invalid, SkillType.Vibroknife), "Character-sheet main-hand accuracy agrees");
                 ctx.AssertEqual(offScriptBaseline + 10, Stat.GetAccuracy(attacker, off, AbilityType.Invalid, SkillType.Vibroknife), "Character-sheet off-hand accuracy agrees");
 
-                ApplyEffectToObject(DurationType.Temporary, EffectAccuracyIncrease(2), attacker, 30f);
-                ctx.AssertEqual(mainBaseline + 15, Stat.GetAccuracyNative(native, mainWeapon), "Ordinary attack buffs still affect main-hand accuracy");
-                ctx.AssertEqual(offBaseline + 20, Stat.GetAccuracyNative(native, offWeapon), "Ordinary attack buffs still affect off-hand accuracy");
+                TemporaryStatModifier.Add(attacker, StatType.Accuracy, 10, 30f);
+                ctx.AssertEqual(mainBaseline + 15, Stat.GetAccuracyNative(native, mainWeapon), "Stat-driven accuracy buffs affect the main hand once");
+                ctx.AssertEqual(offBaseline + 20, Stat.GetAccuracyNative(native, offWeapon), "Stat-driven accuracy buffs affect the off hand once");
+                ctx.AssertEqual(mainScriptBaseline + 15, Stat.GetAccuracy(attacker, main, AbilityType.Invalid, SkillType.Vibroknife), "Character-sheet main-hand accuracy includes the buff");
+                ctx.AssertEqual(offScriptBaseline + 20, Stat.GetAccuracy(attacker, off, AbilityType.Invalid, SkillType.Vibroknife), "Character-sheet off-hand accuracy includes the buff");
             });
         }
 

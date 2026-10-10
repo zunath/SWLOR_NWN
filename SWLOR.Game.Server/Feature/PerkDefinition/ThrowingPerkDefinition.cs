@@ -82,10 +82,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PayloadPouchTrait)
-                .Description("Thrown auto-attacks have a 15% chance to deal 8 Physical DMG to the target and up to four other enemies within 3m of the primary target. This splash cannot trigger other on-hit effects.")
+                .Description("Auto-attacks have a 15% chance to deal 8 Physical DMG to the target and up to four other enemies within 3m of the primary target. This splash cannot trigger other on-hit effects.")
                 .IncreasesStat(StatType.AutoAttackSplashChance, 15)
                 .IncreasesStat(StatType.AutoAttackSplashDamage, 8)
-                .IncreasesStat(StatType.AutoAttackSplashSkillType, (int)SkillType.Throwing)
+                .IncreasesStat(StatType.AutoAttackSplashSkillType, (int)SkillType.Invalid)
                 .IncreasesStat(StatType.AutoAttackSplashRadiusMeters, 3)
                 .IncreasesStat(StatType.AutoAttackSplashMaximumTargets, 5)
                 .Price(2)
@@ -237,7 +237,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RainOfSteel1)
-                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 20 to enemies within 5m of you. For 45 seconds, thrown area abilities leave fragmentation zones that deal 8 physical DMG every 6 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Throwing, 50)
@@ -438,7 +437,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PerfectFlurry1)
-                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 30. Bleeding targets take +45 DMG and spread Bleed to enemies within 5m for 45 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Throwing, 50)

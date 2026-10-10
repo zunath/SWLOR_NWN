@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatusEffectCleanseType.TreatmentKit2 |
             StatusEffectCleanseType.SoothePet;
         public override float Frequency => 6f;
+        public override bool PreservesTickScheduleOnRefresh => true;
 
         protected override void Apply(uint creature, int durationTicks)
         {
@@ -47,6 +48,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Remove(uint creature)
         {
+            if (IsBeingReplaced)
+                return;
+
             var source = GetIsObjectValid(Source) ? Source : creature;
             StatusEffect.RemoveStatusEffect(creature, typeof(PoisonDefensePenaltyStatusEffect), source, false);
         }

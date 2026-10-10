@@ -21,7 +21,7 @@ public class IndependentBuffWindowTests
         (StatType.AbilityRestoredFPHasteDurationSeconds,
             "Energized Forms and Flow of the Maelstrom each author 30 seconds of Haste"),
         (StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds,
-            "Soul Ascension and Soul Sacrifice each author a 30-second HP-spend window")
+            "Soul Sacrifice authors a 30-second HP-spend window")
     };
 
     [TestCaseSource(nameof(AuthoredWindows))]
@@ -50,10 +50,8 @@ public class IndependentBuffWindowTests
     }
 
     [Test]
-    public void HeavyVibrobladeHitPointSpendBuffs_BothAuthorThirtySeconds()
+    public void SoulSacrificeHitPointSpendBuff_AuthorsThirtySeconds()
     {
-        WindowOf<HeavyVibrobladePerkDefinition>("SoulAscension", PerkType.SoulAscension,
-            StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds).Should().Be(30);
         WindowOf<HeavyVibrobladePerkDefinition>("SoulSacrifice", PerkType.SoulSacrifice,
             StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds).Should().Be(30);
     }

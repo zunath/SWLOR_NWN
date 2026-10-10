@@ -446,6 +446,21 @@ namespace SWLOR.Game.Server.Service
             recipeDetails.Add(string.Empty);
             recipeDetailColors.Add(GuiColor.Green);
 
+            if (detail.EffectLines.Count > 0)
+            {
+                recipeDetails.Add("[EFFECT]");
+                recipeDetailColors.Add(GuiColor.Cyan);
+
+                foreach (var line in detail.EffectLines)
+                {
+                    recipeDetails.Add(line);
+                    recipeDetailColors.Add(GuiColor.White);
+                }
+
+                recipeDetails.Add(string.Empty);
+                recipeDetailColors.Add(GuiColor.White);
+            }
+
             recipeDetails.Add("[PROPERTIES]");
             recipeDetailColors.Add(GuiColor.Cyan);
             var tempStorage = GetObjectByTag("TEMP_ITEM_STORAGE");

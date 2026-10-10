@@ -844,6 +844,67 @@ namespace SWLOR.Game.Server.Service.AbilityService
 
         [RecastGroup("Introduction", "Introduction", false)]
         Introduction = 521,
+
+        [RecastGroup("High Slot 1", "High Slot 1", true)]
+        ShipModule1 = 554,
+
+        [RecastGroup("High Slot 2", "High Slot 2", true)]
+        ShipModule2 = 555,
+
+        [RecastGroup("High Slot 3", "High Slot 3", true)]
+        ShipModule3 = 556,
+
+        [RecastGroup("High Slot 4", "High Slot 4", true)]
+        ShipModule4 = 557,
+
+        [RecastGroup("High Slot 5", "High Slot 5", true)]
+        ShipModule5 = 558,
+
+        [RecastGroup("High Slot 6", "High Slot 6", true)]
+        ShipModule6 = 559,
+
+        [RecastGroup("High Slot 7", "High Slot 7", true)]
+        ShipModule7 = 560,
+
+        [RecastGroup("High Slot 8", "High Slot 8", true)]
+        ShipModule8 = 561,
+
+        [RecastGroup("High Slot 9", "High Slot 9", true)]
+        ShipModule9 = 562,
+
+        [RecastGroup("High Slot 10", "High Slot 10", true)]
+        ShipModule10 = 563,
+
+        [RecastGroup("Low Slot 1", "Low Slot 1", true)]
+        ShipModule11 = 564,
+
+        [RecastGroup("Low Slot 2", "Low Slot 2", true)]
+        ShipModule12 = 565,
+
+        [RecastGroup("Low Slot 3", "Low Slot 3", true)]
+        ShipModule13 = 566,
+
+        [RecastGroup("Low Slot 4", "Low Slot 4", true)]
+        ShipModule14 = 567,
+
+        [RecastGroup("Low Slot 5", "Low Slot 5", true)]
+        ShipModule15 = 568,
+
+        [RecastGroup("Low Slot 6", "Low Slot 6", true)]
+        ShipModule16 = 569,
+
+        [RecastGroup("Low Slot 7", "Low Slot 7", true)]
+        ShipModule17 = 570,
+
+        [RecastGroup("Low Slot 8", "Low Slot 8", true)]
+        ShipModule18 = 571,
+
+        [RecastGroup("Low Slot 9", "Low Slot 9", true)]
+        ShipModule19 = 572,
+
+        [RecastGroup("Low Slot 10", "Low Slot 10", true)]
+        ShipModule20 = 573,
+
     }
 
     public class RecastGroupAttribute : Attribute

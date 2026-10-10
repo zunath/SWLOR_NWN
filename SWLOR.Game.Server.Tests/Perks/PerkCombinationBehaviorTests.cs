@@ -41,7 +41,7 @@ public class PerkCombinationBehaviorTests
     }
 
     [Test]
-    public void PayloadPouch_IsAThrowingSplashAndDoesNotIncreaseSavageReflexesChance()
+    public void PayloadPouch_WorksWithEveryWeaponAndDoesNotIncreaseSavageReflexesChance()
     {
         var pouch = PerkSource<ThrowingPerkDefinition>("PayloadPouch", PerkType.PayloadPouch);
         var reflexes = PerkSource<VibrobladePerkDefinition>("SavageReflexes", PerkType.SavageReflexes);
@@ -50,7 +50,7 @@ public class PerkCombinationBehaviorTests
         pouch[StatType.AutoAttackSplashRadiusMeters].Should().Be(3);
         pouch[StatType.AutoAttackSplashMaximumTargets].Should().Be(5);
         foreach (var skill in Enum.GetValues<SkillType>())
-            Combat.CanTriggerAutoAttackSplash(pouch, skill).Should().Be(skill == SkillType.Throwing);
+            Combat.CanTriggerAutoAttackSplash(pouch, skill).Should().Be(Combat.IsWeaponSkillType(skill));
         Combat.CalculateAutoAttackProcDamage(new[] { pouch, reflexes }, () => 16).Should().Be(0);
         Combat.CalculateAutoAttackProcDamage(new[] { pouch, reflexes }, () => 15).Should().Be(10);
     }

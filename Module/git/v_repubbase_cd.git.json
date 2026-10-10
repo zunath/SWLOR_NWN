@@ -2276,11 +2276,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 33
+                      "value": 48
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 30
+                      "value": 100
                     },
                     "Param1": {
                       "type": "byte",
@@ -2292,7 +2292,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 100
+                      "value": 131
                     },
                     "Subtype": {
                       "type": "word",
@@ -5794,11 +5794,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 33
+                      "value": 48
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 30
+                      "value": 100
                     },
                     "Param1": {
                       "type": "byte",
@@ -5810,7 +5810,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 100
+                      "value": 131
                     },
                     "Subtype": {
                       "type": "word",
@@ -10105,11 +10105,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 33
+                      "value": 48
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 30
+                      "value": 100
                     },
                     "Param1": {
                       "type": "byte",
@@ -10121,7 +10121,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 100
+                      "value": 131
                     },
                     "Subtype": {
                       "type": "word",
@@ -152713,7 +152713,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A basic uniform given out to all Republic Troopers enlisted in the military."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -154761,7 +154763,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Explosives are required to use many of the Devices perks."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -154901,7 +154905,9 @@
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Explosives are required to use many of the Devices perks."
+                      }
                     },
                     "Identified": {
                       "type": "byte",

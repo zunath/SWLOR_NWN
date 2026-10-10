@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
+[NonParallelizable]
 public sealed class PassengerShuttleInteriorTests
 {
     [Test]
@@ -57,6 +58,38 @@ public sealed class PassengerShuttleInteriorTests
         var metadata = ReadResource("gic", "shuttle");
         foreach (var list in new[] { "Placeable List", "WaypointList" })
             Objects(metadata, list).Count().Should().Be(Objects(contents, list).Count());
+    }
+
+    [Test]
+    public void FlightTemplateDoesNotCloneAnExtraPilot()
+    {
+        Objects(ReadResource("git", "shuttle"), "Creature List").Should().BeEmpty();
+        Objects(ReadResource("gic", "shuttle"), "Creature List").Should().BeEmpty();
+    }
+
+    [Test]
+    public void FlightTemplateIsExcludedFromPersistentLocationAreaCache()
+    {
+        var cache = (Dictionary<string, uint>)typeof(Area)
+            .GetProperty("AreasByResref", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetValue(null)!;
+        var original = new Dictionary<string, uint>(cache);
+        try
+        {
+            cache["shuttle"] = 123;
+            cache["shuttle_test_landing"] = 456;
+
+            Area.RemoveInstancesFromCache();
+
+            cache.Should().NotContainKey("shuttle");
+            cache["shuttle_test_landing"].Should().Be(456);
+        }
+        finally
+        {
+            cache.Clear();
+            foreach (var entry in original)
+                cache.Add(entry.Key, entry.Value);
+        }
     }
 
     private static IEnumerable<JObject> Objects(JObject resource, string list) =>

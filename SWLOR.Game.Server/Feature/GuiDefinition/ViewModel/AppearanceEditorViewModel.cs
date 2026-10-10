@@ -902,6 +902,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _target = initialPayload.Target;
             }
 
+            if (!RacialAppearanceRegistry.TryGet(GetAppearanceType(_target), out _))
+            {
+                CloseForUnsupportedAppearance();
+                return;
+            }
+
             _colorTarget = ColorTarget.Global;
             _selectedColorChannel = AppearanceArmorColor.Leather1;
             _selectedTabId = AppearanceTabId;
@@ -1745,6 +1751,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return OBJECT_INVALID;
         }
 
+        private void CloseForUnsupportedAppearance()
+        {
+            // Bind uses the possessed creature as Player, but the DM owns the window cache.
+            var owner = GetIsDMPossessed(Player) ? GetMaster(Player) : Player;
+            SendMessageToPC(owner, "This creature's appearance cannot be customized.");
+            Gui.ClosePlayerWindow(owner, GuiWindowType.AppearanceEditor, Player);
+        }
+
         private void LoadBodyParts()
         {
             var appearanceType = GetAppearanceType(_target);
@@ -1752,7 +1766,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (!RacialAppearanceRegistry.TryGet(appearanceType, out var appearance))
             {
-                Gui.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
+                CloseForUnsupportedAppearance();
                 return;
             }
 
@@ -2013,7 +2027,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var appearanceType = GetAppearanceType(_target);
             if (!RacialAppearanceRegistry.TryGet(appearanceType, out var appearance))
             {
-                Gui.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
+                CloseForUnsupportedAppearance();
                 return;
             }
 
@@ -2035,7 +2049,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var appearanceType = GetAppearanceType(_target);
             if (!RacialAppearanceRegistry.TryGet(appearanceType, out var appearance))
             {
-                Gui.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
+                CloseForUnsupportedAppearance();
                 return;
             }
 
@@ -2058,7 +2072,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var appearanceType = GetAppearanceType(_target);
             if (!RacialAppearanceRegistry.TryGet(appearanceType, out var appearance))
             {
-                Gui.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
+                CloseForUnsupportedAppearance();
                 return;
             }
 
@@ -2084,7 +2098,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var appearanceType = GetAppearanceType(_target);
             if (!RacialAppearanceRegistry.TryGet(appearanceType, out var appearance))
             {
-                Gui.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
+                CloseForUnsupportedAppearance();
                 return;
             }
 

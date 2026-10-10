@@ -40,7 +40,7 @@ public class ForceWeaponEnhancementMigrationTests
     }
 
     [Test]
-    public void RetiredRecipesAreInactiveAndKnowledgeMovesToExistingDmgRecipesOnce()
+    public void RetiredRecipesAreRemovedAndKnowledgeMovesToExistingDmgRecipesOnce()
     {
         var recipes = new EnhancementRecipes().BuildRecipes();
         var player = new Player("force-enhancement-test");
@@ -49,7 +49,7 @@ public class ForceWeaponEnhancementMigrationTests
         foreach (var recipe in new[] { RecipeType.WeaponEnhancementDMGForce1,
                      RecipeType.WeaponEnhancementDMGForce2, RecipeType.WeaponEnhancementDMGForce3 })
         {
-            recipes[recipe].IsActive.Should().BeFalse();
+            recipes.Should().NotContainKey(recipe);
             recipes[ForceWeaponEnhancementMigration.GetReplacementRecipe(recipe)].IsActive.Should().BeTrue();
             player.UnlockedRecipes[recipe] = date;
             player.CraftedRecipes[recipe] = date;

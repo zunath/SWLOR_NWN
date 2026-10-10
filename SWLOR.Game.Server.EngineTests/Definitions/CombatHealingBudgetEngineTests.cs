@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             using (Combat.BeginDamageDerivedHealing(source, target))
             {
-                ctx.AssertEqual(60, Combat.ApplyDamageDerivedHealing(source, 684, 25), "critical passive is capped after healing bonuses");
+                ctx.AssertEqual(60, Combat.ApplyDamageDerivedHealing(source, 684, 25), "ordinary passive is capped after healing bonuses");
                 ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 8), "another passive cannot refill the same hit");
                 ctx.AssertEqual(150, Combat.ApplyDamageDerivedHealing(source, 684, 40, true), "active drain keeps its separate allowance");
                 ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 40, true), "one hit cannot repeat the active allowance");
@@ -70,6 +70,124 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             ctx.AssertEqual(121, GetCurrentHitPoints(baseline), "six ordinary hits retain the full 120 HP of 8% lifesteal");
             ctx.AssertEqual(241, GetCurrentHitPoints(ascended), "Soul Ascension doubles recovery to 240 HP across the same hits");
+        }
+
+        [EngineTest("Vampiric Fury adds recovery to stacked lifesteal while sharing its rolling budget", Category = "CombatHealing", TimeoutSeconds = 20f)]
+        public static async Task CriticalStackedSustain(EngineTestContext ctx)
+        {
+            var baseline = ctx.SpawnCreature("civilian", 1f);
+            var criticalFirst = ctx.SpawnCreature("civilian", 2f);
+            var passiveFirst = ctx.SpawnCreature("civilian", 3f);
+            var target = ctx.SpawnCreature("civilian", 4f);
+            await ctx.DelaySecondsAsync(1f);
+            Prepare(ctx, target, 1000, 1000);
+            foreach (var source in new[] { baseline, criticalFirst, passiveFirst })
+            {
+                Prepare(ctx, source, 1000, 1);
+                CreaturePlugin.SetRawAbilityScore(source, AbilityType.Might, 26);
+                ctx.SetNPCPerkLevel(source, PerkType.LifeSiphon, 1);
+                ctx.AssertEqual(8, Stat.GetStatAdjustment(source, StatType.LowHPDamageDealtHPPercentRestore),
+                    "Life Siphon supplies its authored 8% recovery");
+                ctx.Assert(StatusEffect.ApplyStatusEffect(source, source, typeof(SoulAscensionBurstStatusEffect), 45f),
+                    "Soul Ascension applies its real lifesteal buff");
+            }
+            foreach (var source in new[] { criticalFirst, passiveFirst })
+            {
+                ctx.SetNPCPerkLevel(source, PerkType.VampiricFury, 1);
+                ctx.AssertEqual(25, Stat.GetStatAdjustment(source, StatType.CriticalHPPercentOfDamageRestore),
+                    "Vampiric Fury reaches its authored 25% recovery at 26 MGT");
+                ctx.AssertEqual(8, Stat.GetStatAdjustment(source, StatType.CriticalHPPercentOfDamageRestoreCooldownSeconds),
+                    "Vampiric Fury retains its eight-second cooldown");
+            }
+            TemporaryStatModifier.Add(passiveFirst, StatType.HealingReceivedPercentAdjustment, 35, 30f);
+            using (Combat.BeginDamageDerivedHealing(baseline, target))
+                Combat.ApplyDamageDealtEffects(baseline, target, 684, SkillType.HeavyVibroblade,
+                    CombatDamageType.Physical, isAbilityDamage: true);
+            using (Combat.BeginDamageDerivedHealing(criticalFirst, target))
+            {
+                Combat.ApplyCriticalHitEffects(criticalFirst, target, 684, 1);
+                ctx.AssertEqual(121, GetCurrentHitPoints(criticalFirst), "the critical proc uses only its separate 120-HP allowance");
+                Combat.ApplyDamageDealtEffects(criticalFirst, target, 684, SkillType.HeavyVibroblade,
+                    CombatDamageType.Physical, isAbilityDamage: true);
+            }
+            using (Combat.BeginDamageDerivedHealing(passiveFirst, target))
+            {
+                Combat.ApplyDamageDealtEffects(passiveFirst, target, 684, SkillType.HeavyVibroblade,
+                    CombatDamageType.Physical, isAbilityDamage: true);
+                Combat.ApplyCriticalHitEffects(passiveFirst, target, 684, 1);
+            }
+            ctx.AssertEqual(61, GetCurrentHitPoints(baseline), "ordinary stacked lifesteal heals 60 HP");
+            ctx.AssertEqual(181, GetCurrentHitPoints(criticalFirst), "critical healing adds 120 HP alongside ordinary lifesteal");
+            ctx.AssertEqual(181, GetCurrentHitPoints(passiveFirst), "reversed trigger order and healing bonuses preserve the same caps");
+
+            using (Combat.BeginDamageDerivedHealing(criticalFirst, target))
+            {
+                Combat.ApplyCriticalHitEffects(criticalFirst, target, 684, 1);
+                ctx.AssertEqual(181, GetCurrentHitPoints(criticalFirst), "another critical hit cannot heal during the eight-second cooldown");
+                Combat.ApplyDamageDealtEffects(criticalFirst, target, 684, SkillType.HeavyVibroblade,
+                    CombatDamageType.Physical, isAbilityDamage: true);
+            }
+            ctx.AssertEqual(241, GetCurrentHitPoints(criticalFirst), "cooldown prevents another proc while ordinary healing spends the last 60 HP");
+            using (Combat.BeginDamageDerivedHealing(criticalFirst, target))
+                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(criticalFirst, 684, 25),
+                    "critical and ordinary healing together exhaust the shared 240-HP rolling budget");
+
+            await ctx.DelaySecondsAsync(8.1f);
+            ObjectPlugin.SetCurrentHitPoints(criticalFirst, 1);
+            using (Combat.BeginDamageDerivedHealing(criticalFirst, target))
+            {
+                Combat.ApplyCriticalHitEffects(criticalFirst, target, 684, 1);
+                Combat.ApplyDamageDealtEffects(criticalFirst, target, 684, SkillType.HeavyVibroblade,
+                    CombatDamageType.Physical, isAbilityDamage: true);
+            }
+            ctx.AssertEqual(181, GetCurrentHitPoints(criticalFirst), "expired cooldown and rolling receipts allow the next critical proc");
+        }
+
+        [EngineTest("Critical healing without a cooldown uses the ordinary passive allowance", Category = "CombatHealing", TimeoutSeconds = 20f)]
+        public static async Task UnrestrictedCriticalHealing(EngineTestContext ctx)
+        {
+            var source = ctx.SpawnCreature("civilian", 1f);
+            var target = ctx.SpawnCreature("civilian", 3f);
+            await ctx.DelaySecondsAsync(1f);
+            Prepare(ctx, source, 1000, 1);
+            Prepare(ctx, target, 1000, 1000);
+            TemporaryStatModifier.Add(source, StatType.CriticalHPPercentOfDamageRestore, 25, 30f);
+            using (Combat.BeginDamageDerivedHealing(source, target))
+            {
+                Combat.ApplyCriticalHitEffects(source, target, 684, 1);
+                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 8),
+                    "a critical proc with no cooldown shares the ordinary per-hit allowance");
+            }
+            ctx.AssertEqual(61, GetCurrentHitPoints(source), "unrestricted critical healing cannot claim the larger allowance");
+        }
+
+        [EngineTest("Cooldown healing respects aggregate damage and overkill limits", Category = "CombatHealing", TimeoutSeconds = 20f)]
+        public static async Task CriticalDamageLimits(EngineTestContext ctx)
+        {
+            var source = ctx.SpawnCreature("civilian", 1f);
+            var target = ctx.SpawnCreature("civilian", 3f);
+            await ctx.DelaySecondsAsync(1f);
+            Prepare(ctx, source, 1000, 1);
+            Prepare(ctx, target, 1000, 1000);
+            using (Combat.BeginDamageDerivedHealing(source, target))
+            {
+                ctx.AssertEqual(120, Combat.ApplyDamageDerivedHealing(source, 300, 100, passiveHealingCooldownSeconds: 8),
+                    "cooldown recovery can use its 120-HP allowance");
+                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 300, 100, passiveHealingCooldownSeconds: 8),
+                    "the same hit cannot refill its cooldown allowance");
+                ctx.AssertEqual(30, Combat.ApplyDamageDerivedHealing(source, 300, 100),
+                    "ordinary lifesteal only uses the remaining 50%-of-damage allowance");
+                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 300, 100, true),
+                    "active healing shares the aggregate damage ceiling");
+            }
+            ObjectPlugin.SetCurrentHitPoints(target, 20);
+            using (Combat.BeginDamageDerivedHealing(source, target))
+            {
+                ctx.AssertEqual(10, Combat.ApplyDamageDerivedHealing(source, 684, 100, passiveHealingCooldownSeconds: 8),
+                    "cooldown healing cannot draw more than half the target's remaining HP");
+                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 100),
+                    "ordinary healing cannot reuse the target's overkill health");
+            }
         }
 
         [EngineTest("Lifesteal excludes overkill and overhealing does not spend recovery budgets", Category = "CombatHealing", TimeoutSeconds = 20f)]

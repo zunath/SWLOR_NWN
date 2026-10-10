@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Service
         public const int MaximumDamageDerivedHealingPercentPerHit = 50;
         public const int MaximumActivatedDamageHealingMaxHPPercent = 15;
         public const int MaximumPassiveDamageHealingMaxHPPercentPerHit = 6;
+        public const int MaximumCooldownDamageHealingMaxHPPercentPerHit = 12;
         public const int MaximumPassiveDamageHealingMaxHPPercentPerWindow = 24;
         public const int MaximumDefeatedEnemyHealingMaxHPPercentPerWindow = 12;
         public const int CombatHealingWindowSeconds = 6;
@@ -2163,7 +2164,8 @@ namespace SWLOR.Game.Server.Service
             if (hpRestorePercent > 0 &&
                 TryUseStatTrigger(attacker, StatType.CriticalHPPercentOfDamageRestore, hpRestoreCooldown))
             {
-                ApplyDamageDerivedHealing(attacker, damage, hpRestorePercent);
+                ApplyDamageDerivedHealing(attacker, damage, hpRestorePercent,
+                    passiveHealingCooldownSeconds: hpRestoreCooldown);
             }
 
             var accuracyPercent = Stat.GetStatAdjustment(attacker, StatType.CriticalAccuracyPercentAdjustment);
@@ -2921,7 +2923,8 @@ namespace SWLOR.Game.Server.Service
             uint creature,
             int damage,
             int percent,
-            bool isActivatedHealing = false)
+            bool isActivatedHealing = false,
+            int passiveHealingCooldownSeconds = 0)
         {
             if (damage <= 0 || percent <= 0 ||
                 !_damageDerivedHealingStates.TryGetValue(creature, out var state))
@@ -2949,11 +2952,19 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
+                var isCooldownHealing = passiveHealingCooldownSeconds > 0;
+                var maximumPercent = isCooldownHealing
+                    ? MaximumCooldownDamageHealingMaxHPPercentPerHit
+                    : MaximumPassiveDamageHealingMaxHPPercentPerHit;
+                var healingApplied = isCooldownHealing ? state.CooldownHealingApplied : state.PassiveHealingApplied;
                 amount = Math.Min(amount, Math.Max(0, CalculateMaxHPHealingBudget(
-                    maximumHP, MaximumPassiveDamageHealingMaxHPPercentPerHit) - state.PassiveHealingApplied));
+                    maximumHP, maximumPercent) - healingApplied));
                 amount = TakeCombatHealingBudget(_passiveDamageHealingBudgets, creature, maximumHP,
                     MaximumPassiveDamageHealingMaxHPPercentPerWindow, amount);
-                state.PassiveHealingApplied += amount;
+                if (isCooldownHealing)
+                    state.CooldownHealingApplied += amount;
+                else
+                    state.PassiveHealingApplied += amount;
             }
 
             if (amount <= 0)
@@ -2989,6 +3000,7 @@ namespace SWLOR.Game.Server.Service
             public int? Damage { get; set; }
             public int HealingApplied { get; set; }
             public int PassiveHealingApplied { get; set; }
+            public int CooldownHealingApplied { get; set; }
             public int ActivatedHealingApplied { get; set; }
         }
 

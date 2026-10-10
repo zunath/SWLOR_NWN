@@ -1164,14 +1164,31 @@ public class MimicryTests
     [Test]
     public void Mimicry_IsACombatPointEarningSkill()
     {
-        // Mimicry combat points come from two sources: casting techniques, and the Combat Analyzer
-        // recording nearby enemies' technique use (analysis points). Both only convert to Mimicry
-        // skill XP when the creature dies if Mimicry is a non-Exempt combat-point category. The
-        // attribute default is Exempt, so this guards that Mimicry stays a CP-earning skill.
+        // Actively used techniques must continue sharing utility XP. Passive observation pays
+        // separately and must not change the skill's category to bypass active XP sharing.
         var attribute = typeof(SkillType).GetField(nameof(SkillType.Mimicry))!
             .GetCustomAttribute<SkillAttribute>();
         attribute.Should().NotBeNull();
         attribute!.CombatPointCategory.Should().Be(CombatPointCategoryType.Utility);
+    }
+
+    [TestCase(20, 20, 30)]
+    [TestCase(19, 20, 22)]
+    [TestCase(18, 20, 15)]
+    [TestCase(17, 20, 7)]
+    [TestCase(16, 20, 3)]
+    [TestCase(15, 20, 0)]
+    [TestCase(0, 20, 0)]
+    [TestCase(21, 20, 30)]
+    [TestCase(26, 20, 30)]
+    [TestCase(100, 20, 30)]
+    [TestCase(49, 49, 30)]
+    [TestCase(50, 50, 0)]
+    [TestCase(100, 50, 0)]
+    public void ObservationXP_IsSmallRankRelativeAndStopsAtMastery(int npcLevel, int mimicryRank, int expectedXP)
+    {
+        Skill.CacheXPChartData();
+        Mimicry.CalculateAnalysisXP(npcLevel, mimicryRank).Should().Be(expectedXP);
     }
 
     [Test]

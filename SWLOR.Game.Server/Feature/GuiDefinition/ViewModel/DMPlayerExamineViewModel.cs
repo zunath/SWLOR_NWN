@@ -55,17 +55,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .AddTab(2, PerksView, model => model.LoadTargetPerks())
                 .AddTab(3, EffectsView, model => model.LoadTargetEffects())
                 .AddTab(4, NotesView, model => model.LoadTargetNotes());
-        private readonly GuiToggleGroupSync _tabToggles = new(0, 1, 2, 3, 4);
+        private readonly GuiToggleGroupSync _topToggles = new(0, 1, 2);
+        private readonly GuiToggleGroupSync _bottomToggles = new(3, 4);
         private int _selectedTabId;
 
-        public int TabToggleValue
+        public int TopTabId
         {
             get => Get<int>();
             set
             {
                 Set(value);
                 if (_initialized)
-                    _tabToggles.HandleClientChange(value, SelectTab);
+                    _topToggles.HandleClientChange(value, SelectTab);
+            }
+        }
+
+        public int BottomTabId
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                if (_initialized)
+                    _bottomToggles.HandleClientChange(value, SelectTab);
             }
         }
 
@@ -239,7 +251,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedPerkCategoryId = 0;
             SelectedPerkSortOrderId = 2;
             SelectedPerkStatusId = 1;
-            TabToggleValue = 0;
+            TopTabId = 0;
+            BottomTabId = -1;
 
             var skillCategories = new GuiBindingList<GuiComboEntry> { new("All Skills", 0) };
             foreach (var (type, detail) in Skill.GetAllActiveSkillCategories().OrderBy(x => x.Value.Sequence))
@@ -273,7 +286,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadTargetEffects();
             _initialized = true;
 
-            WatchOnClient(model => model.TabToggleValue);
+            WatchOnClient(model => model.TopTabId);
+            WatchOnClient(model => model.BottomTabId);
             WatchOnClient(model => model.SelectedSkillCategoryId);
             WatchOnClient(model => model.SkillSearchText);
             WatchOnClient(model => model.SelectedPerkCategoryId);
@@ -288,7 +302,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void SelectTab(int tabId)
         {
             _selectedTabId = tabId;
-            _tabToggles.SyncTo(tabId, value => TabToggleValue = value);
+            _topToggles.SyncTo(tabId, value => TopTabId = value);
+            _bottomToggles.SyncTo(tabId, value => BottomTabId = value);
             Tabs.Select(this, PartialView, tabId);
         }
 

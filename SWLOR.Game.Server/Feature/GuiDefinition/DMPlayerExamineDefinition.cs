@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             var window = _builder.CreateWindow(GuiWindowType.DMPlayerExamine)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 640f, 620f)
+                .SetInitialGeometry(0, 0, 640f, 660f)
                 .BindTitle(model => model.Name)
                 .DefinePartialView(DMPlayerExamineViewModel.DetailView, AddDetails)
                 .DefinePartialView(DMPlayerExamineViewModel.SkillsView, AddSkills)
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
             window.AddStandardLayout(layout =>
             {
-                layout.SetTabPanelHeight(48f);
+                layout.SetTabPanelHeight(76f);
                 layout.AddTabRow(row =>
                 {
                     row.SetHeight(28f);
@@ -109,9 +109,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .AddOption("Details")
                         .AddOption("Skills")
                         .AddOption("Perks")
+                        .BindSelectedValue(model => model.TopTabId)
+                        .SetWidth(560f)
+                        .SetHeight(28f);
+                });
+                layout.AddTabRow(row =>
+                {
+                    row.SetHeight(28f);
+                    row.AddToggles()
                         .AddOption("Effects")
                         .AddOption("Notes")
-                        .BindSelectedValue(model => model.TabToggleValue)
+                        .BindSelectedValue(model => model.BottomTabId)
                         .SetWidth(560f)
                         .SetHeight(28f);
                 });
@@ -136,8 +144,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             col.AddRow(row =>
             {
+                row.SetHeight(176f);
                 row.AddImage().BindResref(model => model.PortraitResref)
-                    .SetWidth(80f).SetHeight(120f).SetAspect(NuiAspect.ExactScaled);
+                    .SetWidth(80f).SetHeight(120f).SetAspect(NuiAspect.Fit);
                 row.AddColumn(details =>
                 {
                     details.AddRow(r => r.AddLabel().BindText(model => model.Name).SetHeight(20f));
@@ -152,7 +161,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             col.AddRow(r => r.AddLabel().BindText(model => model.TrueName).SetHeight(20f));
             col.AddRow(r => r.AddLabel().BindText(model => model.AccountName).SetHeight(20f));
             col.AddRow(r => r.AddLabel().BindText(model => model.PublicCDKey).SetHeight(20f));
-            col.AddRow(r => r.AddText().BindText(model => model.Description).SetHeight(200f));
+            col.AddRow(r => r.AddText().BindText(model => model.Description).SetHeight(180f));
         });
 
         private static void AddSkills(GuiGroup<DMPlayerExamineViewModel> host) => AddPanel(host, col =>
@@ -176,12 +185,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             col.AddRow(row =>
             {
                 row.AddComboBox().BindOptions(model => model.PerkCategories)
-                    .BindSelectedIndex(model => model.SelectedPerkCategoryId).SetHeight(32f);
+                    .BindSelectedIndex(model => model.SelectedPerkCategoryId).SetWidth(268f).SetHeight(32f);
                 row.AddComboBox().BindSelectedIndex(model => model.SelectedPerkSortOrderId)
                     .AddOption("Alphabetical (A-Z)", 0)
                     .AddOption("Alphabetical (Z-A)", 1)
                     .AddOption("Skill Level (Asc)", 2)
                     .AddOption("Skill Level (Desc)", 3)
+                    .SetWidth(268f)
                     .SetHeight(32f);
             });
             col.AddRow(row => row.AddComboBox().BindSelectedIndex(model => model.SelectedPerkStatusId)

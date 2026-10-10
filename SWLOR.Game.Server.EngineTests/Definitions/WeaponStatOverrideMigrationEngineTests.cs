@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -9,6 +11,7 @@ using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DroidService;
+using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -18,6 +21,39 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static partial class MigrationEngineTests
 {
+    [EngineTest("Completed server checkpoints exclude both original conversion phases", Category = "WeaponStatOverrides")]
+    public static Task CompletedServerMigrationCheckpoints(EngineTestContext ctx)
+    {
+        var original = DB.Get<ServerConfiguration>("SWLOR_CONFIG");
+        var getMigrations = typeof(Migration).GetMethod("GetMigrations", BindingFlags.NonPublic | BindingFlags.Static);
+        typeof(Migration).GetMethod("LoadServerMigrations", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, null);
+        try
+        {
+            foreach (var checkpoint in new[] { 22, 23, 24 })
+            {
+                DB.Set(new ServerConfiguration { MigrationVersion = checkpoint });
+                foreach (var phase in new[] { MigrationExecutionType.PostDatabaseLoad, MigrationExecutionType.PostCacheLoad })
+                {
+                    var pending = ((IEnumerable<IServerMigration>)getMigrations.Invoke(null, new object[] { phase })).ToArray();
+                    var expected = phase == MigrationExecutionType.PostDatabaseLoad ? new int[0] :
+                        new[] { 23, 24 }.Where(version => version > checkpoint).ToArray();
+                    ctx.Assert(pending.Select(migration => migration.Version).SequenceEqual(expected),
+                        $"Checkpoint {checkpoint}, phase {phase}: only the pending targeted repairs are selected");
+                    ctx.Assert(!pending.Any(migration => migration is _22_CombatSystemReplacement or StoredItemSchemaMigration),
+                        "Neither original conversion phase may run again");
+                }
+            }
+        }
+        finally
+        {
+            if (original == null)
+                DB.Delete<ServerConfiguration>("SWLOR_CONFIG");
+            else
+                DB.Set(original);
+        }
+        return Task.CompletedTask;
+    }
+
     [EngineTest("Player migration removes equipped, carried and nested weapon stat overrides", Category = "WeaponStatOverrides")]
     public static async Task PlayerWeaponStatOverrides(EngineTestContext ctx)
     {

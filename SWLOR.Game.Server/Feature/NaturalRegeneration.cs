@@ -47,7 +47,12 @@ namespace SWLOR.Game.Server.Feature
                 Stat.GetStatAdjustment(player, StatType.StaminaRegen), ref remainder);
             SetLocalInt(player, StaminaRegenRemainderVariable, remainder);
             if (stmRegen > 0)
-                Stat.RestoreStamina(player, stmRegen, dbPlayer, sendFeedback: false);
+            {
+                if (dbPlayer.Stamina == Stat.GetMaxStamina(player, dbPlayer))
+                    ExecuteScript(ScriptName.OnPlayerStaminaAdjusted, player);
+                else
+                    Stat.RestoreStamina(player, stmRegen, dbPlayer, sendFeedback: false);
+            }
 
             if (tick >= 5) // 6 seconds * 5 = 30 seconds
             {

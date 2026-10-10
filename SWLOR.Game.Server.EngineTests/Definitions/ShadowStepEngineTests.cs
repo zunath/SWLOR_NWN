@@ -54,7 +54,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var evasionBeforeCast = Stat.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment);
 
                 // Drive the impact directly. The activation pipeline is covered by the Espionage
-                // behavior cases; isolate the target-facing and arrival-stun assertions here.
+                // behavior cases; an NPC's post-activation attack resume clears its action queue
+                // and can drop the queued jump, which a player's resume never does.
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
                 {
                     ClearAllActions(true);
@@ -111,7 +112,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.WaitFrameAsync();
                 foreach (var creature in new[] { activator, target })
                 {
-                    SetAILevel(creature, AILevel.VeryLow);
+                    SetAILevel(creature, AILevel.High);
                     Stat.SetNPCMaxHitPoints(creature, 1000, true);
                 }
                 ctx.MakeHostile(target);
@@ -124,20 +125,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(GetDistanceBetween(activator, target) < 2f, "The attack starts in melee range");
                 }
 
+                var landingPoint = GetPosition(activator);
                 await ctx.ExecuteInCreatureContextAsync(activator, () =>
                 {
                     // Exercise the impact with a live attack still on the native action queue.
-                    // Check before yielding so combat resumption cannot mask a delayed jump.
-                    var position = GetPosition(target);
-                    var radians = GetFacing(target) * Math.PI / 180.0;
-                    var destination = Location(GetArea(target), Vector3(
-                        position.X - (float)Math.Cos(radians) * 1.5f,
-                        position.Y - (float)Math.Sin(radians) * 1.5f,
-                        position.Z), GetFacing(target));
+                    if (!attacking)
+                        ClearAllActions();
+                    landingPoint = BehindPosition(target, GetFacing(target));
                     abilities[feat].ImpactAction(activator, target, abilities[feat].AbilityLevel, GetLocation(target));
-                    ctx.Assert(GetDistanceBetweenLocations(GetLocation(activator), destination) < 0.5f,
-                        $"{feat} must teleport behind its target immediately (attacking={attacking})");
                 });
+                await ctx.WaitUntilAsync(
+                    () => System.Numerics.Vector3.Distance(GetPosition(activator), landingPoint) < 0.5f,
+                    5f, $"{feat} to teleport behind its target (attacking={attacking})");
 
                 DestroyObject(activator);
                 DestroyObject(target);

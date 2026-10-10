@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class MovementAbilityStunTests
 {
-    [TestCase(typeof(ShadowStepAbilityDefinition), "Espionage", "JumpToLocation")]
+    [TestCase(typeof(ShadowStepAbilityDefinition), "Espionage", "ActionJumpToLocation")]
     [TestCase(typeof(ForceLeapAbilityDefinition), "Force", "JumpToLocation")]
     public void MovementStun_UsesTrackedControlOnlyAfterSuccessfulArrival(
         Type definitionType, string folder, string jumpMethod)
@@ -23,8 +23,7 @@ public class MovementAbilityStunTests
             "Feature", "AbilityDefinition", folder, definitionType.Name + ".cs"));
         var calls = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
             .OfType<InvocationExpressionSyntax>().ToArray();
-        var jump = calls.Single(call => call.Expression.ToString() == jumpMethod);
-        var arrival = jump.Ancestors().OfType<InvocationExpressionSyntax>().First();
+        var arrival = calls.Single(call => call.Expression.ToString() == "ActionDoCommand");
         var stun = arrival.DescendantNodes().OfType<InvocationExpressionSyntax>()
             .Single(call => call.Expression.ToString() == "StatusEffect.ApplyStatusEffect");
 
@@ -49,8 +48,8 @@ public class MovementAbilityStunTests
         var source = ReadDefinitionSource("Espionage", nameof(ShadowStepAbilityDefinition));
         var root = CSharpSyntaxTree.ParseText(source).GetRoot();
         var calls = root.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
-        var jump = calls.Single(call => call.Expression.ToString() == "JumpToLocation");
-        var arrival = jump.Ancestors().OfType<InvocationExpressionSyntax>().First();
+        var jump = calls.Single(call => call.Expression.ToString() == "ActionJumpToLocation");
+        var arrival = calls.Single(call => call.Expression.ToString() == "ActionDoCommand");
         var stun = arrival.DescendantNodes().OfType<InvocationExpressionSyntax>()
             .Single(call => call.Expression.ToString() == "StatusEffect.ApplyStatusEffect");
         var turnBack = arrival.DescendantNodes().OfType<InvocationExpressionSyntax>()

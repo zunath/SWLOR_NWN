@@ -86,6 +86,42 @@ public class StoreInventoryTests
         }
     }
 
+    [TestCase("czerkasoda", "Czerka Soda", 211, 4, 1)]
+    [TestCase("packaged_pickle", "Packaged pickle", 311, 142, 11)]
+    [TestCase("hot_chips", "Hot Chips", 311, 170, 11)]
+    [TestCase("czerky_jerky", "Czerky Jerky(tm)", 311, 155, 11)]
+    public void VelesVendingMachine_PreservesItsStock(
+        string resref, string name, int baseItem, int model, int cost)
+    {
+        var root = FindRepositoryRoot();
+        using var area = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "git", "veles_exterior.git.json")));
+        var store = area.RootElement.GetProperty("StoreList").GetProperty("value").EnumerateArray()
+            .Single(store => GetWrappedString(store, "Tag") == "czerka_soda");
+        using var storeBlueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "utm", "czerkasodas.utm.json")));
+        var stock = ReadStoreItemData(store).ToArray();
+        var blueprintStock = ReadStoreItemData(storeBlueprint.RootElement).ToArray();
+        stock.Should().HaveCount(4);
+        blueprintStock.Should().HaveCount(4);
+        var placedItem = stock.Single(item => GetWrappedString(item, "TemplateResRef") == resref);
+        var blueprintEntry = blueprintStock.Single(item => GetWrappedString(item, "InventoryRes") == resref);
+        GetWrappedInt(placedItem, "Infinite").Should().Be(1);
+        GetWrappedInt(blueprintEntry, "Infinite").Should().Be(1);
+
+        using var itemBlueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", $"{resref}.uti.json")));
+        foreach (var item in new[] { placedItem, itemBlueprint.RootElement })
+        {
+            item.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString().Should().Be(name);
+            GetWrappedInt(item, "BaseItem").Should().Be(baseItem);
+            GetWrappedInt(item, "xModelPart1").Should().Be(model);
+            GetWrappedInt(item, "Cost").Should().Be(cost);
+            if (TryGetWrappedArray(item, "VarTable", out var variables))
+                variables.EnumerateArray().Should().NotContain(variable =>
+                    GetWrappedString(variable, "Name") == "NO_ECONOMY" && GetWrappedInt(variable, "Value") == 1);
+        }
+        JsonElement.DeepEquals(placedItem.GetProperty("PropertiesList"),
+            itemBlueprint.RootElement.GetProperty("PropertiesList")).Should().BeTrue();
+    }
+
     [Test]
     public void PlacedPlanetaryGeneralStores_MatchBlueprintInventory()
     {

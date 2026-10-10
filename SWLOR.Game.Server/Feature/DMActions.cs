@@ -80,5 +80,13 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SkipEvent();
             SendMessageToPC(dm, "The vanilla DM Give/Take Level command is disabled. Use /giverpxp <amount> instead to give RP XP.");
         }
+
+        [NWNEventHandler(ScriptName.OnDMJumpAllPlayersToPointBefore)]
+        public static void DisableTeleportAll()
+        {
+            var dm = OBJECT_SELF;
+            EventsPlugin.SkipEvent();
+            SendMessageToPC(dm, "The Teleport All command is permanently disabled and cannot be used.");
+        }
     }
 }

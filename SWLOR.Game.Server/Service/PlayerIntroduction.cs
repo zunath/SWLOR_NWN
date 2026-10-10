@@ -102,10 +102,15 @@ namespace SWLOR.Game.Server.Service
                     : error;
             }, offer =>
             {
+                var previousName = PlayerName.TryGetKnownName(observer, offer.Presenter, out var knownName)
+                    ? knownName
+                    : string.Empty;
                 PlayerName.SetKnownName(observer, offer.Presenter, offer.Name);
                 Log.WriteStructured(LogGroup.PlayerName,
-                    "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} TargetPlayerId={TargetPlayerId} IdentityKey={IdentityKey} Name={Name}",
-                    "introduction-accepted", GetObjectUUID(observer), offer.PresenterPlayerId, offer.IdentityKey, offer.Name);
+                    "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} ObserverName={ObserverName} TargetPlayerId={TargetPlayerId} TargetName={TargetName} IdentityKey={IdentityKey} PreviousName={PreviousName} Name={Name}",
+                    "introduction-accepted", GetObjectUUID(observer), PlayerName.GetAuditName(observer),
+                    offer.PresenterPlayerId, PlayerName.GetAuditName(offer.Presenter), offer.IdentityKey,
+                    previousName, offer.Name);
             });
         }
 

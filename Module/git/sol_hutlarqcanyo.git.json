@@ -25351,6 +25351,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -25625,14 +25626,13 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
         "X": {
           "type": "float",
           "value": 68.5
         },
         "Y": {
           "type": "float",
-          "value": 27.2
+          "value": 27.20000076293945
         },
         "Z": {
           "type": "float",
@@ -26267,6 +26267,7 @@
         }
       },
       {
+        "__struct_id": 5,
         "Appearance": {
           "type": "byte",
           "value": 2
@@ -26307,14 +26308,13 @@
           "type": "resref",
           "value": "wp_velescmd_ent"
         },
-        "__struct_id": 5,
         "XPosition": {
           "type": "float",
           "value": 65.0
         },
         "YPosition": {
           "type": "float",
-          "value": 27.2
+          "value": 27.20000076293945
         },
         "ZPosition": {
           "type": "float",

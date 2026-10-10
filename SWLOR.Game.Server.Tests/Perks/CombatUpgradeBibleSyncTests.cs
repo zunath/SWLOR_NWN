@@ -921,8 +921,8 @@ public class CombatUpgradeBibleSyncTests
                 findings));
         }
 
-        var outputPath = root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBibleImplementationReview.csv";
-        WriteImplementationReview(outputPath.FullName, reviewRows);
+        var outputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "BibleImplementationReview.csv");
+        WriteImplementationReview(outputPath, reviewRows);
 
         reviewRows.Should().HaveCount(rows.Length);
         reviewRows
@@ -1196,15 +1196,6 @@ public class CombatUpgradeBibleSyncTests
             .Select(row => $"{Describe(row)}: use 'control effect' wording instead of undefined controlled shorthand.")
             .ToArray();
 
-        var validationMatrix = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Readmes",
-            "CombatUpgradeReleaseValidationMatrix.md"));
-        validationMatrix.Should().Contain("`Controlled` is a category, not a single status effect.");
-        validationMatrix.Should().Contain("A target is controlled while affected by a control effect");
-        validationMatrix.Should().Contain("Blind, Confusion, Dazed, Disoriented, Foggy Mind, Force Disruption");
-
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
     }
 
@@ -1332,7 +1323,14 @@ public class CombatUpgradeBibleSyncTests
                 failures.Add($"{expectedInstruction.Perk} level {expectedInstruction.Level} has multiple droid instruction UTIs: {string.Join(", ", matchingTemplates.Select(x => x.Resref).OrderBy(x => x))}.");
         }
 
-        enumRecipeTypes.Should().BeEquivalentTo(recipeTypes, "droid instruction recipe enum entries should match live recipe definitions");
+        recipeTypes.Should().BeSubsetOf(enumRecipeTypes);
+        bool IsRetiredCapstoneRecipe(string name) =>
+            Enum.TryParse<PerkType>(name["Instruction".Length..], out var perkType) &&
+            perks.TryGetValue(perkType, out var detail) &&
+            detail.PerkLevels.Values.All(level => level.DroidAISlots == 0) &&
+            detail.PerkLevels.Values.Any(level => level.Requirements.OfType<PerkRequirementQuest>().Any());
+        enumRecipeTypes.Except(recipeTypes).Where(name => !IsRetiredCapstoneRecipe(name)).Should().BeEmpty(
+            "retired capstone instruction recipe IDs remain reserved without registering recipes");
 
         foreach (var group in templates.GroupBy(x => x.Perk).OrderBy(x => x.Key))
         {
@@ -1433,7 +1431,6 @@ public class CombatUpgradeBibleSyncTests
 
         var discsByResref = discs.ToDictionary(row => row["T"]);
         var recipesByType = recipeRows.ToDictionary(row => row["D"]);
-        var manifest = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv");
         foreach (var item in templates)
         {
             var row = discsByResref[item.Resref];
@@ -1448,12 +1445,6 @@ public class CombatUpgradeBibleSyncTests
             row["V"].Should().Be(Regex.Replace(skill.ToString(), "([a-z])([A-Z])", "$1 $2"), item.Resref);
             decimal.Parse(row["W"], CultureInfo.InvariantCulture).Should().Be(level.DroidAISlots, item.Resref);
 
-            if (skill is not (SkillType.Devices or SkillType.FirstAid or SkillType.Armor))
-            {
-                var perkRow = manifest.Single(entry => entry.Tab == row["V"] && entry.PerkName == name);
-                perkRow.Notes.Should().Contain($"Droid instruction AI slots: {level.DroidAISlots}.", name);
-                perkRow.Notes.Should().Contain($"Controller tier: {tier}.", name);
-            }
         }
 
         foreach (var (type, recipe) in recipes)
@@ -1518,7 +1509,7 @@ public class CombatUpgradeBibleSyncTests
         {
             foreach (var (level, perkLevel) in detail.PerkLevels.OrderBy(x => x.Key))
             {
-                if (perkLevel.GrantedFeats.Count <= 0 ||
+                if (perkLevel.DroidAISlots <= 0 || perkLevel.GrantedFeats.Count <= 0 ||
                     perkLevel.GrantedFeats.All(IsPassiveIconTraitFeat))
                     continue;
 

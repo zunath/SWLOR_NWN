@@ -21,11 +21,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.CombatAnalyzer
                 .Name("Overclocked Analyzer")
                 .Level(1)
                 .HasActivationDelay(1.0f)
-                .HasRecastDelay(RecastGroup.Overload, 60f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .UsesImmediateAuthoredAnimation()
                 .IsCastedAbility()
                 .RequirementStamina(10)
+                .RemoveSourceOwnedStatusEffectOnPerkRefund(typeof(OverloadStatusEffect))
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     if (StatusEffect.ApplyStatusEffect(activator, activator, new OverloadStatusEffect(), 12f))

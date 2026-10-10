@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 24
+    "value": 34
   },
   "Disarmable": {
     "type": "byte",
@@ -639,7 +639,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 910
+    "value": 908
   },
   "SpecAbilityList": {
     "type": "list",

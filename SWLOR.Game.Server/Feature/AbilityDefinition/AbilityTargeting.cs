@@ -143,11 +143,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
 
             var location = GetLocation(activator);
-            var creature = GetFirstObjectInShape(Shape.Sphere, radius, location, true);
             var yieldedActivator = false;
 
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, radius, location, true))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (creature == activator || Party.IsInParty(activator, creature))
                 {
                     if (creature == activator)
@@ -157,7 +159,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         yield return creature;
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, radius, location, true);
             }
 
             if (!yieldedActivator && !GetIsDead(activator) && GetCurrentHitPoints(activator) > 0)
@@ -173,11 +174,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (!GetIsObjectValid(GetAreaFromLocation(location)))
                 location = GetLocation(activator);
 
-            var creature = GetFirstObjectInShape(Shape.Sphere, radius, location, true);
             var yieldedActivator = false;
 
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, radius, location, true))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (creature == activator ? includeActivator : Party.IsInParty(activator, creature))
                 {
                     if (creature == activator)
@@ -187,7 +190,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         yield return creature;
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, radius, location, true);
             }
 
             if (includeActivator &&

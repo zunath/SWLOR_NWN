@@ -32,34 +32,34 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         {
             return new List<AbilityBehaviorCase>
             {
-                // ApexCollapseTechniqueAbilityDefinition - self-toggle stance (MimicryStance +
+                // ApexCollapseStanceTechniqueAbilityDefinition - self-toggle stance (MimicryStance +
                 // ConfigureToggle); a fresh caster has no existing stance status, so ToggleSelfStatus
                 // returns true and the impact unconditionally applies the stance status to self.
                 new()
                 {
-                    Feat = FeatType.ApexCollapseTechnique,
+                    Feat = FeatType.ApexCollapseStanceTechnique,
                     Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(ApexCollapseStatusEffect) },
+                    ExpectedActivatorStatusEffects = new[] { typeof(ApexCollapseStanceStatusEffect) },
                     ExpectsRecast = true,
                     Notes = "Self-toggle stance; no Stamina/FP requirement is declared.",
                 },
 
-                // SustainBurnTechniqueAbilityDefinition - self-toggle stance, same ConfigureToggle pattern.
+                // SustainBurnStanceTechniqueAbilityDefinition - self-toggle stance, same ConfigureToggle pattern.
                 new()
                 {
-                    Feat = FeatType.SustainBurnTechnique,
+                    Feat = FeatType.SustainBurnStanceTechnique,
                     Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(SustainBurnStatusEffect) },
+                    ExpectedActivatorStatusEffects = new[] { typeof(SustainBurnStanceStatusEffect) },
                     ExpectsRecast = true,
                     Notes = "Self-toggle stance; no Stamina/FP requirement is declared.",
                 },
 
-                // WardenWallTechniqueAbilityDefinition - self-toggle stance, same ConfigureToggle pattern.
+                // WardenWallStanceTechniqueAbilityDefinition - self-toggle stance, same ConfigureToggle pattern.
                 new()
                 {
-                    Feat = FeatType.WardenWallTechnique,
+                    Feat = FeatType.WardenWallStanceTechnique,
                     Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(WardenWallStatusEffect) },
+                    ExpectedActivatorStatusEffects = new[] { typeof(WardenWallStanceStatusEffect) },
                     ExpectsRecast = true,
                     Notes = "Self-toggle stance; no Stamina/FP requirement is declared.",
                 },

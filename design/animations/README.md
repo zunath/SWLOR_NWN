@@ -9,8 +9,9 @@ perk requirements, 67 active Mimicry techniques, and Call Beast as its own actio
 Stealth retains its native toggle and has no custom project, installed clip, or tester entry.
 The perk plan keeps its explicit `Native` exclusion without an internal animation name.
 Beast abilities are excluded because their models have separate animation sets; player
-Beast Mastery actions remain included. The Animations tab retains all 119 image references
-and documents every entry's internal name, base motion, source project, and review status.
+Beast Mastery actions remain included. The Design Bible's Animations tab has been retired;
+`animation-plan.csv` now retains all 119 image references and documents every entry's
+internal name, base motion, source project, and review status.
 The installed registry and tester also include Fishing6, Fishing7, and Fishing8, for 284
 clips total. These activity clips are separate from the 281-entry ability inventory and Bible.
 The seven original Vibroblade clips are preserved. The other custom ability motions have
@@ -105,19 +106,43 @@ Grenade abilities play the same named motion as the tester. Their C# ability log
 blast and visual effects; the animation does not provide a native projectile carrier.
 Existing gameplay timing remains separate from the authored throw's visual beats.
 
-Inherited animation exports omit position and scale channels that remain at the rig's
-bind values (within one micrometre / 0.000001 scale). Those channels belong to each
-wearer's race and phenotype. Writing even one constant key overrides those proportions;
-native idle often animates only rotation and cannot restore the overwritten offset.
-This caused lowered heads after Skirmisher Stance and Blaster Beacon, and a compressed
-Cathar/Horc skeleton after Fury Stance. Keep intentional
-translations, scale changes, and rotation tracks; compare against the destination bind
-after retargeting, including its animation-scale conversion. Apply the same rule to
-entry and exit phases, and regenerate body banks and robe bridges together.
-Run `python -B SWLOR_Haks/tools/TestAuthoredAnimationBindChannels.py` to check the
-compiled head/neck channels in both the body banks and the complete robe catalog.
-The same audit measures Fury Stance's bone lengths and scales throughout its main,
-entry, and exit phases on both Cathar/Horc body rigs and every corresponding robe.
+### Inherited clips animate bone rotation only
+
+A clip lives in a shared supermodel chain while the bind pose belongs to each appearance,
+so an inherited clip must never key a wearer bone's position or scale. The wearer bones are
+`torso_g`, `pelvis_g`, `neck_g`, `head_g` and the left/right `bicep`, `forearm`, `hand`,
+`thigh`, `shin` and `foot` joints. Keying one stamps the authoring rig's proportions onto
+every other body, scaled by that appearance's `animationscale`, and the replacement latches:
+native idle animates rotation only and cannot restore the overwritten offset. Native BioWare
+clips key bone rotations and the root position alone for exactly this reason. Root travel and
+part attachment dummies (`rootdummy`, `head`, `lhand`, `rhand`, `lforearm`, `impact`, garment
+helpers) are not bones and may still carry authored translation - the native lightsaber throw
+moves `rhand` deliberately.
+
+This caused lowered heads after Skirmisher Stance and Blaster Beacon, a compressed Cathar/Horc
+skeleton after Fury Stance, and then a second wave from three native clips that the robe
+bridges copied verbatim into every shared garment bank: `custom49lp` (Throw Grenade) displaced
+`head_g`, `torso_g` and the right arm, `custom59start/lp/end` (Point Pistol) displaced the shins
+and right foot, and `2hslashl` displaced the left arm on every two-handed swing. Because those
+clips are native rather than authored, the earlier `sw_`-only audit did not see them.
+
+`AnimationMdl.Export` now drops bone position and scale channels outright, and keeps the
+bind-value comparison (within one micrometre / 0.000001 scale) for everything else; compare
+against the destination bind after retargeting, including its animation-scale conversion.
+`RobeAnimations.tracks` applies the same rule when a bridge copies body tracks, so
+regenerating the robe catalog cannot reintroduce it. Apply the rule to entry and exit phases,
+and regenerate body banks and robe bridges together.
+
+Run `python -B SWLOR_Haks/tools/TestInheritedBoneProportions.py` to check every clip in the
+humanoid player chain - authored and native, body banks and the complete robe catalog - and to
+confirm that every distinct player skeleton keeps its bone lengths and scales throughout.
+`python -B SWLOR_Haks/tools/StripInheritedBoneTracks.py --check-only` reports the same offenders
+and, without the flag, removes them in place and refreshes the editable bank sources. Robe
+bridge banks are then closed up into the packed native compiler layout - an in-place strip
+leaves vacated key slots that `RobeAnimationBanks` rejects, which blocks `GenerateRobeRgbModels.py`
+- and their `RobeRgbModels.json` digests are refreshed; `--check-only` also reports unpacked banks.
+`python -B SWLOR_Haks/tools/TestAuthoredAnimationBindChannels.py` remains the narrower authored
+head/neck and Fury Stance audit.
 
 Each recipe contains an ability `Id`, a motion `Description`, `Duration` in seconds,
 and labeled `Beats`. Beat `Time` is in seconds and `SourceTime` is a normalized position
@@ -522,12 +547,21 @@ After changing animations inherited from a body rig, regenerate those bridges fr
 repository before packaging; otherwise a robe can continue using its older movement tracks:
 
 ```powershell
+python -B tools/AlignRobeAnimations.py --game-data "<NWN installation>/data" --apply
 python -B tools/GenerateRobeRgbModels.py --game-data "<NWN installation>/data" --apply
 python -B tools/PruneRobeAnimationBridges.py --apply
 git add -A -- sw_anim_m sw_anim_f sw_pt_root sw_pt_robe sw_2da tools/RobeRgbModels.json
 python -B tools/PruneRobeAnimationBridges.py
 python -B tools/GenerateRobeRgbModels.py --check --game-data "<NWN installation>/data"
 ```
+
+The alignment pass updates ordinary clothing overrides to the body's current
+clip timing and standard skeleton motion, retaining independent cloth helpers.
+It validates the compiled corrections and updates affected descendants' native
+part IDs without re-exporting unchanged binary meshes or bindings. RGB roots
+bind each garment wearer joint beneath the matching body bone with no tracks,
+so emotes, latched channels and canceled casts cannot separate the robe from
+its wearer (see `SWLOR.Game.Server/Readmes/TintMapRendering.md`).
 
 For a packaging or sharing conversion that must preserve all installed movement,
 add `--verify-existing-motion` to generation. This additionally compares each

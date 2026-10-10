@@ -36,6 +36,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance
             _isLoaded = true;
         }
 
+        public static IReadOnlyCollection<AppearanceType> GetAppearanceTypes()
+        {
+            EnsureLoaded();
+            return Definitions.Keys;
+        }
+
         public static bool TryGet(AppearanceType appearanceType, out IRacialAppearanceDefinition definition)
         {
             EnsureLoaded();

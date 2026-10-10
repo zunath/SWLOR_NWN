@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature
             var ipAddress = GetPCIPAddress(player);
             var cdKey = GetPCPublicCDKey(player);
             var account = GetPCPlayerName(player);
-            var pcName = GetName(player);
+            var pcName = PlayerName.GetAuditName(player);
 
             var log = $"{pcName} - {account} - {cdKey} - {ipAddress}: Connected to server";
             Log.Write(LogGroup.Connection, log, true);
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature
             var ipAddress = GetPCIPAddress(player);
             var cdKey = GetPCPublicCDKey(player);
             var account = GetPCPlayerName(player);
-            var pcName = GetName(player);
+            var pcName = PlayerName.GetAuditName(player);
 
             var log = $"{pcName} - {account} - {cdKey} - {ipAddress}: Disconnected from server";
             Log.Write(LogGroup.Connection, log, true);
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature
                 var ipAddress = GetPCIPAddress(sender);
                 var cdKey = GetPCPublicCDKey(sender);
                 var account = GetPCPlayerName(sender);
-                var pcName = GetName(sender);
+                var pcName = PlayerName.GetAuditName(sender);
 
                 var logMessage = $"{pcName} - {account} - {cdKey} - {ipAddress} - {chatChannel}: {message}";
 
@@ -70,11 +70,11 @@ namespace SWLOR.Game.Server.Feature
                 var senderIPAddress = GetPCIPAddress(sender);
                 var senderCDKey = GetPCPublicCDKey(sender);
                 var senderAccount = GetPCPlayerName(sender);
-                var senderPCName = GetName(sender);
+                var senderPCName = PlayerName.GetAuditName(sender);
                 var receiverIPAddress = GetPCIPAddress(receiver);
                 var receiverCDKey = GetPCPublicCDKey(receiver);
                 var receiverAccount = GetPCPlayerName(receiver);
-                var receiverPCName = GetName(receiver);
+                var receiverPCName = PlayerName.GetAuditName(receiver);
 
                 var logMessage = $"{senderPCName} - {senderAccount} - {senderCDKey} - {senderIPAddress} - {chatChannel} (SENT TO {receiverPCName} - {receiverAccount} - {receiverCDKey} - {receiverIPAddress}): {message}";
                 return logMessage;

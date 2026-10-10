@@ -32,7 +32,7 @@ public class EquipmentAnimationPlaybackTests
         var request = playback.ReserveEquipmentPlayback(1);
         playback.InvalidateEquipmentPlayback(1).Should().BeFalse("no pose started yet");
         playback.CanStartEquipmentPlayback(1, request).Should().BeFalse();
-        playback.Begin(1, AuthoredAnimation.SoulDevourer, 2, equipmentRequest: request).Should().BeNull();
+        playback.Begin(1, AuthoredAnimation.SoulDevourerStance, 2, equipmentRequest: request).Should().BeNull();
         runtime.Maps.Should().BeEmpty();
     }
 

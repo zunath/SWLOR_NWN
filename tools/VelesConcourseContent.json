@@ -20,46 +20,6 @@
       "y": 14.0,
       "gameplaySha256": "b7ae02043caf6474bbe5bd0e9e2802ddeb5cc0500776a2df7f059e50c549293e",
       "relocated": true
-    },
-    {
-      "area": "veles_shops",
-      "list": "Placeable List",
-      "sourceTag": "espionage_bench",
-      "tag": "concourse_espionage",
-      "x": 7.0,
-      "y": 18.0
-    },
-    {
-      "area": "veles_shops",
-      "list": "Placeable List",
-      "sourceTag": "gtn_terminal",
-      "tag": "concourse_market",
-      "x": 7.0,
-      "y": 21.0
-    },
-    {
-      "area": "veles_shops",
-      "list": "Placeable List",
-      "sourceTag": "qcontract_board",
-      "tag": "concourse_contract",
-      "x": 23.0,
-      "y": 11.0
-    },
-    {
-      "area": "veles_exterior",
-      "list": "Placeable List",
-      "sourceTag": "train_terminal",
-      "tag": "concourse_training",
-      "x": 23.0,
-      "y": 17.0
-    },
-    {
-      "area": "veles_shops",
-      "list": "WaypointList",
-      "sourceTag": "WP_ESPIONAGE_BENCH",
-      "tag": "WP_CONCOURSE_ESP",
-      "x": 7.0,
-      "y": 18.0
     }
   ],
   "stores": [

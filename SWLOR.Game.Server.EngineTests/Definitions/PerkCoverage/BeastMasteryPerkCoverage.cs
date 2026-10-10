@@ -61,17 +61,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                 },
                 new()
                 {
-                    Perk = PerkType.GuardingBond,
+                    Perk = PerkType.GuardingBondStance,
                     MaxLevel = 1,
                     Prices = new[] { 2 },
-                    GrantedFeats = new[] { FeatType.GuardingBond },
+                    GrantedFeats = new[] { FeatType.GuardingBondStance },
                 },
                 new()
                 {
-                    Perk = PerkType.PredatoryBond,
+                    Perk = PerkType.PredatoryBondStance,
                     MaxLevel = 1,
                     Prices = new[] { 2 },
-                    GrantedFeats = new[] { FeatType.PredatoryBond },
+                    GrantedFeats = new[] { FeatType.PredatoryBondStance },
                 },
                 new()
                 {

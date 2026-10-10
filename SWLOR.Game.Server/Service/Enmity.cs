@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Service
     {
         public const int MinimumEnmityPercentAdjustment = -50;
         public const int MaximumEnmityPercentAdjustment = 50;
+        public const int SecureThreatLeadPercent = 25;
         // Enemy -> Creature -> EnmityAmount mapping
         private static readonly Dictionary<uint, Dictionary<uint, int>> _enemyEnmityTables = new();
 
@@ -23,6 +24,7 @@ namespace SWLOR.Game.Server.Service
         // Enemy -> Creature -> proximity enmity contribution mapping
         private static readonly Dictionary<uint, Dictionary<uint, int>> _proximityEnmityAmounts = new();
         private static readonly Dictionary<uint, DateTime> _attackCommandTimes = new();
+        private static readonly Dictionary<uint, uint> _attackCommandTargets = new();
         private const float MinimumStaleAttackRecoverySeconds = 4.5f;
         private const float AttackMoveRangeTolerance = 0.25f;
         private const float MeleeAttackMoveThreshold = 2.25f;
@@ -37,7 +39,73 @@ namespace SWLOR.Game.Server.Service
             var damager = GetLastDamager(enemy);
             var damage = GetTotalDamageDealt();
 
-            ModifyEnmity(damager, enemy, damage);
+            if (damage <= 0 || !GetIsObjectValid(damager))
+                return;
+            ModifyEnmity(damager, enemy, CalculateDamageEnmity(damage,
+                Stat.GetStatAdjustment(damager, StatType.DamageEnmityPercentAdjustment)));
+        }
+
+        public static int CalculateDamageEnmity(int damage, int adjustment)
+        {
+            return damage <= 0 ? 0 : (int)Math.Clamp((long)damage * Math.Max(0L, 100L + adjustment) / 100, 1, int.MaxValue);
+        }
+
+        // Healing events can nest when healing riders fire. Pair each before/after observation.
+        private static readonly Dictionary<uint, Stack<(uint Source, int HitPoints, long NestedHealing)>> _healingHitPoints = new();
+
+        [NWNEventHandler(ScriptName.OnHealBefore)]
+        public static void HealingStarted()
+        {
+            var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
+            if (!GetIsObjectValid(target))
+                return;
+            if (!_healingHitPoints.TryGetValue(target, out var values))
+                _healingHitPoints[target] = values = new Stack<(uint, int, long)>();
+            values.Push((OBJECT_SELF, GetCurrentHitPoints(target), 0));
+        }
+
+        [NWNEventHandler(ScriptName.OnHealAfter)]
+        public static void HealingCompleted()
+        {
+            var source = OBJECT_SELF;
+            var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
+            if (!_healingHitPoints.TryGetValue(target, out var values) || values.Count == 0)
+                return;
+            var observation = values.Pop();
+            var previousHP = observation.HitPoints;
+            var currentHP = GetCurrentHitPoints(target);
+            if (values.Count > 0)
+            {
+                // Propagate the child's entire HP gain, including its descendants.
+                // Preserve the original HP so nested healing cannot turn a resurrection into a heal.
+                var parent = values.Pop();
+                values.Push((parent.Source, parent.HitPoints,
+                    parent.NestedHealing + Math.Max(0L, (long)currentHP - previousHP)));
+            }
+            if (values.Count == 0)
+                _healingHitPoints.Remove(target);
+            if (observation.Source != source)
+                return;
+            if (!int.TryParse(EventsPlugin.GetEventData("HEAL_AMOUNT"), out var requested))
+                return;
+
+            var amount = CalculateHealingEnmity(requested, previousHP, currentHP, observation.NestedHealing);
+            if (amount <= 0 || !GetIsObjectValid(source))
+                return;
+            foreach (var enemy in GetEnmityTowardsAllEnemies(target).Keys)
+            {
+                if (HasNonProximityEnmity(target, enemy))
+                    ModifyEnmity(source, enemy, amount);
+            }
+        }
+
+        public static int CalculateHealingEnmity(int requested, int previousHP, int currentHP, long nestedHealing = 0)
+        {
+            if (previousHP <= 0)
+                return 0;
+            var restored = Math.Min(Math.Max(0, requested),
+                Math.Max(0L, (long)currentHP - previousHP - Math.Max(0, nestedHealing)));
+            return (int)(restored / 2);
         }
 
         /// <summary>
@@ -146,6 +214,83 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves the creature with the highest amount of enmity that the enemy can attack.
+        /// Creatures hidden from the enemy by invisibility keep their enmity but are skipped until
+        /// they can be seen again. If no creature can be attacked, OBJECT_INVALID will be returned.
+        /// </summary>
+        /// <param name="enemy">The enemy to retrieve the attack target for.</param>
+        /// <returns>The visible target with the highest enmity</returns>
+        public static uint GetHighestEnmityAttackTarget(uint enemy)
+        {
+            // OrderByDescending is stable, so ties resolve to the same creature as GetHighestEnmityTarget.
+            foreach (var (creature, _) in GetEnmityTable(enemy).OrderByDescending(entry => entry.Value))
+            {
+                if (IsEligibleAttackTarget(enemy, creature))
+                    return creature;
+            }
+
+            return OBJECT_INVALID;
+        }
+
+        private static bool IsEligibleAttackTarget(uint enemy, uint creature)
+        {
+            return GetIsObjectValid(creature) && !GetIsDead(creature) &&
+                   GetCurrentHitPoints(creature) > 0 && GetArea(enemy) == GetArea(creature) &&
+                   !Stealth.IsHiddenByInvisibility(enemy, creature);
+        }
+
+        /// <summary>
+        /// Makes every enemy with this creature on its enmity table choose its attack target again.
+        /// Call after the creature becomes hidden so enemies react without waiting for their next
+        /// heartbeat or combat round.
+        /// </summary>
+        /// <param name="creature">The creature whose enemies should re-evaluate their target.</param>
+        public static void ReevaluateEnemyAttackTargets(uint creature)
+        {
+            if (!_creatureToEnemies.TryGetValue(creature, out var enemies))
+                return;
+
+            foreach (var enemy in enemies.ToArray())
+            {
+                AttackHighestEnmityTarget(enemy);
+            }
+        }
+
+        /// <summary>
+        /// Determines whether a creature holds the enemy's attention by a safe margin: it must be the
+        /// enemy's highest enmity target and lead the next-highest creature by at least
+        /// <see cref="SecureThreatLeadPercent"/>. Taunts are wasted when this is already true.
+        /// </summary>
+        /// <param name="enemy">The enemy whose enmity table is checked.</param>
+        /// <param name="creature">The creature expected to hold the enemy's attention.</param>
+        /// <returns>true if the creature's threat lead is secure, false otherwise.</returns>
+        public static bool IsThreatSecured(uint enemy, uint creature)
+        {
+            if (!_enemyEnmityTables.TryGetValue(enemy, out var table) ||
+                !table.TryGetValue(creature, out var creatureEnmity))
+            {
+                return false;
+            }
+
+            var nextHighest = 0;
+            foreach (var (other, amount) in table)
+            {
+                if (other != creature && amount > nextHighest)
+                    nextHighest = amount;
+            }
+
+            return IsThreatLeadSecure(creatureEnmity, nextHighest);
+        }
+
+        public static bool IsThreatLeadSecure(int holderEnmity, int nextHighestEnmity)
+        {
+            if (holderEnmity <= 0 || holderEnmity < nextHighestEnmity)
+                return false;
+
+            return (long)holderEnmity * 100 >= (long)nextHighestEnmity * (100 + SecureThreatLeadPercent);
+        }
+
+        /// <summary>
         /// Modifies the enmity of a specific target toward the specific creature.
         /// </summary>
         /// <param name="creature">The creature whose enmity will be increased.</param>
@@ -153,6 +298,15 @@ namespace SWLOR.Game.Server.Service
         /// <param name="amount">The amount of enmity to adjust by</param>
         public static void ModifyEnmity(uint creature, uint enemy, int amount)
         {
+            ModifyEnmity(creature, enemy, amount, true);
+        }
+
+        private static void ModifyEnmity(uint creature, uint enemy, int amount, bool adjustGeneration)
+        {
+            if (!GetIsObjectValid(creature) || !GetIsObjectValid(enemy) || creature == enemy ||
+                GetArea(creature) != GetArea(enemy))
+                return;
+
             if (GetIsPC(enemy))
                 return;
 
@@ -187,7 +341,7 @@ namespace SWLOR.Game.Server.Service
             // Fire off an event if this creature isn't currently on
             // any enmity lists already.
             if (enemyList.Count <= 0)
-                ExecuteScript("enmity_acquired", creature);
+                ExecuteScript(ScriptName.OnEnmityAcquired, creature);
 
             // Enemy isn't on the creature's list. Add it now.
             if (!enemyList.Contains(enemy))
@@ -202,11 +356,11 @@ namespace SWLOR.Game.Server.Service
                 _enemyEnmityTables[enemy][creature] = 0;
 
             // Percent adjustment from feats/effects.
-            var percentAdjustment = CalculateEnmityAdjustment(creature, enemy);
-            amount += (int)(amount * (percentAdjustment * 0.01f));
+            if (adjustGeneration)
+                amount = CalculateAdjustedEnmity(amount, CalculateEnmityAdjustment(creature, enemy));
 
             // Modify the enemy's enmity toward this creature.
-            var enmityValue = _enemyEnmityTables[enemy][creature] + amount;
+            var enmityValue = (int)Math.Clamp((long)_enemyEnmityTables[enemy][creature] + amount, 1, int.MaxValue);
 
             // Enmity cannot fall below 1.
             if (enmityValue < 1)
@@ -220,7 +374,50 @@ namespace SWLOR.Game.Server.Service
 
             AttackHighestEnmityTarget(enemy);
 
-            ExecuteScript("enmity_changed", creature);
+            ExecuteScript(ScriptName.OnEnmityChanged, creature);
+        }
+
+        public static int CalculateAdjustedEnmity(int amount, int adjustment)
+        {
+            // Generation modifiers must not make threat reductions stronger or weaker.
+            return amount <= 0 ? amount : (int)Math.Clamp(
+                (long)amount * (100 + ClampEnmityPercentAdjustment(adjustment)) / 100, 1, int.MaxValue);
+        }
+
+        /// <summary>
+        /// Catches up to an eligible rival plus a fixed, stat-adjusted lead. Repeated taunts
+        /// while already ahead do not accumulate threat; there is no target lock.
+        /// </summary>
+        public static bool TryTaunt(uint creature, uint enemy, int bonus)
+        {
+            if (bonus <= 0 || !GetIsObjectValid(creature) || !GetIsObjectValid(enemy) ||
+                GetIsDead(creature) || GetIsDead(enemy) || GetIsPC(enemy) ||
+                GetIsObjectValid(GetMaster(enemy)) || BeastMastery.IsPlayerBeast(enemy) || Droid.IsDroid(enemy) ||
+                GetArea(creature) != GetArea(enemy) || !GetIsReactionTypeHostile(enemy, creature) ||
+                !LineOfSightObject(creature, enemy) || AI.IsLeashEvading(enemy) ||
+                AI.TryStartCombatLeashEvade(enemy, creature))
+                return false;
+
+            var rival = GetEnmityTable(enemy)
+                .Where(entry => entry.Key != creature && IsEligibleAttackTarget(enemy, entry.Key))
+                .Select(entry => entry.Value).DefaultIfEmpty(0).Max();
+            var desired = CalculateTauntEnmity(GetRawEnmityAmount(creature, enemy), rival,
+                CalculateAdjustedEnmity(bonus, CalculateEnmityAdjustment(creature, enemy)));
+            if (desired > GetRawEnmityAmount(creature, enemy))
+            {
+                // Register through the ordinary path without scaling the catch-up twice.
+                ModifyEnmity(creature, enemy, desired - GetRawEnmityAmount(creature, enemy), false);
+                if (!_enemyEnmityTables.TryGetValue(enemy, out var table) || !table.ContainsKey(creature))
+                    return false;
+            }
+            else
+                AttackHighestEnmityTarget(enemy);
+            return true;
+        }
+
+        public static int CalculateTauntEnmity(int current, int rival, int adjustedBonus)
+        {
+            return (int)Math.Clamp(Math.Max((long)current, (long)rival + Math.Max(1, adjustedBonus)), 1, int.MaxValue);
         }
 
         /// <summary>
@@ -279,7 +476,7 @@ namespace SWLOR.Game.Server.Service
             // Creature has no enemies.
             if (!_creatureToEnemies.ContainsKey(creature)) return;
 
-            foreach (var enemy in _creatureToEnemies[creature])
+            foreach (var enemy in _creatureToEnemies[creature].ToArray())
             {
                 ModifyEnmity(creature, enemy, amount);
             }
@@ -312,18 +509,26 @@ namespace SWLOR.Game.Server.Service
         /// <param name="percent">The percent of current enmity to remove.</param>
         public static void ReduceEnmity(uint creature, uint enemy, int percent)
         {
+            if (percent <= 0)
+                return;
             if (!_enemyEnmityTables.TryGetValue(enemy, out var table) ||
                 !table.TryGetValue(creature, out var currentEnmity))
             {
                 return;
             }
 
-            var clampedPercent = Math.Min(percent, 100);
-            var reduction = GameMath.PercentOf(currentEnmity, clampedPercent);
-            table[creature] = Math.Max(1, currentEnmity - reduction);
+            table[creature] = CalculateReducedEnmity(currentEnmity, percent);
+            if (_proximityEnmityAmounts.TryGetValue(enemy, out var proximity) && proximity.TryGetValue(creature, out var amount))
+                proximity[creature] = Math.Min(table[creature], CalculateReducedEnmity(amount, percent));
 
             AttackHighestEnmityTarget(enemy);
-            ExecuteScript("enmity_changed", creature);
+            ExecuteScript(ScriptName.OnEnmityChanged, creature);
+        }
+
+        public static int CalculateReducedEnmity(int current, int percent)
+        {
+            var reduction = ((long)Math.Max(0, current) * Math.Clamp(percent, 0, 100) + 99) / 100;
+            return (int)Math.Max(1, current - reduction);
         }
 
         /// <summary>
@@ -361,6 +566,7 @@ namespace SWLOR.Game.Server.Service
         public static void RemoveCreatureEnmity(uint creature)
         {
             _attackCommandTimes.Remove(creature);
+            _attackCommandTargets.Remove(creature);
 
             // Creature isn't on any enmity table.
             if (!_creatureToEnemies.ContainsKey(creature)) return;
@@ -371,6 +577,7 @@ namespace SWLOR.Game.Server.Service
             {
                 RemoveEnmityTableEntry(creature, enemy);
                 RemoveProximityEnmityTracking(creature, enemy);
+                AttackHighestEnmityTarget(enemy);
             }
         }
 
@@ -493,6 +700,7 @@ namespace SWLOR.Game.Server.Service
         private static void ClearEnmityTables(uint enemy)
         {
             _attackCommandTimes.Remove(enemy);
+            _attackCommandTargets.Remove(enemy);
 
             // Enemy isn't registered as having an enmity table.
             if (!_enemyEnmityTables.ContainsKey(enemy))
@@ -538,12 +746,14 @@ namespace SWLOR.Game.Server.Service
         public static void ResumeAttackAfterActionsCleared(uint creature)
         {
             _attackCommandTimes.Remove(creature);
+            _attackCommandTargets.Remove(creature);
             AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
-        /// Forces a creature to attack the highest enmity target.
+        /// Forces a creature to attack the highest enmity target it can see.
         /// Stops an existing chase when its last proximity target is no longer in range.
+        /// Stops attacking, but keeps its enmity, while every target is hidden by invisibility.
         /// If creature did not have enmity, nothing will happen.
         /// If the creature is already actively attacking that target, nothing will happen.
         /// </summary>
@@ -557,12 +767,18 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                target = GetHighestEnmityTarget(creature);
+                target = GetHighestEnmityAttackTarget(creature);
                 while (GetIsObjectValid(target) && ShouldRemoveStaleProximityTarget(creature, target))
                 {
                     RemoveProximityEnmity(target, creature);
                     removedProximityEnmity = true;
-                    target = GetHighestEnmityTarget(creature);
+                    target = GetHighestEnmityAttackTarget(creature);
+                }
+
+                if (!GetIsObjectValid(target) && GetIsObjectValid(GetHighestEnmityTarget(creature)))
+                {
+                    HoldForHiddenTargets(creature);
+                    return;
                 }
             }
 
@@ -573,6 +789,29 @@ namespace SWLOR.Game.Server.Service
             }
 
             AttackTargetIfNeeded(creature, target);
+        }
+
+        /// <summary>
+        /// Every creature on the enemy's enmity table is hidden by invisibility. Drops the enemy's
+        /// attack or chase so it stops striking at a target it cannot see. The enmity table is kept,
+        /// so the enemy resumes once one of its targets can be seen again.
+        /// </summary>
+        private static void HoldForHiddenTargets(uint creature)
+        {
+            if (Activity.IsBusy(creature) || AI.IsLeashEvading(creature))
+                return;
+
+            var currentAction = GetCurrentAction(creature);
+            if (currentAction != ActionType.AttackObject &&
+                currentAction != ActionType.MoveToPoint &&
+                !GetIsObjectValid(GetAttackTarget(creature)))
+            {
+                return;
+            }
+
+            _attackCommandTimes.Remove(creature);
+            _attackCommandTargets.Remove(creature);
+            AssignCommand(creature, () => ClearAllActions(true));
         }
 
         private static void AttackTargetIfNeeded(uint creature, uint target)
@@ -597,6 +836,8 @@ namespace SWLOR.Game.Server.Service
             var commandIssuedAt = commandTime == default
                 ? (DateTime?)null
                 : commandTime;
+            var pendingTarget = _attackCommandTargets.TryGetValue(creature, out var queuedTarget)
+                ? queuedTarget : OBJECT_INVALID;
             var recoverySeconds = GetStaleAttackRecoverySeconds(creature);
 
             if (!ShouldIssueAttackCommand(
@@ -607,7 +848,8 @@ namespace SWLOR.Game.Server.Service
                     shouldRecoverStaleAttack,
                     DateTime.UtcNow,
                     commandIssuedAt,
-                    recoverySeconds))
+                    recoverySeconds,
+                    pendingTarget))
             {
                 return;
             }
@@ -634,8 +876,11 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             _attackCommandTimes[creature] = DateTime.UtcNow;
+            _attackCommandTargets[creature] = target;
             AssignCommand(creature, () =>
             {
+                if (!_attackCommandTargets.TryGetValue(creature, out var queuedTarget) || queuedTarget != target)
+                    return;
                 if (AI.TryStartCombatLeashEvade(creature, target))
                     return;
 
@@ -647,7 +892,14 @@ namespace SWLOR.Game.Server.Service
 
                 ActionDoCommand(() =>
                 {
+                    if (!_attackCommandTargets.TryGetValue(creature, out var pendingTarget) || pendingTarget != target ||
+                        !GetIsObjectValid(target) || GetIsDead(target) || GetArea(creature) != GetArea(target))
+                        return;
                     if (AI.TryStartCombatLeashEvade(creature, target))
+                        return;
+
+                    // The target may have turned invisible during the approach.
+                    if (Stealth.IsHiddenByInvisibility(creature, target))
                         return;
 
                     ActionAttack(target);
@@ -663,7 +915,8 @@ namespace SWLOR.Game.Server.Service
             bool shouldRecoverStaleAttack,
             DateTime now,
             DateTime? commandIssuedAt,
-            float recoverySeconds)
+            float recoverySeconds,
+            uint pendingTarget)
         {
             if (isBusy)
                 return false;
@@ -671,7 +924,16 @@ namespace SWLOR.Game.Server.Service
             if (shouldRecoverStaleAttack)
                 return true;
 
+            // The native attack target can still describe the previous swing while
+            // an already-issued switch waits for its assigned callback.
+            if (pendingTarget == desiredTarget && HasRecentAttackCommand(now, commandIssuedAt, recoverySeconds))
+                return false;
+
             if (attackTarget != OBJECT_INVALID && attackTarget != desiredTarget)
+                return true;
+
+            // An approach can have a destination before GetAttackTarget is populated.
+            if (pendingTarget != OBJECT_INVALID && pendingTarget != desiredTarget)
                 return true;
 
             if (HasRecentAttackCommand(now, commandIssuedAt, recoverySeconds))

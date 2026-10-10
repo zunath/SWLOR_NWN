@@ -140,7 +140,7 @@
     ]
   },
   {
-    "Id": "GuardingBond",
+    "Id": "GuardingBondStance",
     "Description": "Inward chest command settles into a low protective hold signal; settle weight behind the protective command with a soft knee brace rather than a rigid standing arm",
     "Duration": 1.8,
     "Beats": [
@@ -237,7 +237,7 @@
     ]
   },
   {
-    "Id": "PredatoryBond",
+    "Id": "PredatoryBondStance",
     "Description": "Assertive forward companion command with a sweeping advance signal; load the back hip before driving the advance command from the legs and settling the forward weight",
     "Duration": 1.65,
     "Beats": [

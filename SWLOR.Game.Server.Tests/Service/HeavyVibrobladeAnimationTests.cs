@@ -27,7 +27,7 @@ public class HeavyVibrobladeAnimationTests
             foreach (var (feat, ability) in abilities)
             {
                 ability.ActivationDelay(0, 0, ability.AbilityLevel).Should().Be(
-                    entry.Id is "BastionStance" or "SoulDevourer" ? 2f : 0f, entry.Id);
+                    entry.Id is "BastionStance" or "SoulDevourerStance" ? 2f : 0f, entry.Id);
                 ability.ActivationType.Should().Be(original[feat].ActivationType);
                 ability.ImpactDelay.Should().Be(0);
                 ability.ImpactAnimationType.Should().Be(Animation.Invalid, "no second impact gesture should follow activation");

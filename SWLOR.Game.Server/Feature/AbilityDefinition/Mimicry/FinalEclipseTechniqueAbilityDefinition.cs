@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Disruption,
                 VisualEffect.Vfx_Imp_Aura_Negative_Energy,
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Evil,
-                afterSuccessfulHit: InnateAbility.RestoreFPOnHit(5),
+                afterSuccessfulHitPerCast: InnateAbility.RestoreFPPerHit(5, 15),
                 damagePercentAdjustment: InnateAbility.ComboBonus(40, typeof(WeakenedStatusEffect)))
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_FinalEclipseTechnique)
                 .SkillType(SkillType.Mimicry)

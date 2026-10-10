@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Core
 
         public readonly bool Repeating;
         public readonly double Schedule;
+        internal bool IsCancelled { get; private set; }
 
         public ScheduledItem(Action task, double executionTime)
         {
@@ -38,6 +39,7 @@ namespace SWLOR.Game.Server.Core
 
         public void Dispose()
         {
+            IsCancelled = true;
             Scheduler.Unschedule(this);
         }
 

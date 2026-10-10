@@ -81,6 +81,51 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void AbilityAccuracy_ResolvesCreatureWeaponsForEverySkillType()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var weaponLookup = ExtractMethod(
+            combatSource, "private static uint GetRelevantSkillWeapon");
+
+        weaponLookup.Should().Contain("GetCreatureNaturalWeapon(creature)",
+            "creature-weapon NPCs carry nothing in either hand");
+        weaponLookup.Should().NotContain("skillType == SkillType.BeastMastery",
+            "the creature-weapon fallback must not be gated on BeastMastery: gating it there made "
+            + "every other skill resolve ability accuracy against an invalid weapon, which zeroes "
+            + "the attacker's accuracy stat");
+        weaponLookup.Should().NotContain("GetSkillTypeByBaseItem",
+            "a mismatched main-hand weapon must not be skipped for an empty off hand or shield");
+        weaponLookup.Should().Contain("IsAbilityWeapon(rightHand)");
+        weaponLookup.Should().Contain("IsAbilityWeapon(leftHand)");
+    }
+
+    [Test]
+    public void NPCAbilityHitResolution_UsesCreatureLevelNotScalingRank()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+
+        // The derived scaling rank belongs to NPC damage only. Feeding it into hit resolution made
+        // a level 40 enemy resolve its ability accuracy as though it were rank 11, which clamped
+        // its abilities to MinimumHitRate against a geared defender.
+        var hitCallIndex = abilitySource.IndexOf(
+            "!Combat.TryResolveAbilityHit(", StringComparison.Ordinal);
+        hitCallIndex.Should().BeGreaterThanOrEqualTo(0);
+
+        var hitCall = abilitySource.Substring(hitCallIndex, 600);
+        hitCall.Should().NotContain("GetNPCAbilityScalingRank(",
+            "ability hit resolution must use the creature's own level");
+
+        var damageRankIndex = abilitySource.IndexOf(
+            "var scalingRank = GetNPCAbilityScalingRank(", StringComparison.Ordinal);
+        damageRankIndex.Should().BeGreaterThanOrEqualTo(0,
+            "the scaling rank must still drive NPC ability damage");
+    }
+
+    [Test]
     public void CombatSystemLimits_ClampToDocumentedBounds()
     {
         Combat.CalculateHitRate(0, 1000, 0).Should().Be(Combat.MinimumHitRate);
@@ -227,13 +272,13 @@ public class CombatDamageTests
 
         usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item)");
         abilitySource.Should().Contain("trackedImpact.TriggeringWeaponDamage = GetIsObjectValid(triggeringWeapon)");
-        abilitySource.Should().Contain("? Item.GetDMG(triggeringWeapon)");
+        abilitySource.Should().Contain("? WeaponDamage.GetEffectiveDMG(activator, triggeringWeapon)");
         abilitySource.Should().Contain("triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage");
         Combat.GetCombatImpactWeaponDamage(0, SkillType.Vibroblade, triggeringWeaponDamage: 23).Should().Be(23);
         Combat.GetCombatImpactWeaponDamage(0, SkillType.Pistol, triggeringWeaponDamage: 0).Should().Be(0);
         Combat.GetCombatImpactWeaponDamage(0, SkillType.Force, triggeringWeaponDamage: 23).Should().Be(0);
-        abilitySource.Should().Contain("TriggeringWeaponDamage = sequenceOwner?.TriggeringWeaponDamage");
-        abilitySource.Should().Contain("TriggeringWeaponDamage = originatingImpact.TriggeringWeaponDamage");
+        abilitySource.Should().Contain("TriggeringWeaponDamage = triggeringWeaponDamage ?? sequenceOwner?.TriggeringWeaponDamage");
+        abilitySource.Should().Contain("triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage");
         combatSource.Should().Contain("GetCombatImpactWeaponDamage(attacker, attackerWeaponSkill, requireMatchingSkill: true)");
         var selection = ExtractMethod(combatSource, "private static uint GetCombatImpactWeapon");
         selection.Should().Contain("Skill.GetSkillTypeByBaseItem(GetBaseItemType(rightHand)) == skillType");
@@ -265,7 +310,8 @@ public class CombatDamageTests
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
             @"GetRangedAbilityLongRangeHitChanceAdjustment\(\s*attacker.m_idSelf,\s*defender.m_idSelf,\s*abilitySkillType\)").Should().BeTrue();
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
-            @"GetQueuedWeaponAbilityActivationHitChanceAdjustment\(\s*attacker.m_idSelf,\s*abilitySkillType\)").Should().BeTrue();
+            @"queuedAbility == null \? 0 : Combat\.GetQueuedWeaponAbilityActivationHitChanceAdjustment\(\s*attacker.m_idSelf,\s*abilitySkillType\)")
+            .Should().BeTrue("ability accuracy must not affect ordinary weapon attacks");
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
             @"StoreQueuedWeaponAbilityCriticalRateBonus\(\s*attacker.m_idSelf,\s*abilitySkillType,").Should().BeTrue();
         attackSource.Should().Contain("Combat.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType)");
@@ -350,7 +396,7 @@ public class CombatDamageTests
 
         combatSource.Should().Contain("SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalDamagePercentAdjustment)");
         combatSource.Should().Contain("IsRangedWeaponSkill(skillType)");
-        combatSource.Should().Contain("StatType.RangedCriticalDamagePercentAdjustment");
+        combatSource.Should().Contain("StatType.WeaponCriticalDamagePercentAdjustment");
         combatSource.Should().Contain("StatType.RangedAttackDamageFlatAdjustment");
         combatSource.Should().Contain("StatType.RangedAttackDefenseIgnorePercentAdjustment");
         combatSource.Should().Contain("SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalRatePercentAdjustment)");
@@ -724,7 +770,8 @@ public class CombatDamageTests
 
         combatSource.Should().Contain("ApplyTriggeredDamage(defender, attacker, reflectedDamage, damageType);");
         combatSource.Should().Contain("var appliedDamage = ApplyTriggeredDamage(");
-        combatSource.Should().Contain("Enmity.ModifyEnmity(attacker, target, appliedDamage);");
+        combatSource.Should().NotContain("Enmity.ModifyEnmity(attacker, target, appliedDamage);",
+            "triggered damage is credited by the native damage event, once");
         abilitySource.Should().Contain("Combat.ApplyDamageReflectionEffects(activator, target, damage, damageType);");
         abilitySource.Should().NotContain("Combat.ApplyDamageReflectionEffects(activator, target, calculatedDamage, damageType);");
     }
@@ -848,7 +895,6 @@ public class CombatDamageTests
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "AbilityEffectScaling.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "FirstAidTreatmentAdjustments.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "MedKitAbilityDefinition.cs"),
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "ForceDrainAbilityDefinition.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Beastmaster", "InnervateAbilityDefinition.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Beastmaster", "RewardAbilityDefinition.cs"),
         };
@@ -866,10 +912,18 @@ public class CombatDamageTests
             "HeavyVibroblade",
             "HeavyVibrobladeActiveAbilityDefinitionBase.cs"));
         heavyVibrobladeSource.Should().Contain("Combat.ApplyDamageDerivedHealing(");
-        heavyVibrobladeSource.Should().Contain("applyCombatReadiness: true");
-        File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"))
-            .Should()
-            .Contain("Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(creature, amount)");
+        heavyVibrobladeSource.Should().Contain("isActivatedHealing: true");
+        var damageHealing = ExtractMethod(File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs")),
+            "public static int ApplyDamageDerivedHealing(");
+        damageHealing.Should().NotContain("ApplyCombatReadiness",
+            "damage-derived healing already inherits Combat Readiness through its damage");
+        var forceDrain = File.ReadAllText(Path.Combine(root.FullName,
+            "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "ForceDrainAbilityDefinition.cs"));
+        forceDrain.Should().Contain("Combat.BeginDamageDerivedHealing(activator, target)");
+        forceDrain.Should().Contain("Combat.ApplyDamageDerivedHealing(");
+        forceDrain.Should().NotContain("EffectHeal(");
+        forceDrain.Should().NotContain("ApplyCombatReadinessToActivatedAbilityMagnitude");
 
         var directScaledHealingSources = new[]
         {
@@ -1142,7 +1196,16 @@ public class CombatDamageTests
         var extractor = ExtractMethod(damageRollSource, "private static WeaponDamageProfile ExtractWeaponDamageProfile(");
         extractor.Should().Contain("var hasDamageProperty = false;");
         extractor.Should().Contain("if (!hasDamageProperty)");
-        extractor.Should().Contain("return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage);");
+        extractor.Should().Contain("return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage, false);");
+        damageRollSource.Should().Contain("if (weapon != null && damageProfile.HasItemDamage)");
+        var ratingSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "CombatService", "WeaponDamage.cs"));
+        ratingSource.Should().Contain("if (!GetItemHasItemProperty(weapon, ItemPropertyType.DMG))");
+        var payloadSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "GuiDefinition", "Payload", "ExamineItemPayload.cs"));
+        var previewSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "ExamineItemViewModel.cs"));
+        payloadSource.Should().Contain("HasItemDMG = GetItemHasItemProperty(item, ItemPropertyType.DMG)");
+        previewSource.Should().Contain("var hasItemDMG = _payload.HasItemDMG;");
+        previewSource.Should().Contain("hasItemDMG = GetItemHasItemProperty(_payload.ItemObject, ItemPropertyType.DMG)");
+        previewSource.Should().Contain("StatType.SingleWeaponDamagePercentAdjustment), hasItemDMG)");
     }
 
     [Test]
@@ -1296,21 +1359,21 @@ public class CombatDamageTests
             ("del_spear", 25, 28),
             ("proto_spear", 32, 28),
             ("oph_spear", 38, 28),
-            ("b_twinblade", 7, 29),
-            ("tit_twinblade", 12, 29),
-            ("del_twinblade", 16, 29),
-            ("proto_twinblade", 20, 29),
-            ("oph_twinblade", 25, 29),
-            ("trn_saberstaff_1", 7, 29),
-            ("trn_saberstaff_2", 12, 29),
-            ("trn_saberstaff_3", 16, 29),
-            ("trn_saberstaff_4", 20, 29),
-            ("trn_saberstaff_5", 25, 29),
-            ("twin_elec_1", 7, 29),
-            ("twin_elec_2", 12, 29),
-            ("twin_elec_3", 16, 29),
-            ("twin_elec_4", 20, 29),
-            ("twin_elec_5", 25, 29),
+            ("b_twinblade", 5, 23),
+            ("tit_twinblade", 9, 23),
+            ("del_twinblade", 13, 23),
+            ("proto_twinblade", 17, 23),
+            ("oph_twinblade", 21, 23),
+            ("trn_saberstaff_1", 5, 24),
+            ("trn_saberstaff_2", 9, 24),
+            ("trn_saberstaff_3", 13, 24),
+            ("trn_saberstaff_4", 17, 24),
+            ("trn_saberstaff_5", 21, 24),
+            ("twin_elec_1", 5, 24),
+            ("twin_elec_2", 9, 24),
+            ("twin_elec_3", 13, 24),
+            ("twin_elec_4", 17, 24),
+            ("twin_elec_5", 21, 24),
             ("b_rifle", 7, 30),
             ("tit_rifle", 14, 30),
             ("del_rifle", 25, 30),

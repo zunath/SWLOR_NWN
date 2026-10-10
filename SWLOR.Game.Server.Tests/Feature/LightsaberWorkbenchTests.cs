@@ -229,6 +229,7 @@ public class LightsaberWorkbenchTests
                      "ItemPropertyType.EnhancementBonus",
                      "ItemPropertyType.DamageBonus",
                      "ItemPropertyType.AccuracyBonus",
+                     "ItemPropertyType.Accuracy",
                  })
         {
             saberMigration.Should().Contain(normalizedProperty, $"{normalizedProperty} is part of the normalized damage profile");
@@ -288,10 +289,9 @@ public class LightsaberWorkbenchTests
         var root = FindRepositoryRoot();
         var uiRoot = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ui");
 
-        if (!Directory.Exists(uiRoot))
-        {
-            Assert.Ignore("SWLOR_Haks submodule is not checked out.");
-        }
+        var weaponRoot = Path.Combine(root.FullName, "SWLOR_Haks", "sw_weapon");
+        Directory.Exists(uiRoot).Should().BeTrue("the SWLOR_Haks sw_ui asset directory must be checked out");
+        Directory.Exists(weaponRoot).Should().BeTrue("the SWLOR_Haks sw_weapon asset directory must be checked out");
 
         foreach (var weaponType in new[] { BaseItem.Lightsaber, BaseItem.Saberstaff })
         {
@@ -327,7 +327,6 @@ public class LightsaberWorkbenchTests
         }
 
         // Every selectable top value must have a blade model and inventory icon in sw_weapon.
-        var weaponRoot = Path.Combine(root.FullName, "SWLOR_Haks", "sw_weapon");
         var topChecks = straightColors.Select(c => ("wswglsbr", c.StraightTopValue))
             .Concat(curvedColors.Select(c => ("wswglsbr", c.CurvedTopValue)))
             .Concat(staffColors.Select(c => ("wdblsbr", c.SaberstaffTopValue)));

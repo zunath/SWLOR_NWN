@@ -84,6 +84,7 @@
                       IsVisible="{Binding IsEnabled}">
             <ContentControl Content="{Binding Damage}" />
             <ContentControl Content="{Binding Delay}" />
+            <ContentControl Content="{Binding Accuracy}" />
             <ContentControl Content="{Binding DamageType}" />
             <ContentControl Content="{Binding DamageStat}" />
           </StackPanel>

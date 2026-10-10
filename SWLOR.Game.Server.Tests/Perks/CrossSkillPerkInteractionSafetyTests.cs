@@ -1,6 +1,7 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -133,6 +134,24 @@ public class CrossSkillPerkInteractionSafetyTests
     }
 
     [Test]
+    public void StatusAppliedCategoryRiders_OnlyCountCategoriesFromSuccessfulApplications()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = Read(root, "SWLOR.Game.Server", "Service", "Ability.cs");
+        var applyImpactStatus = ExtractMethod(abilitySource, "private static bool ApplyCombatImpactStatusEffect(");
+        applyImpactStatus.Should().Contain("out StatusEffectCategory appliedStatusCategories");
+        applyImpactStatus.Should().Contain("if (applied)");
+        applyImpactStatus.Should().Contain("appliedStatusCategories |= categories;");
+        abilitySource.Should().Contain("StatusEffect.GetStatusEffect(target, type, activator)?.Categories");
+
+        var combatSource = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var applyStatusRider = ExtractMethod(combatSource, "private static void ApplyStatusAppliedEffects(");
+        applyStatusRider.Should().Contain("(appliedStatusCategories & requiredCategory) == 0");
+        applyStatusRider.Should().NotContain("AbilityAppliedAnyStatusCategory",
+            "declared-but-rejected status types must not satisfy a successful-application rider");
+    }
+
+    [Test]
     public void SecondaryDamage_CannotReenterDirectDamageProcOrReflectionChains()
     {
         var root = FindRepositoryRoot();
@@ -162,7 +181,10 @@ public class CrossSkillPerkInteractionSafetyTests
             "legacy and delivery-aware status hooks must ignore triggered and periodic damage");
         blazingSpikes.Should().Contain("if (deliveryType != CombatDamageDeliveryType.Direct)");
         blazingSpikes.Should().Contain("Combat.ApplyTriggeredDamage(defender, attacker, reflectedDamage, CombatDamageType.Fire)");
-        markedForDeath.Should().Contain("Combat.ApplyTriggeredDamage(Source, defender, DamageBonus, damageType)");
+        markedForDeath.Should().NotContain("ApplyTriggeredDamage",
+            "Marked for Death amplifies the marker's own hits instead of adding a separate unmitigated damage instance");
+        new MarkedForDeathStatusEffect().StatGroup.Stats[StatType.DamageTakenFromStatusSourcePercentAdjustment]
+            .Should().Be(MarkedForDeathStatusEffect.DamageTakenFromSourcePercent);
 
         var statusDirectory = Path.Combine(
             root.FullName,

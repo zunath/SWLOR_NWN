@@ -6339,6 +6339,17 @@
               "ZPosition": {
                 "type": "float",
                 "value": -1.0
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": { "type": "cexostring", "value": "NO_ECONOMY" },
+                    "Type": { "type": "dword", "value": 1 },
+                    "Value": { "type": "int", "value": 1 }
+                  }
+                ]
               }
             },
             {
@@ -7172,7 +7183,7 @@
         },
         "CurrentHitPoints": {
           "type": "short",
-          "value": 42
+          "value": 32
         },
         "DecayTime": {
           "type": "dword",
@@ -7333,7 +7344,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 6
+                      "value": 5
                     },
                     "Param1": {
                       "type": "byte",
@@ -7432,6 +7443,26 @@
               "ZPosition": {
                 "type": "float",
                 "value": 0.0
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               }
             },
             {
@@ -7530,7 +7561,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 42
+                      "value": 32
                     },
                     "Param1": {
                       "type": "byte",
@@ -8072,6 +8103,34 @@
                 "type": "word",
                 "value": 27
               }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 392
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1879
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1850
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1851
+              }
             }
           ]
         },
@@ -8095,7 +8154,7 @@
         },
         "HitPoints": {
           "type": "short",
-          "value": 42
+          "value": 32
         },
         "Int": {
           "type": "byte",
@@ -8129,11 +8188,11 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 42
+          "value": 32
         },
         "NaturalAC": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "NoPermDeath": {
           "type": "byte",
@@ -8557,7 +8616,7 @@
         },
         "CurrentHitPoints": {
           "type": "short",
-          "value": 42
+          "value": 32
         },
         "DecayTime": {
           "type": "dword",
@@ -8718,7 +8777,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 6
+                      "value": 5
                     },
                     "Param1": {
                       "type": "byte",
@@ -8817,6 +8876,26 @@
               "ZPosition": {
                 "type": "float",
                 "value": 0.0
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               }
             },
             {
@@ -8915,7 +8994,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 42
+                      "value": 32
                     },
                     "Param1": {
                       "type": "byte",
@@ -9457,6 +9536,34 @@
                 "type": "word",
                 "value": 27
               }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 392
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1879
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1850
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1851
+              }
             }
           ]
         },
@@ -9480,7 +9587,7 @@
         },
         "HitPoints": {
           "type": "short",
-          "value": 42
+          "value": 32
         },
         "Int": {
           "type": "byte",
@@ -9514,11 +9621,11 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 42
+          "value": 32
         },
         "NaturalAC": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "NoPermDeath": {
           "type": "byte",
@@ -10868,6 +10975,17 @@
               "ZPosition": {
                 "type": "float",
                 "value": -1.0
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": { "type": "cexostring", "value": "NO_ECONOMY" },
+                    "Type": { "type": "dword", "value": 1 },
+                    "Value": { "type": "int", "value": 1 }
+                  }
+                ]
               }
             },
             {

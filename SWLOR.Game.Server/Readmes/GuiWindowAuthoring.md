@@ -220,7 +220,7 @@ public class ExampleViewModel : GuiViewModelBase<ExampleViewModel, GuiPayloadBas
         Tabs.Select(this, TabContentElement, tabId);
     }
 
-    // R6: modal close wipes the nested tab partial; the base hook restores it.
+    // R6: re-select the tab after a modal closes so its refresh action reruns.
     protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentElement, SelectedTabId);
 
     private void RefreshSecondTab()
@@ -301,23 +301,25 @@ the VM side to refresh all column lists from one row-DTO list.
 ## 6. Partials, tabs, and modals
 
 - `DefinePartialView(name, builder)` declares a swappable layout; it renders only
-  when applied to an element via `ChangePartialView(elementId, partialName)` (direct)
-  or `SwapNestedPartialView(...)` (root-redraw-safe path used by `GuiTabGroup`).
+  when applied to an element via `ChangePartialView(elementId, partialName)`, which
+  composes it into the window's root layout (R7). `SwapNestedPartialView(...)` is the
+  same call with before/after callbacks (as `GuiTabGroup` uses).
 - Tabs: register in a static `GuiTabGroup`, sync toggle rows with
   `GuiToggleGroupSync`, drive swaps from `SelectTab` — exactly as in §3. Never bind
   the swap-driving property to the widget (R4).
 - **Windows without tabs still use `AddStandardLayout`** (R5 applies regardless):
   zero `AddTabRow` calls, ONE partial holding the entire body (stacked sections as
   rows inside it), applied at the end of `Initialize` via
-  `ChangePartialView(TabContentElement, MainContentPartial)` — and re-applied in
-  `OnModalClosedRestore` if the window shows modals (R6).
-- Element ids are NOT validated server-side; a typo produces a client-only error and
-  the window must be reopened (R7). Keep ids as ViewModel consts.
-- Maximum nesting: window root → partial → one nested slot. Three-deep content gets
-  dropped by parent re-applies (R7).
+  `ChangePartialView(TabContentElement, MainContentPartial)`. Closing a modal brings
+  it back automatically (R6).
+- Element ids are NOT validated server-side; a typo silently shows nothing (R7).
+  Keep ids as ViewModel consts.
+- A partial may contain its own slots; they are composed into the root too (R7).
+- Never call `NuiSetGroupLayout` on a group or schedule delayed layout re-applies;
+  a group layout sent on its own stays blank in the client (R7).
 - Modals: `ShowModal(prompt, onConfirm, onCancel)` / `ShowInputModal(...)` (read
-  `ModalInputText` in the confirm action). Any tabbed window MUST override
-  `OnModalClosedRestore` (R6) or its tab content vanishes when the modal closes.
+  `ModalInputText` in the confirm action). Tabbed windows override
+  `OnModalClosedRestore` (R6) to rerun the selected tab's refresh after a modal.
 
 ## 7. Validation gate (all four, in order)
 

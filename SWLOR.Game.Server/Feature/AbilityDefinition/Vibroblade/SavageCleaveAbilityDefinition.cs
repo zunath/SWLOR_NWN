@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
             var amount = secondaryTargets * 2;
             if (amount > 0)
             {
-                Stat.RestoreStamina(activator, amount);
+                Combat.RestoreAbilityHitStamina(activator, summary.Ability, amount);
             }
         }
     }

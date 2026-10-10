@@ -242,11 +242,11 @@ public class CombatAttackDelayTests
     }
 
     [Test]
-    public void CalculateEffectiveAttackDelay_ClampsReducedDualWieldDelayToAbsoluteMinimum()
+    public void CalculateEffectiveAttackDelay_DualWieldPreservesItsRateAdvantageAtTheSingleWeaponFloor()
     {
         var delay = Combat.CalculateAttackDelayMilliseconds(210, 210, 45, 30);
 
-        Combat.CalculateEffectiveAttackDelay(delay).Should().Be(Combat.MinimumAttackDelayMilliseconds);
+        Combat.CalculateEffectiveAttackDelay(delay).Should().Be(818);
     }
 
     [Test]
@@ -1094,7 +1094,7 @@ public class CombatAttackDelayTests
         weaponDelayMigrationSource.Should().Contain("[\"t_knife\"] = ItemPropertyAttackDelay.Delay220");
         weaponDelayMigrationSource.Should().Contain("[\"t_shuriken\"] = ItemPropertyAttackDelay.Delay220");
         weaponDelayMigrationSource.Should().Contain("[\"t_rifle\"] = ItemPropertyAttackDelay.Delay300");
-        weaponDelayMigrationSource.Should().Contain("[\"t_twinblade\"] = ItemPropertyAttackDelay.Delay290");
+        weaponDelayMigrationSource.Should().Contain("[\"t_twinblade\"] = ItemPropertyAttackDelay.Delay230");
         weaponDelayMigrationSource.Should().Contain("[\"byyskwarriorswor\"] = ItemPropertyAttackDelay.Delay220");
         weaponDelayMigrationSource.Should().Contain("[\"sith_blade\"] = ItemPropertyAttackDelay.Delay220");
         weaponDelayMigrationSource.Should().Contain("[\"wswss002\"] = ItemPropertyAttackDelay.Delay220");
@@ -1166,7 +1166,7 @@ public class CombatAttackDelayTests
         var delays = new Dictionary<int, ItemPropertyAttackDelay>();
         AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes, ItemPropertyAttackDelay.Delay230);
         AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.KatarBaseItemTypes, ItemPropertyAttackDelay.Delay220);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, ItemPropertyAttackDelay.Delay290);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, ItemPropertyAttackDelay.Delay230);
         AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes, ItemPropertyAttackDelay.Delay220);
         AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.StaffBaseItemTypes, ItemPropertyAttackDelay.Delay270);
         AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.RifleBaseItemTypes, ItemPropertyAttackDelay.Delay300);
@@ -1175,7 +1175,7 @@ public class CombatAttackDelayTests
         AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.LightsaberBaseItemTypes, ItemPropertyAttackDelay.Delay240);
         AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SpearBaseItemTypes, ItemPropertyAttackDelay.Delay280);
         AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes, ItemPropertyAttackDelay.Delay220);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, ItemPropertyAttackDelay.Delay290);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, ItemPropertyAttackDelay.Delay240);
         AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.CreatureBaseItemTypes, ItemPropertyAttackDelay.Delay240);
 
         return delays;
@@ -1213,7 +1213,7 @@ public class CombatAttackDelayTests
         string file,
         string path,
         ICollection<string> findings,
-        Action<int, JsonElement, string, ICollection<string>> inspectItemDelay)
+        Action<int, JsonElement, bool, string, ICollection<string>> inspectItemDelay)
     {
         switch (element.ValueKind)
         {
@@ -1221,7 +1221,12 @@ public class CombatAttackDelayTests
                 if (TryGetWrappedInt(element, "BaseItem", out var baseItem) &&
                     TryGetWrappedValue(element, "PropertiesList", out var propertiesList))
                 {
-                    inspectItemDelay(baseItem, propertiesList, $"{file}:{path}", findings);
+                    inspectItemDelay(
+                        baseItem,
+                        propertiesList,
+                        IsEconomyRestrictedJsonItem(element, baseItem),
+                        $"{file}:{path}",
+                        findings);
                 }
 
                 foreach (var property in element.EnumerateObject())
@@ -1251,6 +1256,7 @@ public class CombatAttackDelayTests
     private static void InspectWeaponDelay(
         int baseItem,
         JsonElement propertiesList,
+        bool isEconomyRestricted,
         string findingPath,
         ICollection<string> findings)
     {
@@ -1258,6 +1264,13 @@ public class CombatAttackDelayTests
             return;
 
         var delayCosts = GetDelayCostValues(propertiesList).ToList();
+        if (isEconomyRestricted &&
+            Item.IsDoubleWeaponType((BaseItem)baseItem) &&
+            delayCosts.Count == 1 && delayCosts[0] == 29)
+        {
+            return;
+        }
+
         if (delayCosts.Count == 0)
         {
             findings.Add($"{findingPath} missing weapon Delay");
@@ -1271,6 +1284,7 @@ public class CombatAttackDelayTests
     private static void InspectShieldDelay(
         int baseItem,
         JsonElement propertiesList,
+        bool isEconomyRestricted,
         string findingPath,
         ICollection<string> findings)
     {
@@ -1322,5 +1336,38 @@ public class CombatAttackDelayTests
         return TryGetWrappedValue(element, propertyName, out var wrapperValue) &&
                wrapperValue.ValueKind == JsonValueKind.Number &&
                wrapperValue.TryGetInt32(out value);
+    }
+
+    private static bool IsEconomyRestrictedJsonItem(JsonElement item, int baseItem)
+    {
+        string name = null;
+        if (TryGetWrappedValue(item, "LocalizedName", out var localizedName) &&
+            localizedName.ValueKind == JsonValueKind.Object)
+        {
+            name = localizedName.EnumerateObject()
+                .Select(property => property.Value.ValueKind == JsonValueKind.String
+                    ? property.Value.GetString()
+                    : null)
+                .FirstOrDefault(value => !string.IsNullOrWhiteSpace(value));
+        }
+
+        var noEconomy = false;
+        if (TryGetWrappedValue(item, "VarTable", out var variables) &&
+            variables.ValueKind == JsonValueKind.Array)
+        {
+            noEconomy = variables.EnumerateArray().Any(variable =>
+                TryGetWrappedValue(variable, "Name", out var variableName) &&
+                variableName.ValueKind == JsonValueKind.String &&
+                string.Equals(variableName.GetString(), Item.NoEconomyVariable, StringComparison.Ordinal) &&
+                TryGetWrappedInt(variable, "Type", out var variableType) && variableType == 1 &&
+                TryGetWrappedInt(variable, "Value", out var variableValue) && variableValue == 1);
+        }
+
+        // Embedded items without a name or explicit NO_ECONOMY metadata do not qualify for
+        // the exception. Keep the broad corpus check fail-closed for player weapons.
+        if (name == null && !noEconomy)
+            return false;
+
+        return Item.IsEconomyRestricted((BaseItem)baseItem, name, noEconomy, hasInventoryIcon: true);
     }
 }

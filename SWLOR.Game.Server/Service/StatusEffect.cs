@@ -502,7 +502,7 @@ namespace SWLOR.Game.Server.Service
             IStatusEffect statusEffect,
             uint source,
             uint creature,
-            int durationTicks,
+            float durationSeconds,
             bool isPermanent,
             ResistanceType resistanceOverride = ResistanceType.Invalid,
             CombatDamageType sourceDamageType = CombatDamageType.Invalid,
@@ -512,7 +512,7 @@ namespace SWLOR.Game.Server.Service
                     statusEffect,
                     source,
                     creature,
-                    durationTicks,
+                    durationSeconds,
                     isPermanent,
                     resistanceOverride,
                     sourceDamageType,
@@ -521,7 +521,9 @@ namespace SWLOR.Game.Server.Service
                 return true;
             }
 
-            durationTicks = ApplyOutgoingStatusDurationAdjustments(statusEffect, source, durationTicks, isPermanent);
+            durationSeconds = ApplyOutgoingStatusDurationAdjustments(statusEffect, source, durationSeconds, isPermanent);
+            var frequency = Math.Max(1f, statusEffect.Frequency);
+            var durationTicks = isPermanent ? -1 : Math.Max(1, (int)Math.Ceiling(durationSeconds / frequency));
             ApplyOutgoingStatusStatAdjustments(statusEffect, source);
 
             var resistanceType = ResolveResistanceType(statusEffect, resistanceOverride, sourceDamageType);
@@ -558,6 +560,12 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(source, "Your ability was resisted.");
                 return false;
             }
+
+            // Apply resistance/control budgets after duration bonuses without rounding a short
+            // duration bonus into an entire damage interval.
+            if (!isPermanent)
+                durationSeconds = Math.Max(0.1f, Math.Min(durationSeconds +
+                    Math.Max(0, durationTicks - durationTicksWithoutResistance) * frequency, durationTicks * frequency));
 
             var existingEffects = replacedStatusEffectType == null ? null : GetCreatureStatusEffects(creature);
             var replacedEffects = existingEffects?.GetAllEffects()
@@ -613,6 +621,8 @@ namespace SWLOR.Game.Server.Service
 
             var creatureEffects = EnsureCreatureStatusEffectTracker(creature);
 
+            var tickAnchor = GetRefreshTickAnchor(statusEffect, creatureEffects.GetAllEffects(), source);
+
             RemoveOtherCommandStatuses(creature, statusEffect.GetType(), source);
 
             switch (statusEffect.StackingType)
@@ -632,7 +642,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             statusEffect.AssignResistanceType(resistanceType);
-            statusEffect.ApplyEffect(source, creature, durationTicks);
+            statusEffect.OriginatingAbility ??= Ability.GetActiveAbilityImpactSummary(source)?.Ability;
+            statusEffect.ApplyEffect(source, creature, durationTicks,
+                isPermanent ? 0f : Math.Min(durationSeconds, durationTicks * frequency), tickAnchor);
             if (statusEffect.IsFlaggedForRemoval)
             {
                 statusEffect.RemoveEffect(creature);
@@ -658,8 +670,13 @@ namespace SWLOR.Game.Server.Service
                 Stat.ApplyCreatureMovementRate(creature);
             }
 
-            ApplyTrackedNWNEffect(creature, statusEffect, durationTicks, isPermanent);
+            ApplyTrackedNWNEffect(creature, statusEffect, statusEffect.DurationTicks, isPermanent);
             Combat.ApplyStatusAppliedTargetStaminaDrain(source, creature, statusEffect.Categories);
+            if ((statusEffect.Categories & StatusEffectCategory.Debuff) != 0 &&
+                source != creature && GetIsReactionTypeHostile(creature, source))
+            {
+                Combat.ApplyHostileAbilityPartyBuff(source, Ability.GetActiveAbilityImpactSummary(source)?.Ability, 0, true);
+            }
             PublishStatusEffectReceivedRefresh(creature);
 
             // Compare effective durations so the control budget is not mislabeled as resistance,
@@ -779,32 +796,44 @@ namespace SWLOR.Game.Server.Service
             return Math.Min(ticks, (int)Math.Floor(MaximumHardCrowdControlDurationSeconds / Math.Max(1f, frequency)));
         }
 
-        private static int ApplyOutgoingStatusDurationAdjustments(
+        private static float ApplyOutgoingStatusDurationAdjustments(
             IStatusEffect statusEffect,
             uint source,
-            int durationTicks,
+            float durationSeconds,
             bool isPermanent)
         {
-            if (isPermanent || durationTicks <= 0 || !GetIsObjectValid(source))
-                return durationTicks;
+            if (isPermanent || durationSeconds <= 0 || !GetIsObjectValid(source))
+                return durationSeconds;
 
             var percentAdjustment = GetOutgoingDurationPercentAdjustment(statusEffect.Categories, stat => Stat.GetStatAdjustment(source, stat));
 
-            if (percentAdjustment != 0)
-            {
-                durationTicks = Math.Max(1, durationTicks + (int)Math.Ceiling(durationTicks * (percentAdjustment / 100f)));
-            }
+            durationSeconds = CalculateAdjustedStatusDurationSeconds(durationSeconds, percentAdjustment);
 
             if ((statusEffect.Categories & StatusEffectCategory.Bleeding) == StatusEffectCategory.Bleeding)
             {
                 var bonusSeconds = Stat.GetStatAdjustment(source, StatType.OutgoingBleedingDurationBonusSeconds);
                 if (bonusSeconds > 0)
                 {
-                    durationTicks += Math.Max(1, (int)Math.Ceiling(bonusSeconds / Math.Max(1f, statusEffect.Frequency)));
+                    durationSeconds += bonusSeconds;
                 }
             }
 
-            return durationTicks;
+            return durationSeconds;
+        }
+
+        public static float CalculateAdjustedStatusDurationSeconds(float seconds, int percentAdjustment)
+        {
+            return Math.Max(0.1f, seconds * (1f + percentAdjustment / 100f));
+        }
+
+        public static DateTime? GetRefreshTickAnchor(IStatusEffect incoming, IEnumerable<IStatusEffect> active, uint source)
+        {
+            if (!incoming.PreservesTickScheduleOnRefresh || incoming.StackingType == StatusEffectStackType.UnlimitedStacking)
+                return null;
+
+            return active.Where(effect => !effect.IsFlaggedForRemoval && effect.GetType() == incoming.GetType() &&
+                    (incoming.StackingType != StatusEffectStackType.StackFromMultipleSources || effect.Source == source))
+                .Select(effect => (DateTime?)effect.LastTickTime).Min();
         }
 
         private static void ApplyOutgoingStatusStatAdjustments(IStatusEffect statusEffect, uint source)
@@ -951,15 +980,11 @@ namespace SWLOR.Game.Server.Service
             float durationSeconds,
             ResistanceType resistanceOverride = ResistanceType.Invalid)
         {
-            var durationTicks = durationSeconds <= 0f
-                ? -1
-                : Math.Max(1, (int)Math.Ceiling(durationSeconds / Math.Max(1f, statusEffect.Frequency)));
-
             return ApplyStatusEffectInternal(
                 statusEffect,
                 source,
                 creature,
-                durationTicks,
+                durationSeconds,
                 durationSeconds <= 0f,
                 resistanceOverride);
         }
@@ -971,15 +996,11 @@ namespace SWLOR.Game.Server.Service
             float durationSeconds,
             CombatDamageType sourceDamageType)
         {
-            var durationTicks = durationSeconds <= 0f
-                ? -1
-                : Math.Max(1, (int)Math.Ceiling(durationSeconds / Math.Max(1f, statusEffect.Frequency)));
-
             return ApplyStatusEffectInternal(
                 statusEffect,
                 source,
                 creature,
-                durationTicks,
+                durationSeconds,
                 durationSeconds <= 0f,
                 ResistanceType.Invalid,
                 sourceDamageType);
@@ -995,16 +1016,11 @@ namespace SWLOR.Game.Server.Service
             if (!TryCreateStatusEffect(statusEffectClass, out var statusEffect))
                 throw new KeyNotFoundException($"Status effect '{statusEffectClass?.Name ?? "null"}' is not registered.");
 
-            var frequency = statusEffect.Frequency;
-            var durationTicks = durationSeconds <= 0f
-                ? -1
-                : Math.Max(1, (int)Math.Ceiling(durationSeconds / Math.Max(1f, frequency)));
-
             return ApplyStatusEffectInternal(
                 statusEffect,
                 source,
                 creature,
-                durationTicks,
+                durationSeconds,
                 durationSeconds <= 0f,
                 resistanceOverride);
         }
@@ -1020,16 +1036,11 @@ namespace SWLOR.Game.Server.Service
             if (!TryCreateStatusEffect(statusEffectClass, out var statusEffect))
                 throw new KeyNotFoundException($"Status effect '{statusEffectClass?.Name ?? "null"}' is not registered.");
 
-            var frequency = statusEffect.Frequency;
-            var durationTicks = durationSeconds <= 0f
-                ? -1
-                : Math.Max(1, (int)Math.Ceiling(durationSeconds / Math.Max(1f, frequency)));
-
             return ApplyStatusEffectInternal(
                 statusEffect,
                 source,
                 creature,
-                durationTicks,
+                durationSeconds,
                 durationSeconds <= 0f,
                 ResistanceType.Invalid,
                 sourceDamageType,
@@ -1081,7 +1092,9 @@ namespace SWLOR.Game.Server.Service
 
         private static float GetStatusEffectDurationSeconds(IStatusEffect statusEffect, int durationTicks)
         {
-            var logicalDurationSeconds = durationTicks * Math.Max(1f, statusEffect.Frequency);
+            var logicalDurationSeconds = statusEffect.DurationTicks > 0
+                ? statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow)
+                : durationTicks * Math.Max(1f, statusEffect.Frequency);
 
             // NWN may remove an effect before delivering an interval callback scheduled for the
             // exact same timestamp. Ticking effects therefore keep one logical tick of native
@@ -1172,8 +1185,7 @@ namespace SWLOR.Game.Server.Service
                 if (source != OBJECT_INVALID && statusEffect.Source != source)
                     continue;
 
-                var ticks = Math.Max(1, (int)Math.Ceiling(durationSeconds / Math.Max(1f, statusEffect.Frequency)));
-                statusEffect.ExtendDurationTicks(ticks);
+                statusEffect.SetDurationSeconds(statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow) + durationSeconds);
                 RemoveNativeStatusEffect(creature, statusEffect.Id);
                 ApplyTrackedNWNEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
                 extended = true;
@@ -1207,7 +1219,9 @@ namespace SWLOR.Game.Server.Service
                 if (source != OBJECT_INVALID && statusEffect.Source != source)
                     continue;
 
-                var ticks = Math.Max(1, (int)Math.Ceiling(durationSeconds / Math.Max(1f, statusEffect.Frequency)));
+                var adjustedSeconds = ApplyOutgoingStatusDurationAdjustments(statusEffect, source, durationSeconds, false);
+                var ticks = Math.Max(1, (int)Math.Ceiling(adjustedSeconds / Math.Max(1f, statusEffect.Frequency)));
+                var originalTicks = ticks;
                 var resistanceType = ResolveResistanceType(statusEffect, resistanceOverride, sourceDamageType);
                 if (Resistance.IsValidResistanceType(resistanceType) &&
                     GetIsObjectValid(source) &&
@@ -1229,7 +1243,9 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
-                statusEffect.SetDurationTicks(Math.Max(statusEffect.DurationTicks, ticks));
+                adjustedSeconds = Math.Min(adjustedSeconds + Math.Max(0, ticks - originalTicks) * Math.Max(1f, statusEffect.Frequency),
+                    ticks * Math.Max(1f, statusEffect.Frequency));
+                statusEffect.SetDurationSeconds(Math.Max(statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow), adjustedSeconds));
                 RemoveNativeStatusEffect(creature, statusEffect.Id);
                 ApplyTrackedNWNEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
                 refreshed = true;
@@ -1408,10 +1424,22 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Removes matching instances from active and logged-out targets without clearing unrelated
+        /// effects of the same class. Cached targets lose the matching stat payload before restoration.
+        /// </summary>
+        /// <param name="source">The creature that granted the effects.</param>
+        /// <param name="statusEffectType">The status class, including derived classes, to remove.</param>
+        /// <param name="sendsWornOffMessage">Whether active targets receive expiration feedback.</param>
+        /// <param name="originatingAbility">
+        /// A cached ability definition for exact ownership matching, or null for source-wide cleanup.
+        /// Effects with an unknown origin are preserved when an ability is specified.
+        /// </param>
         public static void RemoveStatusEffectsFromAllTargetsBySource(
             uint source,
             Type statusEffectType,
-            bool sendsWornOffMessage = true)
+            bool sendsWornOffMessage = true,
+            AbilityDetail originatingAbility = null)
         {
             if (!GetIsObjectValid(source) || statusEffectType == null)
                 return;
@@ -1420,10 +1448,8 @@ namespace SWLOR.Game.Server.Service
                 .Select(entry => new
                 {
                     Target = entry.Key,
-                    Effects = entry.Value.GetAllEffects()
-                        .Where(effect => statusEffectType.IsAssignableFrom(effect.GetType()) && effect.Source == source)
-                        .Select(effect => effect.GetType())
-                        .Distinct()
+                    Effects = GetSourceOwnedStatusEffects(entry.Value.GetAllEffects(), statusEffectType, source, originatingAbility)
+                        .Select(effect => effect.Id)
                         .ToList()
                 })
                 .Where(entry => entry.Effects.Count > 0)
@@ -1431,20 +1457,30 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var entry in effectsByTarget)
             {
-                foreach (var effectType in entry.Effects)
-                    RemoveStatusEffect(entry.Target, effectType, source, sendsWornOffMessage);
+                foreach (var effectId in entry.Effects)
+                    RemoveStatusEffectById(entry.Target, effectId, sendsWornOffMessage, true);
             }
 
             foreach (var loggedOutEffects in _loggedOutPlayerEffects.Values)
             {
-                var sourceOwnedEffects = loggedOutEffects.Effects.GetAllEffects()
-                    .Where(effect =>
-                        statusEffectType.IsAssignableFrom(effect.GetType()) &&
-                        effect.Source == source)
-                    .ToList();
+                var sourceOwnedEffects = GetSourceOwnedStatusEffects(
+                    loggedOutEffects.Effects.GetAllEffects(), statusEffectType, source, originatingAbility);
                 foreach (var effect in sourceOwnedEffects)
                     loggedOutEffects.Effects.Remove(effect);
             }
+        }
+
+        /// <summary>
+        /// Snapshots effects matching their status type, current source, and optional ability origin.
+        /// A null requested origin permits source-wide matching; an effect's null origin is never
+        /// a wildcard for a specific ability.
+        /// </summary>
+        public static IReadOnlyList<IStatusEffect> GetSourceOwnedStatusEffects(
+            IEnumerable<IStatusEffect> effects, Type statusEffectType, uint source, AbilityDetail originatingAbility = null)
+        {
+            return effects.Where(effect => statusEffectType.IsAssignableFrom(effect.GetType()) && effect.Source == source &&
+                (originatingAbility == null || effect.OriginatingAbility == originatingAbility))
+                .ToArray();
         }
 
         private static void RemoveStatusEffectsFromAllTargetsWhenSourceExits(uint source)
@@ -2142,7 +2178,7 @@ namespace SWLOR.Game.Server.Service
             IStatusEffect statusEffect,
             uint source,
             uint creature,
-            int durationTicks,
+            float durationSeconds,
             bool isPermanent,
             ResistanceType resistanceOverride,
             CombatDamageType sourceDamageType,
@@ -2165,7 +2201,7 @@ namespace SWLOR.Game.Server.Service
                 statusEffect,
                 source,
                 creature,
-                durationTicks,
+                durationSeconds,
                 isPermanent,
                 resistanceOverride,
                 sourceDamageType,

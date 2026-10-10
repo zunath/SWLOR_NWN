@@ -32,13 +32,14 @@ namespace SWLOR.Game.Server.Feature
             }
 
             var isSwapping = IsItemSwapping(creature, item, slot);
+            var isRestrictedActor =
+                (GetIsPC(creature) || Droid.IsDroid(creature)) &&
+                !GetIsDM(creature) &&
+                !GetIsDMPossessed(creature);
             var canUseItem = Item.CanEquip(creature, item);
             var isRingSwappingPositions = IsRingSwappingPositions(creature, item, slot);
 
-            if (string.IsNullOrWhiteSpace(canUseItem) &&
-                (GetIsPC(creature) || Droid.IsDroid(creature)) &&
-                !GetIsDM(creature) &&
-                !GetIsDMPossessed(creature))
+            if (isRestrictedActor)
             {
                 var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
                 var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
@@ -53,7 +54,8 @@ namespace SWLOR.Game.Server.Feature
                     GetBaseItemType(item),
                     slot,
                     rightHandType,
-                    leftHandType);
+                    leftHandType,
+                    canUseItem);
             }
 
             if (string.IsNullOrWhiteSpace(canUseItem) &&
@@ -88,10 +90,14 @@ namespace SWLOR.Game.Server.Feature
             BaseItem itemType,
             InventorySlot slot,
             BaseItem? rightHandType,
-            BaseItem? leftHandType)
+            BaseItem? leftHandType,
+            string existingError = "")
         {
             if (itemType == BaseItem.OffHandPistol)
-                return "Off-hand pistols cannot be equipped.";
+                return "Legacy off-hand pistols cannot be equipped.";
+
+            if (!string.IsNullOrWhiteSpace(existingError))
+                return existingError;
 
             var isPistol = Item.PistolBaseItemTypes.Contains(itemType);
 
@@ -114,6 +120,37 @@ namespace SWLOR.Game.Server.Feature
             }
 
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Adds a visible legacy warning to the examine description of retired off-hand pistols.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
+        public static void MarkLegacyOffHandPistolOnExamine()
+        {
+            MarkLegacyOffHandPistol(StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID")));
+        }
+
+        public static void MarkLegacyOffHandPistol(uint item)
+        {
+            if (GetObjectType(item) != ObjectType.Item ||
+                GetBaseItemType(item) != BaseItem.OffHandPistol)
+            {
+                return;
+            }
+
+            SetDescription(item, GetLegacyOffHandPistolDescription(GetDescription(item, true)));
+        }
+
+        public static string GetLegacyOffHandPistolDescription(string description)
+        {
+            const string warning = "Legacy item: this off-hand pistol cannot be equipped.";
+            if (description.Contains(warning, StringComparison.OrdinalIgnoreCase))
+                return description;
+
+            return string.IsNullOrWhiteSpace(description)
+                ? warning
+                : $"{description.TrimEnd()}\n{warning}";
         }
 
         private static bool IsItemSwapping(uint creature, uint item, InventorySlot slot)

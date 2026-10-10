@@ -1932,11 +1932,12 @@ function Update-ModuleAssets($rows, $featMap) {
 
         $stats = $row.Stats
         Set-JsonTypedValue $utc "Str" $stats.MGT
-        Set-JsonTypedValue $utc "Dex" $stats.AGI
+        Set-JsonTypedValue $utc "Dex" $stats.PER
         Set-JsonTypedValue $utc "Con" $stats.VIT
-        Set-JsonTypedValue $utc "Int" $stats.PER
+        Set-JsonTypedValue $utc "Int" $stats.AGI
         Set-JsonTypedValue $utc "Wis" $stats.WIL
         Set-JsonTypedValue $utc "Cha" $stats.WIL
+        Set-JsonTypedValue $utc "NaturalAC" 0
 
         $keptFeats = New-Object System.Collections.Generic.List[object]
         foreach ($feat in @($utc.FeatList.value)) {
@@ -2242,7 +2243,7 @@ foreach ($line in $lines) {
             Step = $step
             StepLabel = $stepLabels[$step]
             PackageText = Get-AbilityPackageText $package $signature.DisplayName $capstoneDisplayName
-            SetupNotes = "Capstone $($line.DisplayName) $($stepLabels[$step]); generated from level 50 $difficulty $($line.Role) $($line.CreatureType) preset with a reusable $($signature.DisplayName) signature ability, custom support package, and resistance adjustments."
+            SetupNotes = ""
             Stats = $derived.Stats
             Resistances = $resistanceProfile.Desired
             Adjustments = $resistanceProfile.Adjustments

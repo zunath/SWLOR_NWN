@@ -40,7 +40,7 @@ namespace SWLOR.Toolset.Tests
         {
             var files = Directory.EnumerateFiles(
                 Path.Combine(CorpusLocator.ModuleDirectory, "utc"), "*.utc.json").ToList();
-            files.Should().HaveCount(938);
+            files.Should().HaveCount(936);
 
             var failures = new List<string>();
             foreach (var file in files)
@@ -938,11 +938,11 @@ namespace SWLOR.Toolset.Tests
         {
             CreaturePropertyCatalog.SurfacedSkinProperties.Should().BeEquivalentTo(new[]
             {
-                91, 92, 94, 96, 99, 111, 112, 117, 118, 125, 133
+                91, 92, 94, 96, 99, 111, 112, 117, 118, 125, 133, 142
             });
             CreaturePropertyCatalog.SurfacedWeaponProperties.Should().BeEquivalentTo(new[]
             {
-                93, 98, 103, 134
+                93, 98, 103, 134, 142
             });
         }
 

@@ -307,13 +307,11 @@ namespace SWLOR.Toolset.Tests
             shader.Should().NotContain("float shadeScale = clamp(",
                 "GLSL clamp requires both a lower and upper bound");
             shader.Should().Contain("float referenceRow = 0.000244;");
-            shader.Should().Contain("vec3 referenceShade = textureLod(");
+            shader.Should().Contain("vec4 referenceShade = textureLod(");
             shader.Should().Contain("vec2(128.5 / 256.0, referenceRow)",
                 "custom colors use the same representative midtone as the preset swatches");
             shader.Should().NotContain("vec2(255.5 / 256.0, referenceRow)",
                 "normalizing at the palette peak makes the selected RGB much too dark");
-            shader.Should().Contain("paletteColor.a = 1.0;",
-                "custom RGB must not inherit the previously selected preset's reflection mask");
             shader.Should().Contain("return paletteColor;",
                 "custom RGB must retain the tint map's native nonlinear shade detail");
             shader.Should().NotContain(

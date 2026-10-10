@@ -213,6 +213,105 @@ public class WeatherTests
         other.Conditions.Heat.Should().Be(8);
     }
 
+    [TestCase(PlanetType.Viscara, WeatherStorm.Thunder)]
+    [TestCase(PlanetType.Tatooine, WeatherStorm.Sand)]
+    [TestCase(PlanetType.Hutlar, WeatherStorm.Snow)]
+    public void OutdoorMaps_ShareTheirClimatesStormAcrossEntriesAndWeatherFronts(PlanetType planet, WeatherStorm expected)
+    {
+        var pattern = new WeatherPattern();
+        pattern.TryAdvance(Start, 6, false, Rolls(0, 9, 9, 9));
+        var climate = WeatherPlanetDefinitions.GetPlanetClimates()[planet];
+        var regions = new WeatherRegionCache();
+        var region = regions.GetConditions(pattern, climate, 0, 0, 0, _ => 0);
+        region.Storm.Should().Be(expected);
+        var maps = Enumerable.Range(0, 20).Select(_ => new WeatherAreaState()).ToArray();
+
+        foreach (var map in maps)
+        {
+            map.TryUpdate(pattern, climate, 0, 0, 0, true, region.Storm).Should().BeTrue();
+            map.Conditions.Should().Be(region);
+        }
+        foreach (var map in maps.Reverse())
+        {
+            regions.GetConditions(pattern, climate, 0, 0, 0, NoRoll).Should().BeSameAs(region);
+            map.TryUpdate(pattern, climate, 0, 0, 0, true, region.Storm).Should().BeFalse();
+            map.Conditions.Storm.Should().Be(expected);
+        }
+
+        pattern.TryAdvance(Start.AddHours(1), 6, false, Rolls(0, 10, 9, 7));
+        region = regions.GetConditions(pattern, climate, 0, 0, 0, _ => 2);
+        region.Storm.Should().Be(WeatherStorm.None);
+        foreach (var map in maps)
+        {
+            map.TryUpdate(pattern, climate, 0, 0, 0, true, region.Storm).Should().BeTrue();
+            map.Conditions.Storm.Should().Be(WeatherStorm.None);
+        }
+    }
+
+    [Test]
+    public void SharedStorm_LocalModifiersStillControlPrecipitationAndExposure()
+    {
+        var climate = WeatherPlanetDefinitions.GetPlanetClimates()[PlanetType.Viscara];
+        var ordinary = WeatherConditions.CreateForArea(8, 10, 10, climate, 0, 0, 0, true, WeatherStorm.Thunder);
+        var dry = WeatherConditions.CreateForArea(8, 10, 10, climate, 0, -20, 0, true, WeatherStorm.Thunder);
+        var cold = WeatherConditions.CreateForArea(8, 10, 10, climate, -20, 0, 0, true, WeatherStorm.Thunder);
+        ordinary.Storm.Should().Be(WeatherStorm.Thunder);
+        dry.Precipitation.Should().Be(Precipitation.Clear);
+        dry.Storm.Should().Be(WeatherStorm.None);
+        cold.Precipitation.Should().Be(Precipitation.Snow);
+        cold.Storm.Should().Be(WeatherStorm.None);
+
+        var desert = WeatherPlanetDefinitions.GetPlanetClimates()[PlanetType.Tatooine];
+        var sheltered = WeatherConditions.CreateForArea(8, 10, 10, desert, -4, 0, -5, true, WeatherStorm.Sand);
+        sheltered.Heat.Should().Be(9, "area modifiers are applied before the final clamp");
+        sheltered.GetHazard(false).Should().Be(WeatherHazard.None);
+    }
+
+    [Test]
+    public void AreaModifierEdit_DoesNotRerollTheSharedStormOrChangeItsNeighbors()
+    {
+        var pattern = new WeatherPattern();
+        pattern.TryAdvance(Start, 6, false, Rolls(0, 9, 9, 9));
+        var climate = WeatherPlanetDefinitions.GetPlanetClimates()[PlanetType.Viscara];
+        var regions = new WeatherRegionCache();
+        var region = regions.GetConditions(pattern, climate, 0, 0, 0, _ => 0);
+        var changed = new WeatherAreaState();
+        var other = new WeatherAreaState();
+        changed.TryUpdate(pattern, climate, 0, 0, 0, true, region.Storm);
+        other.TryUpdate(pattern, climate, 0, 0, 0, true, region.Storm);
+
+        changed.Invalidate();
+        regions.GetConditions(pattern, climate, 0, 0, 0, NoRoll).Should().BeSameAs(region);
+        var dry = regions.GetConditions(pattern, climate, 0, -20, 0, NoRoll);
+        changed.TryUpdate(pattern, climate, 0, -20, 0, true, dry.Storm);
+        changed.Conditions.Storm.Should().Be(WeatherStorm.None);
+        other.Conditions.Storm.Should().Be(WeatherStorm.Thunder);
+        changed.Invalidate();
+        changed.TryUpdate(pattern, climate, 0, 0, 0, true, region.Storm);
+        changed.Conditions.Should().Be(other.Conditions);
+    }
+
+    [Test]
+    public void AuthoredWetRegion_CanStormWithoutChangingDryMaps_AndClimateAliasesShareTheFront()
+    {
+        var pattern = new WeatherPattern();
+        pattern.TryAdvance(Start, 6, false, Rolls(4, 0, 9, 9));
+        var planets = WeatherPlanetDefinitions.GetPlanetClimates();
+        var named = WeatherPlanetDefinitions.GetNamedClimates(planets);
+        var climate = planets[PlanetType.Viscara];
+        var regions = new WeatherRegionCache();
+        var dry = regions.GetConditions(pattern, climate, 0, 0, 0, NoRoll);
+        var wet = regions.GetConditions(pattern, climate, 0, 8, 0, _ => 0);
+        dry.Precipitation.Should().Be(Precipitation.Clear);
+        dry.Storm.Should().Be(WeatherStorm.None);
+        wet.Precipitation.Should().Be(Precipitation.Rain);
+        wet.Storm.Should().Be(WeatherStorm.Thunder);
+        regions.GetConditions(pattern, named["Viscara"], 0, 8, 0, NoRoll).Should().BeSameAs(wet);
+        regions.GetConditions(pattern, climate, 0, 0, 0, NoRoll).Should().BeSameAs(dry);
+        regions.Clear();
+        regions.GetConditions(pattern, climate, 0, 8, 0, max => max - 1).Storm.Should().Be(WeatherStorm.None);
+    }
+
     [Test]
     public void HazardDamage_ContinuesEverySixSeconds_WithoutStackingOnEntryOrHeartbeat()
     {

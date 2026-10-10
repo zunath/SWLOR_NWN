@@ -25,6 +25,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             StatGroup.Stats[StatType.ForceDamageReflectionPercentAdjustment] = reflection;
             StatGroup.Stats[StatType.ElementalDamageReflectionPercentAdjustment] = reflection;
+
+            // The Light tree's offensive expression: holding the ward empowers its bearer, the
+            // caster included. It lives on this effect rather than a parallel timed modifier so
+            // it ends exactly when the pool does, including when a hit consumes the last of it.
+            StatGroup.Stats[StatType.WeaponAndForceDamageDealtPercentAdjustment] =
+                Stat.GetStatAdjustment(Source, StatType.LightGuardianTemporaryHPEmpowerment);
         }
 
         protected override void Tick(uint creature)

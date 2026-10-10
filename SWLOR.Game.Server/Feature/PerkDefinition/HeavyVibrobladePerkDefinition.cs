@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             SoulAscension();
             SoulBarrier();
             SoulBurst();
-            SoulDevourer();
+            SoulDevourerStance();
             SoulReaping();
             SoulSacrifice();
             SoulStorm();
@@ -56,7 +56,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AbsoluteDefense1)
-                .DroidAISlots(1)
                 .Description("For 45 seconds, party members within 5m including you take 15% less physical and Force damage and are immune to Knockdown and Dazed.")
                 .Price(6)
                 .RequirementSkill(SkillType.HeavyVibroblade, 50)
@@ -94,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BastionStance1)
                 .DroidAISlots(1)
-                .Description("While active, grants +20% to Enmity generation, +15% Defense, +15% Force Defense, -20% Attack, and -20% Force Attack.")
+                .Description("While active, grants +20% to Enmity generation, +15% Defense, +15% Force Defense, -20% Attack, and -20% Force Attack. You generate +100% threat from damage dealt, before general Enmity modifiers.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 20);
         }
@@ -411,10 +410,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Soul Ascension")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.SoulAscensionTrait)
-                .Description("Defeating an enemy after spending HP on a Heavy Vibroblade Offense ability grants +8% Attack and heals you for 8% of physical damage dealt for 30 seconds.")
-                .IncreasesStat(StatType.HeavyVibrobladeOffenseSoulAscension, 1)
-                .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds, 30)
+                .GrantsFeat(FeatType.SoulAscensionBurst)
+                .Description("For 45 seconds, gain +20% Attack and heal for 8% of direct damage dealt. Costs 10% max HP. Works with any weapon.")
                 .Price(6)
                 .RequirementSkill(SkillType.HeavyVibroblade, 50)
                 .RequirementQuest(HeavyVibrobladeCapstoneQuestDefinition.SoulAscensionMasteryQuestId);
@@ -446,21 +443,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulBurst1)
                 .DroidAISlots(1)
-                .Description("Deal weapon DMG + 35 to all enemies in a 5m x 5m cone. Costs 40% HP which is reduced by 1% per MGT. (Minimum 10%)")
+                .Description("Deal weapon DMG + 35 to all enemies in a 5m x 5m cone. Costs 40% HP which is reduced by 1 percentage point per MGT. (Minimum 10%)")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 18);
         }
 
 
-        private void SoulDevourer()
+        private void SoulDevourerStance()
         {
-            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.SoulDevourer)
-                .Name("Soul Devourer")
+            _builder.Create(PerkCategoryType.HeavyVibrobladeOffense, PerkType.SoulDevourerStance)
+                .Name("Soul Devourer Stance")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.SoulDevourer1)
+                .GrantsFeat(FeatType.SoulDevourerStance1)
                 .DroidAISlots(1)
-                .Description("While active, gain +25% Attack and +10% critical chance, but each attack you make deals 45% of the damage back to you. Damage reduced by 1% per MGT. (Minimum 20%)")
+                .Description("While active, gain +25% Attack and +10% critical chance, but each attack you make deals 45% of the damage back to you. Damage reduced by 1 percentage point per MGT. (Minimum 20%)")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 20);
         }

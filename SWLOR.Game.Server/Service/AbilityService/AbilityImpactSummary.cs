@@ -4,6 +4,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
 {
     public sealed class AbilityImpactSummary
     {
+        public AbilityDetail Ability { get; set; }
         public SkillType SkillType { get; set; }
         public bool IsAreaAbility { get; set; }
         public bool IsSingleTargetAbility { get; set; }

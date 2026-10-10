@@ -1654,5 +1654,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         RazorTrap2 = 1721,
         ShockTrap = 1722,
         Overload = 1710,
+        BloodFrenzyBurst = 1723,
+        SoulAscensionBurst = 1724,
     }
 }

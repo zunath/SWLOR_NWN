@@ -66883,28 +66883,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Emergency Bunker"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_emgbunker"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Emergency Cocktail"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_emgcocktail"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Emergency Triage"
                     },
                     "RESREF": {
@@ -67136,17 +67114,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Killzone Beacon"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_killbeacon"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Kolto Mist I"
                     },
                     "RESREF": {
@@ -67207,17 +67174,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_medkit4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Overload Barrage"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_overbarrage"
                     }
                   },
                   {
@@ -67477,17 +67433,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Thermal Detonator"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_thermdeton"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Treatment Kit I"
                     },
                     "RESREF": {
@@ -67559,28 +67504,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_wristrck3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Absolute Defense"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_absodefe"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Adamantine Guard"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_adamguar"
                     }
                   },
                   {
@@ -67774,17 +67697,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Crippling Defense"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_cripdefe"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Crippling Shot I"
                     },
                     "RESREF": {
@@ -67911,17 +67823,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_cyclstan"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Dead Man's Hand"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_deadmanshand"
                     }
                   },
                   {
@@ -68104,17 +68005,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Escape Artist"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_escapeartist"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Explosive Toss I"
                     },
                     "RESREF": {
@@ -68230,17 +68120,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_flurrystance"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Forcebane"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_forcebane"
                     }
                   },
                   {
@@ -68522,17 +68401,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Invincible"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_invincible"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Iron Wall Stance"
                     },
                     "RESREF": {
@@ -68571,17 +68439,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_jointlock3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Kill Box"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_killbox"
                     }
                   },
                   {
@@ -68637,17 +68494,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_lacestan"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Last Word"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_lastword"
                     }
                   },
                   {
@@ -68731,17 +68577,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: One Shot"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_oneshot"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Ordnance Stance"
                     },
                     "RESREF": {
@@ -68802,17 +68637,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_percstan"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Perfect Flurry"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_perfflur"
                     }
                   },
                   {
@@ -68995,33 +68819,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Rain of Steel"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_rainofsteel"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Rampart"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "id_rampart"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Red Bloom"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_redbloom"
                     }
                   },
                   {
@@ -69165,17 +68967,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_savagecleave3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Scrapheap Lockdown"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_scralock"
                     }
                   },
                   {
@@ -69424,7 +69215,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Soul Devourer"
+                      "value": "Instruction Disc: Soul Devourer Stance"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -69655,17 +69446,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Tempest Bloom"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_tempestbloom"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Twin Rupture I"
                     },
                     "RESREF": {
@@ -69682,17 +69462,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_twinrupture2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Unmoving Center"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_unmocent"
                     }
                   },
                   {
@@ -69798,17 +69567,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Viral Cascade"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_viralcascade"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Virulent Blade I"
                     },
                     "RESREF": {
@@ -69869,17 +69627,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "id_whirguar"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Instruction Disc: Worldbreaker"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_worldbreaker"
                     }
                   },
                   {
@@ -71026,6 +70773,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "night_candleabra"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Datapad"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "handdatapad"
                     }
                   },
                   {
@@ -79513,6 +79271,226 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "bp_deadhandzeph"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gaderffii Grip Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gaffi_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bantha-Hide War Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "hide_warbelt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sun-Cured Bantha Hide"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sun_bantha_hide"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Sun-Cured Hide Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_hidecuirass"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sun-Cured Hide Cuirass"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "hide_cuirass"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Dune Scout Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dunescout_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Dune Scout Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dunescout_glove"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Cycler Scope Assembly"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cycler_scope"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Scopewright Cap"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_scopecap"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Scopewright Cap"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "scopewright_cap"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ritual Bone Beads"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ritual_beads"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sandcaller Wraps"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sandcall_wraps"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ritual Bone Fetish"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bone_fetish"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Windcaller Mantle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_windmantle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Windcaller Mantle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "windcall_mantle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sandstorm Gaderffii"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sandstorm_gaffi"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Warband Leggings"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "warband_legs"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Tribal Bone Totem"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bone_totem"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blueprint: Warband Helm"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bp_warbandhelm"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Warband Helm"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "warband_helm"
                           }
                         },
                         {

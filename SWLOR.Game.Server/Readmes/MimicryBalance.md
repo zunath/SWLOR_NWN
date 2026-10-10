@@ -60,7 +60,7 @@ Cooldowns are banded by payload strength and shape (stronger and area techniques
 Individual utility and close-range techniques have exceptions to these starting bands:
 
 - Holdfast Slam, Inner Circle Pounce, and Inner Ring Flurry reach one target within 6m and cast in 0.5 seconds. Their former 3m reach and 1.3-second cast combined melee exposure with a slow delivery, without a stronger payload to compensate. They retain their 9 STM cost and 24-second cooldown.
-- Inner Ring Flurry occupies 2 slots. Its successful-hit refund is 4 STM, leaving a base net cost of 5 STM; it is a single-target Bleed tool, not a stamina generator. Its Bleed potency is unchanged.
+- Inner Ring Flurry occupies 2 slots. Its successful-hit refund is 4 STM, leaving a base net cost of 5 STM; it is a single-target Bleed tool, not a stamina generator. It uses the shared Bleed damage rules below.
 - Finishing Drive costs 5 STM per stack and recasts in 5 seconds. Three casts spend 15 STM over 10 seconds to reach +24% technique damage. Its 3-slot commitment and 30-second refreshed duration remain the constraints on sustained amplification.
 - Snap Rush spends 4 STM and restores 10 STM, a base net recovery of 6 STM when below the resource cap, alongside +15% Haste for 15 seconds. Its 3-slot cost and 30-second cooldown limit that recovery; it still requires enough STM to activate.
 
@@ -78,10 +78,10 @@ That is a statement about the trait's own lifecycle, not about what it does in c
 
 Each trait grants a distinct effect profile, and stronger payload bands provide larger bonuses. Two flavours exist:
 
-- **On-hit procs** — a percent chance for a landed hit to inflict a status effect. Elemental DoT procs (Poison/Shock/Freezing) scale roughly from 12% to 15–18%. The debuff families (Bleed, Hemorrhage, Sunder) run at **half those rates** (6%, 9–10%, then 12%): their payloads scale with target max HP or strip defenses, so at equal chances they dwarf every perk-priced passive against elite/boss targets. Halved, their steady-state uptime lands near 25–45% instead of 55–85%.
+- **On-hit procs** — a percent chance for a landed hit to inflict a status effect. Elemental DoT procs (Poison/Shock/Freezing) scale roughly from 12% to 15–18%. The debuff families (Bleed, Hemorrhage, Sunder) run at **half those rates** (6%, 9–10%, then 12%). These lower proc bands remain in place: Bleed uses the attacker-scaled ceiling below, Hemorrhage increases damage taken, and Sunder reduces defenses. Their estimated steady-state uptime is 25–45% instead of 55–85%.
 - **Flat buffs** — a permanent stat bonus, scaling roughly from +4% through +6% to +8%.
 
-Trait proc chances read the shared `DamageDealt*Chance` stats consumed by `Combat.ApplyDamageDealtMimicryTraitProcs`; nothing about the trait system special-cases a perk. Traits stack additively when equipped together, including traits that adjust the same stat. The technique-slot budget is the balancing cost: `Chitin Guard` plus `Iron Carapace` consumes 4 slots, `Force Rend` plus `Essence Scar` consumes 4 slots, and combining both carapaces with the 3-slot `Apex Collapse` stance commits 7 of the maximum 10 slots to that package.
+Trait proc chances read the shared `DamageDealt*Chance` stats consumed by `Combat.ApplyDamageDealtMimicryTraitProcs`; nothing about the trait system special-cases a perk. Traits stack additively when equipped together, including traits that adjust the same stat. The technique-slot budget is the balancing cost: `Chitin Guard` plus `Iron Carapace` consumes 4 slots, `Force Rend` plus `Essence Scar` consumes 4 slots, and combining both carapaces with the 3-slot `Apex Collapse Stance` commits 7 of the maximum 10 slots to that package.
 
 | Technique | Power band | Slot | Passive trait effect |
 |---|---|---|---|
@@ -118,7 +118,22 @@ Durations follow the conventions used across the other skill trees, not ad-hoc c
 
 Magnitudes are likewise capped to Bible norms: Accuracy debuffs at −10%, movement slows at −18%, Attack/Defense at ±20%, Haste/Attack buffs at +15%, critical chance at +25%, damage-taken marks at +10%, reflect at 20%, and taunt as **+25% Enmity toward you for 30 seconds** (the pattern shared with Covering Strike, etc.) rather than a forced-attack charm.
 
-Passive on-hit trait procs are a deliberate exception to the active-technique duration bands because they can trigger repeatedly without spending Stamina: Bleed and Hemorrhage last 12 seconds, Freezing 6 seconds, Shock 10 seconds, Sunder 14 seconds, and Poison 12 seconds. Freezing's Ice damage scales with twice the source's Perception modifier, its status level, Mimicry Potency when present, and the target's damage-taken modifiers. Sustain Burn overrides the shared Poison proc duration to 30 seconds while its capstone stance is active.
+Passive on-hit trait procs are a deliberate exception to the active-technique duration bands because they can trigger repeatedly without spending Stamina: Bleed and Hemorrhage last 12 seconds, Freezing 6 seconds, Shock 10 seconds, Sunder 14 seconds, and Poison 12 seconds. Freezing's Ice damage scales with twice the source's Perception modifier, its status level, Mimicry Potency when present, and the target's damage-taken modifiers. Sustain Burn Stance overrides the shared Poison proc duration to 30 seconds while its capstone stance is active.
+
+### Shared damage-over-time effects
+
+These rules apply to every source of the shared effects, including Mimicry, Throwing/Shuriken abilities, other weapon abilities, beasts, and NPCs. They apply against both players and NPCs, without a boss-specific exception.
+
+Bleed and Toxin tick every **6 seconds**. Round the target-HP percentage up, then cap that base damage using the source's **ability modifiers**, not its ability scores:
+
+- **Bleed:** `min(ceil(target maximum HP × 0.04), 20 + 2 × max(0, source Might modifier, source Perception modifier))`.
+- **Toxin:** `min(ceil(target maximum HP × 0.06), 30 + 3 × max(0, source Agility modifier))`.
+
+Both have a minimum base tick of 1. Missing sources use zero modifiers; the target's stats never increase the cap. Bleed's outgoing damage adjustment applies after the base cap, followed by resistance and the existing target damage modifiers. Toxin applies Poison resistance and target damage modifiers after its base cap. These are base-damage caps; bonuses and vulnerabilities can increase the final tick.
+
+Bleed and Fragmentation deal **physical** engine damage and normally use **Trauma** resistance. Fragmentation retains its authored fixed damage and tick interval. Toxin deals **Poison** damage, represented by Acid in the engine, and uses **Poison** resistance. Bleed and Fragmentation must explicitly declare physical engine damage rather than inherit `EffectDamage`'s Force default.
+
+For example, a source with a +8 relevant modifier caps Bleed at 36 and Toxin at 54 before modifiers. Against the Kinrath Queen's 16% Trauma resistance, that Bleed tick becomes 30 before other target modifiers, rather than scaling to 492 from her 14,649 maximum HP.
 
 ### Loadout economy (technique slots)
 
@@ -178,7 +193,7 @@ receive Exposed.
 | Warden Sweep | Physical-damage reflection |
 | Will Fracture | Cone Foggy Mind with FP recovery |
 
-The three stances are **Warden Wall** (defensive aura), **Apex Collapse** (offense-for-defense trade), and **Sustain Burn** (30-second Poison on landed hits).
+The three stances are **Warden Wall Stance** (defensive aura), **Apex Collapse Stance** (offense-for-defense trade), and **Sustain Burn Stance** (30-second Poison on landed hits).
 
 Mechanics reuse shared, stat-driven building blocks such as the chain, detonation, pull, heal, targeting, and status-effect services. Stances use the existing `ConfigureToggle` model; stances and non-damage utility actives are classified separately from damage abilities so their scaling contracts remain accurate.
 

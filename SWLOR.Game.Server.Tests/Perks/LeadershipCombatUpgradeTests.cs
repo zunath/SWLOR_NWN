@@ -123,7 +123,7 @@ public class LeadershipCombatUpgradeTests
         var breakMorale = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Leadership" / "BreakMoraleAbilityDefinition.cs").FullName);
         (breakMorale.Split("LeadershipAbilityEffects.ApplyLeadershipCommandRadiusBonus").Length - 1).Should().Be(2);
         var affectedTargetGuard = breakMorale.IndexOf("if (affectedCount <= 0)", StringComparison.Ordinal);
-        var markTargetRider = breakMorale.IndexOf("Combat.ApplyLeadershipVanguardImpactRiders(activator);", StringComparison.Ordinal);
+        var markTargetRider = breakMorale.IndexOf("Combat.ApplyHostileAbilityPartyBuff(activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability, 0, true);", StringComparison.Ordinal);
         affectedTargetGuard.Should().BeGreaterThanOrEqualTo(0);
         markTargetRider.Should().BeGreaterThan(affectedTargetGuard,
             "Break Morale must grant Mark Target once after at least one direct status application succeeds");
@@ -192,8 +192,7 @@ public class LeadershipCombatUpgradeTests
             "ownership belongs to the game object and must not leak through process-global tracking");
 
         var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
-        combat.Should().Contain("typeof(MarkTarget2StatusEffect)");
-        combat.Should().Contain("typeof(MarkTarget1StatusEffect)");
+        combat.Should().Contain("new HostileAbilityPartyBuffStatusEffect(");
         combat.Should().Contain("AbilityTargeting.GetFriendlyTargets(activator, activator, true, radius)");
         combat.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
         combat.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");

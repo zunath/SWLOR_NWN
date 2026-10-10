@@ -46,7 +46,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 AbilityType.Invalid,
                 new WeaponAbilityProfile
                 {
-                    RestoreFPOnHit = 4
+                    RestoreFPAfterRangedDeflection = 4,
+                    RestoreFPAfterRangedDeflectionWindowSeconds = 30
                 });
 
             ConfigureWeaponAbility(
@@ -77,7 +78,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 AbilityType.Invalid,
                 new WeaponAbilityProfile
                 {
-                    RestoreFPOnHit = 8
+                    RestoreFPAfterRangedDeflection = 8,
+                    RestoreFPAfterRangedDeflectionWindowSeconds = 30
                 });
 
             return builder.Build();

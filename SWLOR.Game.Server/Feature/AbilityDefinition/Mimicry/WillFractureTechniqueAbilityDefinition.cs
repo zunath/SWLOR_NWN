@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Mind,
                 VisualEffect.Vfx_Imp_Fear_S,
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Mind,
-                afterSuccessfulHit: InnateAbility.RestoreFPOnHit(4))
+                afterSuccessfulHitPerCast: InnateAbility.RestoreFPPerHit(4, 12))
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WillFractureTechnique)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

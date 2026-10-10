@@ -196,14 +196,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsRecast = true,
                 },
 
-                // PredatoryBondAbilityDefinition - PLAYER-only toggle: ValidateBeast requires
+                // PredatoryBondStanceAbilityDefinition - PLAYER-only toggle: ValidateBeast requires
                 // GetIsPC(activator) (fresh actor has no status effect yet, so the toggle-off
                 // early-return doesn't apply) then BeastMastery.IsPlayerBeast on the associate.
                 new()
                 {
-                    Feat = FeatType.PredatoryBond,
+                    Feat = FeatType.PredatoryBondStance,
                     Target = AbilityTargetKind.Self,
-                    SkipReason = "ValidateBeast requires GetIsPC(activator) plus a live player-beast associate (BeastMastery.IsPlayerBeast); unreachable for a plain spawned NPC.",
+                    RequiresPlayerBeastFixture = true,
+                    ExpectsRecast = true,
                 },
 
                 // PrimalOverrunAbilityDefinition - self-centered sphere (always centerOnActivator);
@@ -308,20 +309,26 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 new()
                 {
                     Feat = FeatType.Reward1,
+                    ExpectsSTMCost = true,
                     Target = AbilityTargetKind.Self,
-                    SkipReason = "Validation requires GetIsPC(activator), a pet-treat item, and BeastMastery.IsPlayerBeast on the associate; unreachable for a plain spawned NPC.",
+                    RequiresPlayerBeastFixture = true,
+                    ExpectsRecast = true,
                 },
                 new()
                 {
                     Feat = FeatType.Reward2,
+                    ExpectsSTMCost = true,
                     Target = AbilityTargetKind.Self,
-                    SkipReason = "Same PLAYER-only gate as Reward1.",
+                    RequiresPlayerBeastFixture = true,
+                    ExpectsRecast = true,
                 },
                 new()
                 {
                     Feat = FeatType.Reward3,
+                    ExpectsSTMCost = true,
                     Target = AbilityTargetKind.Self,
-                    SkipReason = "Same PLAYER-only gate as Reward1.",
+                    RequiresPlayerBeastFixture = true,
+                    ExpectsRecast = true,
                 },
 
                 // ReviveBeastAbilityDefinition - PLAYER-only: Validation requires GetIsPC(activator),
@@ -329,20 +336,26 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 new()
                 {
                     Feat = FeatType.ReviveBeast1,
+                    ExpectsSTMCost = true,
                     Target = AbilityTargetKind.Self,
-                    SkipReason = "Validation requires GetIsPC(activator) and a Player DB record with a dead ActiveBeastId; unreachable for a plain spawned NPC.",
+                    RequiresPlayerBeastFixture = true,
+                    ExpectsRecast = true,
                 },
                 new()
                 {
                     Feat = FeatType.ReviveBeast2,
+                    ExpectsSTMCost = true,
                     Target = AbilityTargetKind.Self,
-                    SkipReason = "Same PLAYER-only gate as ReviveBeast1.",
+                    RequiresPlayerBeastFixture = true,
+                    ExpectsRecast = true,
                 },
                 new()
                 {
                     Feat = FeatType.ReviveBeast3,
+                    ExpectsSTMCost = true,
                     Target = AbilityTargetKind.Self,
-                    SkipReason = "Same PLAYER-only gate as ReviveBeast1.",
+                    RequiresPlayerBeastFixture = true,
+                    ExpectsRecast = true,
                 },
 
                 // SoothePetAbilityDefinition - PLAYER-only: CustomValidation requires
@@ -350,8 +363,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 new()
                 {
                     Feat = FeatType.SoothePet,
+                    ExpectsSTMCost = true,
                     Target = AbilityTargetKind.Self,
-                    SkipReason = "CustomValidation requires GetIsPC(activator) plus a live player-beast associate (BeastMastery.IsPlayerBeast); unreachable for a plain spawned NPC.",
+                    RequiresPlayerBeastFixture = true,
+                    ExpectsRecast = true,
                 },
 
                 // TameAbilityDefinition - PLAYER-only: CustomValidation requires GetIsPC(activator),
@@ -359,8 +374,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 new()
                 {
                     Feat = FeatType.Tame,
+                    ExpectsSTMCost = true,
                     Target = AbilityTargetKind.Self,
-                    SkipReason = "CustomValidation requires GetIsPC(activator) and a Player DB record; unreachable for a plain spawned NPC. It also requires a distinct tameable target with a non-Invalid BeastType local, which the harness's shared caster/target creature doesn't provide.",
+                    RequiresPlayerBeastFixture = true,
+                    ExpectsRecast = true,
                 },
 
                 // UnbreakableBeastAbilityDefinition - no CustomValidation; unconditional self status.

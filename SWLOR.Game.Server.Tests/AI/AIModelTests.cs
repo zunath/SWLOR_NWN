@@ -236,16 +236,24 @@ public class AIModelTests
     }
 
     [TestCase(8, 8, 0, 8)]
-    [TestCase(8, 8, 50, 8)]
+    [TestCase(8, 8, 27, 8)]
     [TestCase(40, 10, -5, 40)]
     [TestCase(40, 10, 0, 40)]
+    // MGT values are bounded by the Design Bible's progression cap: 26 purchased points plus a
+    // one-time racial point. Cases stay inside 0-27 so they describe costs players actually pay.
     [TestCase(40, 10, 15, 25)]
-    [TestCase(40, 10, 30, 10)]
-    [TestCase(40, 10, 50, 10)]
+    [TestCase(40, 10, 20, 20)]
+    [TestCase(40, 10, 26, 14)]
+    [TestCase(40, 10, 27, 13)]
+    [TestCase(45, 20, 20, 25)]
+    [TestCase(45, 20, 25, 20)]
+    [TestCase(45, 20, 27, 20)]
     public void HitPointCost_SharedByAIAndImpact_RespectsMightAndTheMinimum(
         int basePercent, int minimumPercent, int might, int expected)
     {
         HitPointCostRules.Percent(basePercent, minimumPercent, might).Should().Be(expected);
+        HeavyVibrobladeMightCostRules.Percent(basePercent, minimumPercent, might).Should().Be(expected,
+            "the ability base class and Soul Devourer's recoil share one Might scaling rule");
     }
 
     private sealed class HitPointCostRules : HeavyVibrobladeActiveAbilityDefinitionBase
@@ -694,7 +702,14 @@ public class AIModelTests
             source.IndexOf("private static void ResumeAttackAfterDelay", StringComparison.Ordinal));
 
         resumeBody.Should().Contain("Enmity.IssueAttackCommand(activator, target, clearActions);");
-        resumeBody.Should().Contain("target = Enmity.GetHighestEnmityTarget(activator);");
+        resumeBody.Should().Contain("target = Enmity.GetHighestEnmityAttackTarget(activator);");
+        var invisibilityGuardIndex = resumeBody.IndexOf("if (Stealth.IsInvisible(activator))", StringComparison.Ordinal);
+        invisibilityGuardIndex.Should().BeGreaterThan(-1,
+            "resuming an attack would end invisibility the ability just granted");
+        invisibilityGuardIndex.Should().BeLessThan(
+            resumeBody.IndexOf("Enmity.IssueAttackCommand(activator, target, clearActions);", StringComparison.Ordinal));
+        invisibilityGuardIndex.Should().BeLessThan(
+            resumeBody.IndexOf("ActionAttack(target);", StringComparison.Ordinal));
         delayedResumeBody.Should().Contain("GetIsPC(activator) || GetIsPC(GetMaster(activator))");
         delayedResumeBody.Should().Contain("DelayCommand(delay, () =>");
         animationBody.Should().Contain("if (GetIsPC(activator))");
@@ -758,6 +773,30 @@ public class AIModelTests
         attackActionBody.Should().NotContain("ActionAttack");
         fallbackBody.Should().Contain("Enmity.IssueAttackCommand(creature, target);");
         fallbackBody.Should().NotContain("ActionAttack");
+    }
+
+    [Test]
+    public void InvisibleTargets_AreSkippedByNpcDecisionsAndAttackReissue()
+    {
+        var npcAiSource = ReadSource("SWLOR.Game.Server", "Service", "AIService", "NPCAI.cs").Replace("\r\n", "\n");
+        var enmitySource = ReadSource("SWLOR.Game.Server", "Service", "Enmity.cs").Replace("\r\n", "\n");
+        var weaponSource = ReadSource("SWLOR.Game.Server", "Feature", "AbilityDefinition",
+            "WeaponActiveAbilityDefinitionBase.cs").Replace("\r\n", "\n");
+        var processTriggerBody = ExtractMethodBody(npcAiSource, "public static bool ProcessTrigger");
+        var fallbackBody = ExtractMethodBody(npcAiSource, "private static void ExecuteAbility");
+        var issueBody = ExtractMethodBody(enmitySource, "public static void IssueAttackCommand");
+        var invisibilityBody = ExtractMethodBody(weaponSource, "private void ApplySelfInvisibility");
+
+        processTriggerBody.IndexOf("context.UseAttackableEnmityTarget();", StringComparison.Ordinal)
+            .Should().BeGreaterThan(processTriggerBody.IndexOf("new AIContext(", StringComparison.Ordinal))
+            .And.BeLessThan(processTriggerBody.IndexOf("context.CurrentEnmityTarget", StringComparison.Ordinal));
+        fallbackBody.Should().Contain("target = Enmity.GetHighestEnmityAttackTarget(creature);");
+        issueBody.IndexOf("if (Stealth.IsHiddenByInvisibility(creature, target))", StringComparison.Ordinal)
+            .Should().BeGreaterThan(-1)
+            .And.BeLessThan(issueBody.IndexOf("ActionAttack(target);", StringComparison.Ordinal));
+        invisibilityBody.IndexOf("Enmity.ReevaluateEnemyAttackTargets(activator);", StringComparison.Ordinal)
+            .Should().BeGreaterThan(invisibilityBody.IndexOf("EffectInvisibility(InvisibilityType.Normal)", StringComparison.Ordinal),
+                "enemies must react to the invisibility as soon as it is applied");
     }
 
     [Test]

@@ -85,16 +85,22 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Katar, 5)
 
                 .AddPerkLevel()
-                .Description("Guard chance increases to 25% and guarded hits restore 2 STM.")
+                .Description("Guard chance increases to 25% and guarded hits restore 2 STM. This can trigger once every 6 seconds.")
                 .IncreasesStat(StatType.Guard, 25)
                 .IncreasesStat(StatType.GuardStaminaRestore, 2)
+                .IncreasesStat(StatType.GuardStaminaRestoreCooldownSeconds, 6)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 15)
 
+                // Rank 3 keeps rank 2's Stamina restore: only the purchased rank's stat bonuses
+                // apply, so the rider has to be restated here even though the rank description
+                // only calls out what changed.
                 .AddPerkLevel()
                 .Description("Guard chance increases to 35% and guarded hits reduce physical damage by 30%.")
                 .IncreasesStat(StatType.Guard, 35)
                 .IncreasesStat(StatType.GuardDamageReductionPercentAdjustment, 10)
+                .IncreasesStat(StatType.GuardStaminaRestore, 2)
+                .IncreasesStat(StatType.GuardStaminaRestoreCooldownSeconds, 6)
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 28);
         }
@@ -220,10 +226,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ImpenetrableGripTrait)
-                .Description("Gain +20 Mobility Resistance and +20 Mind Resistance. Guarded hits restore 4 STM.")
+                .Description("Gain +20 Mobility Resistance and +20 Mind Resistance. Guarded hits restore 4 STM. This can trigger once every 6 seconds.")
                 .IncreasesStat(StatType.MobilityResistance, 20)
                 .IncreasesStat(StatType.MindResistance, 20)
                 .IncreasesStat(StatType.GuardStaminaRestore, 4)
+                .IncreasesStat(StatType.GuardStaminaRestoreCooldownSeconds, 6)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 35);
         }
@@ -236,7 +243,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.IronWallStance1)
                 .DroidAISlots(1)
-                .Description("While active, grants +25% Defense, +20% Force Defense, and +30% Enmity generation, but reduces Attack by 25%.")
+                .Description("While active, grants +25% Defense, +20% Force Defense, and +30% Enmity generation, but reduces Attack by 25%. You generate +100% threat from damage dealt, before general Enmity modifiers.")
                 .Price(5)
                 .RequirementSkill(SkillType.Katar, 40);
         }
@@ -264,7 +271,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AdamantineGuard1)
-                .DroidAISlots(1)
                 .Description("For 45 seconds, gain +25 Guard. Guarded hits reduce damage by an additional 20% and generate 75% more enmity.")
                 .Price(6)
                 .RequirementSkill(SkillType.Katar, 50)
@@ -464,7 +470,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ScrapheapLockdown1)
-                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 25 to enemies within 5m of you. Enemies hit suffer Dazed and Hamstring for 30 seconds. Affects up to 5 enemies.")
                 .Price(6)
                 .RequirementSkill(SkillType.Katar, 50)

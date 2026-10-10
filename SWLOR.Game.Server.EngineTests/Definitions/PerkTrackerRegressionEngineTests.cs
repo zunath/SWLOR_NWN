@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(outsiderHP, GetCurrentHitPoints(outsider), "nonparty neighbor receives no healing");
         }
 
-        [EngineTest("Warden Wall grants one defense bonus to its source and nearby party", Category = "PerkTracker", TimeoutSeconds = 30f)]
+        [EngineTest("Warden Wall Stance grants one defense bonus to its source and nearby party", Category = "PerkTracker", TimeoutSeconds = 30f)]
         public static async Task WardenWallDoesNotDoubleCasterBonus(EngineTestContext ctx)
         {
             var caster = ctx.SpawnCreature("nw_bandit001");
@@ -150,15 +150,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitUntilAsync(() => Party.IsInParty(caster, ally), 5f, "the party to include the ally");
             ctx.Assert(!AbilityTargeting.GetFriendlyTargetsNearLocation(caster, GetLocation(caster), 10f, false).Contains(caster),
                 "explicit source exclusion must override party membership");
-            StatusEffect.ApplyStatusEffect(caster, caster, new WardenWallStatusEffect(), 60f);
-            await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect(ally, typeof(WardenWallAuraStatusEffect)), 10f, "the wall to reach the nearby ally");
+            StatusEffect.ApplyStatusEffect(caster, caster, new WardenWallStanceStatusEffect(), 60f);
+            await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect(ally, typeof(WardenWallStanceAuraStatusEffect)), 10f, "the wall to reach the nearby ally");
             foreach (var stat in new[] { StatType.PhysicalDefensePercentAdjustment, StatType.ForceDefensePercentAdjustment })
             {
                 ctx.AssertEqual(20, Stat.GetStatAdjustment(caster, stat), $"caster {stat} is not doubled by its own aura");
                 ctx.AssertEqual(20, Stat.GetStatAdjustment(ally, stat), $"ally {stat}");
             }
-            ctx.Assert(!StatusEffect.HasStatusEffect(caster, typeof(WardenWallAuraStatusEffect)), "caster must not receive its own aura effect");
-            ctx.Assert(!StatusEffect.HasStatusEffect(outsider, typeof(WardenWallAuraStatusEffect)), "wall excludes a nonparty neighbor");
+            ctx.Assert(!StatusEffect.HasStatusEffect(caster, typeof(WardenWallStanceAuraStatusEffect)), "caster must not receive its own aura effect");
+            ctx.Assert(!StatusEffect.HasStatusEffect(outsider, typeof(WardenWallStanceAuraStatusEffect)), "wall excludes a nonparty neighbor");
         }
 
         [EngineTest("Area-use deflection and FP rewards work across skills without requiring a hit", Category = "PerkTracker", TimeoutSeconds = 30f)]
@@ -619,9 +619,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     Stat.ReduceStamina(caster, 20);
                     var before = Stat.GetCurrentStamina(caster);
                     var hp = GetCurrentHitPoints(target);
+                    Combat.ApplyAbilityStaminaCostFPRestore(caster, ability, 9);
                     Ability.BeginAbilityImpact(caster, ability);
                     try { await ctx.ExecuteInCreatureContextAsync(caster, () => ability.ImpactAction(caster, target, 1, GetLocation(caster))); }
-                    finally { Ability.EndAbilityImpact(caster); }
+                    finally
+                    {
+                        Ability.EndAbilityImpact(caster);
+                        Combat.CompleteAbilityStaminaCostContext(caster, ability);
+                    }
                     await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) < hp, 5f, "the area impact to land");
                     ctx.AssertEqual(before + (count >= 3 ? 6 : 0), Stat.GetCurrentStamina(caster), $"{count} targets must refund once only at the three-target threshold");
                 }
@@ -632,62 +637,46 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("Finishing Drive reaches three stacks through its real cooldown", Category = "PerkTracker", TimeoutSeconds = 40f)]
         public static async Task FinishingDriveStacking(EngineTestContext ctx)
         {
-            var caster = ctx.SpawnCreature("nw_bandit001");
-            await ctx.WaitFrameAsync();
-            ctx.SuppressNPCNaturalRegen(caster);
-            ctx.SetNPCResources(caster, 100, 100);
-            SWLOR.NWN.API.NWNX.CreaturePlugin.AddFeat(caster, FeatType.FinishingDriveTechnique);
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var caster = fixture.Creature;
+            ctx.SetResources(caster, 100, 100);
+            fixture.Update(record => record.LearnedTechniques[FeatType.FinishingDriveTechnique] = DateTime.UtcNow);
+            ctx.Assert(Mimicry.EquipTechnique(caster, FeatType.FinishingDriveTechnique), "Finishing Drive equips through the player loadout");
             var startingStamina = Stat.GetCurrentStamina(caster);
-            var ability = Ability.GetAbilityDetail(FeatType.FinishingDriveTechnique);
-            var requiresPlayerLoadout = ability.IsMimicryTechnique;
-            try
+            for (var stack = 1; stack <= 3; stack++)
             {
-                // The NPC fixture cannot own a player loadout. Keep the real activation
-                // and recast pipeline while bypassing only that gate for this serial test.
-                ability.IsMimicryTechnique = false;
-                for (var stack = 1; stack <= 3; stack++)
-                {
-                    if (stack > 1)
-                        await ctx.DelaySecondsAsync(5.1f);
-                    var used = false;
-                    AssignCommand(caster, () => used = UsePerkFeat.TryUseAbility(caster, caster, FeatType.FinishingDriveTechnique, GetLocation(caster), true));
-                    await ctx.WaitUntilAsync(() => used, 3f, "Finishing Drive to activate after its cooldown");
-                    var expected = stack;
-                    await ctx.WaitUntilAsync(() => (StatusEffect.GetStatusEffect(caster, typeof(FinishingDriveMomentumStatusEffect)) as FinishingDriveMomentumStatusEffect)?.Stacks == expected,
-                        3f, "the next Momentum stack");
-                    ctx.AssertEqual(stack * 8, Stat.GetStatAdjustment(caster, StatType.MimicryPotencyPercent), "each cast adds eight percent potency");
-                    ctx.AssertEqual(startingStamina - stack * 5, Stat.GetCurrentStamina(caster), "three Momentum stacks must spend only 15 STM before casting the techniques they amplify");
-                }
+                if (stack > 1)
+                    await ctx.DelaySecondsAsync(5.1f);
+                var used = false;
+                AssignCommand(caster, () => used = UsePerkFeat.TryUseAbility(caster, caster, FeatType.FinishingDriveTechnique, GetLocation(caster)));
+                await ctx.WaitUntilAsync(() => used, 3f, "Finishing Drive to activate after its cooldown");
+                var expected = stack;
+                await ctx.WaitUntilAsync(() => (StatusEffect.GetStatusEffect(caster, typeof(FinishingDriveMomentumStatusEffect)) as FinishingDriveMomentumStatusEffect)?.Stacks == expected,
+                    3f, "the next Momentum stack");
+                ctx.AssertEqual(stack * 8, Stat.GetStatAdjustment(caster, StatType.MimicryPotencyPercent), "each cast adds eight percent potency");
+                ctx.AssertEqual(startingStamina - stack * 5, Stat.GetCurrentStamina(caster), "three Momentum stacks must spend only 15 STM before casting the techniques they amplify");
             }
-            finally { ability.IsMimicryTechnique = requiresPlayerLoadout; }
         }
 
         [EngineTest("Snap Rush requires its cost and recovers stamina after paying it", Category = "PerkTracker", TimeoutSeconds = 15f)]
         public static async Task SnapRushResourceRecovery(EngineTestContext ctx)
         {
-            var caster = ctx.SpawnCreature("nw_bandit001");
-            await ctx.WaitFrameAsync();
-            ctx.SuppressNPCNaturalRegen(caster);
-            ctx.SetNPCResources(caster, 100, 100);
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var caster = fixture.Creature;
+            ctx.SetResources(caster, 100, 100);
+            fixture.Update(record => record.LearnedTechniques[FeatType.SnapRushTechnique] = DateTime.UtcNow);
+            ctx.Assert(Mimicry.EquipTechnique(caster, FeatType.SnapRushTechnique), "Snap Rush equips through the player loadout");
             Stat.ReduceStamina(caster, Stat.GetCurrentStamina(caster) - 3);
             SWLOR.NWN.API.NWNX.CreaturePlugin.AddFeat(caster, FeatType.SnapRushTechnique);
-            var ability = Ability.GetAbilityDetail(FeatType.SnapRushTechnique);
-            var requiresPlayerLoadout = ability.IsMimicryTechnique;
-            try
-            {
-                // Bypass only the player loadout gate for the NPC fixture; retain real costs and recast.
-                ability.IsMimicryTechnique = false;
-                ctx.Assert(!Ability.CanUseAbility(caster, caster, FeatType.SnapRushTechnique, 1, GetLocation(caster)),
-                    "three STM cannot fund a four-STM recovery ability");
-                Stat.RestoreStamina(caster, 1);
-                var used = false;
-                AssignCommand(caster, () => used = UsePerkFeat.TryUseAbility(caster, caster, FeatType.SnapRushTechnique, GetLocation(caster), true));
-                await ctx.WaitUntilAsync(() => used, 3f, "Snap Rush to activate with exactly four STM");
-                await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect(caster, typeof(Hasten1StatusEffect)), 3f, "Snap Rush Haste");
-                ctx.AssertEqual(10, Stat.GetCurrentStamina(caster), "paying four STM and restoring ten must produce a net gain of six");
-                ctx.AssertEqual(15, Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "the recovery preserves fifteen percent Haste");
-            }
-            finally { ability.IsMimicryTechnique = requiresPlayerLoadout; }
+            ctx.Assert(!Ability.CanUseAbility(caster, caster, FeatType.SnapRushTechnique, 1, GetLocation(caster)),
+                "three STM cannot fund a four-STM recovery ability");
+            Stat.RestoreStamina(caster, 1);
+            var used = false;
+            AssignCommand(caster, () => used = UsePerkFeat.TryUseAbility(caster, caster, FeatType.SnapRushTechnique, GetLocation(caster)));
+            await ctx.WaitUntilAsync(() => used, 3f, "Snap Rush to activate with exactly four STM");
+            await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect(caster, typeof(Hasten1StatusEffect)), 3f, "Snap Rush Haste");
+            ctx.AssertEqual(10, Stat.GetCurrentStamina(caster), "paying four STM and restoring ten must produce a net gain of six");
+            ctx.AssertEqual(15, Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "the recovery preserves fifteen percent Haste");
         }
 
         [EngineTest("Droid programming accepts only an owned instruction disc", Category = "PerkTracker", TimeoutSeconds = 30f)]

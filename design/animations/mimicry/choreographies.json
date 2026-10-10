@@ -1,6 +1,6 @@
 [
   {
-    "Id": "ApexCollapseTechnique",
+    "Id": "ApexCollapseStanceTechnique",
     "Description": "Open a deliberately exposed predatory guard, pull the arms wide and lean into an aggressive challenge; expose the guard over a low planted base and lean the challenge through the hips before gathering again",
     "Duration": 2.65,
     "Beats": [
@@ -5203,7 +5203,7 @@
     ]
   },
   {
-    "Id": "SustainBurnTechnique",
+    "Id": "SustainBurnStanceTechnique",
     "Description": "Touch a coating at the belt and wipe it along the held weapon arm before settling into an envenomed guard; remain stable while coating the weapon arm, then settle body weight into the envenomed fighting guard",
     "Duration": 2.65,
     "Beats": [
@@ -6352,7 +6352,7 @@
     ]
   },
   {
-    "Id": "WardenWallTechnique",
+    "Id": "WardenWallStanceTechnique",
     "Description": "Raise a high outward-facing ward from the waist and hold a wide upright protective wall; raise the wall with the legs, then root its sustained protective hold in a firm knee brace",
     "Duration": 3.15,
     "Beats": [

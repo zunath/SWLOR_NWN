@@ -1,6 +1,8 @@
 using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
@@ -15,6 +17,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -140,8 +143,9 @@ public class MimicryTests
                 $"{feat}'s MimicrySourceFeat ({ability.MimicrySourceFeat}) should be a registered NPC ability");
 
             var sourceAbility = npcAbilitiesByFeat[ability.MimicrySourceFeat];
-            ability.Name.Should().Be(sourceAbility.Name,
-                $"{feat}'s name should match the creature ability it replicates ({ability.MimicrySourceFeat})");
+            ability.Name.Should().BeOneOf(new[] { sourceAbility.Name, $"{sourceAbility.Name} Stance" },
+                $"{feat}'s name should match the creature ability it replicates ({ability.MimicrySourceFeat}), " +
+                "optionally carrying the Stance suffix that marks a toggled stance technique");
 
             // Passive traits have no activation, and stances / non-damaging support utilities are not
             // hostile casts, so hostility (an activation concept mirrored from the source) only applies
@@ -237,7 +241,7 @@ public class MimicryTests
         abilityTargeting.Should().Contain("bool includeActivator = true");
         abilityTargeting.Should().Contain(
             "if (creature == activator ? includeActivator : Party.IsInParty(activator, creature))",
-            "excluding the caster must take precedence over party membership for Warden Wall");
+            "excluding the caster must take precedence over party membership for Warden Wall Stance");
         abilityTargeting.Should().Contain(
             "if (!GetIsDead(creature) && GetCurrentHitPoints(creature) > 0)",
             "dead or unconscious party members must not receive Stim Canister");
@@ -454,24 +458,69 @@ public class MimicryTests
             [StatType.DamageDealtShockChance] = 18,
             [StatType.DamageDealtSunderChance] = 21,
             [StatType.ForceAttackPercentAdjustment] = 14,
-            [StatType.ForceDefensePercentAdjustment] = 25,
-            [StatType.PhysicalDefensePercentAdjustment] = 25
+            [StatType.ForceDefensePercentAdjustment] = 12,
+            [StatType.PhysicalDefensePercentAdjustment] = 12
         });
         maximumByResistance.Should().BeEquivalentTo(new Dictionary<ResistanceType, int>
         {
-            [ResistanceType.Fire] = 35,
-            [ResistanceType.Poison] = 35,
-            [ResistanceType.Trauma] = 25
+            [ResistanceType.Fire] = 20,
+            [ResistanceType.Poison] = 20,
+            [ResistanceType.Trauma] = 15
         });
-        maximumCombinedDefense.Should().Be(50,
+        maximumCombinedDefense.Should().Be(24,
             "both carapace traits may stack when the loadout commits four slots to them");
-        maximumCombinedResistance.Should().Be(95,
+        maximumCombinedResistance.Should().Be(55,
             "both carapace traits may stack when the loadout commits four slots to them");
     }
 
-    // The builder is the boundary where a bad trait declaration should fail loudly. An Invalid stat
-    // or resistance would otherwise be stored and summed into the player's totals at runtime under a
-    // sentinel key that no consumer reads, silently costing the trait its bonus.
+    [Test]
+    public void ArcPulse_OffersDamageBeyondTheStarterShockTechniques()
+    {
+        int BaseDamage(string file)
+        {
+            var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName,
+                "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Mimicry", file))).GetRoot();
+            return int.Parse(syntax.DescendantNodes().OfType<InvocationExpressionSyntax>()
+                .Single(call => call.Expression.ToString() == "InnateAbility.BuildArea").ArgumentList.Arguments[9].Expression.ToString());
+        }
+        BaseDamage("ArcPulseTechniqueAbilityDefinition.cs").Should().BeGreaterThan(BaseDamage("StaticWebTechniqueAbilityDefinition.cs"),
+            "a rank-35 three-slot Shock technique must offer a payoff beyond the rank-1 two-slot alternative");
+    }
+
+    [Test]
+    public void CheapDefensiveLoadouts_RetainOffensiveStanceDefensePenalties()
+    {
+        var traits = BuildAllAbilities(MimicryTechniqueNamespace)
+            .Where(technique => technique.Detail.IsMimicryTrait)
+            .Select(technique => technique.Detail).ToArray();
+        var core = BuildPerksWithout2daLookup(new MimicryPerkDefinition(), "CombatAnalyzer", "AnalyzerMemory");
+        (core[PerkType.CombatAnalyzer].PerkLevels[1].Price + core[PerkType.AnalyzerMemory].PerkLevels[1].Price)
+            .Should().Be(4, "partial Mimicry investments must be audited at their real entry cost");
+        var apex = new ApexCollapseStanceStatusEffect();
+        apex.ApplyEffect(1, 1, -1);
+        var wall = new WardenWallStanceStatusEffect();
+        wall.ApplyEffect(1, 1, -1);
+
+        int MaximumDefense(StatType stat, int slots, int index = 0)
+        {
+            if (index == traits.Length) return 0;
+            var best = MaximumDefense(stat, slots, index + 1);
+            var trait = traits[index];
+            return trait.MimicrySlotCost > slots ? best : Math.Max(best,
+                trait.MimicryTraitStats.GetValueOrDefault(stat) + MaximumDefense(stat, slots - trait.MimicrySlotCost, index + 1));
+        }
+
+        foreach (var stat in new[] { StatType.PhysicalDefensePercentAdjustment, StatType.ForceDefensePercentAdjustment })
+        {
+            var cheapDefense = MaximumDefense(stat, 4);
+            cheapDefense.Should().BeLessThanOrEqualTo(12, "a four-SP dip must not buy a tank stance's entire defense budget");
+            (cheapDefense + apex.StatGroup.Stats[stat]).Should().BeLessThan(0,
+                "offensive stances must still sacrifice defense when paired with every legal starter trait loadout");
+            (MaximumDefense(stat, 10 - 3) + wall.StatGroup.Stats[StatType.PhysicalAndForceDefenseAuraPercentAdjustment])
+                .Should().BeLessThanOrEqualTo(22, "a Warden loadout must reserve three slots for its sole personal stance");
+        }
+    }
+
     [Test]
     public void MimicryTraitBuilder_RejectsInvalidStatsAndResistances()
     {
@@ -828,7 +877,7 @@ public class MimicryTests
     }
 
     // feat.2da targeting metadata must match each technique's shape so the client presents the
-    // correct activation UX. Mirrors the AGENTS.md area-targeting convention:
+    // correct activation UX. Mirrors the Readmes/AbilityTargeting.md convention:
     //   - single-target hostile cast  -> HostileFeat=1, TARGETSELF blank (shows a hostile cursor)
     //   - aimed area (line/cone, or a sphere placed at a chosen location) -> HostileFeat=1,
     //     TARGETSELF blank: the player picks the direction or ground point with a cursor, exactly
@@ -973,9 +1022,9 @@ public class MimicryTests
             .MimicrySkillRequirement.Should().Be(1, "CZ-220 Probe Droids are harder than the starter Mynocks");
         techniques[FeatType.SuppressingShotTechnique]
             .MimicrySkillRequirement.Should().Be(1, "CZ-220 Probe Droids are harder than the starter Mynocks");
-        techniques[FeatType.WardenWallTechnique]
+        techniques[FeatType.WardenWallStanceTechnique]
             .MimicrySkillRequirement.Should().Be(47, "level-50 boss techniques begin the final progression band");
-        techniques[FeatType.ApexCollapseTechnique]
+        techniques[FeatType.ApexCollapseStanceTechnique]
             .MimicrySkillRequirement.Should().Be(50, "apex boss techniques remain rank-50 rewards");
     }
 
@@ -1009,11 +1058,11 @@ public class MimicryTests
             "both the initial and post-cast activation checks use CanUseAbility, so an unequipped technique cannot resolve");
 
         var equipped = new Player();
-        equipped.EquippedTechniques.Add(FeatType.WardenWallTechnique);
+        equipped.EquippedTechniques.Add(FeatType.WardenWallStanceTechnique);
 
-        Mimicry.IsTechniqueEquipped(equipped, FeatType.WardenWallTechnique).Should().BeTrue();
-        Mimicry.IsTechniqueEquipped(equipped, FeatType.SustainBurnTechnique).Should().BeFalse();
-        Mimicry.IsTechniqueEquipped((Player)null, FeatType.WardenWallTechnique).Should().BeFalse();
+        Mimicry.IsTechniqueEquipped(equipped, FeatType.WardenWallStanceTechnique).Should().BeTrue();
+        Mimicry.IsTechniqueEquipped(equipped, FeatType.SustainBurnStanceTechnique).Should().BeFalse();
+        Mimicry.IsTechniqueEquipped((Player)null, FeatType.WardenWallStanceTechnique).Should().BeFalse();
     }
 
     [Test]
@@ -1024,9 +1073,9 @@ public class MimicryTests
 
         foreach (var feat in new[]
                  {
-                     FeatType.ApexCollapseTechnique,
-                     FeatType.SustainBurnTechnique,
-                     FeatType.WardenWallTechnique
+                     FeatType.ApexCollapseStanceTechnique,
+                     FeatType.SustainBurnStanceTechnique,
+                     FeatType.WardenWallStanceTechnique
                  })
         {
             techniques[feat].IsMimicryStance.Should().BeTrue();
@@ -1034,10 +1083,25 @@ public class MimicryTests
                 $"{feat} must declare its permanent wearer effect for revocation cleanup");
         }
 
-        techniques[FeatType.WardenWallTechnique]
+        techniques[FeatType.WardenWallStanceTechnique]
             .SourceOwnedStatusEffectTypesRemovedOnPerkRefund
-            .Should().Contain(typeof(WardenWallAuraStatusEffect),
-                "unequipping Warden Wall must also remove the aura it granted to nearby allies");
+            .Should().Contain(typeof(WardenWallStanceAuraStatusEffect),
+                "unequipping Warden Wall Stance must also remove the aura it granted to nearby allies");
+
+        foreach (var (feat, statusType) in new[]
+                 {
+                     (FeatType.FinishingDriveTechnique, typeof(FinishingDriveMomentumStatusEffect)),
+                     (FeatType.FinalMandateTechnique, typeof(FinalMandateStatusEffect)),
+                     (FeatType.StimCanisterTechnique, typeof(StimCanisterStatusEffect)),
+                     (FeatType.SnapRushTechnique, typeof(Hasten1StatusEffect)),
+                     (FeatType.WardenSweepTechnique, typeof(WardenSweepStatusEffect)),
+                     (FeatType.LastBastionTechnique, typeof(LastBastionBarrierStatusEffect)),
+                     (FeatType.LastBastionTechnique, typeof(LastBastionStatusEffect))
+                 })
+        {
+            techniques[feat].SourceOwnedStatusEffectTypesRemovedOnPerkRefund.Should().Contain(statusType,
+                "ongoing benefits must still occupy their technique slots, including benefits granted to allies");
+        }
 
         var root = FindRepositoryRoot();
         var mimicrySource = File.ReadAllText(Path.Combine(
@@ -1053,6 +1117,28 @@ public class MimicryTests
         revokeBody.Should().Contain("StatusEffect.RemoveStatusEffect(player, statusEffectType, false);");
         revokeBody.Should().Contain("detail.SourceOwnedStatusEffectTypesRemovedOnPerkRefund");
         revokeBody.Should().Contain("StatusEffect.RemoveStatusEffectsFromAllTargetsBySource(");
+    }
+
+    [Test]
+    public void TechniqueCleanup_PreservesSharedStatusEffectsGrantedByAnotherAbility()
+    {
+        var snapRush = new SnapRushTechniqueAbilityDefinition().BuildAbilities()[FeatType.SnapRushTechnique];
+        var otherAbility = new AbilityDetail();
+        var snapHaste = new Hasten1StatusEffect { OriginatingAbility = snapRush };
+        var otherHaste = new Hasten1StatusEffect { OriginatingAbility = otherAbility };
+        var alliedHaste = new Hasten1StatusEffect { OriginatingAbility = snapRush };
+        var untrackedHaste = new Hasten1StatusEffect();
+        snapHaste.ApplyEffect(1, 1, 15);
+        otherHaste.ApplyEffect(1, 1, 15);
+        alliedHaste.ApplyEffect(2, 1, 15);
+        untrackedHaste.ApplyEffect(1, 1, 15);
+
+        var effects = new[] { snapHaste, otherHaste, alliedHaste, untrackedHaste };
+        StatusEffect.GetSourceOwnedStatusEffects(effects, typeof(Hasten1StatusEffect), 1, snapRush)
+            .Should().Equal(new IStatusEffect[] { snapHaste }, "unequipping a technique must remove its own benefit without stripping a different perk's or ally's benefit");
+        StatusEffect.GetSourceOwnedStatusEffects(effects, typeof(Hasten1StatusEffect), 1)
+            .Should().Equal(new IStatusEffect[] { snapHaste, otherHaste, untrackedHaste },
+                "source-wide cleanup must still include untracked effects when no originating ability is requested");
     }
 
     [Test]
@@ -1078,14 +1164,31 @@ public class MimicryTests
     [Test]
     public void Mimicry_IsACombatPointEarningSkill()
     {
-        // Mimicry combat points come from two sources: casting techniques, and the Combat Analyzer
-        // recording nearby enemies' technique use (analysis points). Both only convert to Mimicry
-        // skill XP when the creature dies if Mimicry is a non-Exempt combat-point category. The
-        // attribute default is Exempt, so this guards that Mimicry stays a CP-earning skill.
+        // Actively used techniques must continue sharing utility XP. Passive observation pays
+        // separately and must not change the skill's category to bypass active XP sharing.
         var attribute = typeof(SkillType).GetField(nameof(SkillType.Mimicry))!
             .GetCustomAttribute<SkillAttribute>();
         attribute.Should().NotBeNull();
         attribute!.CombatPointCategory.Should().Be(CombatPointCategoryType.Utility);
+    }
+
+    [TestCase(20, 20, 30)]
+    [TestCase(19, 20, 22)]
+    [TestCase(18, 20, 15)]
+    [TestCase(17, 20, 7)]
+    [TestCase(16, 20, 3)]
+    [TestCase(15, 20, 0)]
+    [TestCase(0, 20, 0)]
+    [TestCase(21, 20, 30)]
+    [TestCase(26, 20, 30)]
+    [TestCase(100, 20, 30)]
+    [TestCase(49, 49, 30)]
+    [TestCase(50, 50, 0)]
+    [TestCase(100, 50, 0)]
+    public void ObservationXP_IsSmallRankRelativeAndStopsAtMastery(int npcLevel, int mimicryRank, int expectedXP)
+    {
+        Skill.CacheXPChartData();
+        Mimicry.CalculateAnalysisXP(npcLevel, mimicryRank).Should().Be(expectedXP);
     }
 
     [Test]

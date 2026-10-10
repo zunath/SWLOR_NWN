@@ -670,9 +670,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     dbPlayer.UpgradedStats[ability]++;
                 }
 
-                CreaturePlugin.ModifyRawAbilityScore(_target, ability, 1);
-
                 DB.Set(dbPlayer);
+                Stat.ApplyPlayerStat(dbPlayer, _target, ability);
 
                 FloatingTextStringOnCreature($"Your {abilityName} attribute has increased!", _target, false);
                 LoadData();
@@ -805,12 +804,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var damageAbility = Combat.GetWeaponDamageAbilityType(_target, itemType);
                 var damageStat = GetAbilityScore(_target, damageAbility);
-                var dmg = Item.GetDMG(item) + Combat.GetMiscDMGBonus(_target, itemType);
+                var itemDamage = Item.GetDMG(item);
+                var effectiveDamage = WeaponDamage.GetEffectiveDMG(_target, item, itemDamage);
+                var dmg = effectiveDamage + Combat.GetMiscDMGBonus(_target, itemType);
                 var dmgText = $"{dmg} DMG";
                 var attack = Stat.GetAttack(_target, damageAbility, skill);
                 var defense = Stat.CalculateDefense(damageStat, skillRank, 0);
                 var (min, max) = Combat.CalculateDamageRange(attack, dmg, damageStat, defense, damageStat, 0);
                 var tooltip = $"Est. Damage: {min} - {max}";
+                if (effectiveDamage != itemDamage)
+                {
+                    tooltip += $"\nWeapon DMG: {itemDamage}\nSingle Weapon: +{WeaponDamage.GetNaturalSingleWeaponPercent(_target)}%" +
+                               $"\nDoublehand: +{Stat.GetStatAdjustment(_target, StatType.SingleWeaponDamagePercentAdjustment)}%" +
+                               $"\nEffective weapon DMG: {effectiveDamage}";
+                }
 
                 return (dmgText, tooltip);
             }
@@ -835,9 +842,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 MainHandTooltip = "Est. Damage: N/A";
             }
 
-            if (GetIsObjectValid(offHand))
+            var offhandAttackWeapon = EquipmentPredicates.GetOffhandAttackWeapon(_target);
+            if (GetIsObjectValid(offhandAttackWeapon))
             {
-                var dmgInfo = GetCombatInfo(offHand);
+                var dmgInfo = GetCombatInfo(offhandAttackWeapon);
                 OffHandDMG = dmgInfo.Item1;
                 OffHandTooltip = dmgInfo.Item2;
             }
@@ -955,6 +963,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), "Increases the chance to score a critical hit. Actual chance varies by target Vitality.");
             AddStat("Next Ability Crit", FormatPercent(Combat.GetPersistentNextSkillAbilityCriticalRateBonus(_target, combatProfile.Skill)), "Conditional Critical Rate reserved for the next matching ability. It does not affect ordinary auto-attacks and is consumed only when the ability critically hits.");
             AddStat("Assault Gadget Crit", FormatPercent(GetAssaultGadgetCriticalRate()), "Current Assault Gadget ability critical chance before target-specific bonuses. Includes the 5% baseline, Gadget Harness, Tactical Uplink, and other Devices ability bonuses; capped at 50%.");
+            AddStat("Gadget DMG", DeviceAbilityEffects.GetAssaultGadgetWeaponDamageEquivalent(_target).ToString(), "DMG added to every Assault Gadget ability, the way weapon DMG is added to weapon abilities. Rises with Devices rank: 6 below rank 10, then 10, 15, 19, 24, and 28 at ranks 10, 20, 30, 40, and 50. Droids use their level in place of Devices rank.");
             AddStat("Critical Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.CriticalDamagePercentAdjustment)), "Increases the amount of damage a critical hit deals.");
             AddStat("Damage Dealt", FormatPercent(Stat.GetStatAdjustment(_target, StatType.DamageDealtPercentAdjustment)), "Adjusts all outgoing damage.");
             AddStat("Weapon/Force Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.WeaponAndForceDamageDealtPercentAdjustment)), "Adjusts outgoing weapon and Force damage. Stacks with Damage Dealt.");
@@ -965,6 +974,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("STM Cost", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AbilityStaminaCostPercentAdjustment)), "Adjusts the Stamina cost of abilities. Lower is better.");
             AddStat("Haste", FormatPercent(Combat.CalculateAttackDelayReduction(_target)), "Increases attack speed. Negative values slow attacks.");
             AddStat("Off-Hand Haste", FormatPercent(Combat.CalculateOffhandAttackDelayReduction(_target)), "Increases off-hand attack speed. Only applies while dual wielding.");
+            AddStat("Single Weapon DMG", FormatPercent(EquipmentPredicates.HasSingleWeapon(_target) ? WeaponDamage.GetSingleWeaponPercent(_target) : 0),
+                "Bonus to the item's weapon DMG with one eligible one-handed melee, pistol, or throwing weapon and an empty off hand. Includes the natural bonus and Doublehand; already included in equipped DMG.");
             AddStat("Ranged Evasion", FormatPercent(Stat.GetStatAdjustment(_target, StatType.RangedEvasionPercentAdjustment)), "Evasion adjustment against ranged attacks.");
             AddStat("Slow", GetEffectStateLabel(EffectTypeScript.Slow), "Reduces attack speed.");
             AddStat("Paralysis", GetEffectStateLabel(EffectTypeScript.Paralyze), "Prevents auto attacks and other actions.");

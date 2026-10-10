@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service.CompanionControlService;
@@ -121,9 +122,11 @@ namespace SWLOR.Game.Server.Service.AIService
                 : GetLocation(Self);
 
             var count = 0;
-            var creature = GetFirstObjectInShape(Shape.Sphere, radius, origin, true, ObjectType.Creature);
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, radius, origin, true, ObjectType.Creature))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (creature != Self &&
                     GetIsEnemy(creature, Self) &&
                     GetCurrentHitPoints(creature) > 0 &&
@@ -132,7 +135,6 @@ namespace SWLOR.Game.Server.Service.AIService
                     count++;
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, radius, origin, true, ObjectType.Creature);
             }
 
             return count;

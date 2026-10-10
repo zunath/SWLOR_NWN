@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature;
@@ -2129,17 +2130,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
 
             var location = GetLocation(activator);
-            var creature = GetFirstObjectInShape(Shape.Sphere, 5f, location, true);
-
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, 5f, location, true))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (creature != activator && Party.IsInParty(activator, creature))
                 {
                     if (StatusEffect.ApplyStatusEffect(activator, creature, statusEffectFactory(), duration, CombatDamageType.Physical))
                         Ability.PlaySuccessfulImpactVisualEffect(activator, creature);
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, 5f, location, true);
             }
         }
 
@@ -2161,10 +2162,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(areaVisualEffect), location);
             }
 
-            var creature = GetFirstObjectInShape(Shape.Sphere, 5f, location, true);
-
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, 5f, location, true))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (GetIsReactionTypeHostile(creature, activator))
                 {
                     if (targetVisualEffect != VisualEffect.None)
@@ -2182,7 +2184,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     }
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, 5f, location, true);
             }
         }
 

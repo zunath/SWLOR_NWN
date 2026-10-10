@@ -240,7 +240,7 @@ public class DevicesGrenadierTests
         adhesiveGrenade.Should().Contain("DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 4f)");
         adhesiveGrenade.Should().NotContain("centerOnActivator: !GetIsObjectValid(target)");
 
-        ionGrenade.Should().Contain("while (GetIsObjectValid(creature))");
+        ionGrenade.Should().Contain("foreach (var creature in ObjectSnapshot.InShape(");
         ionGrenade.Should().Contain("Ability.ApplyCombatImpact(");
         ionGrenade.Should().Contain("damageType: CombatDamageType.Electrical");
         ionGrenade.Should().Contain("damagePercentAdjustment: impactedTarget => IsDroid(impactedTarget) ? droidBonusPercent : 0");

@@ -290,8 +290,7 @@ public class DevicesFieldEngineerTests
         var root = FindRepositoryRoot();
         var effects = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "DeviceAbilityEffects.cs").FullName);
 
-        effects.Should().Contain("GetFirstObjectInShape(Shape.Sphere, radius, location, true, ObjectType.Creature)");
-        effects.Should().Contain("GetNextObjectInShape(Shape.Sphere, radius, location, true, ObjectType.Creature)");
+        effects.Should().Contain("ObjectSnapshot.InShape(Shape.Sphere, radius, location, true, ObjectType.Creature)");
         effects.Should().Contain("!GetIsDead(creature)");
         effects.Should().Contain("GetCurrentHitPoints(creature) > 0");
         effects.Should().NotContain("GetNearestCreatureToLocation(CreatureType.IsAlive, true, location, nth)");

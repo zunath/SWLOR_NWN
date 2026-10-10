@@ -7,19 +7,34 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class PlayerFacingNameBroadcastTests
 {
     [Test]
-    public void DMShoutLabel_IsRestoredOnlyForStaffOnLogin()
+    public void DMShoutLabel_RefreshesForStaffAfterLoadingAndWhenChatReceivesFocus()
     {
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Communication.cs"));
-        var method = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree.ParseText(source).GetRoot()
+        var methods = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree.ParseText(source).GetRoot()
             .DescendantNodes().OfType<Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax>()
-            .Single(node => node.Identifier.ValueText == "ApplyDMShoutChannelName");
+            .ToDictionary(node => node.Identifier.ValueText);
+        var login = methods["ApplyDMShoutChannelName"];
+        var gui = methods["RefreshDMShoutChannelName"];
+        var restore = methods["RestoreDMShoutChannelName"];
 
-        method.AttributeLists.ToString().Should().Contain("NWNEventHandler(ScriptName.OnModuleEnter)");
-        var guard = method.Body!.Statements.OfType<Microsoft.CodeAnalysis.CSharp.Syntax.IfStatementSyntax>().Single();
-        guard.Condition.ToString().Should().Be("!GetIsDM(player) && !GetIsDMPossessed(player)");
+        login.AttributeLists.ToString().Should().Contain("NWNEventHandler(ScriptName.OnModuleEnter)");
+        login.Body!.Statements.Single().ToString().Should().Be("RestoreDMShoutChannelName(GetEnteringObject());");
+
+        gui.AttributeLists.ToString().Should().Contain("NWNEventHandler(ScriptName.OnModuleGuiEvent)");
+        var eventGuard = gui.Body!.Statements.OfType<Microsoft.CodeAnalysis.CSharp.Syntax.IfStatementSyntax>().Single();
+        eventGuard.Condition.ToString().Should().Be("type != GuiEventType.AreaLoadScreenFinished && type != GuiEventType.ChatBarFocus");
+        eventGuard.Statement.Should().BeOfType<Microsoft.CodeAnalysis.CSharp.Syntax.ReturnStatementSyntax>();
+        gui.Body.Statements.Last().ToString().Should().Be("RestoreDMShoutChannelName(GetLastGuiEventPlayer());");
+
+        var guard = restore.Body!.Statements.OfType<Microsoft.CodeAnalysis.CSharp.Syntax.IfStatementSyntax>().Single();
+        guard.Condition.ToString().Should().Be("!GetIsObjectValid(player) || (!GetIsDM(player) && !GetIsDMPossessed(player))");
         guard.Statement.Should().BeOfType<Microsoft.CodeAnalysis.CSharp.Syntax.ReturnStatementSyntax>();
-        method.Body.Statements.Last().ToString().Should().Be("PlayerPlugin.SetTlkOverride(player, 66751, \"Shout\");");
+        restore.Body.Statements.Last().ToString().Should().Be("PlayerPlugin.SetTlkOverride(player, 66751, \"Shout\");");
+
+        var globalOverrides = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "TlkOverrides.cs"));
+        globalOverrides.Should().Contain("SetTlkOverride(66751, \"Disabled\");");
+        globalOverrides.Should().NotContain("SetTlkOverride(66751, \"Shout\");");
     }
 
     [Test]

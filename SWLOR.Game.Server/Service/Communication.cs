@@ -67,10 +67,26 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ApplyDMShoutChannelName()
         {
-            var player = GetEnteringObject();
-            if (!GetIsDM(player) && !GetIsDMPossessed(player))
+            RestoreDMShoutChannelName(GetEnteringObject());
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleGuiEvent)]
+        public static void RefreshDMShoutChannelName()
+        {
+            var type = GetLastGuiEventType();
+            if (type != GuiEventType.AreaLoadScreenFinished && type != GuiEventType.ChatBarFocus)
                 return;
 
+            RestoreDMShoutChannelName(GetLastGuiEventPlayer());
+        }
+
+        private static void RestoreDMShoutChannelName(uint player)
+        {
+            if (!GetIsObjectValid(player) || (!GetIsDM(player) && !GetIsDMPossessed(player)))
+                return;
+
+            // Personal TLK overrides are packets, not stored overrides in NWNX_Player.
+            // Reapply after the client loads and before typing, as well as on login.
             // The global "Disabled" label applies to players; staff retain native Shout.
             PlayerPlugin.SetTlkOverride(player, 66751, "Shout");
         }

@@ -2,23 +2,19 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 150
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 15
+    "value": 314
   },
   "Charges": {
     "type": "byte",
     "value": 0
   },
-  "Comment": {
-    "type": "cexostring",
-    "value": ""
-  },
   "Cost": {
     "type": "dword",
-    "value": 151
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -27,13 +23,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A portable datapad for keeping notes and displaying information during roleplay. This cosmetic inventory item grants no gameplay bonuses."
+      "0": "A handheld datapad for displaying notes and information. This cosmetic accessory can be held in your hand for roleplay and grants no gameplay bonuses."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A portable datapad for keeping notes and displaying information during roleplay. This cosmetic inventory item grants no gameplay bonuses."
+      "0": "A handheld datapad for displaying notes and information. This cosmetic accessory can be held in your hand for roleplay and grants no gameplay bonuses."
     }
   },
   "Identified": {
@@ -43,16 +39,20 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Datapad B"
+      "0": "Datapad"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 19
+    "value": 11
   },
-  "PaletteID": {
+  "ModelPart2": {
     "type": "byte",
-    "value": 112
+    "value": 72
+  },
+  "ModelPart3": {
+    "type": "byte",
+    "value": 11
   },
   "Plot": {
     "type": "byte",
@@ -72,14 +72,26 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "DatapadB"
+    "value": "handdatapad"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "night_datapadb"
+    "value": "handdatapad"
   },
   "xModelPart1": {
     "type": "word",
-    "value": 19
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 72
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 112
   }
 }

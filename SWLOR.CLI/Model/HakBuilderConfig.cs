@@ -21,5 +21,6 @@ namespace SWLOR.CLI.Model
         public string Name { get; set; }
         public string Path { get; set; }
         public bool CompileModels { get; set; }
+        public string ModelGenerator { get; set; }
     }
 }

@@ -91,6 +91,7 @@
     {
       "Name": "sw_pt_cloak",
       "Path": "../SWLOR_Haks/sw_pt_cloak/",
+      "ModelGenerator": "../SWLOR_Haks/tools/GenerateRobeCloakModels.py",
       "CompileModels": false
     },
     {

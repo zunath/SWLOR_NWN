@@ -96,14 +96,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
 
                 // Match NWNX_Item_SetItemAppearance's observer refresh, including hands.
                 // Only the client's cached item is discarded; ownership and equipment stay put.
-                message.SendServerPlayerItemUpdate_DestroyItem(player, item);
                 if (handItem || cloakItem)
                 {
-                    // The inventory GUI tracks equipment independently of creature appearance.
-                    // After destroying the client's item, also resend its inventory-slot add.
-                    InvalidateInventorySlot(player.m_pInventoryGUI, creature, item);
-                    InvalidateInventorySlot(player.m_pOtherInventoryGUI, creature, item);
+                    RefreshInventorySlot(player, player.m_pInventoryGUI, creature, item, cloakItem);
+                    RefreshInventorySlot(player, player.m_pOtherInventoryGUI, creature, item, cloakItem);
                 }
+                message.SendServerPlayerItemUpdate_DestroyItem(player, item);
                 refreshedClient = true;
             }
 
@@ -119,15 +117,47 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                 DelayCommand(QuickbarRefreshDelaySeconds, () => RefreshHandAppearance(creature, item));
         }
 
-        private static void InvalidateInventorySlot(CNWSPlayerInventoryGUI gui, uint creature, uint item)
+        private static unsafe void RefreshInventorySlot(CNWSPlayer player, CNWSPlayerInventoryGUI gui, uint creature, uint item, bool clearIcon)
         {
             if (gui == null || gui.m_oidInventoryOwner != creature || gui.m_pcLastUpdateInventory == null)
                 return;
 
+            var message = NWNXLib.g_pAppManager.m_pServerExoApp.GetNWSMessage();
+            var writing = false;
             var slots = gui.m_pcLastUpdateInventory.m_oidInventorySlots;
             for (var index = 0; index < 18; index++)
+            {
                 if (slots[index] == item)
+                {
+                    if (clearIcon && gui.m_bGuiInventoryOpen != 0)
+                    {
+                        if (!writing)
+                        {
+                            message.CreateWriteMessage(128, player.m_nPlayerID, 1);
+                            writing = true;
+                        }
+
+                        // Native MajorGUIPanels_Inventory's slot-delete record. A slot add
+                        // for the same item ID leaves the client's existing icon cached.
+                        // Delete only its GUI entry before the normal update sends fresh
+                        // appearance data; the server's equipment never moves.
+                        message.WriteCHAR((byte)'G');
+                        message.WriteCHAR((byte)(player.m_oidNWSObject == creature ? 'I' : 'i'));
+                        message.WriteCHAR((byte)'D');
+                        message.WriteDWORD(1u << index);
+                    }
                     slots[index] = OBJECT_INVALID;
+                }
+            }
+
+            if (!writing)
+                return;
+
+            byte* data = null;
+            uint size = 0;
+            if (message.GetWriteMessage(&data, &size) != 0 && size > 0)
+                message.SendServerToPlayerMessage(player.m_nPlayerID,
+                    (byte)MessageMajor.GameObjectUpdate, (byte)MessageGameObjectUpdateMinor.ObjectList, data, size);
         }
 
         private static void RefreshHandAppearance(uint creature, uint item)

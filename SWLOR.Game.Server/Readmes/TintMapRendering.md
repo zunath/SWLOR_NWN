@@ -258,6 +258,10 @@ The generator retains canonical cloak geometry, materials, skin binds and animat
 parents, changing only the model and root names. `BuildHaks.cmd` checks the output
 manifest before packaging. Changing a robe phenotype also refreshes the equipped
 cloak after the body update, including when returning to the base body.
+Equipped cloak edits also delete the affected open inventory GUI slot
+before resending it. Resending an add for the same item ID alone leaves the native
+client's icon cached. This refresh changes only client GUI state; item ownership,
+equipment and equip/unequip events remain untouched.
 
 `RobeSkeleton.py` generates shared animation parents for every converted model,
 including custom coats and robes with different joint hierarchies. Body and

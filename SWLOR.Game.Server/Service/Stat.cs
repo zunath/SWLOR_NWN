@@ -2278,7 +2278,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void ApplyHealingReceivedEffects(uint creature, int amount)
         {
-            if (CalculateEffectiveHealingAmount(amount, GetCurrentHitPoints(creature), GetMaxHitPoints(creature)) <= 0)
+            if (CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), GetMaxHitPoints(creature)) <= 0)
                 return;
             ApplyHealingReceivedStaminaRestore(creature);
             ApplyHealingReceivedAttackBoost(creature);

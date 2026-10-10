@@ -219,6 +219,20 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Native current HP includes temporary HP. Subtract queued damage so another hit
+        /// cannot draw healing from health already claimed by an earlier impact.
+        /// </summary>
+        public static int GetRemainingDamageTargetHP(uint activator, uint target)
+        {
+            if (!GetIsObjectValid(target) || GetPlotFlag(target))
+                return 0;
+
+            var pendingDamage = GetTrackedAbilityImpact(activator)?.GetPendingDamage(target) ?? 0;
+            var currentHP = GetCurrentHitPoints(target);
+            return Combat.CalculateDamageEligibleForHealing(currentHP, currentHP, pendingDamage);
+        }
+
+        /// <summary>
         /// Reuses a payload's contributing sources within one impact. Delayed phases and
         /// recurring pulses receive fresh trackers, while conditions can still be checked per target.
         /// </summary>
@@ -2360,7 +2374,7 @@ namespace SWLOR.Game.Server.Service
             DamageType? effectDamageType = null,
             bool firstHostileAbilityHitDamageBonusApplied = false)
         {
-            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator);
+            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
             var trackedImpact = GetTrackedAbilityImpact(activator);
 
             // Register the combat point before applying damage. A lethal hit resolves the target's
@@ -2483,7 +2497,7 @@ namespace SWLOR.Game.Server.Service
             bool canCritical = true,
             bool useUnscaledDamage = false)
         {
-            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator);
+            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
             var trackedImpact = GetTrackedAbilityImpact(activator);
             Combat.TrackHostileAbilityActivity(activator);
             Combat.TrackHostileDefensiveCombatEntryActivity(target, activator);
@@ -3669,6 +3683,11 @@ namespace SWLOR.Game.Server.Service
             public void QueueDamageEffect(uint target, int damage, DamageType damageType)
             {
                 QueueDamageEffect(target, damage, damageType, CombatDamageType.Invalid);
+            }
+
+            public int GetPendingDamage(uint target)
+            {
+                return _pendingDamageEffects.Where(effect => effect.Target == target).Sum(effect => effect.Damage);
             }
 
             public void QueueDirectDamageEffect(

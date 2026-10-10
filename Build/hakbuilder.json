@@ -2,6 +2,13 @@
   "TlkPath": "../SWLOR_Haks/sw_tlk/sw_tlk.tlk",
   "OutputPath": "../debugserver/",
   "EnableChecksumChecking": true,
+  "BeforeBuild": [
+    {
+      "Command": "python",
+      "Arguments": ["-B", "../SWLOR_Haks/tools/GenerateNeckBindings.py", "--ensure"],
+      "OutputDirectories": ["../SWLOR_Haks/sw_neck_f0", "../SWLOR_Haks/sw_neck_f1"]
+    }
+  ],
   "HakList": [
     {
       "Name": "sw_2da",

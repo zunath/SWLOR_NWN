@@ -1961,8 +1961,12 @@ def stance_stat_entries(row):
     skill_expr = skill_type_expression(row)
     base, _ = base_and_level(row["PerkName"])
     exact_stats = exact_weapon_stance_stat_entries(row, base)
+    damage_enmity = parse_percent(r"\+(\d+)% threat from damage dealt", description)
     if exact_stats is not None:
+        if damage_enmity:
+            exact_stats.append(("DamageEnmityPercentAdjustment", damage_enmity))
         return exact_stats
+    add_stat(stats, "DamageEnmityPercentAdjustment", damage_enmity)
 
     add_stat(stats, "AttackPercentAdjustment", parse_percent(r"\+(\d+)% Attack", description))
     add_stat(stats, "ForceAttackPercentAdjustment", parse_percent(r"\+(\d+)% Force Attack", description))

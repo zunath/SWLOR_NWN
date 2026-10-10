@@ -6188,6 +6188,10 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         AutoAttackHitStaminaRestore = 1097,
 
+        /// <summary>Percent bonus to threat from damage events, before general enmity modifiers.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageEnmityPercentAdjustment = 1098,
+
     }
 
     public class StatTypeAttribute : Attribute

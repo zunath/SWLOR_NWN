@@ -47,6 +47,27 @@ public class AppearanceEditorColorStateTests
     }
 
     [Test]
+    public void EquipmentChangesReloadPartOptionsBeforeRefreshingColors()
+    {
+        var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
+        var refreshMethods = root.DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Where(method => method.Identifier.ValueText == "Refresh").ToArray();
+        foreach (var eventType in new[] { "EquipItemRefreshEvent", "UnequipItemRefreshEvent" })
+            refreshMethods.Single(method => method.ParameterList.Parameters[0].Type!.ToString() == eventType)
+                .ToString().Should().Contain("RefreshTintMapEditorAfterAppearanceChange(refreshItemParts: true)");
+        refreshMethods.Single(method => method.ParameterList.Parameters[0].Type!.ToString() == "AppearanceChangedRefreshEvent")
+            .ToString().Should().NotContain("refreshItemParts: true",
+                "appearance edits must not reload combo options while the user is adjusting a part");
+
+        var refresh = FindMethod(root, "RefreshTintMapEditorAfterAppearanceChange").ToString();
+        refresh.IndexOf("ToggleItemEquippedFlags()", StringComparison.Ordinal).Should()
+            .BeLessThan(refresh.IndexOf("LoadItemParts()", StringComparison.Ordinal));
+        refresh.Should().Contain("if (refreshItemParts)");
+        refresh.IndexOf("LoadItemParts()", StringComparison.Ordinal).Should()
+            .BeLessThan(refresh.IndexOf("LoadTintMapEditor()", StringComparison.Ordinal));
+    }
+
+    [Test]
     public void ArmorHydrationDisablesEditingUntilCurrentOptionsHaveBeenPublished()
     {
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();

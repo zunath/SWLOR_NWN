@@ -680,6 +680,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             int activatorTemporaryHPBefore,
             int targetTemporaryHPBefore)
         {
+            if (behaviorCase.MinimumTargetEnmityAfterImpact > 0)
+            {
+                await ctx.WaitUntilAsync(
+                    () => Enmity.GetEnmityTable(impactTarget).GetValueOrDefault(caster) >= behaviorCase.MinimumTargetEnmityAfterImpact,
+                    EffectWaitSeconds, "ability impact to generate the declared threat");
+            }
             foreach (var effectType in behaviorCase.ExpectedActivatorStatusEffects)
             {
                 await ctx.WaitUntilAsync(

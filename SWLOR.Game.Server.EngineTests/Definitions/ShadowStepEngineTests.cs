@@ -17,6 +17,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("Shadow Step lands behind an engaged target that stays facing away while stunned", Category = "Espionage", TimeoutSeconds = 40f)]
         public static async Task ShadowStepKeepsEngagedTargetFacingAway(EngineTestContext ctx)
         {
+            await VerifyArrival(ctx, FeatType.ShadowStep1, false);
+        }
+
+        [EngineTest("Both Shadow Step ranks teleport behind the target during an ongoing melee attack", Category = "ShadowStep", TimeoutSeconds = 80f)]
+        public static async Task TeleportsBehindTargetDuringMelee(EngineTestContext ctx)
+        {
+            foreach (var feat in new[] { FeatType.ShadowStep1, FeatType.ShadowStep2 })
+                await VerifyArrival(ctx, feat, true);
+        }
+
+        private static async Task VerifyArrival(EngineTestContext ctx, FeatType feat, bool attacking)
+        {
             var arena = await QuietArena.CreateAsync(ctx);
             var caster = arena.Spawn(ActorResref, 6f, 90f);
             var target = arena.Spawn(ActorResref, 9f, 270f);
@@ -32,7 +44,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SuppressNPCNaturalRegen(caster);
             ctx.SuppressNPCNaturalRegen(target);
             ctx.SeedRandom(4417);
-            var ability = new ShadowStepAbilityDefinition().BuildAbilities()[FeatType.ShadowStep1];
+            var ability = new ShadowStepAbilityDefinition().BuildAbilities()[feat];
 
             Combat.SetAutoAttackHitResolutionOverride(false);
             try
@@ -49,6 +61,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     await ctx.DelaySecondsAsync(0.25f);
                 }
 
+                if (attacking)
+                {
+                    AssignCommand(caster, () => ActionAttack(target));
+                    await ctx.WaitUntilAsync(
+                        () => GetCurrentAction(caster) == ActionType.AttackObject &&
+                              Combat.HasRecentAttackActivity(caster, 3f),
+                        10f, $"the caster to be swinging in melee before {feat}");
+                    ctx.Assert(GetDistanceBetween(caster, target) < 2f, "The caster starts in melee range");
+                }
+
                 var facingAtCast = GetFacing(target);
                 var landingPoint = BehindPosition(target, facingAtCast);
                 var evasionBeforeCast = Stat.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment);
@@ -58,11 +80,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // and can drop the queued jump, which a player's resume never does.
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
                 {
-                    ClearAllActions(true);
+                    if (!attacking)
+                        ClearAllActions(true);
                     Ability.BeginAbilityImpact(caster, ability);
                     try
                     {
-                        ability.ImpactAction(caster, target, 1, GetLocation(target));
+                        ability.ImpactAction(caster, target, ability.AbilityLevel, GetLocation(target));
                     }
                     finally
                     {

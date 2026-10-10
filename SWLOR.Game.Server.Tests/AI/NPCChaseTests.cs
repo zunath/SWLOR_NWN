@@ -26,7 +26,7 @@ public class NPCChaseTests
             "RemoveProximityEnmityTracking", "ShouldRemoveStaleProximityTarget",
             "ResumeAttackAfterActionsCleared", "AttackTargetIfNeeded",
             "ShouldIssueAttackCommand", "HasRecentAttackCommand",
-            "GetHighestEnmityAttackTarget", "HoldForHiddenTargets");
+            "GetHighestEnmityAttackTarget", "IsEligibleAttackTarget", "HoldForHiddenTargets");
         var source = $$"""
             using System;
             using System.Collections.Generic;
@@ -48,6 +48,8 @@ public class NPCChaseTests
                 public static uint GetBlockingDoor() => 200;
                 public static ObjectType GetObjectType(uint target) => CreatureBlock ? ObjectType.Creature : ObjectType.Door;
                 public static uint GetArea(uint creature) => 300;
+                public static bool GetIsDead(uint creature) => false;
+                public static int GetCurrentHitPoints(uint creature) => 100;
                 public static uint GetAttackTarget(uint creature) => AttackTarget;
                 public static ActionType GetCurrentAction(uint creature) => CurrentAction;
                 public static string GetName(uint creature) => creature.ToString();
@@ -97,6 +99,7 @@ public class NPCChaseTests
                 private static readonly Dictionary<uint, List<uint>> _creatureToEnemies = new();
                 private static readonly Dictionary<uint, Dictionary<uint, int>> _proximityEnmityAmounts = new();
                 private static readonly Dictionary<uint, DateTime> _attackCommandTimes = new();
+                private static readonly Dictionary<uint, uint> _attackCommandTargets = new();
                 private static bool ShouldRecoverStaleAttack(uint creature, uint attackTarget, uint target, ActionType action) => false;
                 private static float GetStaleAttackRecoverySeconds(uint creature) => 4.5f;
                 private static void IssueAttackCommand(uint creature, uint target)
@@ -104,6 +107,7 @@ public class NPCChaseTests
                     AttackCommands++;
                     AttackTarget = target;
                     _attackCommandTimes[creature] = DateTime.UtcNow;
+                    _attackCommandTargets[creature] = target;
                 }
                 {{enmityMethods}}
 

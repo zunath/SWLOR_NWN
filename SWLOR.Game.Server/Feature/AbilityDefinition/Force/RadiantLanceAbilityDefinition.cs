@@ -146,19 +146,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 (float)Math.Sin(rotation) * LineLengthMeters, 0f);
             var endLocation = Location(GetArea(activator), end, GetFacing(activator));
 
-            // MIRV projectiles need an object endpoint, including casts aimed at ground.
-            var projectileTarget = GetIsObjectValid(target) && target != activator
-                ? target
-                : CreateObject(ObjectType.Placeable, "plc_invisobj", endLocation);
+            // Always show the full damage line, even when the selected creature is nearer.
+            var projectileTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", endLocation);
             if (!GetIsObjectValid(projectileTarget))
                 return;
 
-            if (projectileTarget != target)
-            {
-                SetPlotFlag(projectileTarget, true);
-                SetUseableFlag(projectileTarget, false);
-                DestroyObject(projectileTarget, 3f);
-            }
+            SetPlotFlag(projectileTarget, true);
+            SetUseableFlag(projectileTarget, false);
+            DestroyObject(projectileTarget, 3f);
 
             AssignCommand(activator, () => ApplyEffectToObject(
                 DurationType.Instant,

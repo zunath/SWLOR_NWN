@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Service
             int baseFP;
 
             // Players
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 if (dbPlayer == null)
                 {
@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Service
             int baseStamina;
 
             // Players
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 if (dbPlayer == null)
                 {
@@ -338,18 +338,20 @@ namespace SWLOR.Game.Server.Service
             amount = ApplyFPRestoreAdjustment(creature, amount);
             if (amount <= 0) return 0;
 
-            var maxFP = GetMaxFP(creature);
+            var isPlayer = GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
+            if (isPlayer)
+            {
+                dbPlayer ??= DB.Get<Player>(GetObjectUUID(creature));
+                // A status timer can run before the character's persisted data is available.
+                if (dbPlayer == null) return 0;
+            }
+
+            var maxFP = GetMaxFP(creature, dbPlayer);
             var restored = 0;
 
             // Players
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (isPlayer)
             {
-                var playerId = GetObjectUUID(creature);
-                if (dbPlayer == null)
-                {
-                    dbPlayer = DB.Get<Player>(playerId);
-                }
-
                 var current = dbPlayer.FP;
                 dbPlayer.FP = Math.Min(maxFP, current + amount);
                 restored = Math.Max(0, dbPlayer.FP - current);
@@ -427,18 +429,20 @@ namespace SWLOR.Game.Server.Service
         {
             if (amount <= 0) return 0;
 
-            var maxSTM = GetMaxStamina(creature);
+            var isPlayer = GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
+            if (isPlayer)
+            {
+                dbPlayer ??= DB.Get<Player>(GetObjectUUID(creature));
+                // A status timer can run before the character's persisted data is available.
+                if (dbPlayer == null) return 0;
+            }
+
+            var maxSTM = GetMaxStamina(creature, dbPlayer);
             var restored = 0;
 
             // Players
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (isPlayer)
             {
-                var playerId = GetObjectUUID(creature);
-                if (dbPlayer == null)
-                {
-                    dbPlayer = DB.Get<Player>(playerId);
-                }
-
                 var current = dbPlayer.Stamina;
                 dbPlayer.Stamina = Math.Min(maxSTM, current + amount);
                 restored = Math.Max(0, dbPlayer.Stamina - current);
@@ -711,9 +715,32 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (ability == AbilityType.Invalid) return;
 
+            CreaturePlugin.SetRawAbilityScore(player, ability, GetPlayerAttributeScore(entity, ability));
+        }
+
+        private static int GetPlayerAttributeScore(Player entity, AbilityType ability)
+        {
             var racialBonus = entity.RacialStat == ability ? 1 : 0;
-            var totalStat = entity.BaseStats[ability] + entity.UpgradedStats[ability] + racialBonus;
-            CreaturePlugin.SetRawAbilityScore(player, ability, totalStat);
+            return entity.BaseStats[ability] + entity.UpgradedStats[ability] + racialBonus;
+        }
+
+        public static void RestorePlayerAttributes(uint player)
+        {
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) return;
+
+            var entity = DB.Get<Player>(GetObjectUUID(player));
+            RestorePlayerAttributes(entity,
+                (ability, score) => CreaturePlugin.SetRawAbilityScore(player, ability, score));
+        }
+
+        internal static void RestorePlayerAttributes(Player entity, Action<AbilityType, int> setAbilityScore)
+        {
+            // A crash can leave the character file behind the saved AP investments.
+            // Assign totals so reconnecting never drops or doubles purchased points.
+            foreach (var ability in entity.BaseStats.Keys)
+            {
+                setAbilityScore(ability, GetPlayerAttributeScore(entity, ability));
+            }
         }
 
         /// <summary>

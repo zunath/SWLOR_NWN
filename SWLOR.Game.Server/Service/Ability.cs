@@ -551,9 +551,10 @@ namespace SWLOR.Game.Server.Service
             return amount;
         }
 
-        public static void ApplyHostileAbilityEnmity(uint activator, uint target, int damage = 0)
+        public static void ApplyHostileAbilityEnmity(uint activator, uint target, int bonus = 0)
         {
-            var amount = HostileAbilityBaseEnmity + Math.Max(0, damage);
+            // Damage is credited once by the actual damage event, including resistance and absorption.
+            var amount = HostileAbilityBaseEnmity + Math.Max(0, bonus);
             Enmity.ModifyEnmity(activator, target, amount);
         }
 
@@ -1412,14 +1413,16 @@ namespace SWLOR.Game.Server.Service
             if (isArea)
             {
                 var center = GetIsObjectValid(target) ? GetLocation(target) : targetLocation;
-                var creature = GetFirstObjectInShape(Shape.Sphere, 5.0f, center, true);
                 var creatures = new List<uint>();
-                while (GetIsObjectValid(creature))
+
+                foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, 5.0f, center, true))
                 {
+                    if (!GetIsObjectValid(creature))
+                        continue;
+
                     if (HasAbilityLineOfSight(activator, creature))
                         creatures.Add(creature);
 
-                    creature = GetNextObjectInShape(Shape.Sphere, 5.0f, center, true);
                 }
 
                 if (areaVisualEffect != VisualEffect.None &&
@@ -2406,7 +2409,7 @@ namespace SWLOR.Game.Server.Service
             ApplyHostileAbilityEnmity(
                 activator,
                 target,
-                damage + Math.Max(0, enmityBonus) + Math.Max(0, trackedImpact?.NextAttackEnmityBonus ?? 0));
+                Math.Max(0, enmityBonus) + Math.Max(0, trackedImpact?.NextAttackEnmityBonus ?? 0));
 
             var statusApplied = ApplyCombatImpactStatusEffect(
                 activator,

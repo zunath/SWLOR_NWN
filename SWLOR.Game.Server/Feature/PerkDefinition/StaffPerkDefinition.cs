@@ -384,7 +384,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SentinelStance1)
                 .DroidAISlots(1)
-                .Description("While active, grants +15% Evasion and +8 Melee Deflection, but Attack is reduced by 15%.")
+                .Description("While active, grants +15% Evasion and +8 Melee Deflection, but Attack is reduced by 15%. You generate +100% threat from damage dealt, before general Enmity modifiers.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 20);
         }

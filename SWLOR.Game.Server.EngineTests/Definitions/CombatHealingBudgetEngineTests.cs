@@ -392,6 +392,136 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(14, GetCurrentHitPoints(source), "8% lifesteal heals 8 HP, then 5 HP, then zero");
         }
 
+        [EngineTest("Shielded recipients recover base HP from drains, lifesteal and kills", Category = "CombatHealing", TimeoutSeconds = 20f)]
+        public static async Task ShieldedRecipientRecovery(EngineTestContext ctx)
+        {
+            var source = ctx.SpawnCreature("civilian", 1f);
+            var target = ctx.SpawnCreature("civilian", 3f);
+            await ctx.DelaySecondsAsync(1f);
+            Prepare(ctx, source, 1000, 500);
+            Prepare(ctx, target, 1000, 1000);
+            TemporaryHitPointEffects.ApplyFlat(source, "LIFESTEAL_RECIPIENT", 600, 30f);
+            TemporaryStatModifier.Add(source, StatType.HealingReceivedAttackPercentAdjustment, 10, 30f);
+            TemporaryStatModifier.Add(source, StatType.HealingReceivedAttackDurationSeconds, 30, 30f);
+            TemporaryStatModifier.Add(source, StatType.DefeatedEnemyHPPercentRestore, 12, 30f);
+            ctx.AssertEqual(1100, GetCurrentHitPoints(source), "native HP exceeds maximum while base HP is missing");
+            using (Combat.BeginDamageDerivedHealing(source, target))
+            {
+                ctx.AssertEqual(150, Combat.ApplyDamageDerivedHealing(source, 684, 40, true),
+                    "active drain restores missing base HP despite the shield");
+                ctx.AssertEqual(60, Combat.ApplyDamageDerivedHealing(source, 684, 25),
+                    "ordinary lifesteal also restores base HP");
+            }
+            ctx.AssertEqual(710, ObjectPlugin.GetCurrentHitPoints(source), "both damage-derived heals reach base HP");
+            ctx.AssertEqual(10, Stat.GetStatAdjustment(source, StatType.AttackPercentAdjustment),
+                "receiving healing still triggers the attack reward while shielded");
+            Combat.ApplyDefeatedEnemyEffects(source);
+            Combat.ApplyDefeatedEnemyEffects(source);
+            ctx.AssertEqual(830, ObjectPlugin.GetCurrentHitPoints(source), "kill recovery heals base HP and retains its 120-HP budget");
+            ctx.AssertEqual(600, TemporaryHitPointEffects.GetRemaining(source), "healing does not replace or consume temporary HP");
+        }
+
+        [EngineTest("Shielded overhealing spends only recovered base HP from shared budgets", Category = "CombatHealing", TimeoutSeconds = 20f)]
+        public static async Task ShieldedRecipientOverhealing(EngineTestContext ctx)
+        {
+            var source = ctx.SpawnCreature("civilian", 1f);
+            var target = ctx.SpawnCreature("civilian", 3f);
+            await ctx.DelaySecondsAsync(1f);
+            Prepare(ctx, source, 1000, 999);
+            Prepare(ctx, target, 1000, 1000);
+            TemporaryHitPointEffects.ApplyFlat(source, "LIFESTEAL_RECIPIENT", 600, 30f);
+            TemporaryStatModifier.Add(source, StatType.DefeatedEnemyHPPercentRestore, 12, 30f);
+            using (Combat.BeginDamageDerivedHealing(source, target))
+                ctx.AssertEqual(1, Combat.ApplyDamageDerivedHealing(source, 684, 25), "only one missing base HP is healed");
+            using (Combat.BeginDamageDerivedHealing(source, target))
+                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 25), "full base HP cannot spend passive budget");
+            Combat.ApplyDefeatedEnemyEffects(source);
+            ObjectPlugin.SetCurrentHitPoints(source, 500);
+            Combat.ApplyDefeatedEnemyEffects(source);
+            ctx.AssertEqual(620, ObjectPlugin.GetCurrentHitPoints(source), "a full-health kill did not spend the kill budget");
+            foreach (var expected in new[] { 60, 60, 60, 59 })
+            {
+                using (Combat.BeginDamageDerivedHealing(source, target))
+                    ctx.AssertEqual(expected, Combat.ApplyDamageDerivedHealing(source, 684, 25),
+                        "only the one effective HP from the first hit was charged to the passive budget");
+            }
+            using (Combat.BeginDamageDerivedHealing(source, target))
+                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 25), "the 240-HP rolling limit still applies");
+            ctx.AssertEqual(859, ObjectPlugin.GetCurrentHitPoints(source), "base HP receives 120 kill HP plus 239 remaining passive HP");
+            ctx.AssertEqual(600, TemporaryHitPointEffects.GetRemaining(source), "overhealing does not refill or consume the shield");
+        }
+
+        [EngineTest("Ability lifesteal includes reactive shields before reserving queued damage", Category = "CombatHealing", TimeoutSeconds = 20f)]
+        public static async Task ReactiveShieldAbilityHealing(EngineTestContext ctx)
+        {
+            var source = ctx.SpawnCreature("civilian", 1f);
+            var target = ctx.SpawnCreature("civilian", 3f);
+            await ctx.DelaySecondsAsync(1f);
+            Prepare(ctx, source, 1000, 1);
+            PrepareReactiveShield(ctx, target);
+            ctx.MakeHostile(target);
+            ctx.Assert(GetIsReactionTypeHostile(target, source), "the ability target is hostile");
+            TemporaryStatModifier.Add(source, StatType.DamageDealtHPPercentRestore, 8, 30f);
+            Ability.BeginAbilityImpact(source, Ability.GetAbilityDetail(FeatType.ForceDrain3));
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(source, () =>
+                {
+                    int damage;
+                    using (Combat.BeginDamageDerivedHealing(source, target))
+                    {
+                        damage = Ability.ApplyCombatImpact(source, target, GetLocation(target), SkillType.Force,
+                            400, 0, null, false, damageType: CombatDamageType.Force, awardsCombatPoints: false,
+                            resolvesHit: false, canCritical: false, useUnscaledDamage: true);
+                        ctx.Assert(damage >= 375 && damage < 600, "the hit is fatal without the reactive shield and survivable with it");
+                        ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(target), "damage calculation grants the shield before queueing the hit");
+                        ctx.AssertEqual(1 + GameMath.PercentOf(damage, 8), ObjectPlugin.GetCurrentHitPoints(source),
+                            "passive recovery uses the hit's full damage, including shield absorption");
+                        ctx.AssertEqual(150, Combat.ApplyDamageDerivedHealing(source, damage, 40, true),
+                            "the outer active-drain scope also observes the newly granted shield");
+                    }
+                    ctx.AssertEqual(600 - damage, Ability.GetRemainingDamageTargetHP(source, target),
+                        "the queued hit is subtracted from base HP plus the new shield exactly once");
+                    Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 400, CombatDamageType.Force);
+                    var expected = 1 + 150 + GameMath.PercentOf(damage, 8) + GameMath.PercentOf(600 - damage, 8);
+                    ctx.AssertEqual(expected, ObjectPlugin.GetCurrentHitPoints(source), "the second hit only draws from unclaimed shield and base HP");
+                    Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 400, CombatDamageType.Force);
+                    ctx.AssertEqual(expected, ObjectPlugin.GetCurrentHitPoints(source), "the third hit cannot heal from shield overkill");
+                });
+            }
+            finally { Ability.EndAbilityImpact(source); }
+        }
+
+        [EngineTest("Critical lifesteal sees shields granted by damage-taken modifiers", Category = "CombatHealing", TimeoutSeconds = 20f)]
+        public static async Task ReactiveShieldCriticalHealing(EngineTestContext ctx)
+        {
+            var source = ctx.SpawnCreature("civilian", 1f);
+            var target = ctx.SpawnCreature("civilian", 3f);
+            await ctx.DelaySecondsAsync(1f);
+            Prepare(ctx, source, 1000, 1);
+            PrepareReactiveShield(ctx, target);
+            TemporaryStatModifier.Add(source, StatType.CriticalHPPercentOfDamageRestore, 25, 30f);
+            TemporaryStatModifier.Add(source, StatType.CriticalHPPercentOfDamageRestoreCooldownSeconds, 8, 30f);
+            using (Combat.BeginDamageDerivedHealing(source, target))
+            {
+                var damage = Combat.ApplyDamageTakenModifiers(target, 400, source, CombatDamageType.Force);
+                ctx.AssertEqual(400, damage, "the shield preserves the incoming damage amount");
+                ctx.AssertEqual(600, GetCurrentHitPoints(target), "reactive shield increases damageable HP from 100 to 600");
+                Combat.ApplyCriticalHitEffects(source, target, damage, 1);
+                ctx.AssertEqual(101, ObjectPlugin.GetCurrentHitPoints(source), "the critical proc heals 25% of 400 instead of 25% of the old 100 HP");
+                ctx.AssertEqual(60, Combat.ApplyDamageDerivedHealing(source, damage, 25), "ordinary healing keeps its separate allowance");
+            }
+        }
+
+        private static void PrepareReactiveShield(EngineTestContext ctx, uint target)
+        {
+            Prepare(ctx, target, 1000, 100);
+            TemporaryStatModifier.Add(target, StatType.LowHPTemporaryHPThresholdPercent, 10, 30f);
+            TemporaryStatModifier.Add(target, StatType.LowHPTemporaryHPPercent, 50, 30f);
+            TemporaryStatModifier.Add(target, StatType.LowHPTemporaryHPDurationSeconds, 30, 30f);
+            TemporaryStatModifier.Add(target, StatType.LowHPTemporaryHPCooldownSeconds, 30, 30f);
+        }
+
         private static void Prepare(EngineTestContext ctx, uint creature, int maximumHP, int currentHP)
         {
             ctx.SuppressNPCNaturalRegen(creature);

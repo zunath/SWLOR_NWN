@@ -18,6 +18,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using ObjectPlugin = SWLOR.NWN.API.NWNX.ObjectPlugin;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 
@@ -660,6 +661,7 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             ApplyLowHPTemporaryHPBeforeFatalDamage(defender, damage);
+            RefreshDamageDerivedHealingTargetHP(attacker, defender);
             return damage;
         }
 
@@ -2901,6 +2903,19 @@ namespace SWLOR.Game.Server.Service
             return (int)(Math.Max(0, maximumHP) * (long)Math.Max(0, percent) / 100);
         }
 
+        /// <summary>
+        /// Includes defensive HP granted during damage calculation before critical healing
+        /// or queued damage can consume the hit's snapshot. Started healing remains frozen.
+        /// </summary>
+        private static void RefreshDamageDerivedHealingTargetHP(uint creature, uint target)
+        {
+            if (_damageDerivedHealingStates.TryGetValue(creature, out var state) &&
+                state.Target == target && !state.Damage.HasValue)
+            {
+                state.TargetHPBeforeImpact = Ability.GetRemainingDamageTargetHP(creature, target);
+            }
+        }
+
         public static int CalculateDamageEligibleForHealing(int damage, int targetHP, int pendingDamage = 0)
         {
             return Math.Clamp(damage, 0, Math.Max(0, targetHP - Math.Max(0, pendingDamage)));
@@ -2939,7 +2954,7 @@ namespace SWLOR.Game.Server.Service
             var amount = GameMath.PercentOf(damage, percent);
             amount = Stat.ApplyHealingReceivedAdjustment(creature, amount, applyReceivedEffects: false);
             amount = CalculateCappedDamageDerivedHealingAmount(damage, state.HealingApplied, amount);
-            amount = Stat.CalculateEffectiveHealingAmount(amount, GetCurrentHitPoints(creature), maximumHP);
+            amount = Stat.CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), maximumHP);
 
             if (isActivatedHealing)
             {
@@ -4268,7 +4283,7 @@ namespace SWLOR.Game.Server.Service
             var maximumHP = GetMaxHitPoints(creature);
             var amount = GameMath.PercentOf(maximumHP, percent);
             amount = Stat.ApplyHealingReceivedAdjustment(creature, amount, applyReceivedEffects: false);
-            amount = Stat.CalculateEffectiveHealingAmount(amount, GetCurrentHitPoints(creature), maximumHP);
+            amount = Stat.CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), maximumHP);
             amount = TakeCombatHealingBudget(_defeatedEnemyHealingBudgets, creature, maximumHP,
                 MaximumDefeatedEnemyHealingMaxHPPercentPerWindow, amount);
             if (amount <= 0)

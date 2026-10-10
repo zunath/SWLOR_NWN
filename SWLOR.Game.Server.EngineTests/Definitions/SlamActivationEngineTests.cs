@@ -115,6 +115,7 @@ public static class SlamActivationEngineTests
             await ctx.WaitFrameAsync();
             SetAILevel(target, AILevel.VeryLow);
             ctx.MakeHostile(target);
+            ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(5000), target, 120f);
             await ctx.ExecuteInCreatureContextAsync(player, () =>
                 ctx.Assert(UsePerkFeat.TryUseAbility(player, target, FeatType.Slam1, GetLocation(target)),
                     $"Slam I works after hand-in: {Ability.GetLastActivationDenialReason()}"));

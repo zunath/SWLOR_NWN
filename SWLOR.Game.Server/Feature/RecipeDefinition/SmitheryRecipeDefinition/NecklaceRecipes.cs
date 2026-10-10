@@ -471,8 +471,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(7)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_veldite", 2)
-                .Component("jade", 1);
+                .Component("ref_veldite", 3)
+                .Component("jade", 2)
+                .Component("lth_ruined", 1);
 
             // Mystic Necklace
             _builder.Create(RecipeType.MysticNecklace, SkillType.Smithery)
@@ -481,8 +482,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(7)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_veldite", 2)
-                .Component("jade", 1);
+                .Component("ref_veldite", 3)
+                .Component("jade", 2)
+                .Component("fiberp_ruined", 1);
 
             // Vanguard Necklace
             _builder.Create(RecipeType.VanguardNecklace, SkillType.Smithery)
@@ -491,8 +493,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(7)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
-                .Component("ref_veldite", 2)
-                .Component("jade", 1);
+                .Component("ref_veldite", 3)
+                .Component("jade", 2)
+                .Component("elec_ruined", 1);
         }
 
         private void Tier2A()
@@ -504,8 +507,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(17)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_scordspar", 2)
-                .Component("agate", 1);
+                .Component("ref_scordspar", 3)
+                .Component("agate", 2)
+                .Component("lth_flawed", 1);
 
             // Oracle Necklace
             _builder.Create(RecipeType.OracleNecklace, SkillType.Smithery)
@@ -514,8 +518,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(17)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_scordspar", 2)
-                .Component("agate", 1);
+                .Component("ref_scordspar", 3)
+                .Component("agate", 2)
+                .Component("fiberp_flawed", 1);
 
             // Onslaught Necklace
             _builder.Create(RecipeType.OnslaughtNecklace, SkillType.Smithery)
@@ -524,8 +529,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(17)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_scordspar", 2)
-                .Component("agate", 1);
+                .Component("ref_scordspar", 3)
+                .Component("agate", 2)
+                .Component("elec_flawed", 1);
         }
 
         private void Tier3A()
@@ -537,8 +543,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(27)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_plagionite", 2)
-                .Component("citrine", 1);
+                .Component("ref_plagionite", 3)
+                .Component("citrine", 2)
+                .Component("lth_good", 1);
 
             // Arcanist Necklace
             _builder.Create(RecipeType.ArcanistNecklace, SkillType.Smithery)
@@ -547,8 +554,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(27)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_plagionite", 2)
-                .Component("citrine", 1);
+                .Component("ref_plagionite", 3)
+                .Component("citrine", 2)
+                .Component("fiberp_good", 1);
 
             // Maverick Necklace
             _builder.Create(RecipeType.MaverickNecklace, SkillType.Smithery)
@@ -557,8 +565,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(27)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_plagionite", 2)
-                .Component("citrine", 1);
+                .Component("ref_plagionite", 3)
+                .Component("citrine", 2)
+                .Component("elec_good", 1);
         }
 
         private void Tier4A()
@@ -570,8 +579,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(37)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_keromber", 2)
-                .Component("ruby", 1);
+                .Component("ref_keromber", 3)
+                .Component("ruby", 2)
+                .Component("lth_imperfect", 1);
 
             // Luminary Necklace
             _builder.Create(RecipeType.LuminaryNecklace, SkillType.Smithery)
@@ -580,8 +590,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(37)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_keromber", 2)
-                .Component("ruby", 1);
+                .Component("ref_keromber", 3)
+                .Component("ruby", 2)
+                .Component("fiberp_imperfect", 1);
 
             // Apex Necklace
             _builder.Create(RecipeType.ApexNecklace, SkillType.Smithery)
@@ -590,8 +601,9 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(37)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_keromber", 2)
-                .Component("ruby", 1);
+                .Component("ref_keromber", 3)
+                .Component("ruby", 2)
+                .Component("elec_imperfect", 1);
         }
 
 }

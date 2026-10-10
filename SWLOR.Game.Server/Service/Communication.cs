@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Service
     public static class Communication
     {
         private const string DMPossessedCreature = "COMMUNICATION_DM_POSSESSED_CREATURE";
+        private const string PendingDMShoutLabelVariable = "DM_SHOUT_LABEL_PENDING";
         public const string EventCommsAreaVariable = "COMMS_EVENT_AREA";
         public const string SuppressChatAuditVariable = "SUPPRESS_CHAT_AUDIT";
         private const string DisabledChannelMessage = "This chat channel is disabled.";
@@ -65,28 +66,31 @@ namespace SWLOR.Game.Server.Service
         }
 
         [NWNEventHandler(ScriptName.OnModuleEnter)]
-        public static void ApplyDMShoutChannelName()
+        public static void QueueDMShoutChannelName()
         {
-            RestoreDMShoutChannelName(GetEnteringObject());
+            var player = GetEnteringObject();
+            if (!GetIsDM(player) && !GetIsDMPossessed(player))
+                return;
+
+            SetLocalInt(player, PendingDMShoutLabelVariable, 1);
         }
 
         [NWNEventHandler(ScriptName.OnModuleGuiEvent)]
-        public static void RefreshDMShoutChannelName()
+        public static void ApplyDMShoutChannelName()
         {
-            var type = GetLastGuiEventType();
-            if (type != GuiEventType.AreaLoadScreenFinished && type != GuiEventType.ChatBarFocus)
+            if (GetLastGuiEventType() != GuiEventType.AreaLoadScreenFinished)
                 return;
 
-            RestoreDMShoutChannelName(GetLastGuiEventPlayer());
-        }
-
-        private static void RestoreDMShoutChannelName(uint player)
-        {
-            if (!GetIsObjectValid(player) || (!GetIsDM(player) && !GetIsDMPossessed(player)))
+            var player = GetLastGuiEventPlayer();
+            if (!GetIsObjectValid(player) || GetLocalInt(player, PendingDMShoutLabelVariable) != 1)
                 return;
 
-            // Personal TLK overrides are packets, not stored overrides in NWNX_Player.
-            // Reapply after the client loads and before typing, as well as on login.
+            // Consume the login request so later area transitions do not send another update.
+            DeleteLocalInt(player, PendingDMShoutLabelVariable);
+            if (!GetIsDM(player) && !GetIsDMPossessed(player))
+                return;
+
+            // Send once, after the client acknowledges its initial area load.
             // The global "Disabled" label applies to players; staff retain native Shout.
             PlayerPlugin.SetTlkOverride(player, 66751, "Shout");
         }

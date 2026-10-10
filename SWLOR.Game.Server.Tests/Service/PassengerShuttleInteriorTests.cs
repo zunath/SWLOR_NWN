@@ -3,12 +3,46 @@ using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 [NonParallelizable]
 public sealed class PassengerShuttleInteriorTests
 {
+    [TestCase(false, false, "starship1_int")]
+    [TestCase(true, false, "starship1_int")]
+    [TestCase(false, true, "starship1_int")]
+    [TestCase(true, true, "shuttle")]
+    public void TemplateSelectionSupportsPartialDeployments(bool entrance, bool pilot, string expected)
+    {
+        var objects = new List<(string Tag, ObjectType Type)>();
+        if (entrance) objects.Add(("PROPERTY_ENTRANCE", ObjectType.Waypoint));
+        if (pilot) objects.Add(("pilot_chair", ObjectType.Placeable));
+        SelectInterior(objects).Should().Be(expected);
+    }
+
+    [Test]
+    public void WrongObjectTypesCannotEnableTheNewInterior()
+    {
+        SelectInterior(new[] { ("PROPERTY_ENTRANCE", ObjectType.Placeable), ("pilot_chair", ObjectType.Creature) })
+            .Should().Be("starship1_int");
+    }
+
+    [TestCase("shuttle")]
+    [TestCase("starship1_int")]
+    public void BothDeployedTemplatesSatisfyTheBoardingContract(string resref)
+    {
+        var contents = ReadResource("git", resref);
+        var objects = Objects(contents, "WaypointList").Select(obj => (Value<string>(obj, "Tag"), ObjectType.Waypoint))
+            .Concat(Objects(contents, "Placeable List").Select(obj => (Value<string>(obj, "Tag"), ObjectType.Placeable)));
+        SelectInterior(objects).Should().Be("shuttle");
+    }
+
+    private static string SelectInterior(IEnumerable<(string Tag, ObjectType Type)> objects) =>
+        (string)typeof(Shuttle).GetMethod("SelectFlightInterior", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, new object[] { objects })!;
+
     [Test]
     public void FlightTemplateHasABoardingPointAndUsablePilotChair()
     {

@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         internal const string ShuttleInteriorResref = "shuttle";
+        private const string LegacyShuttleInteriorResref = "starship1_int";
         private const string ShuttleFlightIdVariable = "SHUTTLE_FLIGHT_ID";
         private const string TerminalTag = "flights_terminal";
         private const string TerminalPlanetVariable = "CURRENT_LOCATION";
@@ -455,6 +456,40 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Reads the dedicated template directly; instance templates are intentionally absent
+        /// from the persistent-location cache. Older modules may not have its boarding tags.
+        /// </summary>
+        private static IEnumerable<(string Tag, ObjectType Type)> GetShuttleTemplateObjects()
+        {
+            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
+            {
+                if (GetResRef(area) != ShuttleInteriorResref)
+                    continue;
+
+                for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
+                    yield return (GetTag(obj), GetObjectType(obj));
+                yield break;
+            }
+        }
+
+        /// <summary>
+        /// Uses the passenger layout only when its boarding and pilot contracts are present.
+        /// A code-first deployment or module rollback continues using the original freighter.
+        /// </summary>
+        private static string SelectFlightInterior(IEnumerable<(string Tag, ObjectType Type)> objects)
+        {
+            var hasEntrance = false;
+            var hasPilotChair = false;
+            foreach (var obj in objects)
+            {
+                hasEntrance |= obj.Tag == EntranceWaypointTag && obj.Type == ObjectType.Waypoint;
+                hasPilotChair |= obj.Tag == PilotChairTag && obj.Type == ObjectType.Placeable;
+            }
+
+            return hasEntrance && hasPilotChair ? ShuttleInteriorResref : LegacyShuttleInteriorResref;
+        }
+
+        /// <summary>
         /// Creates the shuttle interior instance for a flight: removes the exit and ship computer,
         /// adds the status console, and seats the pilot droid.
         /// </summary>
@@ -464,7 +499,11 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var destinationName = Planet.GetPlanetByType(flight.Destination).Name;
-            var area = Area.CreateInstance(ShuttleInteriorResref, "shuttle_flight", $"Passenger Shuttle - {destinationName}");
+            var interiorResref = SelectFlightInterior(GetShuttleTemplateObjects());
+            if (interiorResref != ShuttleInteriorResref)
+                Log.Write(LogGroup.Server, "Passenger shuttle template is missing its boarding waypoint or pilot chair; using starship1_int. Repack and deploy the module to enable the shuttle interior.");
+
+            var area = Area.CreateInstance(interiorResref, "shuttle_flight", $"Passenger Shuttle - {destinationName}");
             SetLocalString(area, ShuttleFlightIdVariable, flight.FlightId);
             flight.Area = area;
 

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.TelegraphService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -112,9 +113,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ApplyRadiantLance(uint activator, uint target, Location targetLocation, int baseDamage, int level)
         {
-            if (level == 3)
-                LaunchRadiantLance(activator, target, targetLocation);
-
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
@@ -130,21 +128,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.None,
-                areaVisualEffect: VisualEffect.None);
+                areaVisualEffect: VisualEffect.None,
+                onGeometryResolved: geometry =>
+                {
+                    if (level == 3)
+                        LaunchRadiantLance(activator, geometry);
+                });
         }
 
-        private static void LaunchRadiantLance(uint activator, uint target, Location targetLocation)
+        private static System.Numerics.Vector3 GetProjectileEndpoint(TelegraphGeometry geometry)
         {
-            var origin = GetPosition(activator);
-            var destination = GetIsObjectValid(target) ? GetPosition(target) : GetPositionFromLocation(targetLocation);
-            var delta = destination - origin;
-            var rotation = Math.Abs(delta.X) <= 0.01f && Math.Abs(delta.Y) <= 0.01f
-                ? GetFacing(activator) * Math.PI / 180.0
-                : Math.Atan2(delta.Y, delta.X);
-            var end = origin + new System.Numerics.Vector3(
-                (float)Math.Cos(rotation) * LineLengthMeters,
-                (float)Math.Sin(rotation) * LineLengthMeters, 0f);
-            var endLocation = Location(GetArea(activator), end, GetFacing(activator));
+            return geometry.Position + new System.Numerics.Vector3(
+                (float)Math.Cos(geometry.Rotation) * geometry.Size.X,
+                (float)Math.Sin(geometry.Rotation) * geometry.Size.X, 0f);
+        }
+
+        private static void LaunchRadiantLance(uint activator, TelegraphGeometry geometry)
+        {
+            var endLocation = Location(geometry.Area, GetProjectileEndpoint(geometry), 0f);
 
             // Always show the full damage line, even when the selected creature is nearer.
             var projectileTarget = CreateObject(ObjectType.Placeable, "plc_invisobj", endLocation);

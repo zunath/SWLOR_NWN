@@ -1539,7 +1539,8 @@ namespace SWLOR.Game.Server.Service
             bool resolvesHit = true,
             bool canCritical = true,
             float impactFlashDuration = DefaultImpactFlashDuration,
-            bool useUnscaledDamage = false)
+            bool useUnscaledDamage = false,
+            Action<TelegraphGeometry> onGeometryResolved = null)
         {
             PrepareCombatImpactDamageBonuses(activator, baseDamage);
             RecordAbilityImpactShape(activator, skillType, true);
@@ -1549,6 +1550,9 @@ namespace SWLOR.Game.Server.Service
             var geometry = ResolveCombatImpactGeometry(
                 activator, target, targetLocation, shape, lengthOrRadius, width, centerOnActivator, backOffsetOrigin,
                 trackedImpact?.ActivationAreaTelegraphs);
+
+            // Directional visuals must use the same captured footprint as the damage.
+            onGeometryResolved?.Invoke(geometry);
 
             if (telegraphDuration <= 0f)
             {

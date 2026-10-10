@@ -82,6 +82,13 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // Native stealth does not interrupt our custom rest effect or its looping animation.
+            if (StatusEffect.HasStatusEffect<RestStatusEffect>(creature))
+            {
+                StatusEffect.RemoveStatusEffect<RestStatusEffect>(creature);
+                AssignCommand(creature, () => ClearAllActions());
+            }
+
             ClearVerdictsForTarget(creature);
             StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);
         }

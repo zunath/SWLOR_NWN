@@ -8,6 +8,22 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class NaturalRegeneration
     {
+        public const int StaminaRegenHeartbeats = 5;
+        public const int BaseStaminaRegenPerThirtySeconds = 10;
+        private const string StaminaRegenRemainderVariable = "NATURAL_STAMINA_REGEN_REMAINDER";
+
+        /// <summary>
+        /// Distributes the thirty-second budget over six-second heartbeats without
+        /// multiplying equipment/food bonuses or losing fractional recovery.
+        /// </summary>
+        public static int GetStaminaRegenPerHeartbeat(int might, int persistedRegen, int bonus, ref int remainder)
+        {
+            var budget = Math.Max(0, BaseStaminaRegenPerThirtySeconds + Math.Max(0, might) / 4 + persistedRegen + bonus);
+            var accumulated = budget + Math.Clamp(remainder, 0, StaminaRegenHeartbeats - 1);
+            remainder = accumulated % StaminaRegenHeartbeats;
+            return accumulated / StaminaRegenHeartbeats;
+        }
+
         /// <summary>
         /// On module heartbeat, process a player's HP/FP/STM regeneration.
         /// </summary>
@@ -15,22 +31,35 @@ namespace SWLOR.Game.Server.Feature
         public static void ProcessRegeneration()
         {
             var player = OBJECT_SELF;
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) || GetIsDM(player) ||
+                GetLocalInt(player, Stat.SuppressNaturalRegenVariable) != 0) return;
 
             var tick = GetLocalInt(player, "NATURAL_REGENERATION_TICK") + 1;
             ApplyLowResourceIntervalRestore(player);
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null) return;
+
+            var might = Math.Max(0, GetAbilityScore(player, AbilityType.Might));
+            var remainder = GetLocalInt(player, StaminaRegenRemainderVariable);
+            var stmRegen = GetStaminaRegenPerHeartbeat(might, dbPlayer.STMRegen,
+                Stat.GetStatAdjustment(player, StatType.StaminaRegen), ref remainder);
+            SetLocalInt(player, StaminaRegenRemainderVariable, remainder);
+            if (stmRegen > 0)
+            {
+                if (dbPlayer.Stamina == Stat.GetMaxStamina(player, dbPlayer))
+                    ExecuteScript(ScriptName.OnPlayerStaminaAdjusted, player);
+                else
+                    Stat.RestoreStamina(player, stmRegen, dbPlayer, sendFeedback: false);
+            }
 
             if (tick >= 5) // 6 seconds * 5 = 30 seconds
             {
                 var vitality = Math.Max(0, GetAbilityScore(player, AbilityType.Vitality));
                 var willpower = Math.Max(0, GetAbilityScore(player, AbilityType.Willpower));
-                var might = Math.Max(0, GetAbilityScore(player, AbilityType.Might));
-
-                var playerId = GetObjectUUID(player);
-                var dbPlayer = DB.Get<Player>(playerId);
                 var hpRegen = dbPlayer.HPRegen + vitality + Stat.GetStatAdjustment(player, StatType.HPRegen);
                 var fpRegen = 1 + dbPlayer.FPRegen + willpower / 4 + Stat.GetStatAdjustment(player, StatType.FPRegen);
-                var stmRegen = 1 + dbPlayer.STMRegen + might / 4 + Stat.GetStatAdjustment(player, StatType.StaminaRegen);
 
                 if (hpRegen > 0 && GetCurrentHitPoints(player) < GetMaxHitPoints(player))
                 {
@@ -40,11 +69,6 @@ namespace SWLOR.Game.Server.Feature
                 if (fpRegen > 0)
                 {
                     Stat.RestoreFP(player, fpRegen, dbPlayer, sendFeedback: false);
-                }
-
-                if (stmRegen > 0)
-                {
-                    Stat.RestoreStamina(player, stmRegen, dbPlayer, sendFeedback: false);
                 }
 
                 tick = 0;

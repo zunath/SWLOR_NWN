@@ -1458,16 +1458,12 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(target))
                 return;
 
-            var appliedDamage = ApplyTriggeredDamage(
+            ApplyTriggeredDamage(
                 attacker,
                 target,
                 cycleDamage,
                 CombatDamageType.Physical,
                 skillType);
-            if (appliedDamage <= 0)
-                return;
-
-            Enmity.ModifyEnmity(attacker, target, appliedDamage);
         }
 
         private static void ApplySourceStatusAutoAttackCycleDamage(uint attacker, uint defender, SkillType skillType)
@@ -1511,11 +1507,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _sourceStatusAutoAttackCycleCounts[key] = 0;
-            var appliedDamage = ApplyTriggeredDamage(attacker, defender, damage, damageType, skillType);
-            if (appliedDamage > 0)
-            {
-                Enmity.ModifyEnmity(attacker, defender, appliedDamage);
-            }
+            ApplyTriggeredDamage(attacker, defender, damage, damageType, skillType);
         }
 
         public static int CalculateAutoAttackProcDamage(IEnumerable<StatAdjustmentSource> sources, Func<int> roll)
@@ -9616,12 +9608,15 @@ namespace SWLOR.Game.Server.Service
                 creature,
                 StatType.QueuedWeaponAbilityActivationCriticalRateSkillType,
                 StatType.QueuedWeaponAbilityActivationCriticalRateSkillType));
-            return SkillTypeMatches(skillType, activationSkillType)
+            var idleHitChanceAdjustment = SkillTypeMatches(skillType, activationSkillType)
                 ? TemporaryStatModifier.GetStatAdjustment(
                     creature,
                     StatType.QueuedWeaponAbilityIdleHitChancePercentAdjustment,
                     StatType.QueuedWeaponAbilityActivationCriticalRateSkillType)
                 : 0;
+
+            // Queued abilities use the native weapon roll instead of TryResolveAbilityHit.
+            return GetPhysicalAndForceAbilityHitChanceAdjustment(creature, skillType) + idleHitChanceAdjustment;
         }
 
         public static void ClearQueuedWeaponAbilityActivationBonuses(uint creature)
@@ -10103,21 +10098,21 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>Hit rewards share the actual activation's stamina spend, retaining at least
         /// one stamina of cost. FP-funded abilities and explicit recovery actions keep their payouts.</summary>
-        public static int RestoreAbilityHitStamina(uint creature, AbilityDetail ability, int requested)
+        public static int RestoreAbilityHitStamina(uint creature, AbilityDetail ability, int requested, bool sendFeedback = true)
         {
             if (requested <= 0)
                 return 0;
 
             if (ability?.IsHostileAbility != true ||
                 !ability.Requirements.OfType<AbilityRequirementStamina>().Any())
-                return Stat.RestoreStamina(creature, requested);
+                return Stat.RestoreStamina(creature, requested, sendFeedback: sendFeedback);
 
             if (!TryGetAbilityStaminaCostState(creature, ability, out var state))
                 return 0;
 
             var amount = CalculateAbilityHitStaminaRestore(state.Cost, state.HitStaminaRefunded, requested);
             state.HitStaminaRefunded += amount;
-            return amount > 0 ? Stat.RestoreStamina(creature, amount) : 0;
+            return amount > 0 ? Stat.RestoreStamina(creature, amount, sendFeedback: sendFeedback) : 0;
         }
 
         private static int RestoreAbilityHitStamina(uint creature, int requested)

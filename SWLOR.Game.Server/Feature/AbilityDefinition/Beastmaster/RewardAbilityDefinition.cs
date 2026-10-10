@@ -85,11 +85,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             var hitPointsBeforeHealing = GetCurrentHitPoints(beast);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), beast);
             if (GetCurrentHitPoints(beast) > hitPointsBeforeHealing)
+            {
                 Ability.PlaySuccessfulImpactVisualEffect(activator, beast);
+                Enmity.ModifyEnmityOnAll(activator, 300);
+            }
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), beast);
 
             TakePetTreat(activator);
-            Enmity.ModifyEnmityOnAll(activator, 300 + amount);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
         }
 

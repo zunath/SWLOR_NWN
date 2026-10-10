@@ -14,6 +14,57 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class MimicryObservationEngineTests
     {
+        [EngineTest("Mimicry combines active observation and learning XP into one kill message", Category = "MimicryObservation", TimeoutSeconds = 60f)]
+        public static async Task KillProducesOneMimicryXPMessage(EngineTestContext ctx)
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var queue = (SkillXPMessageQueue)typeof(Skill)
+                .GetField("_xpMessages", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            var sendField = typeof(SkillXPMessageQueue).GetField("_send", BindingFlags.NonPublic | BindingFlags.Instance);
+            var originalSend = (Action<uint, SkillType, int>)sendField.GetValue(queue);
+            var messages = new List<int>();
+            sendField.SetValue(queue, new Action<uint, SkillType, int>((player, skill, xp) =>
+            {
+                if (player == fixture.Creature && skill == SkillType.Mimicry)
+                    messages.Add(xp);
+                originalSend(player, skill, xp);
+            }));
+            try
+            {
+                var learned = false;
+                for (var attempt = 0; attempt < 20 && !learned; attempt++)
+                {
+                    Configure(fixture, 0, true);
+                    fixture.Update(record =>
+                    {
+                        record.LearnedTechniques.Remove(FeatType.SonicShriekTechnique);
+                        record.Perks[PerkType.PatternRecognition] = 2;
+                        record.XPDebt = 50;
+                    });
+                    messages.Clear();
+                    var npc = ctx.SpawnCreature("nw_rat001", 2f);
+                    await ctx.WaitFrameAsync();
+                    CombatPoint.AddCombatPoint(fixture.Creature, npc, SkillType.Force, 3);
+                    CombatPoint.AddCombatPoint(fixture.Creature, npc, SkillType.Mimicry, 3);
+                    ctx.SeedRandom(attempt + 1);
+                    Mimicry.OnCreatureAbilityUsed(npc, FeatType.SonicShriek);
+                    await Kill(ctx, npc, fixture.Creature);
+                    await ctx.WaitUntilAsync(() => messages.Count > 0, 3f, "combined Mimicry XP feedback");
+                    await ctx.WaitFrameAsync();
+
+                    ctx.AssertEqual(1, messages.Count, "all Mimicry awards from the kill send exactly one XP message");
+                    ctx.AssertEqual(Experience(fixture, SkillType.Mimicry), messages[0],
+                        "the message total matches independently adjusted XP actually awarded");
+                    learned = DB.Get<Player>(fixture.Id).LearnedTechniques.ContainsKey(FeatType.SonicShriekTechnique);
+                }
+                ctx.Assert(learned, "the combined-message check includes a successful new-technique learning award");
+            }
+            finally
+            {
+                sendField.SetValue(queue, originalSend);
+            }
+        }
+
         [EngineTest("Observation preserves Force XP with higher and capped Mimicry", Category = "MimicryObservation", TimeoutSeconds = 60f)]
         public static async Task ObservationPreservesForceXP(EngineTestContext ctx)
         {

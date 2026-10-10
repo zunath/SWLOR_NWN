@@ -347,7 +347,7 @@ namespace SWLOR.Game.Server.Service
             if (xp > 0)
             {
                 // No area or character XP bonuses: this passive reward must stay within its cap.
-                Skill.GiveSkillXP(player, SkillType.Mimicry, xp, ignoreBonuses: true);
+                Skill.GiveSkillXP(player, SkillType.Mimicry, xp, ignoreBonuses: true, xpMessageSource: npc);
             }
         }
 
@@ -533,7 +533,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var detail in learnedDetails)
             {
                 SendMessageToPC(player, ColorToken.Green($"You learned the technique: {detail.Name}!"));
-                Skill.GiveSkillXP(player, SkillType.Mimicry, LearnTechniqueXP);
+                Skill.GiveSkillXP(player, SkillType.Mimicry, LearnTechniqueXP, xpMessageSource: npc);
 
                 Log.WriteStructured(
                     LogGroup.Mimicry,

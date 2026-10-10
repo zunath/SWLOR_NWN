@@ -2855,9 +2855,11 @@ namespace SWLOR.Game.Server.Service
             var originLocation = GetLocation(origin);
             var nearest = OBJECT_INVALID;
             var nearestDistance = float.MaxValue;
-            var creature = GetFirstObjectInShape(Shape.Sphere, radius, originLocation, true);
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, radius, originLocation, true))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (creature != excludedTarget &&
                     GetIsReactionTypeHostile(creature, source) &&
                     !GetIsDead(creature))
@@ -2870,7 +2872,6 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, radius, originLocation, true);
             }
 
             return nearest;
@@ -3901,14 +3902,11 @@ namespace SWLOR.Game.Server.Service
                 applied = true;
             }
 
-            var target = GetFirstObjectInShape(
-                Shape.Sphere,
-                radius,
-                location,
-                true,
-                SWLOR.NWN.API.NWScript.Enum.ObjectType.Creature);
-            while (GetIsObjectValid(target))
+            foreach (var target in ObjectSnapshot.InShape(Shape.Sphere, radius, location, true, SWLOR.NWN.API.NWScript.Enum.ObjectType.Creature))
             {
+                if (!GetIsObjectValid(target))
+                    continue;
+
                 if (target != originalAttacker &&
                     !GetIsDead(target) &&
                     GetCurrentHitPoints(target) > 0 &&
@@ -3922,12 +3920,6 @@ namespace SWLOR.Game.Server.Service
                     applied = true;
                 }
 
-                target = GetNextObjectInShape(
-                    Shape.Sphere,
-                    radius,
-                    location,
-                    true,
-                    SWLOR.NWN.API.NWScript.Enum.ObjectType.Creature);
             }
 
             if (applied && GetIsPC(defender))
@@ -4337,9 +4329,11 @@ namespace SWLOR.Game.Server.Service
             var category = (StatusEffectCategory)categoryValue;
             var count = 0;
             var location = GetLocation(creature);
-            var target = GetFirstObjectInShape(Shape.Sphere, radius, location, true);
-            while (GetIsObjectValid(target))
+            foreach (var target in ObjectSnapshot.InShape(Shape.Sphere, radius, location, true))
             {
+                if (!GetIsObjectValid(target))
+                    continue;
+
                 if (target != creature &&
                     GetIsReactionTypeHostile(target, creature) &&
                     StatusEffect.HasStatusEffectCategory(target, category))
@@ -4347,7 +4341,6 @@ namespace SWLOR.Game.Server.Service
                     count++;
                 }
 
-                target = GetNextObjectInShape(Shape.Sphere, radius, location, true);
             }
 
             var adjustment = count * percentPerTarget;

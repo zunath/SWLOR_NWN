@@ -70,9 +70,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
 
             var firstApplications = new HashSet<uint>();
-            for (var elapsed = 0f; elapsed < durationSeconds - 0.01f; elapsed += 3f)
+            foreach (var pulseDelay in CombatAreaPulses.GetRefreshPulseDelays(durationSeconds, 3f))
             {
-                var pulseDelay = elapsed;
                 var playReceipt = pulseVisualEffects?.Invoke(pulseDelay) ?? Ability.CaptureSuccessfulImpactVisualEffect(activator);
                 DelayCommand(pulseDelay, () =>
                 {
@@ -102,9 +101,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             Action<uint, bool> onHealed = null,
             Func<float, Action<uint>> pulseVisualEffects = null)
         {
-            for (var elapsed = 3f; elapsed <= durationSeconds + 0.01f; elapsed += 3f)
+            foreach (var pulseDelay in CombatAreaPulses.GetPulseDelays(durationSeconds, 3f))
             {
-                var pulseDelay = elapsed;
                 var playReceipt = pulseVisualEffects?.Invoke(pulseDelay) ?? Ability.CaptureSuccessfulImpactVisualEffect(activator);
                 DelayCommand(pulseDelay, () =>
                 {

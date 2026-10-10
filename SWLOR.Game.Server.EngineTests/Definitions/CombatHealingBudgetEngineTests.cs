@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.CombatService;
@@ -331,6 +332,64 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally { Ability.EndAbilityImpact(source); }
             ctx.AssertEqual(3, GetCurrentHitPoints(source), "only the first impact can draw 8% of the target's 20 remaining HP");
+        }
+
+        [EngineTest("Lifesteal includes temporary HP once when calculating damageable health", Category = "CombatHealing", TimeoutSeconds = 20f)]
+        public static async Task TemporaryHealthDamage(EngineTestContext ctx)
+        {
+            var source = ctx.SpawnCreature("civilian", 1f);
+            var target = ctx.SpawnCreature("civilian", 3f);
+            await ctx.DelaySecondsAsync(1f);
+            Prepare(ctx, source, 1000, 1);
+            Prepare(ctx, target, 1000, 1);
+            TemporaryHitPointEffects.ApplyFlat(target, "LIFESTEAL_TARGET", 100, 30f);
+            ctx.AssertEqual(1, ObjectPlugin.GetCurrentHitPoints(target), "NWNX reports the target's underlying HP");
+            ctx.AssertEqual(100, TemporaryHitPointEffects.GetRemaining(target), "target has a 100-HP temporary pool");
+            ctx.AssertEqual(101, GetCurrentHitPoints(target), "native current HP already includes the temporary pool");
+            ctx.AssertEqual(101, Ability.GetRemainingDamageTargetHP(source, target),
+                "damageable health counts the temporary pool exactly once");
+            using (Combat.BeginDamageDerivedHealing(source, target))
+                ctx.AssertEqual(50, Combat.ApplyDamageDerivedHealing(source, 100, 50, true),
+                    "a hit absorbed by temporary HP still supplies its full damage-derived healing");
+
+            AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(100), target));
+            await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(target) == 0,
+                3f, "the real hit to consume the temporary pool");
+            ctx.AssertEqual(1, GetCurrentHitPoints(target), "underlying HP remains after the shield absorbs the hit");
+            ctx.AssertEqual(51, GetCurrentHitPoints(source), "the source receives 50 HP from shield damage");
+            ctx.AssertEqual(1, Ability.GetRemainingDamageTargetHP(source, target), "consumed temporary HP cannot supply another hit");
+        }
+
+        [EngineTest("Queued lifesteal cannot reuse stacked temporary HP or heal from shield overkill", Category = "CombatHealing", TimeoutSeconds = 20f)]
+        public static async Task QueuedTemporaryHealthOverkill(EngineTestContext ctx)
+        {
+            var source = ctx.SpawnCreature("civilian", 1f);
+            var target = ctx.SpawnCreature("civilian", 3f);
+            await ctx.DelaySecondsAsync(1f);
+            Prepare(ctx, source, 1000, 1);
+            Prepare(ctx, target, 1000, 1);
+            TemporaryHitPointEffects.ApplyFlat(target, "LIFESTEAL_TARGET_FIRST", 100, 30f);
+            TemporaryHitPointEffects.ApplyFlat(target, "LIFESTEAL_TARGET_SECOND", 50, 30f);
+            TemporaryStatModifier.Add(source, StatType.DamageDealtHPPercentRestore, 8, 30f);
+            var definition = Ability.GetAbilityDetail(FeatType.ForceDrain3);
+            Ability.BeginAbilityImpact(source, definition);
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(source, () =>
+                {
+                    ctx.AssertEqual(151, Ability.GetRemainingDamageTargetHP(source, target),
+                        "both temporary pools and underlying HP are counted once");
+                    Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 100, CombatDamageType.Force);
+                    ctx.AssertEqual(51, Ability.GetRemainingDamageTargetHP(source, target),
+                        "the first queued hit reserves 100 HP from the combined pool");
+                    Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 100, CombatDamageType.Force);
+                    ctx.AssertEqual(0, Ability.GetRemainingDamageTargetHP(source, target),
+                        "the second queued hit claims the last 51 HP and excludes overkill");
+                    Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 100, CombatDamageType.Force);
+                });
+            }
+            finally { Ability.EndAbilityImpact(source); }
+            ctx.AssertEqual(14, GetCurrentHitPoints(source), "8% lifesteal heals 8 HP, then 5 HP, then zero");
         }
 
         private static void Prepare(EngineTestContext ctx, uint creature, int maximumHP, int currentHP)

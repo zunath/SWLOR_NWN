@@ -218,7 +218,10 @@ namespace SWLOR.Game.Server.Service
             return GetTrackedAbilityImpact(activator)?.Sequence;
         }
 
-        /// <summary>Queued damage cannot supply another hit with health it has already claimed.</summary>
+        /// <summary>
+        /// Native current HP includes temporary HP. Subtract queued damage so another hit
+        /// cannot draw healing from health already claimed by an earlier impact.
+        /// </summary>
         public static int GetRemainingDamageTargetHP(uint activator, uint target)
         {
             if (!GetIsObjectValid(target) || GetPlotFlag(target))

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -9,6 +10,7 @@ using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.QuestContractService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -113,6 +115,35 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     }
                 };
                 var date = new DateTime(2026, 10, 1, 0, 0, 0, DateTimeKind.Utc);
+                var contracts = new[]
+                {
+                    new QuestContract
+                    {
+                        AuthorPlayerId = "force-migration-owner", Title = "Escrow migration fixture",
+                        Status = QuestContractStatus.Published, RewardCredits = 1234, CompletionsRemaining = 2,
+                        DatePublished = date, DateExpires = date.AddDays(7), RewardItems = EscrowItems()
+                    },
+                    new QuestContract { RewardItems = null },
+                    new QuestContract()
+                };
+                var deliveries = new[]
+                {
+                    new QuestContractDelivery
+                    {
+                        PlayerId = "force-migration-owner", Credits = 4321, SourceContractId = contracts[0].Id,
+                        SourceContractTitle = contracts[0].Title, IsRewardPayment = true, ClaimRevision = 7,
+                        Items = EscrowItems()
+                    },
+                    new QuestContractDelivery
+                    {
+                        PlayerId = "force-migration-owner", SourceContractId = contracts[0].Id,
+                        SourceContractTitle = contracts[0].Title, HeldForCompletion = true, Items = EscrowItems()
+                    },
+                    new QuestContractDelivery { Items = null },
+                    new QuestContractDelivery()
+                };
+                var originalContracts = contracts.Select(JObject.FromObject).ToArray();
+                var originalDeliveries = deliveries.Select(JObject.FromObject).ToArray();
                 var job = new ResearchJob
                 {
                     SerializedItem = data, Recipe = RecipeType.WeaponEnhancementDMGForce1,
@@ -127,6 +158,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     foreach (var bank in banks) DB.Set(bank);
                     DB.Set(market);
+                    foreach (var contract in contracts) DB.Set(contract);
+                    foreach (var delivery in deliveries) DB.Set(delivery);
                     DB.Set(category);
                     DB.Set(property);
                     DB.Set(outfit);
@@ -149,6 +182,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         ctx.AssertEqual(migrated, savedMarket.Data, "Market payload");
                         ctx.AssertEqual("Weapon Enhancement - DMG I", savedMarket.Name, "Market display name");
                         AssertPreservedMetadata(ctx, originalMarket, savedMarket, "Name", "Data");
+                        for (var index = 0; index < contracts.Length; index++)
+                        {
+                            var savedContract = ReadPersisted<QuestContract>(contracts[index].Id);
+                            AssertPreservedMetadata(ctx, originalContracts[index], savedContract, "RewardItems");
+                            AssertEscrowItems(originalContracts[index]["RewardItems"], savedContract.RewardItems);
+                        }
+                        for (var index = 0; index < deliveries.Length; index++)
+                        {
+                            var savedDelivery = ReadPersisted<QuestContractDelivery>(deliveries[index].Id);
+                            AssertPreservedMetadata(ctx, originalDeliveries[index], savedDelivery, "Items");
+                            AssertEscrowItems(originalDeliveries[index]["Items"], savedDelivery.Items);
+                        }
                         var savedCategory = ReadPersisted<WorldPropertyCategory>(category.Id);
                         ctx.AssertEqual(1, savedCategory.Items.Count, "Property item identity is retained");
                         ctx.AssertEqual(migrated, savedCategory.Items["stable-item-id"].Data, "Property storage payload");
@@ -184,6 +229,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     foreach (var bank in banks) DB.Delete<InventoryItem>(bank.Id);
                     DB.Delete<MarketItem>(market.Id);
+                    foreach (var contract in contracts) DB.Delete<QuestContract>(contract.Id);
+                    foreach (var delivery in deliveries) DB.Delete<QuestContractDelivery>(delivery.Id);
                     DB.Delete<WorldPropertyCategory>(category.Id);
                     DB.Delete<WorldProperty>(property.Id);
                     DB.Delete<PlayerOutfit>(outfit.Id);
@@ -191,6 +238,30 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     DB.Delete<PlayerShip>(ship.Id);
                     DB.Delete<ResearchJob>(job.Id);
                     DB.Delete<Player>(player.Id);
+                }
+
+                List<QuestContractItem> EscrowItems() => new()
+                {
+                    new QuestContractItem { Data = data, Name = GetName(weapon), StackSize = 9, Resref = "b_longsword", IconResref = "test-icon" },
+                    new QuestContractItem { Data = data, Name = "Custom reward name", StackSize = 3, Resref = "b_longsword", IconResref = "custom-icon" },
+                    new QuestContractItem { Data = migrated, Name = "Already migrated reward", StackSize = 2, Resref = "b_longsword", IconResref = "other-icon" }
+                };
+
+                void AssertEscrowItems(JToken original, List<QuestContractItem> saved)
+                {
+                    if (original.Type == JTokenType.Null)
+                    {
+                        ctx.Assert(saved == null, "Null escrow lists remain null");
+                        return;
+                    }
+                    ctx.AssertEqual(original.Count(), saved.Count, "Escrow item count and order are retained");
+                    for (var index = 0; index < saved.Count; index++)
+                    {
+                        ctx.AssertEqual(migrated, saved[index].Data, "Escrow payload is migrated before any later claim");
+                        ctx.AssertEqual(index == 0 ? "Weapon Enhancement - DMG I" : original[index]["Name"].Value<string>(),
+                            saved[index].Name, "Only default escrow display names change");
+                        AssertPreservedMetadata(ctx, (JObject)original[index], saved[index], "Name", "Data");
+                    }
                 }
             });
         }

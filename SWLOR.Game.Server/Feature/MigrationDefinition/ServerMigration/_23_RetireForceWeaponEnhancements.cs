@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Service.QuestContractService;
 using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
@@ -21,6 +22,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 () => item.Name = ForceWeaponEnhancementMigration.GetReplacementName(item.Name)));
             MigrateRecords<MarketItem>(item => MigrateData(item.Data, value => item.Data = value,
                 () => item.Name = ForceWeaponEnhancementMigration.GetReplacementName(item.Name)));
+            MigrateRecords<QuestContract>(contract => MigrateContractItems(contract.RewardItems));
+            MigrateRecords<QuestContractDelivery>(delivery => MigrateContractItems(delivery.Items));
             MigrateRecords<WorldPropertyCategory>(category =>
             {
                 var changed = false;
@@ -54,6 +57,19 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 return changed;
             });
             MigrateRecords<Player>(ForceWeaponEnhancementMigration.MigrateRecipeKnowledge);
+        }
+
+        /// <summary>
+        /// Updates escrowed item payloads and default display names without changing delivery or reward metadata.
+        /// </summary>
+        private static bool MigrateContractItems(List<QuestContractItem> items)
+        {
+            if (items == null) return false;
+            var changed = false;
+            foreach (var item in items)
+                changed |= MigrateData(item.Data, value => item.Data = value,
+                    () => item.Name = ForceWeaponEnhancementMigration.GetReplacementName(item.Name));
+            return changed;
         }
 
         private static bool MigrateModules(Dictionary<int, ShipStatus.ShipStatusModule> modules)

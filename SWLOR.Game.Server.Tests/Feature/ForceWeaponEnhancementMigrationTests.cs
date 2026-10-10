@@ -177,6 +177,22 @@ public class ForceWeaponEnhancementMigrationTests
             .Should().NotContain(line => line.Split('\t').Last().Trim() == "Force");
     }
 
+    [Test]
+    public void RetiredEnhancementPaletteNamesMatchTheirDmgBlueprints()
+    {
+        var root = FindRoot();
+        var palette = JObject.Parse(File.ReadAllText(Path.Combine(root, "Module", "itp", "itempalcus.itp.json")));
+        foreach (var resref in new[] { "wen_dmg_for1", "wen_dmg_for2", "wen_dmg_for3" })
+        {
+            var entries = palette.Descendants().OfType<JObject>()
+                .Where(node => node["RESREF"]?["value"]?.Value<string>() == resref).ToArray();
+            entries.Should().ContainSingle(resref);
+            var blueprint = JObject.Parse(File.ReadAllText(Path.Combine(root, "Module", "uti", resref + ".uti.json")));
+            entries[0]["NAME"]["value"].Value<string>()
+                .Should().Be(blueprint["LocalizedName"]["value"]["0"].Value<string>());
+        }
+    }
+
     // Fixtures use the existing raw GFF writer; assertions read with the independent formats library.
     private static readonly Type Document = typeof(ForceWeaponEnhancementMigration).Assembly
         .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData")!;

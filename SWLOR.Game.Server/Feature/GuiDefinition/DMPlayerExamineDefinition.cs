@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -22,83 +23,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .DefinePartialView(DMPlayerExamineViewModel.SkillsView, AddSkills)
                 .DefinePartialView(DMPlayerExamineViewModel.PerksView, AddPerks)
                 .DefinePartialView(DMPlayerExamineViewModel.EffectsView, AddEffects)
-                .DefinePartialView(DMPlayerExamineViewModel.NotesView, group =>
-                {
-                    AddPanel(group, mainCol =>
-                    {
-                        mainCol.AddRow(mainRow =>
-                        {
-                            mainRow.AddColumn(col =>
-                            {
-                                col.AddRow(row =>
-                                {
-                                    row.AddList(template =>
-                                        {
-                                            template.AddCell(cell =>
-                                            {
-                                                cell.AddToggleButton()
-                                                    .BindText(model => model.NoteNames)
-                                                    .BindIsToggled(model => model.NoteToggles)
-                                                    .BindOnClicked(model => model.OnClickNote());
-                                            });
-                                        })
-                                        .BindRowCount(model => model.NoteNames);
-                                });
-
-                                col.AddRow(row =>
-                                {
-                                    row.AddButton()
-                                        .SetHeight(32f)
-                                        .SetText("New Note")
-                                        .BindOnClicked(model => model.OnClickNewNote());
-
-                                    row.AddButton()
-                                        .SetHeight(32f)
-                                        .SetText("Delete")
-                                        .BindOnClicked(model => model.OnClickDeleteNote());
-                                });
-                            });
-
-                            mainRow.AddColumn(col =>
-                            {
-                                col.AddRow(row =>
-                                {
-                                    row.AddTextEdit()
-                                        .BindValue(model => model.ActiveNoteName)
-                                        .SetPlaceholder("Note Name")
-                                        .SetMaxLength(50)
-                                        .BindIsEnabled(model => model.IsNoteSelected);
-                                });
-
-                                col.AddRow(row =>
-                                {
-                                    row.AddLabel()
-                                        .BindText(model => model.ActiveNoteCreator);
-                                });
-
-                                col.AddRow(row =>
-                                {
-                                    row.AddTextEdit()
-                                        .SetIsMultiline(true)
-                                        .BindValue(model => model.ActiveNoteDetail)
-                                        .SetMaxLength(3000)
-                                        .BindIsEnabled(model => model.IsNoteSelected);
-                                });
-
-                                col.AddRow(row =>
-                                {
-                                    row.AddSpacer();
-                                    row.AddButton()
-                                        .SetText("Save Changes")
-                                        .SetHeight(32f)
-                                        .BindOnClicked(model => model.OnClickSaveChanges())
-                                        .BindIsEnabled(model => model.IsNoteSelected);
-                                    row.AddSpacer();
-                                });
-                            });
-                        });
-                    });
-                });
+                .DefinePartialView(DMPlayerExamineViewModel.NotesView, group => AddNotes(group, 560f, 340f));
 
             window.AddStandardLayout(layout =>
             {
@@ -139,6 +64,58 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 panel.SetScrollbars(NuiScrollbars.None);
                 panel.AddColumn(content);
             }).SetWidth(560f)));
+        }
+
+        public static Json BuildNotesLayout(float windowWidth, float windowHeight)
+        {
+            var host = new GuiGroup<DMPlayerExamineViewModel>()
+                .SetShowBorder(false).SetScrollbars(NuiScrollbars.None);
+            AddNotes(host, Math.Max(460f, windowWidth - 80f), Math.Max(120f, windowHeight - 320f));
+            return host.ToJson();
+        }
+
+        private static void AddNotes(GuiGroup<DMPlayerExamineViewModel> host, float contentWidth, float bodyHeight)
+        {
+            host.AddColumn(main =>
+            {
+                main.SetWidth(contentWidth);
+                main.AddRow(row =>
+                {
+                    row.AddColumn(sidebar =>
+                    {
+                        sidebar.AddRow(listRow => listRow.AddList(template =>
+                            template.AddCell(cell => cell.AddToggleButton().SetId("dm_note_select")
+                                .BindText(model => model.NoteNames)
+                                .BindIsToggled(model => model.NoteToggles)
+                                .BindOnClicked(model => model.OnClickNote())))
+                            .BindRowCount(model => model.NoteNames).SetHeight(bodyHeight + 24f));
+                        sidebar.AddRow(buttons => buttons.AddButton().SetId("dm_note_new")
+                            .SetText("New Note").SetHeight(32f)
+                            .BindOnClicked(model => model.OnClickNewNote()));
+                        sidebar.AddRow(buttons => buttons.AddButton().SetId("dm_note_delete")
+                            .SetText("Delete").SetHeight(32f)
+                            .BindOnClicked(model => model.OnClickDeleteNote()));
+                    }).SetWidth(180f);
+                    row.AddColumn(editor =>
+                    {
+                        editor.SetWidth(contentWidth - 200f);
+                        editor.AddRow(title => title.AddTextEdit()
+                            .BindValue(model => model.ActiveNoteName)
+                            .SetPlaceholder("Note Name").SetMaxLength(50).SetHeight(32f)
+                            .BindIsEnabled(model => model.IsNoteSelected));
+                        editor.AddRow(creator => creator.AddLabel()
+                            .BindText(model => model.ActiveNoteCreator).SetHeight(20f));
+                        editor.AddRow(body => body.AddTextEdit()
+                            .SetIsMultiline(true).SetHasWordWrap(true)
+                            .BindValue(model => model.ActiveNoteDetail).SetMaxLength(3000).SetHeight(bodyHeight)
+                            .BindIsEnabled(model => model.IsNoteSelected));
+                        editor.AddRow(buttons => buttons.AddButton().SetId("dm_note_save")
+                            .SetText("Save Changes").SetHeight(32f)
+                            .BindOnClicked(model => model.OnClickSaveChanges())
+                            .BindIsEnabled(model => model.IsNoteSelected));
+                    });
+                });
+            });
         }
 
         private static void AddDetails(GuiGroup<DMPlayerExamineViewModel> host) => AddPanel(host, col =>

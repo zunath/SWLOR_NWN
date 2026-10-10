@@ -59,6 +59,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly GuiToggleGroupSync _topToggles = new(0, 1, 2);
         private readonly GuiToggleGroupSync _bottomToggles = new(3, 4);
         private int _selectedTabId;
+        private float _notesContentWidth = -1f;
+        private float _notesBodyHeight = -1f;
 
         public int TopTabId
         {
@@ -307,11 +309,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _selectedTabId = tabId;
             _topToggles.SyncTo(tabId, value => TopTabId = value);
             _bottomToggles.SyncTo(tabId, value => BottomTabId = value);
-            Tabs.Select(this, PartialView, tabId, onAfterApply: RefreshTabInputs);
+            Tabs.Select(this, PartialView, tabId, onAfterApply: RestoreTabLayoutAndInputs);
         }
 
         protected override void OnModalClosedRestore() =>
-            Tabs.Select(this, PartialView, _selectedTabId, onAfterApply: RefreshTabInputs);
+            Tabs.Select(this, PartialView, _selectedTabId, onAfterApply: RestoreTabLayoutAndInputs);
+
+        private void RestoreTabLayoutAndInputs()
+        {
+            if (_selectedTabId == 4)
+                RefreshNotesLayout(true);
+            else
+                RefreshTabInputs();
+        }
+
+        protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName == nameof(Geometry) && _selectedTabId == 4)
+                RefreshNotesLayout();
+        }
+
+        private void RefreshNotesLayout(bool force = false)
+        {
+            var width = Math.Max(460f, Geometry.Width - 80f);
+            var height = Math.Max(120f, Geometry.Height - 320f);
+            // Ignore the framework's one-pixel redraw nudge and small drag increments.
+            if (!force && Math.Abs(width - _notesContentWidth) < 8f && Math.Abs(height - _notesBodyHeight) < 8f)
+                return;
+            _notesContentWidth = width;
+            _notesBodyHeight = height;
+            SetGroupLayout(PartialView, DMPlayerExamineDefinition.BuildNotesLayout(Geometry.Width, Geometry.Height));
+            RefreshTabInputs();
+        }
 
         private void RefreshTabInputs()
         {

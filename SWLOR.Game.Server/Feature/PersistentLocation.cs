@@ -2,6 +2,8 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature
@@ -134,11 +136,62 @@ namespace SWLOR.Game.Server.Feature
 
             var location = Location(locationArea, position, dbPlayer.LocationOrientation);
 
-            AssignCommand(player, () =>
+            RestoreLocation(player, location);
+        }
+
+        /// <summary>
+        /// Restores a saved location, applying authored recovery regions before arrival.
+        /// </summary>
+        public static void RestoreLocation(uint creature, Location location)
+        {
+            location = ResolveRecoveryLocation(location);
+            var destinationArea = GetAreaFromLocation(location);
+
+            AssignCommand(creature, () =>
             {
                 ClearAllActions();
                 ActionJumpToLocation(location);
+                ActionDoCommand(() =>
+                {
+                    if (!GetIsObjectValid(creature) || GetArea(creature) != destinationArea)
+                        return;
+
+                    SaveLocation(creature);
+                });
             });
+        }
+
+        private static Location ResolveRecoveryLocation(Location location)
+        {
+            var area = GetAreaFromLocation(location);
+            var position = GetPositionFromLocation(location);
+            for (var trigger = GetFirstObjectInArea(area, ObjectType.Trigger);
+                 GetIsObjectValid(trigger);
+                 trigger = GetNextObjectInArea(area, ObjectType.Trigger))
+            {
+                var destinationTag = GetLocalString(trigger, "LOGIN_RECOVERY_WAYPOINT");
+                if (string.IsNullOrWhiteSpace(destinationTag))
+                    continue;
+
+                var minZ = GetLocalFloat(trigger, "LOGIN_RECOVERY_MIN_Z");
+                var maxZ = GetLocalFloat(trigger, "LOGIN_RECOVERY_MAX_Z");
+                if (maxZ <= minZ || position.Z < minZ || position.Z > maxZ ||
+                    !ObjectPlugin.GetPositionIsInTrigger(trigger, position))
+                    continue;
+
+                var waypoint = GetWaypointByTag(destinationTag);
+                if (!GetIsObjectValid(waypoint) || GetArea(waypoint) != area)
+                {
+                    Log.WriteStructured(LogGroup.Server,
+                        "Login recovery waypoint resolution failed: AreaResref={AreaResref} WaypointTag={WaypointTag}",
+                        GetResRef(area), destinationTag);
+                    continue;
+                }
+
+                return Location(area, GetPosition(waypoint), GetFacingFromLocation(location));
+            }
+
+            return location;
         }
     }
 }

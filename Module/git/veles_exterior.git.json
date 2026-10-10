@@ -403234,7 +403234,1910 @@
   },
   "TriggerList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Cursor": {
+          "type": "byte",
+          "value": 0
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "HighlightHeight": {
+          "type": "float",
+          "value": 0.0
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LinkedToFlags": {
+          "type": "byte",
+          "value": 0
+        },
+        "LoadScreenID": {
+          "type": "word",
+          "value": 0
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Culinary School - Login Recovery"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "ScriptHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnEnter": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnExit": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptUserDefine": {
+          "type": "resref",
+          "value": ""
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "LOGIN_RECOVERY_REGION"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "login_recovery"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "int",
+          "value": 0
+        },
+        "__struct_id": 1,
+        "Geometry": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 8.6010542
+              },
+              "PointY": {
+                "type": "float",
+                "value": 14.8536033
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 8.6010546
+              },
+              "PointY": {
+                "type": "float",
+                "value": 13.8740033
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.8050146
+              },
+              "PointY": {
+                "type": "float",
+                "value": 13.874003
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.8050152
+              },
+              "PointY": {
+                "type": "float",
+                "value": 12.205303
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 8.1156452
+              },
+              "PointY": {
+                "type": "float",
+                "value": 12.2053032
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 8.1156459
+              },
+              "PointY": {
+                "type": "float",
+                "value": 10.4020032
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.8252559
+              },
+              "PointY": {
+                "type": "float",
+                "value": 10.402003
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.8252565
+              },
+              "PointY": {
+                "type": "float",
+                "value": 9.025813
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 8.5947065
+              },
+              "PointY": {
+                "type": "float",
+                "value": 9.0258033
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 8.5947069
+              },
+              "PointY": {
+                "type": "float",
+                "value": 8.0258233
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.7818069
+              },
+              "PointY": {
+                "type": "float",
+                "value": 8.025823
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.781807
+              },
+              "PointY": {
+                "type": "float",
+                "value": 7.774593
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.908117
+              },
+              "PointY": {
+                "type": "float",
+                "value": 7.7745931
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.9081176
+              },
+              "PointY": {
+                "type": "float",
+                "value": 6.0909831
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.7986178
+              },
+              "PointY": {
+                "type": "float",
+                "value": 5.716853
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 2.8315678
+              },
+              "PointY": {
+                "type": "float",
+                "value": 5.7168511
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 2.8253589
+              },
+              "PointY": {
+                "type": "float",
+                "value": 2.8365311
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 4.2465089
+              },
+              "PointY": {
+                "type": "float",
+                "value": 2.8365317
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 4.2465086
+              },
+              "PointY": {
+                "type": "float",
+                "value": 3.6666017
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 5.3740286
+              },
+              "PointY": {
+                "type": "float",
+                "value": 3.6666021
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 5.3740289
+              },
+              "PointY": {
+                "type": "float",
+                "value": 2.8365321
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 6.2539389
+              },
+              "PointY": {
+                "type": "float",
+                "value": 2.8365324
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 6.2539393
+              },
+              "PointY": {
+                "type": "float",
+                "value": 1.8432124
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.0796393
+              },
+              "PointY": {
+                "type": "float",
+                "value": 1.8432128
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.0796397
+              },
+              "PointY": {
+                "type": "float",
+                "value": 0.6975188
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 6.2486297
+              },
+              "PointY": {
+                "type": "float",
+                "value": 0.6975224
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 6.248632
+              },
+              "PointY": {
+                "type": "float",
+                "value": -5.1761576
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 6.962082
+              },
+              "PointY": {
+                "type": "float",
+                "value": -5.1761573
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 6.9620824
+              },
+              "PointY": {
+                "type": "float",
+                "value": -6.2806973
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 6.2486324
+              },
+              "PointY": {
+                "type": "float",
+                "value": -6.2806976
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 6.2486327
+              },
+              "PointY": {
+                "type": "float",
+                "value": -6.8801476
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.8059227
+              },
+              "PointY": {
+                "type": "float",
+                "value": -6.880137
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.9154227
+              },
+              "PointY": {
+                "type": "float",
+                "value": -6.9467069
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.9154232
+              },
+              "PointY": {
+                "type": "float",
+                "value": -8.1947569
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.7917132
+              },
+              "PointY": {
+                "type": "float",
+                "value": -8.194757
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.7917132
+              },
+              "PointY": {
+                "type": "float",
+                "value": -8.256157
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 8.5839332
+              },
+              "PointY": {
+                "type": "float",
+                "value": -8.2561567
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 8.5839336
+              },
+              "PointY": {
+                "type": "float",
+                "value": -9.2363067
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.7958136
+              },
+              "PointY": {
+                "type": "float",
+                "value": -9.236307
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.7958143
+              },
+              "PointY": {
+                "type": "float",
+                "value": -10.939397
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 8.1021743
+              },
+              "PointY": {
+                "type": "float",
+                "value": -10.9393968
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 8.102175
+              },
+              "PointY": {
+                "type": "float",
+                "value": -12.7157968
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.803505
+              },
+              "PointY": {
+                "type": "float",
+                "value": -12.715797
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.8035055
+              },
+              "PointY": {
+                "type": "float",
+                "value": -14.123397
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 8.5787055
+              },
+              "PointY": {
+                "type": "float",
+                "value": -14.1233967
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 8.5787059
+              },
+              "PointY": {
+                "type": "float",
+                "value": -15.0870967
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.7954159
+              },
+              "PointY": {
+                "type": "float",
+                "value": -15.087097
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.795416
+              },
+              "PointY": {
+                "type": "float",
+                "value": -15.396997
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.888476
+              },
+              "PointY": {
+                "type": "float",
+                "value": -15.3969969
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.8884765
+              },
+              "PointY": {
+                "type": "float",
+                "value": -16.6005969
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.7789765
+              },
+              "PointY": {
+                "type": "float",
+                "value": -16.705997
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.0764365
+              },
+              "PointY": {
+                "type": "float",
+                "value": -16.7059972
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.0764368
+              },
+              "PointY": {
+                "type": "float",
+                "value": -17.5761972
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 6.0788468
+              },
+              "PointY": {
+                "type": "float",
+                "value": -17.5761976
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 6.0788465
+              },
+              "PointY": {
+                "type": "float",
+                "value": -16.7062976
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -0.0005492
+              },
+              "PointY": {
+                "type": "float",
+                "value": -16.7063
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -0.0005492
+              },
+              "PointY": {
+                "type": "float",
+                "value": -17.5762
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -1.0089732
+              },
+              "PointY": {
+                "type": "float",
+                "value": -17.5762004
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -1.0089735
+              },
+              "PointY": {
+                "type": "float",
+                "value": -16.7063004
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -1.7800635
+              },
+              "PointY": {
+                "type": "float",
+                "value": -16.7063007
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -1.8895635
+              },
+              "PointY": {
+                "type": "float",
+                "value": -16.5968007
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -1.8895639
+              },
+              "PointY": {
+                "type": "float",
+                "value": -15.7675007
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.9905539
+              },
+              "PointY": {
+                "type": "float",
+                "value": -15.7674031
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.990554
+              },
+              "PointY": {
+                "type": "float",
+                "value": -15.3740031
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -8.891734
+              },
+              "PointY": {
+                "type": "float",
+                "value": -15.3740035
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -8.8917356
+              },
+              "PointY": {
+                "type": "float",
+                "value": -11.2287035
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.9905656
+              },
+              "PointY": {
+                "type": "float",
+                "value": -11.2287031
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.9864858
+              },
+              "PointY": {
+                "type": "float",
+                "value": -10.9014031
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.8769858
+              },
+              "PointY": {
+                "type": "float",
+                "value": -10.7919031
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.1134958
+              },
+              "PointY": {
+                "type": "float",
+                "value": -10.7919028
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.1134966
+              },
+              "PointY": {
+                "type": "float",
+                "value": -8.8149028
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.5303966
+              },
+              "PointY": {
+                "type": "float",
+                "value": -8.8149029
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.5303973
+              },
+              "PointY": {
+                "type": "float",
+                "value": -6.9451229
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.1264973
+              },
+              "PointY": {
+                "type": "float",
+                "value": -6.9451228
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.1264981
+              },
+              "PointY": {
+                "type": "float",
+                "value": -4.9734228
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.8653681
+              },
+              "PointY": {
+                "type": "float",
+                "value": -4.9734331
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.9748681
+              },
+              "PointY": {
+                "type": "float",
+                "value": -4.8639331
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.9789382
+              },
+              "PointY": {
+                "type": "float",
+                "value": -4.5287631
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -8.8510882
+              },
+              "PointY": {
+                "type": "float",
+                "value": -4.5287634
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -8.8510899
+              },
+              "PointY": {
+                "type": "float",
+                "value": -0.3834864
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.9979299
+              },
+              "PointY": {
+                "type": "float",
+                "value": -0.3834861
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.9979307
+              },
+              "PointY": {
+                "type": "float",
+                "value": 1.7294869
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.4882207
+              },
+              "PointY": {
+                "type": "float",
+                "value": 1.7294871
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.4882207
+              },
+              "PointY": {
+                "type": "float",
+                "value": 1.8360271
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -8.2788607
+              },
+              "PointY": {
+                "type": "float",
+                "value": 1.8360268
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -8.2788611
+              },
+              "PointY": {
+                "type": "float",
+                "value": 2.7954468
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.4908911
+              },
+              "PointY": {
+                "type": "float",
+                "value": 2.7954471
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.4908918
+              },
+              "PointY": {
+                "type": "float",
+                "value": 4.7144771
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.8040418
+              },
+              "PointY": {
+                "type": "float",
+                "value": 4.714477
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.8040425
+              },
+              "PointY": {
+                "type": "float",
+                "value": 6.494747
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.5178325
+              },
+              "PointY": {
+                "type": "float",
+                "value": 6.4947471
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.5178333
+              },
+              "PointY": {
+                "type": "float",
+                "value": 8.3872571
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -8.3062333
+              },
+              "PointY": {
+                "type": "float",
+                "value": 8.3872668
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -8.3062336
+              },
+              "PointY": {
+                "type": "float",
+                "value": 9.3440468
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.5102636
+              },
+              "PointY": {
+                "type": "float",
+                "value": 9.3440471
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.5102637
+              },
+              "PointY": {
+                "type": "float",
+                "value": 9.6215271
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.9384137
+              },
+              "PointY": {
+                "type": "float",
+                "value": 9.6203569
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -7.9384163
+              },
+              "PointY": {
+                "type": "float",
+                "value": 16.1114969
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -3.2076663
+              },
+              "PointY": {
+                "type": "float",
+                "value": 16.1114988
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -3.2076665
+              },
+              "PointY": {
+                "type": "float",
+                "value": 16.6296988
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -3.0078465
+              },
+              "PointY": {
+                "type": "float",
+                "value": 16.7849988
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -1.7378665
+              },
+              "PointY": {
+                "type": "float",
+                "value": 16.7849993
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -1.7378669
+              },
+              "PointY": {
+                "type": "float",
+                "value": 17.6109993
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -0.6882179
+              },
+              "PointY": {
+                "type": "float",
+                "value": 17.6109997
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -0.6882176
+              },
+              "PointY": {
+                "type": "float",
+                "value": 16.8380997
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 5.3607734
+              },
+              "PointY": {
+                "type": "float",
+                "value": 16.8381021
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 5.3607731
+              },
+              "PointY": {
+                "type": "float",
+                "value": 17.6128021
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 6.3884931
+              },
+              "PointY": {
+                "type": "float",
+                "value": 17.6128025
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 6.3884934
+              },
+              "PointY": {
+                "type": "float",
+                "value": 16.8381025
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.8066734
+              },
+              "PointY": {
+                "type": "float",
+                "value": 16.838103
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.9161735
+              },
+              "PointY": {
+                "type": "float",
+                "value": 16.7532031
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.9161742
+              },
+              "PointY": {
+                "type": "float",
+                "value": 14.9542031
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.8269542
+              },
+              "PointY": {
+                "type": "float",
+                "value": 14.954203
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 7.8269542
+              },
+              "PointY": {
+                "type": "float",
+                "value": 14.853603
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0
+              }
+            }
+          ]
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 165.0241394042969
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 142.4839019775391
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.2
+        },
+        "ZOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "LOGIN_RECOVERY_WAYPOINT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "VELES_CULINARY_LOGIN"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "LOGIN_RECOVERY_MIN_Z"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": -1.0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "LOGIN_RECOVERY_MAX_Z"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 2
+              },
+              "Value": {
+                "type": "float",
+                "value": 7.0
+              }
+            }
+          ]
+        }
+      }
+    ]
   },
   "VarTable": {
     "type": "list",
@@ -405518,6 +407421,67 @@
         "ZPosition": {
           "type": "float",
           "value": 0.1999988555908203
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Culinary School - Login Recovery"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "VELES_CULINARY_LOGIN"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_waypoint001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 150.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 129.15797
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.2
         }
       }
     ]

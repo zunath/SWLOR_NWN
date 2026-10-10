@@ -181,6 +181,10 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            // Migrations can replace base attributes. Restore from the final record,
+            // including when an older character file needs no further migrations.
+            Stat.RestorePlayerAttributes(player);
+
             // Completed migrations may have cleared native feats while preserving perk ownership.
             // Also repair previously saved characters even when no migration is pending.
             Perk.RestorePlayerFeats(player);

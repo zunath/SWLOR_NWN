@@ -711,9 +711,32 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (ability == AbilityType.Invalid) return;
 
+            CreaturePlugin.SetRawAbilityScore(player, ability, GetPlayerAttributeScore(entity, ability));
+        }
+
+        private static int GetPlayerAttributeScore(Player entity, AbilityType ability)
+        {
             var racialBonus = entity.RacialStat == ability ? 1 : 0;
-            var totalStat = entity.BaseStats[ability] + entity.UpgradedStats[ability] + racialBonus;
-            CreaturePlugin.SetRawAbilityScore(player, ability, totalStat);
+            return entity.BaseStats[ability] + entity.UpgradedStats[ability] + racialBonus;
+        }
+
+        public static void RestorePlayerAttributes(uint player)
+        {
+            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) return;
+
+            var entity = DB.Get<Player>(GetObjectUUID(player));
+            RestorePlayerAttributes(entity,
+                (ability, score) => CreaturePlugin.SetRawAbilityScore(player, ability, score));
+        }
+
+        internal static void RestorePlayerAttributes(Player entity, Action<AbilityType, int> setAbilityScore)
+        {
+            // A crash can leave the character file behind the saved AP investments.
+            // Assign totals so reconnecting never drops or doubles purchased points.
+            foreach (var ability in entity.BaseStats.Keys)
+            {
+                setAbilityScore(ability, GetPlayerAttributeScore(entity, ability));
+            }
         }
 
         /// <summary>

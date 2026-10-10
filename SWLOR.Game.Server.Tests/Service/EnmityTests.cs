@@ -38,6 +38,8 @@ public class EnmityTests
             commandIssuedAt: DateTime.UtcNow, pendingTarget: 1).Should().BeTrue();
         ShouldIssueAttackCommand(OBJECT_INVALID, 1, ActionType.MoveToPoint, false,
             commandIssuedAt: DateTime.UtcNow, pendingTarget: 1).Should().BeFalse();
+        ShouldIssueAttackCommand(2, 1, ActionType.AttackObject, false,
+            commandIssuedAt: DateTime.UtcNow, pendingTarget: 1).Should().BeFalse();
         ShouldIssueAttackCommand(OBJECT_INVALID, 2, ActionType.MoveToPoint, true,
             commandIssuedAt: DateTime.UtcNow, pendingTarget: 1).Should().BeFalse();
     }

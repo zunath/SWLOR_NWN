@@ -921,6 +921,11 @@ namespace SWLOR.Game.Server.Service
             if (shouldRecoverStaleAttack)
                 return true;
 
+            // The native attack target can still describe the previous swing while
+            // an already-issued switch waits for its assigned callback.
+            if (pendingTarget == desiredTarget && HasRecentAttackCommand(now, commandIssuedAt, recoverySeconds))
+                return false;
+
             if (attackTarget != OBJECT_INVALID && attackTarget != desiredTarget)
                 return true;
 

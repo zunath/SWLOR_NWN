@@ -7,6 +7,22 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class PlayerFacingNameBroadcastTests
 {
     [Test]
+    public void DMShoutLabel_IsRestoredOnlyForStaffOnLogin()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Communication.cs"));
+        var method = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree.ParseText(source).GetRoot()
+            .DescendantNodes().OfType<Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.ValueText == "ApplyDMShoutChannelName");
+
+        method.AttributeLists.ToString().Should().Contain("NWNEventHandler(ScriptName.OnModuleEnter)");
+        var guard = method.Body!.Statements.OfType<Microsoft.CodeAnalysis.CSharp.Syntax.IfStatementSyntax>().Single();
+        guard.Condition.ToString().Should().Be("!GetIsDM(player) && !GetIsDMPossessed(player)");
+        guard.Statement.Should().BeOfType<Microsoft.CodeAnalysis.CSharp.Syntax.ReturnStatementSyntax>();
+        method.Body.Statements.Last().ToString().Should().Be("PlayerPlugin.SetTlkOverride(player, 66751, \"Shout\");");
+    }
+
+    [Test]
     public void CommsChannel_UsesOneCommsLabelWithoutExposingPlayerNames()
     {
         var root = FindRepositoryRoot();

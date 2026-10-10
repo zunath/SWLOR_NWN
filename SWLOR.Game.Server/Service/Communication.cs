@@ -64,6 +64,17 @@ namespace SWLOR.Game.Server.Service
             PlayerPlugin.SetTlkOverride(player, PartyChatMessagePrefixStrRef, CommsMessagePrefix);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void ApplyDMShoutChannelName()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsDM(player) && !GetIsDMPossessed(player))
+                return;
+
+            // The global "Disabled" label applies to players; staff retain native Shout.
+            PlayerPlugin.SetTlkOverride(player, 66751, "Shout");
+        }
+
         /// <summary>
         /// Whenever a DM possesses a creature, track the NPC on their object so that messages can be
         /// sent to them during the possession.

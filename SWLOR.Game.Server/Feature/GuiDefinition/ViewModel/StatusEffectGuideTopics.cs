@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return new PlayerGuideViewModel.PlayerGuideTopic(
                 TopicName,
                 "Combat",
-                "Complete control and harmful status lists, hard crowd control, cleansing, and Staff - Crusher / Spear - Disabler synergies.",
+                "Control and harmful status lists, Bleed and Toxin damage caps, Fragmentation, cleansing, and Staff - Crusher / Spear - Disabler synergies.",
                 "Control and debuff synergies",
                 new[]
                 {
@@ -25,6 +25,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         "Hemorrhage; Incapacitate; Infection; Kill Box; Last Bastion; Last Word; Marked; Marked for Death; Marking Toss; Nightmare Field; Pacification Field; Poison; Poison Resistance; Predator's Mark I"),
                     new PlayerGuideViewModel.ArticleBlock("Other Harmful Effects (S-W)",
                         "Saturation Toss; Shock; Signal Jammer; Smoke Bomb; Smoke Round; Stasis Volley; Sunder; Suppression; Tempest Mark; Terrified; Toxin; Unstable Pressure; Venom; Vital Strike; Vulnerable; Weakened; Worldbreaker"),
+                    new PlayerGuideViewModel.ArticleBlock("Bleed Damage",
+                        "Bleed deals physical damage every 6 seconds. Its base damage is 4% of the target's maximum HP, rounded up, capped at 20 + twice the higher of the source's Might or Perception modifiers. Negative modifiers count as zero. The cap applies before outgoing Bleed bonuses, Trauma resistance, and the target's damage modifiers. For example, a +8 relevant modifier caps the base tick at 36 damage. These rules also apply to Bleed from Piercing Toss and other Throwing or Shuriken abilities."),
+                    new PlayerGuideViewModel.ArticleBlock("Toxin Damage",
+                        "Toxin deals poison damage every 6 seconds. Its base damage is 6% of the target's maximum HP, rounded up, capped at 30 + three times the source's Agility modifier. Negative modifiers count as zero. The cap applies before Poison resistance and the target's damage modifiers. For example, a +8 Agility modifier caps the base tick at 54 damage."),
+                    new PlayerGuideViewModel.ArticleBlock("Percentage Damage Caps",
+                        "Bleed and Toxin use the lower of their HP percentage and source-based cap, with a minimum base tick of 1 damage. A modifier is the bonus from an attribute, not its full score. If the source is no longer available, its modifiers count as zero. The same caps apply against players, ordinary enemies, and bosses. Damage bonuses and vulnerabilities can raise the final damage above the base cap; resistance can reduce it or prevent damage entirely."),
+                    new PlayerGuideViewModel.ArticleBlock("Fragmentation Damage",
+                        "Fragmentation deals fixed physical damage at the tick interval listed by the ability or perk that applies it. Trauma resistance and the target's damage modifiers affect each tick. Its damage does not grow with the target's maximum HP."),
                     new PlayerGuideViewModel.ArticleBlock("Damage Output Penalties",
                         "Temporary effects that reduce damage dealt, such as Duelist's Distance, are harmful debuffs rather than control effects. A damage-increasing version is a beneficial effect. The damage dealt by an attack itself is not a status effect."),
                     new PlayerGuideViewModel.ArticleBlock("Staff - Crusher",

@@ -29,6 +29,8 @@ public class MigrationDataTests
         migrations.Where(migration => migration.Version == 22).Should().HaveCount(2);
         new _22_CombatSystemReplacement().ExecutionType.Should().Be(MigrationExecutionType.PostDatabaseLoad);
         new StoredItemSchemaMigration().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
+        new _23_RemoveWeaponStatOverrides().Version.Should().BeGreaterThan(22);
+        new _23_RemoveWeaponStatOverrides().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
     }
 
     [Test]

@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     {
                         if (GetIsObjectValid(creature) && (int)GetPhenoType(creature) == desired &&
                             GetItemInSlot(InventorySlot.Cloak, creature) == cloak)
-                            EquippedItemAppearance.Refresh(creature, cloak);
+                            EquippedItemAppearance.Refresh(creature, cloak, resetShaderOverrides: false);
                     });
                 }
             }

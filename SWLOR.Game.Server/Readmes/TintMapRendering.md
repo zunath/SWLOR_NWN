@@ -254,13 +254,12 @@ bone references and child/animation relationships.
 Generated robe phenotypes also need their own native cloak geometry resources.
 After changing the robe or cloak catalog, run
 `python -B SWLOR_Haks/tools/GenerateRobeCloakModels.py --game-data <installed-game-data-directory>`.
-The generator stores each canonical cloak once in `tools/RobeCloakSources`, with a
-compact phenotype matrix in `RobeCloakModels.json`. HakBuilder's configured
-`ModelGenerator` writes the native variants directly into the HAK, retaining the
-exact geometry, materials, skin binds and animation parents and changing only model
-and root names. No expanded cloak MDLs belong in `sw_pt_cloak`. The built HAK still
-contains the full native resources; this reduces repository and loose-file duplication.
-`BuildHaks.cmd` checks the source manifest before packaging.
+Commit the resulting native MDLs in `SWLOR_Haks/sw_pt_cloak` together with
+`tools/RobeCloakModels.json`. They retain the exact geometry, materials, skin binds
+and animation parents, changing only model and root names. Generation is an
+explicit authoring step after catalog changes; normal builds package the checked-in
+assets without generating cloak models. `BuildHaks.cmd` checks their coverage and
+hashes against the manifest before packaging.
 Changing a robe phenotype also refreshes the equipped
 cloak after the body update, including when returning to the base body.
 Equipped cloak edits also delete the affected open inventory GUI slot

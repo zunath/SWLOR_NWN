@@ -34,13 +34,6 @@ The HakBuilder tool compiles NWN hak files from source directories. It includes 
 
 ## Performance Considerations
 
-An individual HAK may specify `ModelGenerator`, a Python script implementing
-`--build-info` and `--pack <archive>`. Build information reports `Checksum` and
-`ResourceSizes` as JSON. Inputs and the combined archive size are validated before
-outputs are deleted; the generator checksum also participates in incremental builds.
-The cloak generator stores 114 canonical models and a phenotype matrix, then writes
-the 15,195 native variants directly into the HAK without creating loose copies.
-
 - **Checksum checking enabled**: Faster for small haks or when few files have changed
 - **Checksum checking disabled**: Faster for large haks where calculating checksums takes longer than rebuilding the hak
 

@@ -16,7 +16,6 @@ namespace SWLOR.CLI
         private HakBuilderConfig _config;
         private List<HakBuilderHakpak> _haksToProcess;
         private readonly Dictionary<string, string> _checksumDictionary = new();
-        private readonly Dictionary<string, GeneratedModelBuildInfo> _generatedModels = new();
 
         public void Process()
         {
@@ -31,24 +30,9 @@ namespace SWLOR.CLI
                 .Where(hak => hak != null && !string.IsNullOrWhiteSpace(hak.Name))
                 .ToList();
             // Validate every input before deleting any previous HAK or TLK.
-            _generatedModels.Clear();
             foreach (var hak in _haksToProcess)
-            {
-                var sizes = Directory.EnumerateFiles(hak.Path, "*", SearchOption.AllDirectories)
-                    .Select(path => new FileInfo(path).Length);
-                if (!string.IsNullOrWhiteSpace(hak.ModelGenerator))
-                {
-                    if (!File.Exists(hak.ModelGenerator))
-                        throw new FileNotFoundException($"Missing model generator for HAK '{hak.Name}'.", hak.ModelGenerator);
-                    var info = JsonConvert.DeserializeObject<GeneratedModelBuildInfo>(
-                        RunProcess("python", "-B", hak.ModelGenerator, "--build-info"));
-                    if (info?.ResourceSizes == null || string.IsNullOrWhiteSpace(info.Checksum))
-                        throw new InvalidDataException($"Invalid model build information for HAK '{hak.Name}'.");
-                    _generatedModels.Add(hak.Name, info);
-                    sizes = sizes.Concat(info.ResourceSizes);
-                }
-                ValidateArchiveSize(hak.Name, sizes);
-            }
+                ValidateArchiveSize(hak.Name, Directory.EnumerateFiles(hak.Path, "*", SearchOption.AllDirectories)
+                    .Select(path => new FileInfo(path).Length));
             // Clean the output folder.
             CleanOutputFolder();
 
@@ -85,7 +69,7 @@ namespace SWLOR.CLI
             // Iterate over every configured hakpak folder and build the hak file.
             Parallel.ForEach(_haksToProcess, hak =>
             {
-                CompileHakpak(hak);
+                CompileHakpak(hak.Name, hak.Path);
             });
 
         }
@@ -165,7 +149,7 @@ namespace SWLOR.CLI
                             continue;
                         }
 
-                        var checksumFolder = Checksum(hak);
+                        var checksumFolder = ChecksumUtil.ChecksumFolder(hak.Path);
                         _checksumDictionary[hak.Name] = checksumFolder;
 
                         // Check whether .sha checksum file exists
@@ -227,18 +211,8 @@ namespace SWLOR.CLI
         /// </summary>
         /// <param name="hakName">The name of the hak without the .hak extension</param>
         /// <param name="folderPath">The folder where the assets are.</param>
-        private string Checksum(HakBuilderHakpak hak)
+        private void CompileHakpak(string hakName, string folderPath)
         {
-            var checksum = ChecksumUtil.ChecksumFolder(hak.Path);
-            return _generatedModels.TryGetValue(hak.Name, out var models)
-                ? checksum + ":" + models.Checksum
-                : checksum;
-        }
-
-        private void CompileHakpak(HakBuilderHakpak hak)
-        {
-            var hakName = hak.Name;
-            var folderPath = hak.Path;
             // Ensure the hak directory exists
             var hakDir = $"{_config.OutputPath}hak/";
             if (!Directory.Exists(hakDir))
@@ -258,22 +232,19 @@ namespace SWLOR.CLI
                 "-e", "HAK",
                 "-c", contentPath);
 
-            if (!string.IsNullOrWhiteSpace(hak.ModelGenerator))
-                RunProcess("python", "-B", hak.ModelGenerator, "--pack", $"{hakDir}{hakName}.hak");
-
             // Only perform checksum operations if enabled
             if (_config.EnableChecksumChecking)
             {
                 if (!_checksumDictionary.TryGetValue(hakName, out var checksum))
                 {
-                    checksum = Checksum(hak);
+                    checksum = ChecksumUtil.ChecksumFolder(folderPath);
                 }
 
                 ChecksumUtil.WriteChecksumFile(_config.OutputPath + "hak/" + hakName + ".md5", checksum);
             }
         }
 
-        private static string RunProcess(string fileName, params string[] arguments)
+        private static void RunProcess(string fileName, params string[] arguments)
         {
             var toolPath = ResolveToolPath(fileName);
             using (var process = new Process
@@ -307,7 +278,6 @@ namespace SWLOR.CLI
                     throw new InvalidOperationException(
                         $"Command failed with exit code {process.ExitCode}: {command}{Environment.NewLine}{standardOutput}{standardError}");
                 }
-                return standardOutput;
             }
         }
 

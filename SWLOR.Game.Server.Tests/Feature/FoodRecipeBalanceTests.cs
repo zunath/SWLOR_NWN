@@ -17,11 +17,7 @@ public class FoodRecipeBalanceTests
     [TestCaseSource(nameof(FoodRecipes))]
     public void FoodBonuses_StayWithinAttributeAndRegenerationBudgets(RecipeDetail recipe)
     {
-        using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(FindRoot(), "Module", "uti", $"{recipe.Resref}.uti.json")));
-        var bonuses = document.RootElement.GetProperty("PropertiesList").GetProperty("value").EnumerateArray()
-            .Where(property => Value(property, "PropertyName") == 106)
-            .GroupBy(property => (FoodItemPropertySubType)Value(property, "Subtype"))
-            .ToDictionary(group => group.Key, group => group.Sum(property => Value(property, "CostValue")));
+        var bonuses = ReadBonuses(recipe.Resref);
         var attributes = new[] { FoodItemPropertySubType.Might, FoodItemPropertySubType.Vitality,
             FoodItemPropertySubType.Perception, FoodItemPropertySubType.Willpower,
             FoodItemPropertySubType.Agility, FoodItemPropertySubType.Social };
@@ -37,6 +33,30 @@ public class FoodRecipeBalanceTests
                 $"{recipe.Resref}: regeneration follows the food tier, allowing one extra point for specialty food");
         bonuses.GetValueOrDefault(FoodItemPropertySubType.RestRegen).Should().BeLessThanOrEqualTo(tier * 2,
             $"{recipe.Resref}: rest regeneration must not exceed the tier's dedicated meatball food");
+    }
+
+    [Test]
+    public void CartelCakes_RewardRareIngredientsWithCompetitiveCombatBonuses()
+    {
+        var cakes = ReadBonuses("cartel_cakes");
+        var broth = ReadBonuses("zoni_broth");
+        var hybridFood = ReadBonuses("cooked_yayin");
+
+        cakes.GetValueOrDefault(FoodItemPropertySubType.HP).Should()
+            .BeGreaterThanOrEqualTo(hybridFood[FoodItemPropertySubType.HP],
+                "the learned capstone recipe should offer HP comparable to other high-tier mixed foods");
+        cakes.GetValueOrDefault(FoodItemPropertySubType.STMRegen).Should()
+            .BeGreaterThan(broth[FoodItemPropertySubType.STMRegen],
+                "the harder-to-source cakes should improve combat stamina recovery over Zoni Broth");
+    }
+
+    private static Dictionary<FoodItemPropertySubType, int> ReadBonuses(string resref)
+    {
+        using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(FindRoot(), "Module", "uti", $"{resref}.uti.json")));
+        return document.RootElement.GetProperty("PropertiesList").GetProperty("value").EnumerateArray()
+            .Where(property => Value(property, "PropertyName") == 106)
+            .GroupBy(property => (FoodItemPropertySubType)Value(property, "Subtype"))
+            .ToDictionary(group => group.Key, group => group.Sum(property => Value(property, "CostValue")));
     }
 
     private static int Value(JsonElement element, string name) => element.GetProperty(name).GetProperty("value").GetInt32();

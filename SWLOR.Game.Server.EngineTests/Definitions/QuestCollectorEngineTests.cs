@@ -16,6 +16,50 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static class QuestCollectorEngineTests
 {
+    [EngineTest("Scrap metal hand-in credits both 99 and 51 stacks through native transfers", Category = "QuestCollectorStacks", TimeoutSeconds = 60f)]
+    public static async Task ScrapMetalStacks(EngineTestContext ctx)
+    {
+        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var player = fixture.Creature;
+        const string questId = "scrapmetal_monster";
+        await ctx.ExecuteInCreatureContextAsync(player, () => Quest.AcceptQuest(player, GetModule(), questId));
+        var first = OBJECT_INVALID;
+        var second = OBJECT_INVALID;
+        await ctx.ExecuteInCreatureContextAsync(player, () =>
+        {
+            first = CreateItemOnObject("scrap_metal", player);
+            ctx.Assert(GetIsObjectValid(first), "Create the first scrap stack in the player's inventory.");
+            SetItemStackSize(first, 99);
+            ctx.AssertEqual(99, GetItemStackSize(first), "The first source stack contains 99 scrap.");
+            second = CreateItemOnObject("scrap_metal", player);
+            ctx.Assert(GetIsObjectValid(second), "Create the second scrap stack in the player's inventory.");
+            SetItemStackSize(second, 51);
+            ctx.AssertEqual(51, GetItemStackSize(second), "The second source stack contains 51 scrap.");
+        });
+        var collector = await OpenCollector(ctx, player, GetModule(), questId);
+        await ctx.ExecuteInCreatureContextAsync(player, () =>
+        {
+            var server = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp;
+            ctx.Assert(server.GetGameObject(player).AsNWSCreature().AddRepositoryMoveActions(
+                server.GetGameObject(first).AsNWSItem(), collector, 0xff, 0xff) != 0, "Queue the player's native inventory transfer.");
+        });
+        await ctx.WaitUntilAsync(() => DB.Get<Player>(fixture.Id).Quests[questId].ItemProgresses["scrap_metal"] != 150,
+            5f, "the native 99-scrap transfer");
+        ctx.AssertEqual(51, DB.Get<Player>(fixture.Id).Quests[questId].ItemProgresses["scrap_metal"], "The first stack credits all 99 scrap.");
+        ctx.AssertEqual(51, CountItems(player, "scrap_metal"), "Only the second source stack remains.");
+        await ctx.ExecuteInCreatureContextAsync(player, () =>
+        {
+            var server = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp;
+            ctx.Assert(server.GetGameObject(player).AsNWSCreature().AddRepositoryMoveActions(
+                server.GetGameObject(second).AsNWSItem(), collector, 0xff, 0xff) != 0, "Queue the second native inventory transfer.");
+        });
+        await ctx.WaitUntilAsync(() => DB.Get<Player>(fixture.Id).Quests[questId].CurrentState == 2,
+            5f, "the native 51-scrap transfer");
+        ctx.AssertEqual(0, CountItems(player, "scrap_metal"), "Exactly 150 scrap are consumed.");
+        await ctx.WaitUntilAsync(() => !GetIsObjectValid(collector), 3f, "completed scrap collector cleanup");
+        ctx.Assert(!Activity.IsBusy(player), "The completed hand-in releases busy state.");
+    }
+
     [EngineTest("Story and guild collection stages can all open and cancel their collectors", Category = "QuestCollectors", TimeoutSeconds = 900f)]
     public static async Task RegisteredCollectionStages(EngineTestContext ctx)
     {

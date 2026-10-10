@@ -2433,13 +2433,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     SetCreatureBodyPart(CreaturePart.Pelvis, appearance.Pelvis[SelectedPartIndex], _target);
                     break;
                 case 3: // Right Bicep
-                    SetCreatureBodyPart(CreaturePart.RightBicep, appearance.RightBicep[SelectedPartIndex], _target);
+                    BodyPartAppearance.Set(CreaturePart.RightBicep, appearance.RightBicep[SelectedPartIndex], _target);
                     break;
                 case 4: // Right Forearm
                     SetCreatureBodyPart(CreaturePart.RightForearm, appearance.RightForearm[SelectedPartIndex], _target);
                     break;
                 case 5: // Right Hand
-                    SetCreatureBodyPart(CreaturePart.RightHand, appearance.RightHand[SelectedPartIndex], _target);
+                    BodyPartAppearance.Set(CreaturePart.RightHand, appearance.RightHand[SelectedPartIndex], _target);
                     break;
                 case 6: // Right Thigh
                     SetCreatureBodyPart(CreaturePart.RightThigh, appearance.RightThigh[SelectedPartIndex], _target);
@@ -2451,13 +2451,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     SetCreatureBodyPart(CreaturePart.RightFoot, appearance.RightFoot[SelectedPartIndex], _target);
                     break;
                 case 9: // Left Bicep
-                    SetCreatureBodyPart(CreaturePart.LeftBicep, appearance.LeftBicep[SelectedPartIndex], _target);
+                    BodyPartAppearance.Set(CreaturePart.LeftBicep, appearance.LeftBicep[SelectedPartIndex], _target);
                     break;
                 case 10: // Left Forearm
                     SetCreatureBodyPart(CreaturePart.LeftForearm, appearance.LeftForearm[SelectedPartIndex], _target);
                     break;
                 case 11: // Left Hand
-                    SetCreatureBodyPart(CreaturePart.LeftHand, appearance.LeftHand[SelectedPartIndex], _target);
+                    BodyPartAppearance.Set(CreaturePart.LeftHand, appearance.LeftHand[SelectedPartIndex], _target);
                     break;
                 case 12: // Left Thigh
                     SetCreatureBodyPart(CreaturePart.LeftThigh, appearance.LeftThigh[SelectedPartIndex], _target);

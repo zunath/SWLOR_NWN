@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
@@ -144,25 +145,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             col.AddRow(row =>
             {
-                row.SetHeight(176f);
+                row.SetHeight(160f);
                 row.AddImage().BindResref(model => model.PortraitResref)
-                    .SetWidth(80f).SetHeight(120f).SetAspect(NuiAspect.Fit);
+                    .SetWidth(112f).SetHeight(152f).SetAspect(NuiAspect.Fit);
                 row.AddColumn(details =>
                 {
-                    details.AddRow(r => r.AddLabel().BindText(model => model.Name).SetHeight(20f));
-                    details.AddRow(r => r.AddLabel().BindText(model => model.CharacterType).SetHeight(20f));
-                    details.AddRow(r => r.AddLabel().BindText(model => model.Health).SetHeight(20f));
-                    details.AddRow(r => r.AddLabel().BindText(model => model.AlignmentText).SetHeight(20f));
-                    details.AddRow(r => r.AddLabel().BindText(model => model.Experience).SetHeight(20f));
-                    details.AddRow(r => r.AddLabel().BindText(model => model.Credits).SetHeight(20f));
+                    AddDetailRow(details, "Type", model => model.CharacterType);
+                    AddDetailRow(details, "Health", model => model.Health);
+                    AddDetailRow(details, "Alignment", model => model.AlignmentText);
+                    AddDetailRow(details, "Experience", model => model.Experience);
+                    AddDetailRow(details, "Credits", model => model.Credits);
                 });
             });
-            col.AddRow(r => r.AddLabel().BindText(model => model.Descriptor).SetHeight(20f));
-            col.AddRow(r => r.AddLabel().BindText(model => model.TrueName).SetHeight(20f));
-            col.AddRow(r => r.AddLabel().BindText(model => model.AccountName).SetHeight(20f));
-            col.AddRow(r => r.AddLabel().BindText(model => model.PublicCDKey).SetHeight(20f));
-            col.AddRow(r => r.AddText().BindText(model => model.Description).SetHeight(180f));
+            AddDetailRow(col, "Descriptor", model => model.Descriptor);
+            AddDetailRow(col, "True name", model => model.TrueName);
+            AddDetailRow(col, "Account", model => model.AccountName);
+            AddDetailRow(col, "Public CD key", model => model.PublicCDKey);
+            col.AddRow(r => r.AddLabel().SetText("Description").SetHeight(20f)
+                .SetHorizontalAlign(NuiHorizontalAlign.Left));
+            col.AddRow(r => r.AddText().BindText(model => model.Description).SetHeight(160f));
         });
+
+        private static void AddDetailRow(GuiColumn<DMPlayerExamineViewModel> col, string label,
+            Expression<Func<DMPlayerExamineViewModel, string>> value)
+        {
+            col.AddRow(row =>
+            {
+                row.AddLabel().SetText(label).SetWidth(112f).SetHeight(20f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                row.AddLabel().BindText(value).BindTooltip(value).SetHeight(20f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            });
+        }
 
         private static void AddSkills(GuiGroup<DMPlayerExamineViewModel> host) => AddPanel(host, col =>
         {
@@ -185,7 +199,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             col.AddRow(row =>
             {
                 row.AddComboBox().BindOptions(model => model.PerkCategories)
-                    .BindSelectedIndex(model => model.SelectedPerkCategoryId).SetWidth(268f).SetHeight(32f);
+                    .BindSelectedIndex(model => model.SelectedPerkCategoryId).SetHeight(32f);
+                row.AddTextEdit().SetPlaceholder("Search perks")
+                    .BindValue(model => model.PerkSearchText).SetHeight(32f).SetMaxLength(100);
+            });
+            col.AddRow(row =>
+            {
+                row.AddComboBox().BindSelectedIndex(model => model.SelectedPerkStatusId)
+                    .AddOption("All", 0).AddOption("Owned", 1).AddOption("Can Buy", 2).AddOption("Maxed", 3)
+                    .SetWidth(268f).SetHeight(32f);
                 row.AddComboBox().BindSelectedIndex(model => model.SelectedPerkSortOrderId)
                     .AddOption("Alphabetical (A-Z)", 0)
                     .AddOption("Alphabetical (Z-A)", 1)
@@ -194,11 +216,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetWidth(268f)
                     .SetHeight(32f);
             });
-            col.AddRow(row => row.AddComboBox().BindSelectedIndex(model => model.SelectedPerkStatusId)
-                .AddOption("All", 0).AddOption("Owned", 1).AddOption("Can Buy", 2).AddOption("Maxed", 3)
-                .SetHeight(32f));
-            col.AddRow(row => row.AddTextEdit().SetPlaceholder("Search perks")
-                .BindValue(model => model.PerkSearchText).SetHeight(32f).SetMaxLength(100));
             col.AddRow(r => r.AddLabel().BindText(model => model.PerkSummary).SetHeight(20f));
             col.AddTable(table => table
                 .AddColumn("Perk", 300f, model => model.PerkNames, model => model.PerkDescriptions)

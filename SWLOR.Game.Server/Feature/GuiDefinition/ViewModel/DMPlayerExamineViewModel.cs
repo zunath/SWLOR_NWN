@@ -316,17 +316,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PortraitResref = GetPortraitResRef(_target) + "l";
             CharacterType = GetClassByPosition(1, _target) == ClassType.ForceSensitive
                 ? "Force Sensitive" : "Standard";
-            Credits = $"Credits: {GetGold(_target)}";
-            Descriptor = $"Descriptor: {(GetIsPC(_target) && !GetIsDM(_target) ? Disguise.GetDisplayDescriptor(_target) : "N/A")}";
-            TrueName = $"True Name: {GetName(_target)}";
-            AccountName = $"Account: {GetPCPlayerName(_target)}";
-            PublicCDKey = $"Public CD Key: {GetPCPublicCDKey(_target)}";
-            Health = $"Health: {GetCurrentHitPoints(_target)}/{GetMaxHitPoints(_target)} HP";
+            Credits = GetGold(_target).ToString("N0");
+            Descriptor = GetIsPC(_target) && !GetIsDM(_target) ? Disguise.GetDisplayDescriptor(_target) : "N/A";
+            TrueName = GetName(_target);
+            AccountName = GetPCPlayerName(_target);
+            PublicCDKey = GetPCPublicCDKey(_target);
+            Health = $"{GetCurrentHitPoints(_target):N0} / {GetMaxHitPoints(_target):N0} HP";
             var lawChaos = GetAlignmentLawChaos(_target);
             var goodEvil = GetAlignmentGoodEvil(_target);
-            AlignmentText = "Alignment: " + (lawChaos == Alignment.Neutral && goodEvil == Alignment.Neutral
-                ? "Neutral" : $"{lawChaos} {goodEvil}");
-            Experience = $"Experience: {GetXP(_target)}";
+            AlignmentText = lawChaos == Alignment.Neutral && goodEvil == Alignment.Neutral
+                ? "Neutral" : $"{lawChaos} {goodEvil}";
+            Experience = GetXP(_target).ToString("N0");
         }
 
         private void LoadTargetSkills()

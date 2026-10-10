@@ -32,6 +32,20 @@ public class StanceStatusEffectTests
     }
 
     [Test]
+    public void TankStanceStatRemovalPreservesOtherBonuses()
+    {
+        AddActiveEffect(Player, new DefensiveStanceStatusEffect());
+        AddActiveEffect(Player, new PerfectAegisStatusEffect());
+        Stat.GetStatAdjustmentExcludingTemporaryModifiers(Player, StatType.DamageEnmityPercentAdjustment).Should().Be(100);
+        Enmity.ClampEnmityPercentAdjustment(Stat.GetStatAdjustmentExcludingTemporaryModifiers(
+            Player, StatType.EnmityPercentAdjustment)).Should().Be(50);
+        var tracker = StatusEffect.GetCreatureStatusEffects(Player);
+        tracker.Remove(tracker.GetAllEffects().Single(effect => effect is DefensiveStanceStatusEffect));
+        Stat.GetStatAdjustmentExcludingTemporaryModifiers(Player, StatType.DamageEnmityPercentAdjustment).Should().Be(0);
+        Stat.GetStatAdjustmentExcludingTemporaryModifiers(Player, StatType.EnmityPercentAdjustment).Should().Be(25);
+    }
+
+    [Test]
     public void StanceStatusEffects_UseExclusiveStanceSourceType()
     {
         var stanceTypes = typeof(BerserkerStanceStatusEffect).Assembly

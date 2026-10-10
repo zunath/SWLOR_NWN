@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BastionStance1)
                 .DroidAISlots(1)
-                .Description("While active, grants +20% to Enmity generation, +15% Defense, +15% Force Defense, -20% Attack, and -20% Force Attack.")
+                .Description("While active, grants +20% to Enmity generation, +15% Defense, +15% Force Defense, -20% Attack, and -20% Force Attack. You generate +100% threat from damage dealt, before general Enmity modifiers.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 20);
         }

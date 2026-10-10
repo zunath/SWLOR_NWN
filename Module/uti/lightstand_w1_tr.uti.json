@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 511
+    "value": 512
   },
   "Charges": {
     "type": "byte",
@@ -41,12 +41,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Reactor-Fed Saberstaff"
+      "0": "Sepulcher Training Saber"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 71
+    "value": 151
   },
   "ModelPart2": {
     "type": "byte",
@@ -54,11 +54,11 @@
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 21
+    "value": 45
   },
   "PaletteID": {
     "type": "byte",
-    "value": 46
+    "value": 36
   },
   "Plot": {
     "type": "byte",
@@ -188,7 +188,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 42
+          "value": 38
         }
       }
     ]
@@ -203,35 +203,15 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "infconduit_w1"
+    "value": "lightstand_w1_tr"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "infconduit_w1"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "NO_ECONOMY"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1
-        }
-      }
-    ]
+    "value": "lightstand_w1_tr"
   },
   "xModelPart1": {
     "type": "word",
-    "value": 71
+    "value": 151
   },
   "xModelPart2": {
     "type": "word",
@@ -239,6 +219,6 @@
   },
   "xModelPart3": {
     "type": "word",
-    "value": 21
+    "value": 45
   }
 }

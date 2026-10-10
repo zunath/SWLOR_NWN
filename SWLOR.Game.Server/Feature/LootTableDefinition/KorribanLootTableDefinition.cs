@@ -113,8 +113,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("CAPSTONE_LIGHTSTAND_RARES")
                 .IsRare()
-                .AddItem("lightstand_l1", 1, 1, true)
-                .AddItem("lightstand_l2", 1, 1, true)
+                .AddItem("lightstand_l1_tr", 1, 1, true)
+                .AddItem("lightstand_l2_tr", 1, 1, true)
                 .AddItem("lightstand_l3", 1, 1, true)
                 .AddItem("lightstand_l4", 1, 1, true)
                 .AddItem("lightstand_l5", 1, 1, true)
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("lightstand_l8", 1, 1, true);
             _builder.Create("CAPSTONE_LIGHTSTAND_WD_RARES")
                 .IsRare()
-                .AddItem("lightstand_w1", 1, 1, true)
+                .AddItem("lightstand_w1_tr", 1, 1, true)
                 .AddItem("lightstand_w2", 1, 1, true)
                 .AddItem("lightstand_w3", 1, 1, true)
                 .AddItem("lightstand_w4", 1, 1, true)
@@ -131,8 +131,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("CAPSTONE_DARKHUNG_RARES")
                 .IsRare()
-                .AddItem("darkhung_l1", 1, 1, true)
-                .AddItem("darkhung_l2", 1, 1, true)
+                .AddItem("darkhung_l1_tr", 1, 1, true)
+                .AddItem("darkhung_l2_tr", 1, 1, true)
                 .AddItem("darkhung_l3", 1, 1, true)
                 .AddItem("darkhung_l4", 1, 1, true)
                 .AddItem("darkhung_l5", 1, 1, true)
@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("darkhung_l8", 1, 1, true);
             _builder.Create("CAPSTONE_DARKHUNG_WD_RARES")
                 .IsRare()
-                .AddItem("darkhung_w1", 1, 1, true)
+                .AddItem("darkhung_w1_tr", 1, 1, true)
                 .AddItem("darkhung_w2", 1, 1, true)
                 .AddItem("darkhung_w3", 1, 1, true)
                 .AddItem("darkhung_w4", 1, 1, true)
@@ -149,8 +149,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("CAPSTONE_ECLIPSE_RARES")
                 .IsRare()
-                .AddItem("eclipse_l1", 1, 1, true)
-                .AddItem("eclipse_l2", 1, 1, true)
+                .AddItem("eclipse_l1_tr", 1, 1, true)
+                .AddItem("eclipse_l2_tr", 1, 1, true)
                 .AddItem("eclipse_l3", 1, 1, true)
                 .AddItem("eclipse_l4", 1, 1, true)
                 .AddItem("eclipse_l5", 1, 1, true)
@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("eclipse_l8", 1, 1, true);
             _builder.Create("CAPSTONE_ECLIPSE_WD_RARES")
                 .IsRare()
-                .AddItem("eclipse_w1", 1, 1, true)
+                .AddItem("eclipse_w1_tr", 1, 1, true)
                 .AddItem("eclipse_w2", 1, 1, true)
                 .AddItem("eclipse_w3", 1, 1, true)
                 .AddItem("eclipse_w4", 1, 1, true)

@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Reactor-Fed Saberstaff"
+      "0": "Vortex Warden Training Saberstaff"
     }
   },
   "ModelPart1": {
@@ -54,7 +54,7 @@
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 21
+    "value": 45
   },
   "PaletteID": {
     "type": "byte",
@@ -122,7 +122,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 112
+          "value": 111
         },
         "Subtype": {
           "type": "word",
@@ -203,31 +203,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "infconduit_w1"
+    "value": "sabcycl_w1_tr"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "infconduit_w1"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "NO_ECONOMY"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1
-        }
-      }
-    ]
+    "value": "sabcycl_w1_tr"
   },
   "xModelPart1": {
     "type": "word",
@@ -239,6 +219,6 @@
   },
   "xModelPart3": {
     "type": "word",
-    "value": 21
+    "value": 45
   }
 }

@@ -61,8 +61,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("CAPSTONE_SABSTORM_RARES")
                 .IsRare()
-                .AddItem("sabstorm_l1", 1, 1, true)
-                .AddItem("sabstorm_l2", 1, 1, true)
+                .AddItem("sabstorm_l1_tr", 1, 1, true)
+                .AddItem("sabstorm_l2_tr", 1, 1, true)
                 .AddItem("sabstorm_l3", 1, 1, true)
                 .AddItem("sabstorm_l4", 1, 1, true)
                 .AddItem("sabstorm_l5", 1, 1, true)
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sabstorm_l8", 1, 1, true);
             _builder.Create("CAPSTONE_SABSTORM_WD_RARES")
                 .IsRare()
-                .AddItem("sabstorm_w1", 1, 1, true)
+                .AddItem("sabstorm_w1_tr", 1, 1, true)
                 .AddItem("sabstorm_w2", 1, 1, true)
                 .AddItem("sabstorm_w3", 1, 1, true)
                 .AddItem("sabstorm_w4", 1, 1, true)
@@ -79,8 +79,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("CAPSTONE_GUARDMST_RARES")
                 .IsRare()
-                .AddItem("guardmst_l1", 1, 1, true)
-                .AddItem("guardmst_l2", 1, 1, true)
+                .AddItem("guardmst_l1_tr", 1, 1, true)
+                .AddItem("guardmst_l2_tr", 1, 1, true)
                 .AddItem("guardmst_l3", 1, 1, true)
                 .AddItem("guardmst_l4", 1, 1, true)
                 .AddItem("guardmst_l5", 1, 1, true)
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("guardmst_l8", 1, 1, true);
             _builder.Create("CAPSTONE_GUARDMST_WD_RARES")
                 .IsRare()
-                .AddItem("guardmst_w1", 1, 1, true)
+                .AddItem("guardmst_w1_tr", 1, 1, true)
                 .AddItem("guardmst_w2", 1, 1, true)
                 .AddItem("guardmst_w3", 1, 1, true)
                 .AddItem("guardmst_w4", 1, 1, true)
@@ -97,8 +97,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("CAPSTONE_SABCYCL_RARES")
                 .IsRare()
-                .AddItem("sabcycl_l1", 1, 1, true)
-                .AddItem("sabcycl_l2", 1, 1, true)
+                .AddItem("sabcycl_l1_tr", 1, 1, true)
+                .AddItem("sabcycl_l2_tr", 1, 1, true)
                 .AddItem("sabcycl_l3", 1, 1, true)
                 .AddItem("sabcycl_l4", 1, 1, true)
                 .AddItem("sabcycl_l5", 1, 1, true)
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sabcycl_l8", 1, 1, true);
             _builder.Create("CAPSTONE_SABCYCL_WD_RARES")
                 .IsRare()
-                .AddItem("sabcycl_w1", 1, 1, true)
+                .AddItem("sabcycl_w1_tr", 1, 1, true)
                 .AddItem("sabcycl_w2", 1, 1, true)
                 .AddItem("sabcycl_w3", 1, 1, true)
                 .AddItem("sabcycl_w4", 1, 1, true)
@@ -151,8 +151,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("CAPSTONE_INFCONDUIT_RARES")
                 .IsRare()
-                .AddItem("infconduit_l1", 1, 1, true)
-                .AddItem("infconduit_l2", 1, 1, true)
+                .AddItem("infconduit_l1_tr", 1, 1, true)
+                .AddItem("infconduit_l2_tr", 1, 1, true)
                 .AddItem("infconduit_l3", 1, 1, true)
                 .AddItem("infconduit_l4", 1, 1, true)
                 .AddItem("infconduit_l5", 1, 1, true)
@@ -161,7 +161,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("infconduit_l8", 1, 1, true);
             _builder.Create("CAPSTONE_INFCONDUIT_WD_RARES")
                 .IsRare()
-                .AddItem("infconduit_w1", 1, 1, true)
+                .AddItem("infconduit_w1_tr", 1, 1, true)
                 .AddItem("infconduit_w2", 1, 1, true)
                 .AddItem("infconduit_w3", 1, 1, true)
                 .AddItem("infconduit_w4", 1, 1, true)

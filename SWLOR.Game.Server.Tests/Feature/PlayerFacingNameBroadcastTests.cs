@@ -7,43 +7,19 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class PlayerFacingNameBroadcastTests
 {
     [Test]
-    public void DMShoutLabel_IsSentOncePerStaffLoginAfterInitialLoading()
+    public void DMShoutLabel_IsRestoredOnlyForStaffOnLogin()
     {
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Communication.cs"));
-        var methods = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree.ParseText(source).GetRoot()
+        var method = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree.ParseText(source).GetRoot()
             .DescendantNodes().OfType<Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax>()
-            .ToDictionary(node => node.Identifier.ValueText);
-        var login = methods["QueueDMShoutChannelName"];
-        var apply = methods["ApplyDMShoutChannelName"];
+            .Single(node => node.Identifier.ValueText == "ApplyDMShoutChannelName");
 
-        login.AttributeLists.ToString().Should().Contain("NWNEventHandler(ScriptName.OnModuleEnter)");
-        var staffGuard = login.Body!.Statements.OfType<Microsoft.CodeAnalysis.CSharp.Syntax.IfStatementSyntax>().Single();
-        staffGuard.Condition.ToString().Should().Be("!GetIsDM(player) && !GetIsDMPossessed(player)");
-        staffGuard.Statement.Should().BeOfType<Microsoft.CodeAnalysis.CSharp.Syntax.ReturnStatementSyntax>();
-        login.Body.Statements.Last().ToString().Should().Be("SetLocalInt(player, PendingDMShoutLabelVariable, 1);");
-        login.ToString().Should().NotContain("SetTlkOverride");
-
-        apply.AttributeLists.ToString().Should().Contain("NWNEventHandler(ScriptName.OnModuleGuiEvent)");
-        var guards = apply.Body!.Statements.OfType<Microsoft.CodeAnalysis.CSharp.Syntax.IfStatementSyntax>().ToArray();
-        var eventGuard = guards[0];
-        eventGuard.Condition.ToString().Should().Be("GetLastGuiEventType() != GuiEventType.AreaLoadScreenFinished");
-        eventGuard.Statement.Should().BeOfType<Microsoft.CodeAnalysis.CSharp.Syntax.ReturnStatementSyntax>();
-        apply.ToString().Should().Contain("var player = GetLastGuiEventPlayer();");
-
-        guards[1].Condition.ToString().Should().Be("!GetIsObjectValid(player) || GetLocalInt(player, PendingDMShoutLabelVariable) != 1");
-        guards[1].Statement.Should().BeOfType<Microsoft.CodeAnalysis.CSharp.Syntax.ReturnStatementSyntax>();
-        guards[2].Condition.ToString().Should().Be("!GetIsDM(player) && !GetIsDMPossessed(player)");
-        guards[2].Statement.Should().BeOfType<Microsoft.CodeAnalysis.CSharp.Syntax.ReturnStatementSyntax>();
-        var consume = apply.Body.Statements.Single(statement => statement.ToString() == "DeleteLocalInt(player, PendingDMShoutLabelVariable);");
-        consume.SpanStart.Should().BeGreaterThan(guards[1].Span.End);
-        consume.Span.End.Should().BeLessThan(guards[2].SpanStart);
-        apply.Body.Statements.Last().ToString().Should().Be("PlayerPlugin.SetTlkOverride(player, 66751, \"Shout\");");
-        methods.Should().NotContainKey("RefreshDMShoutChannelName");
-
-        var globalOverrides = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "TlkOverrides.cs"));
-        globalOverrides.Should().Contain("SetTlkOverride(66751, \"Disabled\");");
-        globalOverrides.Should().NotContain("SetTlkOverride(66751, \"Shout\");");
+        method.AttributeLists.ToString().Should().Contain("NWNEventHandler(ScriptName.OnModuleEnter)");
+        var guard = method.Body!.Statements.OfType<Microsoft.CodeAnalysis.CSharp.Syntax.IfStatementSyntax>().Single();
+        guard.Condition.ToString().Should().Be("!GetIsDM(player) && !GetIsDMPossessed(player)");
+        guard.Statement.Should().BeOfType<Microsoft.CodeAnalysis.CSharp.Syntax.ReturnStatementSyntax>();
+        method.Body.Statements.Last().ToString().Should().Be("PlayerPlugin.SetTlkOverride(player, 66751, \"Shout\");");
     }
 
     [Test]

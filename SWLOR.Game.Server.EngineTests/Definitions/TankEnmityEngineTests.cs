@@ -82,15 +82,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static async Task AreaRecoveryInArena(EngineTestContext ctx)
         {
-            using var tankPlayer = await PlayerAbilityFixture.CreateAsync(ctx, -2f);
+            // QuietArena's established walkable combat lane runs north of its anchor.
+            using var tankPlayer = await PlayerAbilityFixture.CreateAsync(ctx);
             var tank = tankPlayer.Creature;
             tankPlayer.Update(player => player.Perks[PerkType.Provoke] = 2);
             SetAILevel(tank, AILevel.VeryLow);
             SetPlotFlag(tank, false);
             ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(5000), tank, 120f);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneImmobilize(), tank, 120f);
-            var rival = Spawn(ctx, 4f);
-            var enemies = new[] { Spawn(ctx, 1f), Spawn(ctx, 1.5f) };
+            var rival = Spawn(ctx, 0f, 6f);
+            var enemies = new[] { Spawn(ctx, 0f, 2f), Spawn(ctx, 0f, 2.5f) };
             foreach (var enemy in enemies)
             {
                 ctx.MakeHostile(enemy);
@@ -334,9 +335,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(used, $"{feat} activates: {denial}");
         }
 
-        private static uint Spawn(EngineTestContext ctx, float x)
+        private static uint Spawn(EngineTestContext ctx, float x, float y = 0f)
         {
-            var creature = ctx.SpawnCreature("nw_bandit001", x);
+            var creature = ctx.SpawnCreature("nw_bandit001", x, y);
             ctx.SuppressNPCNaturalRegen(creature);
             Stat.SetNPCMaxHitPoints(creature, 10000, true);
             SetAILevel(creature, AILevel.VeryLow);

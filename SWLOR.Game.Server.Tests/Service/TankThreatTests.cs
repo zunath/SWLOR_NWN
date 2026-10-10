@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -78,9 +79,10 @@ public class TankThreatTests
         tank.Should().BeGreaterThan((int)(damageDealer * 1.10), "the active tank needs at least 10% margin");
         tank.Should().BeGreaterThan(healer);
         tank.Should().BeLessThan(damageDealer * 2, "ordinary damage must remain relevant");
-        // Player natural regeneration is 1 + MGT/4 every 30 seconds. MGT 20,
-        // without gear/food regen, supplies 12 STM/minute against this 12 STM budget.
-        (2 * 6).Should().BeLessThanOrEqualTo(2 * (1 + 20 / 4));
+        // This low-use floor remains viable with the revised recovery baseline.
+        var carry = 0;
+        var recovery = Enumerable.Range(0, 10).Sum(_ => NaturalRegeneration.GetStaminaRegenPerHeartbeat(20, 0, 0, ref carry));
+        (2 * 6).Should().BeLessThanOrEqualTo(recovery);
     }
 
     // Chiro level-50 weapons: Bible Equipment - Weapons rows 34, 66, 111, 345, 439.
@@ -151,6 +153,67 @@ public class TankThreatTests
         // Stopping participation cannot hold against a continuing attacker; this rate has
         // no passive taunt or free per-tick generation, and catch-up is tested separately.
         TestContext.WriteLine($"{stanceType.Name}: old={before:F0}/min new={after:F0}/min oldDPS={previousOffense:F0}/min DPS={offense:F0}/min margin={after / offense - 1:P0} STM={stamina * usesPerMinute}/min");
+
+        // PR #2464 permits both builds to use BOTH actual low-rank attacks on cooldown.
+        // Include enemy-specific Covering/Guardian bonuses for the offensive build too.
+        // Five-minute comparison, with no cost discounts, refunds, food or support.
+        foreach (var might in new[] { 20, 26, 27 })
+        {
+            var remainder = 0;
+            var recovery = Enumerable.Range(0, 10).Sum(_ => NaturalRegeneration.GetStaminaRegenPerHeartbeat(might, 0, 0, ref remainder));
+            recovery.Should().Be(might == 20 ? 30 : 32);
+            var primaryRate = 60 / ability.RecastDelay(1);
+            var secondaryRate = 60 / offensiveAbility.RecastDelay(1);
+            var secondaryCost = offensiveAbility.Requirements.OfType<AbilityRequirementStamina>().Sum(cost => cost.RequiredSTM);
+            var spending = primaryRate * stamina + secondaryRate * secondaryCost;
+            spending.Should().BeLessThanOrEqualTo(recovery);
+            var enemyDefense = Stat.GetAttack(50, might, 0);
+            double Rotation(int multiplier, int penalty, int haste, int percent, bool duplicate)
+            {
+                var power = enemyDefense * (100 + penalty) / 100;
+                double Hit(int bonus)
+                {
+                    var (low, high) = Combat.CalculateDamageRange(power, weaponDamage + bonus, 20, enemyDefense, 20, 0);
+                    return (low + high) / 2.0;
+                }
+                var normal = Hit(0);
+                var total = Attacks(haste) * (normal * multiplier + 1);
+                foreach (var (action, bonus, rate) in new[] { (ability, abilityDamage, primaryRate), (offensiveAbility, offensiveDamage, secondaryRate) })
+                {
+                    if (action.ActivationType == AbilityActivationType.Weapon)
+                        total -= rate * (normal * multiplier + 1);
+                    total += rate * (100 + Hit(bonus) * (multiplier + (duplicate ? 1 : 0)));
+                }
+                return total * landed * (100 + percent) / 100.0;
+            }
+            var offenseGeneral = delay == 230 ? 25 : delay == 240 ? 20 : 0;
+            var protection = kitThreat * (weaponDamage == 44 ? primaryRate / usesPerMinute : 1);
+            var revisedTank = Rotation(2, stance.StatGroup.Stats[StatType.AttackPercentAdjustment], 0, generalBonus, false) + protection;
+            var revisedOffense = Rotation(1, 25, 15, offenseGeneral, false);
+            var oldTank = Rotation(1, stance.StatGroup.Stats[StatType.AttackPercentAdjustment], 0, generalBonus, true) + protection;
+            var oldOffense = Rotation(1, 25, 15, offenseGeneral, true);
+            revisedTank.Should().BeGreaterThan(revisedOffense * 1.10, "both builds can spend the newly available stamina");
+            revisedTank.Should().BeLessThan(revisedOffense * 2);
+            // Opening burst pays actual costs from the unchanged pool with ten STM reserved.
+            var maximum = Stat.GetMaxStamina(Stat.BaseSTM, might, 0);
+            var current = maximum;
+            remainder = 0;
+            for (var second = 0; second < 300; second++)
+            {
+                if (second > 0 && second % 6 == 0)
+                    current = Math.Min(maximum, current + NaturalRegeneration.GetStaminaRegenPerHeartbeat(might, 0, 0, ref remainder));
+                foreach (var action in new[] { ability, offensiveAbility })
+                    if (second % (int)action.RecastDelay(1) == 0)
+                        current -= action.Requirements.OfType<AbilityRequirementStamina>().Sum(cost => cost.RequiredSTM);
+                current.Should().BeGreaterThanOrEqualTo(10, "opening and five-minute rotation retain a role reserve without refunds");
+            }
+            // The Force build also funds all casts from WIL20's unchanged 70 FP pool
+            // and 12 FP/minute recovery; these rates are not claimed indefinite in FP.
+            var forceSpending = (ability.Requirements.OfType<AbilityRequirementFP>().Sum(cost => cost.RequiredFP) * primaryRate +
+                offensiveAbility.Requirements.OfType<AbilityRequirementFP>().Sum(cost => cost.RequiredFP) * secondaryRate) * 5;
+            forceSpending.Should().BeLessThanOrEqualTo(70 + 12 * 5);
+            TestContext.WriteLine($"New stamina MGT{might} {stanceType.Name}: tank {oldTank:F0}->{revisedTank:F0}/min DPS {oldOffense:F0}->{revisedOffense:F0}/min margin {revisedTank / revisedOffense - 1:P0}; STM {spending:F1}/{recovery}/min; 300s reserve >=10");
+        }
     }
 
     [Test]

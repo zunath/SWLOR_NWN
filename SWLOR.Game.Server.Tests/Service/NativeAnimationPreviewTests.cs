@@ -12,6 +12,34 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class NativeAnimationPreviewTests
 {
     [Test]
+    public void WristRocketRanksKeepTheOriginalNativeCastBeforeLaunchingAndPreviewThatGesture()
+    {
+        var abilities = new WristRocketAbilityDefinition().BuildAbilities();
+        var entry = ActiveAbilityAnimationCatalog.Entries.Single(entry => entry.Id == "WristRocket");
+        abilities.Should().HaveCount(3);
+        AbilityAnimationBinding.Apply(abilities, new[] { entry });
+        AbilityAnimationBinding.Apply(abilities, new[] { entry });
+
+        foreach (var ability in abilities.Values)
+        {
+            ability.PreservesNativeAnimationChoreography.Should().BeTrue();
+            ability.AuthoredAnimation.Should().BeNull();
+            ability.AuthoredImpactAnimation.Should().BeNull();
+            ability.UsesAuthoredImpactAnimation.Should().BeFalse();
+            ability.ImpactAnimationType.Should().Be(Animation.Invalid, "the cast plays before the rocket launches, without replaying on impact");
+            AbilityAnimationBinding.ActivationType(ability, true, .8f).Should().Be(Animation.CastOutAnimation);
+            AbilityAnimationBinding.ActivationType(ability, false, .8f).Should().Be(Animation.CastOutAnimation);
+            ability.ActivationDelay(0, 0, ability.AbilityLevel).Should().Be(1f);
+            ability.ImpactDelay.Should().Be(0f);
+            ability.NativeAnimationPreview.Should().Be(Animation.CastOutAnimation);
+        }
+
+        var preview = AnimationPreviewCatalog.CreateEntries(abilities.Values).Single(item => item.Id == entry.Id);
+        preview.NativeAnimation.Should().Be(Animation.CastOutAnimation);
+        preview.PreviewDuration.Should().Be(1f);
+    }
+
+    [Test]
     public void FragGrenadeRanksThrowDuringActivationAndPreviewTheNativeGesture()
     {
         var abilities = new FragGrenadeAbilityDefinition().BuildAbilities();

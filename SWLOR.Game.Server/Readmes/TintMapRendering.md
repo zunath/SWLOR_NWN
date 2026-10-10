@@ -254,12 +254,23 @@ bone references and child/animation relationships.
 Generated robe phenotypes also need their own native cloak geometry resources.
 After changing the robe or cloak catalog, run
 `python -B SWLOR_Haks/tools/GenerateRobeCloakModels.py --game-data <installed-game-data-directory>`.
-Commit the resulting native MDLs in `SWLOR_Haks/sw_pt_cloak` together with
-`tools/RobeCloakModels.json`. They retain the exact geometry, materials, skin binds
-and animation parents, changing only model and root names. Generation is an
-explicit authoring step after catalog changes; normal builds package the checked-in
-assets without generating cloak models. `BuildHaks.cmd` checks their coverage and
-hashes against the manifest before packaging.
+Commit `tools/RobeCloakModels.json`, canonical cloak MDLs and their phenotype-specific
+`.lod` redirects in `SWLOR_Haks/sw_pt_cloak`. They share the exact geometry, materials,
+skin binds and animation parents. `tools/ModelLodAssets.json` records every shared
+model's source hash and canonical dependency, including helmet heads, identical
+body parts and empty robe attachments. Models with different geometry, bindings,
+materials, animation data or supermodels remain separate. The server's model
+availability checks follow valid LOD chains and reject missing targets and cycles.
+Toolset appearance catalogs, item previews and area models resolve those same
+redirects, preserving the original resource names used by blueprints.
+
+For explicit model authoring, first run `python -B tools/ModelLodAssets.py --expand`
+from `SWLOR_Haks`, edit or regenerate the models, then run
+`python -B tools/ModelLodAssets.py --apply` to publish checked-in redirects again.
+This is an authoring operation. Normal builds validate the checked-in LOD assets
+and package them with `nwn_erf --add-restypes lod:2078`; they never generate MDLs.
+The Python authoring/audit reader reconstructs original model identities in memory
+and verifies their exact source hashes without creating loose MDL files.
 Changing a robe phenotype also refreshes the equipped
 cloak after the body update, including when returning to the base body.
 Equipped cloak edits also delete the affected open inventory GUI slot

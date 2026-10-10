@@ -24,6 +24,7 @@ namespace SWLOR.Toolset.Editors.Items
     {
         private static readonly string[] Prefixes = { "pmh0", "pfh0" };
         private static readonly ushort ModelResourceType = ResourceIdentity.TypeFromExtension("mdl");
+        private static readonly ushort LodResourceType = ResourceIdentity.TypeFromExtension("lod");
 
         private readonly ResourceIndex? _resources;
         private readonly Lazy<IReadOnlyDictionary<string, IReadOnlyList<int>>>? _numbersByModelPrefix;
@@ -98,7 +99,8 @@ namespace SWLOR.Toolset.Editors.Items
         private IReadOnlyDictionary<string, IReadOnlyList<int>> BuildIndex()
         {
             var found = new Dictionary<string, SortedSet<int>>(StringComparer.OrdinalIgnoreCase);
-            foreach (var identity in _resources!.EnumerateResources(ModelResourceType))
+            foreach (var identity in _resources!.EnumerateResources(ModelResourceType)
+                         .Concat(_resources.EnumerateResources(LodResourceType)).Distinct())
             {
                 var body = identity.ResRef.AsSpan();
                 var digitStart = body.Length;
@@ -114,6 +116,9 @@ namespace SWLOR.Toolset.Editors.Items
                 {
                     continue;
                 }
+
+                if (!ModelResourceResolver.TryResolve(_resources, identity.ResRef, out _))
+                    continue;
 
                 if (!found.TryGetValue(modelPrefix, out var numbers))
                 {

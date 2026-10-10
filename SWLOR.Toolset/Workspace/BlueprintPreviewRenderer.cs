@@ -1203,7 +1203,7 @@ namespace SWLOR.Toolset.Workspace
             if (_resourceIndex == null || string.IsNullOrWhiteSpace(resRef))
                 return null;
 
-            if (!_resourceIndex.TryLookup(ResourceIdentity.FromFileName(resRef + ".mdl"), out var handle))
+            if (!ModelResourceResolver.TryResolve(_resourceIndex, resRef, out var handle))
                 return null;
 
             try
@@ -1219,7 +1219,7 @@ namespace SWLOR.Toolset.Workspace
 
         private bool PartModelExists(string resRef) =>
             _resourceIndex != null &&
-            _resourceIndex.TryLookup(ResourceIdentity.FromFileName(resRef + ".mdl"), out _);
+            ModelResourceResolver.TryResolve(_resourceIndex, resRef, out _);
 
         /// <summary>Loads an equipped item's root struct so armor can override a creature's body parts.</summary>
         private Domain.Gff.JsonGffStruct? LoadItemBlueprintRoot(

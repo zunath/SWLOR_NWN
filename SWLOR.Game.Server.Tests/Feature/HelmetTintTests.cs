@@ -74,8 +74,9 @@ public class HelmetTintTests
             foreach (var gender in new[] { 'm', 'f' })
             {
                 var model = HelmetModelRenderer.GetHeadModel(gender, race, head);
-                Assert.That(File.Exists(Path.Combine(heads, model + ".mdl")), Is.True,
-                    $"{helmet} needs {model}.mdl; add race '{race}' to BODY_RACES in GenerateHelmetRgbModels.py");
+                Assert.That(File.Exists(Path.Combine(heads, model + ".mdl")) ||
+                            File.Exists(Path.Combine(heads, model + ".lod")), Is.True,
+                    $"{helmet} needs {model}.mdl or .lod; add race '{race}' to BODY_RACES in GenerateHelmetRgbModels.py");
             }
         }
     }

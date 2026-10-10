@@ -228,6 +228,7 @@ namespace SWLOR.CLI
 
             RunProcess(
                 "nwn_erf.exe",
+                "--add-restypes", "lod:2078",
                 "-f", $"{_config.OutputPath}hak/{hakName}.hak",
                 "-e", "HAK",
                 "-c", contentPath);

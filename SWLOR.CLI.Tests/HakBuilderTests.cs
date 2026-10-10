@@ -55,4 +55,49 @@ public sealed class HakBuilderTests
         }
         finally { Directory.Delete(root, true); }
     }
+
+    [Test]
+    public void BuiltArchiveIncludesTheLodResourceTypeAndExactRedirectPayload()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "SWLOR lod packing", Guid.NewGuid().ToString("N"));
+        var source = Path.Combine(root, "source");
+        Directory.CreateDirectory(source);
+        File.WriteAllText(Path.Combine(source, "proxy.lod"), "geometry\n");
+        File.WriteAllText(Path.Combine(source, "geometry.mdl"), "model payload");
+        try
+        {
+            new HakBuilder().Process(new HakBuilderConfig
+            {
+                OutputPath = Path.Combine(root, "output") + Path.DirectorySeparatorChar,
+                TlkPath = Path.Combine(root, "unused.tlk"),
+                EnableChecksumChecking = false,
+                HakList = new() { new() { Name = "parts", Path = source } }
+            });
+            using var reader = new BinaryReader(File.OpenRead(Path.Combine(root, "output", "hak", "parts.hak")));
+            reader.BaseStream.Position = 16;
+            var count = reader.ReadUInt32();
+            reader.BaseStream.Position = 24;
+            var keys = reader.ReadUInt32();
+            var resources = reader.ReadUInt32();
+            Assert.That(count, Is.EqualTo(2));
+            var found = false;
+            for (var index = 0; index < count; index++)
+            {
+                reader.BaseStream.Position = keys + index * 24;
+                var name = System.Text.Encoding.ASCII.GetString(reader.ReadBytes(16)).TrimEnd('\0');
+                var resource = reader.ReadUInt32();
+                var type = reader.ReadUInt16();
+                if (name != "proxy") continue;
+                Assert.That(type, Is.EqualTo(2078));
+                reader.BaseStream.Position = resources + resource * 8;
+                var offset = reader.ReadUInt32();
+                var size = reader.ReadUInt32();
+                reader.BaseStream.Position = offset;
+                Assert.That(System.Text.Encoding.ASCII.GetString(reader.ReadBytes((int)size)), Is.EqualTo("geometry\n"));
+                found = true;
+            }
+            Assert.That(found, Is.True, "nwn_erf must not silently omit .lod files");
+        }
+        finally { Directory.Delete(root, true); }
+    }
 }

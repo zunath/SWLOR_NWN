@@ -21,7 +21,7 @@ public class CombatUpgradeBibleWorkbookFormattingTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx");
+            "SWLOR Design Bible.xlsx");
         var layoutPath = Path.Combine(root.FullName, "tools", "CombatUpgradeBibleWorkbookLayout.json");
 
         using var archive = ZipFile.OpenRead(workbookPath);
@@ -63,7 +63,7 @@ public class CombatUpgradeBibleWorkbookFormattingTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx");
+            "SWLOR Design Bible.xlsx");
 
         using var archive = ZipFile.OpenRead(workbookPath);
         var worksheetsByName = ReadWorksheetsByName(archive);
@@ -119,7 +119,7 @@ public class CombatUpgradeBibleWorkbookFormattingTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx");
+            "SWLOR Design Bible.xlsx");
 
         using var archive = ZipFile.OpenRead(workbookPath);
         var worksheetEntry = ReadWorksheetsByName(archive)["Character Stats"];

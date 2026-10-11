@@ -6,6 +6,7 @@ using SWLOR.Toolset.Domain.Editors.Doors;
 using SWLOR.Toolset.Domain.Editors.Sounds;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.Editors.Waypoints;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Doors;
 using SWLOR.Toolset.Editors.Sounds;

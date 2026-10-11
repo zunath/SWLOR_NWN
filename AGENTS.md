@@ -85,7 +85,7 @@ Before writing code in an unfamiliar area, find two or three existing examples o
 
 - Read `SWLOR.Game.Server/Readmes/DesignBibleWorkbookRules.md` before editing any Design Bible workbook.
 - Never edit a workbook with `openpyxl` or any library that rewrites the whole file. It drops cached formula results and silently breaks formula-backed tabs and tests such as `NPCEnemyBalanceAuditTests`. Edit target cells at the zip/XML level (`<c r="G31" s="..." t="inlineStr"><is><t>TEXT</t></is></c>`) and copy every other zip entry byte-for-byte.
-- After editing `design/bible/SWLOR Design Bible - Combat Upgrade.xlsx`, run `powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible`.
+- After editing `design/bible/SWLOR Design Bible.xlsx`, run `powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible`.
 
 ## TLK and 2DA
 

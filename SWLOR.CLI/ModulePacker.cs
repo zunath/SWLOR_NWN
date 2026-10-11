@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SWLOR.NWN.Formats.Common;
+using Nwn.Formats.Io;
 
 namespace SWLOR.CLI
 {
@@ -21,15 +22,16 @@ namespace SWLOR.CLI
         private const string PackingDirectory = "./packing";
         private const string PaletteRefreshDirectory = "./palette-refresh";
         private const string WorkerCountEnvironmentVariable = "SWLOR_RESOURCE_CONVERSION_WORKERS";
-        // Mirrors NewAreaWriter.PendingMarkerPrefix in SWLOR.Toolset.Domain - this project cannot
-        // reference that one (see RequireNoInterruptedAreaCreation), so the literal is duplicated.
-        private const string NewAreaPendingMarkerPrefix = ".swlor-toolset-new-area-";
-        private const string NewAreaPendingMarkerSuffix = ".pending";
         private const string ErfImportPendingMarkerPattern = ".swlor-toolset-erf-import-*.pending.json";
         private const string ItemRenamePendingMarkerPattern = ".swlor-toolset-item-rename-*.pending.json";
         // Mirrors ModuleResourceDeletionService.DeleteTransactionSuffix. SWLOR.CLI cannot reference
         // SWLOR.Toolset, so it refuses the durable manifest and lets the toolset roll it back.
         private const string ResourceDeleteTransactionPattern = ".*.resource-delete-transaction.json";
+        // Mirrors Nwn.Authoring's FileTransaction manifest, which ModuleResourceDeletionService now
+        // commits through, and ModuleWorkspace.ResolveConversationDataRoot for dialog deletes.
+        private const string FileTransactionManifestPattern = ".*.file-transaction.json";
+        private static readonly string ConversationDataRelativePath =
+            Path.Combine("..", "SWLOR.Game.Server", "ConversationData");
 
         public void PackModule(string filePath, bool noPrompt = false)
         {
@@ -585,17 +587,21 @@ namespace SWLOR.CLI
         }
 
         /// <summary>
-        /// Refuses to pack a partially moved logical resource. The toolset writes this manifest
+        /// Refuses to pack a partially moved logical resource. The toolset writes a manifest
         /// before moving the first area/dialog/script companion and removes it only at the commit
-        /// point. This check runs after the CLI acquires the module lease, so it also catches a
+        /// point: in the module root for areas and scripts, and in the conversation source root for
+        /// dialogs. This check runs after the CLI acquires the module lease, so it also catches a
         /// second toolset that crashes during PackService's preceding CLI build.
         /// </summary>
         private static void RequireNoInterruptedResourceDelete()
         {
-            var pending = Directory.GetFiles(
-                ".",
-                ResourceDeleteTransactionPattern,
-                SearchOption.TopDirectoryOnly);
+            var moduleRoot = Path.GetFullPath(Environment.CurrentDirectory);
+            var conversationRoot = Path.GetFullPath(Path.Combine(moduleRoot, ConversationDataRelativePath));
+            var pending = new[] { moduleRoot, conversationRoot }
+                .Where(Directory.Exists)
+                .SelectMany(root => new[] { ResourceDeleteTransactionPattern, FileTransactionManifestPattern }
+                    .SelectMany(pattern => Directory.GetFiles(root, pattern, SearchOption.TopDirectoryOnly)))
+                .ToArray();
             if (pending.Length == 0)
                 return;
 
@@ -626,13 +632,13 @@ namespace SWLOR.CLI
         /// </summary>
         private static void RequireNoInterruptedAreaCreation()
         {
-            var markers = Directory.GetFiles(".", NewAreaPendingMarkerPrefix + "*" + NewAreaPendingMarkerSuffix);
+            var markers = PendingAreaCreationMarker.Enumerate(Environment.CurrentDirectory, SwlorAreaCreationMarker.Prefix).ToArray();
             if (markers.Length == 0)
                 return;
 
             var pendingResRefs = markers
                 .Select(marker => Path.GetFileNameWithoutExtension(Path.GetFileName(marker)))
-                .Select(nameWithoutMarkerExtension => nameWithoutMarkerExtension[NewAreaPendingMarkerPrefix.Length..])
+                .Select(nameWithoutMarkerExtension => nameWithoutMarkerExtension[SwlorAreaCreationMarker.Prefix.Length..])
                 .ToList();
 
             throw new InvalidOperationException(

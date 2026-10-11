@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.ShipModuleDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(deadline,DB.Get<Player>(actor.Id).RecastTimes[RecastGroup.ShipModule1],"regular recast stores exact hardware deadline");
                 ctx.Assert(!DB.Get<Player>(actor.Id).RecastTimes.ContainsKey(RecastGroup.ShipModule2),"identical idle module has no timer");
                 var visual=Visual(actor.Id,RecastGroup.ShipModule1);
-                ctx.AssertEqual("iit_ess_020",Value<string>(visual,"IconTexture"),"regular renderer preserves fitted repair artwork");
+                ctx.AssertEqual(new HullRepairerModuleDefinition().BuildShipModules()["hull_rep_b"].Texture,Value<string>(visual,"IconTexture"),"regular renderer preserves fitted repair artwork");
                 ctx.AssertEqual("ife_sm1",Value<IReadOnlyList<string>>(visual,"SourceTextures").Single(),"recharge overrides the first slot anchor");
                 ctx.AssertEqual(0,Value<int>(visual,"Stage"),"recharge begins empty");
                 var capacitor=DB.Get<PlayerShip>(shipId).Status.Capacitor;
@@ -89,7 +90,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var paid=DB.Get<PlayerShip>(shipId).Status;
                 ctx.AssertEqual(95,paid.Capacitor,"existing mining capacitor cost is unchanged");
                 ctx.AssertEqual(paid.HighPowerModules[1].RecastTime,DB.Get<Player>(actor.Id).RecastTimes[RecastGroup.ShipModule1],"mining and regular UI share the exact paid deadline");
-                ctx.AssertEqual("iit_ess_084",Value<string>(Visual(actor.Id,RecastGroup.ShipModule1),"IconTexture"),"mining recharge uses mining artwork");
+                ctx.AssertEqual(new MiningLaserModuleDefinition().BuildShipModules()["min_laser_b"].Texture,Value<string>(Visual(actor.Id,RecastGroup.ShipModule1),"IconTexture"),"mining recharge uses mining artwork");
                 await ctx.WaitUntilAsync(()=>GetLocalInt(asteroid,"ASTEROID_REMAINING_UNITS")<10 && Visual(actor.Id,RecastGroup.ShipModule1)==null,9,"native extraction and regular recharge complete");
                 ctx.Assert(Visual(actor.Id,RecastGroup.ShipModule1)==null,"regular recharge finishes alongside the mining cycle");
             }

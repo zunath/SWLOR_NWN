@@ -7,4 +7,11 @@
     <RootNamespace>SWLOR.NWN.Formats</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Using Include="Nwn.Formats.Exceptions.NwnFormatException" Alias="NwnFormatException" />
+    <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Formats\Nwn.Formats.csproj"
+                      Condition="'$(NwnToolsetSourceRoot)' != ''" />
+    <PackageReference Include="Nwn.Formats" Version="$(NwnToolsetPackageVersion)"
+                      Condition="'$(NwnToolsetSourceRoot)' == ''" />
+  </ItemGroup>
 </Project>

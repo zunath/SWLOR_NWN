@@ -1,6 +1,7 @@
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Doors;
 using SWLOR.Toolset.Domain.GameData.Resources;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Editors.Triggers;
@@ -19,5 +20,6 @@ namespace SWLOR.Toolset.Editors.Doors
         Func<JsonGffStruct, BlueprintModelRenderResult>? ResolveModel,
         ThumbnailService? Thumbnails = null,
         ChoicePreviewService? ChoicePreviews = null,
-        Services.IEditorPromptService? Prompts = null);
+        Services.IEditorPromptService? Prompts = null,
+        TransitionDestinationResolver? ResolveDestination = null);
 }

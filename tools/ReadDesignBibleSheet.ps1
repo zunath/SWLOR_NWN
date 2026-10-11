@@ -2,7 +2,7 @@
 param(
     [Parameter(Mandatory = $true)]
     [string]$SheetName,
-    [string]$WorkbookPath = "design\bible\SWLOR Design Bible - Combat Upgrade.xlsx",
+    [string]$WorkbookPath = "design\bible\SWLOR Design Bible.xlsx",
     [int]$FirstRow = 1,
     [int]$LastRow = [int]::MaxValue,
     [switch]$IncludeFormulas

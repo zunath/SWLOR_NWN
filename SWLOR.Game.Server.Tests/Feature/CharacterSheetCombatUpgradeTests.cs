@@ -93,7 +93,7 @@ public class CharacterSheetCombatUpgradeTests
         definition.Should().Contain("\"Force DEF\", model => model.ForceDefense");
         definition.Should().Contain("\"Main-hand Acc.\", model => model.WeaponAccuracy");
         definition.Should().Contain("\"Off-hand Acc.\", model => model.OffHandAccuracy");
-        definition.Should().Contain("Dual-wielding does not combine their bonuses.");
+        definition.Should().Contain("Weapon bonuses do not combine.");
         definition.Should().Contain("\"Force Acc.\", model => model.ForceAccuracy");
         viewModel.Should().Contain("public int WeaponAccuracy");
         viewModel.Should().Contain("public int ForceAccuracy");

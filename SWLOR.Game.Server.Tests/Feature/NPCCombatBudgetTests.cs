@@ -163,6 +163,13 @@ public class NPCCombatBudgetTests
             var level = Number(row["D"]);
             var preset = presets[$"{level}|Boss|{row["F"]}"];
             Number(row["N"]).Should().Be(Number(preset["K"]) * 3);
+            if (row["C"] == "garkaniandragon")
+            {
+                Int(utc.RootElement, "HitPoints").Should().Be(15375,
+                    "the dragon's base HP must exclude its 12 native Vitality HP");
+                Int(utc.RootElement, "MaxHitPoints").Should().Be(15387);
+                Int(utc.RootElement, "CurrentHitPoints").Should().Be(15387);
+            }
             Number(row["O"]).Should().Be(Number(preset["L"]) * 2);
             Number(row["P"]).Should().Be(Number(preset["M"]) * 2);
             Number(row["Q"]).Should().Be((int)Math.Round(Number(preset["N"]) * 1.5m, MidpointRounding.AwayFromZero));

@@ -65,24 +65,10 @@ public sealed class PassengerShuttleInteriorTests
     }
 
     [Test]
-    public void PassengerSeatsAreUsableAndUseTheOccupiedChairGuard()
+    public void CenterFacingPassengerSittingPlaceablesAreRemoved()
     {
-        var contents = ReadResource("git", "shuttle");
-        var seats = Objects(contents, "Placeable List")
-            .Where(placeable => Value<string>(placeable, "Tag").StartsWith("shuttle_seat_"))
-            .ToArray();
-
-        seats.Should().HaveCount(12);
-        seats.Select(seat => Value<string>(seat, "Tag")).Should().OnlyHaveUniqueItems();
-        seats.Should().OnlyContain(seat =>
-            Value<int>(seat, "Static") == 0 &&
-            Value<int>(seat, "Useable") == 1 &&
-            Value<int>(seat, "Plot") == 1 &&
-            Value<string>(seat, "OnUsed") == "zep_use_chair");
-
-        var script = File.ReadAllText(Path.Combine(Root(), "Module", "nss", "zep_use_chair.nss"));
-        script.Should().Contain("GetSittingCreature");
-        script.Should().Contain("ActionSit(oChair)");
+        Objects(ReadResource("git", "shuttle"), "Placeable List")
+            .Should().NotContain(placeable => Value<string>(placeable, "Tag").StartsWith("shuttle_seat_"));
     }
 
     [Test]

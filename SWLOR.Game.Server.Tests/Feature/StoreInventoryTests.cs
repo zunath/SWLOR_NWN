@@ -1,6 +1,7 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -210,6 +211,37 @@ public class StoreInventoryTests
 
         foundStores.Should().OnlyContain(entry => entry.Value > 0, "each planetary general store should have at least one placed instance");
         findings.Should().BeEmpty(string.Join("\n", findings));
+    }
+
+    [Test]
+    public void PlacedStoreItems_DoNotProvideForceConversion()
+    {
+        var root = FindRepositoryRoot();
+        var findings = new List<string>();
+        var checkedItems = 0;
+
+        foreach (var file in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "git"), "*.git.json"))
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(file));
+            if (!TryGetWrappedArray(document.RootElement, "StoreList", out var stores))
+                continue;
+
+            foreach (var store in stores.EnumerateArray())
+            foreach (var item in ReadStoreItemData(store))
+            {
+                checkedItems++;
+                if (!TryGetWrappedArray(item, "PropertiesList", out var properties))
+                    continue;
+
+                if (properties.EnumerateArray().Any(property =>
+                        property.GetProperty("PropertyName").GetProperty("value").GetInt32() == (int)ItemPropertyType.WeaponDamageType &&
+                        property.GetProperty("Subtype").GetProperty("value").GetInt32() == (int)CombatDamageType.Force))
+                    findings.Add($"{Path.GetFileName(file)} / {GetWrappedString(store, "ResRef")} / {GetWrappedString(item, "TemplateResRef")}");
+            }
+        }
+
+        checkedItems.Should().BeGreaterThan(5000, "the audit must cover the placed store corpus");
+        findings.Should().BeEmpty("new merchant purchases must not carry retired Force conversion: " + string.Join(", ", findings));
     }
 
     [Test]

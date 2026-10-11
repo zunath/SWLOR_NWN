@@ -125,6 +125,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             int healPercent,
             int lowHPHealPercent)
         {
+            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
             var damage = Ability.ApplyCombatImpact(
                 activator,
                 target,
@@ -145,10 +146,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var effectiveHealPercent = IsBelowHalfHP(target)
                 ? lowHPHealPercent
                 : healPercent;
-            var healAmount = GameMath.PercentOf(damage, effectiveHealPercent);
-            healAmount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, healAmount);
-            healAmount = Stat.ApplyHealingReceivedAdjustment(activator, healAmount);
-            ApplyEffectToObject(DurationType.Instant, EffectHeal(healAmount), activator);
+            Combat.ApplyDamageDerivedHealing(activator, damage, effectiveHealPercent, isActivatedHealing: true);
             ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Red_Black), activator, 1.0f);
         }
 

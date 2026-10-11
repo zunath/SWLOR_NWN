@@ -2,11 +2,11 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 115
+    "value": 1
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10004
+    "value": 10098
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -18,35 +18,35 @@
   },
   "BodyPart_Belt": {
     "type": "byte",
-    "value": 63
+    "value": 0
   },
   "BodyPart_LBicep": {
     "type": "byte",
-    "value": 109
+    "value": 1
   },
   "BodyPart_LFArm": {
     "type": "byte",
-    "value": 101
+    "value": 1
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 102
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 75
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
-    "value": 2
+    "value": 0
   },
   "BodyPart_LThigh": {
     "type": "byte",
-    "value": 234
+    "value": 1
   },
   "BodyPart_Neck": {
     "type": "byte",
@@ -54,35 +54,35 @@
   },
   "BodyPart_Pelvis": {
     "type": "byte",
-    "value": 42
+    "value": 1
   },
   "BodyPart_RBicep": {
     "type": "byte",
-    "value": 109
+    "value": 1
   },
   "BodyPart_RFArm": {
     "type": "byte",
-    "value": 101
+    "value": 1
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 75
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
-    "value": 2
+    "value": 0
   },
   "BodyPart_RThigh": {
     "type": "byte",
-    "value": 234
+    "value": 1
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 53
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -110,23 +110,23 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 12
+    "value": 9
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 13
+    "value": 25
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 12
+    "value": 23
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 12
+    "value": 37
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Saber Storm in Dantooine Jedi Enclave Trial Halls."
+    "value": "A malfunctioning training construct in the sealed Dantooine Jedi Enclave Trial Halls. Its combat routines no longer obey the safety shutdown. Disable its chassis so the enclave can repair the training network."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Saber Storm in Dantooine Jedi Enclave Trial Halls."
+      "0": "A malfunctioning training construct in the sealed Dantooine Jedi Enclave Trial Halls. Its combat routines no longer obey the safety shutdown. Disable its chassis so the enclave can repair the training network."
     }
   },
   "Dex": {
@@ -343,7 +343,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1864
+          "value": 1855
         }
       },
       {
@@ -358,7 +358,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Saber Storm Inner Circle"
+      "0": "Storm Examiner Droid"
     }
   },
   "fortbonus": {
@@ -437,11 +437,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 1056
+    "value": 4416
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 167
   },
   "refbonus": {
     "type": "short",
@@ -702,7 +702,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 448
+    "value": 910
   },
   "SpecAbilityList": {
     "type": "list",
@@ -751,7 +751,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 90
+          "value": 270
         }
       },
       {

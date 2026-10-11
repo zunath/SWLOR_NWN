@@ -146,6 +146,7 @@ public class NPCCombatBudgetTests
             "DANTOOINE_BOL_BOSS_RECIPES", "QIONHIVE_BROODMOTHER_RECIPE",
             "TATOOINE_ANCIENT_WORM_STOLEN_GOODS", "FROG_BOSS_RECIPE",
             "KORRIBAN_MASTER_RECIPE", "KORRIBAN_MASTER_RESOURCE",
+            "NARSHADDAA_GREAT_ARKANIAN_DRAGON_GEMS", "NARSHADDAA_GREAT_ARKANIAN_DRAGON_RARES",
         };
         var presets = ReadRows(root, "Enemy Stat Presets").ToDictionary(r => r["A"]);
         var count = 0;
@@ -162,9 +163,12 @@ public class NPCCombatBudgetTests
             var level = Number(row["D"]);
             var preset = presets[$"{level}|Boss|{row["F"]}"];
             Number(row["N"]).Should().Be(Number(preset["K"]) * 3);
+            Number(row["O"]).Should().Be(Number(preset["L"]) * 2);
+            Number(row["P"]).Should().Be(Number(preset["M"]) * 2);
             Number(row["Q"]).Should().Be((int)Math.Round(Number(preset["N"]) * 1.5m, MidpointRounding.AwayFromZero));
             Number(row["R"]).Should().Be(Number(preset["O"]) + 15);
             Number(row["S"]).Should().Be(Number(preset["P"]) + 15);
+            Number(row["T"]).Should().Be(Math.Max(0, Number(preset["Q"]) - 9));
             Number(row["U"]).Should().Be(Number(preset["R"]) + 20);
             Number(row["V"]).Should().Be(Number(preset["S"]) + 20);
             var elite = presets[$"{level}|Elite|{row["F"]}"];
@@ -177,7 +181,7 @@ public class NPCCombatBudgetTests
             }
             count++;
         }
-        count.Should().Be(13, "all existing premium loot families must receive the group encounter budget");
+        count.Should().Be(14, "all existing premium loot families, including the Great Arkanian Dragon, must receive the group encounter budget");
     }
 
     [Test]

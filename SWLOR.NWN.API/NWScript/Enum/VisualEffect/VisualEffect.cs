@@ -844,5 +844,6 @@ namespace SWLOR.NWN.API.NWScript.Enum.VisualEffect
         Vfx_Ability_VolatileCompound = 1123,
         Vfx_Imp_Breath_Cold = 1124,
         Vfx_Imp_Breath_Poison = 1125,
+        Vfx_Imp_Mirv_BoltGlory = 1126,
     }
 }

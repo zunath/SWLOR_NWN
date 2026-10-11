@@ -84,8 +84,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     // At the end of the process, spawn the ore on the activator and reduce remaining units.
                     DelayCommand(recast + 0.1f, () =>
                     {
+                        // The pilot may have left their ship before mining completes.
+                        var shipStatus = Space.GetShipStatus(activator);
+                        if (shipStatus == null)
+                            return;
+
                         // Perk & module bonuses. These increase the overall yield of each asteroid.
-                        var industrialBonus = Space.GetShipStatus(activator).Industrial;
+                        var industrialBonus = shipStatus.Industrial;
 
                         var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 4) + (int)(moduleBonus)/6f;
 

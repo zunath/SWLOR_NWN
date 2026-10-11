@@ -870,7 +870,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var beastDetails = BeastMastery.GetBeastDetail(beastType);
                 damageStat = beastDetails.DamageStat;
                 accuracyStatOverride = beastDetails.AccuracyStat;
-                mainHand = GetItemInSlot(InventorySlot.CreatureArmor, _target);
+                // The skin's Accuracy is already included through the NPC stats, so read the claw combat attacks with.
+                mainHand = GetItemInSlot(InventorySlot.CreatureLeft, _target);
             }
             else
             {

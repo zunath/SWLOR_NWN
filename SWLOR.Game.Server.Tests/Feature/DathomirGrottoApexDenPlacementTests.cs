@@ -55,6 +55,25 @@ public class DathomirGrottoApexDenPlacementTests
     }
 
     [Test]
+    public void ApexDenEntryGate_StandsOnTheLedgeFloorBesideItsArrivalPoint()
+    {
+        using var cavern = LoadModuleJson("git", CavernAreaFile);
+        var gate = EnumerateObjects(cavern.RootElement)
+            .Single(element =>
+                GetString(element, "OnUsed") == "teleport" &&
+                GetOptionalLocalString(element, "DESTINATION") == "DATH_APEX_DEN_INSIDE");
+        var outside = cavern.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
+            .Single(waypoint => GetString(waypoint, "Tag") == "DATH_APEX_DEN_OUTSIDE");
+
+        // At (24.6, 33.8) the origin sat 0.6 m inside the rock face and players stalled short of using it.
+        var horizontal = Math.Sqrt(
+            Math.Pow(GetFloat(gate, "X") - GetFloat(outside, "XPosition"), 2) +
+            Math.Pow(GetFloat(gate, "Y") - GetFloat(outside, "YPosition"), 2));
+        horizontal.Should().BeLessThan(1.5, "the gate must stand on the same open ledge floor as its arrival point");
+        Math.Abs(GetFloat(gate, "Z") - GetFloat(outside, "ZPosition")).Should().BeLessThan(0.5);
+    }
+
+    [Test]
     public void ApexDenDungeon_UsesGeneratedCapstoneSpawnTable()
     {
         using var dungeon = LoadModuleJson("git", DungeonAreaFile);
@@ -232,6 +251,11 @@ public class DathomirGrottoApexDenPlacementTests
         }
 
         return false;
+    }
+
+    private static double GetFloat(System.Text.Json.JsonElement json, string propertyName)
+    {
+        return json.GetProperty(propertyName).GetProperty("value").GetDouble();
     }
 
     private static string GetString(System.Text.Json.JsonElement json, string propertyName)

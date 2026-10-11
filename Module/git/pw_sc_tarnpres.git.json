@@ -1687,7 +1687,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A breeding pen's broken gate hangs from one hinge, its bars bent outward and gnawed. A tukata's spoor is everywhere."
           }
         },
         "DisarmDC": {
@@ -3207,7 +3207,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A scarred feeding post stands in the preserve, its wood ridged with claw marks and old blood. A shyrack roosts somewhere above."
           }
         },
         "DisarmDC": {
@@ -4727,7 +4727,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A trampled clearing in the preserve, the ground pounded flat in a steady rhythm. An iriaz bull marks it as his own."
           }
         },
         "DisarmDC": {

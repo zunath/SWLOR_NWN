@@ -62,13 +62,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Marda Voss gave you the Anchorhead Canyon Range Key. Six Unmoving Center adepts train at Anchorhead Canyon Range on Tatooine. Defeat six of them and recover the Unmoving Center Canyon Range Tally.")
+                    "Marda Voss gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed door in the south cliff of the Rocky Pass, beside the trail to the Southern Pass. Defeat six Unmoving Center adepts and recover the Unmoving Center Canyon Range Tally.")
                 .AddKillObjective(NPCGroupType.Tatooine_UnmovingCenter_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnmovingCenterCanyonRangeTally)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unmoving Center Canyon Range Tally has been recovered from Anchorhead Canyon Range. Return it to Marda Voss at the Elevagii Farm on Tatooine.")
+                    "You recovered the Unmoving Center Canyon Range Tally. Return it to Marda Voss at the Elevagii Farm on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -83,13 +83,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Five Unmoving Center specialists train at Anchorhead Canyon Range on Tatooine. Defeat five of them and recover the Unmoving Center Sightline Calibrator.")
+                    "Defeat five Unmoving Center specialists deeper in the Anchorhead Canyon Range on Tatooine and recover the Unmoving Center Sightline Calibrator.")
                 .AddKillObjective(NPCGroupType.Tatooine_UnmovingCenter_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnmovingCenterSightlineCalibrator)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unmoving Center Sightline Calibrator has been recovered from Anchorhead Canyon Range. Return it to Marda Voss at the Elevagii Farm on Tatooine.")
+                    "You recovered the Unmoving Center Sightline Calibrator. Return it to Marda Voss at the Elevagii Farm on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -104,13 +104,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unmoving Center warden holds Anchorhead Canyon Range on Tatooine. Defeat the warden and recover the Unmoving Center Shattered Range Crest.")
+                    "With at least two allies, defeat the Unmoving Center warden at the trial altar on the west side of the Anchorhead Canyon Range on Tatooine and recover the Unmoving Center Shattered Range Crest.")
                 .AddKillObjective(NPCGroupType.Tatooine_UnmovingCenter_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnmovingCenterShatteredRangeCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unmoving Center Shattered Range Crest has been recovered from Anchorhead Canyon Range. Return it to Marda Voss at the Elevagii Farm on Tatooine.")
+                    "You recovered the Unmoving Center Shattered Range Crest. Return it to Marda Voss at the Elevagii Farm on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -125,13 +125,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Four members of the Unmoving Center inner circle hold Anchorhead Canyon Range on Tatooine. Defeat all four and recover the Unmoving Center Marshal's Challenge Chit.")
+                    "Defeat four members of the Unmoving Center inner circle in the Anchorhead Canyon Range on Tatooine and recover the Unmoving Center Marshal's Challenge Chit.")
                 .AddKillObjective(NPCGroupType.Tatooine_UnmovingCenter_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnmovingCenterMarshalsChallengeChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unmoving Center Marshal's Challenge Chit has been recovered from Anchorhead Canyon Range. Return it to Marda Voss at the Elevagii Farm on Tatooine.")
+                    "You recovered the Unmoving Center Marshal's Challenge Chit. Return it to Marda Voss at the Elevagii Farm on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unmoving Center master holds Anchorhead Canyon Range on Tatooine. Defeat the master.")
+                    "With at least two allies, defeat the Unmoving Center master in the Canyon Dueling Pit, through the door at the north end of the Anchorhead Canyon Range on Tatooine.")
                 .AddKillObjective(NPCGroupType.Tatooine_UnmovingCenter_Master, 1)
 
                 .AddState()

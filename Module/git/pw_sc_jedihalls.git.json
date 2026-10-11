@@ -1687,7 +1687,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A training-droid dock in the western halls, its maintenance lights still blinking. The gatekeeper unit stored here wakes for anyone who stands in front of it with a lit blade."
           }
         },
         "DisarmDC": {
@@ -3207,7 +3207,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A sparring circle inlaid in the hall floor, ringed by scorch marks from deflected bolts. A guardian training droid stands dormant at its edge, waiting for a challenger."
           }
         },
         "DisarmDC": {
@@ -4727,7 +4727,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A droid charging cradle beside the approach to the Saber Trial Chamber. The gatekeeper unit kept here still answers to anyone who steps into its sparring lane."
           }
         },
         "DisarmDC": {

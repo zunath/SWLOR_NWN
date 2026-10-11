@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Maar Veth gave you the Korriban Forge Caverns Key. Kill six Forcebane adepts at the outer forges of the Korriban Forge Caverns on Korriban and secure the Forcebane Forge Heat Ledger.")
+                    "Maar Veth gave you the Korriban Forge Caverns Key. On Korriban, cross the Sith Fortress Forgeworks to the sealed passage in its far north-east corner and enter the Korriban Forge Caverns. Kill six Forcebane adepts and secure the Forcebane Forge Heat Ledger they keep by the crucibles.")
                 .AddKillObjective(NPCGroupType.Korriban_Forcebane_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneForgeHeatLedger)
 
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill the Forcebane warden in the deep forge of the Korriban Forge Caverns on Korriban and secure the Forcebane Cracked Anvil Sigil.")
+                    "With at least two allies, kill the Forcebane warden at the trial altar on the east side of the Korriban Forge Caverns on Korriban and secure the Forcebane Cracked Anvil Sigil.")
                 .AddKillObjective(NPCGroupType.Korriban_Forcebane_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneCrackedAnvilSigil)
 
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Forcebane master at the heart of the Korriban Forge Caverns on Korriban. His defeat is the only proof required.")
+                    "With at least two allies, defeat the Forcebane master in the Champion Forge, through the door at the north end of the Korriban Forge Caverns on Korriban. His defeat is the only proof required.")
                 .AddKillObjective(NPCGroupType.Korriban_Forcebane_Master, 1)
 
                 .AddState()

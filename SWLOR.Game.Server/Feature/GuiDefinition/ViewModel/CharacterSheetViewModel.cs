@@ -341,15 +341,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public int OffHandAccuracy
+        public string OffHandAccuracy
         {
-            get => Get<int>();
-            set => Set(value);
-        }
-
-        public bool ShowOffHandAccuracy
-        {
-            get => Get<bool>();
+            get => Get<string>();
             set => Set(value);
         }
 
@@ -892,10 +886,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ForceDefense = Stat.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
 
             WeaponAccuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
-            ShowOffHandAccuracy = EquipmentPredicates.HasDualWield(_target);
-            OffHandAccuracy = ShowOffHandAccuracy
-                ? Stat.GetAccuracy(_target, offhandAttackWeapon, AbilityType.Invalid, SkillType.Invalid)
-                : 0;
+            OffHandAccuracy = GetIsObjectValid(offhandAttackWeapon) && Item.IsAttackWeaponType(GetBaseItemType(offhandAttackWeapon))
+                ? Stat.GetAccuracy(_target, offhandAttackWeapon, AbilityType.Invalid, SkillType.Invalid).ToString()
+                : "-";
             ForceAccuracy = Stat.GetAccuracy(
                 _target,
                 forceAccuracyWeapon,

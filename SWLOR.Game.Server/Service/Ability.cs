@@ -1559,6 +1559,8 @@ namespace SWLOR.Game.Server.Service
             PrepareCombatImpactDamageBonuses(activator, baseDamage);
             RecordAbilityImpactShape(activator, skillType, true);
             var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (areaVisualEffect == VisualEffect.None)
+                areaVisualEffect = trackedImpact?.Ability.AreaImpactVisualEffect ?? VisualEffect.None;
             var backOffsetOrigin = trackedImpact?.Ability.Targeting?.Flags
                 .HasFlag(AbilityTargetingFlags.BackOffsetOrigin) == true;
             var geometry = ResolveCombatImpactGeometry(

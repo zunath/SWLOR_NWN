@@ -3468,12 +3468,19 @@ def generate_ability_definitions(rows, feat_values, recast_values):
     # Authored impact art is declared in each ability, independently of generated balance data.
     ability_root = ROOT / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition"
     authored_impacts = {}
+    authored_area_impacts = {}
     for definition in ability_root.rglob("*AbilityDefinition.cs"):
-        bindings = set(re.findall(r"\.DisplaysVisualEffectOnSuccessfulImpact\(([^)]+)\)", definition.read_text()))
+        source = definition.read_text()
+        bindings = set(re.findall(r"\.DisplaysVisualEffectOnSuccessfulImpact\(([^)]+)\)", source))
         if len(bindings) > 1:
             raise ValueError(f"Conflicting authored impact bindings in {definition}")
         if bindings:
             authored_impacts[definition.stem] = next(iter(bindings))
+        area_bindings = set(re.findall(r"\.DisplaysVisualEffectAtImpactArea\(([^)]+)\)", source))
+        if len(area_bindings) > 1:
+            raise ValueError(f"Conflicting authored area impact bindings in {definition}")
+        if area_bindings:
+            authored_area_impacts[definition.stem] = next(iter(area_bindings))
 
     target_classes = {f"{pascal(base)}AbilityDefinition" for _, base in active_by_tab_base}
     delete_old_weapon_ability_definitions(target_classes)
@@ -3624,6 +3631,8 @@ def generate_ability_definitions(rows, feat_values, recast_values):
                 f"                builder.Create(FeatType.{feat}, PerkType.{perk_type})",
                 *([f"                    .DisplaysVisualEffectOnSuccessfulImpact({authored_impacts[class_name]})"]
                   if class_name in authored_impacts else []),
+                *([f"                    .DisplaysVisualEffectAtImpactArea({authored_area_impacts[class_name]})"]
+                  if class_name in authored_area_impacts else []),
                 *authored_animation_builder_lines(skill, row, hostile == "true"),
                 f"                    .Name(\"{escape_csharp(row['PerkName'])}\")",
                 f"                    .Level({level})",

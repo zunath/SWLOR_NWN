@@ -403,6 +403,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        /// <summary>Sets the location burst played at the origin of a shared area impact.</summary>
+        public AbilityBuilder DisplaysVisualEffectAtImpactArea(VisualEffect visualEffect)
+        {
+            _activeAbility.AreaImpactVisualEffect = visualEffect;
+            return this;
+        }
+
         /// <summary>
         /// Assigns an impact action on the active ability we're building.
         /// Calling this more than once will replace the previous action.

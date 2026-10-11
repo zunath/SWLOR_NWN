@@ -334,6 +334,38 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Adds a combat point for a player to every NPC they are tagged on and every NPC in combat
+        /// with the creatures they supported, so a supporter who never attacked still earns XP when
+        /// those enemies die. Aggro-proximity enmity alone does not count as combat.
+        /// </summary>
+        /// <param name="player">The player receiving the point.</param>
+        /// <param name="supportedCreatures">The creatures the player repaired, healed, or otherwise supported.</param>
+        /// <param name="skill">The skill to associate with the point.</param>
+        /// <param name="amount">The number of points to add.</param>
+        public static void AddSupportCombatPoint(uint player, IEnumerable<uint> supportedCreatures, SkillType skill, int amount = 1)
+        {
+            if (!GetIsPC(player) || GetIsDM(player)) return;
+
+            var creatures = _playerToCreatureTracker.TryGetValue(player, out var tagged)
+                ? new HashSet<uint>(tagged)
+                : new HashSet<uint>();
+
+            foreach (var supported in supportedCreatures)
+            {
+                foreach (var enemy in Enmity.GetEnmityTowardsAllEnemies(supported).Keys)
+                {
+                    if (Enmity.HasNonProximityEnmity(supported, enemy))
+                        creatures.Add(enemy);
+                }
+            }
+
+            foreach (var creature in creatures)
+            {
+                AddCombatPoint(player, creature, skill, amount);
+            }
+        }
+
+        /// <summary>
         /// Adds a player-to-npc reference to the cache.
         /// </summary>
         /// <param name="player">The player whose reference we're attaching.</param>

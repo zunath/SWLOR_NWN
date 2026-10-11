@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using Nwn.Preview.Dds;
@@ -20,7 +19,7 @@ namespace SWLOR.Toolset.Domain.Render
         private const string HairTintShader = "fs_plt_hair_nm";
         private const string CloakTintShader = "fs_cloaktint";
         private const int MaxCachedCloakTiles = 32;
-        private static readonly ConditionalWeakTable<ResourceIndex, ConcurrentDictionary<string, TextureImage?>> CloakTiles = new();
+        private static readonly ConditionalWeakTable<ResourceIndex, CloakTileCache> CloakTiles = new();
 
         public static bool IsTintMapMaterial(MtrDocument? material)
         {
@@ -53,14 +52,13 @@ namespace SWLOR.Toolset.Domain.Render
             var atlasName = MaterialResolver.GetTexture(material, 6 + index / 32);
             if (string.IsNullOrWhiteSpace(atlasName))
                 return null;
-            // Each tile otherwise decodes a whole 2048x4096 atlas on every dye change.
-            var tiles = CloakTiles.GetValue(resourceIndex, _ => new ConcurrentDictionary<string, TextureImage?>(StringComparer.OrdinalIgnoreCase));
-            var key = atlasName + "|" + index;
-            if (tiles.TryGetValue(key, out var cached))
-                return cached;
-            if (tiles.Count >= MaxCachedCloakTiles)
-                tiles.Clear();
-            return tiles[key] = LoadCloakTile(resourceIndex, atlasName, index);
+            var tiles = CloakTiles.GetValue(resourceIndex, resources =>
+            {
+                var cache = new CloakTileCache(MaxCachedCloakTiles);
+                resources.ResourcesReloaded += cache.Clear;
+                return cache;
+            });
+            return tiles.GetOrLoad(atlasName + "|" + index, () => LoadCloakTile(resourceIndex, atlasName, index));
         }
 
         private static TextureImage? LoadCloakTile(ResourceIndex resourceIndex, string atlasName, int index)

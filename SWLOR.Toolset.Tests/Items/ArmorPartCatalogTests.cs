@@ -39,6 +39,30 @@ namespace SWLOR.Toolset.Tests.Items
         }
 
         [Test]
+        public async Task CatalogRebuildsAfterResourcesReload()
+        {
+            var scratch = Path.Combine(Path.GetTempPath(), "swlor-armor-parts-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllBytes(Path.Combine(scratch, "pmh0_bicepl001.mdl"), Array.Empty<byte>());
+                var layers = new[] { new ResourceIndex.HakLayer("fixture", scratch) };
+                var resources = new ResourceIndex(baseLayer: null, hakLayersInOrder: layers);
+                var catalog = new ArmorPartCatalog(resources);
+                catalog.Numbers("bicepl").Should().Equal(1);
+
+                File.WriteAllBytes(Path.Combine(scratch, "pmh0_bicepl003.mdl"), Array.Empty<byte>());
+                await resources.ReloadHakLayersAsync(layers);
+
+                catalog.Numbers("bicepl").Should().Equal(1, 3);
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        [Test]
         public void WithNonePrependsTheEngineNoModelValueOnce()
         {
             ArmorPartCatalog.WithNone(new[] { 1, 3, 7 }).Should().Equal(0, 1, 3, 7);

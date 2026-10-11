@@ -28,26 +28,46 @@ namespace SWLOR.Toolset.Editors.Items
         private static readonly ushort LodResourceType = ResourceIdentity.TypeFromExtension("lod");
 
         private readonly ResourceIndex? _resources;
-        private readonly Lazy<IReadOnlyDictionary<string, IReadOnlyList<PartModel>>>? _modelsByPrefix;
-        private readonly ConcurrentDictionary<string, IReadOnlyList<int>> _numbersByModelPrefix =
+        private readonly object _stateGate = new();
+        // Each resource generation pairs its own index with its own per-prefix answers, so a
+        // query racing a reload can never publish stale numbers into the new generation.
+        private Lazy<IReadOnlyDictionary<string, IReadOnlyList<(int Number, string ResRef, bool Redirected)>>>? _modelsByPrefix;
+        private ConcurrentDictionary<string, IReadOnlyList<int>> _numbersByModelPrefix =
             new(StringComparer.OrdinalIgnoreCase);
-        private readonly Lazy<Task>? _buildTask;
+        private Lazy<Task>? _buildTask;
 
-        private readonly record struct PartModel(int Number, string ResRef, bool Redirected);
-
-        public bool IsBuilt => _modelsByPrefix?.IsValueCreated != false;
+        public bool IsBuilt
+        {
+            get
+            {
+                lock (_stateGate)
+                    return _modelsByPrefix?.IsValueCreated != false;
+            }
+        }
 
         public ArmorPartCatalog(ResourceIndex? resources)
         {
             _resources = resources;
             if (_resources != null)
             {
-                _modelsByPrefix = new Lazy<IReadOnlyDictionary<string, IReadOnlyList<PartModel>>>(
-                    BuildIndex,
-                    LazyThreadSafetyMode.ExecutionAndPublication);
-                _buildTask = new Lazy<Task>(
-                    () => Task.Run(() => _ = _modelsByPrefix.Value),
-                    LazyThreadSafetyMode.ExecutionAndPublication);
+                Reset();
+                _resources.ResourcesReloaded += Reset;
+            }
+        }
+
+        private void Reset()
+        {
+            var models = new Lazy<IReadOnlyDictionary<string, IReadOnlyList<(int Number, string ResRef, bool Redirected)>>>(
+                BuildIndex,
+                LazyThreadSafetyMode.ExecutionAndPublication);
+            var build = new Lazy<Task>(
+                () => Task.Run(() => _ = models.Value),
+                LazyThreadSafetyMode.ExecutionAndPublication);
+            lock (_stateGate)
+            {
+                _modelsByPrefix = models;
+                _buildTask = build;
+                _numbersByModelPrefix = new ConcurrentDictionary<string, IReadOnlyList<int>>(StringComparer.OrdinalIgnoreCase);
             }
         }
 
@@ -56,7 +76,13 @@ namespace SWLOR.Toolset.Editors.Items
         /// lazy singleton used by item editors; this merely gives expensive first-use callers a way
         /// to warm it without blocking tab navigation.
         /// </summary>
-        public Task EnsureBuiltAsync() => _buildTask?.Value ?? Task.CompletedTask;
+        public Task EnsureBuiltAsync()
+        {
+            Lazy<Task>? build;
+            lock (_stateGate)
+                build = _buildTask;
+            return build?.Value ?? Task.CompletedTask;
+        }
 
         /// <summary>
         /// The numbers that resolve to a real model for a part category ("chest", "shol", ...),
@@ -84,10 +110,18 @@ namespace SWLOR.Toolset.Editors.Items
             if (_resources == null || string.IsNullOrWhiteSpace(modelPrefix))
                 return Array.Empty<int>();
 
+            Lazy<IReadOnlyDictionary<string, IReadOnlyList<(int Number, string ResRef, bool Redirected)>>> index;
+            ConcurrentDictionary<string, IReadOnlyList<int>> numbers;
+            lock (_stateGate)
+            {
+                index = _modelsByPrefix!;
+                numbers = _numbersByModelPrefix;
+            }
+
             // LOD redirects are read only for prefixes an editor asks for; most belong to
             // generated cloak and robe phenotypes that no part list shows.
-            return _numbersByModelPrefix.GetOrAdd(modelPrefix.Trim(), prefix =>
-                _modelsByPrefix!.Value.TryGetValue(prefix, out var models)
+            return numbers.GetOrAdd(modelPrefix.Trim(), prefix =>
+                index.Value.TryGetValue(prefix, out var models)
                     ? models.Where(model => !model.Redirected ||
                                             ModelResourceResolver.TryResolve(_resources, model.ResRef, out _))
                         .Select(model => model.Number)
@@ -110,7 +144,7 @@ namespace SWLOR.Toolset.Editors.Items
             return new[] { 0 }.Concat(numbers).ToList();
         }
 
-        private IReadOnlyDictionary<string, IReadOnlyList<PartModel>> BuildIndex()
+        private IReadOnlyDictionary<string, IReadOnlyList<(int Number, string ResRef, bool Redirected)>> BuildIndex()
         {
             // The client loads a same-name LOD before the MDL, so a redirect's target decides.
             var redirected = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
@@ -119,7 +153,7 @@ namespace SWLOR.Toolset.Editors.Items
             foreach (var identity in _resources.EnumerateResources(LodResourceType))
                 redirected[identity.ResRef] = true;
 
-            var found = new Dictionary<string, List<PartModel>>(StringComparer.OrdinalIgnoreCase);
+            var found = new Dictionary<string, List<(int Number, string ResRef, bool Redirected)>>(StringComparer.OrdinalIgnoreCase);
             foreach (var (resRef, isRedirected) in redirected)
             {
                 var body = resRef.AsSpan();
@@ -139,16 +173,16 @@ namespace SWLOR.Toolset.Editors.Items
 
                 if (!found.TryGetValue(modelPrefix, out var models))
                 {
-                    models = new List<PartModel>();
+                    models = new List<(int Number, string ResRef, bool Redirected)>();
                     found[modelPrefix] = models;
                 }
 
-                models.Add(new PartModel(number, resRef, isRedirected));
+                models.Add((number, resRef, isRedirected));
             }
 
             return found.ToDictionary(
                 pair => pair.Key,
-                pair => (IReadOnlyList<PartModel>)pair.Value,
+                pair => (IReadOnlyList<(int Number, string ResRef, bool Redirected)>)pair.Value,
                 StringComparer.OrdinalIgnoreCase);
         }
 

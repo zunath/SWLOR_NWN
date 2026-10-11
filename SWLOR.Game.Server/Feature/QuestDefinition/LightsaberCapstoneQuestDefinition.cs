@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Guardian Master Enclave Trial Slate is recovered. Return to Miris Aven at the Anchorhead - Verpex Bazaar on Tatooine.")
+                    "The Guardian Master Enclave Trial Slate is recovered. Return to Miris Aven at the Anchorhead - South District on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Guardian Master Kyber Focus Shard is recovered. Return to Miris Aven at the Anchorhead - Verpex Bazaar on Tatooine.")
+                    "The Guardian Master Kyber Focus Shard is recovered. Return to Miris Aven at the Anchorhead - South District on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Guardian Master Fractured Trial Sigil is recovered. Return to Miris Aven at the Anchorhead - Verpex Bazaar on Tatooine.")
+                    "The Guardian Master Fractured Trial Sigil is recovered. Return to Miris Aven at the Anchorhead - South District on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Guardian Master Council Trial Chit is recovered. Return to Miris Aven at the Anchorhead - Verpex Bazaar on Tatooine.")
+                    "The Guardian Master Council Trial Chit is recovered. Return to Miris Aven at the Anchorhead - South District on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Bastion Training Engine is defeated. Return to Miris Aven at the Anchorhead - Verpex Bazaar on Tatooine.")
+                    "The Bastion Training Engine is defeated. Return to Miris Aven at the Anchorhead - South District on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

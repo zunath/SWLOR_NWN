@@ -60,7 +60,7 @@ public class TeleportPlaceableConfigurationTests
             "Module/git/veles_sheriff.git.json|Veles Militia Annex|VELES_ANNEX_ENTRY|tele_obj|tele_obj",
             "Module/git/dan_jedienlibry.git.json|Jedi Enclave Trial Halls|pw_sc_jedihalls_entry|tele_obj|tele_obj",
             "Module/git/valkorrdung1c.git.json|Forge Caverns|pw_sc_forgecav_entry|tele_obj|tele_obj",
-            "Module/git/anchor_entreenor.git.json|Anchorhead Canyon Range|pw_sc_canyonrng_entry|tele_obj|tele_obj",
+            "Module/git/tat_anc_rckpass2.git.json|Anchorhead Canyon Range|pw_sc_canyonrng_entry|tele_obj|tele_obj",
             "Module/git/sol_hutlarqcanyo.git.json|Qion Test Site|pw_sc_qiontest_entry|tele_obj|tele_obj",
             "Module/git/korr_crypt_zil.git.json|Sith Crypt Depths|pw_sc_cryptdeep_entry|tele_obj|tele_obj",
             "Module/git/v_repubbase_cd.git.json|Republic Engineering Bunker|pw_sc_repubeng_entry|tele_obj|tele_obj",

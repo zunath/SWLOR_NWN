@@ -17,7 +17,7 @@ public class TrialDungeonPlacementTests
             new[] { "sabstorm", "guardmst", "sabcycl" }),
         new("pw_sc_forgecav", "pw_sc_korrforge", "valkorrdung1c", "wp_cap_kforge", 109, 32,
             new[] { "absdef", "soulasc", "forcebane" }),
-        new("pw_sc_canyonrng", "pw_sc_canyonpit", "anchor_entreenor", "wp_cap_tatcan", 112, 2,
+        new("pw_sc_canyonrng", "pw_sc_canyonpit", "tat_anc_rckpass2", "wp_cap_tatcan", 112, 2,
             new[] { "unmovctr", "lastword", "deadhand" }),
         new("pw_sc_qiontest", "pw_sc_qioncore", "sol_hutlarqcanyo", "wp_cap_hutlar", 114, 8,
             new[] { "perflurry", "thermdet", "overbarr" }),

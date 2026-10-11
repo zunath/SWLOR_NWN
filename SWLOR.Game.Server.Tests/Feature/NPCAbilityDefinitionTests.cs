@@ -296,6 +296,8 @@ public class NPCAbilityDefinitionTests
             [FeatType.StimCanister] = new("Stim Canister", RecastGroup.StimCanister, 24f, 6),
             [FeatType.BloodFrenzyFlurry] = new("Blood Frenzy Flurry", RecastGroup.BloodFrenzyFlurry, 20f, 6),
             [FeatType.ConcussiveChallenge] = new("Concussive Challenge", RecastGroup.ConcussiveChallenge, 24f, 5),
+            [FeatType.ChainLightning] = new("Chain Lightning", RecastGroup.ChainLightning, 22f, 6),
+            [FeatType.BloodSiphon] = new("Blood Siphon", RecastGroup.BloodSiphon, 16f, 4),
         };
     }
 
@@ -315,7 +317,9 @@ public class NPCAbilityDefinitionTests
             FeatType.RendingCarve,
             FeatType.StimCanister,
             FeatType.BloodFrenzyFlurry,
-            FeatType.ConcussiveChallenge
+            FeatType.ConcussiveChallenge,
+            FeatType.ChainLightning,
+            FeatType.BloodSiphon
         };
     }
 

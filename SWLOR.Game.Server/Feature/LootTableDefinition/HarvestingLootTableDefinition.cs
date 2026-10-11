@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             Trees();
             Bushes();
             Herbs();
+            SupplyCrates();
             VegetablePatches();
             AsteroidMining();
             StripMining();
@@ -101,6 +102,19 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("herb_t", 50);
             _builder.Create("HERBS_5")
                 .AddItem("herb_x", 50);
+        }
+
+        private void SupplyCrates()
+        {
+            _builder.Create("SUPPLY_CRATE_5")
+                .AddItem("ref_arkoxit", 1, 1, true)
+                .AddItem("ref_jasioclase", 20)
+                .AddItem("ref_gostian", 20)
+                .AddItem("elec_high", 20)
+                .AddItem("lth_high", 20)
+                .AddItem("emerald", 10)
+                .AddItem("fiberp_high", 20)
+                .AddItem("hyphae_wood", 20);
         }
 
         private void VegetablePatches()

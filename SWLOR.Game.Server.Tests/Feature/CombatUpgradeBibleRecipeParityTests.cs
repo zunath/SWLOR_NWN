@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
 /// Permanent regression guard enforcing parity between the crafting recipes documented in
-/// the "SWLOR Design Bible - Combat Upgrade" workbook and the recipes the game actually
+/// the "SWLOR Design Bible" workbook and the recipes the game actually
 /// registers at runtime (every <see cref="IRecipeListDefinition"/> in
 /// SWLOR.Game.Server.Feature.RecipeDefinition).
 /// </summary>

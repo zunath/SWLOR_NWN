@@ -14,7 +14,7 @@ When the request is underspecified, resolve one blocker at a time. Ask only ques
 ## Important Files
 
 - Source TSV: `SWLOR.CLI/InputFiles/beast_levels.tsv`
-- Bible workbook: `design/bible/SWLOR Design Bible - Combat Upgrade.xlsx`
+- Bible workbook: `design/bible/SWLOR Design Bible.xlsx`
 - Beast workbook sheets: `Beast Levels`, `Beast Lookups`, `Beast Calcs`
 - Generator: `SWLOR.CLI/BeastCodeBuilder.cs`
 - Templates: `SWLOR.CLI/Templates/beast_builder_template.txt`, `SWLOR.CLI/Templates/beast_level_template.txt`
@@ -70,7 +70,7 @@ When the request is underspecified, resolve one blocker at a time. Ask only ques
    - Update `Beast Levels` to match the TSV shape and rows.
    - Update `Beast Lookups` with the new beast row and any new mutation columns/data.
    - Update `Beast Calcs` starting, ending, and delta bands if the beast appears in calculated progression tables. Extend lookup ranges so formulas include the new lookup row.
-   - After editing `design/bible/SWLOR Design Bible - Combat Upgrade.xlsx`, run `powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible` from the repo root.
+   - After editing `design/bible/SWLOR Design Bible.xlsx`, run `powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible` from the repo root.
 
 8. Validate.
    - Run a data check that verifies: TSV width and row count, new beast rows, parent mutation data, server definition tokens, workbook rows, TLK slot text, and DNA row.

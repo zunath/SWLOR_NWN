@@ -324,7 +324,7 @@ public class MonCalaSpawnDefinitionTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var sharedStrings = ReadSharedStrings(archive);
         var smitheryWorksheet = ReadWorksheetByName(archive, "Smithery Recipes");
         var fabricationWorksheet = ReadWorksheetByName(archive, "Fabrication Recipes");

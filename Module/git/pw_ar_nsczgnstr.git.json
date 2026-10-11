@@ -71201,7 +71201,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine General Store"
+            "0": "Smuggler's Moon General Store"
           }
         },
         "MarkDown": {
@@ -130293,7 +130293,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "TATOOINE_GENERAL_STORE_MERCHANT"
+          "value": "SMUGGLERS_MOON_GENERAL_STORE"
         },
         "WillNotBuy": {
           "type": "list",

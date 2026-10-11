@@ -1,51 +1,73 @@
-using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.DBService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class DBIndexDefinitionTests
 {
-    [Test]
-    public void EachIndexOnlyCoversItsOwnEntityHashes()
+    private static readonly (string Name, bool IsNumeric)[] PlayerFields =
     {
-        var args = SerializeIndexOptions("Player");
+        ("Version", true), ("Name", false), ("IsDeleted", false), ("Id", false), ("EntityType", false)
+    };
+
+    [Test]
+    public void EachIndexOnlyCoversItsOwnEntityHashesAndKeepsStopWords()
+    {
+        var args = SearchIndexDefinition.BuildCreateArgs("Player", "Player", PlayerFields);
 
         // Without PREFIX, RediSearch indexes every hash in the keyspace, so all entity indexes held every record.
-        var prefix = args.IndexOf("PREFIX");
-        prefix.Should().BeGreaterThanOrEqualTo(0);
-        args[prefix + 1].Should().Be("1");
-        args[prefix + 2].Should().Be("Index:Player:");
-        var on = args.IndexOf("ON");
-        on.Should().BeGreaterThanOrEqualTo(0);
-        args[on + 1].Should().BeEquivalentTo("HASH");
+        // Without STOPWORDS 0, words such as "the" and "a" are dropped from the index and from every query.
+        args.Select(arg => arg.ToString()).Should().Equal(
+            "Player", "ON", "HASH", "PREFIX", "1", "Index:Player:", "STOPWORDS", "0", "SCHEMA",
+            "EntityType", "TEXT", "Id", "TEXT", "IsDeleted", "TEXT", "Name", "TEXT", "Version", "NUMERIC");
     }
 
     [Test]
     public void PrefixEndsAtTheTypeNameBoundary()
     {
         // "Index:Player" alone would also match "Index:PlayerNote:..." hashes.
-        SerializeIndexOptions("Player").Should().NotContain("Index:Player");
-        InvokePrivate<string>("IndexKeyPrefix", "PlayerNote").Should().Be("Index:PlayerNote:");
+        SearchIndexDefinition.KeyPrefix("Player").Should().Be("Index:Player:");
+        SearchIndexDefinition.KeyPrefix("PlayerNote").Should().Be("Index:PlayerNote:");
     }
 
-    private static List<string> SerializeIndexOptions(string keyPrefix)
+    [Test]
+    public void FingerprintIgnoresReflectionOrder()
     {
-        var options = InvokePrivate<object>("BuildIndexOptions", keyPrefix);
-        var serialize = options.GetType().GetMethod(
-            "SerializeRedisArgs",
-            BindingFlags.NonPublic | BindingFlags.Instance,
-            new[] { typeof(List<object>) })!;
-        var args = new List<object>();
-        serialize.Invoke(options, new object[] { args });
+        var reversed = PlayerFields.Reverse();
 
-        return args.Select(arg => arg.ToString()!).ToList();
+        Fingerprint(PlayerFields).Should().Be(Fingerprint(reversed));
     }
 
-    private static T InvokePrivate<T>(string methodName, params object[] arguments)
+    [Test]
+    public void FingerprintChangesWhenTheSchemaChanges()
     {
-        return (T)typeof(DB).GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, arguments)!;
+        var original = Fingerprint(PlayerFields);
+
+        Fingerprint(PlayerFields.Append(("CitizenPropertyId", false))).Should().NotBe(original, "a field was added");
+        Fingerprint(PlayerFields.Where(field => field.Name != "Name")).Should().NotBe(original, "a field was removed");
+        Fingerprint(PlayerFields.Select(field => field.Name == "Version" ? (field.Name, false) : field))
+            .Should().NotBe(original, "a field changed type");
+    }
+
+    [TestCase(typeof(int), true)]
+    [TestCase(typeof(long?), true)]
+    [TestCase(typeof(ulong), true)]
+    [TestCase(typeof(string), false)]
+    [TestCase(typeof(bool), false)]
+    public void OnlyIntegerPropertiesAreNumericFields(Type type, bool expected)
+    {
+        SearchIndexDefinition.IsNumeric(type).Should().Be(expected);
+    }
+
+    [Test]
+    public void FingerprintKeysDoNotCollideWithEntityKeys()
+    {
+        SearchIndexDefinition.FingerprintKey("Player").Should().Be("IndexDefinition:Player");
+    }
+
+    private static string Fingerprint(IEnumerable<(string Name, bool IsNumeric)> fields)
+    {
+        return SearchIndexDefinition.Fingerprint(SearchIndexDefinition.BuildCreateArgs("Player", "Player", fields));
     }
 }

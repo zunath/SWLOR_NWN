@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Jora Sel gave you the Dantooine Jedi Enclave Trial Halls Key. Contain the malfunctioning training network. Disable 6 Cyclone Drill Droid units in the lower ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Cyclone Enclave Trial Slate.")
-                .AddKillObjective(NPCGroupType.Dantooine_SaberCyclone_Adept, 6)
+                .AddKillObjective(NPCGroupType.Dantooine_CycloneDrillDroid, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneEnclaveTrialSlate)
 
                 .AddState()
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Disable 5 Cyclone Duelist Droid units in the deep chambers of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Cyclone Kyber Focus Shard.")
-                .AddKillObjective(NPCGroupType.Dantooine_SaberCyclone_Specialist, 5)
+                .AddKillObjective(NPCGroupType.Dantooine_CycloneDuelistDroid, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneKyberFocusShard)
 
                 .AddState()
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Disable 1 Cyclone Gatekeeper Droid in the trial ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Cyclone Fractured Trial Sigil. Bring at least two allies.")
-                .AddKillObjective(NPCGroupType.Dantooine_SaberCyclone_Warden, 1)
+                .AddKillObjective(NPCGroupType.Dantooine_CycloneGatekeeperDroid, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneFracturedTrialSigil)
 
                 .AddState()
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Disable 4 Cyclone Examiner Droid units in the inner chamber of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Cyclone Council Trial Chit.")
-                .AddKillObjective(NPCGroupType.Dantooine_SaberCyclone_InnerCircle, 4)
+                .AddKillObjective(NPCGroupType.Dantooine_CycloneExaminerDroid, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneCouncilTrialChit)
 
                 .AddState()
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText(
                     "Disable 1 Vortex Training Engine in the deepest hall of the Dantooine Jedi Enclave Trial Halls. Bring at least two allies.")
-                .AddKillObjective(NPCGroupType.Dantooine_SaberCyclone_Master, 1)
+                .AddKillObjective(NPCGroupType.Dantooine_VortexTrainingEngine, 1)
 
                 .AddState()
                 .SetStateJournalText(

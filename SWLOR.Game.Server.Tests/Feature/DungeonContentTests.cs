@@ -33,6 +33,9 @@ public class DungeonContentTests
                 .GetProperty("Value").GetProperty("value").GetInt32();
             typeof(NPCGroupType).GetField(group.ToString())!.GetCustomAttribute<NPCGroupAttribute>()!
                 .Name.Should().Be(name, "the kill counter must identify the visible target");
+            var planet = line is "sabstorm" or "guardmst" or "sabcycl" ? "Dantooine" : "Korriban";
+            group.ToString().Should().Be(planet + "_" + name.Replace(" ", ""),
+                "enemy identifiers must describe their current identity, not the capstone they unlock");
             var quest = quests.Single(q => q.Value.States[1].GetObjectives()
                 .OfType<KillTargetObjective>().Any(o => o.Group == group)).Value;
             quest.States[1].JournalText.Should().Contain(name);

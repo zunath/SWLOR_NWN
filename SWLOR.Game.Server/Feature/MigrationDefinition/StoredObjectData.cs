@@ -208,6 +208,28 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return 0;
         }
 
+        /// <summary>Updates a root integer local without loading or altering the saved creature's other state.</summary>
+        public static string RewriteRootInteger(string data, string name, Func<int, int> replace)
+        {
+            var document = new StoredObjectData(Convert.FromBase64String(data));
+            var variables = document._root.Fields.SingleOrDefault(x => x.Name == "VarTable" && x.Type == 15);
+            if (variables == null) return data;
+            var changed = false;
+            foreach (var variable in variables.Children)
+            {
+                if (ReadVariableName(variable) != name) continue;
+                var type = variable.Fields.SingleOrDefault(x => x.Name == "Type" && x.Type == 4);
+                var value = variable.Fields.SingleOrDefault(x => x.Name == "Value" && x.Type == 5);
+                if (type == null || ReadScalar(type) != 1 || value == null) continue;
+                var original = ReadScalar(value);
+                var replacement = replace(original);
+                if (replacement == original) continue;
+                value.Data = BitConverter.GetBytes(replacement);
+                changed = true;
+            }
+            return changed ? document.Serialize() : data;
+        }
+
         /// <summary>
         /// Restores the archived root UUID in saved bytes without modifying another live object that holds the same UUID.
         /// </summary>

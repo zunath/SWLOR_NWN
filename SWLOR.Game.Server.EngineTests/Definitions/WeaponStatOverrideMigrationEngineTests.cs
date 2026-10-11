@@ -29,14 +29,14 @@ public static partial class MigrationEngineTests
         typeof(Migration).GetMethod("LoadServerMigrations", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, null);
         try
         {
-            foreach (var checkpoint in new[] { 22, 23, 24, 25 })
+            foreach (var checkpoint in new[] { 22, 23, 24, 25, 26 })
             {
                 DB.Set(new ServerConfiguration { MigrationVersion = checkpoint });
                 foreach (var phase in new[] { MigrationExecutionType.PostDatabaseLoad, MigrationExecutionType.PostCacheLoad })
                 {
                     var pending = ((IEnumerable<IServerMigration>)getMigrations.Invoke(null, new object[] { phase })).ToArray();
                     var expected = phase == MigrationExecutionType.PostDatabaseLoad ? new int[0] :
-                        new[] { 23, 24, 25 }.Where(version => version > checkpoint).ToArray();
+                        new[] { 23, 24, 25, 26 }.Where(version => version > checkpoint).ToArray();
                     ctx.Assert(pending.Select(migration => migration.Version).SequenceEqual(expected),
                         $"Checkpoint {checkpoint}, phase {phase}: only the pending targeted repairs are selected");
                     ctx.Assert(!pending.Any(migration => migration is _22_CombatSystemReplacement or StoredItemSchemaMigration),

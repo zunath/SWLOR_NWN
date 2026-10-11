@@ -176,7 +176,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             AddBoundValueRow(combatCol, "Atk Delay", model => model.AttackDelay, "Estimated time between auto attacks.", model => model.AttackDelayTooltip, 94f);
                             AddBoundValueRow(combatCol, "Attack", model => model.Attack, "Physical attack rating used to scale weapon and physical ability damage.", null, 94f);
                             AddBoundValueRow(combatCol, "Force Attack", model => model.ForceAttack, "Force attack rating used to scale Force ability damage.", null, 94f);
-                            AddBoundValueRow(combatCol, "Weapon Acc.", model => model.WeaponAccuracy, "Underlying main-hand weapon accuracy rating. Actual hit chance depends on target Evasion and ability-specific modifiers.", null, 94f);
+                            AddBoundValueRow(combatCol, "Main-hand Acc.", model => model.WeaponAccuracy, "Main-hand attack accuracy. Weapon bonuses do not combine.", null, 120f);
+                            AddBoundValueRow(combatCol, "Off-hand Acc.", model => model.OffHandAccuracy, "Off-hand attack accuracy, including double weapons. Weapon bonuses do not combine.", null, 120f);
                             AddBoundValueRow(combatCol, "Force Acc.", model => model.ForceAccuracy, "Underlying Force ability accuracy rating. Actual hit chance depends on target Evasion, Force affinity, and direct ability hit chance modifiers.", null, 94f);
                             AddBoundValueRow(combatCol, "Evasion", model => model.Evasion, "Evasion rating used to oppose attacks and detrimental abilities.", null, 94f);
                             AddBoundValueRow(combatCol, "Physical DEF", model => model.PhysicalDefense, "Defense against physical attacks.", null, 94f);

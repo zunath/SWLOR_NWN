@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You know the rule of my counter by now: if you're standing there, you're holding something. Here - keep that level while I titrate. The sublevel drains clean these days, the wards upstairs got their kolto pressure back, and the only person building an emergency cocktail below Dantooine is you, when someone's dying and the minutes run short. That's how it should be. I even slept last week. Don't spread that around.",
+          "Text": "You know the rule of my counter by now: if you're standing there, you're holding something. Here - keep that level while I titrate. The sublevel drains clean these days, the Dantooine wards got their kolto pressure back, and the only person building an emergency cocktail below Dantooine is you, when someone's dying and the minutes run short. That's how it should be. I even slept last week. Don't spread that around.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Hold this vial - level, don't tilt it, it's mid-titration and I don't own a spare. Good. You have working hands, so listen. There's a crew in the sublevel under this facility running my discipline backwards: hot stabilizer batches, mixed fast, tested on patients who can't crawl off the cot. Their adepts hold the arms down. Put six of them down instead, and bring me the book they log the doses in - the Emergency Cocktail Triage Ward Ledger. My format, their handwriting. I want it off their counter and onto mine.",
+          "Text": "Hold this vial - level, don't tilt it, it's mid-titration and I don't own a spare. Good. You have working hands, so listen. There's a crew in the Dantooine Medical Sublevel running my discipline backwards: hot stabilizer batches, mixed fast, tested on patients who can't crawl off the cot. Their adepts hold the arms down. Put six of them down instead, and bring me the book they log the doses in - the Emergency Cocktail Triage Ward Ledger. My format, their handwriting. I want it off their counter and onto mine.",
           "Style": 0,
           "Color": null
         }
@@ -285,6 +285,10 @@
         },
         {
           "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "neutral-ask",
           "Conditions": []
         }
       ]
@@ -349,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Under your feet. This facility sits on a sublevel from the old enclave days - kolto conduits, triage rooms, storage nobody audited in a decade. That's the Dantooine Medical Sublevel. The entry hatch is sealed; the key I keep on that hook opens it. Past the supply lifts, down the service stairs, follow the pipe markings. Everything below the hatch is theirs, not ours. For now.",
+          "Text": "On Dantooine, beneath the medical facility. The sublevel dates from the old enclave days - kolto conduits, triage rooms, storage nobody audited in a decade. That's the Dantooine Medical Sublevel. The entry hatch is sealed; the key I keep on that hook opens it. Past the supply lifts, down the service stairs, follow the pipe markings. Everything below the hatch is theirs, not ours. For now.",
           "Style": 0,
           "Color": null
         }
@@ -558,7 +562,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Because a splice fitting is a signature. The coupler will show the machining, the batch residue, the draw rate - enough for me to prove to this facility's board that its own kolto lines fed the operation. The ledger told me what they did. The coupler tells me what it cost the wards upstairs.",
+          "Text": "Because a splice fitting is a signature. The coupler will show the machining, the batch residue, the draw rate - enough for me to prove to the Dantooine facility's board that its own kolto lines fed the operation. The ledger told me what they did. The coupler tells me what it cost the wards upstairs.",
           "Style": 0,
           "Color": null
         }
@@ -741,7 +745,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "She ran a trauma ward upstairs for six years. Best hands I ever watched work - and then she decided consent was a bottleneck. Now she guards their mixing room and doses herself from the stock. Whatever speed and strength you're imagining, add more, and remember she knows exactly where you keep your arteries. Professionally.",
+          "Text": "She ran a trauma ward on Dantooine for six years. Best hands I ever watched work - and then she decided consent was a bottleneck. Now she guards their mixing room and doses herself from the stock. Whatever speed and strength you're imagining, add more, and remember she knows exactly where you keep your arteries. Professionally.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +870,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "There's the crack, right through the ward mark. They wanted the joke on record; now it's evidence. The clean room's dark, the warden's off the board, and this facility owes you more than what's in my drawer - but the drawer is what I control, so take it. And tell your two they have standing credit at my counter. That's not nothing.",
+          "Text": "There's the crack, right through the ward mark. They wanted the joke on record; now it's evidence. The clean room's dark, the warden's off the board, and the Dantooine facility owes you more than what's in my drawer - but the drawer is what I control, so take it. And tell your two they have standing credit at my counter. That's not nothing.",
           "Style": 0,
           "Color": null
         }
@@ -950,7 +954,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The founders. Two washed out of this facility's certification board, one mixed for a mercenary column, and the fourth - the fourth trained me, years ago, which is a sentence I'd rather you forgot. They built the doctrine the adepts died practicing. Every dose in that ledger traces uphill to those four signatures.",
+          "Text": "The founders. Two washed out of the Dantooine facility's certification board, one mixed for a mercenary column, and the fourth - the fourth trained me, years ago, which is a sentence I'd rather you forgot. They built the doctrine the adepts died practicing. Every dose in that ledger traces uphill to those four signatures.",
           "Style": 0,
           "Color": null
         }
@@ -1291,6 +1295,32 @@
       ],
       "OnEnterActions": [],
       "Choices": []
+    },
+    "neutral-meeting": {
+      "Id": "neutral-meeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The Medshed on Smuggler's Moon needed working hands. I needed a counter where the next patient could reach me without a Republic escort. I don't check allegiance before I stop bleeding. The crew is still in the Dantooine Medical Sublevel on Dantooine. Bring their dose records back to this counter.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "neutral-return",
+          "Conditions": []
+        }
+      ]
     }
   },
   "Choices": {
@@ -2138,6 +2168,52 @@
       "Next": [
         {
           "TargetNodeId": "entry-00041",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-ask": {
+      "Id": "neutral-ask",
+      "Text": {
+        "Text": "Why are we meeting here, and where is the trial?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "neutral-meeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-return": {
+      "Id": "neutral-return",
+      "Text": {
+        "Text": "Back to the assignment.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00002",
           "Conditions": []
         }
       ],

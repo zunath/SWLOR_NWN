@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Cyclone Enclave Trial Slate is recovered. Return to Jora Sel at the colony interior on Dantooine.")
+                    "The Saber Cyclone Enclave Trial Slate is recovered. Return to Jora Sel at the Tochee on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Cyclone Kyber Focus Shard is recovered. Return to Jora Sel at the colony interior on Dantooine.")
+                    "The Saber Cyclone Kyber Focus Shard is recovered. Return to Jora Sel at the Tochee on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Cyclone Fractured Trial Sigil is recovered. Return to Jora Sel at the colony interior on Dantooine.")
+                    "The Saber Cyclone Fractured Trial Sigil is recovered. Return to Jora Sel at the Tochee on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Cyclone Council Trial Chit is recovered. Return to Jora Sel at the colony interior on Dantooine.")
+                    "The Saber Cyclone Council Trial Chit is recovered. Return to Jora Sel at the Tochee on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vortex Training Engine is defeated. Return to Jora Sel at the colony interior on Dantooine.")
+                    "The Vortex Training Engine is defeated. Return to Jora Sel at the Tochee on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Infinite Conduit Triage Ward Ledger. Bring it to Tessa Quell at the Dantooine medical center.")
+                    "You recovered the Infinite Conduit Triage Ward Ledger. Bring it to Tessa Quell at the Anchorhead - Medical Center on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Infinite Conduit Kolto Conduit Coupler is recovered. Return it to Tessa Quell at the Dantooine medical center.")
+                    "The Infinite Conduit Kolto Conduit Coupler is recovered. Return it to Tessa Quell at the Anchorhead - Medical Center on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The warden is defeated and the Infinite Conduit Fractured Ward Sigil secured. Return to Tessa Quell at the Dantooine medical center.")
+                    "The warden is defeated and the Infinite Conduit Fractured Ward Sigil secured. Return to Tessa Quell at the Anchorhead - Medical Center on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Infinite Conduit Matron's Ward Token is recovered. Bring it to Tessa Quell at the Dantooine medical center.")
+                    "The Infinite Conduit Matron's Ward Token is recovered. Bring it to Tessa Quell at the Anchorhead - Medical Center on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Infinite Conduit master is defeated. Return to Tessa Quell at the Dantooine medical center.")
+                    "The Infinite Conduit master is defeated. Return to Tessa Quell at the Anchorhead - Medical Center on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

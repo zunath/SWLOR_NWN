@@ -320,7 +320,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon Republic Bunker Docket has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Republic Base on Viscara.")
+                    "The Killzone Beacon Republic Bunker Docket has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Corporate District on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -341,7 +341,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon Shield Grid Relay has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Republic Base on Viscara.")
+                    "The Killzone Beacon Shield Grid Relay has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Corporate District on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -362,7 +362,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon Cracked Command Crest has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Republic Base on Viscara.")
+                    "The Killzone Beacon Cracked Command Crest has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Corporate District on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -383,7 +383,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon Quartermaster Override Chip has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Republic Base on Viscara.")
+                    "The Killzone Beacon Quartermaster Override Chip has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Corporate District on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -401,7 +401,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon master has been defeated. Return to Aric Jorr at the Republic Base on Viscara to complete the briefing.")
+                    "The Killzone Beacon master has been defeated. Return to Aric Jorr at the Corporate District on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -433,7 +433,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker Republic Bunker Docket has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Republic Base grounds on Viscara.")
+                    "The Emergency Bunker Republic Bunker Docket has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Anchorhead - Go-Corp Station on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -454,7 +454,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker Shield Grid Relay has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Republic Base grounds on Viscara.")
+                    "The Emergency Bunker Shield Grid Relay has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Anchorhead - Go-Corp Station on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -475,7 +475,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker Cracked Command Crest has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Republic Base grounds on Viscara.")
+                    "The Emergency Bunker Cracked Command Crest has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Anchorhead - Go-Corp Station on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -496,7 +496,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker Quartermaster Override Chip has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Republic Base grounds on Viscara.")
+                    "The Emergency Bunker Quartermaster Override Chip has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Anchorhead - Go-Corp Station on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -514,7 +514,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker master has been defeated. Return to Nella Voss at the Republic Base grounds on Viscara to complete the certification.")
+                    "The Emergency Bunker master has been defeated. Return to Nella Voss at the Anchorhead - Go-Corp Station on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

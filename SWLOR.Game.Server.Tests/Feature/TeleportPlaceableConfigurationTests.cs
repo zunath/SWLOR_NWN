@@ -119,6 +119,37 @@ public class TeleportPlaceableConfigurationTests
             "every placed teleport's DESTINATION local string must match the tag of an object placed somewhere in Module/git");
     }
 
+    [Test]
+    public void TeleportPlaceables_DestinationsAreWaypoints()
+    {
+        var root = FindRepositoryRoot();
+        var waypointTags = Directory
+            .EnumerateFiles(Path.Combine(root.FullName, "Module", "git"), "*.json", SearchOption.AllDirectories)
+            .SelectMany(path =>
+            {
+                using var document = JsonDocument.Parse(File.ReadAllText(path));
+                return document.RootElement.TryGetProperty("WaypointList", out var waypoints)
+                    ? waypoints.GetProperty("value").EnumerateArray().Select(waypoint => GetString(waypoint, "Tag")).ToArray()
+                    : Array.Empty<string>();
+            })
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        // A door or other object as the destination makes the engine pick the arrival point. The
+        // Viscara Jedi Temple exit targeted its locked front door, and a second arrival (such as the
+        // player's own beast or droid) pushed the player into the sealed alcove behind that door.
+        var nonWaypointDestinations = LoadTeleportObjects()
+            .Where(teleport => NormalizePath(teleport.RelativePath).StartsWith("Module/git/"))
+            .Where(teleport => !KnownUnbuiltTeleporters.Contains(
+                $"{NormalizePath(teleport.RelativePath)}|{teleport.Name}|{teleport.Destination}",
+                StringComparer.OrdinalIgnoreCase))
+            .Where(teleport => !waypointTags.Contains(teleport.Destination))
+            .Select(teleport => $"{NormalizePath(teleport.RelativePath)}|{teleport.Name}|DESTINATION='{teleport.Destination}'")
+            .ToArray();
+
+        nonWaypointDestinations.Should().BeEmpty(
+            "every placed teleport must arrive at an authored waypoint, not at another object's position");
+    }
+
     private static IEnumerable<string> EnumerateTags(JsonElement element)
     {
         if (element.ValueKind == JsonValueKind.Object)

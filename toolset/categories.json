@@ -936,13 +936,13 @@
         {
           "name": "Smuggler\u0027s Moon",
           "members": [
-            "czerka_arms_shop",
             "gsiquest1",
             "mcdce_gamemstr",
             "mcdce_reception",
             "nar_datasmg_q",
             "nar_pirate_q",
             "nar_slaver_q",
+            "talia_brenn",
             "veles_colonist1",
             "veles_colonist2"
           ]

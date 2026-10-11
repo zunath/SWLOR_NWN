@@ -178,7 +178,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "czerka_arms_shop"
+          "value": "talia_brenn"
         },
         "CRAdjust": {
           "type": "int",
@@ -923,7 +923,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "czerka_arms_merchant"
+          "value": "talia_brenn"
         },
         "Tail_New": {
           "type": "dword",

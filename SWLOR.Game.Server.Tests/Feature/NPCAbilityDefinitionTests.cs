@@ -63,7 +63,7 @@ public class NPCAbilityDefinitionTests
     public void NPCAbilities_AreDocumentedInBibleNpcAbilitiesTab()
     {
         var root = FindRepositoryRoot();
-        using var archive = ZipFile.OpenRead((root / "design" / "bible" / "SWLOR Design Bible - Combat Upgrade.xlsx").FullName);
+        using var archive = ZipFile.OpenRead((root / "design" / "bible" / "SWLOR Design Bible.xlsx").FullName);
         var worksheet = ReadWorksheetByName(archive, "NPC Abilities");
         var sharedStrings = ReadSharedStrings(archive);
         var documentedRows = ReadNpcAbilityBibleRows(worksheet, sharedStrings);

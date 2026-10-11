@@ -639,7 +639,7 @@ public class NPCEnemyBalanceAuditTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var worldNpcs = ReadWorksheetByName(archive, "World NPCs");
         var sharedStrings = ReadSharedStrings(archive);
         XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
@@ -1111,7 +1111,7 @@ public class NPCEnemyBalanceAuditTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var worldNpcs = ReadWorksheetByName(archive, "World NPCs");
         var mimicry = ReadWorksheetByName(archive, "Mimicry");
         var sharedStrings = ReadSharedStrings(archive);
@@ -1264,7 +1264,7 @@ public class NPCEnemyBalanceAuditTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var worksheet = ReadWorksheetByName(archive, "World NPCs");
         var weaponDelays = ReadWorksheetByName(archive, "World NPC Weapon Delays");
         var sharedStrings = ReadSharedStrings(archive);
@@ -1443,7 +1443,7 @@ public class NPCEnemyBalanceAuditTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var worksheet = ReadWorksheetByName(archive, "World NPCs");
         var sharedStrings = ReadSharedStrings(archive);
 

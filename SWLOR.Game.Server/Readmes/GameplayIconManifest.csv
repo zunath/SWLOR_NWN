@@ -68,6 +68,7 @@
 "Ability","CalmingStance1","CalmingStance1","Self","1","ife_calmstance1","SWLOR_Haks\sw_2da\feat.2da",""
 "Ability","CapacitorSurgeTechnique","CapacitorSurgeTechnique","Harmful","","ife_cap_surge","SWLOR_Haks\sw_2da\feat.2da",""
 "Ability","Carve1","Carve1","Harmful","1","ife_carve1","SWLOR_Haks\sw_2da\feat.2da",""
+"Ability","ChainLightning","ChainLightning","Harmful","","ife_chainltng","SWLOR_Haks\sw_2da\feat.2da",""
 "Ability","ChargeOrder1","ChargeOrder1","Beneficial","1","ife_chargeorder1","SWLOR_Haks\sw_2da\feat.2da",""
 "Ability","ChargeOrder2","ChargeOrder2","Beneficial","2","ife_chargeorder2","SWLOR_Haks\sw_2da\feat.2da",""
 "Ability","CheapShot1","CheapShot1","Harmful","1","ife_cheapsht1","SWLOR_Haks\sw_2da\feat.2da",""

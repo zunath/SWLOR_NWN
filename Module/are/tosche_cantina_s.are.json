@@ -87,8 +87,8 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Anchorhead - Smuggler's Den",
-      "2": "Anchorhead - Smuggler's Cantina"
+      "0": "[Prefab] Tatooine - Anchorhead - Smuggler's Den",
+      "2": "[Prefab] Anchorhead - Smuggler's Cantina"
     }
   },
   "NoRest": {

@@ -177,9 +177,21 @@ namespace SWLOR.Game.Server.Service
             // Cache the indexed properties for quick look-up later.
             _indexedPropertiesByName[type] = indexedProperties;
 
-            _searchClientsByType[type].CreateIndex(schema, new Client.ConfiguredIndexOptions());
+            _searchClientsByType[type].CreateIndex(schema, BuildIndexOptions(_keyPrefixByType[type]));
             Console.WriteLine($"Created index for {type}");
             WaitForReindexing(type);
+        }
+
+        // Without a key prefix every index would hold every entity's search hash.
+        private static Client.ConfiguredIndexOptions BuildIndexOptions(string keyPrefix)
+        {
+            var definition = new Client.IndexDefinition(prefixes: new[] { IndexKeyPrefix(keyPrefix) });
+            return new Client.ConfiguredIndexOptions(definition);
+        }
+
+        private static string IndexKeyPrefix(string keyPrefix)
+        {
+            return $"Index:{keyPrefix}:";
         }
 
         private static void WaitForReindexing(Type type)
@@ -242,7 +254,7 @@ namespace SWLOR.Game.Server.Service
             var data = JsonConvert.SerializeObject(entity);
 
             var keyPrefix = _keyPrefixByType[type];
-            var indexKey = $"Index:{keyPrefix}:{entity.Id}";
+            var indexKey = IndexKeyPrefix(keyPrefix) + entity.Id;
             var indexData = new Dictionary<string, RedisValue>();
 
             foreach (var prop in _indexedPropertiesByName[type])
@@ -345,7 +357,7 @@ namespace SWLOR.Game.Server.Service
             where T: EntityBase
         {
             var keyPrefix = _keyPrefixByType[typeof(T)];
-            var indexKey = $"Index:{keyPrefix}:{id}";
+            var indexKey = IndexKeyPrefix(keyPrefix) + id;
             _searchClientsByType[typeof(T)].DeleteDocument(indexKey);
             _multiplexer.GetDatabase().JsonDelete($"{keyPrefix}:{id}");
             _cachedEntities.Remove(id);

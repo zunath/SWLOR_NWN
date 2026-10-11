@@ -30,8 +30,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// <summary>Finite receipt burst on each successfully affected recipient, once per impact or pulse.</summary>
         public VisualEffect SuccessfulImpactVisualEffect { get; set; } = VisualEffect.None;
         public VisualEffect DamageImpactVisualEffect { get; set; } = VisualEffect.None;
-        /// <summary>Location burst at a shared area impact's origin, marking where the area landed.</summary>
-        public VisualEffect AreaImpactVisualEffect { get; set; } = VisualEffect.None;
         public string ActivationSound { get; set; }
         public string ImpactSound { get; set; }
         public RecastGroup RecastGroup { get; set; }

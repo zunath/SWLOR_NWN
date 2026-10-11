@@ -91,11 +91,16 @@ public class CharacterSheetCombatUpgradeTests
 
         definition.Should().Contain("\"Physical DEF\", model => model.PhysicalDefense");
         definition.Should().Contain("\"Force DEF\", model => model.ForceDefense");
-        definition.Should().Contain("\"Weapon Acc.\", model => model.WeaponAccuracy");
+        definition.Should().Contain("\"Main-hand Acc.\", model => model.WeaponAccuracy");
+        definition.Should().Contain("\"Off-hand Acc.\", model => model.OffHandAccuracy");
+        definition.Should().Contain("model => model.ShowOffHandAccuracy");
+        definition.Should().Contain("Dual-wielding does not combine their bonuses.");
         definition.Should().Contain("\"Force Acc.\", model => model.ForceAccuracy");
         viewModel.Should().Contain("public int WeaponAccuracy");
         viewModel.Should().Contain("public int ForceAccuracy");
         viewModel.Should().Contain("WeaponAccuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);");
+        viewModel.Should().Contain("ShowOffHandAccuracy = EquipmentPredicates.HasDualWield(_target);");
+        viewModel.Should().Contain("Stat.GetAccuracy(_target, offhandAttackWeapon, AbilityType.Invalid, SkillType.Invalid)");
         viewModel.Should().Contain("ignoreWeaponAccuracyStatOverride: true");
         definition.Should().Contain("\"TYPE\", 90f, \"Resistance family.\"");
         definition.Should().Contain("model => model.ResistanceNames");

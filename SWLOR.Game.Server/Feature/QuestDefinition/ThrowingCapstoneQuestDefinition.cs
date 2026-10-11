@@ -62,13 +62,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Varik Dane gave you the Czerka Arms Test Range Key. Enter the Czerka Arms Test Range on Smuggler's Moon and defeat 6 Rain of Steel adepts, then recover the Rain of Steel Czerka Test Docket from their trial.")
+                    "Varik Dane gave you the Czerka Arms Test Range Key. Enter the Czerka Arms Test Range on Smuggler's Moon through the Czerka Weapons Testing Facility door in the Corporate District, a short walk south of the GSI Tower doors. Defeat six Rain of Steel adepts and recover the Rain of Steel Czerka Test Docket.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRainOfSteelCzerkaTestDocket)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Rain of Steel Czerka Test Docket. Deliver it to Varik Dane at the Nar Shaddaa fabrication facility.")
+                    "You recovered the Rain of Steel Czerka Test Docket. Deliver it to Varik Dane in the Fabrication Facility on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -83,13 +83,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 5 Rain of Steel specialists in the calibration lanes of the Czerka Arms Test Range on Smuggler's Moon and recover the Rain of Steel Blast-Cell Regulator.")
+                    "Defeat five Rain of Steel specialists in the calibration lanes of the Czerka Arms Test Range on Smuggler's Moon and recover the Rain of Steel Blast-Cell Regulator.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRainOfSteelBlastCellRegulator)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Rain of Steel Blast-Cell Regulator. Deliver it to Varik Dane at the Nar Shaddaa fabrication facility.")
+                    "You recovered the Rain of Steel Blast-Cell Regulator. Deliver it to Varik Dane in the Fabrication Facility on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You took the Rain of Steel Scored Range Crest from the warden. Deliver it to Varik Dane at the Nar Shaddaa fabrication facility.")
+                    "You took the Rain of Steel Scored Range Crest from the warden. Deliver it to Varik Dane in the Fabrication Facility on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -125,13 +125,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the 4 members of the Rain of Steel inner circle in the stockrooms of the Czerka Arms Test Range on Smuggler's Moon and recover the Rain of Steel Czerka Clearance Chit.")
+                    "Defeat the four members of the Rain of Steel inner circle in the stockrooms of the Czerka Arms Test Range on Smuggler's Moon and recover the Rain of Steel Czerka Clearance Chit.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneRainOfSteelCzerkaClearanceChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Rain of Steel Czerka Clearance Chit. Deliver it to Varik Dane at the Nar Shaddaa fabrication facility.")
+                    "You recovered the Rain of Steel Czerka Clearance Chit. Deliver it to Varik Dane in the Fabrication Facility on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -144,12 +144,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Rain of Steel master on the proving floor at the back of the Czerka Arms Test Range on Smuggler's Moon.")
+                    "Defeat the Rain of Steel master in the Blast-Safe Cell at the far end of the Czerka Arms Test Range on Smuggler's Moon.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_RainOfSteel_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Rain of Steel master is defeated. Report to Varik Dane at the Nar Shaddaa fabrication facility.")
+                    "The Rain of Steel master is defeated. Report to Varik Dane in the Fabrication Facility on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -175,13 +175,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Selka Vorn gave you the Hutlar Qion Test Site Key. Enter the Hutlar Qion Test Site on Hutlar and defeat 6 Perfect Flurry adepts on the open range, then recover the Perfect Flurry Qion Test Log.")
+                    "Selka Vorn gave you the Hutlar Qion Test Site Key. Enter the Hutlar Qion Test Site on Hutlar through its gate in the Qion Box Canyon, a short walk south of where she stands. Defeat six Perfect Flurry adepts on the open range and recover the Perfect Flurry Qion Test Log.")
                 .AddKillObjective(NPCGroupType.Hutlar_PerfectFlurry_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePerfectFlurryQionTestLog)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Perfect Flurry Qion Test Log. Deliver it to Selka Vorn at the Qion Box Canyon on Hutlar.")
+                    "You recovered the Perfect Flurry Qion Test Log. Deliver it to Selka Vorn in the Qion Box Canyon on Hutlar.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -196,13 +196,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 5 Perfect Flurry specialists on the cryo range of the Hutlar Qion Test Site on Hutlar and recover the Perfect Flurry Cryo-Range Regulator.")
+                    "Defeat five Perfect Flurry specialists on the cryo range of the Hutlar Qion Test Site on Hutlar and recover the Perfect Flurry Cryo-Range Regulator.")
                 .AddKillObjective(NPCGroupType.Hutlar_PerfectFlurry_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePerfectFlurryCryoRangeRegulator)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Perfect Flurry Cryo-Range Regulator. Deliver it to Selka Vorn at the Qion Box Canyon on Hutlar.")
+                    "You recovered the Perfect Flurry Cryo-Range Regulator. Deliver it to Selka Vorn in the Qion Box Canyon on Hutlar.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You took the Perfect Flurry Frostburned Test Crest from the warden. Deliver it to Selka Vorn at the Qion Box Canyon on Hutlar.")
+                    "You took the Perfect Flurry Frostburned Test Crest from the warden. Deliver it to Selka Vorn in the Qion Box Canyon on Hutlar.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -238,13 +238,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the 4 members of the Perfect Flurry inner circle in the control block of the Hutlar Qion Test Site on Hutlar and recover the Perfect Flurry Site Chief's Override Chip.")
+                    "Defeat the four members of the Perfect Flurry inner circle in the control block of the Hutlar Qion Test Site on Hutlar and recover the Perfect Flurry Site Chief's Override Chip.")
                 .AddKillObjective(NPCGroupType.Hutlar_PerfectFlurry_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePerfectFlurrySiteChiefsOverrideChip)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Perfect Flurry Site Chief's Override Chip. Deliver it to Selka Vorn at the Qion Box Canyon on Hutlar.")
+                    "You recovered the Perfect Flurry Site Chief's Override Chip. Deliver it to Selka Vorn in the Qion Box Canyon on Hutlar.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -257,12 +257,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Perfect Flurry master on the far proving floor of the Hutlar Qion Test Site on Hutlar.")
+                    "Defeat the Perfect Flurry master in the Overload Chamber at the far end of the Hutlar Qion Test Site on Hutlar.")
                 .AddKillObjective(NPCGroupType.Hutlar_PerfectFlurry_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Perfect Flurry master is defeated. Report to Selka Vorn at the Qion Box Canyon on Hutlar.")
+                    "The Perfect Flurry master is defeated. Report to Selka Vorn in the Qion Box Canyon on Hutlar.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

@@ -7164,7 +7164,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Varik Dane is a ordnance foreman tied to the Rain of Steel capstone trials in Czerka Arms Test Range."
+            "0": "Varik Dane is a weathered, square-shouldered man with a quartermaster's habit of counting everything within reach, people included. A bandolier of recovered throwing blades crosses his chest, each one scratched with an inventory mark. He once ran stock for Czerka's weapons trials, and now he keeps a tool cage in the Fabrication Facility and an open grudge against the crew who took over his old range."
           }
         },
         "Dex": {
@@ -7612,7 +7612,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 320
+          "value": 4170
         },
         "Race": {
           "type": "byte",

@@ -1687,7 +1687,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A targeting beacon is bolted beside the inner blast doors, its lens cracked but still pulsing. The bunker warden keeps the kill zone it marks."
           }
         },
         "DisarmDC": {
@@ -3207,7 +3207,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A collapsed shield emitter leans against the inner blast doors, its housing reinforced with scrap. The warden has made this doorway a fortress."
           }
         },
         "DisarmDC": {
@@ -4727,7 +4727,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "Inner blast doors stand sealed behind a sandbagged firing step. The warden who holds them will not let anyone pass without a fight."
           }
         },
         "DisarmDC": {

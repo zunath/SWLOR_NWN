@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your grip rides high on the hilt - that's a throat angle, not mine. I want to see if it can be taught out of you. Adepts are drilling Vital Rupture wrong in the Veles Militia Annex on Viscara, six of them, sloppy work all of it. Kill them, bring me back their drill ledger, and we'll see what you have.",
+          "Text": "Your grip rides high on the hilt - that's a throat angle, not mine. Let's see if it can be taught out of you. There's a knife cadre still inside the Veles Militia Annex, the one Captain Renn sealed when they refused to stand down, and they've been drilling Vital Rupture wrong ever since. Six adepts, sloppy work all of it. Put them down and bring me back their drill ledger, and we'll see what you have.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then go. The annex key is already on you; it opens the sealed gate. Cut clean, or don't cut at all.",
+          "Text": "Then take this key. It opens the sealed annex door inside the Sheriff's Office on the west side of Veles, deeper in the building past Captain Renn's post. Cut clean, or don't cut at all.",
           "Style": 0,
           "Color": null
         }
@@ -323,7 +323,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I patched enough arterial wounds to know exactly where they open. Teaching someone to open them on purpose is the same knowledge, aimed the other direction. I'd rather you learn it from me than from a corpse's mistake.",
+          "Text": "I was the annex medic until the door was sealed. I patched enough arterial wounds to know exactly where they open. Teaching someone to open them on purpose is the same knowledge, aimed the other direction. I'd rather you learn it from me than from a corpse's mistake.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Veles Militia Annex sits off the main garrison road on Viscara. The gate is sealed; the key I gave you opens it. Follow the access route in and stay inside the annex proper.",
+          "Text": "The Sheriff's Office, on the west side of Veles. Go inside and keep going; the annex door is deeper in the building, north-east of the entrance, sealed since the stand-down. The key I gave you opens it. Stay inside the annex proper.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Go. The annex gate still knows your key. This time, don't stop at good enough.",
+          "Text": "Go. The annex door still knows your key. This time, don't stop at good enough.",
           "Style": 0,
           "Color": null
         }
@@ -532,7 +532,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A rupture cut opens the femoral or the brachial and lets pressure do the rest. Done right, it's over before they understand what happened. Done sloppy, and this annex is full of sloppy, you get someone who bleeds for ten minutes screaming instead of ten seconds quiet. That's cruelty pretending to be skill.",
+          "Text": "A rupture cut opens the femoral or the brachial and lets pressure do the rest. Done right, it's over before they understand what happened. Done sloppy, and this annex is full of sloppy, you get someone who bleeds out screaming instead of going quiet. That's cruelty pretending to be skill.",
           "Style": 0,
           "Color": null
         }
@@ -558,7 +558,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same annex, same gate, deeper in. The specialists have claimed the training floor past the first checkpoint. Your key still opens the way; it doesn't open sympathy.",
+          "Text": "Same annex, same door, deeper in. The specialists have claimed the training floor past where you dropped the adepts. Your key still opens the way; it doesn't open sympathy.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then arrange your company and go. The gate still answers to your key.",
+          "Text": "Then arrange your company and go. The annex door still answers to your key.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Deeper still, past the specialists' floor, behind a locked partition the annex calls the arena. Your key clears the outer gate; the warden's door opens because you'll put it in.",
+          "Text": "Deeper still, past the specialists' floor. You'll know his ground when the drills stop looking like drills. Your key gets you through the annex door; the rest of the way opens because you put it in.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Scored, cracked down the middle. He'll heal wrong and remember why. You've done what most of his students couldn't. There's an inner circle above him who won't like that.",
+          "Text": "Scored, and cracked down the middle. Whatever he was teaching down there, he won't teach it again. You've done what most of his students couldn't. There's an inner circle above him who won't like that.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +976,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "They've sealed the command floor above the arena. The same key that got you this far still turns in that lock; they never thought anyone would get this far to use it.",
+          "Text": "Deeper in, past the warden's ground. They kept apart from their own students even before the door was sealed. They never thought anyone would get this far to come looking.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four names, four confessions dressed as duty logs. The annex answers to me again below this floor. Only the master's left, and he taught the warden everything the warden got wrong trying to copy.",
+          "Text": "Four names, four confessions dressed as duty logs. That leaves the master, and he taught the warden everything the warden got wrong trying to copy.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Past everything you've already cleared, at the annex's deepest floor, the one the inner circle kept locked even from their own instructors. You've earned every door between here and there.",
+          "Text": "Past everything you've already cleared, in the deepest part of the annex, the ground the inner circle kept even from their own students. You've earned every step between here and there.",
           "Style": 0,
           "Color": null
         }
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "I'll map the second one.",
+        "Text": "I'll take the second lesson.",
         "Style": 4,
         "Color": null
       },

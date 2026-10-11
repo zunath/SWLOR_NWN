@@ -62,13 +62,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Edda Maln gave you the Dantooine Medical Sublevel Key. Use the Dantooine Medical Sublevel Key to enter the Dantooine Medical Sublevel on Dantooine. Defeat six Hold the Line adepts in the triage hall and recover the Hold the Line Triage Ward Ledger.")
+                    "Edda Maln gave you the Dantooine Medical Sublevel Key. Travel to the Dantooine Medical Sublevel on Dantooine; its sealed door is on the far west wall of the Abandoned Warehouse, on the north-west side of the Jungle Mountain. Defeat six Hold the Line adepts inside and recover the Hold the Line Triage Ward Ledger.")
                 .AddKillObjective(NPCGroupType.Dantooine_HoldTheLine_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHoldTheLineTriageWardLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hold the Line Triage Ward Ledger has been recovered. Return it to Edda Maln at the Shipping District, Foreman's Office on Smuggler's Moon.")
+                    "You recovered the Hold the Line Triage Ward Ledger. Return it to Edda Maln at the Shipping District, Foreman's Office on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hold the Line Kolto Conduit Coupler has been recovered. Bring it to Edda Maln at the Shipping District, Foreman's Office on Smuggler's Moon.")
+                    "You recovered the Hold the Line Kolto Conduit Coupler. Bring it to Edda Maln at the Shipping District, Foreman's Office on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -104,13 +104,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Hold the Line warden at the recovery ward doors in the Dantooine Medical Sublevel on Dantooine and recover the Hold the Line Fractured Ward Sigil. The warden is too strong to face alone; bring companions.")
+                    "Bring at least two people you trust to the heart of the Dantooine Medical Sublevel on Dantooine. Defeat the Hold the Line warden and recover the Hold the Line Fractured Ward Sigil he wears.")
                 .AddKillObjective(NPCGroupType.Dantooine_HoldTheLine_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHoldTheLineFracturedWardSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hold the Line Fractured Ward Sigil has been recovered from the warden. Return it to Edda Maln at the Shipping District, Foreman's Office on Smuggler's Moon.")
+                    "You recovered the Hold the Line Fractured Ward Sigil from the warden. Return it to Edda Maln at the Shipping District, Foreman's Office on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -125,13 +125,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Hold the Line inner circle in the deep wards of the Dantooine Medical Sublevel on Dantooine and recover the Hold the Line Matron's Ward Token.")
+                    "Defeat the four members of the Hold the Line inner circle in the Dantooine Medical Sublevel on Dantooine and recover the Hold the Line Matron's Ward Token.")
                 .AddKillObjective(NPCGroupType.Dantooine_HoldTheLine_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHoldTheLineMatronsWardToken)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hold the Line Matron's Ward Token has been recovered. Return it to Edda Maln at the Shipping District, Foreman's Office on Smuggler's Moon.")
+                    "You recovered the Hold the Line Matron's Ward Token. Return it to Edda Maln at the Shipping District, Foreman's Office on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -144,12 +144,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Hold the Line master in the last ward of the Dantooine Medical Sublevel on Dantooine. The master is too strong to face alone; bring companions.")
+                    "Gather the people who have stood with you and defeat the Hold the Line master, the Anchor, in the Protected Ward, through the north-east door of the Dantooine Medical Sublevel on Dantooine.")
                 .AddKillObjective(NPCGroupType.Dantooine_HoldTheLine_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hold the Line master is defeated. Return to Edda Maln at the Shipping District, Foreman's Office on Smuggler's Moon.")
+                    "You defeated the Hold the Line master. Return to Edda Maln at the Shipping District, Foreman's Office on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -175,13 +175,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Varen Kell gave you the Viscara Republic Engineering Bunker Key. Use the Viscara Republic Engineering Bunker Key to enter the Viscara Republic Engineering Bunker on Viscara. Defeat six Decisive Command adepts in the outer galleries and recover the Decisive Command Republic Bunker Docket.")
+                    "Varen Kell gave you the Viscara Republic Engineering Bunker Key. Travel to the Viscara Republic Engineering Bunker on Viscara; its door is beside the elevator on the Combat Deck of the Republic Base at Outpost Hope. Defeat six Decisive Command adepts in the outer galleries and recover the Decisive Command Republic Bunker Docket.")
                 .AddKillObjective(NPCGroupType.Viscara_DecisiveCommand_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDecisiveCommandRepublicBunkerDocket)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Decisive Command Republic Bunker Docket has been recovered. Return it to Varen Kell at the Landing Pads on Smuggler's Moon.")
+                    "You recovered the Decisive Command Republic Bunker Docket. Return it to Varen Kell at the Landing Pads on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Decisive Command Shield Grid Relay has been recovered. Bring it to Varen Kell at the Landing Pads on Smuggler's Moon.")
+                    "You recovered the Decisive Command Shield Grid Relay. Bring it to Varen Kell at the Landing Pads on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -217,13 +217,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Decisive Command warden at the inner blast doors of the Viscara Republic Engineering Bunker on Viscara and recover the Decisive Command Cracked Command Crest. The warden is too strong to face alone; bring companions.")
+                    "Take a fire team of at least two others to the inner blast doors of the Viscara Republic Engineering Bunker on Viscara. Defeat the Decisive Command warden and recover the Decisive Command Cracked Command Crest he carries.")
                 .AddKillObjective(NPCGroupType.Viscara_DecisiveCommand_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDecisiveCommandCrackedCommandCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Decisive Command Cracked Command Crest has been recovered from the warden. Return it to Varen Kell at the Landing Pads on Smuggler's Moon.")
+                    "You recovered the Decisive Command Cracked Command Crest from the warden. Return it to Varen Kell at the Landing Pads on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Decisive Command Quartermaster Override Chip has been recovered. Return it to Varen Kell at the Landing Pads on Smuggler's Moon.")
+                    "You recovered the Decisive Command Quartermaster Override Chip. Return it to Varen Kell at the Landing Pads on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -257,12 +257,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Decisive Command master in the command room of the Viscara Republic Engineering Bunker on Viscara. The master is too strong to face alone; bring companions.")
+                    "Muster the people who have fought beside you and defeat the Decisive Command master, Halden Rhee, in the command room of the Viscara Republic Engineering Bunker on Viscara.")
                 .AddKillObjective(NPCGroupType.Viscara_DecisiveCommand_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Decisive Command master is defeated. Return to Varen Kell at the Landing Pads on Smuggler's Moon.")
+                    "You defeated the Decisive Command master. Return to Varen Kell at the Landing Pads on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

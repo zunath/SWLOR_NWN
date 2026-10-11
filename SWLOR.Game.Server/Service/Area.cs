@@ -61,6 +61,10 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RemoveInstancesFromCache()
         {
+            // Scheduled flights clone this template without a property layout definition.
+            // Keep flight coordinates out of persistent player locations.
+            AreasByResref.Remove(Shuttle.ShuttleInteriorResref);
+
             foreach (var areaResref in Property.GetAllInstanceAreaResrefs())
             {
                 if (AreasByResref.ContainsKey(areaResref))

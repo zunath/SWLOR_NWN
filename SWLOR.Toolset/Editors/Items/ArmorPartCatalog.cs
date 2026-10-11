@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Globalization;
 using System.Threading;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -27,21 +28,25 @@ namespace SWLOR.Toolset.Editors.Items
         private static readonly ushort LodResourceType = ResourceIdentity.TypeFromExtension("lod");
 
         private readonly ResourceIndex? _resources;
-        private readonly Lazy<IReadOnlyDictionary<string, IReadOnlyList<int>>>? _numbersByModelPrefix;
+        private readonly Lazy<IReadOnlyDictionary<string, IReadOnlyList<PartModel>>>? _modelsByPrefix;
+        private readonly ConcurrentDictionary<string, IReadOnlyList<int>> _numbersByModelPrefix =
+            new(StringComparer.OrdinalIgnoreCase);
         private readonly Lazy<Task>? _buildTask;
 
-        public bool IsBuilt => _numbersByModelPrefix?.IsValueCreated != false;
+        private readonly record struct PartModel(int Number, string ResRef, bool Redirected);
+
+        public bool IsBuilt => _modelsByPrefix?.IsValueCreated != false;
 
         public ArmorPartCatalog(ResourceIndex? resources)
         {
             _resources = resources;
             if (_resources != null)
             {
-                _numbersByModelPrefix = new Lazy<IReadOnlyDictionary<string, IReadOnlyList<int>>>(
+                _modelsByPrefix = new Lazy<IReadOnlyDictionary<string, IReadOnlyList<PartModel>>>(
                     BuildIndex,
                     LazyThreadSafetyMode.ExecutionAndPublication);
                 _buildTask = new Lazy<Task>(
-                    () => Task.Run(() => _ = _numbersByModelPrefix.Value),
+                    () => Task.Run(() => _ = _modelsByPrefix.Value),
                     LazyThreadSafetyMode.ExecutionAndPublication);
             }
         }
@@ -79,8 +84,17 @@ namespace SWLOR.Toolset.Editors.Items
             if (_resources == null || string.IsNullOrWhiteSpace(modelPrefix))
                 return Array.Empty<int>();
 
-            return _numbersByModelPrefix!.Value.GetValueOrDefault(modelPrefix.Trim()) ??
-                   Array.Empty<int>();
+            // LOD redirects are read only for prefixes an editor asks for; most belong to
+            // generated cloak and robe phenotypes that no part list shows.
+            return _numbersByModelPrefix.GetOrAdd(modelPrefix.Trim(), prefix =>
+                _modelsByPrefix!.Value.TryGetValue(prefix, out var models)
+                    ? models.Where(model => !model.Redirected ||
+                                            ModelResourceResolver.TryResolve(_resources, model.ResRef, out _))
+                        .Select(model => model.Number)
+                        .Distinct()
+                        .OrderBy(number => number)
+                        .ToList()
+                    : Array.Empty<int>());
         }
 
         /// <summary>
@@ -96,13 +110,19 @@ namespace SWLOR.Toolset.Editors.Items
             return new[] { 0 }.Concat(numbers).ToList();
         }
 
-        private IReadOnlyDictionary<string, IReadOnlyList<int>> BuildIndex()
+        private IReadOnlyDictionary<string, IReadOnlyList<PartModel>> BuildIndex()
         {
-            var found = new Dictionary<string, SortedSet<int>>(StringComparer.OrdinalIgnoreCase);
-            foreach (var identity in _resources!.EnumerateResources(ModelResourceType)
-                         .Concat(_resources.EnumerateResources(LodResourceType)).Distinct())
+            // The client loads a same-name LOD before the MDL, so a redirect's target decides.
+            var redirected = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+            foreach (var identity in _resources!.EnumerateResources(ModelResourceType))
+                redirected.TryAdd(identity.ResRef, false);
+            foreach (var identity in _resources.EnumerateResources(LodResourceType))
+                redirected[identity.ResRef] = true;
+
+            var found = new Dictionary<string, List<PartModel>>(StringComparer.OrdinalIgnoreCase);
+            foreach (var (resRef, isRedirected) in redirected)
             {
-                var body = identity.ResRef.AsSpan();
+                var body = resRef.AsSpan();
                 var digitStart = body.Length;
                 while (digitStart > 0 && char.IsAsciiDigit(body[digitStart - 1]))
                     digitStart--;
@@ -117,21 +137,18 @@ namespace SWLOR.Toolset.Editors.Items
                     continue;
                 }
 
-                if (!ModelResourceResolver.TryResolve(_resources, identity.ResRef, out _))
-                    continue;
-
-                if (!found.TryGetValue(modelPrefix, out var numbers))
+                if (!found.TryGetValue(modelPrefix, out var models))
                 {
-                    numbers = new SortedSet<int>();
-                    found[modelPrefix] = numbers;
+                    models = new List<PartModel>();
+                    found[modelPrefix] = models;
                 }
 
-                numbers.Add(number);
+                models.Add(new PartModel(number, resRef, isRedirected));
             }
 
             return found.ToDictionary(
                 pair => pair.Key,
-                pair => (IReadOnlyList<int>)pair.Value.ToList(),
+                pair => (IReadOnlyList<PartModel>)pair.Value,
                 StringComparer.OrdinalIgnoreCase);
         }
 

@@ -26,8 +26,9 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             return false;
         }
 
+        // Hyphens are valid in hak model resrefs (c_jelly-mst-m); dots and slashes are not.
         private static bool IsResRef(string name) =>
             !string.IsNullOrEmpty(name) && name.Length <= 16 &&
-            name.All(character => char.IsAsciiLetterOrDigit(character) || character == '_');
+            name.All(character => char.IsAsciiLetterOrDigit(character) || character is '_' or '-');
     }
 }

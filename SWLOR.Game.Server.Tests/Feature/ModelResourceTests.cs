@@ -12,11 +12,12 @@ public class ModelResourceTests
     [TestCase("head_proxy", "../helm_114\n", false)]
     [TestCase("head_proxy", "\nhelm_114\n", false)]
     [TestCase("head_proxy", "", false)]
+    [TestCase("head_proxy", "c_jelly-mst-m\n", true)]
     public void LodModelsRequireAnAvailableFirstModelAndCannotFallBackToAShadowedMdl(
         string name, string contents, bool expected)
     {
         Assert.That(ModelResource.Exists(name,
-            (model, type) => type == ResType.LOD ? model == "head_proxy" : model is "head_proxy" or "helm_114",
+            (model, type) => type == ResType.LOD ? model == "head_proxy" : model is "head_proxy" or "helm_114" or "c_jelly-mst-m",
             _ => contents), Is.EqualTo(expected));
     }
 

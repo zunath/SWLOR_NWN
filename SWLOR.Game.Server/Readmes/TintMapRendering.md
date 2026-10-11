@@ -40,7 +40,7 @@ and `GenerateHelmetRgbModels.py --apply`. Rebuild `sw_shader`, `sw_item`,
 `sw_tint*` mask HAKs, and `sw_2da` together, then restart the client.
 The shared helmet heads and these necks feed `.lod` redirects and neck skin
 aliases. Expand redirects with `ModelLodAssets.py --expand` before applying
-helmet heads, publish them again with `--apply`, and rerun
+helmet heads, publish them again with `--apply --game-data`, and rerun
 `GenerateNeckModels.py --apply` after any neck source changes.
 
 ## Preserve the authored palette rows
@@ -301,9 +301,13 @@ redirects, preserving the original resource names used by blueprints.
 
 For explicit model authoring, first run `python -B tools/ModelLodAssets.py --expand`
 from `SWLOR_Haks`, edit or regenerate the models, then run
-`python -B tools/ModelLodAssets.py --apply` to publish checked-in redirects again.
+`python -B tools/ModelLodAssets.py --apply --game-data "<NWN>/data"` to publish
+checked-in redirects again. Overrides of base-game model names stay MDLs and are
+listed as `native_overrides`: an MDL-first lookup would otherwise load the stock model.
 This is an authoring operation. Normal builds validate the checked-in LOD assets
 and package them with `nwn_erf --add-restypes lod:2078`; they never generate MDLs.
+`CheckPackedLods.py` then fails the build if a packer without that option dropped
+any `.lod` from the archives, so build haks only with the matching `SWLOR.CLI`.
 The Python authoring/audit reader reconstructs original model identities in memory
 and verifies their exact source hashes without creating loose MDL files.
 Changing a robe phenotype also refreshes the equipped

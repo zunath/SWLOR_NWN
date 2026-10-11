@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var armor = GetItemInSlot(InventorySlot.Chest, creature);
             var armorStyle = GetIsObjectValid(armor)
                 ? GetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck) : 0;
-            var naked = checked((ushort)GetCreatureBodyPart(CreaturePart.Neck, creature));
+            var naked = _catalog.GetAuthoredStyle(body, checked((ushort)GetCreatureBodyPart(CreaturePart.Neck, creature)));
             var desired = Resolve(creature, body, naked);
             var server = NWNXLib.g_pAppManager.m_pServerExoApp;
             var native = server.GetCreatureByGameObjectID(creature);
@@ -68,6 +68,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 EquippedItemAppearance.Refresh(creature, armor, resetShaderOverrides: false);
             }
         }
+
+        public static int GetAuthoredStyle(uint creature, int style) =>
+            style is >= 1000 and <= ushort.MaxValue
+                ? _catalog.GetAuthoredStyle(NeckAppearance.GetBodyModel(creature), (ushort)style)
+                : style;
 
         private static ushort Resolve(uint creature, string body, ushort source) =>
             string.IsNullOrEmpty(body) || source == 0 ? source :

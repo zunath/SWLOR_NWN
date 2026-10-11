@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition
             foreach (var character in name)
                 if (!(character >= 'a' && character <= 'z') &&
                     !(character >= 'A' && character <= 'Z') &&
-                    !(character >= '0' && character <= '9') && character != '_')
+                    !(character >= '0' && character <= '9') && character != '_' && character != '-')
                     return false;
             return true;
         }

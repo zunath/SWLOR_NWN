@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     continue;
 
                 var model = part == CreaturePart.Neck
-                    ? ItemAppearance.NeckAppearance.GetModel(creature, partId)
+                    ? ItemAppearance.NeckAppearance.GetModel(creature, NeckModelRenderer.GetAuthoredStyle(creature, partId))
                     : $"{prefix}{partName}{partId:D3}".ToLowerInvariant();
                 AddModelSelections(
                     selections,

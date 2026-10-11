@@ -540,30 +540,93 @@ namespace SWLOR.Game.Server.Service.NPCService
         Dathomir_ForceBondedBeast_InnerCircle = 265,
         [NPCGroup("Force-Bonded Beast Master")]
         Dathomir_ForceBondedBeast_Master = 266,
+
+        // Retain the historical groups above for persisted enum keys and migration.
+        [NPCGroup("Storm Drill Droid")]
+        Dantooine_StormDrillDroid = 267,
+        [NPCGroup("Storm Duelist Droid")]
+        Dantooine_StormDuelistDroid = 268,
+        [NPCGroup("Storm Gatekeeper Droid")]
+        Dantooine_StormGatekeeperDroid = 269,
+        [NPCGroup("Storm Examiner Droid")]
+        Dantooine_StormExaminerDroid = 270,
+        [NPCGroup("Tempest Training Engine")]
+        Dantooine_TempestTrainingEngine = 271,
+        [NPCGroup("Guardian Patrol Droid")]
+        Dantooine_GuardianPatrolDroid = 272,
+        [NPCGroup("Guardian Bulwark Droid")]
+        Dantooine_GuardianBulwarkDroid = 273,
+        [NPCGroup("Guardian Gatekeeper Droid")]
+        Dantooine_GuardianGatekeeperDroid = 274,
+        [NPCGroup("Guardian Shield Droid")]
+        Dantooine_GuardianShieldDroid = 275,
+        [NPCGroup("Bastion Training Engine")]
+        Dantooine_BastionTrainingEngine = 276,
+        [NPCGroup("Cyclone Drill Droid")]
+        Dantooine_CycloneDrillDroid = 277,
+        [NPCGroup("Cyclone Duelist Droid")]
+        Dantooine_CycloneDuelistDroid = 278,
+        [NPCGroup("Cyclone Gatekeeper Droid")]
+        Dantooine_CycloneGatekeeperDroid = 279,
+        [NPCGroup("Cyclone Examiner Droid")]
+        Dantooine_CycloneExaminerDroid = 280,
+        [NPCGroup("Vortex Training Engine")]
+        Dantooine_VortexTrainingEngine = 281,
+        [NPCGroup("Crypt Raider")]
+        Korriban_CryptRaider = 282,
+        [NPCGroup("Crypt Marauder")]
+        Korriban_CryptMarauder = 283,
+        [NPCGroup("Crypt Breach Captain")]
+        Korriban_CryptBreachCaptain = 284,
+        [NPCGroup("Crypt Reaver")]
+        Korriban_CryptReaver = 285,
+        [NPCGroup("Crypt Expedition Leader")]
+        Korriban_CryptExpeditionLeader = 286,
+        [NPCGroup("Vitae Reaver Initiate")]
+        Korriban_VitaeReaverInitiate = 287,
+        [NPCGroup("Vitae Reaver Adept")]
+        Korriban_VitaeReaverAdept = 288,
+        [NPCGroup("Vitae Reaver Enforcer")]
+        Korriban_VitaeReaverEnforcer = 289,
+        [NPCGroup("Vitae Reaver Binder")]
+        Korriban_VitaeReaverBinder = 290,
+        [NPCGroup("Vitae Reaver Chief")]
+        Korriban_VitaeReaverChief = 291,
+        [NPCGroup("Umbral Raider Scout")]
+        Korriban_UmbralRaiderScout = 292,
+        [NPCGroup("Umbral Raider Adept")]
+        Korriban_UmbralRaiderAdept = 293,
+        [NPCGroup("Umbral Raider Captain")]
+        Korriban_UmbralRaiderCaptain = 294,
+        [NPCGroup("Umbral Raider Saboteur")]
+        Korriban_UmbralRaiderSaboteur = 295,
+        [NPCGroup("Umbral Raider Commander")]
+        Korriban_UmbralRaiderCommander = 296,
+
         [NPCGroup("Eshan Dire Wolves")]
-        Eshan_DireWolf = 267,
+        Eshan_DireWolf = 297,
         [NPCGroup("Eshan Frost Dire Wolves")]
-        Eshan_FrostWolf = 268,
+        Eshan_FrostWolf = 298,
         [NPCGroup("Eshan Dire Wolf Alpha")]
-        Eshan_DireWolfAlpha = 269,
+        Eshan_DireWolfAlpha = 299,
         [NPCGroup("Eshan Neo-Crusader Scouts")]
-        Eshan_NeoCrusaderScout = 270,
+        Eshan_NeoCrusaderScout = 300,
         [NPCGroup("Eshan Neo-Crusader Hunters")]
-        Eshan_NeoCrusaderHunter = 271,
+        Eshan_NeoCrusaderHunter = 301,
         [NPCGroup("Eshan Neo-Crusader Vanguards")]
-        Eshan_NeoCrusaderVanguard = 272,
+        Eshan_NeoCrusaderVanguard = 302,
         [NPCGroup("Eshan Neo-Crusader Heavy Troopers")]
-        Eshan_NeoCrusaderHeavy = 273,
+        Eshan_NeoCrusaderHeavy = 303,
         [NPCGroup("Eshan Neo-Crusader Medics")]
-        Eshan_NeoCrusaderMedic = 274,
+        Eshan_NeoCrusaderMedic = 304,
         [NPCGroup("Eshan Neo-Crusader Captains")]
-        Eshan_NeoCrusaderCaptain = 275,
+        Eshan_NeoCrusaderCaptain = 305,
         [NPCGroup("Eshan Thyrsian Exiles")]
-        Eshan_SunGuard = 276,
+        Eshan_SunGuard = 306,
         [NPCGroup("Eshan Scrapyard Smugglers")]
-        Eshan_ScrapyardSmuggler = 277,
+        Eshan_ScrapyardSmuggler = 307,
         [NPCGroup("Gorak Vesh, the Icebound")]
-        Eshan_GorakVesh = 278,
+        Eshan_GorakVesh = 308,
     }
 
     public class NPCGroupAttribute : Attribute

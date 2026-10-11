@@ -323,7 +323,6 @@ public class AIModelTests
     [TestCase(FeatType.SkirmisherStance1, FeatType.GamblerStance1)]
     [TestCase(FeatType.GamblerStance1, FeatType.SkirmisherStance1)]
     [TestCase(FeatType.SuppressionStance1, FeatType.BastionStance1)]
-    [TestCase(FeatType.BlazingSpikes1, FeatType.GamblerStance1)]
     public void WeaponStanceAIScore_PreservesAnyActiveStanceWithoutBlockingOtherBuffs(FeatType feat, FeatType activeStance)
     {
         const uint self = 100;
@@ -359,6 +358,46 @@ public class AIModelTests
             score(context).Should().BeGreaterThan(0, "a stance pending removal no longer occupies the stance slot");
             tracker.Remove(effect);
             score(context).Should().BeGreaterThan(0, "an expired stance may be reapplied");
+        }
+        finally
+        {
+            if (previousEffects == null) creatureEffects.Remove(self);
+            else creatureEffects[self] = previousEffects;
+        }
+    }
+
+    [TestCase(FeatType.BlazingSpikes1, FeatType.CycloneStance1)]
+    [TestCase(FeatType.CycloneStance1, FeatType.BlazingSpikes1)]
+    public void BlazingSpikesAndCycloneStanceAIScore_AllowsBothWithoutRecastingActiveEffects(FeatType feat, FeatType activeFeat)
+    {
+        const uint self = 100;
+        const uint target = 200;
+        StatusEffect.CacheData();
+        Ability.CacheData();
+        var ability = Ability.GetAbilityDetail(feat);
+        var score = AIScore.Ability(ability);
+        var activeEffectType = Ability.GetAbilityDetail(activeFeat)
+            .StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle().Which;
+        var selfEffectType = ability.StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle().Which;
+        var creatureEffects = (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
+            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        creatureEffects.TryGetValue(self, out var previousEffects);
+        var tracker = new CreatureStatusEffect();
+        creatureEffects[self] = tracker;
+        EnemyEnmityTables()[self] = new Dictionary<uint, int> { [target] = 1 };
+        CreatureToEnemies()[target] = new List<uint> { self };
+        try
+        {
+            var context = CreateContext(self: self);
+            var activeEffect = (IStatusEffect)Activator.CreateInstance(activeEffectType)!;
+            activeEffect.ApplyEffect(self, self, -1);
+            tracker.Add(activeEffect);
+            score(context).Should().BeGreaterThan(0, "Blazing Spikes does not occupy the stance slot");
+
+            var selfEffect = (IStatusEffect)Activator.CreateInstance(selfEffectType)!;
+            selfEffect.ApplyEffect(self, self, -1);
+            tracker.Add(selfEffect);
+            score(context).Should().Be(0, "an active toggle must not be recast and switched off");
         }
         finally
         {

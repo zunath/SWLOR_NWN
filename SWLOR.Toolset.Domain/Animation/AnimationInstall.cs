@@ -3,7 +3,8 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Numerics;
 using System.Security.Cryptography;
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
+using Nwn.Preview.Scene;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Toolset.Domain.Render;
 

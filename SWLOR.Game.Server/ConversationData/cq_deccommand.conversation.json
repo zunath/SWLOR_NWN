@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Hand me that spanner. The one by your foot... there. You stopped to wonder why, and the wondering took three seconds. Three seconds is a squad. I have work behind a sealed door on this planet, but not for a voice that pauses. When your people move before your sentence ends - when command sits in you like grammar, not like effort - report back to me.",
+          "Text": "Hand me that spanner. The one by your foot... there. You stopped to wonder why, and the wondering took three seconds. Three seconds is a squad. I have work behind a sealed door on Viscara, but not for a voice that pauses. When your people move before your sentence ends - when command sits in you like grammar, not like effort - report back to me.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You moved on the first word. That buys you the briefing. The Republic Engineering Bunker here on Viscara was my last command. My old adjutant sealed it from the inside, kept the garrison, and drills them in a command style with no oath in it - orders as fear, obedience as reflex. His junior officers hold the outer galleries; the garrison calls them adepts. Put six of them down and bring me the Republic Bunker Docket from the gallery duty desk. I intend to read exactly what my command has become.",
+          "Text": "You moved on the first word. That buys you the briefing. The Republic Engineering Bunker on Viscara was my last command. My old adjutant sealed it from the inside, kept the garrison, and drills them in a command style with no oath in it - orders as fear, obedience as reflex. His junior officers hold the outer galleries; the garrison calls them adepts. Put six of them down and bring me the Republic Bunker Docket from the gallery duty desk. I intend to read exactly what my command has become.",
           "Style": 0,
           "Color": null
         }
@@ -285,6 +285,10 @@
         },
         {
           "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "neutral-ask",
           "Conditions": []
         }
       ]
@@ -1291,6 +1295,32 @@
       ],
       "OnEnterActions": [],
       "Choices": []
+    },
+    "neutral-meeting": {
+      "Id": "neutral-meeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Landing Pads, Smuggler's Moon. Crews arrive, crews leave, and a commander who can't speak beyond his own garrison isn't much of a commander. I test the order you give, not the flag over your berth. Rhee remains in the Republic Engineering Bunker on Viscara. Your report comes back to me at these pads.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "neutral-return",
+          "Conditions": []
+        }
+      ]
     }
   },
   "Choices": {
@@ -2138,6 +2168,52 @@
       "Next": [
         {
           "TargetNodeId": "entry-00041",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-ask": {
+      "Id": "neutral-ask",
+      "Text": {
+        "Text": "Why are we meeting here, and where is the trial?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "neutral-meeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-return": {
+      "Id": "neutral-return",
+      "Text": {
+        "Text": "Back to the assignment.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00002",
           "Conditions": []
         }
       ],

@@ -859,6 +859,13 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            // Force conversion belongs to Imbuement Stance, including its FP cost.
+            if (explicitDamageType == CombatDamageType.Force)
+            {
+                damageType = CombatDamageType.Physical;
+                return true;
+            }
+
             if (explicitDamageType.IsCharacterDamageType())
             {
                 damageType = explicitDamageType;
@@ -883,6 +890,8 @@ namespace SWLOR.Game.Server.Service
 
             if (type == ItemPropertyType.WeaponDamageType)
             {
+                if (subType == (int)CombatDamageType.Force)
+                    return;
                 ApplyWeaponDamageTypeProperty(item, ip, subType);
                 return;
             }

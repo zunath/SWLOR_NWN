@@ -82,6 +82,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Unsummon), activator);
             AssignCommand(activator, () =>
             {
+                // Stop the current attack so it cannot block the teleport and arrival actions.
+                ClearAllActions();
                 ActionJumpToLocation(destination);
                 ActionDoCommand(() =>
                 {

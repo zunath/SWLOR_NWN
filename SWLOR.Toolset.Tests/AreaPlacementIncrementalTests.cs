@@ -1,11 +1,15 @@
+using Nwn.Preview.Areas.Clipboard;
+using Nwn.Authoring.Areas.Placement;
 using System.Numerics;
 using Avalonia.Headless.NUnit;
 using Avalonia.Input;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
@@ -60,6 +64,7 @@ namespace SWLOR.Toolset.Tests
 
             var before = editor.AreaScene!;
             var originalInstanceCount = before.Instances.Count;
+            var originalPlaceableCount = before.Instances.Count(marker => marker.Kind == Nwn.Preview.Areas.InstanceMarkerKind.Placeable);
             editor.ArmPlacement(
                 ResourceType.Utp,
                 PlaceableResRef,
@@ -76,6 +81,10 @@ namespace SWLOR.Toolset.Tests
             editor.SelectedSceneInstance.Should().BeSameAs(published.Instances[^1]);
             editor.SelectedSceneInstance!.TemplateResRef.Should().Be(PlaceableResRef);
             editor.SelectedSceneInstance.Position.Should().Be(new Vector3(12.5f, 7.25f, 0f));
+            editor.SelectedSceneInstance.ListIndex.Should().Be(originalPlaceableCount);
+            var placeableSection = editor.Sections.Single(section => section.BlueprintType == ResourceType.Utp);
+            placeableSection.Rows[originalPlaceableCount].TemplateResRef.Should().Be(PlaceableResRef);
+            placeableSection.SelectedRow.Should().BeSameAs(placeableSection.Rows[originalPlaceableCount]);
             editor.IsBuildingScene.Should().BeFalse();
 
             // Run past the ordinary edit debounce. If the placement failed to claim the new scene

@@ -417,17 +417,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_ruined", 2)
 				;
 
-			// Weapon Enhancement - Force Damage I
-			_builder.Create(RecipeType.WeaponEnhancementDMGForce1, SkillType.Engineering)
-				.Category(RecipeCategoryType.WeaponEnhancement)
-				.Resref("wen_dmg_for1")
-				.Level(8)
-				.Quantity(1)
-				.Component("ref_tilarium", 5)
-				.Component("ref_veldite", 3)
-				.Component("elec_ruined", 2)
-				;
-
             // Weapon Enhancement - Evasion I
 			_builder.Create(RecipeType.WeaponEnhancementEvasion1, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
@@ -1681,17 +1670,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_good", 2)
 				;
 
-			// Weapon Enhancement - Force Damage II
-			_builder.Create(RecipeType.WeaponEnhancementDMGForce2, SkillType.Engineering)
-				.Category(RecipeCategoryType.WeaponEnhancement)
-				.Resref("wen_dmg_for2")
-				.Level(28)
-				.Quantity(1)
-				.Component("ref_idailia", 5)
-				.Component("ref_plagionite", 3)
-				.Component("elec_good", 2)
-				;
-
 			// Weapon Enhancement - Evasion III
 			_builder.Create(RecipeType.WeaponEnhancementEvasion3, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
@@ -2939,17 +2917,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_phy3")
 				.Level(49)
-				.Quantity(1)
-				.Component("ref_gostian", 5)
-				.Component("ref_jasioclase", 3)
-				.Component("elec_high", 2)
-				;
-
-			// Weapon Enhancement - Force Damage III
-			_builder.Create(RecipeType.WeaponEnhancementDMGForce3, SkillType.Engineering)
-				.Category(RecipeCategoryType.WeaponEnhancement)
-				.Resref("wen_dmg_for3")
-				.Level(48)
 				.Quantity(1)
 				.Component("ref_gostian", 5)
 				.Component("ref_jasioclase", 3)

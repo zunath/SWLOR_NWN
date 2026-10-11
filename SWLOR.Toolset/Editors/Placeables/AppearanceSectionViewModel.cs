@@ -1,18 +1,19 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Lookups;
-using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
+using Nwn.Toolset.Avalonia.Appearances;
+using Nwn.Authoring.Behaviors;
+using Nwn.Authoring.Placeables;
 
 namespace SWLOR.Toolset.Editors.Placeables
 {
     /// <summary>One model-declared state as it appears in the preview picker.</summary>
-    public sealed record PlaceableAnimationOption(Domain.Render.RenderAnimation Animation)
+    public sealed record PlaceableAnimationOption(RenderAnimation Animation)
     {
         public string Name => Animation.Name;
 
@@ -46,9 +47,10 @@ namespace SWLOR.Toolset.Editors.Placeables
         private readonly ThumbnailService? _thumbnails;
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Func<PlaceableAppearanceUsageIndex> _usage;
+        private IReadOnlyList<Appearance.AppearanceOption> _galleryOptions = Array.Empty<Appearance.AppearanceOption>();
 
         /// <summary>Builds the render geometry for a model resref; null leaves the 3D view empty.</summary>
-        private readonly Func<string, Domain.Render.RenderModel?>? _resolveModel;
+        private readonly Func<string, RenderModel?>? _resolveModel;
 
         /// <summary>False until the tab has been shown once; see EnsureLoaded.</summary>
         private bool _loaded;
@@ -58,7 +60,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// keeps only what is genuinely a placeable's: the retained 3D view, the animation states
         /// its model declares, and the two filters that narrow which models are offered at all.
         /// </summary>
-        public Appearance.AppearanceGallerySectionViewModel Gallery { get; }
+        public AppearanceGalleryViewModel Gallery { get; }
 
         [ObservableProperty]
         private bool _usedInModuleOnly = true;
@@ -86,7 +88,7 @@ namespace SWLOR.Toolset.Editors.Placeables
             Func<PlaceableAppearanceUsageIndex> usage,
             Func<string, Action, bool> runEdit,
             Domain.GameData.Resources.ResourceIndex? resourceIndex = null,
-            Func<string, Domain.Render.RenderModel?>? resolveModel = null)
+            Func<string, RenderModel?>? resolveModel = null)
         {
             _context = context;
             _catalog = catalog;
@@ -96,10 +98,15 @@ namespace SWLOR.Toolset.Editors.Placeables
             _resolveModel = resolveModel;
             ResourceIndex = resourceIndex;
 
-            Gallery = new Appearance.AppearanceGallerySectionViewModel(
-                Array.Empty<Appearance.AppearanceOption>(),
-                thumbnails,
-                () => CurrentId.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            var previewProvider = thumbnails == null
+                ? null
+                : new Appearance.AppearanceGalleryPreviewProvider(
+                    thumbnails,
+                    id => _galleryOptions.FirstOrDefault(option => option.Key == id.Value));
+            Gallery = new AppearanceGalleryViewModel(
+                Array.Empty<AppearanceGalleryOption>(),
+                previewProvider,
+                () => new AppearanceGalleryOptionId(CurrentId.ToString(CultureInfo.InvariantCulture)),
                 Apply,
                 noun: "model",
                 // 24,304 rows: the grid earns its density here in a way the door and creature
@@ -212,7 +219,7 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// renderer to keep working. The scene is an empty 1x1 grid holding a single placeable
         /// marker at the origin, which the control's own framing then centres on.
         /// </remarks>
-        public Domain.Render.AreaScene? PreviewScene { get; private set; }
+        public AreaScene? PreviewScene { get; private set; }
 
         /// <summary>States declared by the highlighted model, in file order.</summary>
         public ObservableCollection<PlaceableAnimationOption> AnimationStates { get; } = new();
@@ -229,7 +236,8 @@ namespace SWLOR.Toolset.Editors.Placeables
         public string? PreviewAnimationName => SelectedAnimation?.Name;
 
         /// <summary>The appearance row the placeable stores right now.</summary>
-        public int CurrentId => (int)(_context.Document.Root.GetOrNull("Appearance")?.GetInteger() ?? 0);
+        public int CurrentId => unchecked((int)PlaceableAppearanceValueStore.Read(
+            new BehaviorValueStore(_context.Document.Root)));
 
         public string CurrentDescription
         {
@@ -249,7 +257,9 @@ namespace SWLOR.Toolset.Editors.Placeables
         public bool HasHighlight => Gallery.Highlighted != null;
 
         /// <summary>The highlighted model's own name, for the panel beside the 3D view.</summary>
-        public string? HighlightedModelName => Gallery.Highlighted?.Option.ModelResRef;
+        public string? HighlightedModelName => Gallery.Highlighted == null
+            ? null
+            : _galleryOptions.FirstOrDefault(option => option.Key == Gallery.Highlighted.Option.Id.Value)?.ModelResRef;
 
         public string? HighlightedCaption => Gallery.Highlighted?.Caption;
 
@@ -318,9 +328,9 @@ namespace SWLOR.Toolset.Editors.Placeables
         /// Picking a model IS the edit. A confirm button in between only asks a builder to say twice
         /// what they already said once, and undo is the real safety net either way.
         /// </summary>
-        private bool Apply(Appearance.AppearanceOption option)
+        private bool Apply(AppearanceGalleryOption option)
         {
-            if (!int.TryParse(option.Key, out var id) || id == CurrentId)
+            if (!int.TryParse(option.Id.Value, out var id) || id == CurrentId)
                 return false;
 
             if (!_runEdit($"Change appearance to {option.Caption}", () => WriteAppearance(id)))
@@ -337,7 +347,9 @@ namespace SWLOR.Toolset.Editors.Placeables
             if (_disposed)
                 return;
 
-            var modelName = Gallery.Highlighted?.Option.ModelResRef;
+            var modelName = Gallery.Highlighted == null
+                ? null
+                : _galleryOptions.FirstOrDefault(option => option.Key == Gallery.Highlighted.Option.Id.Value)?.ModelResRef;
             if (modelName == null && _catalog.TryGet(CurrentId, out var currentRow))
                 modelName = currentRow.ModelName;
 
@@ -346,17 +358,17 @@ namespace SWLOR.Toolset.Editors.Placeables
 
             PreviewScene = model == null
                 ? null
-                : new Domain.Render.AreaScene
+                : new AreaScene
                 {
                     Tileset = string.Empty,
                     Width = 1,
                     Height = 1,
-                    Tiles = Array.Empty<Domain.Render.TilePlacement>(),
+                    Tiles = Array.Empty<TilePlacement>(),
                     Instances = new[]
                     {
-                        new Domain.Render.InstanceMarker
+                        new InstanceMarker
                         {
-                            Kind = Domain.Render.InstanceMarkerKind.Placeable,
+                            Kind = InstanceMarkerKind.Placeable,
                             TemplateResRef = modelName!,
                             Tag = string.Empty,
                             Position = new System.Numerics.Vector3(
@@ -367,7 +379,7 @@ namespace SWLOR.Toolset.Editors.Placeables
                             Model = model
                         }
                     },
-                    Diagnostics = new Domain.Render.AreaSceneDiagnostics()
+                    Diagnostics = new AreaSceneDiagnostics()
                 };
 
             OnPropertyChanged(nameof(PreviewScene));
@@ -382,7 +394,7 @@ namespace SWLOR.Toolset.Editors.Placeables
             BeginLoading();
         }
 
-        private void PublishAnimationStates(Domain.Render.RenderModel? model)
+        private void PublishAnimationStates(RenderModel? model)
         {
             AnimationStates.Clear();
             if (model != null)
@@ -445,27 +457,18 @@ namespace SWLOR.Toolset.Editors.Placeables
             if (UsedInModuleOnly && usage.IsBuilt)
                 rows = rows.Where(row => usage.CountFor(row.Id) > 0);
 
-            Gallery.SetOptions(rows
+            _galleryOptions = rows
                 .Select(row => new Appearance.AppearanceOption(
-                    row.Id.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                    row.Id.ToString(CultureInfo.InvariantCulture),
                     row.DisplayName,
                     row.ModelName,
                     ModelResRef: row.ModelName))
-                .ToList());
+                .ToArray();
+            Gallery.SetOptions(Appearance.AppearanceGalleryOptionAdapter.ToShared(_galleryOptions));
         }
 
-        private void WriteAppearance(int id)
-        {
-            var field = _context.Document.Root.GetOrNull("Appearance");
-            if (field == null)
-            {
-                var raw = Encoding.ASCII.GetBytes(id.ToString(CultureInfo.InvariantCulture));
-                _context.Document.Root.Add("Appearance", JsonGffField.CreateScalar(GffFieldType.Dword, raw));
-                return;
-            }
-
-            field.SetInteger(id);
-        }
+        private void WriteAppearance(int id) =>
+            PlaceableAppearanceValueStore.Write(new BehaviorValueStore(_context.Document.Root), id);
 
         private void NotifyCurrentChanged()
         {

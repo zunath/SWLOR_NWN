@@ -3,7 +3,6 @@ using System.Security.Cryptography;
 using Serilog;
 using SWLOR.NWN.Formats;
 using SWLOR.NWN.Formats.Tlk;
-using SWLOR.NWN.Formats.TwoDA;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 
 namespace SWLOR.Toolset.Domain.GameData.Tlk
@@ -218,7 +217,9 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
         {
             try
             {
-                var table = new TwoDaTable(Path.GetFileNameWithoutExtension(fileName), TwoDAReader.Read(path));
+                var table = TwoDaTable.Parse(
+                    Path.GetFileNameWithoutExtension(fileName),
+                    File.ReadAllBytes(path));
                 ScanTable(fileName, table, usages, cancellationToken);
                 return true;
             }

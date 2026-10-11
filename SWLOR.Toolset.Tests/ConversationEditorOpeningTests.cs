@@ -7,6 +7,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Toolset.Domain.Conversations;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
@@ -288,6 +289,49 @@ public sealed class ConversationEditorOpeningTests
             prompts.ExternalChangePrompts.Should().Be(1);
             File.Exists(path).Should().BeFalse("cancel must preserve the external deletion");
             Directory.EnumerateFiles(scratch, "*.tmp").Should().BeEmpty();
+        }
+        finally
+        {
+            model.OnClose();
+            Directory.Delete(scratch, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task NuiConversationSavePreservesCleanBytesAndAcknowledgesTheSavedGraph()
+    {
+        var scratch = Path.Combine(Path.GetTempPath(), $"nui-conversation-history-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(scratch);
+        var path = Path.Combine(scratch, "test.conversation.json");
+        File.Copy(
+            Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Game.Server",
+                "ConversationData",
+                "cz_receptionist.conversation.json"),
+            path);
+        var originalBytes = File.ReadAllBytes(path);
+        var model = new NuiConversationEditorViewModel(
+            path, "test", SnippetCatalog.Build(), null, new OutputLogService(), new TrackingPrompts());
+
+        try
+        {
+            (await model.TrySaveAsync()).Should().BeTrue();
+            File.ReadAllBytes(path).Should().Equal(originalBytes,
+                "a clean save keeps the original JSON bytes unchanged");
+
+            model.SpeakerName = "Saved by shared history";
+            (await model.TrySaveAsync()).Should().BeTrue();
+            model.IsDirty.Should().BeFalse();
+            Directory.EnumerateFiles(scratch, "*.tmp").Should().BeEmpty();
+
+            var savedGraph = Newtonsoft.Json.JsonConvert.DeserializeObject<ConversationGraph>(File.ReadAllText(path));
+            savedGraph!.Nodes.Values.Should().Contain(node => node.SpeakerName == "Saved by shared history");
+
+            model.Undo();
+            model.IsDirty.Should().BeTrue("undo moves away from the exact saved graph");
+            model.Redo();
+            model.IsDirty.Should().BeFalse("redo returns to the exact graph acknowledged after save");
         }
         finally
         {

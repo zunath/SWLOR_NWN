@@ -43,6 +43,8 @@
         <MenuItem Header="_Pack Module" Command="{Binding PackModuleCommand}" />
       </MenuItem>
       <MenuItem Header="_Tools">
+        <MenuItem Header="_Native Model Preview..." Command="{Binding NativeModelPreviewCommand}" />
+        <Separator />
         <MenuItem x:Name="AreaGeneratorMenuItem" Header="_Area Generator..."
                   Command="{Binding AreaGeneratorCommand}" />
         <MenuItem x:Name="FactionEditorMenuItem" Header="_Faction Editor..."
@@ -84,8 +86,8 @@
         <Border Width="1" Margin="5,3" Background="{DynamicResource RuleBrush}" />
 
         <ToggleButton Classes="tool"
-                      IsChecked="{Binding Display.ShowShadows}"
-                      IsEnabled="{Binding Display.CanShowShadows}"
+                      IsChecked="{Binding ShowShadows}"
+                      IsEnabled="{Binding CanShowShadows}"
                       ToolTip.Tip="Display shadows - the viewport renderer has no shadow pass yet">
           <Path Data="M4,4 H14 V14 H4 Z M8,8 H20 V20 H8 Z" />
         </ToggleButton>

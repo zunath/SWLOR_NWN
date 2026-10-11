@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using SWLOR.Toolset.Editors.Conversations;
 
 namespace SWLOR.Toolset.Editors
 {
@@ -8,6 +9,12 @@ namespace SWLOR.Toolset.Editors
         public ConversationEditorView()
         {
             InitializeComponent();
+        }
+
+        private void OnGraphOverview(object? sender, RoutedEventArgs args)
+        {
+            if (DataContext is ConversationEditorViewModel editor && TopLevel.GetTopLevel(this) is Window owner)
+                new ConversationGraphWindow(editor.LiveDialog, editor.ResRef).Show(owner);
         }
 
         /// <summary>

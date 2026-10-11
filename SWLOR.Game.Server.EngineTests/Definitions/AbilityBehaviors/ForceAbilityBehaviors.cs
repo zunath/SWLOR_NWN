@@ -134,8 +134,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsRecast = true,
                 },
 
-                // ForceDrainAbilityDefinition - hostile direct-damage siphon; heal is raw EffectHeal
-                // on the activator (not a status effect), gated on damage > 0.
+                // ForceDrainAbilityDefinition - hostile direct-damage siphon with shared healing budgets,
+                // gated on damage > 0.
                 new()
                 {
                     Feat = FeatType.ForceDrain1,
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsActivatorHealing = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
-                    Notes = "Drain heal is a raw EffectHeal applied to the activator, not a tracked status effect.",
+                    Notes = "Drain healing shares the hit's damage ceiling and the activation's maximum-HP allowance.",
                 },
                 new()
                 {

@@ -8,6 +8,10 @@
     "type": "int",
     "value": 25
   },
+  "ID": {
+    "type": "byte",
+    "value": 5
+  },
   "IdentifyPrice": {
     "type": "int",
     "value": 100

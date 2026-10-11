@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Hunger of the Dark in Korriban Sith Crypt Depths."
+    "value": "A living tomb raider in the Korriban Sith Crypt Depths. This independent looting expedition attacks anyone who obstructs its theft of sealed relics. Its members have no authority from the Sith Academy."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A named rare elite of the Korriban Sith Crypt Depths. Ranged."
+      "0": "A living tomb raider in the Korriban Sith Crypt Depths. This independent looting expedition attacks anyone who obstructs its theft of sealed relics. Its members have no authority from the Sith Academy."
     }
   },
   "Dex": {
@@ -225,7 +225,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hunger of Marka"
+      "0": "Vitae Reaver Vark"
     }
   },
   "fortbonus": {

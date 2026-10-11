@@ -27,6 +27,28 @@ public class CapstoneEnemyAppearanceTests
 
     private static readonly string[] Tiers = { "ad", "sp", "wd", "ic", "ms" };
 
+    [TestCase("sabstorm")]
+    [TestCase("guardmst")]
+    [TestCase("sabcycl")]
+    public void EnclaveTargets_AreMobileDroidsWithMechanicalAbilityPackages(string line)
+    {
+        foreach (var tier in Tiers)
+        {
+            using var doc = JsonDocument.Parse(File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName,
+                "Module", "utc", $"cp_{line}_{tier}.utc.json")));
+            var root = doc.RootElement;
+            root.GetProperty("Race").GetProperty("value").GetInt32().Should().Be((int)RacialType.Droid);
+            root.GetProperty("Appearance_Type").GetProperty("value").GetInt32().Should().BeOneOf(
+                (int)AppearanceType.SWLORAssdroid, (int)AppearanceType.Droid);
+            root.GetProperty("FirstName").GetProperty("value").GetProperty("0").GetString()
+                .Should().MatchRegex("Droid|Training Engine");
+            root.GetProperty("FeatList").GetProperty("value").EnumerateArray()
+                .Select(feat => (FeatType)feat.GetProperty("Feat").GetProperty("value").GetInt32())
+                .Should().NotIntersectWith(new[] { FeatType.ForceRend, FeatType.ForceSunder,
+                    FeatType.MindSpike, FeatType.DarkShock, FeatType.DreadWave });
+        }
+    }
+
     [Test]
     public void CapstoneEnemies_DoNotAllShareTheSameAppearance()
     {

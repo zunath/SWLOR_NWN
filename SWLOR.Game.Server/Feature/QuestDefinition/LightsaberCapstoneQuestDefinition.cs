@@ -62,13 +62,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Talan Rees gave you the Dantooine Jedi Enclave Trial Halls Key. Defeat 6 Saber Storm adepts in the outer ring of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Saber Storm Enclave Trial Slate.")
-                .AddKillObjective(NPCGroupType.Dantooine_SaberStorm_Adept, 6)
+                    "Talan Rees gave you the Dantooine Jedi Enclave Trial Halls Key. Contain the malfunctioning training network. Disable 6 Storm Drill Droid units in the outer ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Enclave Trial Slate.")
+                .AddKillObjective(NPCGroupType.Dantooine_StormDrillDroid, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormEnclaveTrialSlate)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Saber Storm Enclave Trial Slate. Return to Talan Rees at the Dantooine Jedi Enclave.")
+                    "The Saber Storm Enclave Trial Slate is recovered. Return to Talan Rees at the Jedi Enclave on Dantooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -83,13 +83,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 5 Saber Storm specialists in the middle ring of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Saber Storm Kyber Focus Shard.")
-                .AddKillObjective(NPCGroupType.Dantooine_SaberStorm_Specialist, 5)
+                    "Disable 5 Storm Duelist Droid units in the middle ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Kyber Focus Shard.")
+                .AddKillObjective(NPCGroupType.Dantooine_StormDuelistDroid, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormKyberFocusShard)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Saber Storm Kyber Focus Shard. Return to Talan Rees at the Dantooine Jedi Enclave.")
+                    "The Saber Storm Kyber Focus Shard is recovered. Return to Talan Rees at the Jedi Enclave on Dantooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -104,13 +104,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Saber Storm warden beyond the third door of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Saber Storm Fractured Trial Sigil. The warden is a match for several blades; bring two companions.")
-                .AddKillObjective(NPCGroupType.Dantooine_SaberStorm_Warden, 1)
+                    "Disable 1 Storm Gatekeeper Droid in the third trial door of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Fractured Trial Sigil. Bring at least two allies.")
+                .AddKillObjective(NPCGroupType.Dantooine_StormGatekeeperDroid, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormFracturedTrialSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Saber Storm Fractured Trial Sigil from the warden. Return to Talan Rees at the Dantooine Jedi Enclave.")
+                    "The Saber Storm Fractured Trial Sigil is recovered. Return to Talan Rees at the Jedi Enclave on Dantooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -125,13 +125,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the 4 members of the Saber Storm inner circle in the high ring of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Saber Storm Council Trial Chit.")
-                .AddKillObjective(NPCGroupType.Dantooine_SaberStorm_InnerCircle, 4)
+                    "Disable 4 Storm Examiner Droid units in the high ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Council Trial Chit.")
+                .AddKillObjective(NPCGroupType.Dantooine_StormExaminerDroid, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormCouncilTrialChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Saber Storm Council Trial Chit. Return to Talan Rees at the Dantooine Jedi Enclave.")
+                    "The Saber Storm Council Trial Chit is recovered. Return to Talan Rees at the Jedi Enclave on Dantooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -144,12 +144,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Saber Storm master behind the last door of the Dantooine Jedi Enclave Trial Halls on Dantooine. The master is beyond any lone blade; bring two companions. His defeat is the only proof required.")
-                .AddKillObjective(NPCGroupType.Dantooine_SaberStorm_Master, 1)
+                    "Disable 1 Tempest Training Engine in the deepest trial hall of the Dantooine Jedi Enclave Trial Halls. Bring at least two allies.")
+                .AddKillObjective(NPCGroupType.Dantooine_TempestTrainingEngine, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Storm master is defeated. Return to Talan Rees at the Dantooine Jedi Enclave.")
+                    "The Tempest Training Engine is defeated. Return to Talan Rees at the Jedi Enclave on Dantooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -175,13 +175,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Miris Aven gave you the Dantooine Jedi Enclave Trial Halls Key. Defeat 6 Guardian Master adepts in the outer ward of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Guardian Master Enclave Trial Slate.")
-                .AddKillObjective(NPCGroupType.Dantooine_GuardianMaster_Adept, 6)
+                    "Miris Aven gave you the Dantooine Jedi Enclave Trial Halls Key. Contain the malfunctioning training network. Disable 6 Guardian Patrol Droid units in the outer ward of the Dantooine Jedi Enclave Trial Halls. Recover the Guardian Master Enclave Trial Slate.")
+                .AddKillObjective(NPCGroupType.Dantooine_GuardianPatrolDroid, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterEnclaveTrialSlate)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Guardian Master Enclave Trial Slate. Return to Miris Aven at the Dantooine Jedi Library.")
+                    "The Guardian Master Enclave Trial Slate is recovered. Return to Miris Aven at the Jedi Library on Dantooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -196,13 +196,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 5 Guardian Master specialists in the middle ward of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Guardian Master Kyber Focus Shard.")
-                .AddKillObjective(NPCGroupType.Dantooine_GuardianMaster_Specialist, 5)
+                    "Disable 5 Guardian Bulwark Droid units in the shrine chambers of the Dantooine Jedi Enclave Trial Halls. Recover the Guardian Master Kyber Focus Shard.")
+                .AddKillObjective(NPCGroupType.Dantooine_GuardianBulwarkDroid, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterKyberFocusShard)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Guardian Master Kyber Focus Shard. Return to Miris Aven at the Dantooine Jedi Library.")
+                    "The Guardian Master Kyber Focus Shard is recovered. Return to Miris Aven at the Jedi Library on Dantooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -217,13 +217,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Guardian Master warden in the third ward of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Guardian Master Fractured Trial Sigil. The warden is a trial for several blades; bring two companions.")
-                .AddKillObjective(NPCGroupType.Dantooine_GuardianMaster_Warden, 1)
+                    "Disable 1 Guardian Gatekeeper Droid in the third ward of the Dantooine Jedi Enclave Trial Halls. Recover the Guardian Master Fractured Trial Sigil. Bring at least two allies.")
+                .AddKillObjective(NPCGroupType.Dantooine_GuardianGatekeeperDroid, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterFracturedTrialSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Guardian Master Fractured Trial Sigil from the warden. Return to Miris Aven at the Dantooine Jedi Library.")
+                    "The Guardian Master Fractured Trial Sigil is recovered. Return to Miris Aven at the Jedi Library on Dantooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -238,13 +238,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the 4 ward-captains of the Guardian Master inner circle in the deep ward of the Dantooine Jedi Enclave Trial Halls on Dantooine and secure the Guardian Master Council Trial Chit.")
-                .AddKillObjective(NPCGroupType.Dantooine_GuardianMaster_InnerCircle, 4)
+                    "Disable 4 Guardian Shield Droid units in the deep ward of the Dantooine Jedi Enclave Trial Halls. Recover the Guardian Master Council Trial Chit.")
+                .AddKillObjective(NPCGroupType.Dantooine_GuardianShieldDroid, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterCouncilTrialChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Guardian Master Council Trial Chit. Return to Miris Aven at the Dantooine Jedi Library.")
+                    "The Guardian Master Council Trial Chit is recovered. Return to Miris Aven at the Jedi Library on Dantooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -257,12 +257,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Guardian Master Paragon behind the last seal of the Dantooine Jedi Enclave Trial Halls on Dantooine. The Paragon is beyond any lone blade; bring two companions. The Paragon's defeat is the only proof required.")
-                .AddKillObjective(NPCGroupType.Dantooine_GuardianMaster_Paragon, 1)
+                    "Disable 1 Bastion Training Engine in the final ward of the Dantooine Jedi Enclave Trial Halls. Bring at least two allies.")
+                .AddKillObjective(NPCGroupType.Dantooine_BastionTrainingEngine, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Guardian Master Paragon is defeated. Return to Miris Aven at the Dantooine Jedi Library.")
+                    "The Bastion Training Engine is defeated. Return to Miris Aven at the Jedi Library on Dantooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

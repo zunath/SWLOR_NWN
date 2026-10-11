@@ -23,21 +23,21 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Challenge: Last Stand of the Light Master; invisible interaction object beside the trial altar."
+          "value": "Challenge: Crypt Expedition Leader; invisible interaction object beside the trial altar."
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Challenge: Hunger of the Dark Master; invisible interaction object beside the trial altar."
+          "value": "Challenge: Vitae Reaver Chief; invisible interaction object beside the trial altar."
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Challenge: Eclipse of Resolve Master; invisible interaction object beside the trial altar."
+          "value": "Challenge: Umbral Raider Commander; invisible interaction object beside the trial altar."
         }
       },
       {

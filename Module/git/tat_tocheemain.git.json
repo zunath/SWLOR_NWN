@@ -8067,19 +8067,19 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.0
+          "value": 0.0
         },
         "XPosition": {
           "type": "float",
-          "value": 22.0
+          "value": 15.0
         },
         "YOrientation": {
           "type": "float",
-          "value": -1.0
+          "value": 1.0
         },
         "YPosition": {
           "type": "float",
-          "value": 49.0
+          "value": 46.6
         },
         "ZPosition": {
           "type": "float",

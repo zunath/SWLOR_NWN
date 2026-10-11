@@ -1706,19 +1706,19 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.0
+          "value": 0.998599
         },
         "XPosition": {
           "type": "float",
-          "value": 109.0
+          "value": 105.6
         },
         "YOrientation": {
           "type": "float",
-          "value": -1.0
+          "value": -0.052911
         },
         "YPosition": {
           "type": "float",
-          "value": 17.0
+          "value": 18.4
         },
         "ZPosition": {
           "type": "float",

@@ -12,6 +12,15 @@ weapons, provide distinct material identities or occurrence-specific rendering
 for independently colored copies of the same equipped model: creature material
 uniforms alone cannot distinguish identical main-hand and off-hand materials.
 
+Authored MTRs can inherit a same-name DDS/TGA without declaring `texture0`.
+`TintMapMaterialSources.json` records that original input as `implicitTexture0`.
+Preserve it explicitly on a separate material instead of substituting a converted
+PLT. Helmet 101, both human neck 12 textures, and female human left shin 264 use
+this path. Helmet 101 keeps its native attachment and baked artwork; its old
+128-by-128 PLT has a different atlas from the original 512-by-512 diffuse.
+Rebuild `sw_item`, `sw_pt_helm`, `sw_pt_neck`, `sw_pt_lshin`, `sw_pt_head`,
+`sw_tint_mtr`, and `sw_2da` together after changing these bindings.
+
 ## Preserve the authored palette rows
 
 Converting a PLT material must preserve the creature and equipment color IDs.

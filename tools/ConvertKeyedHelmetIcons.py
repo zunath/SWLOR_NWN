@@ -3,9 +3,7 @@
 Each source PNG paints every dye region in one key hue (see KEY_LAYERS) over a
 flat #808080 background, shading only by brightness. The hue selects the PLT
 layer and the brightness becomes the PLT shade, so the icon takes the item's
-dye colors in game. The generation prompt and key mapping are recorded in
-SWLOR_Haks/sw_item_source/helmets/helmet-artwork.json; the source images are not
-kept in the repository.
+dye colors in game. The source images are not kept in the repository.
 """
 import argparse
 import struct

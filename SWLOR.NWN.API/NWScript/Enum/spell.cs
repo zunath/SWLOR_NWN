@@ -1656,5 +1656,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         Overload = 1710,
         BloodFrenzyBurst = 1723,
         SoulAscensionBurst = 1724,
+        ChainLightningTechnique = 1725,
+        BloodSiphonTechnique = 1726,
     }
 }

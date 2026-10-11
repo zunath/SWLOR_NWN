@@ -112,7 +112,7 @@ public class MimicryTests
         }
     }
 
-    // Registry-driven contract check covering every technique in the (currently 88-strong) pool,
+    // Registry-driven contract check covering every technique in the (currently 90-strong) pool,
     // not just the original 10 pinned above. Discovers definitions by reflection so it stays valid
     // as the technique pool grows.
     [Test]
@@ -455,7 +455,8 @@ public class MimicryTests
             [StatType.DamageDealtFreezingChance] = 33,
             [StatType.DamageDealtHemorrhageChance] = 15,
             [StatType.DamageDealtPoisonChance] = 18,
-            [StatType.DamageDealtShockChance] = 18,
+            [StatType.DamageDealtHPPercentRestore] = 4,
+            [StatType.DamageDealtShockChance] = 33,
             [StatType.DamageDealtSunderChance] = 21,
             [StatType.ForceAttackPercentAdjustment] = 14,
             [StatType.ForceDefensePercentAdjustment] = 12,

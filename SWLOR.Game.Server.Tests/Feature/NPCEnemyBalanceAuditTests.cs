@@ -26,7 +26,11 @@ public class NPCEnemyBalanceAuditTests
     private const int ItemPropertyFP = 91;
     private const int ItemPropertyStamina = 92;
     private const int ItemPropertyDMG = 93;
+    private const int HostileFactionId = 1;
     private const int ItemPropertyOnHitProperties = 48;
+    private const int ItemPropertyOnMonsterHit = 72;
+    private const int ItemPropertyOnHitCastSpell = 82;
+    private const int OnHitUniquePowerSubtype = 125;
     private const int ItemPropertyDefense = 94;
     private const int ItemPropertyNPCHP = 96;
     private const int ItemPropertyDelay = 98;
@@ -111,6 +115,8 @@ public class NPCEnemyBalanceAuditTests
         [(int)FeatType.StimCanister] = ResistanceType.Poison,
         [(int)FeatType.BloodFrenzyFlurry] = ResistanceType.Trauma,
         [(int)FeatType.ConcussiveChallenge] = ResistanceType.Mind,
+        [(int)FeatType.ChainLightning] = ResistanceType.Electrical,
+        [(int)FeatType.BloodSiphon] = ResistanceType.Trauma,
     };
 
     private static readonly ExpectedEnemy[] ExpectedAlternateEnemies =
@@ -996,17 +1002,42 @@ public class NPCEnemyBalanceAuditTests
         }
     }
 
-    [TestCase("swampvines_wp")]
-    [TestCase("rootcoil_wp")]
-    [TestCase("mirevein_wp")]
-    public void ViscaraSwampVineWeapons_DoNotApplyNativeOnHitSaves(string weaponResref)
+    [Test]
+    public void HostileCreatureWeapons_DoNotApplyNativeOnHitEffects()
     {
         var root = FindRepositoryRoot();
-        using var weapon = ReadJson(root, "Module", "uti", $"{weaponResref}.uti.json");
+        var failures = new List<string>();
 
-        GetItemPropertySubtypes(weapon.RootElement, ItemPropertyOnHitProperties)
-            .Should()
-            .BeEmpty($"{weaponResref} status pressure comes from its Bible ability package checked against Resistance, not native saving throws");
+        foreach (var utcPath in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "utc"), "*.utc.json"))
+        {
+            using var utc = JsonDocument.Parse(File.ReadAllText(utcPath));
+            if (GetInt(utc.RootElement, "FactionID") != HostileFactionId)
+                continue;
+
+            foreach (var weaponResref in GetEquippedWeaponResrefs(utc.RootElement))
+            {
+                var weaponPath = Path.Combine(root.FullName, "Module", "uti", $"{weaponResref}.uti.json");
+                if (!File.Exists(weaponPath))
+                    continue;
+
+                using var weapon = JsonDocument.Parse(File.ReadAllText(weaponPath));
+                var nativeEffects = GetItemProperties(weapon.RootElement)
+                    .Where(property =>
+                    {
+                        var propertyName = GetInt(property, "PropertyName");
+                        return propertyName is ItemPropertyOnHitProperties or ItemPropertyOnMonsterHit ||
+                               propertyName == ItemPropertyOnHitCastSpell && GetInt(property, "Subtype") != OnHitUniquePowerSubtype;
+                    })
+                    .Select(property => $"{GetInt(property, "PropertyName")}:{GetInt(property, "Subtype")}")
+                    .ToArray();
+
+                if (nativeEffects.Length > 0)
+                    failures.Add($"{Path.GetFileName(utcPath)} -> {weaponResref}: {string.Join(", ", nativeEffects)}");
+            }
+        }
+
+        failures.Should().BeEmpty(
+            "hostile creature status pressure comes from Bible NPC abilities checked against Resistance, not native NWN on-hit saves");
     }
 
     [Test]
@@ -1220,7 +1251,7 @@ public class NPCEnemyBalanceAuditTests
             requirementsByTechnique[technique] = actualRequirement;
         }
 
-        requirementsByTechnique.Should().HaveCount(88, "the complete Mimicry technique pool must be audited against World NPCs");
+        requirementsByTechnique.Should().HaveCount(90, "the complete Mimicry technique pool must be audited against World NPCs");
         failures.Should().BeEmpty(
             "Mimicry requirements use player-accessible World NPC progression, excluding Additional and Training rows");
 

@@ -26,6 +26,7 @@ public class NPCEnemyBalanceAuditTests
     private const int ItemPropertyFP = 91;
     private const int ItemPropertyStamina = 92;
     private const int ItemPropertyDMG = 93;
+    private const int ItemPropertyOnHitProperties = 48;
     private const int ItemPropertyDefense = 94;
     private const int ItemPropertyNPCHP = 96;
     private const int ItemPropertyDelay = 98;
@@ -993,6 +994,19 @@ public class NPCEnemyBalanceAuditTests
                     .Be(expectedValue, $"{resistanceType} should match {expected.Resref}'s named rare elite Bible package");
             }
         }
+    }
+
+    [TestCase("swampvines_wp")]
+    [TestCase("rootcoil_wp")]
+    [TestCase("mirevein_wp")]
+    public void ViscaraSwampVineWeapons_DoNotApplyNativeOnHitSaves(string weaponResref)
+    {
+        var root = FindRepositoryRoot();
+        using var weapon = ReadJson(root, "Module", "uti", $"{weaponResref}.uti.json");
+
+        GetItemPropertySubtypes(weapon.RootElement, ItemPropertyOnHitProperties)
+            .Should()
+            .BeEmpty($"{weaponResref} status pressure comes from its Bible ability package checked against Resistance, not native saving throws");
     }
 
     [Test]

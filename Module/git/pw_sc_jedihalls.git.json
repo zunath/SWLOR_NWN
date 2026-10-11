@@ -46774,7 +46774,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls - Saber Storm Warden Spawn"
+            "0": "Dantooine Jedi Enclave Trial Halls - Storm Gatekeeper Droid Spawn"
           }
         },
         "MapNote": {
@@ -46837,7 +46837,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls - Guardian Master Warden Spawn"
+            "0": "Dantooine Jedi Enclave Trial Halls - Guardian Gatekeeper Droid Spawn"
           }
         },
         "MapNote": {
@@ -46900,7 +46900,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls - Saber Cyclone Warden Spawn"
+            "0": "Dantooine Jedi Enclave Trial Halls - Cyclone Gatekeeper Droid Spawn"
           }
         },
         "MapNote": {

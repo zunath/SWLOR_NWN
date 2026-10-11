@@ -48,10 +48,32 @@ public class AbilityImpactVisualEffectTests
             {
                 var feat = Enum.Parse<FeatType>(featName.GetString()!);
                 var matches = definitions.SelectMany(definition => built[definition]).Where(pair => pair.Key == feat).ToArray();
+                // These capstones share Overclocked Analyzer's animation, not its impact VFX.
+                var animationOnlyDefinition = feat switch
+                {
+                    FeatType.BloodFrenzyBurst => "BloodFrenzyAbilityDefinition",
+                    FeatType.SoulAscensionBurst => "SoulAscensionAbilityDefinition",
+                    _ => null
+                };
+                if (animationOnlyDefinition != null)
+                {
+                    id.Should().Be("OverclockedAnalyzer");
+                    var type = types.Single(type => type.Name == animationOnlyDefinition);
+                    matches = ((IAbilityListDefinition)Activator.CreateInstance(type)!).BuildAbilities()
+                        .Where(pair => pair.Key == feat).ToArray();
+                }
                 matches.Should().ContainSingle($"{id}/{feat} should resolve to one active definition");
-                // Wrist Rocket restores the native missile and delayed fireball in its impact action.
-                var impactEffect = id == "WristRocket" ? VisualEffect.None : expected;
-                matches.Single().Value.SuccessfulImpactVisualEffect.Should().Be(impactEffect, $"{id}/{feat} must share its line's effect");
+                // These lines use native visuals in the impact action or positive-damage path.
+                var usesNativeImpact = animationOnlyDefinition != null ||
+                    id is "WristRocket" or "ForceBurst" or "ForceJudgment" or "RadiantLance";
+                var ability = matches.Single().Value;
+                ability.SuccessfulImpactVisualEffect.Should().Be(usesNativeImpact ? VisualEffect.None : expected,
+                    $"{id}/{feat} must use its intended impact path");
+                ability.DamageImpactVisualEffect.Should().Be(
+                    id is "ForceJudgment" or "RadiantLance" ? VisualEffect.Vfx_Imp_Sunstrike : VisualEffect.None,
+                    $"{id}/{feat} must bind the intended positive-damage visual");
+                if (usesNativeImpact)
+                    ability.ImpactAction.Should().NotBeNull($"{id}/{feat} still needs its native impact action");
             }
 
             rows.Should().ContainKey((int)expected, $"{id} needs an installed visualeffects.2da row");
@@ -71,6 +93,41 @@ public class AbilityImpactVisualEffectTests
                 bytes.Take(4).Should().Equal(new byte[4], $"{model} must be binary MDL, not ASCII");
             }
         }
+    }
+
+    [Test]
+    public void NativeReplacements_KeepTheirImpactActionsAndDamageGate()
+    {
+        var root = FindRepositoryRoot();
+        var burst = File.ReadAllText(Path.Combine(root,
+            "SWLOR.Game.Server/Feature/AbilityDefinition/Force/ForceBurstAbilityDefinition.cs"));
+        burst.Should().Contain("EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_Fireball)");
+        burst.Should().Contain("targetVisualEffect: VisualEffect.VFX_IMP_KIN_L");
+        burst.Should().Contain("afterSuccessfulHit: creature =>");
+        burst.Should().Contain("EffectVisualEffect(VisualEffect.Vfx_Imp_Silence)");
+        burst.Should().Contain("EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Wind)");
+        burst.Should().Contain("onGeometryResolved: geometry => PlayCentralVisuals(activator, geometry)");
+        burst.Should().Contain("Location(geometry.Area, geometry.Position, 0f)");
+        burst.Should().Contain("CreateObject(ObjectType.Placeable, \"plc_invisobj\", center)");
+        burst.Should().Contain("EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_Fireball), visualAnchor)");
+        burst.Should().Contain("ApplyWindPulse(visualAnchor);");
+        burst.Should().Contain("DelayCommand(0.1f, () => ApplyWindPulse(visualAnchor))");
+        burst.Should().Contain("DelayCommand(0.2f, () => ApplyWindPulse(visualAnchor))");
+        burst.Should().Contain("DestroyObject(visualAnchor, 3f)");
+        burst.Should().NotContain("ApplyWindPulse(target)");
+        burst.Should().NotContain("EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_Fireball), target)");
+
+        var lance = File.ReadAllText(Path.Combine(root,
+            "SWLOR.Game.Server/Feature/AbilityDefinition/Force/RadiantLanceAbilityDefinition.cs"));
+        lance.Should().Contain("onGeometryResolved: geometry =>");
+        Regex.IsMatch(lance, @"if \(level == 3\)\s+LaunchRadiantLance\(activator, geometry\)").Should().BeTrue();
+        lance.Should().Contain("EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_BoltGlory)");
+        lance.Should().NotContain("GetPosition(target)");
+
+        var service = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server/Service/Ability.cs"));
+        service.Should().Contain("onGeometryResolved?.Invoke(geometry)");
+        service.Should().Contain("if (damage > 0 && trackedImpact?.Ability is { } impactAbility &&");
+        service.Should().Contain("EffectVisualEffect(impactAbility.DamageImpactVisualEffect)");
     }
 
     private static string FindRepositoryRoot()

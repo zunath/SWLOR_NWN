@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Service
     {
         public const float IntroductionRange = 20f;
         private static readonly TimeSpan OfferLifetime = TimeSpan.FromMinutes(10);
-        private const float IntroductionDelaySeconds = 300f;
+        private const float IntroductionDelaySeconds = 120f;
         private static readonly PlayerIntroductionInbox Inbox = new();
 
         [NWNEventHandler(ScriptName.OnModuleExit)]

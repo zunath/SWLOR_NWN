@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Blazing Spikes";
         public override EffectIconType Icon => EffectIconType.BlazingSpikesStatusEffect;
-        public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
+        public override StatusEffectSourceType SourceType => StatusEffectSourceType.Normal;
 
         protected override void OnDamageTaken(
             uint defender,

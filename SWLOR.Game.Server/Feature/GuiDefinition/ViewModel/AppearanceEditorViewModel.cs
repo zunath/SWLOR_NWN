@@ -801,13 +801,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!GetIsObjectValid(item))
                 return false;
 
-            if (GetItemCursedFlag(item))
-                return false;
-
             // Lightsabers and saberstaffs still require all three parts to pass the allowlists below.
-            if (GetPlotFlag(item) &&
-                GetBaseItemType(item) != BaseItem.Lightsaber &&
-                GetBaseItemType(item) != BaseItem.Saberstaff)
+            if (!AllowsItemFlags(GetBaseItemType(item), GetPlotFlag(item), GetItemCursedFlag(item)))
                 return false;
 
             // Armors must have parts that are publicly available.
@@ -874,14 +869,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var middlePartId = middleId + middleColor * 100;
                     var bottomPartId = bottomId + bottomColor * 100;
 
-                    if (!appearance.TopParts.Contains(topPartId) ||
-                        !appearance.MiddleParts.Contains(middlePartId) ||
-                        !appearance.BottomParts.Contains(bottomPartId))
+                    if (!AllowsWeaponParts(appearance, topPartId, middlePartId, bottomPartId))
                         return false;
                 }
             }
 
             return true;
+        }
+
+        private static bool AllowsItemFlags(BaseItem itemType, bool isPlot, bool isCursed)
+        {
+            return !isCursed && (!isPlot || itemType == BaseItem.Lightsaber || itemType == BaseItem.Saberstaff);
+        }
+
+        private static bool AllowsWeaponParts(IWeaponAppearanceDefinition appearance, int top, int middle, int bottom)
+        {
+            return appearance.TopParts.Contains(top) && appearance.MiddleParts.Contains(middle) &&
+                   appearance.BottomParts.Contains(bottom);
         }
 
         private void ToggleItemEquippedFlags()

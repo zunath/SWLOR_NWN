@@ -73,6 +73,7 @@ Before writing code in an unfamiliar area, find two or three existing examples o
 
 ## Content Rules
 
+- **Saber loot:** training sabers, training saberstaves, lightsabers, and saberstaves must never appear in regular loot tables, including rare, boss, chest, and steal tables. Their acquisition belongs to the dedicated progression/crafting systems. Validate loot by blueprint base item type, not display name.
 - **Conversations:** authored dialogue lives only in `SWLOR.Game.Server/ConversationData/*.conversation.json`. Edit those graphs directly; never create DLG sources or regenerate graphs from legacy files. `Module/dlg/dmfi_universal.dlg.json` and the empty `Module/dlg/x0_skill_ctrap.dlg.json` base-game crafting override are the native exceptions. Preserve NPC `Conversation` IDs and route through `dialog_start`. Read `SWLOR.Game.Server/Readmes/Conversations.md` first.
 - **Player identity:** player-facing surfaces never show raw character names, account names, or CD keys; they go through the `PlayerName` service. Read `SWLOR.Game.Server/Readmes/PlayerIdentity.md` before touching any surface that displays a player.
 - **Economy-restricted items:** NPC-only and unobtainable items must stay out of player search and economy surfaces. `Item.IsEconomyRestricted` is the only classifier; never hardcode resref lists. Read `SWLOR.Game.Server/Readmes/EconomyRestrictedItems.md` before adding item blueprints or item pickers.

@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Ossus - Wastes Cave Facility"
+      "0": "[Prefab] Ossus - Wastes Cave Facility"
     }
   },
   "NoRest": {

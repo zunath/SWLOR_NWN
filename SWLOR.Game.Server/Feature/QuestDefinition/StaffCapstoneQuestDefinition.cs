@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unmoving Center Canyon Range Tally has been recovered from Anchorhead Canyon Range. Return it to Marda Voss at the Anchorhead cantina on Tatooine.")
+                    "The Unmoving Center Canyon Range Tally has been recovered from Anchorhead Canyon Range. Return it to Marda Voss at the Elevagii Farm on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unmoving Center Sightline Calibrator has been recovered from Anchorhead Canyon Range. Return it to Marda Voss at the Anchorhead cantina on Tatooine.")
+                    "The Unmoving Center Sightline Calibrator has been recovered from Anchorhead Canyon Range. Return it to Marda Voss at the Elevagii Farm on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unmoving Center Shattered Range Crest has been recovered from Anchorhead Canyon Range. Return it to Marda Voss at the Anchorhead cantina on Tatooine.")
+                    "The Unmoving Center Shattered Range Crest has been recovered from Anchorhead Canyon Range. Return it to Marda Voss at the Elevagii Farm on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unmoving Center Marshal's Challenge Chit has been recovered from Anchorhead Canyon Range. Return it to Marda Voss at the Anchorhead cantina on Tatooine.")
+                    "The Unmoving Center Marshal's Challenge Chit has been recovered from Anchorhead Canyon Range. Return it to Marda Voss at the Elevagii Farm on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unmoving Center master has been defeated. Return to Marda Voss at the Anchorhead cantina on Tatooine.")
+                    "The Unmoving Center master has been defeated. Return to Marda Voss at the Elevagii Farm on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

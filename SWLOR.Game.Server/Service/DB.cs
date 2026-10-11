@@ -177,9 +177,15 @@ namespace SWLOR.Game.Server.Service
             // Cache the indexed properties for quick look-up later.
             _indexedPropertiesByName[type] = indexedProperties;
 
-            _searchClientsByType[type].CreateIndex(schema, new Client.ConfiguredIndexOptions());
+            _searchClientsByType[type].CreateIndex(schema, BuildIndexOptions());
             Console.WriteLine($"Created index for {type}");
             WaitForReindexing(type);
+        }
+
+        // Stop words stay indexed so partial-match searches can require every word the player types.
+        private static Client.ConfiguredIndexOptions BuildIndexOptions()
+        {
+            return new Client.ConfiguredIndexOptions().SetNoStopwords();
         }
 
         private static void WaitForReindexing(Type type)

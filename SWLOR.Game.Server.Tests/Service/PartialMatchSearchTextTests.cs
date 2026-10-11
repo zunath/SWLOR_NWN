@@ -1,6 +1,8 @@
+using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -24,22 +26,33 @@ public class PartialMatchSearchTextTests
         PartialMatchSearchText.Build(search).Should().Be(expected);
     }
 
-    [TestCase("The Hunter", "(Hunter*)")]
-    [TestCase("Lord of War", "(Lord* War*)")]
-    [TestCase("Bob A", "(Bob*)")]
-    public void StopWordsAreIgnoredBecauseRediSearchRemovesThemFromIndexAndQuery(string search, string expected)
+    [TestCase("The Hunter", "(The* Hunter*)")]
+    [TestCase("Lord of War", "(Lord* of* War*)")]
+    [TestCase("Bob A", "(Bob* A)")]
+    [TestCase("the", "(the*)")]
+    [TestCase("a", "(a)")]
+    public void StopWordsAreSearchedLikeAnyOtherWord(string search, string expected)
     {
         PartialMatchSearchText.Build(search).Should().Be(expected);
     }
 
-    [TestCase("the", "the*")]
-    [TestCase("a", "a*")]
-    [TestCase("The A", "The A*")]
-    [TestCase("of X", "of X*")]
-    public void SearchesWithoutAPrefixableWordKeepTheSinglePrefixForm(string search, string expected)
+    [Test]
+    public void IndexesKeepStopWordsSoEveryWordCanBeRequired()
     {
-        // Dropping the stop words would leave an empty or single-character group.
-        PartialMatchSearchText.Build(search).Should().Be(expected);
+        // RediSearch strips default stop words from the index and the query unless the index sets STOPWORDS 0.
+        var options = typeof(DB).GetMethod("BuildIndexOptions", BindingFlags.NonPublic | BindingFlags.Static)!
+            .Invoke(null, null)!;
+        var serialize = options.GetType().GetMethod(
+            "SerializeRedisArgs",
+            BindingFlags.NonPublic | BindingFlags.Instance,
+            new[] { typeof(List<object>) })!;
+        var args = new List<object>();
+        serialize.Invoke(options, new object[] { args });
+
+        var text = args.Select(arg => arg.ToString()).ToList();
+        var index = text.IndexOf("STOPWORDS");
+        index.Should().BeGreaterThanOrEqualTo(0, "the index must be created with an explicit stop-word list");
+        text[index + 1].Should().Be("0");
     }
 
     [Test]

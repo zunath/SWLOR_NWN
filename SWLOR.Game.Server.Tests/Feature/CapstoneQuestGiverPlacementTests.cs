@@ -14,9 +14,9 @@ public class CapstoneQuestGiverPlacementTests
     {
         ("cq_invinc", "veles_sheriff"), ("cq_vitrupt", "veles_cantina"), ("cq_sysshut", "veles_cz_tower"),
         ("cq_killbeacon", "pw_ar_narscorpd"), ("cq_embunker", "tat_anc_gocorpst"), ("cq_deccommand", "pw_ar_nsshipyard"),
-        ("cq_sabstorm", "tat_anc_astropor"), ("cq_guardmst", "tat_anc_verpexba"), ("cq_sabcycl", "tat_tocheemain"),
+        ("cq_sabstorm", "tat_anc_astropor"), ("cq_guardmst", "tat_anc_southdis"), ("cq_sabcycl", "tat_tocheemain"),
         ("cq_emcocktail", "pw_ar_ns_medical"), ("cq_holdline", "pw_ar_ns_doffice"), ("cq_infconduit", "tat_anc_medical"),
-        ("cq_absdef", "pw_ar_nsficlub"), ("cq_soulasc", "pw_ar_narshahub"), ("cq_forcebane", "tat_anc_northdis"),
+        ("cq_absdef", "pw_ar_nsficlub"), ("cq_soulasc", "pw_ar_narshahub"), ("cq_forcebane", "tat_anc_southent"),
         ("cq_lightstand", "pw_ar_narpromena"), ("cq_darkhung", "tat_anc_junix"), ("cq_eclipse", "pw_ar_nardocks"),
         ("cq_adamguard", "nanostation015"), ("cq_scraplock", "czs220_hangar"), ("cq_worldbrk", "tat_anc_droidshp"),
         ("cq_unmovctr", "tat_anc_cantina"), ("cq_lastword", "tosche_cantina_s"), ("cq_deadhand", "tochee_cantina"),
@@ -164,7 +164,7 @@ public class CapstoneQuestGiverPlacementTests
         var relocatedAreas = new[]
         {
             "pw_ar_narpromena", "tat_anc_junix", "pw_ar_nardocks", "pw_ar_nsficlub",
-            "pw_ar_narshahub", "tat_anc_northdis", "tat_anc_astropor", "tat_anc_verpexba",
+            "pw_ar_narshahub", "tat_anc_southent", "tat_anc_astropor", "tat_anc_southdis",
             "tat_tocheemain", "tat_anc_medical", "pw_ar_ns_medical", "pw_ar_ns_doffice",
             "tat_anc_droidshp", "pw_ar_narscorpd", "tat_anc_gocorpst", "pw_ar_nsshipyard",
         };

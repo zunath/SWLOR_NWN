@@ -1,7 +1,9 @@
 using System.Text.RegularExpressions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AppearanceDefinition;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -66,7 +68,10 @@ public class HelmetTintTests
             .ToList();
         Assert.That(helmets, Is.Not.Empty);
 
-        var heads = Path.Combine(root, "SWLOR_Haks", "sw_pt_head");
+        var models = Directory.EnumerateDirectories(Path.Combine(root, "SWLOR_Haks"), "sw_*")
+            .SelectMany(directory => Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories))
+            .Where(path => Path.GetExtension(path) is ".mdl" or ".lod")
+            .ToDictionary(Path.GetFileName, path => path, StringComparer.OrdinalIgnoreCase);
         foreach (var helmet in helmets)
         {
             var head = HelmetModelRenderer.ResolveHead(helmet, 0, true, true);
@@ -74,9 +79,10 @@ public class HelmetTintTests
             foreach (var gender in new[] { 'm', 'f' })
             {
                 var model = HelmetModelRenderer.GetHeadModel(gender, race, head);
-                Assert.That(File.Exists(Path.Combine(heads, model + ".mdl")) ||
-                            File.Exists(Path.Combine(heads, model + ".lod")), Is.True,
-                    $"{helmet} needs {model}.mdl or .lod; add race '{race}' to BODY_RACES in GenerateHelmetRgbModels.py");
+                Assert.That(ModelResource.Exists(model,
+                    (name, type) => models.ContainsKey(name + (type == ResType.LOD ? ".lod" : ".mdl")),
+                    name => File.ReadAllText(models[name + ".lod"])), Is.True,
+                    $"{helmet} needs valid geometry for {model}; add race '{race}' to BODY_RACES in GenerateHelmetRgbModels.py");
             }
         }
     }

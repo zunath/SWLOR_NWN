@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SWLOR.CLI.Model;
@@ -13,6 +15,7 @@ namespace SWLOR.CLI
     public class HakBuilder
     {
         private const string ConfigFilePath = "./hakbuilder.json";
+        private static readonly string[] PackerOptions = { "--add-restypes", "lod:2078", "-e", "HAK" };
         private HakBuilderConfig _config;
         private List<HakBuilderHakpak> _haksToProcess;
         private readonly Dictionary<string, string> _checksumDictionary = new();
@@ -149,7 +152,7 @@ namespace SWLOR.CLI
                             continue;
                         }
 
-                        var checksumFolder = ChecksumUtil.ChecksumFolder(hak.Path);
+                        var checksumFolder = CalculateBuildChecksum(hak.Path);
                         _checksumDictionary[hak.Name] = checksumFolder;
 
                         // Check whether .sha checksum file exists
@@ -228,21 +231,30 @@ namespace SWLOR.CLI
 
             RunProcess(
                 "nwn_erf.exe",
-                "--add-restypes", "lod:2078",
-                "-f", $"{_config.OutputPath}hak/{hakName}.hak",
-                "-e", "HAK",
-                "-c", contentPath);
+                PackerOptions.Concat(new[]
+                {
+                    "-f", $"{_config.OutputPath}hak/{hakName}.hak", "-c", contentPath
+                }).ToArray());
 
             // Only perform checksum operations if enabled
             if (_config.EnableChecksumChecking)
             {
                 if (!_checksumDictionary.TryGetValue(hakName, out var checksum))
                 {
-                    checksum = ChecksumUtil.ChecksumFolder(folderPath);
+                    checksum = CalculateBuildChecksum(folderPath);
                 }
 
                 ChecksumUtil.WriteChecksumFile(_config.OutputPath + "hak/" + hakName + ".md5", checksum);
             }
+        }
+
+        private static string CalculateBuildChecksum(string folderPath)
+        {
+            // A source-only checksum can reuse an archive built without LOD resources.
+            var inputs = string.Join("\n", PackerOptions) + "\n" + ChecksumUtil.ChecksumFolder(folderPath);
+            using var md5 = MD5.Create();
+            return BitConverter.ToString(md5.ComputeHash(Encoding.UTF8.GetBytes(inputs)))
+                .Replace("-", "").ToLowerInvariant();
         }
 
         private static void RunProcess(string fileName, params string[] arguments)

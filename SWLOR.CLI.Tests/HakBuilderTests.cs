@@ -56,8 +56,9 @@ public sealed class HakBuilderTests
         finally { Directory.Delete(root, true); }
     }
 
-    [Test]
-    public void BuiltArchiveIncludesTheLodResourceTypeAndExactRedirectPayload()
+    [TestCase(false)]
+    [TestCase(true)]
+    public void BuiltArchiveIncludesTheLodResourceTypeAndExactRedirectPayload(bool legacyCache)
     {
         var root = Path.Combine(Path.GetTempPath(), "SWLOR lod packing", Guid.NewGuid().ToString("N"));
         var source = Path.Combine(root, "source");
@@ -66,14 +67,34 @@ public sealed class HakBuilderTests
         File.WriteAllText(Path.Combine(source, "geometry.mdl"), "model payload");
         try
         {
-            new HakBuilder().Process(new HakBuilderConfig
+            var output = Path.Combine(root, "output", "hak");
+            var archive = Path.Combine(output, "parts.hak");
+            var sidecar = Path.Combine(output, "parts.md5");
+            if (legacyCache)
+            {
+                Directory.CreateDirectory(output);
+                File.WriteAllText(archive, "legacy archive without LOD resources");
+                ChecksumUtil.WriteChecksumFile(sidecar, ChecksumUtil.ChecksumFolder(source));
+            }
+            var config = new HakBuilderConfig
             {
                 OutputPath = Path.Combine(root, "output") + Path.DirectorySeparatorChar,
                 TlkPath = Path.Combine(root, "unused.tlk"),
-                EnableChecksumChecking = false,
+                EnableChecksumChecking = legacyCache,
                 HakList = new() { new() { Name = "parts", Path = source } }
-            });
-            using var reader = new BinaryReader(File.OpenRead(Path.Combine(root, "output", "hak", "parts.hak")));
+            };
+            new HakBuilder().Process(config);
+            if (legacyCache)
+            {
+                Assert.That(ChecksumUtil.ReadChecksumFile(sidecar), Is.Not.EqualTo(ChecksumUtil.ChecksumFolder(source)),
+                    "the new cache must include packer options as well as source contents");
+                var previousBuild = new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                File.SetLastWriteTimeUtc(archive, previousBuild);
+                new HakBuilder().Process(config);
+                Assert.That(File.GetLastWriteTimeUtc(archive), Is.EqualTo(previousBuild),
+                    "an archive built with the current options must still be reused");
+            }
+            using var reader = new BinaryReader(File.OpenRead(archive));
             reader.BaseStream.Position = 16;
             var count = reader.ReadUInt32();
             reader.BaseStream.Position = 24;

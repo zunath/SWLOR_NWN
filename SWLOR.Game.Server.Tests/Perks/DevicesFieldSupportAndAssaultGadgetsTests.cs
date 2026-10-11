@@ -82,6 +82,21 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         }
     }
 
+    [TestCase("DeflectorShieldAbilityDefinition.cs")]
+    [TestCase("PowerCellAbilityDefinition.cs")]
+    [TestCase("GroupDeflectorAbilityDefinition.cs")]
+    [TestCase("EmergencyBunkerAbilityDefinition.cs")]
+    public void FieldSupportAllyAbilities_AwardDevicesCombatPoints(string file)
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / file).FullName);
+
+        source.Should().Contain(
+            "CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices);",
+            $"{file} has no hostile impact, so it must award Devices combat points itself or the skill never levels");
+    }
+
     [TestCase(true, 0, null, 45, 0)]
     [TestCase(true, 50, null, 0, 50)]
     [TestCase(false, 0, null, 45, 45)]

@@ -9,7 +9,7 @@ namespace SWLOR.Toolset.Tests
     /// Coverage for the WP5.1 <see cref="AreaPicking"/> instance hit-testing: ray/AABB and
     /// ray-triangle math against hand-built meshes, closest-of-several selection, and the
     /// marker-vs-model display rule (a placeable in marker mode must pick by its marker box even
-    /// when it carries a resolved model, mirroring GlAreaControl.DrawsAsModel).
+    /// when it carries a resolved model, mirroring AreaViewportControl.DrawsAsModel).
     /// </summary>
     public class AreaPickingTests
     {
@@ -214,7 +214,7 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void PickClosestInstance_NonPlaceableKindWithModel_AlwaysDrawnAsModelRegardlessOfToggle()
         {
-            // The showPlaceableModels toggle only affects Placeable kinds (per GlAreaControl.DrawsAsModel) -
+            // The showPlaceableModels toggle only affects Placeable kinds (per AreaViewportControl.DrawsAsModel) -
             // a Door with a resolved model must still pick through its model mesh either way.
             var instance = MakeMarkerInstance(InstanceMarkerKind.Door, Vector3.Zero, "door", MakeFlatQuadModel());
             var scene = MakeScene(instance);
@@ -224,7 +224,7 @@ namespace SWLOR.Toolset.Tests
             hit.Should().BeSameAs(instance);
         }
 
-        // ----- Bounds helpers used by GlAreaControl's selection highlight -----
+        // ----- Bounds helpers used by AreaViewportControl's selection highlight -----
 
         [Test]
         public void ComputeMarkerWorldBounds_IsCenteredOnInstancePosition()
@@ -360,7 +360,7 @@ namespace SWLOR.Toolset.Tests
         [TestCase(InstanceMarkerKind.Placeable, true, true)]
         [TestCase(InstanceMarkerKind.Door, false, true)]
         [TestCase(InstanceMarkerKind.Door, true, true)]
-        public void DrawsAsModel_MatchesGlAreaControlRule(InstanceMarkerKind kind, bool showPlaceableModels, bool expected)
+        public void DrawsAsModel_MatchesAreaViewportControlRule(InstanceMarkerKind kind, bool showPlaceableModels, bool expected)
         {
             var instance = MakeMarkerInstance(kind, Vector3.Zero, "x", MakeFlatQuadModel());
 

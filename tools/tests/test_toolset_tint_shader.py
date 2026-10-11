@@ -1,11 +1,14 @@
 """Draw the actual Toolset tint shader against the shipped palette on Windows.
 
-Requires initialized HAK sources and an OpenGL driver. Reuses the hidden WGL
-test context; no Toolset window or game process is launched.
+Requires initialized HAK sources, an OpenGL driver and a clone of the shared
+NWN.Toolset source (NWN_TOOLSET_SOURCE_ROOT, or ../NWN.Toolset beside this
+repository), which owns the area viewport shader. Reuses the hidden WGL test
+context; no Toolset window or game process is launched.
 Run: python -B -m unittest discover -s tools/tests -p test_toolset_tint_shader.py
 """
 import ctypes as ct
 import json
+import os
 from pathlib import Path
 import re
 import struct
@@ -17,11 +20,15 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "SWLOR_Haks/tools"))
 from TestTintShaderMaterials import MaterialTest, OpenGL
 
+SHADER_SOURCE = Path(os.environ.get("NWN_TOOLSET_SOURCE_ROOT") or ROOT.parent / "NWN.Toolset") \
+    / "src/Nwn.Toolset.Avalonia/Areas/AreaViewportControl.cs"
+
 
 @unittest.skipUnless(sys.platform == "win32", "Requires the Windows WGL test context")
+@unittest.skipUnless(SHADER_SOURCE.is_file(), "Requires the shared NWN.Toolset source")
 class ToolsetTintShaderTests(unittest.TestCase):
     def setUp(self):
-        source = (ROOT / "SWLOR.Toolset/Viewport/GlAreaControl.cs").read_text()
+        source = SHADER_SOURCE.read_text()
         def body(name):
             return re.search(r'private const string ' + name + r' = @"((?:[^"]|"")*)";',
                              source).group(1).replace('""', '"')

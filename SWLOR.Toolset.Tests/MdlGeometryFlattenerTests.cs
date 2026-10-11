@@ -1,8 +1,10 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
+using Nwn.Preview.Scene;
 using SWLOR.Toolset.Domain.Render;
+using SWLOR.Toolset.Tests.Support;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -19,6 +21,9 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                if (ToolsetCorpusPaths.RepositoryRoot is { } selected)
+                    return selected;
+
                 var current = new DirectoryInfo(AppContext.BaseDirectory);
                 while (current != null)
                 {
@@ -33,6 +38,8 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
+        private static string HaksRoot => ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks");
+
         [Test]
         public void Flatten_SwlorLeftThighPart_BringsVerticesToPartOrigin()
         {
@@ -40,7 +47,7 @@ namespace SWLOR.Toolset.Tests
             // corrected by the mesh node's Position <0.026, 0.013, -0.459>. After flattening,
             // the geometry must hang DOWN from the origin like its right-leg counterpart
             // (Z ≈ [-0.47..0.07]) and the node transform must be identity.
-            var path = Path.Combine(RepoRoot, "SWLOR_Haks", "sw_pt_lthigh", "pfh0_legl001.mdl");
+            var path = Path.Combine(HaksRoot, "sw_pt_lthigh", "pfh0_legl001.mdl");
             var model = new MdlReader().Parse(File.ReadAllBytes(path));
 
             MdlGeometryFlattener.FlattenNodeTransforms(model);
@@ -61,7 +68,7 @@ namespace SWLOR.Toolset.Tests
         {
             // pfh0_shinl001.mdl: 'Shin' mesh vertices sit at X ≈ +0.47 / Z ≈ +0.38, corrected by
             // node Position <-0.458, -1.033, -0.562>.
-            var path = Path.Combine(RepoRoot, "SWLOR_Haks", "sw_pt_lshin", "pfh0_shinl001.mdl");
+            var path = Path.Combine(HaksRoot, "sw_pt_lshin", "pfh0_shinl001.mdl");
             var model = new MdlReader().Parse(File.ReadAllBytes(path));
 
             MdlGeometryFlattener.FlattenNodeTransforms(model);
@@ -75,7 +82,7 @@ namespace SWLOR.Toolset.Tests
         public void Flatten_BaseStylePartAuthoredAtOrigin_IsUnchanged()
         {
             // pfh0_legr001.mdl's mesh node transform is identity — flattening must not move it.
-            var path = Path.Combine(RepoRoot, "SWLOR_Haks", "sw_pt_rthigh", "pfh0_legr001.mdl");
+            var path = Path.Combine(HaksRoot, "sw_pt_rthigh", "pfh0_legr001.mdl");
             var model = new MdlReader().Parse(File.ReadAllBytes(path));
             var before = model.GetMeshNodes().First(m => m.Name == "pfh0_legr001g").Vertices.ToArray();
 

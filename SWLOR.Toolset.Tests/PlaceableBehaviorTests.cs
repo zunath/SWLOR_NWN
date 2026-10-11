@@ -1,8 +1,10 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.Editors.Schemas;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
@@ -283,6 +285,41 @@ namespace SWLOR.Toolset.Tests
                 "Decor's Static value is a builder choice, not a behavior default");
         }
 
+        [Test]
+        public void PlaceableAppearancePreservesUnknownUnsignedRowAsRawInt()
+        {
+            var directory = Path.Combine(Path.GetTempPath(), "swlor-placeable-appearance-raw-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(directory);
+            try
+            {
+                var catalog = CreateFixturePlaceableModelCatalog(directory);
+                _ = catalog.GetAll();
+                var document = JsonGffDocument.Parse(System.Text.Encoding.UTF8.GetBytes(
+                    "{\"__data_type\":\"UTP \",\"Appearance\":{\"type\":\"dword\",\"value\":4294967295}}"));
+                using var appearance = new AppearanceSectionViewModel(
+                    new EditorFieldContext(document, (_, mutation) =>
+                    {
+                        mutation();
+                        return true;
+                    }),
+                    catalog,
+                    thumbnails: null,
+                    () => PlaceableAppearanceUsageIndex.Empty,
+                    (_, mutation) =>
+                    {
+                        mutation();
+                        return true;
+                    });
+
+                appearance.CurrentId.Should().Be(-1,
+                    "the original editor exposed an unknown unsigned DWORD through an unchecked raw Int32 cast");
+                appearance.CurrentDescription.Should().Contain("-1");
+            }
+            finally
+            {
+                Directory.Delete(directory, recursive: true);
+            }
+        }
         [Test]
         public async Task BlueprintSave_CompletesNamedBehaviorWiring()
         {
@@ -678,13 +715,14 @@ namespace SWLOR.Toolset.Tests
 
             // The strref explains a blank box; it is not a second value beside the real one. As a
             // column it ran as wide as the box it explained, on every row, and a description got
-            // whatever was left.
+            // whatever was left. The field templates themselves - strref watermark and the 140px
+            // description floor - live in the shared FieldView and are asserted by the shared
+            // library's FieldViewMarkupTests; the app must draw every schema field with it.
             app.Should().NotContain("Text=\"{Binding StrRefDisplay}\"");
-            app.Should().Contain("Watermark=\"{Binding StrRefDisplay}\"");
-
-            // The description's problem was its width, not its height: a floor tall enough to write
-            // in, low enough that it does not own a short window.
-            app.Should().Contain("MinHeight=\"140\"");
+            app.Should().Contain("<DataTemplate DataType=\"fields:FieldViewModel\">");
+            app.Should().Contain("<fieldViews:FieldView />");
+            app.Should().NotContain("DataType=\"editors:LocStringFieldViewModel\"",
+                "a second LocString template would let blueprint and area fields drift apart");
 
             var blueprintView = File.ReadAllText(Path.Combine(
                 CorpusLocator.RepositoryRoot,
@@ -725,7 +763,7 @@ namespace SWLOR.Toolset.Tests
             var gallerySource = new BehaviorValueSourceProvider(
                 gameCode: null,
                 tags: () => null,
-                blueprints: type => type == Domain.Workspace.ResourceType.Utp
+                blueprints: type => type == Nwn.Authoring.Resources.ModuleResourceType.Utp
                     ? new[]
                     {
                         new Domain.Workspace.CatalogEntry(

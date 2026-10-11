@@ -66,6 +66,37 @@ class TranslateWeaponModelTests(unittest.TestCase):
                          source[base + 1024 + 20:base + 1024 + 36])
         self.assertEqual(translated[-16:], source[-16:])
 
+    def test_pitch_rotates_position_and_orientation_about_the_pivot(self):
+        base = 12
+        source = bytearray(fixture())
+        struct.pack_into("<4f", source, base + 1024 + 20, 0, 0, 0, 1)
+        source = bytes(source)
+        rotated = translate_model(source, (0.0, -0.01, 0.0), 90.0, (0.0, 0.1, 0.0))
+        position = struct.unpack_from("<3f", rotated, base + 1024 + 4)
+        # (y, z) = (.2, .3) about pivot y=.1: (.1 - .3, .1) then dropped by .01.
+        for actual, expected in zip(position, (.1, -.21, .1)):
+            self.assertAlmostEqual(actual, expected, places=6)
+        quaternion = struct.unpack_from("<4f", rotated, base + 1024 + 20)
+        for actual, expected in zip(quaternion, (math.sqrt(.5), 0, 0, math.sqrt(.5))):
+            self.assertAlmostEqual(actual, expected, places=6)
+        sweep = 2 * (8.0 + .1) * math.sin(math.radians(45))
+        bounds = struct.unpack_from("<6f", rotated, base + 136)
+        for actual, expected in zip(bounds, (-1 - sweep, -2.01 - sweep, -3 - sweep,
+                                             4 + sweep, 4.99 + sweep, 6 + sweep)):
+            self.assertAlmostEqual(actual, expected, places=4)
+        self.assertAlmostEqual(struct.unpack_from("<f", rotated, base + 160)[0], 8.01 + sweep, places=4)
+        self.assertEqual(rotated[base + 1100:base + 1116], source[base + 1100:base + 1116])
+        self.assertEqual(rotated[-16:], source[-16:])
+
+    def test_positive_pitch_raises_a_minus_z_barrel(self):
+        source = bytearray(fixture())
+        struct.pack_into("<3f", source, 12 + 1024 + 4, 0, 0, -1)
+        rotated = translate_model(bytes(source), (0, 0, 0), 10.0)
+        _, y, z = struct.unpack_from("<3f", rotated, 12 + 1024 + 4)
+        self.assertGreater(y, 0)
+        self.assertAlmostEqual(y, math.sin(math.radians(10)), places=6)
+        self.assertAlmostEqual(z, -math.cos(math.radians(10)), places=6)
+
     def test_rejects_bad_offset(self):
         for delta in ((1, 2), (math.nan, 0, 0), (math.inf, 0, 0)):
             with self.subTest(delta=delta), self.assertRaises(ValueError):

@@ -2431,5 +2431,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         DoublehandTrait = 2900,
         BloodFrenzyBurst = 2901,
         SoulAscensionBurst = 2902,
+        ChainLightning = 2903,
+        BloodSiphon = 2904,
 }
 }

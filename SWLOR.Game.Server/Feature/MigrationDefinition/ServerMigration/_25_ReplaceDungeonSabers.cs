@@ -18,14 +18,25 @@ public sealed class _25_ReplaceDungeonSabers : IServerMigration
 
     public void Migrate()
     {
-        MigrateRecords<InventoryItem>(item => MigrateData(item.Data, value => item.Data = value, obj =>
+        var progress = new ServerMigrationProgress(Version,
+            ServerMigrationProgress.CountRecords<InventoryItem>(),
+            ServerMigrationProgress.CountRecords<MarketItem>(),
+            ServerMigrationProgress.CountRecords<QuestContract>(),
+            ServerMigrationProgress.CountRecords<QuestContractDelivery>(),
+            ServerMigrationProgress.CountRecords<WorldPropertyCategory>(),
+            ServerMigrationProgress.CountRecords<WorldProperty>(),
+            ServerMigrationProgress.CountRecords<ResearchJob>(),
+            ServerMigrationProgress.CountRecords<PlayerOutfit>(),
+            ServerMigrationProgress.CountRecords<DMCreature>(),
+            ServerMigrationProgress.CountRecords<PlayerShip>());
+        MigrateRecords<InventoryItem>(progress, item => MigrateData(item.Data, value => item.Data = value, obj =>
         {
             item.Resref = GetResRef(obj);
             item.Tag = GetTag(obj);
             item.Name = GetName(obj);
             item.IconResref = Item.GetIconResref(obj);
         }));
-        MigrateRecords<MarketItem>(item => MigrateData(item.Data, value => item.Data = value, obj =>
+        MigrateRecords<MarketItem>(progress, item => MigrateData(item.Data, value => item.Data = value, obj =>
         {
             item.Resref = GetResRef(obj);
             item.Tag = GetTag(obj);
@@ -36,9 +47,9 @@ public sealed class _25_ReplaceDungeonSabers : IServerMigration
             item.IsListed = false;
             item.DateListed = null;
         }));
-        MigrateRecords<QuestContract>(contract => MigrateContractItems(contract.RewardItems));
-        MigrateRecords<QuestContractDelivery>(delivery => MigrateContractItems(delivery.Items));
-        MigrateRecords<WorldPropertyCategory>(category =>
+        MigrateRecords<QuestContract>(progress, contract => MigrateContractItems(contract.RewardItems));
+        MigrateRecords<QuestContractDelivery>(progress, delivery => MigrateContractItems(delivery.Items));
+        MigrateRecords<WorldPropertyCategory>(progress, category =>
         {
             var changed = false;
             if (category.Items == null) return false;
@@ -52,11 +63,11 @@ public sealed class _25_ReplaceDungeonSabers : IServerMigration
                 });
             return changed;
         });
-        MigrateRecords<WorldProperty>(item => MigrateData(item.SerializedItem, value => item.SerializedItem = value));
-        MigrateRecords<ResearchJob>(item => MigrateData(item.SerializedItem, value => item.SerializedItem = value));
-        MigrateRecords<PlayerOutfit>(item => MigrateData(item.Data, value => item.Data = value));
-        MigrateRecords<DMCreature>(item => MigrateData(item.Data, value => item.Data = value));
-        MigrateRecords<PlayerShip>(ship =>
+        MigrateRecords<WorldProperty>(progress, item => MigrateData(item.SerializedItem, value => item.SerializedItem = value));
+        MigrateRecords<ResearchJob>(progress, item => MigrateData(item.SerializedItem, value => item.SerializedItem = value));
+        MigrateRecords<PlayerOutfit>(progress, item => MigrateData(item.Data, value => item.Data = value));
+        MigrateRecords<DMCreature>(progress, item => MigrateData(item.Data, value => item.Data = value));
+        MigrateRecords<PlayerShip>(progress, ship =>
         {
             var changed = MigrateData(ship.SerializedItem, value => ship.SerializedItem = value);
             changed |= MigrateModules(ship.Status?.HighPowerModules);
@@ -102,25 +113,30 @@ public sealed class _25_ReplaceDungeonSabers : IServerMigration
         return true;
     }
 
-    private static void MigrateRecords<T>(Func<T, bool> migrate) where T : EntityBase
+    private static void MigrateRecords<T>(ServerMigrationProgress progress, Func<T, bool> migrate) where T : EntityBase
     {
         var query = new DBQuery<T>();
-        var count = checked((int)DB.SearchCount(query));
+        var count = progress.BeginSection<T>();
         var records = DB.Search(query.AddPaging(count, 0)).ToList();
         var changed = 0;
         foreach (var record in records)
         {
             try
             {
-                if (!migrate(record)) continue;
-                DB.Set(record);
-                changed++;
+                var recordChanged = migrate(record);
+                if (recordChanged)
+                {
+                    DB.Set(record);
+                    changed++;
+                }
+                progress.RecordProcessed(recordChanged);
             }
             catch (Exception ex)
             {
                 throw new InvalidOperationException($"Dungeon saber migration failed for {typeof(T).Name} {record.Id}.", ex);
             }
         }
+        progress.FinishSection();
         Log.Write(LogGroup.Migration, $"Dungeon sabers: {typeof(T).Name} completed, {changed}/{count} records changed.", true);
     }
 }

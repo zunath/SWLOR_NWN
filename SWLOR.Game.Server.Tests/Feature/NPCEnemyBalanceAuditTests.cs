@@ -646,7 +646,7 @@ public class NPCEnemyBalanceAuditTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var worldNpcs = ReadWorksheetByName(archive, "World NPCs");
         var sharedStrings = ReadSharedStrings(archive);
         XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
@@ -1156,7 +1156,7 @@ public class NPCEnemyBalanceAuditTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var worldNpcs = ReadWorksheetByName(archive, "World NPCs");
         var mimicry = ReadWorksheetByName(archive, "Mimicry");
         var sharedStrings = ReadSharedStrings(archive);
@@ -1309,7 +1309,7 @@ public class NPCEnemyBalanceAuditTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var worksheet = ReadWorksheetByName(archive, "World NPCs");
         var weaponDelays = ReadWorksheetByName(archive, "World NPC Weapon Delays");
         var sharedStrings = ReadSharedStrings(archive);
@@ -1488,7 +1488,7 @@ public class NPCEnemyBalanceAuditTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var worksheet = ReadWorksheetByName(archive, "World NPCs");
         var sharedStrings = ReadSharedStrings(archive);
 
@@ -1527,8 +1527,11 @@ public class NPCEnemyBalanceAuditTests
                 var abilityPackage = GetWorkbookCellText(worksheet, sharedStrings, $"AP{row}");
                 abilityPackage.Should().NotBeNullOrWhiteSpace();
                 GetWorkbookCellText(worksheet, sharedStrings, $"AQ{row}").Should().Be(abilityPackage);
+                using var utc = ReadJson(root, "Module", "utc", $"{resref}.utc.json");
                 GetWorkbookCellText(worksheet, sharedStrings, $"B{row}")
-                    .Should().Contain(line.DisplayName, "the enemy-name column identifies its capstone line");
+                    .Should().Be(
+                        utc.RootElement.GetProperty("FirstName").GetProperty("value").GetProperty("0").GetString(),
+                        "the enemy-name column must match the name players see");
 
                 if (step == 4)
                 {

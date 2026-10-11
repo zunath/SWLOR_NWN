@@ -63,7 +63,7 @@ public class NPCAbilityDefinitionTests
     public void NPCAbilities_AreDocumentedInBibleNpcAbilitiesTab()
     {
         var root = FindRepositoryRoot();
-        using var archive = ZipFile.OpenRead((root / "design" / "bible" / "SWLOR Design Bible - Combat Upgrade.xlsx").FullName);
+        using var archive = ZipFile.OpenRead((root / "design" / "bible" / "SWLOR Design Bible.xlsx").FullName);
         var worksheet = ReadWorksheetByName(archive, "NPC Abilities");
         var sharedStrings = ReadSharedStrings(archive);
         var documentedRows = ReadNpcAbilityBibleRows(worksheet, sharedStrings);
@@ -101,7 +101,8 @@ public class NPCAbilityDefinitionTests
             row.DamageResistance.Should().NotBeNullOrWhiteSpace();
             row.StatusEffect.Should().NotBeNullOrWhiteSpace();
             row.Duration.Should().NotBeNullOrWhiteSpace();
-            row.Notes.Should().NotBeNullOrWhiteSpace();
+            if (!row.DamageResistance.StartsWith("None /", StringComparison.Ordinal))
+                row.Notes.Should().StartWith("Base damage", "damaging abilities document their base damage");
 
             var detail = expectedAbility.Ability;
             row.Hostile.Should().Be(detail.IsHostileAbility ? "Yes" : "No");

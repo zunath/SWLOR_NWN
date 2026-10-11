@@ -563,7 +563,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Nima"
+            "0": "Talia"
           }
         },
         "fortbonus": {
@@ -601,7 +601,7 @@
         "LastName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Poy"
+            "0": "Brenn"
           }
         },
         "LawfulChaotic": {
@@ -923,7 +923,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "nima_poy"
+          "value": "czerka_arms_merchant"
         },
         "Tail_New": {
           "type": "dword",

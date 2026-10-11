@@ -178,7 +178,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "nima_poy"
+          "value": "czerka_arms_shop"
         },
         "CRAdjust": {
           "type": "int",
@@ -939,23 +939,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "STORE_TAG"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VELES_GENERAL_STORE_MERCHANT"
-              }
-            }
-          ]
+          "value": []
         },
         "WalkRate": {
           "type": "int",

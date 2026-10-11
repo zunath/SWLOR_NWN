@@ -29,6 +29,23 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Updates one unindexed property without deserializing legacy fields in the entity.
+        /// </summary>
+        internal static void SetUnindexedJsonProperty<T>(string id, string propertyName, string json)
+            where T : EntityBase
+        {
+            var property = typeof(T).GetProperty(propertyName);
+            if (property == null || property.GetCustomAttribute<IndexedAttribute>() != null)
+                throw new ArgumentException("A declared, unindexed entity property is required.", nameof(propertyName));
+
+            var result = _multiplexer.GetDatabase().JsonSet($"{_keyPrefixByType[typeof(T)]}:{id}",
+                json, path: $".{propertyName}", setOption: SetOption.SetOnlyIfExists);
+            if (!result.IsSuccess)
+                throw new InvalidOperationException($"Could not update {typeof(T).Name} {id}.{propertyName}.");
+            _cachedEntities.Remove(id);
+        }
+
         private static ApplicationSettings _appSettings;
         private static readonly Dictionary<Type, string> _keyPrefixByType = new();
         private static readonly Dictionary<Type, Client> _searchClientsByType = new();

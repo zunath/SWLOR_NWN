@@ -133,7 +133,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     var values = slot == SWLOR.NWN.API.NWScript.Enum.Item.AppearanceWeapon.Bottom
                         ? LightsaberWorkbench.GetHilts(type).Select(h => h.PartValue)
-                        : LightsaberWorkbench.GetBladeColors(type, false).Select(c => LightsaberWorkbench.GetTopValue(c, type, false));
+                        : new[] { false, true }
+                            .SelectMany(curved => LightsaberWorkbench.GetBladeColors(type, curved)
+                                .Select(c => LightsaberWorkbench.GetTopValue(c, type, curved)))
+                            .Distinct();
                     foreach (var value in values)
                     {
                         await ctx.ExecuteInCreatureContextAsync(owner, () =>

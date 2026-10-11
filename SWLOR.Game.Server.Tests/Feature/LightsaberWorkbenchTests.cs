@@ -379,6 +379,28 @@ public class LightsaberWorkbenchTests
             colors[name].LightColor.Should().Be(lightColor);
         }
 
+        // Check every catalog entry, including shoto, crossguard and saberstaff pike variants.
+        var allColors = LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, false)
+            .Concat(LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, true))
+            .Concat(LightsaberWorkbench.GetBladeColors(BaseItem.Saberstaff, false));
+        foreach (var color in allColors)
+        {
+            var name = Regex.Replace(color.Name, @"^(shoto|crossguard|pike) - ", "");
+            name = Regex.Replace(name, @" \(variant \d+\)$", "").ToLowerInvariant();
+            var lightColor = name switch
+            {
+                "orange" => LightColor.Orange,
+                "blue" => LightColor.Blue,
+                "green" or "green 1" or "green 2" => LightColor.Green,
+                "red" => LightColor.Red,
+                "yellow" => LightColor.Yellow,
+                "purple" or "purple 1" or "purple 2" => LightColor.Purple,
+                "white" or "teal" or "pink" or "brown" or "lavender" or "cyan" => LightColor.White,
+                _ => throw new InvalidOperationException($"Add an explicit light-color expectation for {color.Name}")
+            };
+            color.LightColor.Should().Be(lightColor, $"{color.Name} must use its supported light color or white fallback");
+        }
+
         var root = FindRepositoryRoot();
         var viewModel = File.ReadAllText(Path.Combine(
             root.FullName,

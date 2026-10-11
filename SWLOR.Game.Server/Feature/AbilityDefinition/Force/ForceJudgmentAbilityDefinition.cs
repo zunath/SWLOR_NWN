@@ -91,7 +91,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             var ability = builder
                 .Create(feat, PerkType.ForceJudgment)
-                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ForceJudgment)
+                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.None)
+                .DisplaysVisualEffectOnDamage(VisualEffect.Vfx_Imp_Sunstrike)
                 .UsesAuthoredAnimationAtImpact()
                 .Name(name)
                 .Level(level)
@@ -149,7 +150,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     false,
                     Array.Empty<Type>(),
                     damageType: CombatDamageType.Force,
-                    targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+                    targetVisualEffect: VisualEffect.None);
                 return;
             }
 
@@ -167,7 +168,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 0f,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                targetVisualEffect: VisualEffect.None,
                 areaVisualEffect: VisualEffect.None,
                 maxTargets: maxTargets);
         }

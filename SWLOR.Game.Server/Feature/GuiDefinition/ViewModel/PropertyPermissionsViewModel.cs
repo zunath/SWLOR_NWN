@@ -248,19 +248,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void EnsureUsableWindowGeometry()
         {
             var current = Geometry;
-            if (current == null || current.Width >= PropertyPermissionsDefinition.WindowWidth)
+            if (current == null ||
+                current.Width >= PropertyPermissionsDefinition.WindowWidth &&
+                current.Height >= PropertyPermissionsDefinition.WindowHeight)
                 return;
 
             Geometry = new GuiRectangle(
                 current.X,
                 current.Y,
-                PropertyPermissionsDefinition.WindowWidth,
-                current.Height);
+                Math.Max(current.Width, PropertyPermissionsDefinition.WindowWidth),
+                Math.Max(current.Height, PropertyPermissionsDefinition.WindowHeight));
         }
 
         protected override void Initialize(PropertyPermissionPayload initialPayload)
         {
-            // Saved sizes from before pagination are too narrow for the layout.
+            // Saved sizes from before pagination are too small for the layout.
             EnsureUsableWindowGeometry();
             DelayCommand(0.0f, EnsureUsableWindowGeometry);
 

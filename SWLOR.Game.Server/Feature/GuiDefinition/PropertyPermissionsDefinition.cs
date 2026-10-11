@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class PropertyPermissionsDefinition: IGuiWindowDefinition
     {
-        // Narrower than this, the page selector widens the player column and clips the Grant column.
+        // Minimum usable size: narrower clips the Grant column, shorter leaves room for only two players.
         internal const float WindowWidth = 620f;
         internal const float WindowHeight = 330f;
 

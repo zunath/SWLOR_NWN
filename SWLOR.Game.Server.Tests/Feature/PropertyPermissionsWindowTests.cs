@@ -46,12 +46,13 @@ public class PropertyPermissionsWindowTests
         definition.Should().Contain("internal const float WindowHeight = 330f;");
         definition.Should().Contain(".SetInitialGeometry(0, 0, WindowWidth, WindowHeight)");
 
-        // Saved geometry overrides the initial size, so older narrow sizes are widened on open.
+        // Saved geometry overrides the initial size, so older smaller sizes are enlarged on open.
         var initialize = ExtractMethod(viewModel, "protected override void Initialize(PropertyPermissionPayload initialPayload)");
         initialize.Should().Contain("EnsureUsableWindowGeometry();");
         initialize.Should().Contain("DelayCommand(0.0f, EnsureUsableWindowGeometry);");
-        ExtractMethod(viewModel, "private void EnsureUsableWindowGeometry()")
-            .Should().Contain("current.Width >= PropertyPermissionsDefinition.WindowWidth");
+        var ensure = ExtractMethod(viewModel, "private void EnsureUsableWindowGeometry()");
+        ensure.Should().Contain("Math.Max(current.Width, PropertyPermissionsDefinition.WindowWidth)");
+        ensure.Should().Contain("Math.Max(current.Height, PropertyPermissionsDefinition.WindowHeight)");
     }
 
     private static string ExtractMethod(string source, string signature)

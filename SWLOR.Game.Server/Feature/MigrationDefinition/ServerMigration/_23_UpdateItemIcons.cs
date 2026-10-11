@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Service.QuestContractService;
 using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
@@ -52,6 +53,20 @@ public sealed class _23_UpdateItemIcons : IServerMigration
             changed |= UpdateModules(ship.Status?.ConfigurationModules);
             return changed;
         });
+        MigrateRecords<QuestContract>(contract => UpdateContractItems(contract.RewardItems));
+        MigrateRecords<QuestContractDelivery>(delivery => UpdateContractItems(delivery.Items));
+    }
+
+    private static bool UpdateContractItems(List<QuestContractItem> items)
+    {
+        if (items == null) return false;
+        var changed = false;
+        foreach (var item in items)
+        {
+            changed |= UpdateData(item.Data, value => item.Data = value);
+            changed |= UpdateIcon(item.Resref, item.IconResref, value => item.IconResref = value);
+        }
+        return changed;
     }
 
     private static bool UpdateModules(Dictionary<int, ShipStatus.ShipStatusModule> modules)

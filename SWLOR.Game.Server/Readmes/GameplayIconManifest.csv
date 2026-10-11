@@ -1175,7 +1175,7 @@
 "Item","missile_launcher","Missile launcher","Harmful","","iit_smmsllaunch","SWLOR_Haks/sw_item_source/missile_launcher.png",""
 "Item","module_enhancement","Ship module enhancement","Utility","","iit_smenhmodule","SWLOR_Haks/sw_item_source/module_enhancement.png",""
 "Item","power_diverter","Capital power diverter","Passive","","iit_smpowdivert","SWLOR_Haks/sw_item_source/power_diverter.png",""
-"Item","power_relay","Power relay construction","Utility","","iit_smpowrelay","SWLOR_Haks/sw_item_source/power_relay.png",""
+"Item","ship_power_relay","Power relay construction","Utility","","iit_smpowrelay","SWLOR_Haks/sw_item_source/power_relay.png",""
 "Item","proton_bomb","Proton bomb ammunition","Utility","","iit_smprotbomb","SWLOR_Haks/sw_item_source/proton_bomb.png",""
 "Item","quad_laser","Quad laser cannon","Harmful","","iit_smquadlaser","SWLOR_Haks/sw_item_source/quad_laser.png",""
 "Item","reactive_armor","Reactive armor","Passive","","iit_smreactarmor","SWLOR_Haks/sw_item_source/reactive_armor.png",""

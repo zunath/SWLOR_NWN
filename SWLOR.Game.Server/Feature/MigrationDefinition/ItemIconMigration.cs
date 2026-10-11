@@ -1425,12 +1425,22 @@ public static class ItemIconMigration
     {
         updated = serialized;
         if (string.IsNullOrWhiteSpace(serialized)) return false;
-        var obj = MigrationObject.Deserialize(serialized);
+        // Saved creatures can carry retired appearances that native loading rejects.
+        var storedInventory = StoredObjectData.ReadInventory(serialized);
+        ushort? temporaryAppearance = null;
+        if (storedInventory != null && storedInventory.Appearance >= 0)
+        {
+            var modelType = Get2DAString("appearance", "MODELTYPE", storedInventory.Appearance);
+            if (string.IsNullOrWhiteSpace(modelType) || modelType == "****")
+                temporaryAppearance = (ushort)AppearanceType.Human;
+        }
+        var obj = MigrationObject.Deserialize(storedInventory?.PrepareForNativeLoad(temporaryAppearance) ?? serialized);
         if (!GetIsObjectValid(obj)) return false;
         try
         {
             if (!MigrateObject(obj)) return false;
-            updated = MigrationObject.Serialize(obj, serialized);
+            var migrated = MigrationObject.Serialize(obj, serialized);
+            updated = storedInventory == null ? migrated : storedInventory.CopyMigratedInventory(migrated);
             return true;
         }
         finally { MigrationObject.DestroyTemporaryObject(obj); }

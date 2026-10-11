@@ -286,7 +286,9 @@ authored skeleton and meshes sit beneath a private `rg_model` branch. Garment
 joint names and skin bone references are renamed together; mesh data, material
 references, bind transforms, and native inverse skin binds are preserved.
 Duplicate legacy nodes are removed or renamed only after checking actual binary
-bone references and child/animation relationships.
+bone references and child/animation relationships. Empty `rp_` spacers give all
+robe bodies of one base body the same body-node indices; see
+[Neck skins on robe skeletons](#neck-skins-on-robe-skeletons).
 
 Generated robe phenotypes also need their own native cloak geometry resources.
 After changing the robe or cloak catalog, run
@@ -802,7 +804,17 @@ neck packets and equipped armor packets use these aliases; saved armor, body
 stats and outfit selections retain their authored IDs. The equipment packet
 hook restores the original field immediately after the synchronous writer.
 
-After changing body roots, neck meshes or phenotype fallbacks, run
+Garment joints must stay beneath their body bones, so each robe would otherwise
+shift later body nodes by a different amount and need its own aliases.
+`GenerateRobeRgbModels.py` inserts empty `rp_` dummies before body nodes until
+every robe body of one base body (for example all `pfh` robes) has the same
+body-node indices. One alias per source neck then serves all of them; the
+generator fails if any robe body breaks that layout. Aliases skip the stock
+skinny and horse-rider phenotypes (1, 3, 5, 6, 8), which no SWLOR creature
+uses. Regeneration deletes unused aliases and keeps their IDs reserved in
+`NeckModels.json` so an ID never renders a different neck.
+
+After changing body roots, robe bodies, neck meshes or phenotype fallbacks, run
 `python -B SWLOR_Haks/tools/GenerateNeckModels.py --game-data "<NWN>/data" --apply`,
 then repeat with `--check` and run `TestNeckModels.py --game-data "<NWN>/data"`.
 The HAK build rejects stale source/output hashes, a deleted repository input,

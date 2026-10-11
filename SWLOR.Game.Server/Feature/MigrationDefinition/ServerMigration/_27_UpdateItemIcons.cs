@@ -11,9 +11,9 @@ using SWLOR.Game.Server.Service.SpaceService;
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 
 /// <summary>Updates saved item artwork independently of previously completed item-schema migrations.</summary>
-public sealed class _23_UpdateItemIcons : IServerMigration
+public sealed class _27_UpdateItemIcons : IServerMigration
 {
-    public int Version => 23;
+    public int Version => 27;
     public MigrationExecutionType ExecutionType => MigrationExecutionType.PostCacheLoad;
 
     public void Migrate()
@@ -104,6 +104,6 @@ public sealed class _23_UpdateItemIcons : IServerMigration
             DB.Set(entity);
             changed++;
         }
-        Log.Write(LogGroup.Migration, $"Migration #23: Updated item artwork in {changed}/{count} {typeof(T).Name} records.", true);
+        Log.Write(LogGroup.Migration, $"Migration #27: Updated item artwork in {changed}/{count} {typeof(T).Name} records.", true);
     }
 }

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.QuestContractService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -30,7 +31,7 @@ public static partial class MigrationEngineTests
             ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, 88);
             var properties = DescribeProperties(item);
             var identity = GetObjectUUID(item);
-            new _16_UpdateItemIcons().Migrate(owner);
+            new _19_UpdateItemIcons().Migrate(owner);
             ctx.AssertEqual(ItemIconMigration.GetUpdatedModel("aen_hp1", (int)GetBaseItemType(item), 88), GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0), "Uses its reviewed enhancement artwork");
             ctx.AssertEqual(identity, GetObjectUUID(item), "The original native object is retained");
             ctx.AssertEqual("Custom vitality enhancement", GetName(item), "Custom name is retained");
@@ -91,6 +92,10 @@ public static partial class MigrationEngineTests
             var outfit = new PlayerOutfit { Data = data, Name = "Retained outfit" };
             var creature = new DMCreature("Retained creature", "retained_tag", creatureData);
             var ship = new PlayerShip { SerializedItem = data, Status = new ShipStatus() };
+            var contract = new QuestContract { Title = "Retained contract" };
+            contract.RewardItems.Add(new QuestContractItem { Data = data, Resref = "aen_hp1", IconResref = "iit_ess2_088", StackSize = 4, Name = "Retained reward" });
+            var delivery = new QuestContractDelivery { PlayerId = "retained-player" };
+            delivery.Items.Add(new QuestContractItem { Data = data, Resref = "aen_hp1", IconResref = "iit_ess2_088", StackSize = 5, Name = "Retained delivery" });
             foreach (var modules in new[] { ship.Status.HighPowerModules, ship.Status.LowPowerModules, ship.Status.ConfigurationModules })
                 modules[2] = new ShipStatus.ShipStatusModule { SerializedItem = data, ItemInstanceId = "retained-id", ModuleBonus = 13, RecastTime = new DateTime(2030, 1, 1) };
             void AssertPayload(string updated, bool isCreature = false)
@@ -107,7 +112,8 @@ public static partial class MigrationEngineTests
             {
                 DB.Set(inventory); DB.Set(market); DB.Set(category); DB.Set(property);
                 DB.Set(research); DB.Set(outfit); DB.Set(creature); DB.Set(ship);
-                new _23_UpdateItemIcons().Migrate();
+                DB.Set(contract); DB.Set(delivery);
+                new _27_UpdateItemIcons().Migrate();
                 var migratedInventory = DB.Get<InventoryItem>(inventory.Id);
                 AssertPayload(migratedInventory.Data);
                 ctx.AssertEqual("iit_ess2_019", migratedInventory.IconResref, "Stored UI metadata follows the new artwork");
@@ -137,7 +143,15 @@ public static partial class MigrationEngineTests
                     ctx.AssertEqual(13, modules[2].ModuleBonus, "Installed module bonus is preserved");
                     ctx.AssertEqual(new DateTime(2030, 1, 1), modules[2].RecastTime, "Installed module recast is preserved");
                 }
-                new _23_UpdateItemIcons().Migrate();
+                var reward = DB.Get<QuestContract>(contract.Id).RewardItems[0];
+                AssertPayload(reward.Data);
+                ctx.AssertEqual("iit_ess2_019", reward.IconResref, "Escrowed contract reward artwork is updated");
+                ctx.AssertEqual(4, reward.StackSize, "Contract reward stack size is preserved");
+                var delivered = DB.Get<QuestContractDelivery>(delivery.Id).Items[0];
+                AssertPayload(delivered.Data);
+                ctx.AssertEqual("iit_ess2_019", delivered.IconResref, "Pending delivery artwork is updated");
+                ctx.AssertEqual("Retained delivery", delivered.Name, "Pending delivery name is preserved");
+                new _27_UpdateItemIcons().Migrate();
                 ctx.AssertEqual(migratedInventory.Data, DB.Get<InventoryItem>(inventory.Id).Data, "A repeat server migration leaves exact payloads intact");
             }
             finally
@@ -146,8 +160,36 @@ public static partial class MigrationEngineTests
                 DB.Delete<WorldPropertyCategory>(category.Id); DB.Delete<WorldProperty>(property.Id);
                 DB.Delete<ResearchJob>(research.Id); DB.Delete<PlayerOutfit>(outfit.Id);
                 DB.Delete<DMCreature>(creature.Id); DB.Delete<PlayerShip>(ship.Id);
+                DB.Delete<QuestContract>(contract.Id); DB.Delete<QuestContractDelivery>(delivery.Id);
             }
         });
     }
 
+    [EngineTest("Saved creature artwork refresh keeps a retired appearance and creature state", Category = "ItemIcons")]
+    public static async Task SavedCreatureArtworkKeepsRetiredAppearance(EngineTestContext ctx)
+    {
+        var owner = ctx.SpawnCreature("nw_rat001");
+        await ctx.WaitFrameAsync();
+        var item = await CreateItemAsync(ctx, owner, "aen_hp1", owner);
+        await ctx.ExecuteInCreatureContextAsync(owner, () =>
+        {
+            ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, 88);
+            SetLocalString(owner, "PRESERVED_CREATURE_NOTE", "Saved creature state");
+            var original = Invoke("StoredObjectData", "ReadCreature", ObjectPlugin.Serialize(owner));
+            string TemporaryAppearance(object document, ushort appearance) => (string)document.GetType()
+                .GetMethod("WithTemporaryAppearance").Invoke(document, new object[] { appearance });
+            var saved = TemporaryAppearance(original, ushort.MaxValue);
+            ctx.Assert(!GetIsObjectValid(ObjectPlugin.Deserialize(saved)), "The retired appearance must reproduce native loading failure");
+
+            ctx.Assert(ItemIconMigration.MigrateSerializedObject(saved, out var migrated), "Carried item artwork is updated");
+            var document = Invoke("StoredObjectData", "ReadCreature", migrated);
+            ctx.AssertEqual((int)ushort.MaxValue, (int)document.GetType().GetProperty("Appearance").GetValue(document), "The saved appearance is preserved");
+            var view = Deserialize(ctx, TemporaryAppearance(document, (ushort)AppearanceType.Human));
+            ctx.AssertEqual("Saved creature state", GetLocalString(view, "PRESERVED_CREATURE_NOTE"), "Unrelated creature data is preserved");
+            var restoredItem = GetFirstItemInInventory(view);
+            ctx.AssertEqual(19, GetItemAppearance(restoredItem, ItemAppearanceType.SimpleModel, 0), "Carried item artwork is updated");
+            ctx.Assert(!ItemIconMigration.MigrateSerializedObject(migrated, out var unchanged), "Retry needs no further changes");
+            ctx.AssertEqual(migrated, unchanged, "Retry retains the saved payload exactly");
+        });
+    }
 }

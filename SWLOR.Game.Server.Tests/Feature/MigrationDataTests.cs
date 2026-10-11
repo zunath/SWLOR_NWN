@@ -48,14 +48,14 @@ public class MigrationDataTests
     public void ItemIconMigration_CheckpointsAfterAlreadyCompletedSchemaMigration()
     {
         var type = ServerAssembly.GetType("SWLOR.Game.Server.Service.MigrationService.ServerMigrationState")!;
-        var state = Activator.CreateInstance(type, 22)!;
+        var state = Activator.CreateInstance(type, 26)!;
         var executed = false;
         type.GetMethod("Run")!.Invoke(state, new object[]
         {
-            new _23_UpdateItemIcons(), (Action<IServerMigration>)(_ => executed = true)
+            new _27_UpdateItemIcons(), (Action<IServerMigration>)(_ => executed = true)
         });
         executed.Should().BeTrue();
-        type.GetProperty("CompletedVersion")!.GetValue(state).Should().Be(23);
+        type.GetProperty("CompletedVersion")!.GetValue(state).Should().Be(27);
     }
 
     [Test]

@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 /// <summary>Updates reviewed inventory artwork in place, including saved nested inventories.</summary>
 public static class ItemIconMigration
 {
-    // Fixed legacy appearances for player migration 16 and server migration 23.
+    // Fixed legacy appearances for player migration 19 and server migration 27.
     private static readonly Dictionary<string, (int BaseItem, int OldModel, int NewModel, string OldIcon, string NewIcon)> Models =
         new(StringComparer.OrdinalIgnoreCase)
         {

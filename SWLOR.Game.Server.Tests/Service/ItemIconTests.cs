@@ -105,12 +105,12 @@ public class ItemIconTests
         File.Exists(Path.Combine(server, "Service", "ShipItemAppearance.cs")).Should().BeFalse();
         File.Exists(Path.Combine(server, "Service", "ItemIconAppearance.cs")).Should().BeFalse();
         File.Exists(Path.Combine(server, "Feature", "ShipItemIconCompatibility.cs")).Should().BeFalse();
-        new _16_UpdateItemIcons().Version.Should().Be(16);
-        new _23_UpdateItemIcons().Version.Should().Be(23);
-        new _23_UpdateItemIcons().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
-        File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_16_UpdateItemIcons.cs"))
+        new _19_UpdateItemIcons().Version.Should().Be(19);
+        new _27_UpdateItemIcons().Version.Should().Be(27);
+        new _27_UpdateItemIcons().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
+        File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_19_UpdateItemIcons.cs"))
             .Should().Contain("ItemIconMigration.MigrateObject(player)");
-        File.ReadAllText(Path.Combine(migrations, "ServerMigration", "_23_UpdateItemIcons.cs"))
+        File.ReadAllText(Path.Combine(migrations, "ServerMigration", "_27_UpdateItemIcons.cs"))
             .Should().Contain("ItemIconMigration.MigrateSerializedObject").And.NotContain("StoredItemDataMigration.Migrate()");
         File.ReadAllText(Path.Combine(migrations, "PlayerMigration", "_14_MigrateResistanceItemProperties.cs"))
             .Should().NotContain("ItemIconMigration");

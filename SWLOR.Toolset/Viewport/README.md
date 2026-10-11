@@ -1,8 +1,6 @@
 # Viewport rendering approach
 
-The SWLOR Toolset renders 3D content with Avalonia's `OpenGlControlBase` and Silk.NET.OpenGL.
-Format decoding and scene preparation stay in `SWLOR.Toolset.Domain`; the app project owns only
-the OpenGL control, GPU resources, and interaction layer.
+The SWLOR Toolset uses the shared `Nwn.Toolset.Avalonia.Areas.AreaViewportControl` for OpenGL+rendering and interaction. SWLOR supplies a host material adapter for its HAK resources, MTR/TXI+policy, PLT composition and tint metadata.
 
 ## Data flow
 
@@ -11,8 +9,9 @@ the OpenGL control, GPU resources, and interaction layer.
 3. Domain render services compose creature parts, flatten model transforms, resolve materials and
    textures, and emit `RenderModel` data.
 4. `AreaSceneBuilder` combines area tiles and placed instances into a scene.
-5. `GlAreaControl` uploads meshes and textures, batches draw calls, and handles camera, picking,
-   overlays, gizmos, animation previews, and bounded emitter cues.
+5. `AreaViewportControl` uploads meshes and textures, batches draw calls, and handles camera,
+   picking, overlays, gizmos, animation previews, and bounded emitter cues. `SwlorAreaViewportMaterialProvider`
+   supplies material and tint surfaces without exposing SWLOR conventions to the shared control.
 
 The viewport code does not parse game formats and the formats library has no dependency on the
 toolset or game server.

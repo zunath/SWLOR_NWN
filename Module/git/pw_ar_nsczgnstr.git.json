@@ -96197,11 +96197,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 191,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Basic Knife"
-                      },
-                      "id": 191
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -96413,11 +96413,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 191,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Field Knife"
-                      },
-                      "id": 191
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -96845,11 +96845,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 191,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Veteran Knife"
-                      },
-                      "id": 191
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -97061,11 +97061,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 191,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Delta Knife"
-                      },
-                      "id": 191
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -97277,11 +97277,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 191,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Prime Knife"
-                      },
-                      "id": 191
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -98361,11 +98361,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 167,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Field Great Sword"
-                      },
-                      "id": 167
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -98579,11 +98579,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 167,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Titan Great Sword"
-                      },
-                      "id": 167
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -98797,11 +98797,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 167,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Veteran Great Sword"
-                      },
-                      "id": 167
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -99015,11 +99015,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 167,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Delta Great Sword"
-                      },
-                      "id": 167
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -99233,11 +99233,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 167,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Prime Great Sword"
-                      },
-                      "id": 167
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -99887,11 +99887,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 167,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Ophidian Great Sword"
-                      },
-                      "id": 167
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -127403,7 +127403,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -127471,7 +127471,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -127646,11 +127646,11 @@
                       "value": 0
                     },
                     "DescIdentified": {
+                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
-                      },
-                      "id": 64105
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
@@ -127816,7 +127816,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -127884,7 +127884,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -127977,7 +127977,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -128045,7 +128045,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -128138,7 +128138,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -128206,7 +128206,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -129344,7 +129344,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -129412,7 +129412,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Services;
 
 namespace SWLOR.Toolset.Workspace
 {
@@ -93,7 +94,7 @@ namespace SWLOR.Toolset.Workspace
             // returning partial success, and that must propagate out of Open so the caller's
             // existing "failed to open" handling refuses the module rather than opening it with an
             // area at mixed ARE/GIT/GIC generations.
-            var saves = Services.SaveService.RecoverInterruptedSaves(moduleRoot);
+            var saves = SwlorFileWriteAccess.Writer.RecoverInterruptedSaves(moduleRoot);
 
             // A ResRef rename may contain one of the grouped GIT saves recovered above. Restore that
             // inner transaction first, then the outer rename transaction can reliably see either
@@ -222,7 +223,7 @@ namespace SWLOR.Toolset.Workspace
         /// The resource kinds <see cref="BlueprintCatalog"/>'s initial build actually indexes - areas
         /// and every blueprint type. Shared by <see cref="RefreshCatalogEntry"/>/
         /// <see cref="RemoveCatalogEntry"/> here and by callers deciding whether to read the catalog or
-        /// enumerate the workspace directly (see <c>ModuleExplorerViewModel.IsCatalogIndexed</c>), so
+        /// enumerate the workspace directly (see <c>SwlorExplorerContentSource</c>), so
         /// the two can never drift apart.
         /// </summary>
         /// <remarks>

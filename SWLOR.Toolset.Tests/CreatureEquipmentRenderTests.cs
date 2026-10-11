@@ -1,12 +1,15 @@
+using Nwn.Authoring.Areas.Placement;
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Editors.Creatures;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
@@ -32,6 +35,7 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                if (Support.ToolsetCorpusPaths.RepositoryRoot is { } configuredRoot) return configuredRoot;
                 for (var current = new DirectoryInfo(AppContext.BaseDirectory);
                      current != null;
                      current = current.Parent)
@@ -60,13 +64,13 @@ namespace SWLOR.Toolset.Tests
             var baseLayer = KeyBifCatalog.Load(Path.Combine(installRoot, "data"));
             var index = ResourceIndex.FromHakBuilderConfig(
                 Path.Combine(RepoRoot, "Build", "hakbuilder.json"),
-                Path.Combine(RepoRoot, "SWLOR_Haks"),
+                (Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks")),
                 baseLayer);
             index.EnsureInitialized();
             _resources = index;
 
             var twoDa = new TwoDaService(index);
-            var tlk = TlkService.Load(Path.Combine(RepoRoot, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json"));
+            var tlk = TlkService.Load(Path.Combine(Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks"), "sw_tlk", "sw_tlk.tlk.json"));
             var log = new OutputLogService();
             var context = new WorkspaceContext(path => new ModuleWorkspace(path, index), log);
             context.Open(CorpusLocator.ModuleDirectory);
@@ -408,8 +412,8 @@ namespace SWLOR.Toolset.Tests
                     : mesh.MaterialName)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .Where(materialName => MaterialResolver.TryParseMaterial(_resources, materialName) is { } material &&
-                    material.CustomShaders.Values.Any(shader =>
-                        shader.Equals("fs_plt_tinter", StringComparison.OrdinalIgnoreCase)))
+                    material.RawShaderBindings.Values.Any(shader =>
+                        shader?.Equals("fs_plt_tinter", StringComparison.OrdinalIgnoreCase) == true))
                 .ToList();
             tintMaterials.Should().Contain("pmh0_chest027",
                 "modular body parts with stale bitmaps must retain their explicit same-name tint material");
@@ -442,7 +446,7 @@ namespace SWLOR.Toolset.Tests
                 () => KeyBifCatalog.Load(Path.Combine(installRoot, "data")));
             resources.EnsureInitialized();
             var twoDa = new TwoDaService(resources);
-            var tlk = TlkService.Load(Path.Combine(RepoRoot, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json"));
+            var tlk = TlkService.Load(Path.Combine(Support.ToolsetCorpusPaths.HaksRoot ?? Path.Combine(RepoRoot, "SWLOR_Haks"), "sw_tlk", "sw_tlk.tlk.json"));
             var context = new WorkspaceContext(
                 path => new ModuleWorkspace(path, resources),
                 new OutputLogService());
@@ -464,23 +468,24 @@ namespace SWLOR.Toolset.Tests
                     : mesh.MaterialName)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .Select(name => (Name: name, Material: MaterialResolver.TryParseMaterial(resources, name)))
-                .Where(entry => entry.Material?.CustomShaders.Values.Any(shader =>
-                    shader.Equals("fs_plt_tinter", StringComparison.OrdinalIgnoreCase)) == true)
+                .Where(entry => entry.Material?.RawShaderBindings.Values.Any(shader =>
+                    shader?.Equals("fs_plt_tinter", StringComparison.OrdinalIgnoreCase) == true) == true)
                 .ToList();
             tintMaterials.Select(entry => entry.Name).Should().Contain("pmh0_h_lh_83916d",
                 "the left hand's isolated material profile must retain its collision-proof tint mask");
             foreach (var (name, material) in tintMaterials)
             {
-                var tintTexture = material!.GetTexture(7);
+                var parsedMaterial = material!;
+                var tintTexture = MaterialResolver.GetTexture(parsedMaterial, 7);
                 tintTexture.Should().MatchRegex("^tm_[0-9a-f]{13}$",
                     $"{name} must bind a collision-proof internal tint resource");
                 var tintImage = TextureLoader.Load(resources, tintTexture);
                 tintImage.Should().NotBeNull($"installed HAK resources must resolve {name}'s tint mask");
                 var expectedWidth = int.Parse(
-                    material.Parameters["tintMapWidth"].Split('.')[0],
+                    parsedMaterial.Parameters["tintMapWidth"].RawValues[0].Split('.')[0],
                     System.Globalization.CultureInfo.InvariantCulture);
                 var expectedHeight = int.Parse(
-                    material.Parameters["tintMapHeight"].Split('.')[0],
+                    parsedMaterial.Parameters["tintMapHeight"].RawValues[0].Split('.')[0],
                     System.Globalization.CultureInfo.InvariantCulture);
                 tintImage!.Width.Should().Be(expectedWidth,
                     $"{name} must not resolve a same-name legacy DDS with different dimensions");

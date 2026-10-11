@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
 
 namespace SWLOR.NWN.Formats.Tests;
 

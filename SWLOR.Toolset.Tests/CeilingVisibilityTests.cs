@@ -9,7 +9,7 @@ namespace SWLOR.Toolset.Tests
 {
     /// <summary>
     /// The viewport hides an interior tileset's ceilings by dropping mesh nodes whose MDL
-    /// <c>tilefade</c> flag is non-zero (see <c>GlAreaControl.ShowCeilings</c>). These cover the two
+    /// <c>tilefade</c> flag is non-zero (see <c>AreaViewportControl.ShowCeilings</c>). These cover the two
     /// facts that rule depends on: the flag survives into <see cref="RenderMesh"/>, and it really does
     /// separate overhead geometry from floors and walls.
     /// </summary>

@@ -1,6 +1,7 @@
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 
 namespace SWLOR.Toolset.Tests
@@ -17,9 +18,8 @@ namespace SWLOR.Toolset.Tests
             var original = File.ReadAllBytes(file);
             var document = JsonGffDocument.Parse(original);
 
-            var field = FindFirstMutableInteger(document.Root);
-            if (field == null)
-                Assert.Ignore($"No mutable integer field in {file}");
+            var field = FindFirstMutableInteger(document.Root)
+                ?? throw new AssertionException($"The integer-edit fixture no longer has an integer: {file}");
 
             field.SetInteger(field.GetInteger() == 0 ? 1 : 0);
 
@@ -81,10 +81,21 @@ namespace SWLOR.Toolset.Tests
                 if (!Directory.Exists(path))
                     continue;
 
-                var file = Directory.EnumerateFiles(path, "*.json").FirstOrDefault();
+                var file = Directory.EnumerateFiles(path, "*.json")
+                    .OrderBy(file => file, StringComparer.Ordinal)
+                    .FirstOrDefault(file => FindFirstMutableInteger(JsonGffDocument.Load(file).Root) != null);
                 if (file != null)
                     yield return file;
             }
+        }
+
+        [Test]
+        public void JournalWithoutMutableIntegersPreservesItsBytes()
+        {
+            var path = Path.Combine(CorpusLocator.ModuleDirectory, "jrl", "module.jrl.json");
+            var source = File.ReadAllBytes(path);
+            var document = JsonGffDocument.Parse(source);
+            document.ToBytes().Should().Equal(source);
         }
     }
 }

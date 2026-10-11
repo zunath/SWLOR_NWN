@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(shortName)
                 .Type(ShipModuleType.BulwarkShieldGenerator)
-                .Texture("iit_ess_075")
+                .Texture("iit_smbulwark")
                 .Description(description)
                 .PowerType(ShipModulePowerType.High)
                 .Capacitor(25)

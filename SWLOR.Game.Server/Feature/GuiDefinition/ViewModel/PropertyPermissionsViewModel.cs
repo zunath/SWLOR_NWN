@@ -13,9 +13,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class PropertyPermissionsViewModel: GuiViewModelBase<PropertyPermissionsViewModel, PropertyPermissionPayload>
     {
+        private const int PlayersPerPage = 25;
+
         private bool _isCategory;
         private PropertyType _propertyType;
         private string _cityId;
+        private bool _suppressSearch;
 
         private string PropertyId { get; set; }
         private List<PropertyPermissionType> AvailablePermissions { get; set; }
@@ -57,6 +60,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             get => Get<GuiBindingList<bool>>();
             set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> PageNumbers
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public int SelectedPageIndex
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                if (!_suppressSearch)
+                    Search();
+            }
         }
 
         public GuiBindingList<bool> PermissionStates
@@ -225,8 +245,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             GrantPermissionEnabled = grantPermissionEnabled;
         }
 
+        private void EnsureUsableWindowGeometry()
+        {
+            var current = Geometry;
+            if (current == null ||
+                current.Width >= PropertyPermissionsDefinition.WindowWidth &&
+                current.Height >= PropertyPermissionsDefinition.WindowHeight)
+                return;
+
+            Geometry = new GuiRectangle(
+                current.X,
+                current.Y,
+                Math.Max(current.Width, PropertyPermissionsDefinition.WindowWidth),
+                Math.Max(current.Height, PropertyPermissionsDefinition.WindowHeight));
+        }
+
         protected override void Initialize(PropertyPermissionPayload initialPayload)
         {
+            // Saved sizes from before pagination are too small for the layout.
+            EnsureUsableWindowGeometry();
+            DelayCommand(0.0f, EnsureUsableWindowGeometry);
 
             SelectedPlayerIndex = -1;
             PropertyId = initialPayload.PropertyId;
@@ -271,8 +309,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PermissionNames = new GuiBindingList<string>();
             PermissionDescriptions = new GuiBindingList<string>();
 
+            _suppressSearch = true;
+            SelectedPageIndex = 0;
+            _suppressSearch = false;
 
             WatchOnClient(model => model.SearchText);
+            WatchOnClient(model => model.SelectedPageIndex);
             WatchOnClient(model => model.PermissionStates);
             WatchOnClient(model => model.PermissionGrantingStates);
             WatchOnClient(model => model.IsPublic);
@@ -293,18 +335,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // If no search is specified, load only the users who currently have permissions.
             if (string.IsNullOrWhiteSpace(SearchText))
             {
-                var permissionQuery = new DBQuery<WorldPropertyPermission>()
-                    .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false);
-                var playerIds = DB.Search(permissionQuery).Select(s => s.PlayerId);
-                var query = new DBQuery<Player>()
-                    .AddFieldSearch(nameof(Entity.Player.Id), playerIds)
-                    .AddFieldSearch(nameof(Entity.Player.IsDeleted), false);
-                dbPlayers = DB.Search(query);
+                dbPlayers = SearchPlayersWithPermissions();
             }
             // Otherwise look for players by their permission-management names.
             else
             {
-                dbPlayers = SearchPlayersByPermissionName();
+                var matches = SearchPlayersByPermissionName();
+                UpdatePagination(matches.Count);
+                dbPlayers = matches;
             }
 
             foreach (var player in dbPlayers)
@@ -321,6 +359,54 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PermissionNames.Clear();
             PermissionDescriptions.Clear();
             PlayerName = string.Empty;
+        }
+
+        private void UpdatePagination(long totalRecordCount)
+        {
+            var wasSuppressingSearch = _suppressSearch;
+            _suppressSearch = true;
+
+            var pagination = GuiPaginationState.Create(
+                totalRecordCount,
+                PlayersPerPage,
+                SelectedPageIndex);
+            PageNumbers = pagination.PageNumbers;
+            SelectedPageIndex = pagination.SelectedPageIndex;
+
+            _suppressSearch = wasSuppressingSearch;
+        }
+
+        private List<string> GetPermissionPlayerIds()
+        {
+            var query = new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false);
+            var permissionCount = (int)DB.SearchCount(query);
+            if (permissionCount <= 0)
+                return new List<string>();
+
+            query.AddPaging(permissionCount, 0);
+            return DB.Search(query)
+                .Select(permission => permission.PlayerId)
+                .ToList();
+        }
+
+        private IEnumerable<Player> SearchPlayersWithPermissions()
+        {
+            var playerIds = GetPermissionPlayerIds();
+            if (playerIds.Count <= 0)
+            {
+                UpdatePagination(0);
+                return Enumerable.Empty<Player>();
+            }
+
+            var query = new DBQuery<Player>()
+                .AddFieldSearch(nameof(Entity.Player.Id), playerIds)
+                .AddFieldSearch(nameof(Entity.Player.IsDeleted), false)
+                .OrderBy(nameof(Entity.Player.Name));
+            UpdatePagination(DB.SearchCount(query));
+
+            query.AddPaging(PlayersPerPage, SelectedPageIndex * PlayersPerPage);
+            return DB.Search(query);
         }
 
         private List<Player> SearchPlayersByPermissionName()
@@ -376,13 +462,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return query;
         }
 
-        public Action OnClickSearch() => Search;
+        private void SearchFromFirstPage()
+        {
+            _suppressSearch = true;
+            SelectedPageIndex = 0;
+            _suppressSearch = false;
+
+            Search();
+        }
+
+        public Action OnClickSearch() => SearchFromFirstPage;
 
         public Action OnClickClearSearch() => () =>
         {
             Instruction = string.Empty;
             SearchText = string.Empty;
-            Search();
+            SearchFromFirstPage();
+        };
+
+        public Action OnClickPreviousPage() => () =>
+        {
+            SelectedPageIndex = Math.Max(0, SelectedPageIndex - 1);
+        };
+
+        public Action OnClickNextPage() => () =>
+        {
+            SelectedPageIndex = Math.Min(PageNumbers.Count - 1, SelectedPageIndex + 1);
         };
 
         public Action OnSelectPlayer() => () =>

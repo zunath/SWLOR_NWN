@@ -1,7 +1,7 @@
 # BeastCodeBuilder
 
 ## Overview
-The BeastCodeBuilder generates C# beast definition classes from the Design Bible workbooks. Public beast identity and stat progression come from `design/bible/SWLOR Design Bible - Combat Upgrade.xlsx`. Mutation requirements come from `design/bible/SWLOR Design Bible - Private Source Data.xlsx`.
+The BeastCodeBuilder generates C# beast definition classes from the Design Bible workbooks. Public beast identity and stat progression come from `design/bible/SWLOR Design Bible.xlsx`. Mutation requirements come from `design/bible/SWLOR Design Bible - Private Source Data.xlsx`.
 
 ## Command
 ```bash

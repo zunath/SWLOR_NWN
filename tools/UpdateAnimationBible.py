@@ -380,7 +380,7 @@ def synchronize_files(manifest_path, workbook_path, registry_path, provenance_pa
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("manifest", type=Path)
-    parser.add_argument("--workbook", type=Path, default=ROOT / "design/bible/SWLOR Design Bible - Combat Upgrade.xlsx")
+    parser.add_argument("--workbook", type=Path, default=ROOT / "design/bible/SWLOR Design Bible.xlsx")
     parser.add_argument("--registry", type=Path, default=ROOT / "design/animations/registry.json")
     parser.add_argument("--provenance", type=Path, default=ROOT / "design/animations/active-manifest.json")
     args = parser.parse_args()

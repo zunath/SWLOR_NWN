@@ -1,4 +1,7 @@
+using Nwn.Authoring.Areas.Tiles;
+using Nwn.Formats.Tilesets;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Domain.GameData.Tilesets

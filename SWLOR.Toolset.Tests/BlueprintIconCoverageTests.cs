@@ -1,12 +1,15 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.Render;
+using Nwn.Preview.Icons;
 using SWLOR.Toolset.Domain.Render.Icons;
 using SWLOR.Toolset.Domain.Workspace;
 
@@ -36,6 +39,9 @@ namespace SWLOR.Toolset.Tests
         {
             get
             {
+                if (Support.ToolsetCorpusPaths.RepositoryRoot is { } configuredRoot)
+                    return configuredRoot;
+
                 var current = new DirectoryInfo(AppContext.BaseDirectory);
                 while (current != null)
                 {
@@ -74,7 +80,7 @@ namespace SWLOR.Toolset.Tests
                 var tlk = TlkService.Load(Path.Combine(RepoRoot, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json"));
 
                 KeyBifCatalog? baseLayer = null;
-                var install = NwnInstallLocator.Locate(null);
+                var install = NwnInstallLocator.Locate(Environment.GetEnvironmentVariable("NWN_INSTALL_PATH"));
                 if (install != null)
                     baseLayer = KeyBifCatalog.Load(Path.Combine(install, "data"));
 
@@ -154,7 +160,7 @@ namespace SWLOR.Toolset.Tests
                          $"unresolved: {string.Join(", ", unresolved.Take(10))}");
         }
 
-        private static bool UsesIntentionalNullCreatureAppearance(Domain.Gff.JsonGffStruct root)
+        private static bool UsesIntentionalNullCreatureAppearance(Nwn.Authoring.Documents.NimGff.JsonGffStruct root)
         {
             var appearanceId = root.GetIntOrNull("Appearance_Type");
             if (appearanceId is not >= 0)
@@ -275,9 +281,34 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void Door_Model_Coverage_Does_Not_Regress()
         {
-            var resolved = Data.Workspace.EnumerateResRefs(ResourceType.Utd)
-                .Count(resRef => ResolvesModel(
-                    ResourceType.Utd, Data.Workspace.LoadBlueprint(ResourceType.Utd, resRef).Fields));
+            var doors = Data.Workspace.EnumerateResRefs(ResourceType.Utd)
+                .Select(resRef =>
+                {
+                    var root = Data.Workspace.LoadBlueprint(ResourceType.Utd, resRef).Fields;
+                    var model = BlueprintModelResolver.Resolve(
+                        ResourceType.Utd, root, Data.Appearances, Data.Placeables, Data.Doors);
+                    return (ResRef: resRef, Root: root, Model: model);
+                })
+                .ToArray();
+            var unresolved = doors
+                .Where(door => door.Model.Kind == BlueprintModelKind.Simple
+                    ? !Data.HasModel(door.Model.ModelResRef)
+                    : door.Model.Kind != BlueprintModelKind.Segmented ||
+                      !door.Model.Parts.Any(part => Data.HasModel(part.ModelResRef)))
+                .ToArray();
+            var resolved = doors.Length - unresolved.Length;
+
+            if (resolved < 115)
+            {
+                foreach (var door in unresolved)
+                {
+                    TestContext.Out.WriteLine(
+                        $"unresolved door {door.ResRef}: Appearance={door.Root.GetIntOrNull("Appearance")}, " +
+                        $"GenericType_New={door.Root.GetIntOrNull("GenericType_New")}, " +
+                        $"GenericType={door.Root.GetIntOrNull("GenericType")}, " +
+                        $"kind={door.Model.Kind}, model={door.Model.ModelResRef}, status={door.Model.Status}");
+                }
+            }
 
             resolved.Should().BeGreaterThanOrEqualTo(115,
                 because: "121 of the 129 doors resolved a model when this was measured");
@@ -300,7 +331,7 @@ namespace SWLOR.Toolset.Tests
             Data.BaseItems.GetOrNull(int.MaxValue).Should().BeNull();
         }
 
-        private static bool ResolvesPortrait(Domain.Gff.JsonGffStruct root)
+        private static bool ResolvesPortrait(Nwn.Authoring.Documents.NimGff.JsonGffStruct root)
         {
             if (!root.TryGet("PortraitId", out var field))
                 return false;
@@ -535,7 +566,7 @@ namespace SWLOR.Toolset.Tests
                 because: $"measured {type} coverage outside the module was above this when written");
         }
 
-        private static bool ResolvesModel(ResourceType type, Domain.Gff.JsonGffStruct root)
+        private static bool ResolvesModel(ResourceType type, Nwn.Authoring.Documents.NimGff.JsonGffStruct root)
         {
             var reference = BlueprintModelResolver.Resolve(
                 type, root, Data.Appearances, Data.Placeables, Data.Doors);

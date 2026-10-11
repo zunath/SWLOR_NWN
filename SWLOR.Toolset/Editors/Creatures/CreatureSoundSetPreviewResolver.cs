@@ -1,3 +1,4 @@
+using NwnResRef = Nwn.Formats.Resources.ResourceReferenceRules;
 using System.Text;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.GameData.Resources;

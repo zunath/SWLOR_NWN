@@ -1597,7 +1597,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 3.363116314379561e-43
+                "value": 3.363116314379561e-043
               },
               "XPosition": {
                 "type": "float",
@@ -1637,6 +1637,7 @@
               }
             },
             {
+              "__struct_id": 16384,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -1994,10 +1995,10 @@
               "xModelPart1": {
                 "type": "word",
                 "value": 1
-              },
-              "__struct_id": 16384
+              }
             },
             {
+              "__struct_id": 131072,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -2605,8 +2606,7 @@
               "xModelPart1": {
                 "type": "word",
                 "value": 1
-              },
-              "__struct_id": 131072
+              }
             }
           ]
         },
@@ -3630,7 +3630,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 3.363116314379561e-43
+                "value": 3.363116314379561e-043
               },
               "XPosition": {
                 "type": "float",
@@ -3670,6 +3670,7 @@
               }
             },
             {
+              "__struct_id": 16384,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -4027,10 +4028,10 @@
               "xModelPart1": {
                 "type": "word",
                 "value": 1
-              },
-              "__struct_id": 16384
+              }
             },
             {
+              "__struct_id": 131072,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -4638,8 +4639,7 @@
               "xModelPart1": {
                 "type": "word",
                 "value": 1
-              },
-              "__struct_id": 131072
+              }
             }
           ]
         },
@@ -12511,7 +12511,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 8.407790785948902e-45
+                "value": 8.407790785948902e-045
               },
               "XPosition": {
                 "type": "float",
@@ -12551,6 +12551,7 @@
               }
             },
             {
+              "__struct_id": 16384,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -12908,10 +12909,10 @@
               "xModelPart1": {
                 "type": "word",
                 "value": 1
-              },
-              "__struct_id": 16384
+              }
             },
             {
+              "__struct_id": 131072,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -13519,8 +13520,7 @@
               "xModelPart1": {
                 "type": "word",
                 "value": 1
-              },
-              "__struct_id": 131072
+              }
             }
           ]
         },
@@ -14546,7 +14546,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 8.407790785948902e-45
+                "value": 8.407790785948902e-045
               },
               "XPosition": {
                 "type": "float",
@@ -14586,6 +14586,7 @@
               }
             },
             {
+              "__struct_id": 16384,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -14943,10 +14944,10 @@
               "xModelPart1": {
                 "type": "word",
                 "value": 1
-              },
-              "__struct_id": 16384
+              }
             },
             {
+              "__struct_id": 131072,
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -15554,8 +15555,7 @@
               "xModelPart1": {
                 "type": "word",
                 "value": 1
-              },
-              "__struct_id": 131072
+              }
             }
           ]
         },

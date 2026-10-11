@@ -21,7 +21,21 @@ namespace SWLOR.Toolset.Tests
         private static readonly HashSet<string> ApprovedToolsetReferences = new(StringComparer.Ordinal)
         {
             "SWLOR.ConversationMigrator -> SWLOR.Toolset.Domain",
-            "SWLOR.AnimationDrafts -> SWLOR.Toolset.Domain"
+            "SWLOR.AnimationDrafts -> SWLOR.Toolset.Domain",
+            // Real-window render and capture harness for the toolset's own tests.
+            "SWLOR.Toolset.PreviewRender -> SWLOR.Toolset"
+        };
+
+        /// <summary>
+        /// The MIT-licensed shared toolset libraries. Normally consumed as packages; source mode
+        /// (NwnToolsetSourceRoot) swaps them for project references.
+        /// </summary>
+        private static readonly string[] SharedToolsetLibraries =
+        {
+            "Nwn.Formats",
+            "Nwn.Authoring",
+            "Nwn.Preview",
+            "Nwn.Toolset.Avalonia"
         };
 
         private static readonly string[] ExecutableSourceRoots =
@@ -122,10 +136,12 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void TheToolsetOnlyDependsOnItselfAndApprovedSharedProjects()
         {
-            var allowed = new HashSet<string>(ToolsetProjects)
+            var allowed = new HashSet<string>(ToolsetProjects.Concat(SharedToolsetLibraries))
             {
                 "SWLOR.Game.Server",
-                "SWLOR.NWN.Formats"
+                "SWLOR.NWN.Formats",
+                // Build-order only (ReferenceOutputAssembly=false): the tests launch the render harness.
+                "SWLOR.Toolset.PreviewRender"
             };
             var violations = new List<string>();
 
@@ -198,7 +214,7 @@ namespace SWLOR.Toolset.Tests
             {
                 typeof(SWLOR.Toolset.App).Assembly,
                 typeof(SWLOR.Toolset.Domain.Workspace.ModuleWorkspace).Assembly,
-                typeof(SWLOR.NWN.Formats.NwnFormatException).Assembly
+                typeof(NwnFormatException).Assembly
             };
 
             var violations = assemblies

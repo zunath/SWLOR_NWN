@@ -23,12 +23,14 @@ namespace SWLOR.Toolset.Tests
     [TestFixture]
     public class ModuleExplorerNewAreaFilingTests
     {
+        private string _ownedRoot = string.Empty;
         private string _root = string.Empty;
 
         [SetUp]
         public void SetUp()
         {
-            _root = Path.Combine(Path.GetTempPath(), $"swlor_newarea_filing_{Guid.NewGuid():N}");
+            _ownedRoot = Path.Combine(Path.GetTempPath(), $"swlor_newarea_filing_{Guid.NewGuid():N}");
+            _root = Path.Combine(_ownedRoot, "Module");
             Directory.CreateDirectory(Path.Combine(_root, "are"));
             Directory.CreateDirectory(Path.Combine(_root, "utc"));
         }
@@ -36,8 +38,8 @@ namespace SWLOR.Toolset.Tests
         [TearDown]
         public void TearDown()
         {
-            if (Directory.Exists(_root))
-                Directory.Delete(_root, recursive: true);
+            if (Directory.Exists(_ownedRoot))
+                ScratchDirectory.Delete(_ownedRoot);
         }
 
         [Test]
@@ -45,7 +47,7 @@ namespace SWLOR.Toolset.Tests
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            workspace.OpenAndSettle(_root);
             var categories = new CategoryService(workspace, log);
 
             var areaFolder = categories.Section(ResourceType.Area)!.Find("Tatooine") ?? categories.Section(ResourceType.Area)!.AddFolder("Tatooine");
@@ -85,7 +87,7 @@ namespace SWLOR.Toolset.Tests
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            workspace.OpenAndSettle(_root);
             var categories = new CategoryService(workspace, log);
             var scriptsFolder = categories.Section(ResourceType.Nss)!.Find("Utility") ?? categories.Section(ResourceType.Nss)!.AddFolder("Utility");
 

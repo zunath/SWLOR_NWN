@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using Nwn.Authoring.Doors;
 using SWLOR.Toolset.Domain.Editors.Doors;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -91,7 +92,7 @@ namespace SWLOR.Toolset.Tests
             marker.Model.Should().BeNull();
             marker.IsDoorTransition.Should().BeTrue();
             editor.Appearance.Tiles.Should().ContainSingle()
-                .Which.Option.IsDoorTransition.Should().BeTrue();
+                .Which.Option.Id.Value.Should().Be($"{DoorAppearanceKind.Generic}:0");
 
             var (target, distance) = AreaCameraMath.ComputeSceneFraming(
                 editor.PreviewScene,
@@ -140,7 +141,7 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
-        private static Domain.Gff.JsonGffStruct TransitionDoor()
+        private static Nwn.Authoring.Documents.NimGff.JsonGffStruct TransitionDoor()
         {
             var door = new ModuleWorkspace(CorpusLocator.ModuleDirectory)
                 .LoadBlueprint(ResourceType.Utd, "_mdrn_dt_bars")

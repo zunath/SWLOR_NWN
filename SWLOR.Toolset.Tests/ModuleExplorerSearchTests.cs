@@ -1,9 +1,12 @@
 using Avalonia.Headless.NUnit;
 using FluentAssertions;
 using NUnit.Framework;
+using Nwn.Toolset.Avalonia.Explorer;
 using SWLOR.Toolset.Domain.Categories;
+using Nwn.Authoring.Categories;
 using SWLOR.Toolset.Domain.Conversations;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Shell.Panels;
 using SWLOR.Toolset.Workspace;
@@ -24,23 +27,27 @@ namespace SWLOR.Toolset.Tests
     [TestFixture]
     public class ModuleExplorerSearchTests
     {
+        private string _ownedRoot = string.Empty;
         private string _root = string.Empty;
 
         [SetUp]
         public void SetUp()
         {
-            _root = Path.Combine(Path.GetTempPath(), $"swlor_explorer_{Guid.NewGuid():N}");
+            _ownedRoot = Path.Combine(Path.GetTempPath(), $"swlor_explorer_{Guid.NewGuid():N}");
+            _root = Path.Combine(_ownedRoot, "Module");
             Directory.CreateDirectory(Path.Combine(_root, "dlg"));
             // The two folders ModuleWorkspace looks for before it accepts a root.
             Directory.CreateDirectory(Path.Combine(_root, "are"));
+            Directory.CreateDirectory(Path.Combine(_root, "gic"));
+            Directory.CreateDirectory(Path.Combine(_root, "git"));
             Directory.CreateDirectory(Path.Combine(_root, "utc"));
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (Directory.Exists(_root))
-                Directory.Delete(_root, recursive: true);
+            if (Directory.Exists(_ownedRoot))
+                ScratchDirectory.Delete(_ownedRoot);
         }
 
         /// <summary>
@@ -56,7 +63,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            workspace.OpenAndSettle(_root);
 
             var explorer = new ModuleExplorerViewModel(
                 workspace,
@@ -117,7 +124,7 @@ namespace SWLOR.Toolset.Tests
             WriteConversation("mining", "The Veldite seam runs deep.");
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            workspace.OpenAndSettle(_root);
             var explorer = new ModuleExplorerViewModel(
                 workspace,
                 new PropertiesViewModel(workspace, log),
@@ -145,7 +152,7 @@ namespace SWLOR.Toolset.Tests
             WriteConversation("ordinary", "Hand-authored dialogue.");
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            workspace.OpenAndSettle(_root);
             var explorer = new ModuleExplorerViewModel(
                 workspace,
                 new PropertiesViewModel(workspace, log),
@@ -164,12 +171,12 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void AreaSearchHidesCategoriesWithoutMatchesAndRestoresThemWhenCleared()
         {
-            File.WriteAllText(Path.Combine(_root, "are", "nanostation015.are.json"), "{}");
-            File.WriteAllText(Path.Combine(_root, "are", "tatooine001.are.json"), "{}");
+            CopyAreaTemplate("nanostation015");
+            CopyAreaTemplate("tatooine001");
 
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            workspace.OpenAndSettle(_root);
             var categories = new CategoryService(workspace, log);
             var section = categories.Section(ResourceType.Area)!;
             section.IsSeeded = true;
@@ -222,7 +229,7 @@ namespace SWLOR.Toolset.Tests
             WriteConversation("mining", "The Veldite seam runs deep.");
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            workspace.OpenAndSettle(_root);
             var explorer = new ModuleExplorerViewModel(
                 workspace,
                 new PropertiesViewModel(workspace, log),
@@ -243,26 +250,36 @@ namespace SWLOR.Toolset.Tests
                 "the declared debounce must be awaited before the scan runs, not skipped");
         }
 
+        /// <summary>
+        /// The shared Module Contents controller calls <c>Prepare</c> on the UI thread and only then starts
+        /// its worker (covered by the shared library's content-search tests). SWLOR's half of that contract
+        /// is that the open-editor snapshots are taken in <c>Prepare</c>, and that the worker-side scan
+        /// never reaches back into the live editor service.
+        /// </summary>
         [Test]
         public void OpenConversationSnapshotsAreCapturedBeforeTheSearchWorkerStarts()
         {
-            var source = File.ReadAllText(Path.Combine(
+            var hostDirectory = Path.Combine(
                 FindRepositoryRoot().FullName,
                 "SWLOR.Toolset",
                 "Shell",
                 "Panels",
-                "ModuleExplorerViewModel.cs"));
-            var openDialogsIndex = source.IndexOf(
+                "ExplorerHost");
+            var prepare = File.ReadAllText(Path.Combine(hostDirectory, "SwlorExplorerDialogueSearch.cs"));
+            var worker = File.ReadAllText(Path.Combine(hostDirectory, "SwlorDialogueSearchScan.cs"));
+            var prepareIndex = prepare.IndexOf("Prepare(", StringComparison.Ordinal);
+            var openDialogsIndex = prepare.IndexOf(
                 "SnapshotOpenConversationDocuments();", StringComparison.Ordinal);
-            var openGraphsIndex = source.IndexOf(
+            var openGraphsIndex = prepare.IndexOf(
                 "SnapshotOpenNuiConversationGraphs();", StringComparison.Ordinal);
-            var workerIndex = source.IndexOf("_ = Task.Run(", StringComparison.Ordinal);
 
-            openDialogsIndex.Should().BeGreaterThanOrEqualTo(0);
-            openGraphsIndex.Should().BeGreaterThanOrEqualTo(0);
-            workerIndex.Should().BeGreaterThan(openDialogsIndex);
-            workerIndex.Should().BeGreaterThan(openGraphsIndex,
+            prepareIndex.Should().BeGreaterThanOrEqualTo(0);
+            openDialogsIndex.Should().BeGreaterThan(prepareIndex);
+            openGraphsIndex.Should().BeGreaterThan(prepareIndex,
                 "the UI-owned graph editors must be snapshotted before background work begins");
+            prepare.Should().NotContain("Task.Run(", "the shared controller owns the worker");
+            worker.Should().NotContain("EditorService",
+                "the worker must only read the snapshots handed to it, never live editor state");
         }
 
         [AvaloniaTest]
@@ -271,7 +288,7 @@ namespace SWLOR.Toolset.Tests
             WriteConversation("greeting", "Nothing to see here.");
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
-            workspace.Open(_root);
+            workspace.OpenAndSettle(_root);
             var explorer = new ModuleExplorerViewModel(
                 workspace,
                 new PropertiesViewModel(workspace, log),
@@ -395,6 +412,16 @@ namespace SWLOR.Toolset.Tests
                 """;
 
             File.WriteAllText(Path.Combine(_root, "dlg", $"{resRef}.dlg.json"), json);
+        }
+
+        private void CopyAreaTemplate(string targetResRef)
+        {
+            foreach (var extension in new[] { "are", "git", "gic" })
+            {
+                File.Copy(
+                    Path.Combine(CorpusLocator.ModuleDirectory, extension, $"area_template.{extension}.json"),
+                    Path.Combine(_root, extension, $"{targetResRef}.{extension}.json"));
+            }
         }
     }
 }

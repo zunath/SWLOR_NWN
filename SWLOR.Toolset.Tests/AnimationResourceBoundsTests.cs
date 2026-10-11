@@ -69,7 +69,8 @@ public class AnimationResourceBoundsTests
         var bif = memory ? BifReader.Read(File.ReadAllBytes(path)) : BifReader.ReadMetadataOnly(path);
         var before = GC.GetAllocatedBytesForCurrentThread();
         Action read = () => bif.ExtractVariableResource(0, 1024);
-        read.Should().Throw<Exception>().Where(e => e.Message.Contains("1024-byte"));
+        read.Should().Throw<Exception>().Where(e => e.Message.Contains("1024")
+            && e.Message.Contains("limit", StringComparison.OrdinalIgnoreCase));
         (GC.GetAllocatedBytesForCurrentThread() - before).Should().BeLessThan(1024 * 1024);
     }
 
@@ -77,7 +78,8 @@ public class AnimationResourceBoundsTests
     {
         var before = GC.GetAllocatedBytesForCurrentThread();
         Action read = () => resource.GetBytes(1024);
-        read.Should().Throw<Exception>().Where(e => e.GetBaseException().Message.Contains("1024-byte"));
+        read.Should().Throw<Exception>().Where(e => e.GetBaseException().Message.Contains("1024")
+            && e.GetBaseException().Message.Contains("limit", StringComparison.OrdinalIgnoreCase));
         (GC.GetAllocatedBytesForCurrentThread() - before).Should().BeLessThan(1024 * 1024,
             "the winning resource must be rejected before its eight-megabyte payload is allocated");
     }

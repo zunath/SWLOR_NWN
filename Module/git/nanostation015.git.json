@@ -236874,11 +236874,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 191,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Basic Knife"
-                      },
-                      "id": 191
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -237090,11 +237090,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 191,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Field Knife"
-                      },
-                      "id": 191
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -239044,11 +239044,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 172,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Basic Twin Blade"
-                      },
-                      "id": 172
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",

@@ -109,6 +109,55 @@ public class DungeonEncounterWalkmeshTests
         }
     }
 
+    // Qion Test Site, Forge Caverns and Canyon Range use base-game tiles whose walkmeshes are not in the repository.
+    [TestCase("pw_sc_jedihalls", "sw_t_office")]
+    [TestCase("pw_sc_cryptdeep", "sw_t_alienruin")]
+    [TestCase("pw_sc_repubeng", "sw_t_facility")]
+    [TestCase("pw_sc_tarnpres", "sw_t_jungle")]
+    public void SlicingTerminals_HaveAClearApproachOnTheirUseSide(string area, string hakFolder)
+    {
+        var root = FindRoot();
+        using var git = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "git", area + ".git.json")));
+        var terminals = git.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
+            .Where(w => Text(w, "Tag") == "SLICING_TERMINAL_T5").ToArray();
+        terminals.Should().HaveCount(2);
+        var floor = ReadWalkableFloor(root, area, hakFolder);
+        var appearances = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
+        var meshes = Directory.EnumerateFiles(Path.Combine(root, "SWLOR_Haks"), "*.pwk", SearchOption.AllDirectories)
+            .ToDictionary(Path.GetFileNameWithoutExtension, StringComparer.OrdinalIgnoreCase);
+        var scenery = git.RootElement.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
+            .Select(p => (Model: appearances.GetValue((int)Number(p, "Appearance"), "ModelName"), Placeable: p))
+            .Where(p => meshes.ContainsKey(p.Model))
+            .SelectMany(p => ReadCollisionBounds(meshes[p.Model], Matrix4x4.CreateRotationZ(Number(p.Placeable, "Bearing"))
+                * Matrix4x4.CreateTranslation(Number(p.Placeable, "X"), Number(p.Placeable, "Y"), Number(p.Placeable, "Z"))))
+            .ToArray();
+
+        foreach (var terminal in terminals)
+        {
+            var position = new Vector3(Number(terminal, "XPosition"), Number(terminal, "YPosition"), Number(terminal, "ZPosition"));
+            var facing = new Vector3(Number(terminal, "XOrientation"), Number(terminal, "YOrientation"), 0);
+            // The terminal model (shp_crate1_m) is used from the side opposite its facing; verified in the client.
+            var approach = position - facing * 1.5f;
+            var body = Enumerable.Range(0, 8).Select(i => approach + new Vector3(
+                .4f * MathF.Cos(i * MathF.PI / 4), .4f * MathF.Sin(i * MathF.PI / 4), 0)).Prepend(approach).ToArray();
+            foreach (var sample in body)
+            {
+                floor.Any(t => Covers(t, sample, .5f)).Should().BeTrue(
+                    $"{area} slicing terminal at {position} needs walkable floor on its use side at {sample}");
+                scenery.Any(bounds => Inside(bounds, sample)).Should().BeFalse(
+                    $"{area} slicing terminal at {position} needs its use side at {sample} clear of scenery");
+            }
+        }
+    }
+
+    private static bool Inside((Vector3 Min, Vector3 Max, Matrix4x4 Inverse) bounds, Vector3 sample)
+    {
+        var local = Vector3.Transform(sample, bounds.Inverse);
+        return local.X >= bounds.Min.X && local.X <= bounds.Max.X
+            && local.Y >= bounds.Min.Y && local.Y <= bounds.Max.Y
+            && local.Z + 1.8f > bounds.Min.Z && local.Z + .05f < bounds.Max.Z;
+    }
+
     private static IEnumerable<(Vector3 Min, Vector3 Max, Matrix4x4 Inverse)> ReadCollisionBounds(string file, Matrix4x4 placement)
     {
         foreach (Match node in Regex.Matches(File.ReadAllText(file), @"(?is)node\s+trimesh\s+\S+\s+(.*?)endnode"))
@@ -181,14 +230,14 @@ public class DungeonEncounterWalkmeshTests
         return result;
     }
 
-    private static bool Covers(Vector3[] triangle, Vector3 point)
+    private static bool Covers(Vector3[] triangle, Vector3 point, float heightTolerance = .05f)
     {
         var a = triangle[0]; var u = triangle[1] - a; var v = triangle[2] - a; var d = point - a;
         var determinant = u.X * v.Y - u.Y * v.X;
         if (Math.Abs(determinant) < .00001f) return false;
         var s = (d.X * v.Y - d.Y * v.X) / determinant;
         var t = (u.X * d.Y - u.Y * d.X) / determinant;
-        return s >= -.00001f && t >= -.00001f && s + t <= 1.00001f && Math.Abs(a.Z + s * u.Z + t * v.Z - point.Z) <= .05f;
+        return s >= -.00001f && t >= -.00001f && s + t <= 1.00001f && Math.Abs(a.Z + s * u.Z + t * v.Z - point.Z) <= heightTolerance;
     }
 
     private static string Text(JsonElement o, string name) => o.GetProperty(name).GetProperty("value").GetString()!;

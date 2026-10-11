@@ -6,6 +6,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class PropertyPermissionsDefinition: IGuiWindowDefinition
     {
+        // Narrower than this, the page selector widens the player column and clips the Grant column.
+        internal const float WindowWidth = 620f;
+        internal const float WindowHeight = 330f;
+
         private readonly GuiWindowBuilder<PropertyPermissionsViewModel> _builder = new();
 
         public GuiConstructedWindow BuildWindow()
@@ -14,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.PermissionManagement)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 545f, 295.5f)
+                .SetInitialGeometry(0, 0, WindowWidth, WindowHeight)
                 .SetTitle("Manage Permissions")
 
                 .AddColumn(col =>
@@ -77,6 +81,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 })
                                     .BindRowCount(model => model.PlayerNames);
                             });
+
+                            col2.AddPagination(
+                                model => model.PageNumbers,
+                                model => model.SelectedPageIndex,
+                                model => model.OnClickPreviousPage(),
+                                model => model.OnClickNextPage());
                         });
 
                         row.AddColumn(col2 =>

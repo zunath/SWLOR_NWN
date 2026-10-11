@@ -312,12 +312,13 @@ namespace SWLOR.Toolset.Tests
             cloakMeshes.Should().NotBeEmpty(
                 "cloakmodel row 70 selects the native cloak_150 palette");
             cloakMeshes.Should().OnlyContain(mesh => mesh.UsesItemTintOverrides);
-            cloakMeshes.Select(mesh => mesh.MaterialName).Should().OnlyContain(name => name == "cloak_150",
-                "the authored native palette must replace the retired tint alias");
+            cloakMeshes.Select(mesh => mesh.MaterialName).Should().OnlyContain(name => name == "cloaktint",
+                "cloak geometry uses a stable RGB material independently of the selected native texture");
 
             var textures = new PreviewTextureCache(_resources);
             cloakMeshes.Should().OnlyContain(mesh =>
-                textures.Get(mesh.MaterialName, mesh.LayerColorIndices, null, true) != null,
+                textures.Get(mesh.MaterialName, mesh.LayerColorIndices, null, true,
+                    SWLOR.NWN.API.NWScript.Enum.Item.AppearanceArmor.Invalid, mesh.TextureName) != null,
                 "cloakmodel texture selection must preserve the native dyed surface");
         }
 

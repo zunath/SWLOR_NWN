@@ -58,7 +58,8 @@ namespace SWLOR.Toolset.Domain.Render
             IReadOnlyDictionary<int, int>? layerColorIndices = null,
             IReadOnlyDictionary<string, int>? tintMapOverrides = null,
             bool resolveMaterial = true,
-            AppearanceArmor armorPart = AppearanceArmor.Invalid)
+            AppearanceArmor armorPart = AppearanceArmor.Invalid,
+            string? textureName = null)
         {
             if (string.IsNullOrWhiteSpace(textureOrMaterialName))
                 return null;
@@ -68,7 +69,8 @@ namespace SWLOR.Toolset.Domain.Render
                 layerColorIndices,
                 tintMapOverrides,
                 resolveMaterial,
-                armorPart);
+                armorPart,
+                textureName);
             lock (_gate)
             {
                 if (_entries.TryGetValue(key, out var node))
@@ -84,7 +86,8 @@ namespace SWLOR.Toolset.Domain.Render
                 layerColorIndices,
                 tintMapOverrides,
                 resolveMaterial,
-                armorPart);
+                armorPart,
+                textureName);
 
             lock (_gate)
             {
@@ -129,7 +132,8 @@ namespace SWLOR.Toolset.Domain.Render
             IReadOnlyDictionary<int, int>? layerColorIndices,
             IReadOnlyDictionary<string, int>? tintMapOverrides,
             bool resolveMaterial,
-            AppearanceArmor armorPart)
+            AppearanceArmor armorPart,
+            string? textureName)
         {
             try
             {
@@ -143,7 +147,8 @@ namespace SWLOR.Toolset.Domain.Render
                         material,
                         layerColorIndices,
                         tintMapOverrides,
-                        armorPart) is { } tintMap)
+                        armorPart,
+                        textureName) is { } tintMap)
                 {
                     return tintMap;
                 }
@@ -166,8 +171,10 @@ namespace SWLOR.Toolset.Domain.Render
             IReadOnlyDictionary<int, int>? layerColorIndices,
             IReadOnlyDictionary<string, int>? tintMapOverrides = null,
             bool resolveMaterial = true,
-            AppearanceArmor armorPart = AppearanceArmor.Invalid)
+            AppearanceArmor armorPart = AppearanceArmor.Invalid,
+            string? textureName = null)
         {
+            textureOrMaterialName += string.IsNullOrEmpty(textureName) ? string.Empty : $"|texture:{textureName}";
             if ((layerColorIndices == null || layerColorIndices.Count == 0) &&
                 (tintMapOverrides == null || tintMapOverrides.Count == 0))
                 return $"{(resolveMaterial ? 'm' : 't')}|{textureOrMaterialName}|p:{(int)armorPart}";

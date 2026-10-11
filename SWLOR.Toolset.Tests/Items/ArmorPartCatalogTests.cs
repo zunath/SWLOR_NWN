@@ -20,13 +20,15 @@ namespace SWLOR.Toolset.Tests.Items
                 File.WriteAllBytes(Path.Combine(scratch, "pmh0_bicepr002.mdl"), Array.Empty<byte>());
                 File.WriteAllBytes(Path.Combine(scratch, "pmh0_bicepl_bad.mdl"), Array.Empty<byte>());
                 File.WriteAllBytes(Path.Combine(scratch, "helm_309.mdl"), Array.Empty<byte>());
+                File.WriteAllText(Path.Combine(scratch, "pmh0_bicepl271.lod"), "pfh0_bicepl270\n");
+                File.WriteAllText(Path.Combine(scratch, "pmh0_bicepl272.lod"), "missing\n");
 
                 var resources = new ResourceIndex(
                     baseLayer: null,
                     hakLayersInOrder: new[] { new ResourceIndex.HakLayer("fixture", scratch) });
                 var catalog = new ArmorPartCatalog(resources);
 
-                catalog.Numbers("bicepl").Should().Equal(1, 270);
+                catalog.Numbers("bicepl").Should().Equal(1, 270, 271);
                 catalog.Numbers("bicepr").Should().Equal(2);
                 catalog.NumbersForModelPrefix("helm_").Should().Equal(309);
             }

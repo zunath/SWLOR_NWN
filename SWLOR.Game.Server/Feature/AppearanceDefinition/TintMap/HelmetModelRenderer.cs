@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 return false;
 
             var gender = GetGender(creature) == Gender.Female ? 'f' : 'm';
-            return !string.IsNullOrEmpty(ResManGetAliasFor(GetHeadModel(gender, race, head), ResType.MDL));
+            return ModelResource.Exists(GetHeadModel(gender, race, head));
         }
 
         public static void Apply(uint creature, IReadOnlyList<TintMapMaterialSelection> selections)

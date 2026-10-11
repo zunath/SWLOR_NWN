@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
     {
         public static IReadOnlyList<int> GetAvailableStyles(uint creature, IEnumerable<int> styles) =>
             FilterStyles(styles, style => TintMapModelResolver.GetCurrentRobeModelResref(creature, style),
-                model => !string.IsNullOrEmpty(ResManGetAliasFor(model, ResType.MDL)));
+                ModelResource.Exists);
 
         public static IReadOnlyList<int> FilterStyles(IEnumerable<int> styles,
             Func<int, string> getModel, Func<string, bool> modelExists) =>
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                 return false;
             var model = TintMapModelResolver.GetCurrentRobeModelResref(creature, style);
             // A non-parts creature has no modular robe model to validate.
-            if (string.IsNullOrEmpty(model) || !string.IsNullOrEmpty(ResManGetAliasFor(model, ResType.MDL)))
+            if (string.IsNullOrEmpty(model) || ModelResource.Exists(model))
                 return false;
 
             // Keep the armor, its other parts and all saved dyes. Missing robe geometry

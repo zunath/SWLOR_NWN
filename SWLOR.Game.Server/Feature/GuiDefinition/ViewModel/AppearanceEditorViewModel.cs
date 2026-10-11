@@ -808,7 +808,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var appearanceType = GetAppearanceType(_target);
 
-                if (!_armorAppearances[appearanceType].Neck.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck)) ||
+                if (!_armorAppearances[appearanceType].Neck.Prepend(0).Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck)) ||
                     !_armorAppearances[appearanceType].Torso.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso)) ||
                     !_armorAppearances[appearanceType].Belt.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt)) ||
                     !_armorAppearances[appearanceType].Pelvis.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis)) ||
@@ -1902,7 +1902,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (SelectedItemTypeIndex == 0) // 0 = Armor
             {
-                NeckOptions = _armorAppearances[appearanceType].NeckOptions;
+                var neckOptions = new GuiBindingList<GuiComboEntry>();
+                foreach (var style in NeckAppearance.GetAvailableStyles(_target, _armorAppearances[appearanceType].Neck.Prepend(0)))
+                    neckOptions.Add(new GuiComboEntry(style.ToString(), style));
+                NeckOptions = neckOptions;
                 ChestOptions = _armorAppearances[appearanceType].TorsoOptions;
                 BeltOptions = _armorAppearances[appearanceType].BeltOptions;
                 PelvisOptions = _armorAppearances[appearanceType].PelvisOptions;
@@ -1910,7 +1913,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 foreach (var style in RobeAppearance.GetAvailableStyles(_target, _armorAppearances[appearanceType].Robe))
                     robeOptions.Add(new GuiComboEntry(style.ToString(), style));
                 RobeOptions = robeOptions;
-                if (RobeAppearance.RemoveUnavailableRobe(_target, item))
+                var repairedNeck = NeckAppearance.RemoveUnavailableNeck(_target, item);
+                if (RobeAppearance.RemoveUnavailableRobe(_target, item) || repairedNeck)
                     EquippedItemAppearance.Refresh(_target, item);
 
                 LeftShoulderOptions = _armorAppearances[appearanceType].ShoulderOptions;

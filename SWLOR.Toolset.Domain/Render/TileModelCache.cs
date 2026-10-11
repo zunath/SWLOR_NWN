@@ -16,7 +16,6 @@ namespace SWLOR.Toolset.Domain.Render
     public sealed class TileModelCache
     {
         private static readonly ILogger Logger = Log.ForContext<TileModelCache>();
-        private static readonly ushort MdlResourceType = ResourceIdentity.TypeFromExtension("mdl");
 
         private readonly ResourceIndex _resourceIndex;
         private readonly ConcurrentDictionary<string, RenderModel?> _cache =
@@ -146,8 +145,7 @@ namespace SWLOR.Toolset.Domain.Render
         {
             try
             {
-                var identity = new ResourceIdentity(modelResRef, MdlResourceType);
-                if (!_resourceIndex.TryLookup(identity, out var handle))
+                if (!ModelResourceResolver.TryResolve(_resourceIndex, modelResRef, out var handle))
                     return null;
 
                 var bytes = handle.GetBytes();

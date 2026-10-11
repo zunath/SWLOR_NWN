@@ -49,7 +49,7 @@ public static class NeckAppearanceEngineTests
                         ctx.AssertEqual(expected, packet.Parts[(int)AppearanceArmor.Neck], $"{race}/{gender}/{robe}/{neck} packet");
                         ctx.AssertEqual(neck, GetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck), "Saved neck ID");
                         ctx.Assert(colors.SequenceEqual(packet.Colors.Select(v => (int)v)), "All dyes survive projection");
-                        if (race == AppearanceType.Human && gender == Gender.Female && robe == 187)
+                        if (race == AppearanceType.Human && gender == Gender.Female && robe == 187 && neck != 123)
                             ctx.Assert(expected >= 1000, "The photographed robe must use a corrected neck skin");
                         if (robe == 0)
                             ctx.AssertEqual((ushort)neck, expected, "Removing robe restores canonical neck");

@@ -176,8 +176,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             AddBoundValueRow(combatCol, "Atk Delay", model => model.AttackDelay, "Estimated time between auto attacks.", model => model.AttackDelayTooltip, 94f);
                             AddBoundValueRow(combatCol, "Attack", model => model.Attack, "Physical attack rating used to scale weapon and physical ability damage.", null, 94f);
                             AddBoundValueRow(combatCol, "Force Attack", model => model.ForceAttack, "Force attack rating used to scale Force ability damage.", null, 94f);
-                            AddBoundValueRow(combatCol, "Main-hand Acc.", model => model.WeaponAccuracy, "Accuracy for attacks made with your main-hand weapon. Each weapon's accuracy bonuses apply only to that weapon's attacks. Dual-wielding does not combine their bonuses. Actual hit chance depends on target Evasion and ability-specific modifiers.", null, 112f);
-                            AddBoundValueRow(combatCol, "Off-hand Acc.", model => model.OffHandAccuracy, "Accuracy for attacks made with your off-hand weapon or the second striking end of a double weapon. Each weapon's accuracy bonuses apply only to that weapon's attacks. Dual-wielding does not combine their bonuses. Actual hit chance depends on target Evasion and ability-specific modifiers.", null, 112f, null, model => model.ShowOffHandAccuracy);
+                            AddBoundValueRow(combatCol, "Main-hand Acc.", model => model.WeaponAccuracy, "Accuracy for attacks made with your main-hand weapon. Each weapon's accuracy bonuses apply only to that weapon's attacks. Dual-wielding does not combine their bonuses. Actual hit chance depends on target Evasion and ability-specific modifiers.", null, 120f);
+                            AddBoundValueRow(combatCol, "Off-hand Acc.", model => model.OffHandAccuracy, "Accuracy for attacks made with your off-hand weapon or the second striking end of a double weapon. Each weapon's accuracy bonuses apply only to that weapon's attacks. Dual-wielding does not combine their bonuses. Actual hit chance depends on target Evasion and ability-specific modifiers.", null, 120f, null, model => model.ShowOffHandAccuracy);
                             AddBoundValueRow(combatCol, "Force Acc.", model => model.ForceAccuracy, "Underlying Force ability accuracy rating. Actual hit chance depends on target Evasion, Force affinity, and direct ability hit chance modifiers.", null, 94f);
                             AddBoundValueRow(combatCol, "Evasion", model => model.Evasion, "Evasion rating used to oppose attacks and detrimental abilities.", null, 94f);
                             AddBoundValueRow(combatCol, "Physical DEF", model => model.PhysicalDefense, "Defense against physical attacks.", null, 94f);
@@ -418,6 +418,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 if (visibleExpression != null)
                 {
                     row.BindIsVisible(visibleExpression);
+                    labelElement.BindIsVisible(visibleExpression);
+                    value.BindIsVisible(visibleExpression);
                 }
             });
         }

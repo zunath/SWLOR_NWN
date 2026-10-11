@@ -117,14 +117,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast goads a single target, gains +8% evasion chance for 30 seconds, and restores 1 STM the next time it evades during the effect.")
+                .Description("The beast goads a single target, gains +8% evasion chance for 30 seconds, and restores 1 STM the next time it evades during the effect. On a valid impact, threat catches up to the highest visible rival plus the VIT-scaled threat bonus. Repeated goads while already ahead do not accumulate threat. No forced target lock.")
                 .Price(3)
                 .RequirementBeastLevel(15)
                 .RequirementBeastRole(BeastRoleType.Evasion)
                 .GrantsFeat(FeatType.EvasiveChallenge1)
 
                 .AddPerkLevel()
-                .Description("The beast goads the selected target and enemies within 5m, removes movement slow, gains +14% evasion chance for 30 seconds, and restores 1 STM the next time it evades during the effect.")
+                .Description("The beast goads the selected target and enemies within 5m, removes movement slow, gains +14% evasion chance for 30 seconds, and restores 1 STM the next time it evades during the effect. On a valid impact, threat catches up to the highest visible rival plus the VIT-scaled threat bonus. Repeated goads while already ahead do not accumulate threat. No forced target lock.")
                 .Price(4)
                 .RequirementBeastLevel(35)
                 .RequirementBeastRole(BeastRoleType.Evasion)

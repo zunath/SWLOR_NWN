@@ -1565,6 +1565,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             if (includeGlobalColor &&
+                !TintMapVariable.IsCreatureColorLayer(layer) &&
                 GetObjectType(paletteSource) == ObjectType.Item &&
                 !HasExplicitItemPresetColor(selection, layer, 0))
             {

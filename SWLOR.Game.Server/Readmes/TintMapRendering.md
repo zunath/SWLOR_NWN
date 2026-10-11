@@ -12,6 +12,22 @@ weapons, provide distinct material identities or occurrence-specific rendering
 for independently colored copies of the same equipped model: creature material
 uniforms alone cannot distinguish identical main-hand and off-hand materials.
 
+Authored MTRs can inherit a same-name DDS/TGA without declaring `texture0`.
+`TintMapMaterialSources.json` records that input as `implicitTexture0`.
+Helmet 101, both human neck 12 textures, and female human left shin 264 have
+obsolete PLT atlases that differ from their authored diffuse artwork.
+`GenerateAuthoredDiffuseTintMaps.py` registers a uniform channel selector while
+retaining the full-resolution diffuse and normal/specular textures. Cloth 1
+controls helmet 101 and shin 264; Skin controls the necks' authored surfaces.
+The mapped shader's opt-in `useAuthoredDiffuse` preserves original colors for
+native presets and reset. Explicit RGB replaces the hue using the original
+luminance detail, without sampling the obsolete PLT. Helmet 101 retains its
+generated render heads and RGB editor support. Other materials leave this mode off.
+After regenerating controls, run `GenerateTintMapAssets.py --refresh-model-bindings`
+and `GenerateHelmetRgbModels.py --apply`. Rebuild `sw_shader`, `sw_item`,
+`sw_pt_helm`, `sw_pt_neck`, `sw_pt_lshin`, `sw_pt_head`, `sw_tint_mtr`, the changed
+`sw_tint*` mask HAKs, and `sw_2da` together, then restart the client.
+
 ## Preserve the authored palette rows
 
 Converting a PLT material must preserve the creature and equipment color IDs.
@@ -63,11 +79,19 @@ row parameter. Atlas coordinates occupy [0,1). Custom values occupy [1,4),
 using the two float exponent ranges' 2^24 distinct values. All three shaders
 decode this value before lighting. They multiply RGB by a neutral reference
 row's luminance curve, normalized at shade128, preserving shading without
-importing a preset's hue or reflection mask. The Toolset uses the same shading
-formula. Preset lookup and authored colors are unchanged.
+importing a preset's hue. Metal1 and Metal2 retain that neutral metal row's
+shade-dependent environment coverage: PLT-only armor relies on this alpha for
+its reflection and specularity. Other RGB layers stay opaque. Authored normal,
+specular and roughness maps still pass through standard material lighting.
+The Toolset viewport uses the same RGB shading and metal coverage. Preset
+lookup and authored colors are unchanged.
 
-Run `TestTintRgb.py --game-data <NWN data directory>` for GPU RGB checks and
-`TestTintShaderMaterials.py` for native engine shader/MTR and preset parity.
+Run `TestTintRgb.py --game-data <NWN data directory>` for GPU RGB and metal
+material checks. `TestTintShaderMaterials.py` validates native engine shader/MTR
+and preset parity, including the RGB metal coverage curve at every shade.
+`python -B -m unittest discover -s tools/tests -p test_toolset_tint_shader.py`
+draws the Toolset's production desktop and ES shader pairs on Windows, checking
+RGB/preset coverage and lit metal reflection without normal or specular maps.
 `TintMapShaderColorTests` exhaustively checks every RGB byte combination;
 the native AppearanceEditor tests cover scalar storage, drafts, reopening,
 inheritance and preset reset. Shader changes require rebuilding sw_shader.hak
@@ -546,6 +570,18 @@ fragment specular lighting still compile.
 Preserve the engine's authored specular and roughness maps, material overrides,
 palette alpha, and hair cutouts. Disabling specularity globally or editing each
 NPC would hide the initialization error and remove intentional material detail.
+
+Match the engine's color-space ordering as well: blend the legacy reflection
+gray into the palette RGB **before** `ApplyColorSpace`, then perform the optional
+environment-map blend in linear space. Mixing gray into already-linear RGB
+brightens reflective palette colors when gamma correction is enabled, washing
+out dark hair and metal dyes (including female chest 304's two metal layers).
+`SWLOR_Haks/tools/TestTintPaletteLighting.py --game-data <NWN data directory>`
+compares diffuse and cached specular color against the installed engine's
+unmodified `SetupStandardShaderInputs`, using all native palette colors,
+shades, layers, shader qualities, lighting modes, and gamma settings. This
+shader-only correction requires rebuilding/deploying `sw_shader.hak` and a
+full client restart; the palette artwork and character colors stay unchanged.
 
 ## Compile against the engine's conditional declarations
 

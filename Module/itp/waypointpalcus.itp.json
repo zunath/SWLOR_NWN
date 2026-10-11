@@ -362,7 +362,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dantooine Jedi Enclave Trial Halls - Guardian Master Paragon Spawn"
+                      "value": "Dantooine Jedi Enclave Trial Halls - Bastion Training Engine Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -373,7 +373,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dantooine Jedi Enclave Trial Halls - Guardian Master Warden Spawn"
+                      "value": "Dantooine Jedi Enclave Trial Halls - Guardian Gatekeeper Droid Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -384,7 +384,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dantooine Jedi Enclave Trial Halls - Saber Cyclone Master Spawn"
+                      "value": "Dantooine Jedi Enclave Trial Halls - Vortex Training Engine Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -395,7 +395,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dantooine Jedi Enclave Trial Halls - Saber Cyclone Warden Spawn"
+                      "value": "Dantooine Jedi Enclave Trial Halls - Cyclone Gatekeeper Droid Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -406,7 +406,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dantooine Jedi Enclave Trial Halls - Saber Storm Master Spawn"
+                      "value": "Dantooine Jedi Enclave Trial Halls - Tempest Training Engine Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -417,7 +417,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dantooine Jedi Enclave Trial Halls - Saber Storm Warden Spawn"
+                      "value": "Dantooine Jedi Enclave Trial Halls - Storm Gatekeeper Droid Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1121,7 +1121,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Korriban Sith Crypt Depths - Eclipse of Resolve Master Spawn"
+                      "value": "Korriban Sith Crypt Depths - Umbral Raider Commander Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1132,7 +1132,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Korriban Sith Crypt Depths - Eclipse of Resolve Warden Spawn"
+                      "value": "Korriban Sith Crypt Depths - Umbral Raider Captain Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1154,7 +1154,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Korriban Sith Crypt Depths - Hunger of the Dark Master Spawn"
+                      "value": "Korriban Sith Crypt Depths - Vitae Reaver Chief Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1165,7 +1165,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Korriban Sith Crypt Depths - Hunger of the Dark Warden Spawn"
+                      "value": "Korriban Sith Crypt Depths - Vitae Reaver Enforcer Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1176,7 +1176,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Korriban Sith Crypt Depths - Last Stand of the Light Master Spawn"
+                      "value": "Korriban Sith Crypt Depths - Crypt Expedition Leader Spawn"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -1187,7 +1187,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Korriban Sith Crypt Depths - Last Stand of the Light Warden Spawn"
+                      "value": "Korriban Sith Crypt Depths - Crypt Breach Captain Spawn"
                     },
                     "RESREF": {
                       "type": "resref",

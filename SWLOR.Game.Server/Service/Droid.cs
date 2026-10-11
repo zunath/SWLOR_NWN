@@ -624,13 +624,16 @@ namespace SWLOR.Game.Server.Service
             CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Willpower, details.WIL);
             CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Agility, details.AGI);
             CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Social, details.SOC);
-            Stat.SetNPCMaxHitPoints(droid, details.HP, true);
+            // Controller HP is the base contribution. Preserve the native Vitality
+            // bonus in the final skin budget used by spawning and equipment changes.
+            var maxHP = details.HP + GetAbilityModifier(AbilityType.Vitality, droid) * GetHitDice(droid);
+            Stat.SetNPCMaxHitPoints(droid, maxHP, true);
             CreaturePlugin.SetBaseAC(droid, 10);
             CreaturePlugin.SetBaseAttackBonus(droid, 1);
 
             // Skin item properties
             var levelIP = ItemPropertyCustom(ItemPropertyType.NPCLevel, -1, details.Level);
-            var hpIP = ItemPropertyCustom(ItemPropertyType.NPCHP, -1, details.HP);
+            var hpIP = ItemPropertyCustom(ItemPropertyType.NPCHP, -1, maxHP);
             var stmIP = ItemPropertyCustom(ItemPropertyType.Stamina, -1, details.STM);
 
             BiowareXP2.IPSafeAddItemProperty(skin, levelIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);

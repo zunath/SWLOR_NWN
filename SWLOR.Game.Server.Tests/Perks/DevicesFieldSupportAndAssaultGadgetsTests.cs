@@ -222,6 +222,27 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
     }
 
     [Test]
+    public void WristRocket_RestoresSourceOwnedMissileAndDelayedFireballAcrossAllRanks()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "WristRocketAbilityDefinition.cs").FullName)
+            .Replace("\r\n", "\n");
+
+        source.Should().Contain("AssignCommand(activator, () =>\n                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv), target))");
+        source.Should().Contain("DelayCommand(delay, () =>");
+        source.Should().Contain("EffectVisualEffect(VisualEffect.Fnf_Fireball)");
+        source.Should().NotContain("VisualEffect.Vfx_Fnf_Gas_Explosion_Fire");
+        source.Should().NotContain("VisualEffect.Vfx_Com_Hit_Fire");
+        source.Should().NotContain("VisualEffect.Vfx_Ability_WristRocket");
+
+        source.Split("PlayRocketLaunch(activator, target);\n\n            Ability.ApplyCombatImpact(").Should().HaveCount(4,
+            "all three ranks launch the missile before resolving combat");
+        source.Split("afterSuccessfulHit: impactedTarget => ApplyRocketImpactEffects(activator, impactedTarget)").Should().HaveCount(4,
+            "only successful hits show the delayed explosion and grant Tactical Uplink");
+    }
+
+    [Test]
     public void Flamethrower_UsesImpactDamageBeforeCosmeticAnimationCanClearIt()
     {
         var root = FindRepositoryRoot();

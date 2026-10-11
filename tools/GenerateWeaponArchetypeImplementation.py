@@ -310,6 +310,16 @@ def max_range_for_row(row, skill):
         if range_match:
             return float(range_match.group(1))
 
+    if (
+        skill not in RANGED_COMBAT_IMPACT_SKILLS
+        and row["Type"] in {"Combat", "Capstone"}
+        and not is_friendly_target_active(row["Description"])
+        and not is_self_only_active(row["Description"])
+        and not is_area(row["Description"])
+        and not is_queued_weapon_active(row)
+    ):
+        return 7.0
+
     return MAX_RANGE_BY_SKILL.get(skill, 0.0)
 
 FEAT_COLUMN_WIDTHS = [
@@ -1951,8 +1961,12 @@ def stance_stat_entries(row):
     skill_expr = skill_type_expression(row)
     base, _ = base_and_level(row["PerkName"])
     exact_stats = exact_weapon_stance_stat_entries(row, base)
+    damage_enmity = parse_percent(r"\+(\d+)% threat from damage dealt", description)
     if exact_stats is not None:
+        if damage_enmity:
+            exact_stats.append(("DamageEnmityPercentAdjustment", damage_enmity))
         return exact_stats
+    add_stat(stats, "DamageEnmityPercentAdjustment", damage_enmity)
 
     add_stat(stats, "AttackPercentAdjustment", parse_percent(r"\+(\d+)% Attack", description))
     add_stat(stats, "ForceAttackPercentAdjustment", parse_percent(r"\+(\d+)% Force Attack", description))
@@ -3352,7 +3366,7 @@ def generate_perk_definitions(rows, perk_values, feat_values):
                 lines.append("                .AddPerkLevel()")
                 if row["Type"] in ACTIVE_TYPES:
                     lines.append(f"                .GrantsFeat(FeatType.{choose_active_feat(row, feat_values)})")
-                    if row["CharacterType"] != "Force":
+                    if row["CharacterType"] != "Force" and row["Type"] != "Capstone":
                         lines.append(f"                .DroidAISlots({level})")
                 elif index == 0:
                     trait_feat = choose_trait_feat(base, feat_values)

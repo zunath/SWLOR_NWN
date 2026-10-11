@@ -1,12 +1,41 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class TeleportPlaceableConfigurationTests
 {
     private const string PartyTeleportVariable = "TELEPORT_PARTY_MEMBERS";
+
+    [Test]
+    public void TradeConcourseWarehouse_RestrictsEntryAndProvidesAnExitAfterDoorRelocks()
+    {
+        var root = FindRepositoryRoot();
+        using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+            root.FullName, "Module", "git", "veles_tradecon.git.json")));
+        var area = document.RootElement;
+        var doors = area.GetProperty("Door List").GetProperty("value").EnumerateArray().ToArray();
+        var entrance = doors.Single(door => GetString(door, "Tag") == "concourse_warehouse_door");
+
+        GetString(entrance, "KeyName").Should().Be("Key_Smuggler_1");
+        entrance.GetProperty("KeyRequired").GetProperty("value").GetInt32().Should().Be(1);
+        entrance.GetProperty("Locked").GetProperty("value").GetInt32().Should().Be(1);
+        GetString(entrance, "OnOpen").Should().Be(ScriptName.OnDoorAutoRelockOpen);
+        GetString(entrance, "OnClosed").Should().Be(ScriptName.OnDoorAutoRelockClosed);
+        doors.Where(door => GetString(door, "Tag") != "concourse_warehouse_door")
+            .Should().OnlyContain(door => GetString(door, "OnOpen") == string.Empty &&
+                                         GetString(door, "OnClosed") == string.Empty);
+
+        var exit = area.GetProperty("Placeable List").GetProperty("value").EnumerateArray()
+            .Single(placeable => GetString(placeable, "Tag") == "concourse_warehouse_exit");
+        GetString(exit, "OnUsed").Should().Be(ScriptName.OnPlaceableTeleport);
+        GetLocalInt(exit, "KEY_ITEM_ID").Should().Be(0);
+        GetLocalString(exit, "DESTINATION").Should().Be("V_Warehouse_To_Concourse");
+        EnumerateTags(area).Should().Contain(GetString(entrance, "LinkedTo"))
+            .And.Contain(GetLocalString(exit, "DESTINATION"));
+    }
 
     [Test]
     public void TeleportPlaceables_DefinePartyTeleportFlag()

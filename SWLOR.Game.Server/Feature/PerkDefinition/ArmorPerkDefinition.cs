@@ -26,14 +26,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Provoke")
 
                 .AddPerkLevel()
-                .Description("Goads a single target into attacking you. Enmity generated increases by 1% per VIT.")
+                .Description("Goads a single target into attacking you. Enmity generated increases by 1% per VIT. On a valid impact, threat catches up to the highest visible rival plus the VIT-scaled threat bonus. Repeated goads while already ahead do not accumulate threat. No forced target lock.")
                 .Price(2)
                 .DroidAISlots(1)
                 .RequirementSkill(SkillType.Armor, 5)
                 .GrantsFeat(FeatType.Provoke1)
 
                 .AddPerkLevel()
-                .Description("Goads the selected target and all other enemies within 8m of it into attacking you. Enmity generated increases by 1% per VIT.")
+                .Description("Goads the selected target and all other enemies within 8m of it into attacking you. Enmity generated increases by 1% per VIT. On a valid impact, threat catches up to the highest visible rival plus the VIT-scaled threat bonus. Repeated goads while already ahead do not accumulate threat. No forced target lock.")
                 .Price(3)
                 .DroidAISlots(2)
                 .RequirementSkill(SkillType.Armor, 15)

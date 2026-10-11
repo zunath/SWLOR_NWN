@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Do you hear the conduits this morning? Under the ward -- there, that low note. Out of tune. There are practitioners in the Dantooine Medical Sublevel who took the conduit form from me and dammed it: they pool the Force in their blades and let it stagnate, and stagnant power always finds somewhere to spill. Go down, defeat six of their adepts, and bring me the Infinite Conduit Triage Ward Ledger they carried off when they sealed the stair. The ward cannot sort its sick without it, and I cannot reach them anymore.",
+          "Text": "These pipes sound nothing like the conduits beneath my old ward on Dantooine. Those had a low note that kept time with a blade. There are practitioners in the Dantooine Medical Sublevel who took the conduit form from me and dammed it: they pool the Force in their blades and let it stagnate, and stagnant power always finds somewhere to spill. Go to Dantooine, defeat six of their adepts, and bring me the Infinite Conduit Triage Ward Ledger they carried off when they sealed the stair. The ward cannot sort its sick without it, and I cannot reach them anymore.",
           "Style": 0,
           "Color": null
         }
@@ -285,6 +285,10 @@
         },
         {
           "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "neutral-ask",
           "Conditions": []
         }
       ]
@@ -349,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Beneath us. The sublevel runs under this whole facility -- it was cut as a kolto reserve, and I taught the form down there because the conduits keep honest time. Take the work and I'll give you the sublevel key; it opens the sealed service door behind the recovery ward. Past that seal, everything is theirs now. Follow the pipes.",
+          "Text": "On Dantooine. The Medical Sublevel runs beneath the medical facility there -- it was cut as a kolto reserve, and I taught the form down there because the conduits keep honest time. Take the work and I'll give you the sublevel key; it opens the sealed service door behind the recovery ward. Past that seal, everything is theirs now. Follow the pipes.",
           "Style": 0,
           "Color": null
         }
@@ -1291,6 +1295,32 @@
       ],
       "OnEnterActions": [],
       "Choices": []
+    },
+    "neutral-meeting": {
+      "Id": "neutral-meeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Anchorhead Medical Center on Tatooine gives me somewhere to work while my old ward is sealed. Power should circulate, and so should help. Your faction has no place on a patient's chart. The practitioners are still in the Dantooine Medical Sublevel on Dantooine. Bring the ledger back to me at this clinic.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "neutral-return",
+          "Conditions": []
+        }
+      ]
     }
   },
   "Choices": {
@@ -2138,6 +2168,52 @@
       "Next": [
         {
           "TargetNodeId": "entry-00041",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-ask": {
+      "Id": "neutral-ask",
+      "Text": {
+        "Text": "Why are we meeting here, and where is the trial?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "neutral-meeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-return": {
+      "Id": "neutral-return",
+      "Text": {
+        "Text": "Back to the assignment.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00002",
           "Conditions": []
         }
       ],

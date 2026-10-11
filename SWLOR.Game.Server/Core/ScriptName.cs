@@ -206,6 +206,10 @@ namespace SWLOR.Game.Server.Core
         public const string OnRestTriggerEnter = "rest_trg_enter";
         public const string OnRestTriggerExit = "rest_trg_exit";
 
+        // Door events
+        public const string OnDoorAutoRelockOpen = "door_relock_open";
+        public const string OnDoorAutoRelockClosed = "door_relock_shut";
+
         // Placeable events
         public const string OnPlaceableTeleport = "teleport";
         public const string OnPlaceablePermanentVfx = "permanent_vfx";

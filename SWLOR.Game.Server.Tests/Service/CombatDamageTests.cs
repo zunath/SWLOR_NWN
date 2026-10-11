@@ -310,7 +310,8 @@ public class CombatDamageTests
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
             @"GetRangedAbilityLongRangeHitChanceAdjustment\(\s*attacker.m_idSelf,\s*defender.m_idSelf,\s*abilitySkillType\)").Should().BeTrue();
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
-            @"GetQueuedWeaponAbilityActivationHitChanceAdjustment\(\s*attacker.m_idSelf,\s*abilitySkillType\)").Should().BeTrue();
+            @"queuedAbility == null \? 0 : Combat\.GetQueuedWeaponAbilityActivationHitChanceAdjustment\(\s*attacker.m_idSelf,\s*abilitySkillType\)")
+            .Should().BeTrue("ability accuracy must not affect ordinary weapon attacks");
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
             @"StoreQueuedWeaponAbilityCriticalRateBonus\(\s*attacker.m_idSelf,\s*abilitySkillType,").Should().BeTrue();
         attackSource.Should().Contain("Combat.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType)");
@@ -769,7 +770,8 @@ public class CombatDamageTests
 
         combatSource.Should().Contain("ApplyTriggeredDamage(defender, attacker, reflectedDamage, damageType);");
         combatSource.Should().Contain("var appliedDamage = ApplyTriggeredDamage(");
-        combatSource.Should().Contain("Enmity.ModifyEnmity(attacker, target, appliedDamage);");
+        combatSource.Should().NotContain("Enmity.ModifyEnmity(attacker, target, appliedDamage);",
+            "triggered damage is credited by the native damage event, once");
         abilitySource.Should().Contain("Combat.ApplyDamageReflectionEffects(activator, target, damage, damageType);");
         abilitySource.Should().NotContain("Combat.ApplyDamageReflectionEffects(activator, target, calculatedDamage, damageType);");
     }
@@ -893,7 +895,6 @@ public class CombatDamageTests
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "AbilityEffectScaling.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "FirstAidTreatmentAdjustments.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "MedKitAbilityDefinition.cs"),
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "ForceDrainAbilityDefinition.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Beastmaster", "InnervateAbilityDefinition.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Beastmaster", "RewardAbilityDefinition.cs"),
         };
@@ -911,10 +912,18 @@ public class CombatDamageTests
             "HeavyVibroblade",
             "HeavyVibrobladeActiveAbilityDefinitionBase.cs"));
         heavyVibrobladeSource.Should().Contain("Combat.ApplyDamageDerivedHealing(");
-        heavyVibrobladeSource.Should().Contain("applyCombatReadiness: true");
-        File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"))
-            .Should()
-            .Contain("Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(creature, amount)");
+        heavyVibrobladeSource.Should().Contain("isActivatedHealing: true");
+        var damageHealing = ExtractMethod(File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs")),
+            "public static int ApplyDamageDerivedHealing(");
+        damageHealing.Should().NotContain("ApplyCombatReadiness",
+            "damage-derived healing already inherits Combat Readiness through its damage");
+        var forceDrain = File.ReadAllText(Path.Combine(root.FullName,
+            "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "ForceDrainAbilityDefinition.cs"));
+        forceDrain.Should().Contain("Combat.BeginDamageDerivedHealing(activator, target)");
+        forceDrain.Should().Contain("Combat.ApplyDamageDerivedHealing(");
+        forceDrain.Should().NotContain("EffectHeal(");
+        forceDrain.Should().NotContain("ApplyCombatReadinessToActivatedAbilityMagnitude");
 
         var directScaledHealingSources = new[]
         {

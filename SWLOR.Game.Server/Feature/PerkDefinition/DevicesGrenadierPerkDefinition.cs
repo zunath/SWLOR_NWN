@@ -212,7 +212,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)
-                .DroidAISlots(1)
                 .GrantsFeat(FeatType.ThermalDetonator1)
                 .RequirementQuest(DevicesCapstoneQuestDefinition.ThermalDetonatorMasteryQuestId);
         }

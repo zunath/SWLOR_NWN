@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.CombatAnalyzer
                 .Name("Overclocked Analyzer")
                 .Level(1)
                 .HasActivationDelay(1.0f)
-                .HasRecastDelay(RecastGroup.Overload, 60f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .UsesImmediateAuthoredAnimation()
                 .IsCastedAbility()

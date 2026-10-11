@@ -17,23 +17,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         {
             return new List<AbilityBehaviorCase>
             {
-                // ProvokeAbilityDefinition - hostile single-target/area enmity modifier. Enmity is
-                // not observable via these case fields and neither tier declares a status effect,
-                // damage, or an FP/Stamina cost - the recast is the only observable outcome.
+                // Threat-only impacts must produce observable enmity.
                 new()
                 {
                     Feat = FeatType.Provoke1,
                     Target = AbilityTargetKind.HostileCreature,
                     ExpectsRecast = true,
-                    OutcomeAssertionWaiverReason = "The impact only changes the private enmity table and plays a VFX; the harness has no read-only enmity observation seam.",
-                    Notes = "Impact only calls Enmity.ModifyEnmity and plays a visual effect; enmity is not observable via these case fields, and no FP/Stamina cost is declared.",
+                    MinimumTargetEnmityAfterImpact = 400,
+                    Notes = "Verifies generated threat; deficit recovery and actual attacks are covered by TankEnmityEngineTests.",
                 },
                 new()
                 {
                     Feat = FeatType.Provoke2,
                     Target = AbilityTargetKind.HostileCreature,
                     ExpectsRecast = true,
-                    OutcomeAssertionWaiverReason = "The area impact only changes private enmity entries; the harness has no read-only enmity observation seam.",
+                    MinimumTargetEnmityAfterImpact = 400,
                     Notes = "Area variant of Provoke1 with the same enmity-only impact on each hostile in range.",
                 },
             };

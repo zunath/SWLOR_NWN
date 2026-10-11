@@ -19,6 +19,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         {
             return new List<AbilityBehaviorCase>
             {
+                new()
+                {
+                    Feat = FeatType.SoulAscensionBurst,
+                    Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatusEffects = new[] { typeof(SoulAscensionBurstStatusEffect) },
+                    ExpectsRecast = true,
+                    VerifiesImmediateRecastRejection = true,
+                },
+
                 // AbsoluteDefenseAbilityDefinition - capstone party buff; solo caster falls back to self.
                 new()
                 {

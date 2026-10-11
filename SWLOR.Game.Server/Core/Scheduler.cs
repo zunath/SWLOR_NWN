@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using SWLOR.Game.Server.Core.Extensions;
 
 namespace SWLOR.Game.Server.Core
@@ -66,30 +67,26 @@ namespace SWLOR.Game.Server.Core
 
         private static void ProcessScheduledItems()
         {
-            int i;
-            for (i = 0; i < _scheduledItems.Count; i++)
+            // Callbacks can schedule or cancel work. Only run the work due at this frame's start.
+            var dueItems = _scheduledItems.TakeWhile(item => item.ExecutionTime <= Time).ToArray();
+            foreach (var item in dueItems)
             {
-                var item = _scheduledItems[i];
-                if (Time < item.ExecutionTime)
-                {
-                    break;
-                }
-
-                item.Execute();
-                if (!item.Repeating)
-                {
+                if (item.IsCancelled)
                     continue;
+
+                _scheduledItems.Remove(item);
+                try
+                {
+                    item.Execute();
                 }
-
-                item.Reschedule(Time + item.Schedule);
-                _scheduledItems.RemoveAt(i);
-                _scheduledItems.InsertOrdered(item, _comparer);
-                i--;
-            }
-
-            if (i > 0)
-            {
-                _scheduledItems.RemoveRange(0, i);
+                finally
+                {
+                    if (item.Repeating && !item.IsCancelled)
+                    {
+                        item.Reschedule(Time + item.Schedule);
+                        _scheduledItems.InsertOrdered(item, _comparer);
+                    }
+                }
             }
         }
     }

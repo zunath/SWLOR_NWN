@@ -285,7 +285,7 @@ public class CombatUpgradeBibleRecipeParityTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx");
+            "SWLOR Design Bible.xlsx");
 
         using var archive = OpenWorkbookWithRetry(workbookPath);
         var sharedStrings = ReadSharedStrings(archive);

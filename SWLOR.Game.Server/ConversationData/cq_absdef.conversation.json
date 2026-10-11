@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Your guard drops a finger's width every time you breathe out. That's a flaw in the grain, and flaws crack under load. The Forge Caverns below this rock can work it out of you. Smith-guards hold the galleries now, sworn to an oath I never approved, and their newest call themselves adepts. Cut down six adepts and bring me the Absolute Defense Forge Heat Ledger they keep by the crucibles. Do that, and I'll start hammering that flaw out of your guard.",
+          "Text": "Your guard drops a finger's width every time you breathe out. That's a flaw in the grain, and flaws crack under load. The Forge Caverns on Korriban can work it out of you. Smith-guards hold the galleries now, sworn to an oath I never approved, and their newest call themselves adepts. Cut down six adepts and bring me the Absolute Defense Forge Heat Ledger they keep by the crucibles. Do that, and I'll start hammering that flaw out of your guard.",
           "Style": 0,
           "Color": null
         }
@@ -285,6 +285,10 @@
         },
         {
           "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "neutral-ask",
           "Conditions": []
         }
       ]
@@ -1291,6 +1295,32 @@
       ],
       "OnEnterActions": [],
       "Choices": []
+    },
+    "neutral-meeting": {
+      "Id": "neutral-meeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "A blade's guard doesn't improve because someone checks its owner's papers. I teach at the Fight Club on Smuggler's Moon now; you needn't enter a bout to speak to me. The test is still in the Forge Caverns on Korriban. Take the key there. Bring the ledger back here, and we'll see what held.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "neutral-return",
+          "Conditions": []
+        }
+      ]
     }
   },
   "Choices": {
@@ -2138,6 +2168,52 @@
       "Next": [
         {
           "TargetNodeId": "entry-00041",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-ask": {
+      "Id": "neutral-ask",
+      "Text": {
+        "Text": "Why are we meeting here, and where is the trial?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "neutral-meeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-return": {
+      "Id": "neutral-return",
+      "Text": {
+        "Text": "Back to the assignment.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00002",
           "Conditions": []
         }
       ],

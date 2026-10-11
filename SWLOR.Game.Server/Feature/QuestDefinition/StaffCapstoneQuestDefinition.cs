@@ -175,13 +175,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Unit KX-17 gave you the CZ-220 Breaker Yard Key. Six Worldbreaker adepts operate at CZ-220 Breaker Yard on CZ-220. Defeat six of them and recover the Worldbreaker Breaker Yard Work Order.")
+                    "Unit KX-17 gave you the CZ-220 Breaker Yard Key. Travel to the CZ-220 Breaker Yard on CZ-220; enter through the Breaker Bay force-field wall in the far north-east corner of the Maintenance Level, below the Offices & Labs. Defeat six Worldbreaker adepts and recover the Worldbreaker Breaker Yard Work Order.")
                 .AddKillObjective(NPCGroupType.CZ220_Worldbreaker_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneWorldbreakerBreakerYardWorkOrder)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker Breaker Yard Work Order has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the Anchorhead - Droid Shop on Tatooine.")
+                    "You recovered the Worldbreaker Breaker Yard Work Order. Return it to Unit KX-17 at the Anchorhead - Droid Shop on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -196,13 +196,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Five Worldbreaker specialists operate at CZ-220 Breaker Yard on CZ-220. Defeat five of them and recover the Worldbreaker Junkline Control Relay.")
+                    "Return to the CZ-220 Breaker Yard on CZ-220. Defeat five Worldbreaker specialists on the junkline and recover the Worldbreaker Junkline Control Relay.")
                 .AddKillObjective(NPCGroupType.CZ220_Worldbreaker_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneWorldbreakerJunklineControlRelay)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker Junkline Control Relay has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the Anchorhead - Droid Shop on Tatooine.")
+                    "You recovered the Worldbreaker Junkline Control Relay. Return it to Unit KX-17 at the Anchorhead - Droid Shop on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -217,13 +217,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker warden holds CZ-220 Breaker Yard on CZ-220. Defeat the warden and recover the Worldbreaker Sheared Bay Sigil.")
+                    "The Worldbreaker warden holds the sheared bay in the CZ-220 Breaker Yard on CZ-220. Bring at least two others, defeat him, and recover the Worldbreaker Sheared Bay Sigil.")
                 .AddKillObjective(NPCGroupType.CZ220_Worldbreaker_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneWorldbreakerShearedBaySigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker Sheared Bay Sigil has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the Anchorhead - Droid Shop on Tatooine.")
+                    "You recovered the Worldbreaker Sheared Bay Sigil. Return it to Unit KX-17 at the Anchorhead - Droid Shop on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -238,13 +238,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Four members of the Worldbreaker inner circle hold CZ-220 Breaker Yard on CZ-220. Defeat all four and recover the Worldbreaker Foreman's Override Chip.")
+                    "Four members of the Worldbreaker inner circle hold the crane deck above the drill pit in the CZ-220 Breaker Yard on CZ-220. Defeat all four and recover the Worldbreaker Foreman's Override Chip.")
                 .AddKillObjective(NPCGroupType.CZ220_Worldbreaker_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneWorldbreakerForemansOverrideChip)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker Foreman's Override Chip has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the Anchorhead - Droid Shop on Tatooine.")
+                    "You recovered the Worldbreaker Foreman's Override Chip. Return it to Unit KX-17 at the Anchorhead - Droid Shop on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -257,12 +257,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker master holds CZ-220 Breaker Yard on CZ-220. Defeat the master.")
+                    "The Worldbreaker master holds the deepest part of the CZ-220 Breaker Yard on CZ-220. Bring at least two others and defeat him.")
                 .AddKillObjective(NPCGroupType.CZ220_Worldbreaker_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker master has been defeated. Return to Unit KX-17 at the Anchorhead - Droid Shop on Tatooine.")
+                    "You defeated the Worldbreaker master. Return to Unit KX-17 at the Anchorhead - Droid Shop on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

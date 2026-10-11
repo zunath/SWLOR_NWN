@@ -166,7 +166,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Dax Rell is a private-ring pit boss tied to the Crippling Defense capstone trials in Smuggler's Moon Fight Club Backrooms."
+      "0": "Dax Rell leans against the gaming machines of the Hyper Dive Cantina, sizing up every passing fighter's reach and footwork with a booker's practiced eye. She dresses for business rather than the ring, though her stance says she once fought in it, and a spearman's calluses still mark her hands. She books fighters for the Fight Club below The Slums, and lately she has been keeping a close watch on whatever goes on behind its back rooms."
     }
   },
   "Dex": {
@@ -364,7 +364,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 309
+    "value": 4075
   },
   "Race": {
     "type": "byte",

@@ -62,13 +62,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Talan Rees gave you the Dantooine Jedi Enclave Trial Halls Key. Contain the malfunctioning training network. Disable 6 Storm Drill Droid units in the outer ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Enclave Trial Slate.")
+                    "Talan Rees gave you the Dantooine Jedi Enclave Trial Halls Key. Disable six Storm Drill Droids in the Dantooine Jedi Enclave Trial Halls, through the sealed passage just inside the Jedi Enclave Library on Dantooine, and recover the Saber Storm Enclave Trial Slate.")
                 .AddKillObjective(NPCGroupType.Dantooine_StormDrillDroid, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormEnclaveTrialSlate)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Storm Enclave Trial Slate is recovered. Return to Talan Rees at the Anchorhead - Spaceport on Tatooine.")
+                    "You recovered the Saber Storm Enclave Trial Slate. Return to Talan Rees at the Anchorhead - Spaceport on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -83,13 +83,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable 5 Storm Duelist Droid units in the middle ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Kyber Focus Shard.")
+                    "Disable five Storm Duelist Droids deeper in the Dantooine Jedi Enclave Trial Halls on Dantooine and recover the Saber Storm Kyber Focus Shard.")
                 .AddKillObjective(NPCGroupType.Dantooine_StormDuelistDroid, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormKyberFocusShard)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Storm Kyber Focus Shard is recovered. Return to Talan Rees at the Anchorhead - Spaceport on Tatooine.")
+                    "You recovered the Saber Storm Kyber Focus Shard. Return to Talan Rees at the Anchorhead - Spaceport on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -104,13 +104,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable 1 Storm Gatekeeper Droid in the third trial door of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Fractured Trial Sigil. Bring at least two allies.")
+                    "With at least two allies, disable the Storm Gatekeeper Droid in the western halls of the Dantooine Jedi Enclave Trial Halls on Dantooine and recover the Saber Storm Fractured Trial Sigil.")
                 .AddKillObjective(NPCGroupType.Dantooine_StormGatekeeperDroid, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormFracturedTrialSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Storm Fractured Trial Sigil is recovered. Return to Talan Rees at the Anchorhead - Spaceport on Tatooine.")
+                    "You recovered the Saber Storm Fractured Trial Sigil. Return to Talan Rees at the Anchorhead - Spaceport on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -125,13 +125,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable 4 Storm Examiner Droid units in the high ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Council Trial Chit.")
+                    "Disable four Storm Examiner Droids guarding the control systems of the Dantooine Jedi Enclave Trial Halls on Dantooine and recover the Saber Storm Council Trial Chit.")
                 .AddKillObjective(NPCGroupType.Dantooine_StormExaminerDroid, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormCouncilTrialChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Storm Council Trial Chit is recovered. Return to Talan Rees at the Anchorhead - Spaceport on Tatooine.")
+                    "You recovered the Saber Storm Council Trial Chit. Return to Talan Rees at the Anchorhead - Spaceport on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -144,12 +144,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable 1 Tempest Training Engine in the deepest trial hall of the Dantooine Jedi Enclave Trial Halls. Bring at least two allies.")
+                    "With at least two allies, disable the Tempest Training Engine in the Saber Trial Chamber at the north end of the Dantooine Jedi Enclave Trial Halls on Dantooine.")
                 .AddKillObjective(NPCGroupType.Dantooine_TempestTrainingEngine, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Tempest Training Engine is defeated. Return to Talan Rees at the Anchorhead - Spaceport on Tatooine.")
+                    "The Tempest Training Engine is disabled. Return to Talan Rees at the Anchorhead - Spaceport on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

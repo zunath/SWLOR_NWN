@@ -101,7 +101,8 @@ public class NPCAbilityDefinitionTests
             row.DamageResistance.Should().NotBeNullOrWhiteSpace();
             row.StatusEffect.Should().NotBeNullOrWhiteSpace();
             row.Duration.Should().NotBeNullOrWhiteSpace();
-            row.Notes.Should().NotBeNullOrWhiteSpace();
+            if (!row.DamageResistance.StartsWith("None /", StringComparison.Ordinal))
+                row.Notes.Should().StartWith("Base damage", "damaging abilities document their base damage");
 
             var detail = expectedAbility.Ability;
             row.Hostile.Should().Be(detail.IsHostileAbility ? "Yes" : "No");

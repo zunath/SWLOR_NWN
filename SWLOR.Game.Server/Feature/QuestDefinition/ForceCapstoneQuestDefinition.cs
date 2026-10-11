@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Stand of the Light Crypt Trial Tablet is recovered. Return to Seris Nahl at the Korriban Starport.")
+                    "The Last Stand of the Light Crypt Trial Tablet is recovered. Return to Seris Nahl at the Promenade on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Stand of the Light Ritual Focus Shard is recovered. Return to Seris Nahl at the Korriban Starport.")
+                    "The Last Stand of the Light Ritual Focus Shard is recovered. Return to Seris Nahl at the Promenade on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Stand of the Light Splintered Tomb Sigil is recovered. Return to Seris Nahl at the Korriban Starport.")
+                    "The Last Stand of the Light Splintered Tomb Sigil is recovered. Return to Seris Nahl at the Promenade on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Stand of the Light Keeper's Rite Token is recovered. Return to Seris Nahl at the Korriban Starport.")
+                    "The Last Stand of the Light Keeper's Rite Token is recovered. Return to Seris Nahl at the Promenade on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Crypt Expedition Leader is defeated. Return to Seris Nahl at the Korriban Starport.")
+                    "The Crypt Expedition Leader is defeated. Return to Seris Nahl at the Promenade on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -194,7 +194,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hunger of the Dark Crypt Trial Tablet is recovered. Return to Neth Kyr at the Korriban Starport Cantina.")
+                    "The Hunger of the Dark Crypt Trial Tablet is recovered. Return to Neth Kyr at the Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hunger of the Dark Ritual Focus Shard is recovered. Return to Neth Kyr at the Korriban Starport Cantina.")
+                    "The Hunger of the Dark Ritual Focus Shard is recovered. Return to Neth Kyr at the Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hunger of the Dark Splintered Tomb Sigil is recovered. Return to Neth Kyr at the Korriban Starport Cantina.")
+                    "The Hunger of the Dark Splintered Tomb Sigil is recovered. Return to Neth Kyr at the Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -257,7 +257,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hunger of the Dark Keeper's Rite Token is recovered. Return to Neth Kyr at the Korriban Starport Cantina.")
+                    "The Hunger of the Dark Keeper's Rite Token is recovered. Return to Neth Kyr at the Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -275,7 +275,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vitae Reaver Chief is defeated. Return to Neth Kyr at the Korriban Starport Cantina.")
+                    "The Vitae Reaver Chief is defeated. Return to Neth Kyr at the Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -307,7 +307,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Eclipse of Resolve Crypt Trial Tablet is recovered. Return to Acolyte Varn at the Korriban Wastelands Tunnels.")
+                    "The Eclipse of Resolve Crypt Trial Tablet is recovered. Return to Acolyte Varn at the Shipping District on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -328,7 +328,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Eclipse of Resolve Ritual Focus Shard is recovered. Return to Acolyte Varn at the Korriban Wastelands Tunnels.")
+                    "The Eclipse of Resolve Ritual Focus Shard is recovered. Return to Acolyte Varn at the Shipping District on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -349,7 +349,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Eclipse of Resolve Splintered Tomb Sigil is recovered. Return to Acolyte Varn at the Korriban Wastelands Tunnels.")
+                    "The Eclipse of Resolve Splintered Tomb Sigil is recovered. Return to Acolyte Varn at the Shipping District on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -370,7 +370,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Eclipse of Resolve Keeper's Rite Token is recovered. Return to Acolyte Varn at the Korriban Wastelands Tunnels.")
+                    "The Eclipse of Resolve Keeper's Rite Token is recovered. Return to Acolyte Varn at the Shipping District on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -388,7 +388,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Umbral Raider Commander is defeated. Return to Acolyte Varn at the Korriban Wastelands Tunnels.")
+                    "The Umbral Raider Commander is defeated. Return to Acolyte Varn at the Shipping District on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

@@ -4,6 +4,9 @@ This folder contains comprehensive documentation for the SWLOR.Game.Server proje
 
 ## Available Documentation
 
+### [InEngineVisualVerification.md](InEngineVisualVerification.md)
+Required NWN client screenshot evidence for visual changes, including the isolated background client workflow, public-path checks, capture provenance, reporting, and cleanup.
+
 ### [Builders.md](Builders.md)
 Comprehensive documentation of all builder classes in the SWLOR.Game.Server project. This includes:
 

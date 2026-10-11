@@ -18,54 +18,58 @@ public sealed class _24_RemoveWeaponStatOverrides : IServerMigration
 
     public void Migrate()
     {
+        var progress = new ServerMigrationProgress(Version,
+            ServerMigrationProgress.CountRecords<InventoryItem>(),
+            ServerMigrationProgress.CountRecords<MarketItem>(),
+            ServerMigrationProgress.CountRecords<WorldProperty>(),
+            ServerMigrationProgress.CountRecords<ResearchJob>(),
+            ServerMigrationProgress.CountRecords<PlayerOutfit>(),
+            ServerMigrationProgress.CountRecords<WorldPropertyCategory>(),
+            ServerMigrationProgress.CountRecords<PlayerShip>());
         var changed = 0;
-        changed += MigrateEntities<InventoryItem>(x => x.Data, (x, value) => x.Data = value);
-        changed += MigrateEntities<MarketItem>(x => x.Data, (x, value) => x.Data = value);
-        changed += MigrateEntities<WorldProperty>(x => x.SerializedItem, (x, value) => x.SerializedItem = value);
-        changed += MigrateEntities<ResearchJob>(x => x.SerializedItem, (x, value) => x.SerializedItem = value);
-        changed += MigrateEntities<PlayerOutfit>(x => x.Data, (x, value) => x.Data = value);
-        foreach (var category in SearchAll<WorldPropertyCategory>())
+        changed += MigrateEntities<InventoryItem>(progress, x => x.Data, (x, value) => x.Data = value);
+        changed += MigrateEntities<MarketItem>(progress, x => x.Data, (x, value) => x.Data = value);
+        changed += MigrateEntities<WorldProperty>(progress, x => x.SerializedItem, (x, value) => x.SerializedItem = value);
+        changed += MigrateEntities<ResearchJob>(progress, x => x.SerializedItem, (x, value) => x.SerializedItem = value);
+        changed += MigrateEntities<PlayerOutfit>(progress, x => x.Data, (x, value) => x.Data = value);
+        changed += MigrateRecords<WorldPropertyCategory>(progress, category =>
         {
             var categoryChanged = false;
             if (category.Items != null)
                 foreach (var item in category.Items.Values)
                     categoryChanged |= MigrateField(item.Data, value => item.Data = value);
-            if (!categoryChanged)
-                continue;
-            DB.Set(category);
-            changed++;
-        }
-        foreach (var ship in SearchAll<PlayerShip>())
+            return categoryChanged;
+        });
+        changed += MigrateRecords<PlayerShip>(progress, ship =>
         {
             var shipChanged = MigrateField(ship.SerializedItem, value => ship.SerializedItem = value);
             shipChanged |= MigrateModules(ship.Status?.HighPowerModules);
             shipChanged |= MigrateModules(ship.Status?.LowPowerModules);
             shipChanged |= MigrateModules(ship.Status?.ConfigurationModules);
-            if (!shipChanged)
-                continue;
-            DB.Set(ship);
-            changed++;
-        }
+            return shipChanged;
+        });
         Log.Write(LogGroup.Migration, $"Migration #{Version}: Removed player weapon stat overrides in {changed} stored records.", true);
     }
 
-    private static List<T> SearchAll<T>() where T : EntityBase
-    {
-        var query = new DBQuery<T>();
-        var count = (int)DB.SearchCount(query);
-        return DB.Search(query.AddPaging(count, 0)).ToList();
-    }
+    private static int MigrateEntities<T>(ServerMigrationProgress progress, Func<T, string> getData, Action<T, string> setData) where T : EntityBase
+        => MigrateRecords<T>(progress, entity => MigrateField(getData(entity), value => setData(entity, value)));
 
-    private static int MigrateEntities<T>(Func<T, string> getData, Action<T, string> setData) where T : EntityBase
+    private static int MigrateRecords<T>(ServerMigrationProgress progress, Func<T, bool> migrate) where T : EntityBase
     {
+        var count = progress.BeginSection<T>();
+        var records = DB.Search(new DBQuery<T>().AddPaging(count, 0)).ToList();
         var changed = 0;
-        foreach (var entity in SearchAll<T>())
+        foreach (var record in records)
         {
-            if (!MigrateField(getData(entity), value => setData(entity, value)))
-                continue;
-            DB.Set(entity);
-            changed++;
+            var recordChanged = migrate(record);
+            if (recordChanged)
+            {
+                DB.Set(record);
+                changed++;
+            }
+            progress.RecordProcessed(recordChanged);
         }
+        progress.FinishSection();
         return changed;
     }
 

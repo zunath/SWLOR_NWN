@@ -23,6 +23,26 @@ variables and survives editor reopening. The Toolset crops the same atlas tile
 for its viewport and thumbnails. `CloakTintAssets.py --check` validates the
 checked-in assets during a build; explicit authoring requires `--game-data`.
 
+Authored MTRs can inherit a same-name DDS/TGA without declaring `texture0`.
+`TintMapMaterialSources.json` records that input as `implicitTexture0`.
+Helmet 101, both human neck 12 textures, and female human left shin 264 have
+obsolete PLT atlases that differ from their authored diffuse artwork.
+`GenerateAuthoredDiffuseTintMaps.py` registers a uniform channel selector while
+retaining the full-resolution diffuse and normal/specular textures. Cloth 1
+controls helmet 101 and shin 264; Skin controls the necks' authored surfaces.
+The mapped shader's opt-in `useAuthoredDiffuse` preserves original colors for
+native presets and reset. Explicit RGB replaces the hue using the original
+luminance detail, without sampling the obsolete PLT. Helmet 101 retains its
+generated render heads and RGB editor support. Other materials leave this mode off.
+After regenerating controls, run `GenerateTintMapAssets.py --refresh-model-bindings`
+and `GenerateHelmetRgbModels.py --apply`. Rebuild `sw_shader`, `sw_item`,
+`sw_pt_helm`, `sw_pt_neck`, `sw_pt_lshin`, `sw_pt_head`, `sw_tint_mtr`, the changed
+`sw_tint*` mask HAKs, and `sw_2da` together, then restart the client.
+The shared helmet heads and these necks feed `.lod` redirects and neck skin
+aliases. Expand redirects with `ModelLodAssets.py --expand` before applying
+helmet heads, publish them again with `--apply`, and rerun
+`GenerateNeckModels.py --apply` after any neck source changes.
+
 ## Preserve the authored palette rows
 
 Converting a PLT material must preserve the creature and equipment color IDs.

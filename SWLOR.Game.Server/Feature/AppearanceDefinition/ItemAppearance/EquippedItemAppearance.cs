@@ -51,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                 return;
 
             RobeAppearance.RemoveUnavailableRobe(creature, item);
+            NeckAppearance.RemoveUnavailableNeck(creature, item);
             nativeCreature.UpdateAppearanceForEquippedItems();
 
             var message = server.GetNWSMessage();

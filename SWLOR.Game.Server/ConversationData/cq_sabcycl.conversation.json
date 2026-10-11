@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Look at that turn. You carry the eye with you now -- the students copy your footwork when they think I'm not watching. The halls are open, the form has a center again, and I have nothing left to teach you that the staff won't say better.",
+          "Text": "The Vortex Training Engine is offline. Now the engineers can reach the drive assemblies. You found your center under pressure; come here and I will show you how to carry that control into Saber Cyclone.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Keep walking, I don't stop between forms. Your grip says staff; your feet say the staff is still two blades to you. Finish that education first. When it stops being two blades and starts being one motion -- when there's nothing left of the discipline you haven't made your own -- come find me about the cyclone.",
+          "Text": "I can only take someone who has mastered the saberstaff discipline. Reach rank 50 before we discuss the work below.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Walk with me -- I think better moving. You came for the cyclone, and you're about to say you're ready, so I'll finish the sentence: you're ready to start. The trial halls under this enclave are full of students spinning the form with no center, and their masters won't intervene. I will, through you. Go down into the Dantooine Jedi Enclave Trial Halls, defeat six of the adepts, and bring me the Saber Cyclone Enclave Trial Slate they drill from. Their bad orbit starts on that slate.",
+          "Text": "Mind the stairs. A cyclone droid cut through the railing before we sealed the lower ring. Everyone got out; the machines stayed, repeating the last drill at full power. Disable 6 Cyclone Drill Droid units in the lower ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Cyclone Enclave Trial Slate.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then keep up. The key I've just put in your hand opens the sealed door on the enclave's lower ring. Six adepts, the slate, back to me before your sweat dries. And watch their turns while you break them -- even a wrong lesson teaches.",
+          "Text": "Take the Dantooine Jedi Enclave Trial Halls Key. Disable 6 Cyclone Drill Droid units in the lower ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Cyclone Enclave Trial Slate.",
           "Style": 0,
           "Color": null
         }
@@ -323,7 +323,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Most forms plant their feet and swing. The cyclone never plants. The staff keeps turning -- every parry feeds the next arc, defense becomes orbit, and whatever steps into the orbit gets carried out of it. What they're doing down there is all spin and no center. You'll learn the difference by unmaking theirs.",
+          "Text": "The cyclone is one continuous motion. Your center stays under your control while both ends of the staff work around it.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Below us. The enclave sealed the lower trial halls when the drills turned bloody -- the door is on the lower ring, past the meditation court, and the key I'll give you when you take the work opens the seal. Once you're through, stay in the halls. Everything past that door considers itself part of the trial.",
+          "Text": "The key opens the sealed entrance to the Dantooine Jedi Enclave Trial Halls. Start in the lower ring. I am monitoring the disabled lift and keeping the power isolated from the public practice rooms. Cutting the wrong feed would release every lock below.",
           "Style": 0,
           "Color": null
         }
@@ -375,7 +375,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Adepts who've drilled the cyclone's opening turns until they're reflex. Reflex without judgment cuts in both directions -- they won't stop at first blood, because nobody taught them where a drill ends. Don't extend your arcs to impress them. Six, cleanly, and out.",
+          "Text": "Duelist constructs with rotary combat routines. They imitate our forms through motors and targeting software. You are dismantling faulty equipment, not fighting other students.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You still owe the lower halls six adepts, and I still want the Saber Cyclone Enclave Trial Slate they drill from. Walk with me later -- right now the only conversation you owe is down there.",
+          "Text": "Disable 6 Cyclone Drill Droid units in the lower ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Cyclone Enclave Trial Slate.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "There -- your arcs came back shorter. The halls did that in a day; imagine a year. And that's the slate under your arm. Hand it over.",
+          "Text": "You have the Saber Cyclone Enclave Trial Slate. Let me see it.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +448,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six adepts and their drill slate. Want to know what's wrong with it? Nothing. Every form on it is copied perfectly -- that's the lesson. Perfect copies, no center. The credits are for your time. The next turn is faster.",
+          "Text": "The slate records the shutdown failures. The next controller is deeper inside.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Fall in beside me -- colonnade pace. The adepts were students; the specialists are the ones teaching them. Five of them run focus drills in the deep chambers, and they've hung the whole practice on a kyber shard that should never have left the vaults. Take the five apart and bring me the Saber Cyclone Kyber Focus Shard before it teaches anyone else to spin blind.",
+          "Text": "The outer units are down. Their timing controller still drives the next set of machines. Disable 5 Cyclone Duelist Droid units in the deep chambers of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Cyclone Kyber Focus Shard.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Quick answer. I like that better than a careful one. Deep chambers, five specialists, and the shard comes back wrapped -- kyber listens, and I don't want it learning anything on the way. If you catch yourself matching their rhythm, break your own first.",
+          "Text": "Disable 5 Cyclone Duelist Droid units in the deep chambers of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Cyclone Kyber Focus Shard.",
           "Style": 0,
           "Color": null
         }
@@ -532,7 +532,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Kyber holds a note when you feed it attention. The specialists use the shard as a false center -- focus on the stone and the cyclone feels effortless, right up until the stone isn't there. It's a crutch dressed as a doctrine. That's why it comes out of the halls and into my hand.",
+          "Text": "The next units react to each other. Bait one attack, move out of its partner's line, then close before their routines synchronize again.",
           "Style": 0,
           "Color": null
         }
@@ -558,7 +558,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same door on the lower ring -- your key still turns the seal. The specialists keep past the chambers where you met the adepts, deeper in. You'll hear them before you see them; kyber hums when it's working, and theirs never rests.",
+          "Text": "The Saber Cyclone Kyber Focus Shard belongs to the training array. It helps coordinate the practice emitters; return it so the technicians can trace the fault.",
           "Style": 0,
           "Color": null
         }
@@ -584,7 +584,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Better than the adepts, and worse. The shard smooths their gaps, so they're flawless until you break their tempo -- then they stumble over their own orbit. Change your speed and keep changing it. And they spar live steel down there, so treat every exchange as real. It is.",
+          "Text": "Continue beyond the lower ring into the deep chambers. Keep a way back to the stairs.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists, deep chambers, and the Saber Cyclone Kyber Focus Shard comes home with you. Nothing about the assignment has changed while you stood here -- except how long it's been waiting.",
+          "Text": "Disable 5 Cyclone Duelist Droid units in the deep chambers of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Cyclone Kyber Focus Shard.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I can hear it from here. Even wrapped, that shard hums like it's mid-drill. You outlasted five teachers at their own tempo -- give it over.",
+          "Text": "You brought the Saber Cyclone Kyber Focus Shard. Hand it over and we can finish this part.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Listen to it. Kyber sings whatever you feed it, and they fed it certainty for a year. You heard the difference; they never did. Take your pay, walk the long way back, and let your arms argue about what they learned.",
+          "Text": "The focus shard is secure. We can now work on the sealed gate.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Stop. Don't fall in beside me this time -- stand still, because this I say once. The trial ring below has a warden. He proctored these halls for twenty years, and when the cyclone drills turned bad he didn't end them; he started keeping score. Now he holds the ring, wears a sigil he cracked with his own grading hand, and he has flung stronger blades than yours out of the ring for interrupting his orbit. Bring two blades you trust -- that's instruction, not advice. Put him down and bring me the Saber Cyclone Fractured Trial Sigil.",
+          "Text": "The next gate has an independent controller. The remote shutdown still cannot reach it. Disable 1 Cyclone Gatekeeper Droid in the trial ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Cyclone Fractured Trial Sigil. Bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then hear the rest at walking pace. He fights the ring like it's his orbit, because it is -- don't take turns with him. Overlap him: one draws the arc, one breaks it, one finishes. That's why you're bringing company. Sigil off his belt, and come back standing.",
+          "Text": "Disable 1 Cyclone Gatekeeper Droid in the trial ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Cyclone Fractured Trial Sigil. Bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -741,7 +741,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He graded my students for twenty years. He graded me, once -- passed me, which I've held against him ever since. Somewhere in the scoring he stopped seeing duelists and started seeing gaps. Whatever he says to you mid-fight, don't answer. He's counting the syllables you waste.",
+          "Text": "The Cyclone Gatekeeper Droid is a reinforced gate-control construct. Its shutdown channel is broken, so the chassis must be disabled directly.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Through your usual door, past the deep chambers, down to the trial ring itself. He's sealed it from inside, but the seal answers the key you already carry -- he wants challengers. He just wants them tired when they arrive. Don't oblige him. Go rested, go fed, go three.",
+          "Text": "The Saber Cyclone Fractured Trial Sigil is the damaged authorization plate from that gate. Recover it so we can restore the lock without reactivating its defender.",
           "Style": 0,
           "Color": null
         }
@@ -793,7 +793,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A cyclone with twenty years of patience at its center. He doesn't tire, he doesn't chase, and every solo challenge the students sent him ended the same way. Alone, you're a lesson he's already graded. Three of you are a problem he hasn't -- so bring the problem.",
+          "Text": "Three fighters can divide its attention and cover a retreat. This is damaged equipment operating at lethal output; do not treat it as a practice duel.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden still holds the trial ring, and the Saber Cyclone Fractured Trial Sigil still hangs off his belt. If you're waiting on your blades to arrive, good. That's the assignment working.",
+          "Text": "Disable 1 Cyclone Gatekeeper Droid in the trial ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Cyclone Fractured Trial Sigil. Bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +840,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You walked back up the stairs -- I know because the students stopped whispering about the ring an hour ago. Sigil first. Then breathe.",
+          "Text": "You brought the Saber Cyclone Fractured Trial Sigil. Hand it over and we can finish this part.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Cracked down the middle. He did that himself the day he decided his orbit was the standard everything else fell short of. I'll set it back where the masters' mark belongs, crack and all -- some lessons should stay visible. You did this the right way: not alone. Keep that shape. You'll need it once more.",
+          "Text": "The gate is clear. The sigil will let us identify the remaining control seals.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Walk with me -- you've earned the fast pace. With the warden gone, his inner circle has no one left to grade them, and it's made them honest at last: four duelists barricaded in the council chamber, because the form is all they have left to hold. They keep the council's trial chit among them like it's a title. It isn't. Take all four down and bring me the Saber Cyclone Council Trial Chit -- the council wants it back before they'll reopen the halls.",
+          "Text": "The gate is open, but four linked constructs still protect the control chamber. Disable 4 Cyclone Examiner Droid units in the inner chamber of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Cyclone Council Trial Chit.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good. One more thing, between strides: don't let them make it four duels. It's one fight with four parts -- treat it that way and you're back by nightfall. The chit comes straight to me; the council counts hours now.",
+          "Text": "Disable 4 Cyclone Examiner Droid units in the inner chamber of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Cyclone Council Trial Chit.",
           "Style": 0,
           "Color": null
         }
@@ -950,7 +950,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden's chosen -- the four he scored highest. Each one built their cyclone around a different lie: speed, reach, endurance, fury. Together they cover one another's gaps, which is the only true thing he ever taught them.",
+          "Text": "The Saber Cyclone Council Trial Chit authorizes service access to the training network. Recover it so the instructors can restore service access.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +976,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The council chamber, one hall past the trial ring you cleared -- same key, same stairs, further in. They know the ring fell. They'll be waiting, which spares you the trouble of looking.",
+          "Text": "The four constructs share targeting data. Break their formation before they can concentrate every attack on one of you.",
           "Style": 0,
           "Color": null
         }
@@ -1002,7 +1002,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four cyclones that learned to orbit each other. Split them if you can. If you can't, bring enough blades that splitting stops mattering. And watch the one who hangs back -- the warden always graded patience highest.",
+          "Text": "Their routines were built from recorded exercises. The engineers can rebuild the machinery once you have made the wing safe.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of the inner circle still hold the council chamber, and the Saber Cyclone Council Trial Chit is still in their keeping. The council keeps asking me questions I'd rather answer with the chit in my hand.",
+          "Text": "Disable 4 Cyclone Examiner Droid units in the inner chamber of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Cyclone Council Trial Chit.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1049,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The chamber went quiet yesterday -- the whole enclave felt it. You're carrying the chit like it's heavier than it looks. It is. Give it here.",
+          "Text": "You brought the Saber Cyclone Council Trial Chit. Hand it over and we can finish this part.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Sealed and unspent. They held the council's proof for a year and never once earned the right to open it. You've earned it four times over. The halls reopen, the council owes me a favor, and I lose my best excuse for walking fast. One trial left -- and I've been avoiding saying her name.",
+          "Text": "The token is secure. There is one final chamber to clear.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "No drill today. Stand with me a moment -- I don't ask that often. The master in the deep hall: I trained her. I gave her the cyclone the way it was given to me, and she took it somewhere I couldn't follow -- an orbit with no center at all, no self left inside the turn. She holds the deepest hall, and she wields the finished form you came here to earn. No one walks out of her circle alone; I've read every report that says so. Take two partners who can hold the turn beside you and end the lesson I couldn't. There's nothing to carry back. Her defeat is the proof, and I'll feel it from up here.",
+          "Text": "Only the central training engine remains. Until it is disabled, it can restart the damaged routines. Disable 1 Vortex Training Engine in the deepest hall of the Dantooine Jedi Enclave Trial Halls. Bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then the last part, plainly, standing still: her orbit widens as she tires. Most people back away from it -- that's when she takes them. Step in when everyone else would step out. That's the whole secret, and it took me twenty years and one empty chair to learn it. Come back, and I'll finish your sentence one last time.",
+          "Text": "Disable 1 Vortex Training Engine in the deepest hall of the Dantooine Jedi Enclave Trial Halls. Bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -1159,7 +1159,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "She was the best center I ever saw. Still, kind, certain -- then the turning became the center, and the rest of her went into it. What's down there remembers every form and none of the reasons. If she speaks, it will sound like me on my best day. It isn't me. It's the form, talking to itself.",
+          "Text": "The Vortex Training Engine coordinates this branch of the training network. Its adaptive combat routines let it direct several attackers at once.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The deepest hall, below the council chamber -- the one built for masters' trials, never meant to be sealed. Your key carries anyone who has cleared the ring and the chamber; her door opens to that and nothing else. She knows the halls above have gone quiet. She's waiting for whoever quieted them.",
+          "Text": "Stay close enough to help each other without offering it one easy line of attack. Trade the pressure between you and keep the escape route open.",
           "Style": 0,
           "Color": null
         }
@@ -1211,7 +1211,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The cyclone as I'll never teach it. Both blades always in motion, nothing wasted, nothing spared -- the very turn you're trying to earn, sharpened by years alone in the dark. A cyclone alone just digs its own crater. Hers is deep. Don't step into it with fewer than three.",
+          "Text": "The hall will stay sealed until the engineers replace the faulty controllers and test every shutdown. Nobody will be sent back into ordinary lessons while these faults remain.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "She's still in the deep hall. I'd know the moment that changed -- so would every stone in this enclave. Gather your blades. Don't come walk with me again until it's done; I'll only slow you down.",
+          "Text": "Disable 1 Vortex Training Engine in the deepest hall of the Dantooine Jedi Enclave Trial Halls. Bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The halls are quiet all the way to the bottom. I walked down to the ring this morning just to listen. I know already -- say it anyway. I want the words.",
+          "Text": "The Vortex Training Engine is down. Tell me what happened.",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then it's yours. The whole turn -- defense into orbit, orbit into stillness. She'd have been proud of how you did it: with others, and not for the spin. I have no trials left for you. Go correct somebody's footing; I hear it's how the best of us start. Me? I finally feel like standing still.",
+          "Text": "The Vortex Training Engine is offline. Now the engineers can reach the drive assemblies. You found your center under pressure; come here and I will show you how to carry that control into Saber Cyclone.",
           "Style": 0,
           "Color": null
         }
@@ -1297,7 +1297,7 @@
     "reply-00000": {
       "Id": "reply-00000",
       "Text": {
-        "Text": "Keep walking. Tell me the trial again.",
+        "Text": "Go over the first assignment.",
         "Style": 4,
         "Color": null
       },
@@ -1320,7 +1320,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "Six adepts and the slate. Point me at the stairs.",
+        "Text": "I will clear the outer chambers.",
         "Style": 4,
         "Color": null
       },
@@ -1350,7 +1350,7 @@
     "reply-00002": {
       "Id": "reply-00002",
       "Text": {
-        "Text": "What is the cyclone, exactly?",
+        "Text": "What does this discipline teach?",
         "Style": 4,
         "Color": null
       },
@@ -1373,7 +1373,7 @@
     "reply-00003": {
       "Id": "reply-00003",
       "Text": {
-        "Text": "Where do I find these adepts?",
+        "Text": "Where do I go, and why are you staying here?",
         "Style": 4,
         "Color": null
       },
@@ -1396,7 +1396,7 @@
     "reply-00004": {
       "Id": "reply-00004",
       "Text": {
-        "Text": "What am I walking into?",
+        "Text": "Who or what will I be fighting?",
         "Style": 4,
         "Color": null
       },
@@ -1419,7 +1419,7 @@
     "reply-00005": {
       "Id": "reply-00005",
       "Text": {
-        "Text": "Not yet. My footing isn't there.",
+        "Text": "I need to prepare first.",
         "Style": 4,
         "Color": null
       },
@@ -1437,7 +1437,7 @@
     "reply-00006": {
       "Id": "reply-00006",
       "Text": {
-        "Text": "The Saber Cyclone Enclave Trial Slate. Take it.",
+        "Text": "Here is the recovered slate.",
         "Style": 4,
         "Color": null
       },
@@ -1467,7 +1467,7 @@
     "reply-00007": {
       "Id": "reply-00007",
       "Text": {
-        "Text": "Slow down -- the specialists. Go over it again.",
+        "Text": "Go over the next objective.",
         "Style": 4,
         "Color": null
       },
@@ -1490,7 +1490,7 @@
     "reply-00008": {
       "Id": "reply-00008",
       "Text": {
-        "Text": "Five specialists. The shard comes back with me.",
+        "Text": "I will recover the focus shard.",
         "Style": 4,
         "Color": null
       },
@@ -1520,7 +1520,7 @@
     "reply-00009": {
       "Id": "reply-00009",
       "Text": {
-        "Text": "What does the shard actually do?",
+        "Text": "What should I know before going deeper?",
         "Style": 4,
         "Color": null
       },
@@ -1543,7 +1543,7 @@
     "reply-00010": {
       "Id": "reply-00010",
       "Text": {
-        "Text": "Where do the specialists train?",
+        "Text": "What is the focus shard?",
         "Style": 4,
         "Color": null
       },
@@ -1566,7 +1566,7 @@
     "reply-00011": {
       "Id": "reply-00011",
       "Text": {
-        "Text": "How do they fight?",
+        "Text": "Where is the next group?",
         "Style": 4,
         "Color": null
       },
@@ -1589,7 +1589,7 @@
     "reply-00012": {
       "Id": "reply-00012",
       "Text": {
-        "Text": "Not this turn. Give me a day.",
+        "Text": "I need more time.",
         "Style": 4,
         "Color": null
       },
@@ -1607,7 +1607,7 @@
     "reply-00013": {
       "Id": "reply-00013",
       "Text": {
-        "Text": "The Saber Cyclone Kyber Focus Shard. It hasn't stopped humming.",
+        "Text": "Here is the focus shard.",
         "Style": 4,
         "Color": null
       },
@@ -1637,7 +1637,7 @@
     "reply-00014": {
       "Id": "reply-00014",
       "Text": {
-        "Text": "Say the assignment again. All of it.",
+        "Text": "Explain the gate assignment again.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1660,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I'll bring the blades. The warden falls.",
+        "Text": "I will bring two allies and clear the breach.",
         "Style": 4,
         "Color": null
       },
@@ -1690,7 +1690,7 @@
     "reply-00016": {
       "Id": "reply-00016",
       "Text": {
-        "Text": "Who is this warden?",
+        "Text": "What guards the gate?",
         "Style": 4,
         "Color": null
       },
@@ -1713,7 +1713,7 @@
     "reply-00017": {
       "Id": "reply-00017",
       "Text": {
-        "Text": "Where is the trial ring?",
+        "Text": "Why recover the broken sigil?",
         "Style": 4,
         "Color": null
       },
@@ -1736,7 +1736,7 @@
     "reply-00018": {
       "Id": "reply-00018",
       "Text": {
-        "Text": "What will he throw at us?",
+        "Text": "Why bring a group?",
         "Style": 4,
         "Color": null
       },
@@ -1759,7 +1759,7 @@
     "reply-00019": {
       "Id": "reply-00019",
       "Text": {
-        "Text": "My blades aren't here yet. Soon.",
+        "Text": "I will gather my companions first.",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1777,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "The Saber Cyclone Fractured Trial Sigil. The ring is open.",
+        "Text": "The gate is clear. Here is the sigil.",
         "Style": 4,
         "Color": null
       },
@@ -1807,7 +1807,7 @@
     "reply-00021": {
       "Id": "reply-00021",
       "Text": {
-        "Text": "Back to the four. I'm listening.",
+        "Text": "Go over the four targets again.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1830,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "Four duelists, one chit. Done.",
+        "Text": "I will clear the control chamber.",
         "Style": 4,
         "Color": null
       },
@@ -1860,7 +1860,7 @@
     "reply-00023": {
       "Id": "reply-00023",
       "Text": {
-        "Text": "Who are the inner circle?",
+        "Text": "What does the access token do?",
         "Style": 4,
         "Color": null
       },
@@ -1883,7 +1883,7 @@
     "reply-00024": {
       "Id": "reply-00024",
       "Text": {
-        "Text": "Where are they holed up?",
+        "Text": "How do they work together?",
         "Style": 4,
         "Color": null
       },
@@ -1906,7 +1906,7 @@
     "reply-00025": {
       "Id": "reply-00025",
       "Text": {
-        "Text": "How do the four fight together?",
+        "Text": "Can the machines be repaired?",
         "Style": 4,
         "Color": null
       },
@@ -1929,7 +1929,7 @@
     "reply-00026": {
       "Id": "reply-00026",
       "Text": {
-        "Text": "When my edge comes back. Not before.",
+        "Text": "I need to rest first.",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1947,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "The Saber Cyclone Council Trial Chit. The chamber is quiet.",
+        "Text": "Here is the recovered token.",
         "Style": 4,
         "Color": null
       },
@@ -1977,7 +1977,7 @@
     "reply-00028": {
       "Id": "reply-00028",
       "Text": {
-        "Text": "Start over. I want to hear all of it again.",
+        "Text": "Go over the final objective.",
         "Style": 4,
         "Color": null
       },
@@ -2000,7 +2000,7 @@
     "reply-00029": {
       "Id": "reply-00029",
       "Text": {
-        "Text": "We go together, three of us. It ends there.",
+        "Text": "We will go in together.",
         "Style": 4,
         "Color": null
       },
@@ -2030,7 +2030,7 @@
     "reply-00030": {
       "Id": "reply-00030",
       "Text": {
-        "Text": "What did she become?",
+        "Text": "What is waiting in the last chamber?",
         "Style": 4,
         "Color": null
       },
@@ -2053,7 +2053,7 @@
     "reply-00031": {
       "Id": "reply-00031",
       "Text": {
-        "Text": "Where does she wait?",
+        "Text": "How should we fight it?",
         "Style": 4,
         "Color": null
       },
@@ -2076,7 +2076,7 @@
     "reply-00032": {
       "Id": "reply-00032",
       "Text": {
-        "Text": "What should we expect from her?",
+        "Text": "What happens after this?",
         "Style": 4,
         "Color": null
       },
@@ -2099,7 +2099,7 @@
     "reply-00033": {
       "Id": "reply-00033",
       "Text": {
-        "Text": "Not until my people are ready. She can wait.",
+        "Text": "My companions need to prepare.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2117,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "She's defeated. The cyclone has a center again.",
+        "Text": "The final target is down. We made it out.",
         "Style": 4,
         "Color": null
       },

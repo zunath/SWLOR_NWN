@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         /// <summary>
         /// Traverses nested saved inventory, optionally excluding items and subtrees intentionally retired by conversion.
         /// </summary>
-        private static IEnumerable<Node> InventoryItems(Node root, bool skipRetired)
+        private static IEnumerable<Node> InventoryItems(Node root, bool skipRetired, Func<string, bool> isReplacedItem = null)
         {
             foreach (var list in root.Fields.Where(IsInventoryList))
             foreach (var item in list.Children)
@@ -154,9 +154,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 var resref = item.Fields.SingleOrDefault(x => x.Name == "TemplateResRef" && x.Type == 11);
                 var name = resref == null ? "" : Encoding.ASCII.GetString(resref.Data.AsSpan(1));
                 if (skipRetired && (ObsoleteItemMigration.IsObsoleteResRef(name) ||
-                    ObsoleteItemMigration.TryGetConversionResRef(name, out _))) continue;
+                    ObsoleteItemMigration.TryGetConversionResRef(name, out _) ||
+                    isReplacedItem?.Invoke(name) == true)) continue;
                 yield return item;
-                foreach (var nested in InventoryItems(item, skipRetired)) yield return nested;
+                foreach (var nested in InventoryItems(item, skipRetired, isReplacedItem)) yield return nested;
             }
         }
 
@@ -205,6 +206,28 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                     return BinaryPrimitives.ReadInt32LittleEndian(value.Data);
             }
             return 0;
+        }
+
+        /// <summary>Updates a root integer local without loading or altering the saved creature's other state.</summary>
+        public static string RewriteRootInteger(string data, string name, Func<int, int> replace)
+        {
+            var document = new StoredObjectData(Convert.FromBase64String(data));
+            var variables = document._root.Fields.SingleOrDefault(x => x.Name == "VarTable" && x.Type == 15);
+            if (variables == null) return data;
+            var changed = false;
+            foreach (var variable in variables.Children)
+            {
+                if (ReadVariableName(variable) != name) continue;
+                var type = variable.Fields.SingleOrDefault(x => x.Name == "Type" && x.Type == 4);
+                var value = variable.Fields.SingleOrDefault(x => x.Name == "Value" && x.Type == 5);
+                if (type == null || ReadScalar(type) != 1 || value == null) continue;
+                var original = ReadScalar(value);
+                var replacement = replace(original);
+                if (replacement == original) continue;
+                value.Data = BitConverter.GetBytes(replacement);
+                changed = true;
+            }
+            return changed ? document.Serialize() : data;
         }
 
         /// <summary>
@@ -264,7 +287,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         /// <summary>
         /// Marks retained inventory and equipment in a disposable GFF copy before native loading can alter identities or slots.
         /// </summary>
-        public string PrepareForNativeLoad(ushort? appearance)
+        public string PrepareForNativeLoad(ushort? appearance, Func<string, bool> isReplacedItem = null)
         {
             // Loading can unequip saved weapons because the current model cannot
             // wield them. Track individual items, including identical un-UUIDed
@@ -272,7 +295,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             var copy = new StoredObjectData(Convert.FromBase64String(Serialize()));
             _savedIdentities.Clear();
             _identityMarker = IdentityMarkerPrefix + Guid.NewGuid().ToString("N");
-            foreach (var item in InventoryItems(copy._root, true).Distinct())
+            foreach (var item in InventoryItems(copy._root, true, isReplacedItem).Distinct())
             {
                 var identity = item.Fields.SingleOrDefault(x => x.Name == "UUID" && x.Type == 10);
                 if (identity == null) continue;
@@ -292,7 +315,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                     var resref = item.Fields.SingleOrDefault(x => x.Name == "TemplateResRef" && x.Type == 11);
                     var name = resref == null ? "" : Encoding.ASCII.GetString(resref.Data.AsSpan(1));
                     if (ObsoleteItemMigration.IsObsoleteResRef(name) ||
-                        ObsoleteItemMigration.TryGetConversionResRef(name, out _)) continue;
+                        ObsoleteItemMigration.TryGetConversionResRef(name, out _) ||
+                        isReplacedItem?.Invoke(name) == true) continue;
 
                     var id = _savedEquipment.Count + 1;
                     _savedEquipment.Add(id, item);

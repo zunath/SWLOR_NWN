@@ -252,6 +252,10 @@ gender that the source robe does not support.
 
 An empty robe attachment for that phenotype preserves the original robe number
 and its native body-part hiding rules without drawing a second copy.
+These tiny attachments must remain MDLs. The native robe lookup falls back to
+the base phenotype when only a `.lod` exists, drawing the original robe over
+the RGB body root. `ModelLodAssets.py` retains and validates the empty MDLs;
+visible geometry can still be shared.
 
 `SWLOR_Haks/tools/GenerateRobeRgbModels.py` keeps two independent joint trees
 inside each generated body root. The wearer's complete canonical skeleton stays
@@ -268,8 +272,8 @@ After changing the robe or cloak catalog, run
 Commit `tools/RobeCloakModels.json`, canonical cloak MDLs and their phenotype-specific
 `.lod` redirects in `SWLOR_Haks/sw_pt_cloak`. They share the exact geometry, materials,
 skin binds and animation parents. `tools/ModelLodAssets.json` records every shared
-model's source hash and canonical dependency, including helmet heads, identical
-body parts and empty robe attachments. Models with different geometry, bindings,
+model's source hash and canonical dependency, including helmet heads and identical
+body parts. Models with different geometry, bindings,
 materials, animation data or supermodels remain separate. The server's model
 availability checks follow valid LOD chains and reject missing targets and cycles.
 Toolset appearance catalogs, item previews and area models resolve those same

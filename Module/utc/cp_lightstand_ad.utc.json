@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 125
+    "value": 9
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 41
+    "value": 6
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -430,11 +430,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 237
+    "value": 3502
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 155
   },
   "refbonus": {
     "type": "short",

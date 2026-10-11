@@ -1,6 +1,8 @@
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using Nwn.Preview.Cache;
 using Nwn.Formats.Mdl;
+using Nwn.Formats.TwoDa;
 using Nwn.Preview.Dds;
 using Nwn.Preview.Pixels;
 using Nwn.Preview.Scene;
@@ -31,6 +33,7 @@ public sealed class NativeModelPreviewAdapter(ResourceIndex resources)
         var textures = new Dictionary<string, RgbaImage>(StringComparer.OrdinalIgnoreCase);
         var missingTextures = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var unsupportedMaterials = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var cloakTexture = CloakTexture(resources, resRef);
         foreach (var mesh in scene.Nodes.Where(node => node.RenderEnabled && node.Mesh is not null).Select(node => node.Mesh!))
         {
             var materialName = HasName(mesh.MaterialName) ? mesh.MaterialName : mesh.BitmapName;
@@ -40,7 +43,7 @@ public sealed class NativeModelPreviewAdapter(ResourceIndex resources)
                 if (material is not null)
                 {
                     var tinted = TintMapTextureRenderer.Render(resources, materialName!, material, null, null,
-                        textureName: mesh.BitmapName);
+                        textureName: cloakTexture ?? mesh.BitmapName);
                     if (tinted is not null)
                     {
                         textures.Add(materialName!, new RgbaImage(tinted.Width, tinted.Height, tinted.Pixels));
@@ -82,4 +85,34 @@ public sealed class NativeModelPreviewAdapter(ResourceIndex resources)
 
     private static bool HasName(string? name) =>
         !string.IsNullOrWhiteSpace(name) && !name.Equals("NULL", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// The client draws every cloak mesh with a cloakmodel.2da TEXTURE, whatever its bitmap names
+    /// (model 007's visible mesh names cala_cloak). Preview the first appearance using this geometry.
+    /// </summary>
+    internal static string? CloakTexture(ResourceIndex resources, string resRef)
+    {
+        var match = CloakModel.Match(resRef);
+        if (!match.Success)
+            return null;
+        var model = int.Parse(match.Groups[1].Value);
+        var texture = model;
+        if (resources.TryLookup(new ResourceIdentity("cloakmodel", ResourceIdentity.TypeFromExtension("2da")), out var handle))
+        {
+            var table = TwoDaReader.Read(handle.GetBytes(), TwoDaReadOptions.EngineCompatible);
+            for (var row = 0; row < table.Rows.Count; row++)
+            {
+                if (int.TryParse(table.GetValue(row, "MODEL"), out var rowModel) && rowModel == model &&
+                    int.TryParse(table.GetValue(row, "TEXTURE"), out var rowTexture) && rowTexture > 0)
+                {
+                    texture = rowTexture;
+                    break;
+                }
+            }
+        }
+        return $"cloak_{texture:000}";
+    }
+
+    private static readonly Regex CloakModel = new(@"^p[fm][a-z]\d+_cloak_(\d{3})$",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 }

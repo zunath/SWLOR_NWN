@@ -15,10 +15,9 @@ namespace SWLOR.Game.Server.Service.GuiService
         public IReadOnlyList<string> LayoutFindings { get; set; }
 
         /// <summary>
-        /// The element ids declared inside each partial view, keyed by partial name. Used to
-        /// work out which nested layouts are still on screen after a parent layout changes.
+        /// The JSON text of each partial view, keyed by partial name.
         /// </summary>
-        public IReadOnlyDictionary<string, IReadOnlyCollection<string>> PartialElementIds { get; set; }
+        public IReadOnlyDictionary<string, string> PartialViewLayouts { get; set; }
 
         public GuiConstructedWindow(
             GuiWindowType type,
@@ -27,7 +26,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             GuiRectangle initialGeometry,
             Dictionary<string, Json> partialViews,
             IReadOnlyList<string> layoutFindings,
-            IReadOnlyDictionary<string, IReadOnlyCollection<string>> partialElementIds,
+            IReadOnlyDictionary<string, string> partialViewLayouts,
             CreatePlayerWindowDelegate createPlayerWindowAction)
         {
             Type = type;
@@ -36,7 +35,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             InitialGeometry = initialGeometry;
             PartialViews = partialViews;
             LayoutFindings = layoutFindings;
-            PartialElementIds = partialElementIds;
+            PartialViewLayouts = partialViewLayouts;
             CreatePlayerWindowAction = createPlayerWindowAction;
         }
     }

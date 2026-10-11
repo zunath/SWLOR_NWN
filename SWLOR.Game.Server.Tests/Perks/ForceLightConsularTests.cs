@@ -664,7 +664,7 @@ public class ForceLightConsularTests
         // reset the clock before the tick could ever run.
         new SereneFocusStatusEffect().Frequency.Should().Be(6f);
         var areaEffects = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "AbilityAreaEffects.cs").FullName);
-        areaEffects.Should().Contain("for (var elapsed = 3f; elapsed <= durationSeconds + 0.01f; elapsed += 3f)",
+        areaEffects.Should().Contain("CombatAreaPulses.GetPulseDelays(durationSeconds, 3f)",
             "the three-second healing pulse is what makes the refresh necessary");
 
         var sanctuary = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceSanctuaryAbilityDefinition.cs").FullName);

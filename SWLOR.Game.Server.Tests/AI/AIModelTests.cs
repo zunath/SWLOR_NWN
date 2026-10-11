@@ -323,7 +323,6 @@ public class AIModelTests
     [TestCase(FeatType.SkirmisherStance1, FeatType.GamblerStance1)]
     [TestCase(FeatType.GamblerStance1, FeatType.SkirmisherStance1)]
     [TestCase(FeatType.SuppressionStance1, FeatType.BastionStance1)]
-    [TestCase(FeatType.BlazingSpikes1, FeatType.GamblerStance1)]
     public void WeaponStanceAIScore_PreservesAnyActiveStanceWithoutBlockingOtherBuffs(FeatType feat, FeatType activeStance)
     {
         const uint self = 100;
@@ -359,6 +358,46 @@ public class AIModelTests
             score(context).Should().BeGreaterThan(0, "a stance pending removal no longer occupies the stance slot");
             tracker.Remove(effect);
             score(context).Should().BeGreaterThan(0, "an expired stance may be reapplied");
+        }
+        finally
+        {
+            if (previousEffects == null) creatureEffects.Remove(self);
+            else creatureEffects[self] = previousEffects;
+        }
+    }
+
+    [TestCase(FeatType.BlazingSpikes1, FeatType.CycloneStance1)]
+    [TestCase(FeatType.CycloneStance1, FeatType.BlazingSpikes1)]
+    public void BlazingSpikesAndCycloneStanceAIScore_AllowsBothWithoutRecastingActiveEffects(FeatType feat, FeatType activeFeat)
+    {
+        const uint self = 100;
+        const uint target = 200;
+        StatusEffect.CacheData();
+        Ability.CacheData();
+        var ability = Ability.GetAbilityDetail(feat);
+        var score = AIScore.Ability(ability);
+        var activeEffectType = Ability.GetAbilityDetail(activeFeat)
+            .StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle().Which;
+        var selfEffectType = ability.StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle().Which;
+        var creatureEffects = (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
+            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        creatureEffects.TryGetValue(self, out var previousEffects);
+        var tracker = new CreatureStatusEffect();
+        creatureEffects[self] = tracker;
+        EnemyEnmityTables()[self] = new Dictionary<uint, int> { [target] = 1 };
+        CreatureToEnemies()[target] = new List<uint> { self };
+        try
+        {
+            var context = CreateContext(self: self);
+            var activeEffect = (IStatusEffect)Activator.CreateInstance(activeEffectType)!;
+            activeEffect.ApplyEffect(self, self, -1);
+            tracker.Add(activeEffect);
+            score(context).Should().BeGreaterThan(0, "Blazing Spikes does not occupy the stance slot");
+
+            var selfEffect = (IStatusEffect)Activator.CreateInstance(selfEffectType)!;
+            selfEffect.ApplyEffect(self, self, -1);
+            tracker.Add(selfEffect);
+            score(context).Should().Be(0, "an active toggle must not be recast and switched off");
         }
         finally
         {
@@ -702,7 +741,14 @@ public class AIModelTests
             source.IndexOf("private static void ResumeAttackAfterDelay", StringComparison.Ordinal));
 
         resumeBody.Should().Contain("Enmity.IssueAttackCommand(activator, target, clearActions);");
-        resumeBody.Should().Contain("target = Enmity.GetHighestEnmityTarget(activator);");
+        resumeBody.Should().Contain("target = Enmity.GetHighestEnmityAttackTarget(activator);");
+        var invisibilityGuardIndex = resumeBody.IndexOf("if (Stealth.IsInvisible(activator))", StringComparison.Ordinal);
+        invisibilityGuardIndex.Should().BeGreaterThan(-1,
+            "resuming an attack would end invisibility the ability just granted");
+        invisibilityGuardIndex.Should().BeLessThan(
+            resumeBody.IndexOf("Enmity.IssueAttackCommand(activator, target, clearActions);", StringComparison.Ordinal));
+        invisibilityGuardIndex.Should().BeLessThan(
+            resumeBody.IndexOf("ActionAttack(target);", StringComparison.Ordinal));
         delayedResumeBody.Should().Contain("GetIsPC(activator) || GetIsPC(GetMaster(activator))");
         delayedResumeBody.Should().Contain("DelayCommand(delay, () =>");
         animationBody.Should().Contain("if (GetIsPC(activator))");
@@ -766,6 +812,30 @@ public class AIModelTests
         attackActionBody.Should().NotContain("ActionAttack");
         fallbackBody.Should().Contain("Enmity.IssueAttackCommand(creature, target);");
         fallbackBody.Should().NotContain("ActionAttack");
+    }
+
+    [Test]
+    public void InvisibleTargets_AreSkippedByNpcDecisionsAndAttackReissue()
+    {
+        var npcAiSource = ReadSource("SWLOR.Game.Server", "Service", "AIService", "NPCAI.cs").Replace("\r\n", "\n");
+        var enmitySource = ReadSource("SWLOR.Game.Server", "Service", "Enmity.cs").Replace("\r\n", "\n");
+        var weaponSource = ReadSource("SWLOR.Game.Server", "Feature", "AbilityDefinition",
+            "WeaponActiveAbilityDefinitionBase.cs").Replace("\r\n", "\n");
+        var processTriggerBody = ExtractMethodBody(npcAiSource, "public static bool ProcessTrigger");
+        var fallbackBody = ExtractMethodBody(npcAiSource, "private static void ExecuteAbility");
+        var issueBody = ExtractMethodBody(enmitySource, "public static void IssueAttackCommand");
+        var invisibilityBody = ExtractMethodBody(weaponSource, "private void ApplySelfInvisibility");
+
+        processTriggerBody.IndexOf("context.UseAttackableEnmityTarget();", StringComparison.Ordinal)
+            .Should().BeGreaterThan(processTriggerBody.IndexOf("new AIContext(", StringComparison.Ordinal))
+            .And.BeLessThan(processTriggerBody.IndexOf("context.CurrentEnmityTarget", StringComparison.Ordinal));
+        fallbackBody.Should().Contain("target = Enmity.GetHighestEnmityAttackTarget(creature);");
+        issueBody.IndexOf("if (Stealth.IsHiddenByInvisibility(creature, target))", StringComparison.Ordinal)
+            .Should().BeGreaterThan(-1)
+            .And.BeLessThan(issueBody.IndexOf("ActionAttack(target);", StringComparison.Ordinal));
+        invisibilityBody.IndexOf("Enmity.ReevaluateEnemyAttackTargets(activator);", StringComparison.Ordinal)
+            .Should().BeGreaterThan(invisibilityBody.IndexOf("EffectInvisibility(InvisibilityType.Normal)", StringComparison.Ordinal),
+                "enemies must react to the invisibility as soon as it is applied");
     }
 
     [Test]

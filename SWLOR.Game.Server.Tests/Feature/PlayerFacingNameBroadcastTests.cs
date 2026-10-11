@@ -97,7 +97,7 @@ public class PlayerFacingNameBroadcastTests
             "GuiDefinition",
             "ViewModel",
             "HoloNetViewModel.cs"));
-        holoNetSource.Should().Contain("PlayerName.GetChatDisplayName(onlinePlayer, Player)");
+        holoNetSource.Should().Contain("PlayerName.GetChatDisplayName(onlinePlayer, player)");
         holoNetSource.Should().Contain("\"HoloNet Broadcast\"");
         holoNetSource.Should().NotContain("authorName + \" broadcasts a new HoloNet message");
 
@@ -289,7 +289,7 @@ public class PlayerFacingNameBroadcastTests
             "Feature",
             "TlkOverrides.cs"));
         tlkOverrideSource.Should().Contain("SetTlkOverride(10303, \"[Comms] \");");
-        tlkOverrideSource.Should().Contain("SetTlkOverride(66751, \"Disabled\");");
+        tlkOverrideSource.Should().NotContain("SetTlkOverride(66751,");
         tlkOverrideSource.Should().Contain("SetTlkOverride(66755, \"Comms\");");
 
         var settingsDefinitionSource = File.ReadAllText(Path.Combine(

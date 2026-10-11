@@ -84,7 +84,6 @@ namespace SWLOR.CLI
         private readonly Dictionary<string, int> _damageTypeToId = new(StringComparer.OrdinalIgnoreCase)
         {
             { "Physical", 1 },
-            { "Force", 2 },
             { "Fire", 3 },
             { "Poison", 4 },
             { "Electrical", 5 },

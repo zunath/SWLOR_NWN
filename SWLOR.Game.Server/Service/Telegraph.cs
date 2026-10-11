@@ -348,9 +348,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(area))
                 yield break;
 
-            for (var creature = GetFirstObjectInArea(area, ObjectType.Creature);
-                 GetIsObjectValid(creature);
-                 creature = GetNextObjectInArea(area, ObjectType.Creature))
+            foreach (var creature in ObjectSnapshot.InArea(area, ObjectType.Creature))
             {
                 if (!GetIsDead(creature) && GetCurrentHitPoints(creature) > 0)
                     yield return creature;
@@ -427,7 +425,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void UpdateShadersForAllPlayers()
         {
-            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            foreach (var player in ObjectSnapshot.Players())
             {
                 UpdateShaderForPlayer(player);
             }
@@ -461,7 +459,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(area))
                 return;
 
-            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            foreach (var player in ObjectSnapshot.Players())
             {
                 if (GetArea(player) == area)
                     UpdateShaderForPlayer(player);

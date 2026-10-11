@@ -94,8 +94,8 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         }
 
         /// <summary>
-        /// Creates a persisted native player and enters the arena, rolling back identity
-        /// if any setup or arena-entry step fails.
+        /// Enters the arena and installs a persisted native player identity, rolling back
+        /// identity if any setup or arena-entry step fails.
         /// </summary>
         public static Task<PlayerAbilityFixture> CreateAsync(EngineTestContext context, float xOffset = 0f)
             => CreateAsync(context, xOffset, null);
@@ -118,9 +118,12 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             var fixture = new PlayerAbilityFixture(creature);
             try
             {
+                // AddToArea holds a creature with a registered client out of the area until that
+                // client reports the area loaded, which a headless client never does.
+                await context.ExecuteInCreatureContextAsync(template, () => EnterArena(context, creature, template));
+                context.Assert(IsListedInArena(context, creature), "fixture is in the arena's native object list");
                 fixture.InstallIdentity(afterStage);
                 context.Assert(GetIsPC(creature), "fixture follows the native player branch");
-                await context.ExecuteInCreatureContextAsync(template, () => EnterArena(context, creature, template));
                 DestroyObject(template);
                 await context.WaitFrameAsync();
                 return fixture;
@@ -150,6 +153,12 @@ namespace SWLOR.Game.Server.EngineTests.Framework
                 file.WriteFieldBYTE(root, 1, label);
             using var player = new WorldPlayerCreature();
             context.Assert(player.LoadCreature(file, root, 0, 0, 0, 0) != 0, "load the creature with native PC inventory semantics");
+            // LoadCreature restores the template's area ID, which makes AddToArea skip the area's
+            // object list. The engine corrupts that list's heap block when such a creature moves.
+            player.SetArea(null);
+            // IsPC is for player inventory loading. Until InstallIdentity the creature is an NPC;
+            // Dispose restores that, and the engine ignores DestroyObject on player-flagged creatures.
+            player.m_bPlayerCharacter = 0;
             // The area's normal DestroyObject/DestroyArea cleanup owns the live creature.
             player.TransferOwnershipToServer();
             return player.m_idSelf;
@@ -159,8 +168,20 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         {
             var server = NWNXLib.g_pAppManager.m_pServerExoApp;
             var position = GetPosition(template);
+            // No area-enter event: the fixture is placed in the arena, not a player arriving.
             server.GetGameObject(creature).AsNWSCreature().AddToArea(
-                server.GetGameObject(context.Arena).AsNWSArea(), position.X, position.Y, position.Z);
+                server.GetGameObject(context.Arena).AsNWSArea(), position.X, position.Y, position.Z, 0, 0);
+        }
+
+        internal static bool IsListedInArena(EngineTestContext context, uint creature)
+        {
+            for (var obj = GetFirstObjectInArea(context.Arena); GetIsObjectValid(obj); obj = GetNextObjectInArea(context.Arena))
+            {
+                if (obj == creature)
+                    return true;
+            }
+
+            return false;
         }
 
         public void Update(Action<Player> update)

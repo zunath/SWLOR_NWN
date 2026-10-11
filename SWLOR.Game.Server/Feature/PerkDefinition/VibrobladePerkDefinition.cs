@@ -56,11 +56,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Blood Frenzy")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.BloodFrenzyTrait)
-                .Description("Defeating an enemy restores 10 STM and grants +8% Haste for 30 seconds.")
-                .IncreasesStat(StatType.DefeatedEnemyStaminaRestore, 10)
-                .IncreasesStat(StatType.DefeatedEnemyAttackDelayReductionPercent, 8)
-                .IncreasesStat(StatType.DefeatedEnemyAttackDelayReductionDurationSeconds, 30)
+                .GrantsFeat(FeatType.BloodFrenzyBurst)
+                .Description("For 45 seconds, gain +15% Haste. Successful auto-attacks restore 1 STM, and defeating an enemy restores 8 STM. Works with any weapon.")
                 .Price(6)
                 .RequirementSkill(SkillType.Vibroblade, 50)
                 .RequirementQuest(BloodFrenzyQuestDefinition.FinalQuestId);
@@ -101,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DefensiveStance1)
                 .DroidAISlots(1)
-                .Description("While active, grants +30% Enmity generation, +20% Defense and +20% Force Defense, -20% Attack, and -20% Force Attack.")
+                .Description("While active, grants +30% Enmity generation, +20% Defense and +20% Force Defense, -20% Attack, and -20% Force Attack. You generate +100% threat from damage dealt, before general Enmity modifiers.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 20);
         }
@@ -149,7 +146,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Invincible1)
-                .DroidAISlots(1)
                 .Description("For 45 seconds, you take 50% less physical damage and are immune to Knockdown and Dazed.")
                 .Price(6)
                 .RequirementSkill(SkillType.Vibroblade, 50)

@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Native
 
                 if (isLandedAttack)
                 {
-                    using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(attacker.m_idSelf);
+                    using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(attacker.m_idSelf, defender.m_idSelf);
 
                     if (defender.m_nObjectType == (int)ObjectType.Creature)
                     {

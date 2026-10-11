@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 0.0f,
                 AbilityTargetingFlags.HarmsEnemies,
                 Animation.DoubleStrike,
-                0.0f,
+                7.0f,
                 AbilityType.Invalid,
                 new WeaponAbilityProfile
                 {
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 0.0f,
                 AbilityTargetingFlags.HarmsEnemies,
                 Animation.DoubleStrike,
-                0.0f,
+                7.0f,
                 AbilityType.Invalid,
                 new WeaponAbilityProfile
                 {
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 0.0f,
                 AbilityTargetingFlags.HarmsEnemies,
                 Animation.DoubleStrike,
-                0.0f,
+                7.0f,
                 AbilityType.Invalid,
                 new WeaponAbilityProfile
                 {

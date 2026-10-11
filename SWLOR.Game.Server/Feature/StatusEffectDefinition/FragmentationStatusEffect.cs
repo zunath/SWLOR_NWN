@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (amount <= 0)
                 return;
 
-            AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount), creature));
+            AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, CombatDamageType.Physical.GetNWScriptDamageType()), creature));
         }
     }
 }

@@ -46,7 +46,7 @@ namespace SWLOR.Toolset.Tests
         public void TearDown()
         {
             if (Directory.Exists(_staging))
-                Directory.Delete(_staging, recursive: true);
+                ScratchDirectory.Delete(_staging);
         }
 
         private ScriptCompiler Compiler() =>
@@ -98,7 +98,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
-            context.Open(module);
+            context.OpenAndSettle(module);
             var service = new ScriptCompileService(context, log);
             var stageHeader = typeof(ScriptCompileService).GetMethod(
                 "StageEngineHeader",
@@ -210,7 +210,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
-            context.Open(module);
+            context.OpenAndSettle(module);
             var service = new ScriptCompileService(
                 context, log, compilerPathOverride: CompilerPath);
 
@@ -247,7 +247,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
-            context.Open(module);
+            context.OpenAndSettle(module);
             var service = new ScriptCompileService(
                 context, log, compilerPathOverride: CompilerPath);
 
@@ -280,7 +280,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
-            context.Open(module);
+            context.OpenAndSettle(module);
             var service = new ScriptCompileService(context, log, compilerPathOverride: CompilerPath);
 
             var outcome = await service.CompileAsync("spike_atomic");
@@ -315,7 +315,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
-            context.Open(module);
+            context.OpenAndSettle(module);
             var service = new ScriptCompileService(context, log, compilerPathOverride: CompilerPath);
 
             (await service.CompileAsync("spike_atomic2")).Succeeded.Should().BeTrue();
@@ -361,7 +361,7 @@ namespace SWLOR.Toolset.Tests
 
             var log = new OutputLogService();
             var context = new WorkspaceContext(path => new ModuleWorkspace(path), log);
-            context.Open(module);
+            context.OpenAndSettle(module);
             var service = new ScriptCompileService(context, log, compilerPathOverride: CompilerPath);
 
             var outcome = await service.BuildAllAsync();

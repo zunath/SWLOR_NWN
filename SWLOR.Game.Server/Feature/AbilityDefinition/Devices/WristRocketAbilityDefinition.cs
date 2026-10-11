@@ -35,15 +35,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.WristRocket1, PerkType.WristRocket)
-                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WristRocket)
-                .UsesAuthoredAnimationAtImpact()
                 .Name("Wrist Rocket I")
                 .Level(1)
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.WristRocket, 12f)
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .UsesImpactAnimation(Animation.CastOutAnimation)
+                .UsesAnimation(Animation.CastOutAnimation)
+                .PreservesNativeAnimationChoreography()
+                .UsesNativeAnimationPreview(Animation.CastOutAnimation, 1f)
                 .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
@@ -58,15 +58,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.WristRocket2, PerkType.WristRocket)
-                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WristRocket)
-                .UsesAuthoredAnimationAtImpact()
                 .Name("Wrist Rocket II")
                 .Level(2)
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.WristRocket, 12f)
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .UsesImpactAnimation(Animation.CastOutAnimation)
+                .UsesAnimation(Animation.CastOutAnimation)
+                .PreservesNativeAnimationChoreography()
+                .UsesNativeAnimationPreview(Animation.CastOutAnimation, 1f)
                 .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
@@ -81,15 +81,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.WristRocket3, PerkType.WristRocket)
-                .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_WristRocket)
-                .UsesAuthoredAnimationAtImpact()
                 .Name("Wrist Rocket III")
                 .Level(3)
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.WristRocket, 12f)
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
-                .UsesImpactAnimation(Animation.CastOutAnimation)
+                .UsesAnimation(Animation.CastOutAnimation)
+                .PreservesNativeAnimationChoreography()
+                .UsesNativeAnimationPreview(Animation.CastOutAnimation, 1f)
                 .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
@@ -100,17 +100,29 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .RequirementStamina(5);
         }
 
+        private static void PlayRocketLaunch(uint activator, uint target)
+        {
+            AssignCommand(activator, () =>
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv), target));
+        }
+
         private static void ApplyRocketImpactEffects(uint activator, uint target)
         {
-            ApplyEffectAtLocation(
-                DurationType.Instant,
-                EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Fire),
-                GetLocation(target));
+            // Match the original missile flight before showing the explosion. Combat resolves immediately.
+            var distance = Math.Max(1f, GetDistanceBetween(activator, target));
+            var delay = (float)(distance / (3.0 * Math.Log(distance) + 2.0));
+            DelayCommand(delay, () =>
+            {
+                if (GetIsObjectValid(target))
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), target);
+            });
             DeviceAbilityEffects.ApplyTacticalUplink(activator);
         }
 
         private static void WristRocket1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            PlayRocketLaunch(activator, target);
+
             Ability.ApplyCombatImpact(
                 activator,
                 target,
@@ -122,7 +134,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Fire,
-                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
                 afterSuccessfulHit: impactedTarget => ApplyRocketImpactEffects(activator, impactedTarget),
@@ -132,6 +143,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void WristRocket2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            PlayRocketLaunch(activator, target);
+
             Ability.ApplyCombatImpact(
                 activator,
                 target,
@@ -143,7 +156,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Fire,
-                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
                 afterSuccessfulHit: impactedTarget => ApplyRocketImpactEffects(activator, impactedTarget),
@@ -153,6 +165,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void WristRocket3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            PlayRocketLaunch(activator, target);
+
             Ability.ApplyCombatImpact(
                 activator,
                 target,
@@ -164,7 +178,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Fire,
-                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
                 afterSuccessfulHit: impactedTarget => ApplyRocketImpactEffects(activator, impactedTarget),

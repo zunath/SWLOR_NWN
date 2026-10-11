@@ -86,12 +86,14 @@ namespace SWLOR.Game.Server.Service
         /// <param name="xp">The amount of XP to give.</param>
         /// <param name="ignoreBonuses">If true, bonuses from food and other sources will NOT be applied.</param>
         /// <param name="applyHenchmanPenalty">If true, a penalty will apply if the player has a henchman active (droid, pet, etc.)</param>
+        /// <param name="xpMessageSource">Combines XP feedback for the same player, skill, and source until the next frame.</param>
         public static void GiveSkillXP(
             uint player,
             SkillType skill,
             int xp,
             bool ignoreBonuses = false,
-            bool applyHenchmanPenalty = true)
+            bool applyHenchmanPenalty = true,
+            uint xpMessageSource = OBJECT_INVALID)
         {
             if (skill == SkillType.Invalid ||
                 xp <= 0 ||
@@ -194,7 +196,10 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            SendMessageToPC(player, $"You earned {details.Name} skill experience. ({xp})");
+            if (xpMessageSource == OBJECT_INVALID)
+                SendMessageToPC(player, $"You earned {details.Name} skill experience. ({xp})");
+            else
+                _xpMessages.Add(player, xpMessageSource, skill, xp);
             pcSkill.XP += xp;
             // Skill is at cap. No additional XP can be acquired.
             if (pcSkill.Rank >= details.MaxRank)

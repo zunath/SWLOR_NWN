@@ -476,6 +476,9 @@ namespace SWLOR.NWN.API.NWScript.Enum
         CleanseOrder1StatusEffect = 473,
         DeadeyeReloadStatusEffect = 474,
         LuckyChamberStatusEffect = 475,
+        BloodFrenzyStatusEffect = 476,
+        SoulAscensionBurstStatusEffect = 477,
+        ChallengeEnmityStatusEffect = 478,
         // End custom status effect icons
     }
 }

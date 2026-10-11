@@ -1,6 +1,7 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -86,6 +87,80 @@ public class StoreInventoryTests
         }
     }
 
+    [TestCase("czerkasoda", "Czerka Soda", 211, 4, 1)]
+    [TestCase("packaged_pickle", "Packaged pickle", 311, 142, 11)]
+    [TestCase("hot_chips", "Hot Chips", 311, 170, 11)]
+    [TestCase("czerky_jerky", "Czerky Jerky(tm)", 311, 155, 11)]
+    public void VelesVendingMachine_PreservesItsStock(
+        string resref, string name, int baseItem, int model, int cost)
+    {
+        var root = FindRepositoryRoot();
+        using var area = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "git", "veles_exterior.git.json")));
+        var store = area.RootElement.GetProperty("StoreList").GetProperty("value").EnumerateArray()
+            .Single(store => GetWrappedString(store, "Tag") == "czerka_soda");
+        using var storeBlueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "utm", "czerkasodas.utm.json")));
+        var stock = ReadStoreItemData(store).ToArray();
+        var blueprintStock = ReadStoreItemData(storeBlueprint.RootElement).ToArray();
+        stock.Should().HaveCount(4);
+        blueprintStock.Should().HaveCount(4);
+        var placedItem = stock.Single(item => GetWrappedString(item, "TemplateResRef") == resref);
+        var blueprintEntry = blueprintStock.Single(item => GetWrappedString(item, "InventoryRes") == resref);
+        GetWrappedInt(placedItem, "Infinite").Should().Be(1);
+        GetWrappedInt(blueprintEntry, "Infinite").Should().Be(1);
+
+        using var itemBlueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", $"{resref}.uti.json")));
+        foreach (var item in new[] { placedItem, itemBlueprint.RootElement })
+        {
+            item.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString().Should().Be(name);
+            GetWrappedInt(item, "BaseItem").Should().Be(baseItem);
+            GetWrappedInt(item, "xModelPart1").Should().Be(model);
+            GetWrappedInt(item, "Cost").Should().Be(cost);
+            if (TryGetWrappedArray(item, "VarTable", out var variables))
+                variables.EnumerateArray().Should().NotContain(variable =>
+                    GetWrappedString(variable, "Name") == "NO_ECONOMY" && GetWrappedInt(variable, "Value") == 1);
+        }
+        JsonElement.DeepEquals(placedItem.GetProperty("PropertiesList"),
+            itemBlueprint.RootElement.GetProperty("PropertiesList")).Should().BeTrue();
+    }
+
+    [Test]
+    public void VelesOutfitters_SellTheCompleteAccessoryInventory()
+    {
+        var root = FindRepositoryRoot();
+        using var area = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "git", "veles_tradecon.git.json")));
+        var store = area.RootElement.GetProperty("StoreList").GetProperty("value").EnumerateArray()
+            .Single(store => GetWrappedString(store, "Tag") == "NIGHT_ACCESSORY_SHOP");
+        GetWrappedString(store, "ResRef").Should().Be("night_accessory");
+        var stock = ReadStoreItemData(store).ToArray();
+        var resrefs = stock.Select(item => GetWrappedString(item, "TemplateResRef")).ToArray();
+        resrefs.Should().HaveCount(74).And.OnlyHaveUniqueItems()
+            .And.BeEquivalentTo(ReadStoreBlueprintItems(root, "night_accessory"));
+        resrefs.Should().Contain(new[] { "night_cigar", "night_cigarette" });
+        foreach (var item in stock)
+        {
+            GetWrappedInt(item, "Infinite").Should().Be(1);
+            var resref = GetWrappedString(item, "TemplateResRef");
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", $"{resref}.uti.json")));
+            foreach (var field in new[] { "LocalizedName", "BaseItem", "Cost", "PropertiesList" })
+                JsonElement.DeepEquals(item.GetProperty(field), blueprint.RootElement.GetProperty(field)).Should()
+                    .BeTrue($"{resref} must retain its authored {field}");
+        }
+
+        foreach (var name in new[] { "Ressa Jellin", "Varko Jellin" })
+        {
+            var npc = area.RootElement.GetProperty("Creature List").GetProperty("value").EnumerateArray()
+                .Single(npc => npc.GetProperty("FirstName").GetProperty("value").GetProperty("0").GetString() == name);
+            GetWrappedString(npc, "Conversation").Should().Be("night_viscaccess");
+            GetWrappedString(npc, "ScriptDialogue").Should().Be("dialog_start");
+        }
+        using var conversation = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "ConversationData", "night_viscaccess.conversation.json")));
+        var storeActions = conversation.RootElement.GetProperty("Choices").EnumerateObject()
+            .SelectMany(choice => choice.Value.GetProperty("Actions").EnumerateArray())
+            .Where(action => action.GetProperty("Key").GetString() == "action-open-store").ToArray();
+        storeActions.Should().ContainSingle();
+        storeActions[0].GetProperty("Arguments")[0].GetString().Should().Be("NIGHT_ACCESSORY_SHOP");
+    }
+
     [Test]
     public void PlacedPlanetaryGeneralStores_MatchBlueprintInventory()
     {
@@ -136,6 +211,37 @@ public class StoreInventoryTests
 
         foundStores.Should().OnlyContain(entry => entry.Value > 0, "each planetary general store should have at least one placed instance");
         findings.Should().BeEmpty(string.Join("\n", findings));
+    }
+
+    [Test]
+    public void PlacedStoreItems_DoNotProvideForceConversion()
+    {
+        var root = FindRepositoryRoot();
+        var findings = new List<string>();
+        var checkedItems = 0;
+
+        foreach (var file in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "git"), "*.git.json"))
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(file));
+            if (!TryGetWrappedArray(document.RootElement, "StoreList", out var stores))
+                continue;
+
+            foreach (var store in stores.EnumerateArray())
+            foreach (var item in ReadStoreItemData(store))
+            {
+                checkedItems++;
+                if (!TryGetWrappedArray(item, "PropertiesList", out var properties))
+                    continue;
+
+                if (properties.EnumerateArray().Any(property =>
+                        property.GetProperty("PropertyName").GetProperty("value").GetInt32() == (int)ItemPropertyType.WeaponDamageType &&
+                        property.GetProperty("Subtype").GetProperty("value").GetInt32() == (int)CombatDamageType.Force))
+                    findings.Add($"{Path.GetFileName(file)} / {GetWrappedString(store, "ResRef")} / {GetWrappedString(item, "TemplateResRef")}");
+            }
+        }
+
+        checkedItems.Should().BeGreaterThan(5000, "the audit must cover the placed store corpus");
+        findings.Should().BeEmpty("new merchant purchases must not carry retired Force conversion: " + string.Join(", ", findings));
     }
 
     [Test]

@@ -50,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (damage <= 0)
                 return;
 
+            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(source, creature);
             AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, CombatDamageType.Force.GetNWScriptDamageType()), creature));
 
             if (!GetIsObjectValid(Source))

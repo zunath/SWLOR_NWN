@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Categories;
+using Nwn.Authoring.Categories;
 
 namespace SWLOR.Toolset.Tests
 {

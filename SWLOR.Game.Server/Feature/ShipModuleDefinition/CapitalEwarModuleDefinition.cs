@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
@@ -44,11 +45,16 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, 4),activator, 12.0f);
 
                     const float Distance = 20f;
-                    var nearby = GetFirstObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
                     var count = 1;
 
-                    while (GetIsObjectValid(nearby) && count <= 10)
+                    foreach (var nearby in ObjectSnapshot.InShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature))
                     {
+                        if (count > 10)
+                            break;
+
+                        if (!GetIsObjectValid(nearby))
+                            continue;
+
                         if (GetIsEnemy(nearby, activator) &&
                             !GetIsDead(activator) &&
                             Space.GetShipStatus(nearby) != null &&
@@ -63,7 +69,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             count++;
                         }
 
-                        nearby = GetNextObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
 
                     }
 

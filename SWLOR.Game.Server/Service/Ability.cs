@@ -219,6 +219,20 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Native current HP includes temporary HP. Subtract queued damage so another hit
+        /// cannot draw healing from health already claimed by an earlier impact.
+        /// </summary>
+        public static int GetRemainingDamageTargetHP(uint activator, uint target)
+        {
+            if (!GetIsObjectValid(target) || GetPlotFlag(target))
+                return 0;
+
+            var pendingDamage = GetTrackedAbilityImpact(activator)?.GetPendingDamage(target) ?? 0;
+            var currentHP = GetCurrentHitPoints(target);
+            return Combat.CalculateDamageEligibleForHealing(currentHP, currentHP, pendingDamage);
+        }
+
+        /// <summary>
         /// Reuses a payload's contributing sources within one impact. Delayed phases and
         /// recurring pulses receive fresh trackers, while conditions can still be checked per target.
         /// </summary>
@@ -551,9 +565,10 @@ namespace SWLOR.Game.Server.Service
             return amount;
         }
 
-        public static void ApplyHostileAbilityEnmity(uint activator, uint target, int damage = 0)
+        public static void ApplyHostileAbilityEnmity(uint activator, uint target, int bonus = 0)
         {
-            var amount = HostileAbilityBaseEnmity + Math.Max(0, damage);
+            // Damage is credited once by the actual damage event, including resistance and absorption.
+            var amount = HostileAbilityBaseEnmity + Math.Max(0, bonus);
             Enmity.ModifyEnmity(activator, target, amount);
         }
 
@@ -1412,14 +1427,16 @@ namespace SWLOR.Game.Server.Service
             if (isArea)
             {
                 var center = GetIsObjectValid(target) ? GetLocation(target) : targetLocation;
-                var creature = GetFirstObjectInShape(Shape.Sphere, 5.0f, center, true);
                 var creatures = new List<uint>();
-                while (GetIsObjectValid(creature))
+
+                foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, 5.0f, center, true))
                 {
+                    if (!GetIsObjectValid(creature))
+                        continue;
+
                     if (HasAbilityLineOfSight(activator, creature))
                         creatures.Add(creature);
 
-                    creature = GetNextObjectInShape(Shape.Sphere, 5.0f, center, true);
                 }
 
                 if (areaVisualEffect != VisualEffect.None &&
@@ -1536,7 +1553,8 @@ namespace SWLOR.Game.Server.Service
             bool resolvesHit = true,
             bool canCritical = true,
             float impactFlashDuration = DefaultImpactFlashDuration,
-            bool useUnscaledDamage = false)
+            bool useUnscaledDamage = false,
+            Action<TelegraphGeometry> onGeometryResolved = null)
         {
             PrepareCombatImpactDamageBonuses(activator, baseDamage);
             RecordAbilityImpactShape(activator, skillType, true);
@@ -1546,6 +1564,9 @@ namespace SWLOR.Game.Server.Service
             var geometry = ResolveCombatImpactGeometry(
                 activator, target, targetLocation, shape, lengthOrRadius, width, centerOnActivator, backOffsetOrigin,
                 trackedImpact?.ActivationAreaTelegraphs);
+
+            // Directional visuals must use the same captured footprint as the damage.
+            onGeometryResolved?.Invoke(geometry);
 
             if (telegraphDuration <= 0f)
             {
@@ -2357,7 +2378,7 @@ namespace SWLOR.Game.Server.Service
             DamageType? effectDamageType = null,
             bool firstHostileAbilityHitDamageBonusApplied = false)
         {
-            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator);
+            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
             var trackedImpact = GetTrackedAbilityImpact(activator);
 
             // Register the combat point before applying damage. A lethal hit resolves the target's
@@ -2406,7 +2427,7 @@ namespace SWLOR.Game.Server.Service
             ApplyHostileAbilityEnmity(
                 activator,
                 target,
-                damage + Math.Max(0, enmityBonus) + Math.Max(0, trackedImpact?.NextAttackEnmityBonus ?? 0));
+                Math.Max(0, enmityBonus) + Math.Max(0, trackedImpact?.NextAttackEnmityBonus ?? 0));
 
             var statusApplied = ApplyCombatImpactStatusEffect(
                 activator,
@@ -2439,6 +2460,13 @@ namespace SWLOR.Game.Server.Service
                 firstHostileAbilityHitDamageBonusApplied,
                 trackedImpact == null || trackedImpact.Summary.ImpactedTargetCount == 0,
                 appliedStatusCategories);
+
+            if (damage > 0 && trackedImpact?.Ability is { } impactAbility &&
+                impactAbility.DamageImpactVisualEffect != VisualEffect.None)
+            {
+                var damageVisual = EffectVisualEffect(impactAbility.DamageImpactVisualEffect);
+                ApplyEffectToObject(DurationType.Instant, damageVisual, target);
+            }
 
             if (damage > 0 || statusApplied)
             {
@@ -2480,7 +2508,7 @@ namespace SWLOR.Game.Server.Service
             bool canCritical = true,
             bool useUnscaledDamage = false)
         {
-            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator);
+            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
             var trackedImpact = GetTrackedAbilityImpact(activator);
             Combat.TrackHostileAbilityActivity(activator);
             Combat.TrackHostileDefensiveCombatEntryActivity(target, activator);
@@ -3666,6 +3694,11 @@ namespace SWLOR.Game.Server.Service
             public void QueueDamageEffect(uint target, int damage, DamageType damageType)
             {
                 QueueDamageEffect(target, damage, damageType, CombatDamageType.Invalid);
+            }
+
+            public int GetPendingDamage(uint target)
+            {
+                return _pendingDamageEffects.Where(effect => effect.Target == target).Sum(effect => effect.Damage);
             }
 
             public void QueueDirectDamageEffect(

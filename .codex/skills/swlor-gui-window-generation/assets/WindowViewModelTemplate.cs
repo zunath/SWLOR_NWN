@@ -13,8 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // Keep TabContentElement, rename the single partial const to
         // MainContentPartial, and in Initialize (after assignments and watches) call:
         //     ChangePartialView(TabContentElement, MainContentPartial);
-        // If the window shows modals, override OnModalClosedRestore with that same
-        // ChangePartialView call (rule R6).
+        // Closing a modal restores that partial automatically (rule R6).
         private const int FirstTabId = 0;
         private const int SecondTabId = 1;
         public const string TabContentElement = "templatewindow_tab_content"; // TEMPLATE: unique element id
@@ -68,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Tabs.Select(this, TabContentElement, tabId);
         }
 
-        // Rule R6: modal close wipes the nested tab partial; this restores it.
+        // Rule R6: re-select the tab after a modal closes so its refresh action reruns.
         // TEMPLATE: delete ONLY if this window never calls ShowModal/ShowInputModal.
         protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentElement, SelectedTabId);
 

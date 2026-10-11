@@ -981,11 +981,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Korriban_LastStandOfTheLight_Adept,
-                NPCGroupType.Korriban_LastStandOfTheLight_Specialist,
-                NPCGroupType.Korriban_LastStandOfTheLight_Warden,
-                NPCGroupType.Korriban_LastStandOfTheLight_InnerCircle,
-                NPCGroupType.Korriban_LastStandOfTheLight_Master,
+                NPCGroupType.Korriban_CryptRaider,
+                NPCGroupType.Korriban_CryptMarauder,
+                NPCGroupType.Korriban_CryptBreachCaptain,
+                NPCGroupType.Korriban_CryptReaver,
+                NPCGroupType.Korriban_CryptExpeditionLeader,
             },
             new[]
             {
@@ -1054,11 +1054,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Korriban_HungerOfTheDark_Adept,
-                NPCGroupType.Korriban_HungerOfTheDark_Specialist,
-                NPCGroupType.Korriban_HungerOfTheDark_Warden,
-                NPCGroupType.Korriban_HungerOfTheDark_InnerCircle,
-                NPCGroupType.Korriban_HungerOfTheDark_Master,
+                NPCGroupType.Korriban_VitaeReaverInitiate,
+                NPCGroupType.Korriban_VitaeReaverAdept,
+                NPCGroupType.Korriban_VitaeReaverEnforcer,
+                NPCGroupType.Korriban_VitaeReaverBinder,
+                NPCGroupType.Korriban_VitaeReaverChief,
             },
             new[]
             {
@@ -1127,11 +1127,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Korriban_EclipseOfResolve_Adept,
-                NPCGroupType.Korriban_EclipseOfResolve_Specialist,
-                NPCGroupType.Korriban_EclipseOfResolve_Warden,
-                NPCGroupType.Korriban_EclipseOfResolve_InnerCircle,
-                NPCGroupType.Korriban_EclipseOfResolve_Master,
+                NPCGroupType.Korriban_UmbralRaiderScout,
+                NPCGroupType.Korriban_UmbralRaiderAdept,
+                NPCGroupType.Korriban_UmbralRaiderCaptain,
+                NPCGroupType.Korriban_UmbralRaiderSaboteur,
+                NPCGroupType.Korriban_UmbralRaiderCommander,
             },
             new[]
             {
@@ -1638,11 +1638,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Dantooine_SaberStorm_Adept,
-                NPCGroupType.Dantooine_SaberStorm_Specialist,
-                NPCGroupType.Dantooine_SaberStorm_Warden,
-                NPCGroupType.Dantooine_SaberStorm_InnerCircle,
-                NPCGroupType.Dantooine_SaberStorm_Master,
+                NPCGroupType.Dantooine_StormDrillDroid,
+                NPCGroupType.Dantooine_StormDuelistDroid,
+                NPCGroupType.Dantooine_StormGatekeeperDroid,
+                NPCGroupType.Dantooine_StormExaminerDroid,
+                NPCGroupType.Dantooine_TempestTrainingEngine,
             },
             new[]
             {
@@ -1711,11 +1711,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Dantooine_GuardianMaster_Adept,
-                NPCGroupType.Dantooine_GuardianMaster_Specialist,
-                NPCGroupType.Dantooine_GuardianMaster_Warden,
-                NPCGroupType.Dantooine_GuardianMaster_InnerCircle,
-                NPCGroupType.Dantooine_GuardianMaster_Paragon,
+                NPCGroupType.Dantooine_GuardianPatrolDroid,
+                NPCGroupType.Dantooine_GuardianBulwarkDroid,
+                NPCGroupType.Dantooine_GuardianGatekeeperDroid,
+                NPCGroupType.Dantooine_GuardianShieldDroid,
+                NPCGroupType.Dantooine_BastionTrainingEngine,
             },
             new[]
             {
@@ -2076,11 +2076,11 @@ internal static class CapstoneQuestDefinitionTestData
             },
             new[]
             {
-                NPCGroupType.Dantooine_SaberCyclone_Adept,
-                NPCGroupType.Dantooine_SaberCyclone_Specialist,
-                NPCGroupType.Dantooine_SaberCyclone_Warden,
-                NPCGroupType.Dantooine_SaberCyclone_InnerCircle,
-                NPCGroupType.Dantooine_SaberCyclone_Master,
+                NPCGroupType.Dantooine_CycloneDrillDroid,
+                NPCGroupType.Dantooine_CycloneDuelistDroid,
+                NPCGroupType.Dantooine_CycloneGatekeeperDroid,
+                NPCGroupType.Dantooine_CycloneExaminerDroid,
+                NPCGroupType.Dantooine_VortexTrainingEngine,
             },
             new[]
             {

@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -163,9 +164,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (!revealsHidden && (evasionPenalty <= 0 || durationSeconds <= 0))
                 return;
 
-            var creature = GetFirstObjectInShape(Shape.Sphere, radius, location, true);
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, radius, location, true))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (GetIsReactionTypeHostile(creature, activator))
                 {
                     if (revealsHidden)
@@ -184,7 +187,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     }
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, radius, location, true);
             }
         }
 
@@ -865,10 +867,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             var nearestCreature = OBJECT_INVALID;
             var nearestDistance = float.MaxValue;
-            var creature = GetFirstObjectInShape(Shape.Sphere, radius, location, true, ObjectType.Creature);
-
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, radius, location, true, ObjectType.Creature))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (!GetIsDead(creature) &&
                     GetCurrentHitPoints(creature) > 0 &&
                     GetIsReactionTypeHostile(creature, activator))
@@ -881,7 +884,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     }
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, radius, location, true, ObjectType.Creature);
             }
 
             return nearestCreature;

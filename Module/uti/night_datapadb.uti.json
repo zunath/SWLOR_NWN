@@ -26,12 +26,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A portable datapad for keeping notes and displaying information during roleplay. This cosmetic inventory item grants no gameplay bonuses."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A portable datapad for keeping notes and displaying information during roleplay. This cosmetic inventory item grants no gameplay bonuses."
     }
   },
   "Identified": {

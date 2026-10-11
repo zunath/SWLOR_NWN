@@ -331,10 +331,9 @@ namespace SWLOR.Game.Server.Service
             if (!IsHazardousWeatherArea(GetAreaFromLocation(location))) return;
 
             const ObjectType targets = ObjectType.Creature | ObjectType.Door | ObjectType.Placeable;
-            for (var target = GetFirstObjectInShape(Shape.Sphere, range, location, false, targets);
-                 GetIsObjectValid(target);
-                 target = GetNextObjectInShape(Shape.Sphere, range, location, false, targets))
+            foreach (var target in ObjectSnapshot.InShape(Shape.Sphere, range, location, false, targets))
             {
+                if (!GetIsObjectValid(target)) continue;
                 var damage = WeatherConditions.GetLightningDamage(power, GetDistanceBetweenLocations(location, GetLocation(target)));
                 if (damage <= 0 || GetIsDM(target) || GetIsDMPossessed(target)) continue;
                 damage = GetProtectedDamage(target, damage, CombatDamageType.Electrical);
@@ -367,7 +366,7 @@ namespace SWLOR.Game.Server.Service
             var now = DateTime.UtcNow;
             var players = new HashSet<uint>();
             var occupiedAreas = new HashSet<uint>();
-            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            foreach (var player in ObjectSnapshot.Players())
             {
                 players.Add(player);
                 occupiedAreas.Add(GetArea(player));

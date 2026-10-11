@@ -10,6 +10,27 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class AreaImpactTelegraphTests
 {
+    [TestCase(false)]
+    [TestCase(true)]
+    public void RadiantLanceProjectile_EndsAtCapturedDamageLineAfterMovement(bool casterMoves)
+    {
+        var warning = new TelegraphGeometry(1, TelegraphType.Line,
+            new Vector3(1f, 2f, 3f), new Vector2(8f, 2.5f), 0f);
+        var current = warning with
+        {
+            Rotation = MathF.PI / 2f,
+            Position = casterMoves ? new Vector3(4f, 5f, 3f) : warning.Position
+        };
+        var resolved = Telegraph.ResolveImpactGeometry(current, new[] { warning });
+        var endpointMethod = typeof(SWLOR.Game.Server.Feature.AbilityDefinition.Force.RadiantLanceAbilityDefinition)
+            .GetMethod("GetProjectileEndpoint", BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        var endpoint = (Vector3)endpointMethod.Invoke(null, new object[] { resolved })!;
+
+        endpoint.Should().Be(new Vector3(9f, 2f, 3f),
+            "the bolt must end on the original eight-meter line even when the target or caster moves");
+    }
+
     /// <summary>
     /// Reproduces a target changing the attack direction after the activation warning was displayed.
     /// </summary>

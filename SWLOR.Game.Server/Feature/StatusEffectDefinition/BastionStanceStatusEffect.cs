@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
         public BastionStanceStatusEffect()
         {
+            StatGroup.Stats[StatType.DamageEnmityPercentAdjustment] = 100;
             StatGroup.Stats[StatType.AttackPercentAdjustment] = -20;
             StatGroup.Stats[StatType.ForceAttackPercentAdjustment] = -20;
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 15;

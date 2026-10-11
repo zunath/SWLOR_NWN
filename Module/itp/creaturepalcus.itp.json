@@ -4101,7 +4101,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Eclipse of Resolve Specialist"
+                      "value": "Umbral Raider Adept"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -4177,7 +4177,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Guardian Master Specialist"
+                      "value": "Guardian Bulwark Droid"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -4215,7 +4215,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hunger of the Dark Specialist"
+                      "value": "Vitae Reaver Adept"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -4405,7 +4405,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Last Stand of the Light Specialist"
+                      "value": "Crypt Marauder"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -4576,7 +4576,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Saber Cyclone Specialist"
+                      "value": "Cyclone Duelist Droid"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -4595,7 +4595,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Saber Storm Specialist"
+                      "value": "Storm Duelist Droid"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13833,7 +13833,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Eclipse of Resolve Adept"
+                      "value": "Umbral Raider Scout"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13852,7 +13852,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Eclipse of Resolve Inner Circle"
+                      "value": "Umbral Raider Saboteur"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13871,7 +13871,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Eclipse of Resolve Master"
+                      "value": "Umbral Raider Commander"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -13890,7 +13890,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Eclipse of Resolve Warden"
+                      "value": "Umbral Raider Captain"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -14137,7 +14137,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Guardian Master Adept"
+                      "value": "Guardian Patrol Droid"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -14156,7 +14156,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Guardian Master Inner Circle"
+                      "value": "Guardian Shield Droid"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -14175,7 +14175,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Guardian Master Paragon"
+                      "value": "Bastion Training Engine"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -14194,7 +14194,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Guardian Master Warden"
+                      "value": "Guardian Gatekeeper Droid"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -14289,7 +14289,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hunger of the Dark Adept"
+                      "value": "Vitae Reaver Initiate"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -14308,7 +14308,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hunger of the Dark Inner Circle"
+                      "value": "Vitae Reaver Binder"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -14327,7 +14327,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hunger of the Dark Master"
+                      "value": "Vitae Reaver Chief"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -14346,7 +14346,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hunger of the Dark Warden"
+                      "value": "Vitae Reaver Enforcer"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -14688,7 +14688,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Last Stand of the Light Adept"
+                      "value": "Crypt Raider"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -14707,7 +14707,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Last Stand of the Light Inner Circle"
+                      "value": "Crypt Reaver"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -14726,7 +14726,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Last Stand of the Light Master"
+                      "value": "Crypt Expedition Leader"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -14745,7 +14745,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Last Stand of the Light Warden"
+                      "value": "Crypt Breach Captain"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -15410,7 +15410,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Saber Cyclone Adept"
+                      "value": "Cyclone Drill Droid"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -15429,7 +15429,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Saber Cyclone Inner Circle"
+                      "value": "Cyclone Examiner Droid"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -15448,7 +15448,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Saber Cyclone Master"
+                      "value": "Vortex Training Engine"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -15467,7 +15467,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Saber Cyclone Warden"
+                      "value": "Cyclone Gatekeeper Droid"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -15486,7 +15486,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Saber Storm Adept"
+                      "value": "Storm Drill Droid"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -15505,7 +15505,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Saber Storm Inner Circle"
+                      "value": "Storm Examiner Droid"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -15524,7 +15524,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Saber Storm Master"
+                      "value": "Tempest Training Engine"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -15543,7 +15543,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Saber Storm Warden"
+                      "value": "Storm Gatekeeper Droid"
                     },
                     "RESREF": {
                       "type": "resref",

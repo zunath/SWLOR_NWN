@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Quest
     {
+        private const string ActiveItemCollectorVariable = "ACTIVE_QUEST_COLLECTOR";
         private static readonly Dictionary<string, QuestDetail> _quests = new();
         private static readonly Dictionary<NPCGroupType, List<string>> _npcsWithKillQuests = new();
         private static readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _questsByGuildType = new();
@@ -333,7 +334,7 @@ namespace SWLOR.Game.Server.Service
             DelayCommand(300f, () =>
             {
                 if (GetIsObjectValid(collector))
-                    DestroyObject(collector);
+                    DestroyItemCollector(collector);
             });
 
             return true;
@@ -433,9 +434,10 @@ namespace SWLOR.Game.Server.Service
 
             var dbPlayer = DB.Get<Player>(playerId);
 
-            if (!dbPlayer.Quests.ContainsKey(questId))
+            if (player != GetLocalObject(container, "QUEST_PLAYER") || dbPlayer == null ||
+                !dbPlayer.Quests.ContainsKey(questId))
             {
-                SendMessageToPC(player, "You have not accepted this quest.");
+                SendMessageToPC(player, "This quest collector is not available to you.");
                 return;
             }
 
@@ -452,7 +454,26 @@ namespace SWLOR.Game.Server.Service
 
             SendMessageToPC(player, text);
 
+            SetLocalObject(player, ActiveItemCollectorVariable, container);
             Activity.SetBusy(player, ActivityStatusType.Quest);
+        }
+
+        private static void ReleaseItemCollectorPlayer(uint container)
+        {
+            var player = GetLocalObject(container, "QUEST_PLAYER");
+            if (!GetIsObjectValid(player) || GetLocalObject(player, ActiveItemCollectorVariable) != container)
+                return;
+
+            DeleteLocalObject(player, ActiveItemCollectorVariable);
+            if (Activity.GetBusyType(player) == ActivityStatusType.Quest)
+                Activity.ClearBusy(player);
+        }
+
+        private static void DestroyItemCollector(uint container)
+        {
+            // DestroyObject closes the inventory view without running its OnClosed script.
+            ReleaseItemCollectorPlayer(container);
+            DestroyObject(container);
         }
 
         /// <summary>
@@ -461,7 +482,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnQuestCollectClosed)]
         public static void CloseItemCollector()
         {
-            var player = GetLastClosedBy();
+            ReleaseItemCollectorPlayer(OBJECT_SELF);
             DelayCommand(0.02f, () =>
             {
                 for (var item = GetFirstItemInInventory(OBJECT_SELF); GetIsObjectValid(item); item = GetNextItemInInventory(OBJECT_SELF))
@@ -471,8 +492,6 @@ namespace SWLOR.Game.Server.Service
 
                 DestroyObject(OBJECT_SELF);
             });
-
-            Activity.ClearBusy(player);
         }
 
         /// <summary>
@@ -589,6 +608,7 @@ namespace SWLOR.Game.Server.Service
 
             if (itemsRequired <= 0)
             {
+                ReleaseItemCollectorPlayer(container);
                 if (GetIsObjectValid(owner) && GetObjectType(owner) == ObjectType.Creature)
                 {
                     if (!Conversation.TryStartAssigned(player, owner))
@@ -597,7 +617,7 @@ namespace SWLOR.Game.Server.Service
 
                 // The collector has served its purpose - destroy it so it doesn't linger on the
                 // ground (closing the player's open container view in the process).
-                DestroyObject(container);
+                DestroyItemCollector(container);
             }
         }
 

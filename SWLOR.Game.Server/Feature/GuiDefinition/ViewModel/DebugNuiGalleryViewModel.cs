@@ -731,16 +731,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // even if the window blanks out client-side.
             LogEvent($"LOADING HAZARD {partialName} (expect: {expectedFailure})");
 
-            // The hazard slot is nested two partials deep (window root -> hazards tab
-            // partial -> slot). SwapNestedPartialView's root-redraw pass would reset
-            // the tab content and destroy the slot element, so apply directly and
-            // re-apply once after the redraw nudge settles instead.
             ChangePartialView(HazardSlotElement, partialName);
-            DelayCommand(0.0f, () =>
-            {
-                if (Gui.IsWindowOpen(Player, WindowType))
-                    ChangePartialView(HazardSlotElement, partialName);
-            });
         }
 
         public Action OnClickHazardButtonRow() => () =>
@@ -869,7 +860,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             try
             {
                 ChangePartialView("no_such_element_id", HazardSafePartial);
-                LogEvent("PROBE result: no server-side exception (check client for errors)");
+                LogEvent("PROBE result: no server-side exception; nothing is sent for a group that is not on screen");
             }
             catch (Exception ex)
             {
@@ -879,7 +870,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickProbeNestedPartial() => () =>
         {
-            LoadHazard(ProbeNestedHostPartial, "verified with caveat - renders, but the inner slot content is dropped by the parent re-apply");
+            LoadHazard(ProbeNestedHostPartial, "composed into the root - expect the inner slot content to render");
             DelayCommand(0.1f, () =>
             {
                 if (Gui.IsWindowOpen(Player, WindowType))

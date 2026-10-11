@@ -37,6 +37,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string Weight
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         /// <summary>
         /// Replaces the native item examine panel, which is disabled for players on login.
         /// </summary>
@@ -59,6 +65,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _payload = initialPayload;
             WindowTitle = initialPayload.ItemName;
             ItemProperties = initialPayload.ItemProperties;
+            Weight = $"Weight: {initialPayload.Weight / 10.0m:0.0} lbs";
             RefreshDescription();
             ChangePartialView(ContentElement, ContentPartial);
         }

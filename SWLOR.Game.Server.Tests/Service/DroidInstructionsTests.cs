@@ -115,6 +115,33 @@ public class DroidInstructionsTests
     }
 
     [Test]
+    public void CapstonesCannotBeUploadedOrSelectedFromSavedDroidInstructions()
+    {
+        Ability.CacheData();
+        var capstones = Ability.GetAllAbilityDetails().Values
+            .Where(ability => ability.RecastGroup == RecastGroup.Capstone)
+            .Select(ability => ability.EffectiveLevelPerkType)
+            .Where(perk => perk != PerkType.Invalid)
+            .Distinct().Select(perk => new DroidPerk(perk, 1)).ToArray();
+        capstones.Should().NotBeEmpty();
+        foreach (var instruction in capstones)
+        {
+            DroidInstructions.TryGetLevel(instruction, out _).Should().BeFalse(instruction.Perk.ToString());
+            DroidInstructions.TryNormalize(instruction, out _).Should().BeFalse(instruction.Perk.ToString());
+        }
+
+        var medKit = new DroidPerk(PerkType.MedKit, 1);
+        var instructions = capstones.Append(medKit).ToList();
+        DroidInstructions.SelectActive(instructions, 5, 100).Should().ContainSingle()
+            .Which.Should().BeEquivalentTo(medKit);
+        var droid = new ConstructedDroid { LearnedPerks = instructions.ToList(), ActivePerks = instructions.ToList() };
+        DroidInstructions.Normalize(droid, 5, 100).Should().BeTrue();
+        droid.LearnedPerks.Should().ContainSingle().Which.Should().BeEquivalentTo(medKit);
+        droid.ActivePerks.Should().ContainSingle().Which.Should().BeEquivalentTo(medKit);
+        DroidInstructions.Normalize(droid, 5, 100).Should().BeFalse();
+    }
+
+    [Test]
     public void LeadershipForceAndPassiveWeaponTraitsRemainUnavailable()
     {
         Ability.CacheData();

@@ -227,7 +227,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Forcebane1)
-                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 25 to enemies within 5m of you. Enemies hit suffer Foggy Mind, Force Disruption, and -20% Ability Accuracy for 45 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Spear, 50)
@@ -429,7 +428,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingDefense1)
-                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 30. For 45 seconds, your high-STM abilities also inflict Exposed for 30 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Spear, 50)

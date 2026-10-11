@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A heavy bracer reinforced with thick plates, made to protect the forearm during close combat."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A heavy bracer reinforced with thick plates, made to protect the forearm during close combat."
     }
   },
   "Identified": {

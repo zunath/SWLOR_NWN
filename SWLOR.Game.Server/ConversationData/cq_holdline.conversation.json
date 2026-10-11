@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You came. Good. The sublevel under this facility was my ward for twenty years, and the staff I trained have sealed it from the inside. They call what they practice down there holding the line. It is not. They drill in my old triage hall and turn the sick away at the door. Six of their adepts run the intake now. Put them down, and bring me the Triage Ward Ledger they keep at the desk. I signed every name in that book, and I want it back where names still mean something.",
+          "Text": "You came. Good. The Dantooine Medical Sublevel was my ward for twenty years, and the staff I trained have sealed it from the inside. They call what they practice down there holding the line. It is not. They drill in my old triage hall and turn the sick away at the door. Six of their adepts run the intake now. Put them down, and bring me the Triage Ward Ledger they keep at the desk. I signed every name in that book, and I want it back where names still mean something.",
           "Style": 0,
           "Color": null
         }
@@ -286,6 +286,10 @@
         {
           "ChoiceId": "reply-00005",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "neutral-ask",
+          "Conditions": []
         }
       ]
     },
@@ -302,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then take the sublevel key. It opens the sealed service door below this facility - the one they think I forgot. Start in the triage hall; the adepts will find you before you find them. And walk in like you belong to the ward. You do, now.",
+          "Text": "Then take the sublevel key. It opens the sealed service door beneath the medical facility on Dantooine - the one they think I forgot. Start in the triage hall; the adepts will find you before you find them. And walk in like you belong to the ward. You do, now.",
           "Style": 0,
           "Color": null
         }
@@ -558,7 +562,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That coupler is the heart valve of this facility. Every drop of kolto that reaches my wards passes through it. They pulled it so no one could undo their rationing without coming to them on their knees. I do not kneel well anymore. Bring me the valve instead.",
+          "Text": "That coupler is the heart valve of the Dantooine facility. Every drop of kolto that reaches my wards passes through it. They pulled it so no one could undo their rationing without coming to them on their knees. I do not kneel well anymore. Bring me the valve instead.",
           "Style": 0,
           "Color": null
         }
@@ -793,7 +797,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The sigil was cast when this facility opened - the mark of the matron's ward, carried by whoever answered for every bed on the floor. It cracked the night everything went wrong down there, and Isa wears it fractured, like a wound she is proud of. Bring it to me. Broken things can be answered for. Worn like that, they only keep the wound open.",
+          "Text": "The sigil was cast when the Dantooine facility opened - the mark of the matron's ward, carried by whoever answered for every bed on the floor. It cracked the night everything went wrong down there, and Isa wears it fractured, like a wound she is proud of. Bring it to me. Broken things can be answered for. Worn like that, they only keep the wound open.",
           "Style": 0,
           "Color": null
         }
@@ -1291,6 +1295,32 @@
       ],
       "OnEnterActions": [],
       "Choices": []
+    },
+    "neutral-meeting": {
+      "Id": "neutral-meeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The foreman's office in Smuggler's Moon's Shipping District gives me a desk and a steady stream of crews needing someone to keep them alive. I won't make a helper pass a garrison inspection. My old ward remains in the Dantooine Medical Sublevel on Dantooine. The key opens it; the ledger comes back to this office.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "neutral-return",
+          "Conditions": []
+        }
+      ]
     }
   },
   "Choices": {
@@ -2138,6 +2168,52 @@
       "Next": [
         {
           "TargetNodeId": "entry-00041",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-ask": {
+      "Id": "neutral-ask",
+      "Text": {
+        "Text": "Why are we meeting here, and where is the trial?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "neutral-meeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-return": {
+      "Id": "neutral-return",
+      "Text": {
+        "Text": "Back to the assignment.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00002",
           "Conditions": []
         }
       ],

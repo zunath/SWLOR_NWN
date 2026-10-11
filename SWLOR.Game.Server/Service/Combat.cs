@@ -18,6 +18,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using ObjectPlugin = SWLOR.NWN.API.NWNX.ObjectPlugin;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 
@@ -39,6 +40,12 @@ namespace SWLOR.Game.Server.Service
         public const int MinimumCriticalRate = 5;
         public const int MaximumCriticalRate = 50;
         public const int MaximumDamageDerivedHealingPercentPerHit = 50;
+        public const int MaximumActivatedDamageHealingMaxHPPercent = 15;
+        public const int MaximumPassiveDamageHealingMaxHPPercentPerHit = 6;
+        public const int MaximumCooldownDamageHealingMaxHPPercentPerHit = 12;
+        public const int MaximumPassiveDamageHealingMaxHPPercentPerWindow = 24;
+        public const int MaximumDefeatedEnemyHealingMaxHPPercentPerWindow = 12;
+        public const int CombatHealingWindowSeconds = 6;
         public const int MaximumCriticalDamagePercentAdjustment = 200;
 
         public const int StandardCriticalRating = 2;
@@ -61,6 +68,8 @@ namespace SWLOR.Game.Server.Service
         private static readonly List<CombatDamageType> _allDefenseDamageTypes = new();
         private static readonly Dictionary<(uint, StatType), DateTime> _statTriggerCooldowns = new();
         private static readonly Dictionary<uint, DamageDerivedHealingState> _damageDerivedHealingStates = new();
+        private static readonly Dictionary<uint, RollingHealingBudget> _passiveDamageHealingBudgets = new();
+        private static readonly Dictionary<uint, RollingHealingBudget> _defeatedEnemyHealingBudgets = new();
         private static readonly Dictionary<(uint, uint), DateTime> _recentDamageTargets = new();
         private static readonly Dictionary<uint, DateTime> _recentDamageTaken = new();
         private static readonly Dictionary<uint, DateTime> _recentGuardedHits = new();
@@ -652,6 +661,7 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             ApplyLowHPTemporaryHPBeforeFatalDamage(defender, damage);
+            RefreshDamageDerivedHealingTargetHP(attacker, defender);
             return damage;
         }
 
@@ -1214,6 +1224,12 @@ namespace SWLOR.Game.Server.Service
                 damage += nextAutoAttackBonus;
             }
 
+            var guaranteedStaminaRestore = Stat.GetStatAdjustment(attacker, StatType.AutoAttackHitStaminaRestore);
+            if (guaranteedStaminaRestore > 0)
+            {
+                RestoreAbilityHitStamina(attacker, guaranteedStaminaRestore);
+            }
+
             var staminaRestoreChance = Stat.GetStatAdjustment(attacker, StatType.AutoAttackStaminaRestoreChance);
             var staminaRestore = Stat.GetStatAdjustment(attacker, StatType.AutoAttackStaminaRestore);
             if (staminaRestoreChance > 0 && staminaRestore > 0 && Random.D100(1) <= staminaRestoreChance)
@@ -1452,16 +1468,12 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(target))
                 return;
 
-            var appliedDamage = ApplyTriggeredDamage(
+            ApplyTriggeredDamage(
                 attacker,
                 target,
                 cycleDamage,
                 CombatDamageType.Physical,
                 skillType);
-            if (appliedDamage <= 0)
-                return;
-
-            Enmity.ModifyEnmity(attacker, target, appliedDamage);
         }
 
         private static void ApplySourceStatusAutoAttackCycleDamage(uint attacker, uint defender, SkillType skillType)
@@ -1505,11 +1517,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _sourceStatusAutoAttackCycleCounts[key] = 0;
-            var appliedDamage = ApplyTriggeredDamage(attacker, defender, damage, damageType, skillType);
-            if (appliedDamage > 0)
-            {
-                Enmity.ModifyEnmity(attacker, defender, appliedDamage);
-            }
+            ApplyTriggeredDamage(attacker, defender, damage, damageType, skillType);
         }
 
         public static int CalculateAutoAttackProcDamage(IEnumerable<StatAdjustmentSource> sources, Func<int> roll)
@@ -2158,7 +2166,8 @@ namespace SWLOR.Game.Server.Service
             if (hpRestorePercent > 0 &&
                 TryUseStatTrigger(attacker, StatType.CriticalHPPercentOfDamageRestore, hpRestoreCooldown))
             {
-                ApplyDamageDerivedHealing(attacker, damage, hpRestorePercent);
+                ApplyDamageDerivedHealing(attacker, damage, hpRestorePercent,
+                    passiveHealingCooldownSeconds: hpRestoreCooldown);
             }
 
             var accuracyPercent = Stat.GetStatAdjustment(attacker, StatType.CriticalAccuracyPercentAdjustment);
@@ -2849,9 +2858,11 @@ namespace SWLOR.Game.Server.Service
             var originLocation = GetLocation(origin);
             var nearest = OBJECT_INVALID;
             var nearestDistance = float.MaxValue;
-            var creature = GetFirstObjectInShape(Shape.Sphere, radius, originLocation, true);
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, radius, originLocation, true))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (creature != excludedTarget &&
                     GetIsReactionTypeHostile(creature, source) &&
                     !GetIsDead(creature))
@@ -2864,22 +2875,50 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, radius, originLocation, true);
             }
 
             return nearest;
         }
 
-        public static IDisposable BeginDamageDerivedHealing(uint creature)
+        public static IDisposable BeginDamageDerivedHealing(uint creature, uint target)
         {
-            if (!_damageDerivedHealingStates.TryGetValue(creature, out var state))
+            _damageDerivedHealingStates.TryGetValue(creature, out var state);
+            if (state == null || state.Target != target)
             {
-                state = new DamageDerivedHealingState();
+                state = new DamageDerivedHealingState
+                {
+                    Target = target,
+                    TargetHPBeforeImpact = Ability.GetRemainingDamageTargetHP(creature, target),
+                    Parent = state
+                };
                 _damageDerivedHealingStates[creature] = state;
             }
 
             state.Depth++;
             return new DamageDerivedHealingScope(creature);
+        }
+
+        public static int CalculateMaxHPHealingBudget(int maximumHP, int percent)
+        {
+            return (int)(Math.Max(0, maximumHP) * (long)Math.Max(0, percent) / 100);
+        }
+
+        /// <summary>
+        /// Includes defensive HP granted during damage calculation before critical healing
+        /// or queued damage can consume the hit's snapshot. Started healing remains frozen.
+        /// </summary>
+        private static void RefreshDamageDerivedHealingTargetHP(uint creature, uint target)
+        {
+            if (_damageDerivedHealingStates.TryGetValue(creature, out var state) &&
+                state.Target == target && !state.Damage.HasValue)
+            {
+                state.TargetHPBeforeImpact = Ability.GetRemainingDamageTargetHP(creature, target);
+            }
+        }
+
+        public static int CalculateDamageEligibleForHealing(int damage, int targetHP, int pendingDamage = 0)
+        {
+            return Math.Clamp(damage, 0, Math.Max(0, targetHP - Math.Max(0, pendingDamage)));
         }
 
         public static int CalculateCappedDamageDerivedHealingAmount(
@@ -2899,35 +2938,54 @@ namespace SWLOR.Game.Server.Service
             uint creature,
             int damage,
             int percent,
-            bool applyCombatReadiness = false)
+            bool isActivatedHealing = false,
+            int passiveHealingCooldownSeconds = 0)
         {
-            if (damage <= 0 || percent <= 0)
+            if (damage <= 0 || percent <= 0 ||
+                !_damageDerivedHealingStates.TryGetValue(creature, out var state))
                 return 0;
 
+            state.Damage ??= CalculateDamageEligibleForHealing(damage, state.TargetHPBeforeImpact);
+            damage = state.Damage.Value;
+            if (damage <= 0)
+                return 0;
+
+            var maximumHP = GetMaxHitPoints(creature);
             var amount = GameMath.PercentOf(damage, percent);
-            if (applyCombatReadiness)
-                amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(creature, amount);
             amount = Stat.ApplyHealingReceivedAdjustment(creature, amount, applyReceivedEffects: false);
+            amount = CalculateCappedDamageDerivedHealingAmount(damage, state.HealingApplied, amount);
+            amount = Stat.CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), maximumHP);
 
-            if (_damageDerivedHealingStates.TryGetValue(creature, out var state))
+            if (isActivatedHealing)
             {
-                if (state.Damage <= 0)
-                    state.Damage = damage;
-
-                amount = CalculateCappedDamageDerivedHealingAmount(
-                    state.Damage,
-                    state.HealingApplied,
-                    amount);
-                state.HealingApplied += amount;
+                var sequence = Ability.GetAbilityImpactSequence(creature);
+                amount = sequence != null
+                    ? sequence.TakeDamageDerivedHealing(maximumHP, amount)
+                    : Math.Min(amount, Math.Max(0, CalculateMaxHPHealingBudget(
+                        maximumHP, MaximumActivatedDamageHealingMaxHPPercent) - state.ActivatedHealingApplied));
+                state.ActivatedHealingApplied += amount;
             }
             else
             {
-                amount = CalculateCappedDamageDerivedHealingAmount(damage, 0, amount);
+                var isCooldownHealing = passiveHealingCooldownSeconds > 0;
+                var maximumPercent = isCooldownHealing
+                    ? MaximumCooldownDamageHealingMaxHPPercentPerHit
+                    : MaximumPassiveDamageHealingMaxHPPercentPerHit;
+                var healingApplied = isCooldownHealing ? state.CooldownHealingApplied : state.PassiveHealingApplied;
+                amount = Math.Min(amount, Math.Max(0, CalculateMaxHPHealingBudget(
+                    maximumHP, maximumPercent) - healingApplied));
+                amount = TakeCombatHealingBudget(_passiveDamageHealingBudgets, creature, maximumHP,
+                    MaximumPassiveDamageHealingMaxHPPercentPerWindow, amount);
+                if (isCooldownHealing)
+                    state.CooldownHealingApplied += amount;
+                else
+                    state.PassiveHealingApplied += amount;
             }
 
             if (amount <= 0)
                 return 0;
 
+            state.HealingApplied += amount;
             Stat.ApplyHealingReceivedEffects(creature, amount);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), creature);
             return amount;
@@ -2940,14 +2998,25 @@ namespace SWLOR.Game.Server.Service
 
             state.Depth--;
             if (state.Depth <= 0)
-                _damageDerivedHealingStates.Remove(creature);
+            {
+                if (state.Parent == null)
+                    _damageDerivedHealingStates.Remove(creature);
+                else
+                    _damageDerivedHealingStates[creature] = state.Parent;
+            }
         }
 
         private sealed class DamageDerivedHealingState
         {
             public int Depth { get; set; }
-            public int Damage { get; set; }
+            public uint Target { get; set; }
+            public int TargetHPBeforeImpact { get; set; }
+            public DamageDerivedHealingState Parent { get; set; }
+            public int? Damage { get; set; }
             public int HealingApplied { get; set; }
+            public int PassiveHealingApplied { get; set; }
+            public int CooldownHealingApplied { get; set; }
+            public int ActivatedHealingApplied { get; set; }
         }
 
         private sealed class DamageDerivedHealingScope : IDisposable
@@ -3895,14 +3964,11 @@ namespace SWLOR.Game.Server.Service
                 applied = true;
             }
 
-            var target = GetFirstObjectInShape(
-                Shape.Sphere,
-                radius,
-                location,
-                true,
-                SWLOR.NWN.API.NWScript.Enum.ObjectType.Creature);
-            while (GetIsObjectValid(target))
+            foreach (var target in ObjectSnapshot.InShape(Shape.Sphere, radius, location, true, SWLOR.NWN.API.NWScript.Enum.ObjectType.Creature))
             {
+                if (!GetIsObjectValid(target))
+                    continue;
+
                 if (target != originalAttacker &&
                     !GetIsDead(target) &&
                     GetCurrentHitPoints(target) > 0 &&
@@ -3916,12 +3982,6 @@ namespace SWLOR.Game.Server.Service
                     applied = true;
                 }
 
-                target = GetNextObjectInShape(
-                    Shape.Sphere,
-                    radius,
-                    location,
-                    true,
-                    SWLOR.NWN.API.NWScript.Enum.ObjectType.Creature);
             }
 
             if (applied && GetIsPC(defender))
@@ -4220,9 +4280,32 @@ namespace SWLOR.Game.Server.Service
             if (percent <= 0)
                 return;
 
-            var amount = GameMath.PercentOf(GetMaxHitPoints(creature), percent);
-            amount = Stat.ApplyHealingReceivedAdjustment(creature, amount);
+            var maximumHP = GetMaxHitPoints(creature);
+            var amount = GameMath.PercentOf(maximumHP, percent);
+            amount = Stat.ApplyHealingReceivedAdjustment(creature, amount, applyReceivedEffects: false);
+            amount = Stat.CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), maximumHP);
+            amount = TakeCombatHealingBudget(_defeatedEnemyHealingBudgets, creature, maximumHP,
+                MaximumDefeatedEnemyHealingMaxHPPercentPerWindow, amount);
+            if (amount <= 0)
+                return;
+
+            Stat.ApplyHealingReceivedEffects(creature, amount);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), creature);
+        }
+
+        private static int TakeCombatHealingBudget(
+            Dictionary<uint, RollingHealingBudget> budgets, uint creature, int maximumHP, int percent, int requested)
+        {
+            if (requested <= 0)
+                return 0;
+
+            if (!budgets.TryGetValue(creature, out var budget))
+            {
+                budget = new RollingHealingBudget(TimeSpan.FromSeconds(CombatHealingWindowSeconds));
+                budgets[creature] = budget;
+            }
+
+            return budget.Take(CalculateMaxHPHealingBudget(maximumHP, percent), requested, DateTime.UtcNow);
         }
 
         private static int ApplyOutgoingDamageModifier(uint attacker, int damage)
@@ -4331,9 +4414,11 @@ namespace SWLOR.Game.Server.Service
             var category = (StatusEffectCategory)categoryValue;
             var count = 0;
             var location = GetLocation(creature);
-            var target = GetFirstObjectInShape(Shape.Sphere, radius, location, true);
-            while (GetIsObjectValid(target))
+            foreach (var target in ObjectSnapshot.InShape(Shape.Sphere, radius, location, true))
             {
+                if (!GetIsObjectValid(target))
+                    continue;
+
                 if (target != creature &&
                     GetIsReactionTypeHostile(target, creature) &&
                     StatusEffect.HasStatusEffectCategory(target, category))
@@ -4341,7 +4426,6 @@ namespace SWLOR.Game.Server.Service
                     count++;
                 }
 
-                target = GetNextObjectInShape(Shape.Sphere, radius, location, true);
             }
 
             var adjustment = count * percentPerTarget;
@@ -5192,6 +5276,8 @@ namespace SWLOR.Game.Server.Service
 
         private static void RemoveStatTriggerCooldowns(uint creature)
         {
+            _passiveDamageHealingBudgets.Remove(creature);
+            _defeatedEnemyHealingBudgets.Remove(creature);
             foreach (var key in _statTriggerCooldowns.Keys.Where(x => x.Item1 == creature).ToList())
             {
                 _statTriggerCooldowns.Remove(key);
@@ -5739,6 +5825,8 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
                 return;
 
+            ApplyHostileAbilityPartyBuff(activator, ability, damage, statusApplied);
+
             if (firstHostileAbilityHitDamageBonusApplied)
                 ApplyFirstHostileAbilityHitCount(activator, ability);
             if (ability.IsHostileAbility && !ability.SuppressesSourceStatusStackRiders)
@@ -5955,10 +6043,6 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case SkillType.Katar:
                     ApplyKatarVenomCurrentImpactRiders(activator, target);
-                    break;
-                case SkillType.Leadership:
-                    if (isFirstSuccessfulTarget)
-                        ApplyLeadershipVanguardImpactRiders(activator);
                     break;
                 case SkillType.Lightsaber:
                     ApplyLightsaberOffenseImpactRiders(activator, target, ability);
@@ -7119,21 +7203,43 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void ApplyLeadershipVanguardImpactRiders(uint activator)
+        internal static bool IsSuccessfulHostileAbilityImpact(AbilityDetail ability, int damage, bool statusApplied)
         {
-            var rank = Stat.GetStatAdjustment(activator, StatType.LeadershipVanguardMarkTargetRank);
-            if (rank <= 0)
+            return ability?.IsHostileAbility == true && (damage > 0 || statusApplied);
+        }
+
+        public static void ApplyHostileAbilityPartyBuff(uint activator, AbilityDetail ability, int damage, bool statusApplied)
+        {
+            if (!IsSuccessfulHostileAbilityImpact(ability, damage, statusApplied))
                 return;
 
+            var baseDamage = Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffDamagePercent);
+            var baseAccuracy = Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffAccuracyPercent);
+            var baseDuration = Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffDurationSeconds);
+            var cooldown = Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffCooldownSeconds);
+            var nameStrRef = Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffNameStrRef);
+            var icon = (EffectIconType)Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffIcon);
+            if ((baseDamage <= 0 && baseAccuracy <= 0) || baseDuration <= 0 || cooldown <= 0 ||
+                nameStrRef <= 0 || icon == EffectIconType.Invalid)
+                return;
+
+            var sequence = Ability.GetAbilityImpactSequence(activator);
+            if (sequence != null && !sequence.TryTriggerPartyBuff())
+                return;
+            if (!TryUseStatTrigger(activator, StatType.HostileAbilityPartyBuffDamagePercent, cooldown))
+                return;
+
+            var damagePercent = AbilityEffectScaling.ScaleValueBySourceSocial(activator, baseDamage,
+                Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffMaximumDamagePercent));
+            var accuracyPercent = AbilityEffectScaling.ScaleValueBySourceSocial(activator, baseAccuracy,
+                Stat.GetStatAdjustment(activator, StatType.HostileAbilityPartyBuffMaximumAccuracyPercent));
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
-            var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, 30f);
-            var statusEffectType = rank >= 2
-                ? typeof(MarkTarget2StatusEffect)
-                : typeof(MarkTarget1StatusEffect);
+            var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, baseDuration);
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, activator, true, radius))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, statusEffectType, duration);
+                StatusEffect.ApplyStatusEffect(activator, friendly,
+                    new HostileAbilityPartyBuffStatusEffect(damagePercent, accuracyPercent, nameStrRef, icon), duration);
             }
         }
 
@@ -9597,12 +9703,15 @@ namespace SWLOR.Game.Server.Service
                 creature,
                 StatType.QueuedWeaponAbilityActivationCriticalRateSkillType,
                 StatType.QueuedWeaponAbilityActivationCriticalRateSkillType));
-            return SkillTypeMatches(skillType, activationSkillType)
+            var idleHitChanceAdjustment = SkillTypeMatches(skillType, activationSkillType)
                 ? TemporaryStatModifier.GetStatAdjustment(
                     creature,
                     StatType.QueuedWeaponAbilityIdleHitChancePercentAdjustment,
                     StatType.QueuedWeaponAbilityActivationCriticalRateSkillType)
                 : 0;
+
+            // Queued abilities use the native weapon roll instead of TryResolveAbilityHit.
+            return GetPhysicalAndForceAbilityHitChanceAdjustment(creature, skillType) + idleHitChanceAdjustment;
         }
 
         public static void ClearQueuedWeaponAbilityActivationBonuses(uint creature)
@@ -10084,21 +10193,21 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>Hit rewards share the actual activation's stamina spend, retaining at least
         /// one stamina of cost. FP-funded abilities and explicit recovery actions keep their payouts.</summary>
-        public static int RestoreAbilityHitStamina(uint creature, AbilityDetail ability, int requested)
+        public static int RestoreAbilityHitStamina(uint creature, AbilityDetail ability, int requested, bool sendFeedback = true)
         {
             if (requested <= 0)
                 return 0;
 
             if (ability?.IsHostileAbility != true ||
                 !ability.Requirements.OfType<AbilityRequirementStamina>().Any())
-                return Stat.RestoreStamina(creature, requested);
+                return Stat.RestoreStamina(creature, requested, sendFeedback: sendFeedback);
 
             if (!TryGetAbilityStaminaCostState(creature, ability, out var state))
                 return 0;
 
             var amount = CalculateAbilityHitStaminaRestore(state.Cost, state.HitStaminaRefunded, requested);
             state.HitStaminaRefunded += amount;
-            return amount > 0 ? Stat.RestoreStamina(creature, amount) : 0;
+            return amount > 0 ? Stat.RestoreStamina(creature, amount, sendFeedback: sendFeedback) : 0;
         }
 
         private static int RestoreAbilityHitStamina(uint creature, int requested)

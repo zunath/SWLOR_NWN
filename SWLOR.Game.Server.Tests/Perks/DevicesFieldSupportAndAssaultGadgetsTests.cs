@@ -82,6 +82,21 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         }
     }
 
+    [TestCase("DeflectorShieldAbilityDefinition.cs")]
+    [TestCase("PowerCellAbilityDefinition.cs")]
+    [TestCase("GroupDeflectorAbilityDefinition.cs")]
+    [TestCase("EmergencyBunkerAbilityDefinition.cs")]
+    public void FieldSupportAllyAbilities_AwardDevicesCombatPoints(string file)
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / file).FullName);
+
+        source.Should().Contain(
+            "CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices);",
+            $"{file} has no hostile impact, so it must award Devices combat points itself or the skill never levels");
+    }
+
     [TestCase(true, 0, null, 45, 0)]
     [TestCase(true, 50, null, 0, 50)]
     [TestCase(false, 0, null, 45, 45)]
@@ -219,6 +234,27 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(40).Should().Be(24);
         DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(49).Should().Be(24);
         DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(50).Should().Be(28);
+    }
+
+    [Test]
+    public void WristRocket_RestoresSourceOwnedMissileAndDelayedFireballAcrossAllRanks()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "WristRocketAbilityDefinition.cs").FullName)
+            .Replace("\r\n", "\n");
+
+        source.Should().Contain("AssignCommand(activator, () =>\n                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv), target))");
+        source.Should().Contain("DelayCommand(delay, () =>");
+        source.Should().Contain("EffectVisualEffect(VisualEffect.Fnf_Fireball)");
+        source.Should().NotContain("VisualEffect.Vfx_Fnf_Gas_Explosion_Fire");
+        source.Should().NotContain("VisualEffect.Vfx_Com_Hit_Fire");
+        source.Should().NotContain("VisualEffect.Vfx_Ability_WristRocket");
+
+        source.Split("PlayRocketLaunch(activator, target);\n\n            Ability.ApplyCombatImpact(").Should().HaveCount(4,
+            "all three ranks launch the missile before resolving combat");
+        source.Split("afterSuccessfulHit: impactedTarget => ApplyRocketImpactEffects(activator, impactedTarget)").Should().HaveCount(4,
+            "only successful hits show the delayed explosion and grant Tactical Uplink");
     }
 
     [Test]

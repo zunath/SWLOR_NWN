@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Toolset.Domain.Conversations;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 
 namespace SWLOR.Toolset.Tests;
 
@@ -71,6 +72,22 @@ public sealed class ConversationImporterTests
         var import = () => ConversationImporter.Import(LegacyConversationFixtures.PathFor("dmfi_universal"), destination);
 
         import.Should().Throw<InvalidDataException>().WithMessage("*DMFI*");
+        File.Exists(destination).Should().BeFalse();
+    }
+
+    [Test]
+    public void Import_LeavesCraftingOverrideOnItsNativePath()
+    {
+        var source = Path.Combine(CorpusLocator.ModuleDirectory, "dlg", "x0_skill_ctrap.dlg.json");
+        var destination = Path.Combine(_directory, "x0_skill_ctrap.conversation.json");
+        var document = DlgDocument.Load(source);
+        document.Openings.Should().BeEmpty();
+        document.Entries.Should().BeEmpty();
+        document.Replies.Should().BeEmpty();
+        DlgDocument.Parse(document.ToBytes()).Openings.Should().BeEmpty();
+
+        var import = () => ConversationImporter.Import(source, destination);
+        import.Should().Throw<InvalidDataException>().WithMessage("*empty native DLG override*");
         File.Exists(destination).Should().BeFalse();
     }
 

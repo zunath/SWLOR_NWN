@@ -282,8 +282,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // temporarily changes the window geometry.
             UpdatePropertyFromClient(nameof(Geometry));
 
-            // A plain nested ChangePartialView can be dropped by NUI mid-redraw, leaving the tab
-            // blank. Use the same root-redraw + next-tick reapply path as the character sheet.
             SwapNestedPartialView(SettingsView, partialName, onAfterApply: RefreshPartialViewBindings);
         }
 

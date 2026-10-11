@@ -672,6 +672,11 @@ namespace SWLOR.Game.Server.Service
 
             ApplyTrackedNWNEffect(creature, statusEffect, statusEffect.DurationTicks, isPermanent);
             Combat.ApplyStatusAppliedTargetStaminaDrain(source, creature, statusEffect.Categories);
+            if ((statusEffect.Categories & StatusEffectCategory.Debuff) != 0 &&
+                source != creature && GetIsReactionTypeHostile(creature, source))
+            {
+                Combat.ApplyHostileAbilityPartyBuff(source, Ability.GetActiveAbilityImpactSummary(source)?.Ability, 0, true);
+            }
             PublishStatusEffectReceivedRefresh(creature);
 
             // Compare effective durations so the control budget is not mislabeled as resistance,

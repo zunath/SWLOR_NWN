@@ -22,29 +22,42 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Tick(uint creature)
         {
-            var damageAmount = GameMath.PercentOf(GetMaxHitPoints(creature), 4);
-            var damageAdjustment = Stat.GetStatAdjustment(Source, StatType.OutgoingBleedingDamagePercentAdjustment);
-            if (damageAdjustment != 0)
-            {
-                damageAmount = Math.Max(1, damageAmount + (int)Math.Ceiling(damageAmount * (damageAdjustment / 100f)));
-            }
+            var hasSource = GetIsObjectValid(Source);
+            var source = hasSource ? Source : creature;
+            var might = hasSource ? GetAbilityModifier(AbilityType.Might, Source) : 0;
+            var perception = hasSource ? GetAbilityModifier(AbilityType.Perception, Source) : 0;
+            var damageAdjustment = hasSource
+                ? Stat.GetStatAdjustment(Source, StatType.OutgoingBleedingDamagePercentAdjustment)
+                : 0;
+            var damageAmount = CalculateTickDamage(GetMaxHitPoints(creature), might, perception, damageAdjustment);
 
             var resistanceType = Resistance.IsValidResistanceType(AppliedResistanceType)
                 ? AppliedResistanceType
                 : ResistanceType;
             damageAmount = Resistance.ApplyResistanceToDamage(creature, resistanceType, damageAmount);
             damageAmount = Combat.ApplyDamageOverTimeTakenModifiers(creature, damageAmount, CombatDamageType.Physical, out var targetStatusDamageAdjustment);
-            var source = GetIsObjectValid(Source) ? Source : creature;
             damageAmount = Combat.ApplyDamageTakenModifiers(creature, damageAmount, source, CombatDamageType.Physical,
                 deliveryType: CombatDamageDeliveryType.DamageOverTime, targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment);
             if (damageAmount <= 0)
                 return;
 
-            AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damageAmount), creature));
+            AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damageAmount, CombatDamageType.Physical.GetNWScriptDamageType()), creature));
 
             var location = GetLocation(creature);
             var placeable = CreateObject(ObjectType.Placeable, "plc_bloodstain", location);
             DestroyObject(placeable, 48.0f);
+        }
+
+        /// <summary>
+        /// Retains percentage damage against smaller targets, with an attacker-scaled ceiling
+        /// before outgoing bonuses and target mitigation so boss HP cannot multiply potency.
+        /// </summary>
+        public static int CalculateTickDamage(
+            int targetMaxHP, int mightModifier, int perceptionModifier, int damageAdjustment = 0)
+        {
+            var damageCap = 20 + 2 * Math.Max(0, Math.Max(mightModifier, perceptionModifier));
+            var damage = Math.Min(GameMath.PercentOf(targetMaxHP, 4), damageCap);
+            return Math.Max(1, damage + (int)Math.Ceiling(damage * (damageAdjustment / 100f)));
         }
 
         protected override void Remove(uint creature)

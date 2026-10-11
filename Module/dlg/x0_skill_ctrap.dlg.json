@@ -1,0 +1,12 @@
+{
+  "__data_type": "DLG ",
+  "DelayEntry": { "type": "dword", "value": 0 },
+  "DelayReply": { "type": "dword", "value": 0 },
+  "EndConverAbort": { "type": "resref", "value": "" },
+  "EndConversation": { "type": "resref", "value": "" },
+  "EntryList": { "type": "list", "value": [] },
+  "NumWords": { "type": "dword", "value": 0 },
+  "PreventZoomIn": { "type": "byte", "value": 1 },
+  "ReplyList": { "type": "list", "value": [] },
+  "StartingList": { "type": "list", "value": [] }
+}

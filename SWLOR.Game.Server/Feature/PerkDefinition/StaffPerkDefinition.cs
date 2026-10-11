@@ -231,7 +231,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Worldbreaker1)
-                .DroidAISlots(1)
                 .Description("Deals weapon DMG + 35 to enemies within 5m of you. Enemies affected by control effects take +40 DMG and are Dazed for 30 seconds. Affects up to 5 enemies.")
                 .Price(6)
                 .RequirementSkill(SkillType.Staff, 50)
@@ -385,7 +384,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SentinelStance1)
                 .DroidAISlots(1)
-                .Description("While active, grants +15% Evasion and +8 Melee Deflection, but Attack is reduced by 15%.")
+                .Description("While active, grants +15% Evasion and +8 Melee Deflection, but Attack is reduced by 15%. You generate +100% threat from damage dealt, before general Enmity modifiers.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 20);
         }
@@ -441,7 +440,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.UnmovingCenter1)
-                .DroidAISlots(1)
                 .Description("For 45 seconds, you cannot be Knocked down or Dazed, gain +20 Melee Deflection, and generate +30% Enmity.")
                 .Price(6)
                 .RequirementSkill(SkillType.Staff, 50)

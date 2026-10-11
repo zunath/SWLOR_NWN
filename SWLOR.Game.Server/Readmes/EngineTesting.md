@@ -210,6 +210,33 @@ pools (FP/Stamina) aren't otherwise initialized on a freshly spawned NPC - set t
 Freshly spawned creatures aren't hostile to each other by default. Call `ctx.MakeHostile(target)`
 before commanding an attack so the attacker's `ActionAttack` treats it as a valid enemy.
 
+### Player fixture
+
+`PlayerAbilityFixture.CreateAsync` builds a headless player: it reloads a spawned `civilian` as a
+native PC creature, places it in the arena, then registers a fake `CNWSPlayer` client and a
+persisted `Player` record so `GetIsPC` and player DB paths work. Disposing it unregisters the
+client and deletes the record; the test context destroys the creature.
+
+Three engine rules shape the setup:
+
+- `LoadCreature` restores the template's area ID. The fixture clears it before entering the
+  arena; otherwise `CNWSCreature::AddToArea` treats the creature as already present and skips the
+  area's native object list. When such a creature moves, `CNWSArea::UpdatePositionInObjectsArray`
+  swaps entries at index -1 and overwrites the list's heap header. The server then aborts while
+  freeing the module's areas at shutdown (`free(): invalid next size`, `munmap_chunk(): invalid
+  pointer`, `double free or corruption`) even though every test passed. The fixture asserts its
+  membership in the arena's object list, and `PlayerFixtureCombatEngineTests` covers hostile
+  melee against it.
+- The creature enters the arena before its client is registered. With a client registered,
+  `AddToArea` sends the area to the client and keeps the creature out of the area until the
+  client reports the area loaded, which a headless client never does. For the same reason, do
+  not move the fixture to another area while it is a player.
+- Loading with the `IsPC` field also sets the native player flag, and the engine ignores
+  `DestroyObject` on a creature with that flag. The fixture clears the flag after loading and
+  sets it only while the identity is installed, so the creature is destroyable after `Dispose`.
+  A fixture that kept the flag would never be destroyed, and leftover fixtures would pile up in
+  the arena during multi-case sweeps.
+
 ### Timing guidance
 
 Status effects tick on the shared status-effect interval, roughly every 6 real seconds - not every
@@ -449,6 +476,15 @@ data directory so every run starts against a fresh, empty database, there are no
 (pinning the JSON report to where the runner scripts look, regardless of where the server home's
 `swlor.env` points `SWLOR_APP_LOG_DIRECTORY`), and `NWNX_METRICS_INFLUXDB_SKIP=y` (no InfluxDB
 service exists in this compose file) on top of the normal `swlor.env` defaults.
+
+The `redis` service keeps the production image (`redislabs/redismod:latest`) but passes
+`FORK_GC_CLEAN_THRESHOLD 100000000` to RediSearch, so the search GC never cleans during a run. The
+bundled RediSearch build (commit `669b3f0c`) sets a numeric range's cardinality array to NULL when
+GC removes every entry in that range, and the next value indexed into the range segfaults Redis in
+`NumericRange_Add` (`Accessing address: 0xfffffffffffffff4`). Player fixtures create and delete
+their `Player` records case after case, so long sweeps such as the Mimicry behaviors emptied those
+ranges and killed the run (Redis exit 139, server exit 137, no report). The command repeats the
+image's default module list; keep it in sync if the image changes.
 
 **Hard wall clock**: both runner scripts enforce a timeout on the containerized run
 (`-TimeoutMinutes` / `--timeout-minutes`, default 90; a full sweep takes roughly 45). On expiry

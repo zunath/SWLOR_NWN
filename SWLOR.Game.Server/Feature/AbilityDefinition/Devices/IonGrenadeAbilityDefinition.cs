@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -105,14 +106,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion),
                 location);
 
-            var creature = GetFirstObjectInShape(
-                Shape.Sphere,
-                DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 3f),
-                location,
-                true);
-
-            while (GetIsObjectValid(creature))
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 3f), location, true))
             {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
                 if (creature != activator && GetIsReactionTypeHostile(creature, activator))
                 {
                     Ability.ApplyCombatImpact(
@@ -131,7 +129,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         playImpactAnimation: false);
                 }
 
-                creature = GetNextObjectInShape(Shape.Sphere, DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 3f), location, true);
             }
         }
 

@@ -169,7 +169,8 @@ namespace SWLOR.Game.Server.Core.Async
             {
                 do
                 {
-                    await MainThreadSynchronizationContext;
+                    // A wait must yield even when it starts on the main synchronization context.
+                    await new SynchronizationContextAwaiter(MainThreadSynchronizationContext, alwaysYield: true);
                 }
                 while (!completionSource() && cancellationToken is not { IsCancellationRequested: true });
             }

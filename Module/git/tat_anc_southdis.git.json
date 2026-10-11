@@ -6944,9 +6944,18 @@
                 "value": [
                   {
                     "__struct_id": 0,
-                    "Name": { "type": "cexostring", "value": "NO_ECONOMY" },
-                    "Type": { "type": "dword", "value": 1 },
-                    "Value": { "type": "int", "value": 1 }
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
                   }
                 ]
               }
@@ -8714,9 +8723,18 @@
                 "value": [
                   {
                     "__struct_id": 0,
-                    "Name": { "type": "cexostring", "value": "NO_ECONOMY" },
-                    "Type": { "type": "dword", "value": 1 },
-                    "Value": { "type": "int", "value": 1 }
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
                   }
                 ]
               }
@@ -10484,9 +10502,18 @@
                 "value": [
                   {
                     "__struct_id": 0,
-                    "Name": { "type": "cexostring", "value": "NO_ECONOMY" },
-                    "Type": { "type": "dword", "value": 1 },
-                    "Value": { "type": "int", "value": 1 }
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
                   }
                 ]
               }
@@ -12254,9 +12281,18 @@
                 "value": [
                   {
                     "__struct_id": 0,
-                    "Name": { "type": "cexostring", "value": "NO_ECONOMY" },
-                    "Type": { "type": "dword", "value": 1 },
-                    "Value": { "type": "int", "value": 1 }
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
                   }
                 ]
               }
@@ -14024,9 +14060,18 @@
                 "value": [
                   {
                     "__struct_id": 0,
-                    "Name": { "type": "cexostring", "value": "NO_ECONOMY" },
-                    "Type": { "type": "dword", "value": 1 },
-                    "Value": { "type": "int", "value": 1 }
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
                   }
                 ]
               }
@@ -15794,9 +15839,18 @@
                 "value": [
                   {
                     "__struct_id": 0,
-                    "Name": { "type": "cexostring", "value": "NO_ECONOMY" },
-                    "Type": { "type": "dword", "value": 1 },
-                    "Value": { "type": "int", "value": 1 }
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
                   }
                 ]
               }
@@ -18060,9 +18114,18 @@
                 "value": [
                   {
                     "__struct_id": 0,
-                    "Name": { "type": "cexostring", "value": "NO_ECONOMY" },
-                    "Type": { "type": "dword", "value": 1 },
-                    "Value": { "type": "int", "value": 1 }
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
                   }
                 ]
               }
@@ -20859,9 +20922,18 @@
                 "value": [
                   {
                     "__struct_id": 0,
-                    "Name": { "type": "cexostring", "value": "NO_ECONOMY" },
-                    "Type": { "type": "dword", "value": 1 },
-                    "Value": { "type": "int", "value": 1 }
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
                   }
                 ]
               }
@@ -28568,9 +28640,18 @@
                 "value": [
                   {
                     "__struct_id": 0,
-                    "Name": { "type": "cexostring", "value": "NO_ECONOMY" },
-                    "Type": { "type": "dword", "value": 1 },
-                    "Value": { "type": "int", "value": 1 }
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
                   }
                 ]
               }
@@ -30338,9 +30419,18 @@
                 "value": [
                   {
                     "__struct_id": 0,
-                    "Name": { "type": "cexostring", "value": "NO_ECONOMY" },
-                    "Type": { "type": "dword", "value": 1 },
-                    "Value": { "type": "int", "value": 1 }
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
                   }
                 ]
               }
@@ -192647,37 +192737,6 @@
                             "type": "word",
                             "value": 18
                           }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 0
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 134
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 2
-                          }
                         }
                       ]
                     },
@@ -212564,37 +212623,6 @@
                             "type": "word",
                             "value": 18
                           }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 0
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 134
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 2
-                          }
                         }
                       ]
                     },
@@ -231615,37 +231643,6 @@
                           "Subtype": {
                             "type": "word",
                             "value": 18
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 0
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 134
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 2
                           }
                         }
                       ]

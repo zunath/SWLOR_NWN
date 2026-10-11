@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Cyclone Enclave Trial Slate is recovered. Return to Jora Sel at the Tochee on Tatooine.")
+                    "The Saber Cyclone Enclave Trial Slate is recovered. Return to Jora Sel in Tochee on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Cyclone Kyber Focus Shard is recovered. Return to Jora Sel at the Tochee on Tatooine.")
+                    "The Saber Cyclone Kyber Focus Shard is recovered. Return to Jora Sel in Tochee on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Cyclone Fractured Trial Sigil is recovered. Return to Jora Sel at the Tochee on Tatooine.")
+                    "The Saber Cyclone Fractured Trial Sigil is recovered. Return to Jora Sel in Tochee on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Cyclone Council Trial Chit is recovered. Return to Jora Sel at the Tochee on Tatooine.")
+                    "The Saber Cyclone Council Trial Chit is recovered. Return to Jora Sel in Tochee on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vortex Training Engine is defeated. Return to Jora Sel at the Tochee on Tatooine.")
+                    "The Vortex Training Engine is defeated. Return to Jora Sel in Tochee on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

@@ -14,8 +14,11 @@ public sealed class _26_ReplaceDungeonEnemyGroups : IServerMigration
 
     public void Migrate()
     {
-        MigrateRecords<Player>(DungeonEnemyGroupMigration.MigrateQuestProgress);
-        MigrateRecords<DMCreature>(creature =>
+        var progress = new ServerMigrationProgress(Version,
+            ServerMigrationProgress.CountRecords<Player>(),
+            ServerMigrationProgress.CountRecords<DMCreature>());
+        MigrateRecords<Player>(progress, DungeonEnemyGroupMigration.MigrateQuestProgress);
+        MigrateRecords<DMCreature>(progress, creature =>
         {
             if (!DungeonEnemyGroupMigration.MigrateCreature(creature.Data, out var migrated)) return false;
             creature.Data = migrated;
@@ -23,25 +26,30 @@ public sealed class _26_ReplaceDungeonEnemyGroups : IServerMigration
         });
     }
 
-    private static void MigrateRecords<T>(Func<T, bool> migrate) where T : EntityBase
+    private static void MigrateRecords<T>(ServerMigrationProgress progress, Func<T, bool> migrate) where T : EntityBase
     {
         var query = new DBQuery<T>();
-        var count = checked((int)DB.SearchCount(query));
+        var count = progress.BeginSection<T>();
         var records = DB.Search(query.AddPaging(count, 0));
         var changed = 0;
         foreach (var record in records)
         {
             try
             {
-                if (!migrate(record)) continue;
-                DB.Set(record);
-                changed++;
+                var recordChanged = migrate(record);
+                if (recordChanged)
+                {
+                    DB.Set(record);
+                    changed++;
+                }
+                progress.RecordProcessed(recordChanged);
             }
             catch (Exception ex)
             {
                 throw new InvalidOperationException($"Dungeon enemy group migration failed for {typeof(T).Name} {record.Id}.", ex);
             }
         }
+        progress.FinishSection();
         Log.Write(LogGroup.Migration, $"Dungeon enemy groups: {typeof(T).Name} completed, {changed}/{count} records changed.", true);
     }
 }

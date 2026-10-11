@@ -93,6 +93,17 @@ public class CombatUpgradeBibleRecipeParityTests
         "Missile45",
     };
 
+    /// <summary>
+    /// Force weapon enhancement recipes documented in the Bible that have no live code
+    /// counterpart (retired in favor of Physical DMG enhancements by ForceWeaponEnhancementMigration).
+    /// </summary>
+    private static readonly HashSet<string> RetiredForceWeaponEnhancementRows = new(StringComparer.Ordinal)
+    {
+        "WeaponEnhancementDMGForce1",
+        "WeaponEnhancementDMGForce2",
+        "WeaponEnhancementDMGForce3",
+    };
+
     private static readonly Regex Droid005VariantPattern =
         new(@"^D[A-Z]{3}00\d[AC]$", RegexOptions.Compiled);
 
@@ -214,6 +225,10 @@ public class CombatUpgradeBibleRecipeParityTests
 
         // Legacy starship missile ammo tiers, superseded by the current missile tiers.
         if (LegacyMissileTierRows.Contains(enumName))
+            return true;
+
+        // Retired Force weapon enhancements, replaced by Physical DMG enhancements.
+        if (RetiredForceWeaponEnhancementRows.Contains(enumName))
             return true;
 
         return false;

@@ -1637,6 +1637,7 @@ public class CombatUpgradeBibleSyncTests
             "Beast",
             "Damage",
             "DefensePenalty",
+            "Enmity",
             "Healing",
             "MightPenalty",
             "Penalty",

@@ -516,15 +516,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             MainHand = "-";
             OffHand = "-";
 
-            var attack = Stat.GetAttack(dbBeast.Level, level.Stats[beastDetails.DamageStat], (int)(level.MaxAttackBonus * (dbBeast.AttackPurity * 0.01f)));
-            var accuracy = Stat.GetAccuracy(dbBeast.Level, level.Stats[beastDetails.AccuracyStat], (int)(level.MaxAccuracyBonus * (dbBeast.AccuracyPurity * 0.01f)));
-            var evasion = Stat.GetEvasion(dbBeast.Level, level.Stats[AbilityType.Agility], (int)(level.MaxEvasionBonus * (dbBeast.EvasionPurity * 0.01f)));
+            var attack = BeastCombatStatCalculator.CalculateAttack(beastDetails, level, dbBeast);
+            var accuracy = BeastCombatStatCalculator.CalculateAccuracy(beastDetails, level, dbBeast);
+            var evasion = BeastCombatStatCalculator.CalculateEvasion(level, dbBeast);
             Attack = $"{attack}";
             Accuracy = $"{accuracy}";
             Evasion = $"{evasion}";
 
-            var physicalDefense = BeastResistanceCalculator.CalculateDefenseBonus(level, dbBeast, CombatDamageType.Physical);
-            var forceDefense = BeastResistanceCalculator.CalculateDefenseBonus(level, dbBeast, CombatDamageType.Force);
+            var physicalDefense = BeastCombatStatCalculator.CalculateDefense(level, dbBeast, CombatDamageType.Physical);
+            var forceDefense = BeastCombatStatCalculator.CalculateDefense(level, dbBeast, CombatDamageType.Force);
             var fireResistance = $"{BeastResistanceCalculator.CalculateResistanceBonus(level, dbBeast, ResistanceType.Fire)}";
             var poisonResistance = $"{BeastResistanceCalculator.CalculateResistanceBonus(level, dbBeast, ResistanceType.Poison)}";
             var electricalResistance = $"{BeastResistanceCalculator.CalculateResistanceBonus(level, dbBeast, ResistanceType.Electrical)}";

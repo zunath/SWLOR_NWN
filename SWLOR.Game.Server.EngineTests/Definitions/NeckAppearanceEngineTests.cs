@@ -30,7 +30,7 @@ public static class NeckAppearanceEngineTests
             SetCreatureAppearanceType(creature, AppearanceType.Gnome);
             SetGender(creature, Gender.Female);
             ctx.AssertEqual("pfg0_neck123", NeckAppearance.GetModel(creature, 123),
-                "An authored neck shared through LOD remains selectable");
+                "An authored gnome neck remains selectable");
             foreach (var race in RacialAppearanceRegistry.GetAppearanceTypes())
             foreach (var gender in new[] { Gender.Female, Gender.Male })
             {

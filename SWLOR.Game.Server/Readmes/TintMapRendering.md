@@ -38,9 +38,7 @@ After regenerating controls, run `GenerateTintMapAssets.py --refresh-model-bindi
 and `GenerateHelmetRgbModels.py --apply`. Rebuild `sw_shader`, `sw_item`,
 `sw_pt_helm`, `sw_pt_neck`, `sw_pt_lshin`, `sw_pt_head`, `sw_tint_mtr`, the changed
 `sw_tint*` mask HAKs, and `sw_2da` together, then restart the client.
-The shared helmet heads and these necks feed `.lod` redirects and neck skin
-aliases. Expand redirects with `ModelLodAssets.py --expand` before applying
-helmet heads, publish them again with `--apply --game-data`, and rerun
+These necks also feed the generated neck skin aliases; rerun
 `GenerateNeckModels.py --apply` after any neck source changes.
 
 ## Preserve the authored palette rows
@@ -291,13 +289,19 @@ After changing the robe or cloak catalog, run
 `python -B SWLOR_Haks/tools/GenerateRobeCloakModels.py --game-data <installed-game-data-directory>`.
 Commit `tools/RobeCloakModels.json`, canonical cloak MDLs and their phenotype-specific
 `.lod` redirects in `SWLOR_Haks/sw_pt_cloak`. They share the exact geometry, materials,
-skin binds and animation parents. `tools/ModelLodAssets.json` records every shared
-model's source hash and canonical dependency, including helmet heads and identical
-body parts. Models with different geometry, bindings,
-materials, animation data or supermodels remain separate. The server's model
-availability checks follow valid LOD chains and reject missing targets and cycles.
-Toolset appearance catalogs, item previews and area models resolve those same
-redirects, preserving the original resource names used by blueprints.
+skin binds and animation parents. `tools/ModelLodAssets.json` records each redirect's
+source hash and canonical dependency. The server's model availability checks follow
+valid LOD chains and reject missing targets and cycles. Toolset appearance catalogs,
+item previews and area models resolve those same redirects.
+
+Only these generated robe-phenotype cloaks may be redirects: they have no MDL on
+master, so a client that ignores them simply shows master's missing robe cloak.
+Every other model stays a native MDL even when another model is byte-identical.
+Background-client checks against master's MDLs showed area tiles drawn as voids,
+a missing tower shield and placeable, and the wrong cross-race torso through
+redirects, and with `graphics.lod.enabled = false` the client ignores redirects
+entirely (redirected helmet heads vanished). `ModelLodAssets.py --check` rejects
+any redirect outside the robe cloak catalog.
 
 For explicit model authoring, first run `python -B tools/ModelLodAssets.py --expand`
 from `SWLOR_Haks`, edit or regenerate the models, then run

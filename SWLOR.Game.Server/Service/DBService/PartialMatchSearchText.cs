@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Service.DBService
 {
     /// <summary>
     /// Builds the RediSearch text for a partial-match field search so every word must match
-    /// the start of a word in that field. Relies on the indexes keeping stop words (see DB).
+    /// the start of a word in that field. Relies on the indexes keeping stop words (see SearchIndexDefinition).
     /// </summary>
     public static class PartialMatchSearchText
     {

@@ -1,10 +1,13 @@
+using NwnResRef = Nwn.Formats.Resources.ResourceReferenceRules;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Triggers;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Triggers;
 using SWLOR.Toolset.Services;
@@ -152,9 +155,10 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void LoadScreensOfferPicturesRatherThanNames()
         {
-            var sw2Da = Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks", "sw_2da");
-            if (!Directory.Exists(sw2Da))
-                Assert.Ignore("The haks submodule is not initialised in this checkout.");
+            var haksRoot = Support.ToolsetCorpusPaths.HaksRoot
+                ?? Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks");
+            var sw2Da = Path.Combine(haksRoot, "sw_2da");
+            Directory.Exists(sw2Da).Should().BeTrue("the selected HAK corpus is required; set SWLOR_TEST_HAKS_ROOT");
 
             var screens = LoadScreenCatalog.Read(new Domain.GameData.TwoDa.TwoDaService(sw2Da));
 
@@ -473,7 +477,7 @@ namespace SWLOR.Toolset.Tests
                 Assert.Ignore("triggerpalcus.itp.json is not present in this checkout.");
 
             var categories = PaletteCategoryReader.Read(
-                SWLOR.Toolset.Domain.Documents.ItpDocument.Load(path));
+                Nwn.Authoring.Documents.Native.ItpDocument.Load(path));
 
             categories.Should().NotBeEmpty();
             categories.Select(category => category.Value).Should().OnlyHaveUniqueItems();

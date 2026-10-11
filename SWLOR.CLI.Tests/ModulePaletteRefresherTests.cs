@@ -392,6 +392,49 @@ public sealed class ModulePaletteRefresherTests
         }
     }
 
+    [Test]
+    [NonParallelizable]
+    public void PackModule_RejectsAnInterruptedSharedTransactionInTheModuleRoot()
+    {
+        File.WriteAllText(
+            Path.Combine(_moduleRoot, "." + Guid.NewGuid().ToString("N") + ".file-transaction.json"),
+            "{}");
+
+        AssertPackRefusesInterruptedDelete();
+    }
+
+    [Test]
+    [NonParallelizable]
+    public void PackModule_RejectsAnInterruptedSharedTransactionInTheConversationRoot()
+    {
+        // Dialog deletes journal beside the authored graphs, not in the module root.
+        var conversationRoot = Path.GetFullPath(
+            Path.Combine(_moduleRoot, "..", "SWLOR.Game.Server", "ConversationData"));
+        Directory.CreateDirectory(conversationRoot);
+        File.WriteAllText(
+            Path.Combine(conversationRoot, "." + Guid.NewGuid().ToString("N") + ".file-transaction.json"),
+            "{}");
+
+        AssertPackRefusesInterruptedDelete();
+    }
+
+    private void AssertPackRefusesInterruptedDelete()
+    {
+        var previousDirectory = Environment.CurrentDirectory;
+        try
+        {
+            Environment.CurrentDirectory = _moduleRoot;
+            var action = () => new ModulePacker().PackModule("blocked.mod", noPrompt: true);
+
+            action.Should().Throw<InvalidOperationException>()
+                .WithMessage("*Interrupted toolset resource delete*");
+        }
+        finally
+        {
+            Environment.CurrentDirectory = previousDirectory;
+        }
+    }
+
     private string WritePalette(string paletteName, params JObject[] categories)
     {
         var palette = new JObject

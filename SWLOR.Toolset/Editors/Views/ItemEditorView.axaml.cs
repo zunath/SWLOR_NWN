@@ -71,7 +71,7 @@ namespace SWLOR.Toolset.Editors.Items
                 flags.Margin = narrow ? new Avalonia.Thickness(0, 10, 0, 0) : default;
             }
 
-            if (this.FindControl<Behaviors.BehaviorRailView>("BehaviorRail") is { } behaviorRail)
+            if (this.FindControl<BehaviorRailView>("BehaviorRail") is { } behaviorRail)
                 behaviorRail.Width = narrow ? NarrowBehaviorRailWidth : BehaviorRailWidth;
         }
     }

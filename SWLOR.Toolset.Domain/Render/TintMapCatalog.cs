@@ -1,5 +1,5 @@
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
-using SWLOR.NWN.Formats.TwoDA;
+using Nwn.Formats.TwoDa;
 using SWLOR.Toolset.Domain.GameData.Resources;
 
 namespace SWLOR.Toolset.Domain.Render
@@ -37,62 +37,61 @@ namespace SWLOR.Toolset.Domain.Render
 
             try
             {
+                // cloaktint.2da registers the shared cloak material for each cloakmodel.TEXTURE.
+                var tables = new List<TwoDaTable> { TwoDaReader.Read(handle.GetBytes(), TwoDaReadOptions.EngineCompatible) };
+                if (resourceIndex.TryLookup(new ResourceIdentity("cloaktint", identity.ResourceType), out var cloakHandle))
+                    tables.Add(TwoDaReader.Read(cloakHandle.GetBytes(), TwoDaReadOptions.EngineCompatible));
                 var layersByMaterial = new Dictionary<string, HashSet<TintMapLayerType>>(
                     StringComparer.OrdinalIgnoreCase);
                 var materialsByModel = new Dictionary<string, List<TintMapMaterialDefinition>>(
                     StringComparer.OrdinalIgnoreCase);
-                foreach (var tableName in new[] { "tintmap", "cloaktint" })
+                foreach (var table in tables)
+                for (var row = 0; row < table.Rows.Count; row++)
                 {
-                    if (!resourceIndex.TryLookup(new ResourceIdentity(tableName, identity.ResourceType), out var tableHandle))
+                    var model = table.GetValue(row, "MODEL");
+                    var material = table.GetValue(row, "MATERIAL");
+                    var layerList = table.GetValue(row, "LAYERS");
+                    if (string.IsNullOrWhiteSpace(model) ||
+                        string.IsNullOrWhiteSpace(material) ||
+                        string.IsNullOrWhiteSpace(layerList))
                         continue;
-                    var table = TwoDAReader.Read(tableHandle.GetBytes());
-                    for (var row = 0; row < table.RowCount; row++)
+
+                    if (!layersByMaterial.TryGetValue(material, out var layers))
                     {
-                        var model = table.GetValue(row, "MODEL");
-                        var material = table.GetValue(row, "MATERIAL");
-                        var layerList = table.GetValue(row, "LAYERS");
-                        if (string.IsNullOrWhiteSpace(model) ||
-                            string.IsNullOrWhiteSpace(material) ||
-                            string.IsNullOrWhiteSpace(layerList))
-                            continue;
-
-                        if (!layersByMaterial.TryGetValue(material, out var layers))
-                        {
-                            layers = new HashSet<TintMapLayerType>();
-                            layersByMaterial[material] = layers;
-                        }
-
-                        foreach (var rawLayer in layerList.Split(',', StringSplitOptions.RemoveEmptyEntries))
-                        {
-                            if (int.TryParse(rawLayer, out var value) &&
-                                Enum.IsDefined(typeof(TintMapLayerType), value))
-                            {
-                                layers.Add((TintMapLayerType)value);
-                            }
-                        }
-
-                        var rowLayers = layerList
-                            .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                            .Select(rawLayer => int.TryParse(rawLayer, out var value) &&
-                                                Enum.IsDefined(typeof(TintMapLayerType), value)
-                                ? (TintMapLayerType?)value
-                                : null)
-                            .Where(layer => layer.HasValue)
-                            .Select(layer => layer!.Value)
-                            .Distinct()
-                            .ToArray();
-                        if (rowLayers.Length == 0)
-                            continue;
-                        if (!materialsByModel.TryGetValue(model, out var modelMaterials))
-                        {
-                            modelMaterials = new List<TintMapMaterialDefinition>();
-                            materialsByModel[model] = modelMaterials;
-                        }
-                        modelMaterials.Add(new TintMapMaterialDefinition(
-                            material,
-                            material,
-                            rowLayers));
+                        layers = new HashSet<TintMapLayerType>();
+                        layersByMaterial[material] = layers;
                     }
+
+                    foreach (var rawLayer in layerList.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        if (int.TryParse(rawLayer, out var value) &&
+                            Enum.IsDefined(typeof(TintMapLayerType), value))
+                        {
+                            layers.Add((TintMapLayerType)value);
+                        }
+                    }
+
+                    var rowLayers = layerList
+                        .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(rawLayer => int.TryParse(rawLayer, out var value) &&
+                                            Enum.IsDefined(typeof(TintMapLayerType), value)
+                            ? (TintMapLayerType?)value
+                            : null)
+                        .Where(layer => layer.HasValue)
+                        .Select(layer => layer!.Value)
+                        .Distinct()
+                        .ToArray();
+                    if (rowLayers.Length == 0)
+                        continue;
+                    if (!materialsByModel.TryGetValue(model, out var modelMaterials))
+                    {
+                        modelMaterials = new List<TintMapMaterialDefinition>();
+                        materialsByModel[model] = modelMaterials;
+                    }
+                    modelMaterials.Add(new TintMapMaterialDefinition(
+                        material,
+                        material,
+                        rowLayers));
                 }
 
                 var materials = layersByMaterial
@@ -131,9 +130,9 @@ namespace SWLOR.Toolset.Domain.Render
             foreach (var mesh in model.Meshes)
             {
                 TintMapMaterialDefinition? material = null;
-                if (mesh.MaterialName.Equals(CloakTintRenderer.MaterialResref, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(mesh.MaterialName, CloakTintRenderer.MaterialResref, StringComparison.OrdinalIgnoreCase))
                 {
-                    var texture = mesh.TextureName.Split('_').Last();
+                    var texture = mesh.TextureName?.Split('_').Last();
                     if (_materialsByModel.TryGetValue($"cloak_{texture}", out var cloakMaterials))
                         material = cloakMaterials.SingleOrDefault();
                 }

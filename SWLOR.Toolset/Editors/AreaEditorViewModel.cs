@@ -1,3 +1,7 @@
+using Nwn.Preview.Areas.Clipboard;
+using Nwn.Authoring.Areas.Placement;
+using Nwn.Authoring.Areas.Editing;
+using Nwn.Toolset.Avalonia.Areas;
 using System.Collections.ObjectModel;
 using System.Numerics;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -5,7 +9,8 @@ using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
@@ -13,6 +18,9 @@ using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
+using Nwn.Formats.Tilesets;
+using Nwn.Authoring.Areas.Tiles;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
@@ -40,26 +48,16 @@ namespace SWLOR.Toolset.Editors
     public partial class AreaEditorViewModel
         : Document, IEditorDocument, IDocumentStatusSource, Shell.Panels.IAreaPlacementTarget
     {
-        private static readonly (string Title, string ListFieldName, ResourceType BlueprintType)[] InstanceListConfigs =
-        {
-            ("Creatures", "Creature List", ResourceType.Utc),
-            ("Placeables", "Placeable List", ResourceType.Utp),
-            ("Doors", "Door List", ResourceType.Utd),
-            ("Waypoints", "WaypointList", ResourceType.Utw),
-            ("Stores", "StoreList", ResourceType.Utm),
-            ("Sounds", "SoundList", ResourceType.Uts),
-            ("Triggers", "TriggerList", ResourceType.Utt),
-            // Loose items on the ground. The GIT calls this one just "List".
-            ("Items", "List", ResourceType.Uti)
-        };
-
         private readonly DocumentSession _areSession;
         private readonly DocumentSession _gitSession;
         private readonly DocumentSession _gicSession;
+        private readonly AreaDocumentEditSession _documentEdits;
+        private readonly AreaInstanceEditor _instanceEditor;
+        private readonly AreaSceneInstanceEditor _sceneInstanceEditor;
+        private AreaTileEditor? _tileEditor;
         private byte[] _savedGicBytes = Array.Empty<byte>();
         private bool _gicDirty;
         private readonly OutputLogService _log;
-        private readonly LookupOptionProvider _lookups;
         private readonly ModuleWorkspace _workspace;
         private readonly string _areResRef;
         private readonly TilesetCatalog? _tilesetCatalog;
@@ -90,21 +88,6 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Shared by open area tabs so copied placements can cross area boundaries.</summary>
         private readonly AreaInstanceClipboard _instanceClipboard;
 
-        /// <summary>
-        /// Which session each still-undoable edit went to, oldest first.
-        /// </summary>
-        /// <remarks>
-        /// The toolbar keeps a dedicated button pair per session; only the shell's single Edit-menu
-        /// Undo/Redo collapses the two into one, and it has to walk them in the order the edits were
-        /// actually made. Remembering only the session touched last got that wrong as soon as the two
-        /// interleaved: after GIT, ARE, GIT, two undos both came out of the GIT history and skipped
-        /// the ARE edit that happened between them.
-        /// </remarks>
-        private readonly List<DocumentSession> _editOrder = new();
-
-        /// <summary>Undone edits, newest first - the redo side of <see cref="_editOrder"/>.</summary>
-        private readonly List<DocumentSession> _undoneOrder = new();
-
         private bool _sceneBuildRequested;
         private long _sceneBuildGeneration;
         private long _sceneInputRevision;
@@ -114,7 +97,10 @@ namespace SWLOR.Toolset.Editors
         private bool _closePromptOpen;
         private bool _disposed;
 
-        public ObservableCollection<EditorGroup> AreaPropertyGroups { get; } = new();
+        /// <summary>The shared Properties page: area property groups and one section per instance list.</summary>
+        public AreaPropertiesPageViewModel PropertiesPage { get; }
+
+        public ObservableCollection<EditorGroup> AreaPropertyGroups => PropertiesPage.AreaPropertyGroups;
 
         public ObservableCollection<InstanceListSectionViewModel> Sections { get; } = new();
 
@@ -127,14 +113,24 @@ namespace SWLOR.Toolset.Editors
         private int _selectedRootTabIndex;
 
         /// <summary>Whether the top-level Area Properties card is expanded in this open document.</summary>
-        [ObservableProperty]
-        private bool _areaPropertiesExpanded;
+        public bool AreaPropertiesExpanded
+        {
+            get => PropertiesPage.AreaPropertiesExpanded;
+            set
+            {
+                if (PropertiesPage.AreaPropertiesExpanded == value)
+                    return;
+
+                PropertiesPage.AreaPropertiesExpanded = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>The Properties page's retained scroll position, stored without an Avalonia dependency.</summary>
         public Vector2 PropertiesScrollOffset { get; set; }
 
         /// <summary>The last camera owned by this open area tab, restored when its view is recreated.</summary>
-        public Viewport.AreaViewportState? ViewportState { get; set; }
+        public AreaViewportState? ViewportState { get; set; }
 
         public bool IsDirty =>
             _areSession.UndoStack.IsDirty ||
@@ -223,7 +219,7 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>
         /// The instance currently selected (from either the 3D view or an instance-list row) - the
-        /// view mirrors this onto <c>GlAreaControl.SelectedInstance</c> for the 3D highlight. Always
+        /// view mirrors this onto <c>AreaViewportControl.SelectedInstance</c> for the 3D highlight. Always
         /// an object from the current <see cref="AreaScene"/>'s <c>Instances</c> list (or null);
         /// changes flow through <see cref="ApplySelection"/> only, so it and every section's
         /// SelectedRow never drift out of sync.
@@ -304,57 +300,6 @@ namespace SWLOR.Toolset.Editors
         public string SelectionCoordinates => SelectedSceneInstance is { } instance
             ? $"x {instance.Position.X:0.00}  y {instance.Position.Y:0.00}  z {instance.Position.Z:0.00}"
             : string.Empty;
-
-        // ----- drag readout -----
-        //
-        // The numbers appear beside the map while a drag is in flight and disappear when it ends. Showing
-        // the delta as well as the absolute is the point: "how far have I moved this" is the question a
-        // builder is actually asking mid-drag, and it is the one a static coordinate box cannot answer.
-
-        [ObservableProperty]
-        private bool _isDragging;
-
-        [ObservableProperty]
-        private string _dragPosition = string.Empty;
-
-        [ObservableProperty]
-        private string _dragFacing = string.Empty;
-
-        [ObservableProperty]
-        private string _dragDelta = string.Empty;
-
-        /// <summary>
-        /// Called by the view as a manipulation drag updates. Both null ends the readout.
-        /// </summary>
-        public void ShowDragReadout(InstanceMarker? original, InstanceMarker? preview)
-        {
-            if (original == null || preview == null)
-            {
-                IsDragging = false;
-                return;
-            }
-
-            DragPosition =
-                $"x {preview.Position.X:0.00}   y {preview.Position.Y:0.00}   z {preview.Position.Z:0.00}";
-
-            var headingDegrees = MathF.Atan2(preview.Orientation.Y, preview.Orientation.X) * 180f / MathF.PI;
-            if (headingDegrees < 0)
-                headingDegrees += 360f;
-            DragFacing = $"facing {headingDegrees:0}°";
-
-            var moved = Vector3.Distance(preview.Position, original.Position);
-            var turned = MathF.Abs(
-                MathF.Atan2(preview.Orientation.Y, preview.Orientation.X) -
-                MathF.Atan2(original.Orientation.Y, original.Orientation.X)) * 180f / MathF.PI;
-
-            DragDelta = moved > 1e-4f
-                ? $"moved {moved:0.00} m"
-                : turned > 1e-4f
-                    ? $"turned {turned:0}°"
-                    : string.Empty;
-
-            IsDragging = true;
-        }
 
         /// <summary>A one-letter stand-in for the selection's icon until blueprint thumbnails exist.</summary>
         public string SelectionGlyph
@@ -440,7 +385,7 @@ namespace SWLOR.Toolset.Editors
             var identity = new ResourceIdentity(
                 resRef,
                 ResourceIdentity.TypeFromExtension(type.Extension()));
-            return ResourceIndex.TryLookup(identity, out _);
+            return ResourceIndex.Contains(identity);
         }
 
         private void OnMutationLockChanged() =>
@@ -591,7 +536,7 @@ namespace SWLOR.Toolset.Editors
         private bool _pendingPlacementUsesIndexedBlueprint;
         private AreaInstanceClipboardEntry? _pendingPlacementCopy;
 
-        /// <summary>True from the moment a palette blueprint is chosen for placement until the next viewport click (or Esc/right-click cancel) resolves it - drives GlAreaControl.IsPlacementActive.</summary>
+        /// <summary>True from the moment a palette blueprint is chosen for placement until the next viewport click (or Esc/right-click cancel) resolves it - drives AreaViewportControl.IsPlacementActive.</summary>
         public bool IsPlacementPending => _pendingPlacementSection != null;
 
         /// <summary>
@@ -619,7 +564,7 @@ namespace SWLOR.Toolset.Editors
 
         private TilePaletteEntry? _pendingTile;
 
-        /// <summary>True while a tile or group is armed - drives GlAreaControl.IsTilePlacementActive.</summary>
+        /// <summary>True while a tile or group is armed - drives AreaViewportControl.IsTilePlacementActive.</summary>
         public bool IsTilePlacementPending => _pendingTile != null;
 
         /// <summary>
@@ -636,7 +581,7 @@ namespace SWLOR.Toolset.Editors
         /// <summary>
         /// True while the armed palette entry is a terrain - which paints grid VERTICES, the way the
         /// reference toolset does, rather than stamping cells. Drives
-        /// GlAreaControl.TilePlacementTargetsVertex: the viewport then snaps its cursor to the
+        /// AreaViewportControl.TilePlacementTargetsVertex: the viewport then snaps its cursor to the
         /// nearest vertex, draws the red vertex-centred paint square, and reports vertex
         /// coordinates through the pick event.
         /// </summary>
@@ -646,7 +591,7 @@ namespace SWLOR.Toolset.Editors
         /// True while the armed palette entry is a crosser brush (road, bridge, wall - or the
         /// eraser, whose crosser is the empty string). Crossers paint grid EDGES: the viewport
         /// snaps to the nearest edge, draws the red edge-centred paint square, and reports edge
-        /// coordinates through GlAreaControl.TileEdgePicked.
+        /// coordinates through AreaViewportControl.TileEdgePicked.
         /// </summary>
         public bool TilePlacementTargetsEdge => _pendingTile?.Crosser != null;
 
@@ -663,6 +608,11 @@ namespace SWLOR.Toolset.Editors
         /// tileset lookup is not free and the answer does not change while the stamp follows the cursor.
         /// </remarks>
         public IReadOnlyList<RenderModel?> TilePlacementModels => _tilePlacementModels;
+
+        private TilesetDefinition? ResolveTilesetForEditing(string resRef) =>
+            _tilesetCatalog != null && _tilesetCatalog.TryGetTileset(resRef, out var tileset)
+                ? tileset
+                : null;
 
         private IReadOnlyList<RenderModel?> ResolveTileModels(TilePaletteEntry entry)
         {
@@ -726,10 +676,10 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public void RotatePendingTile()
         {
-            if (!CanRotatePendingTile)
+            if (!CanRotatePendingTile || _tileEditor?.Rotate() != true)
                 return;
 
-            _pendingTileOrientation = (_pendingTileOrientation + 1) % 4;
+            _pendingTileOrientation = _tileEditor.ArmedOrientation;
             OnPropertyChanged(nameof(PendingTileFacing));
             OnPropertyChanged(nameof(PlacementStatus));
         }
@@ -739,7 +689,7 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public bool ArmTilePlacement(TilePaletteEntry entry)
         {
-            if (entry == null || entry.TileIds.Count == 0)
+            if (entry == null || _tileEditor?.Arm(entry) != true)
                 return false;
 
             // Arming a tile cancels any armed object and vice versa: two ghosts following one cursor
@@ -768,6 +718,7 @@ namespace SWLOR.Toolset.Editors
             if (_pendingTile == null)
                 return;
 
+            _tileEditor?.Cancel();
             _pendingTile = null;
             _tilePlacementModels = Array.Empty<RenderModel?>();
             InvalidateTilePlacementValidity();
@@ -779,120 +730,58 @@ namespace SWLOR.Toolset.Editors
             OnPropertyChanged(nameof(HasViewportHud));
         }
 
-        /// <summary>
-        /// Writes the armed stamp into the grid at the clicked anchor cell, as ONE undo step.
-        /// </summary>
-        /// <remarks>
-        /// A specific tile or group is a raw write, not an edge-matched one: Aurora's tile palette
-        /// places the piece you picked, and a builder who chose a doorway wants that doorway. Group
-        /// cells carrying -1 are holes in the rectangle and are skipped, leaving whatever the area
-        /// already had there. The Terrain category is the other half of that split - see
-        /// <see cref="CommitTerrainPaint"/>.
-        /// </remarks>
+        /// <summary>Commits the shared tile editor's armed stamp or terrain brush.</summary>
         public void CommitTilePlacement(int anchorColumn, int anchorRow)
         {
-            // A terrain brush stays armed across clicks - the reference toolset dabs terrain
-            // repeatedly until the builder switches tools - and its anchor is a VERTEX, not a cell.
-            if (_pendingTile is { } terrainEntry && terrainEntry.Terrain is { Length: > 0 } terrain)
-            {
-                CommitTerrainPaint(anchorColumn, anchorRow, terrainEntry, terrain);
-                return;
-            }
-
-            // A crosser's picks arrive through CommitCrosserPaint as EDGES; a cell pick reaching
-            // here with a crosser armed is a stale event and must not stamp the representative tile.
-            if (_pendingTile?.Crosser != null)
-                return;
-
             var entry = _pendingTile;
+            if (entry == null || entry.Crosser != null || _tileEditor == null)
+                return;
+
+            if (entry.Terrain == null)
+                _pendingTile = null;
+            var label = entry.Terrain is { Length: > 0 }
+                ? $"Paint {entry.Label} at vertex ({anchorColumn},{anchorRow})"
+                : $"Place {entry.Label} at ({anchorColumn},{anchorRow})";
+            var outcome = _tileEditor.CommitAt(anchorColumn, anchorRow, label);
+            if (entry.Terrain == null)
+                _tileEditor.Cancel();
+            if (outcome == AreaTileEditOutcome.OutOfBounds)
+                SceneStatus = $"'{entry.Label}' does not fit at ({anchorColumn},{anchorRow}).";
+            else if (outcome == AreaTileEditOutcome.MissingTileset)
+                SceneStatus = "Terrain painting is unavailable (this area's tileset could not be read).";
+            if (entry.Terrain == null)
+                CompleteTilePlacementUi();
+            if (outcome == AreaTileEditOutcome.Changed)
+            {
+                InvalidateTilePlacementValidity();
+                Interlocked.Increment(ref _sceneInputRevision);
+                RequestSceneRefresh(immediate: true);
+                AfterHistoryChange();
+            }
+        }
+
+        private void CompleteTilePlacementUi()
+        {
             _pendingTile = null;
+            _pendingTileOrientation = 0;
+            _tilePlacementModels = Array.Empty<RenderModel?>();
             OnPropertyChanged(nameof(IsTilePlacementPending));
             OnPropertyChanged(nameof(TilePlacementTargetsVertex));
             OnPropertyChanged(nameof(TilePlacementTargetsEdge));
+            OnPropertyChanged(nameof(TilePlacementModels));
+            OnPropertyChanged(nameof(CanRotatePendingTile));
+            OnPropertyChanged(nameof(PendingTileFacing));
             OnPropertyChanged(nameof(PlacementStatus));
             OnPropertyChanged(nameof(HasViewportHud));
-
-            if (entry == null)
-                return;
-
-            var are = new AreDocument(_areSession.Document);
-            var width = AreaTiles.Width(are);
-            var height = AreaTiles.Height(are);
-
-            // Asked of the captured entry, not the field: _pendingTile was cleared at the top of this
-            // method, so CanRotatePendingTile would answer false for every placement.
-            var orientation = IsRotatable(entry) ? _pendingTileOrientation : 0;
-            var writes = new List<(int Column, int Row, int TileId)>();
-            for (var row = 0; row < entry.Rows; row++)
-            {
-                for (var column = 0; column < entry.Columns; column++)
-                {
-                    var tileId = entry.TileIds[row * entry.Columns + column];
-                    if (tileId < 0)
-                        continue;
-
-                    var targetColumn = anchorColumn + column;
-                    var targetRow = anchorRow + row;
-                    if (targetColumn < 0 || targetRow < 0 || targetColumn >= width || targetRow >= height)
-                    {
-                        SceneStatus = $"'{entry.Label}' does not fit at ({anchorColumn},{anchorRow}).";
-                        return;
-                    }
-
-                    writes.Add((targetColumn, targetRow, tileId));
-                }
-            }
-
-            if (writes.Count == 0)
-                return;
-
-            var label = writes.Count == 1
-                ? $"Place tile at ({anchorColumn},{anchorRow})"
-                : $"Place {entry.Label} at ({anchorColumn},{anchorRow})";
-
-            RunAreEdit(label, () =>
-            {
-                foreach (var (column, row, tileId) in writes)
-                    AreaTiles.SetTile(are, column, row, tileId, orientation);
-            }, immediateSceneRefresh: true);
         }
-
-
-        /// <summary>
-        /// Whether the armed palette entry would actually go down at this cell - the question the
-        /// hovered cell is coloured green or red by.
-        /// </summary>
-        /// <remarks>
-        /// For a terrain this is not a bounds check but the real answer: the solver is run against the
-        /// live grid and asked whether it can produce a blend, exactly as the click would. It says no
-        /// where the terrain has no tile that can meet what is already around the cell, which is a
-        /// thing a builder otherwise only discovers by clicking and reading a status line.
-        /// <para>
-        /// A dry run, so nothing is written; the result is memoised per cell because the pointer asks
-        /// this on every move and a solve walks the eight-neighbour ring. The memo is dropped whenever
-        /// the grid changes, which is what <see cref="InvalidateTilePlacementValidity"/> is for.
-        /// </para>
-        /// </remarks>
-        public bool CanPlaceArmedTileAt(int column, int row)
-        {
-            if (_pendingTile is not { } entry)
-                return false;
-
-            if (_tileValidity.TryGetValue((column, row), out var memo))
-                return memo;
-
-            var valid = SolveTilePlacementValidity(column, row, entry);
-            _tileValidity[(column, row)] = valid;
-            return valid;
-        }
-
-        private readonly Dictionary<(int Column, int Row), bool> _tileValidity = new();
+        public bool CanPlaceArmedTileAt(int column, int row) =>
+            _tileEditor?.CanPlaceAt(column, row) == true;
 
         private (int Column, int Row)? _selectedTile;
 
         /// <summary>
         /// The grid cell the builder has selected in the 3D view, or null when none is. The view
-        /// mirrors it onto <c>GlAreaControl.SelectedTileCell</c> for the highlight, and the raise and
+        /// mirrors it onto <c>AreaViewportControl.SelectedTileCell</c> for the highlight, and the raise and
         /// lower commands act on it.
         /// </summary>
         /// <remarks>
@@ -909,6 +798,7 @@ namespace SWLOR.Toolset.Editors
                     return;
 
                 _selectedTile = value;
+                _tileEditor?.SelectCell(value);
                 OnPropertyChanged(nameof(SelectedTile));
                 OnPropertyChanged(nameof(HasTileSelection));
                 OnPropertyChanged(nameof(TileSelectionStatus));
@@ -954,242 +844,67 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         private void AdjustSelectedTileElevation(int delta)
         {
-            if (_selectedTile is not { } cell)
+            if (_selectedTile is not { } cell || _tileEditor == null)
                 return;
 
-            CommitTileElevation(cell.Column, cell.Row, Math.Sign(delta));
-            OnPropertyChanged(nameof(TileSelectionStatus));
-        }
-
-        private void CommitTileElevation(int column, int row, int delta)
-        {
-            var are = new AreDocument(_areSession.Document);
-            var current = AreaTiles.StateAt(are, column, row);
+            var area = new AreDocument(_areSession.Document);
+            var current = AreaTiles.StateAt(area, cell.Column, cell.Row);
             if (current == null)
                 return;
-
-            if (current.Value.HeightLevel + delta < AreaTiles.MinimumHeightLevel)
+            var direction = Math.Sign(delta);
+            if (current.Value.HeightLevel + direction < AreaTiles.MinimumHeightLevel)
             {
-                SceneStatus =
-                    $"Tile ({column},{row}) is already at the minimum height " +
-                    $"{AreaTiles.MinimumHeightLevel}.";
+                SceneStatus = $"Tile ({cell.Column},{cell.Row}) is already at the minimum height " +
+                              $"{AreaTiles.MinimumHeightLevel}.";
                 return;
             }
 
-            var verb = delta > 0 ? "Raise" : "Lower";
-            RunAreEdit(
-                $"{verb} tile at ({column},{row})",
-                () => AreaTiles.TryAdjustHeightLevel(are, column, row, delta),
-                immediateSceneRefresh: true);
-        }
+            var verb = direction > 0 ? "Raise" : "Lower";
+            if (_tileEditor.AdjustSelectedHeight(
+                    direction, $"{verb} tile at ({cell.Column},{cell.Row})") != AreaTileEditOutcome.Changed)
+                return;
 
+            InvalidateTilePlacementValidity();
+            Interlocked.Increment(ref _sceneInputRevision);
+            RequestSceneRefresh(immediate: true);
+            OnPropertyChanged(nameof(TileSelectionStatus));
+            AfterHistoryChange();
+        }
         /// <summary>Drops the memoised answers - the grid they were computed against has changed.</summary>
-        private void InvalidateTilePlacementValidity()
-        {
-            _tileValidity.Clear();
-            _edgeValidity.Clear();
-        }
+        private void InvalidateTilePlacementValidity() => _tileEditor?.InvalidatePlacementValidity();
 
-        private bool SolveTilePlacementValidity(int column, int row, TilePaletteEntry entry)
-        {
-            var are = new AreDocument(_areSession.Document);
-            var width = AreaTiles.Width(are);
-            var height = AreaTiles.Height(are);
-
-            // A terrain paints a VERTEX (inclusive upper bound), and its verdict is the real
-            // solver's: the reference toolset colours the paint cursor by whether the dab would be
-            // accepted, and only a dry run of the same solve the click will perform can answer
-            // that honestly. The solve touches at most four cells and the answer is memoised per
-            // vertex until the grid changes, so hovering stays cheap.
-            if (entry.Terrain is { Length: > 0 } terrain)
-            {
-                if (column < 0 || row < 0 || column > width || row > height)
-                    return false;
-
-                return _tilesetCatalog != null &&
-                       TilesetResRef is { Length: > 0 } tilesetResRef &&
-                       _tilesetCatalog.TryGetTileset(tilesetResRef, out var tileset) &&
-                       TilePainter.CanPaintTerrainVertex(
-                           tileset, width, height, AreaTiles.StateReader(are), column, row, terrain);
-            }
-
-            if (column < 0 || row < 0 || column >= width || row >= height)
-                return false;
-
-            // A fixed stamp only has to fit the grid: every one of its cells must be a real cell.
-            return column + entry.Columns <= width && row + entry.Rows <= height;
-        }
-
-        private readonly Dictionary<(int Column, int Row, bool Vertical), bool> _edgeValidity = new();
-
-        /// <summary>
-        /// Whether the armed crosser would actually paint at this edge - the question the paint
-        /// cursor's green/red colour answers, dry-running the same two-cell solve the click will
-        /// perform. Memoised per edge until the grid changes.
-        /// </summary>
-        public bool CanPlaceArmedCrosserAt(int edgeColumn, int edgeRow, bool verticalEdge)
-        {
-            if (_pendingTile is not { Crosser: { } crosser })
-                return false;
-
-            if (_edgeValidity.TryGetValue((edgeColumn, edgeRow, verticalEdge), out var memo))
-                return memo;
-
-            var are = new AreDocument(_areSession.Document);
-            var valid = _tilesetCatalog != null &&
-                        TilesetResRef is { Length: > 0 } tilesetResRef &&
-                        _tilesetCatalog.TryGetTileset(tilesetResRef, out var tileset) &&
-                        TilePainter.CanPaintCrosserEdge(
-                            tileset,
-                            AreaTiles.Width(are),
-                            AreaTiles.Height(are),
-                            AreaTiles.StateReader(are),
-                            edgeColumn,
-                            edgeRow,
-                            verticalEdge,
-                            crosser);
-            _edgeValidity[(edgeColumn, edgeRow, verticalEdge)] = valid;
-            return valid;
-        }
-
-        /// <summary>
-        /// Paints one grid VERTEX with a terrain and re-solves the up-to-four cells that share it,
-        /// as ONE undo step - the reference toolset's terrain model, verified against it live.
-        /// </summary>
-        /// <remarks>
-        /// This is the brush half of the Tiles palette: <see cref="TilePainter.PaintTerrainVertex"/>
-        /// picks tiles whose corners and edge crossers agree with the repainted vertex and with what
-        /// already surrounds each touched cell. It can legitimately decline - a vertex whose cells
-        /// cannot all be solved has no answer - and declines the way the reference does: silently,
-        /// with no partial write. Only the output log records the refusal.
-        /// </remarks>
-        private void CommitTerrainPaint(int vertexColumn, int vertexRow, TilePaletteEntry entry, string terrain)
-        {
-            if (_tilesetCatalog == null)
-            {
-                SceneStatus = "Terrain painting is unavailable (tileset data not loaded).";
-                return;
-            }
-
-            var tilesetResRef = TilesetResRef;
-            if (string.IsNullOrWhiteSpace(tilesetResRef) ||
-                !_tilesetCatalog.TryGetTileset(tilesetResRef, out var tileset))
-            {
-                SceneStatus = "Terrain painting is unavailable (this area's tileset could not be read).";
-                return;
-            }
-
-            var are = new AreDocument(_areSession.Document);
-            var changes = TilePainter.PaintTerrainVertex(
-                tileset,
-                AreaTiles.Width(are),
-                AreaTiles.Height(are),
-                AreaTiles.StateReader(are),
-                vertexColumn,
-                vertexRow,
-                terrain);
-
-            if (changes.Count == 0)
-            {
-                // A repaint that is already satisfied returns no changes too, and that is not a
-                // refusal - only a genuine one is answered, and it is answered on the map rather
-                // than in the log, where a builder watching the area would never see it.
-                if (!TilePainter.CanPaintTerrainVertex(
-                        tileset, AreaTiles.Width(are), AreaTiles.Height(are), AreaTiles.StateReader(are),
-                        vertexColumn, vertexRow, terrain))
-                {
-                    PaintRejected?.Invoke();
-                }
-
-                return;
-            }
-
-            RunAreEdit($"Paint {entry.Label} at vertex ({vertexColumn},{vertexRow})", () =>
-            {
-                foreach (var change in changes)
-                    AreaTiles.SetTile(are, change.Col, change.Row, change.TileId, change.Orientation);
-            }, immediateSceneRefresh: true);
-        }
-
-        /// <summary>
-        /// Paints the armed crosser onto one grid EDGE, re-solving the two cells that share it, as
-        /// ONE undo step - the reference toolset's crosser model, verified against it live (two
-        /// road dabs on ztd01 produced two single-edge stubs and re-solved the shared cell into the
-        /// two-edge corner piece). The eraser is the same paint with a blank crosser. Refusal is
-        /// silent, and the brush stays armed.
-        /// </summary>
+        public bool CanPlaceArmedCrosserAt(int edgeColumn, int edgeRow, bool verticalEdge) =>
+            _tileEditor?.CanPaintCrosserAt(edgeColumn, edgeRow, verticalEdge) == true;
+        /// <summary>Commits an edge-paint operation through the shared tile editor.</summary>
         public void CommitCrosserPaint(int edgeColumn, int edgeRow, bool verticalEdge)
         {
-            if (_pendingTile is not { Crosser: { } crosser } entry)
+            if (_pendingTile is not { Crosser: not null } entry || _tileEditor == null)
                 return;
 
-            if (_tilesetCatalog == null)
-            {
-                SceneStatus = "Crosser painting is unavailable (tileset data not loaded).";
-                return;
-            }
-
-            var tilesetResRef = TilesetResRef;
-            if (string.IsNullOrWhiteSpace(tilesetResRef) ||
-                !_tilesetCatalog.TryGetTileset(tilesetResRef, out var tileset))
-            {
+            var label = $"Paint {entry.Label} at edge ({edgeColumn},{edgeRow})";
+            var outcome = _tileEditor.CommitCrosserAt(edgeColumn, edgeRow, verticalEdge, label);
+            if (outcome == AreaTileEditOutcome.MissingTileset)
                 SceneStatus = "Crosser painting is unavailable (this area's tileset could not be read).";
-                return;
-            }
-
-            var are = new AreDocument(_areSession.Document);
-            var changes = TilePainter.PaintCrosserEdge(
-                tileset,
-                AreaTiles.Width(are),
-                AreaTiles.Height(are),
-                AreaTiles.StateReader(are),
-                edgeColumn,
-                edgeRow,
-                verticalEdge,
-                crosser);
-
-            if (changes.Count == 0)
+            if (outcome == AreaTileEditOutcome.Changed)
             {
-                // As for terrain: an already-satisfied repaint is not a refusal, and a real refusal
-                // is answered on the map.
-                if (!TilePainter.CanPaintCrosserEdge(
-                        tileset, AreaTiles.Width(are), AreaTiles.Height(are), AreaTiles.StateReader(are),
-                        edgeColumn, edgeRow, verticalEdge, crosser))
-                {
-                    PaintRejected?.Invoke();
-                }
-
-                return;
+                InvalidateTilePlacementValidity();
+                Interlocked.Increment(ref _sceneInputRevision);
+                RequestSceneRefresh(immediate: true);
+                AfterHistoryChange();
             }
-
-            RunAreEdit($"Paint {entry.Label} at edge ({edgeColumn},{edgeRow})", () =>
-            {
-                foreach (var change in changes)
-                    AreaTiles.SetTile(are, change.Col, change.Row, change.TileId, change.Orientation);
-            }, immediateSceneRefresh: true);
         }
-        /// <summary>
-        /// Arms placement for a blueprint chosen in the Palette panel: the object then follows the
-        /// cursor across the map as a translucent ghost until a click puts it down (Esc or a
-        /// right-click cancels). This is the only way to place an instance - the editor no longer
-        /// carries its own blueprint picker, because the Palette panel is already one.
-        /// </summary>
+
+        /// <summary>Arms a palette blueprint for placement in the shared area scene.</summary>
         public bool ArmPlacement(
             ResourceType type,
             string resRef,
             Shell.Panels.PaletteSource source)
         {
             var section = Sections.FirstOrDefault(candidate => candidate.BlueprintType == type);
-            if (section == null || string.IsNullOrWhiteSpace(resRef))
+            if (section == null || string.IsNullOrWhiteSpace(resRef) || !CanArmObjectPlacement(type, resRef))
                 return false;
 
-            if (!CanArmObjectPlacement(type, resRef))
-                return false;
-
-            // The other half of the exclusion in ArmTilePlacement: only one thing follows the cursor, so a
-            // builder always knows what the next click resolves.
             CancelTilePlacement();
-
             _pendingPlacementSection = section;
             _pendingPlacementResRef = resRef;
             _pendingPlacementUsesIndexedBlueprint = source == Shell.Panels.PaletteSource.Standard;
@@ -1374,7 +1089,7 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>
         /// Called by the view when a viewport click resolves a pending placement
-        /// (GlAreaControl.PlacementPointPicked): creates the instance at the clicked ground
+        /// (AreaViewportControl.PlacementPointPicked): creates the instance at the clicked ground
         /// position through the pending section's InstanceFieldMap-based Add path (one RunGitEdit
         /// transaction), then appends its one marker to the scene and selects it. A full rebuild is
         /// retained as a fallback when the scene was already stale.
@@ -1476,7 +1191,8 @@ namespace SWLOR.Toolset.Editors
                     _doorTypes,
                     _waypointAppearances,
                     ResolveCreatureModel,
-                    scene.Tiles);
+                    scene.Tiles,
+                    index);
             }
             catch (Exception ex)
             {
@@ -1503,7 +1219,7 @@ namespace SWLOR.Toolset.Editors
             return true;
         }
 
-        /// <summary>Called by the view when a pending placement is cancelled (Esc or right-click in the viewport, GlAreaControl.PlacementCancelled).</summary>
+        /// <summary>Called by the view when a pending placement is cancelled (Esc or right-click in the viewport, AreaViewportControl.PlacementCancelled).</summary>
         public void CancelPlacement()
         {
             if (_pendingPlacementSection == null)
@@ -1517,131 +1233,50 @@ namespace SWLOR.Toolset.Editors
             NotifyPlacementChanged();
         }
 
-        /// <summary>
-        /// Called by the view when the 3D-view move gizmo releases (GlAreaControl.InstanceMoved):
-        /// commits the final X/Y (Z unchanged) through the matching section's
-        /// InstanceFieldMap.SetPosition path as one RunGitEdit transaction, then refreshes the
-        /// scene keeping the same instance selected (rebind by kind+index).
-        /// </summary>
+        /// <summary>Commits viewport instance transforms through the shared scene editor.</summary>
         public void MoveSelectedInstance(InstanceMarker instance, Vector3 newPosition)
         {
-            var section = SectionForKind(instance.Kind);
-            var index = IndexWithinKind(instance);
-            if (section == null || index < 0)
+            if (AreaScene is not { } scene)
                 return;
 
-            // A door is not free-standing scenery: it belongs in a tile's doorway, which is what the
-            // placement path already enforces. Dragging one used to write the raw position and detach it
-            // from the tile frame and its walkmesh opening, so a move snaps to the doorway it was
-            // dropped in and takes that doorway's heading with it.
-            //
-            // A drop that reaches no empty doorway is refused outright rather than falling through to
-            // the raw write below - that fall-through is the detachment bug itself. The door being
-            // dragged is excluded from "empty", or a nudge inside its own doorway would find the
-            // doorway filled by the very door being moved and jump it to a different one.
-            if (instance.Kind == InstanceMarkerKind.Door)
+            var result = _sceneInstanceEditor.Move(scene, instance, newPosition);
+            if (result.Outcome == AreaSceneInstanceEditOutcome.NoAvailableDoorway)
             {
-                if (AreaScene?.NearestEmptyDoorway(newPosition, instance) is not { } anchor)
-                {
-                    SceneStatus = $"\"{instance.Tag}\" can only be moved into an empty doorway.";
-                    return;
-                }
-
-                MoveDoorToAnchor(instance, section, index, anchor);
+                SceneStatus = $"\"{instance.Tag}\" can only be moved into an empty doorway.";
                 return;
             }
 
-            if (!section.SetInstancePosition(index, newPosition.X, newPosition.Y, newPosition.Z,
-                    $"Move {instance.Kind} \"{instance.Tag}\""))
-                return;
-
-            if (!ApplyTransformInPlace(instance, newPosition, instance.Orientation))
-                _ = BuildSceneAsync((instance.Kind, index));
+            PublishInstanceEdit(result);
         }
 
-        /// <summary>
-        /// Puts a door in <paramref name="anchor"/>'s doorway, position and heading together, as one edit.
-        /// </summary>
-        private void MoveDoorToAnchor(
-            InstanceMarker instance, InstanceListSectionViewModel section, int index, TileDoorAnchor anchor)
-        {
-            var description = $"Move {instance.Kind} \"{instance.Tag}\"";
-            if (!section.SetInstanceTransform(
-                    index,
-                    anchor.Position.X,
-                    anchor.Position.Y,
-                    anchor.Position.Z,
-                    anchor.Orientation.X,
-                    anchor.Orientation.Y,
-                    description))
-            {
-                return;
-            }
-
-            if (!ApplyTransformInPlace(instance, anchor.Position, anchor.Orientation))
-                _ = BuildSceneAsync((instance.Kind, index));
-        }
-
-        /// <summary>Called by the view when the 3D-view rotate gizmo releases (GlAreaControl.InstanceRotated): mirrors <see cref="MoveSelectedInstance"/> for heading.</summary>
         public void RotateSelectedInstance(InstanceMarker instance, Vector2 newOrientation)
         {
-            // Guarded here as well as on CanRotateSelection: the gizmo reaches this directly, and a
-            // sound has no heading to write - the edit would report success having changed nothing.
-            if (instance.Kind == InstanceMarkerKind.Sound)
-                return;
-
-            // A door's heading comes from the doorway it hangs in, not from the builder. Turning one
-            // freely left it facing across its own frame.
-            if (instance.Kind == InstanceMarkerKind.Door)
-                return;
-
-            var section = SectionForKind(instance.Kind);
-            var index = IndexWithinKind(instance);
-            if (section == null || index < 0)
-                return;
-
-            if (!section.SetInstanceOrientation(index, newOrientation.X, newOrientation.Y,
-                    $"Rotate {instance.Kind} \"{instance.Tag}\""))
-                return;
-
-            if (!ApplyTransformInPlace(instance, instance.Position, newOrientation))
-                _ = BuildSceneAsync((instance.Kind, index));
-        }
-
-        /// <summary>
-        /// Publishes a moved/turned instance straight into the current scene, returning false when
-        /// that is not possible and the caller should fall back to a full rebuild.
-        /// </summary>
-        /// <remarks>
-        /// A move or a rotate changes one marker's transform and nothing else: no tile changed, no
-        /// other instance changed, and no model needs re-resolving. Rebuilding for it meant
-        /// reserialising both documents, reparsing them, and reassembling every tile and instance -
-        /// per repeat tick of a held rotate button, with the "Building scene..." banner flashing over
-        /// the viewport throughout. That is what made rotating an object unusable.
-        /// <para>
-        /// The scene's revision is marked current afterwards so the debounced refresh that every edit
-        /// also queues sees the view as up to date and drops its rebuild, rather than undoing the
-        /// saving 220ms later.
-        /// </para>
-        /// </remarks>
-        private bool ApplyTransformInPlace(InstanceMarker instance, Vector3 position, Vector2 orientation)
-        {
             if (AreaScene is not { } scene)
-                return false;
-
-            var replacement = instance.WithTransform(position, orientation);
-            if (scene.WithInstanceReplaced(instance, replacement) is not { } updated)
-                return false;
-
-            // Claim the revision this edit produced before publishing, so a refresh queued by the
-            // edit itself sees the scene as current.
-            Volatile.Write(ref _builtSceneInputRevision, Volatile.Read(ref _sceneInputRevision));
-
-            AreaScene = updated;
-            ApplySelection(replacement);
-            return true;
+                return;
+            PublishInstanceEdit(_sceneInstanceEditor.Rotate(scene, instance, newOrientation));
         }
 
+        private void PublishInstanceEdit(AreaSceneInstanceEditResult result)
+        {
+            if (result.Outcome is AreaSceneInstanceEditOutcome.NoChange or
+                AreaSceneInstanceEditOutcome.InvalidIdentity or
+                AreaSceneInstanceEditOutcome.RotationNotSupported)
+                return;
+
+            RefreshGicDirty();
+            Interlocked.Increment(ref _sceneInputRevision);
+            AfterHistoryChange();
+            if (result.Outcome == AreaSceneInstanceEditOutcome.Changed &&
+                result.Scene is { } updated && result.UpdatedMarker is { } marker)
+            {
+                Volatile.Write(ref _builtSceneInputRevision, Volatile.Read(ref _sceneInputRevision));
+                AreaScene = updated;
+                ApplySelection(marker);
+                return;
+            }
+
+            RequestSceneRefresh(immediate: true);
+        }
         /// <summary>True when there is a selected instance this editor can actually rotate.</summary>
         /// <remarks>
         /// Ambient sounds are excluded even though they have an instance-list section like everything
@@ -1655,29 +1290,6 @@ namespace SWLOR.Toolset.Editors
             instance.Kind != InstanceMarkerKind.Sound &&
             instance.Kind != InstanceMarkerKind.Door &&
             SectionForKind(instance.Kind) != null;
-
-        /// <summary>
-        /// Turns the selection to a random heading. Aurora has this because a row of identically
-        /// angled crates reads as placed by a machine; one press per object breaks that up.
-        /// </summary>
-        [RelayCommand]
-        private void RotateSelectionRandomly()
-        {
-            if (SelectedSceneInstance is not { } instance)
-                return;
-
-            var current = MathF.Atan2(instance.Orientation.Y, instance.Orientation.X);
-            RotateSelectionBy(Random.Shared.NextSingle() * MathF.Tau - current);
-        }
-
-        private void RotateSelectionBy(float deltaRadians)
-        {
-            if (SelectedSceneInstance is not { } instance)
-                return;
-
-            var heading = MathF.Atan2(instance.Orientation.Y, instance.Orientation.X) + deltaRadians;
-            RotateSelectedInstance(instance, new Vector2(MathF.Cos(heading), MathF.Sin(heading)));
-        }
 
         // ----- Terrain paint / rotate / raise-lower tools -----
 
@@ -1715,7 +1327,8 @@ namespace SWLOR.Toolset.Editors
             Func<ResourceType, string, string?>? editCopyBlueprint = null,
             ModuleMutationLock? mutationLock = null,
             AreaInstanceClipboard? instanceClipboard = null,
-            Action<uint>? openTlkRow = null)
+            Action<uint>? openTlkRow = null,
+            Triggers.TriggerEditorServices? triggerEditorServices = null)
         {
             _scriptSlotHost = scriptSlotHost;
             _resolveBlueprintModel = resolveBlueprintModel;
@@ -1729,7 +1342,6 @@ namespace SWLOR.Toolset.Editors
             if (_mutationLock != null)
                 _mutationLock.Changed += OnMutationLockChanged;
             _log = log;
-            _lookups = lookups;
             _workspace = workspace;
             _areResRef = areResRef;
             _tilesetCatalog = tilesetCatalog;
@@ -1757,30 +1369,35 @@ namespace SWLOR.Toolset.Editors
                 ? DocumentSession.Open(gicPath)
                 : DocumentSession.FromLoadedContent(
                     gicPath, loadedDocuments.Gic, loadedDocuments.GicBytes);
+            _documentEdits = new AreaDocumentEditSession(_areSession, _gitSession, _gicSession);
+            _instanceEditor = new AreaInstanceEditor(_documentEdits);
+            _sceneInstanceEditor = new AreaSceneInstanceEditor(_instanceEditor);
+            _tileEditor = new AreaTileEditor(_documentEdits, ResolveTilesetForEditing);
+            _tileEditor.PaintRejected += () => PaintRejected?.Invoke();
             _savedGicBytes = _gicSession.ToBytes();
 
             var areContext = new EditorFieldContext(
                 _areSession.Document,
                 (description, mutation) => RunAreEdit(description, mutation),
                 resolveStrRef,
-                openTlkRow);
-            foreach (var group in AreSchema.Build().Groups)
-            {
-                var fields = group.Fields.Select(descriptor => CreateFieldViewModel(descriptor, areContext, lookups, scriptSlotHost)).ToList();
-                AreaPropertyGroups.Add(new EditorGroup(group.Title, fields));
-            }
+                openTlkRow,
+                Domain.GameData.Tlk.TlkService.IsEditableCustomStrRef);
+            PropertiesPage = new AreaPropertiesPageViewModel(areContext);
 
-            foreach (var config in InstanceListConfigs)
+            foreach (var definition in AreaInstanceSectionCatalog.All)
             {
-                Sections.Add(new InstanceListSectionViewModel(
-                    config.Title, config.ListFieldName, config.BlueprintType,
+                var section = new InstanceListSectionViewModel(
+                    PropertiesPage.SectionTitle(definition), definition.ListFieldName, definition.Type,
                     _gitSession, _gicSession, workspace, RunGitEdit, gameCodeIndex, log, _prompts, resolveStrRef,
-                    config.BlueprintType == ResourceType.Utd ? doorEditorServices : null,
-                    config.BlueprintType == ResourceType.Utw ? waypointEditorServices : null,
+                    definition.Type == ResourceType.Utd ? doorEditorServices : null,
+                    definition.Type == ResourceType.Utw ? waypointEditorServices : null,
                     areResRef,
                     resolveSoundChoices,
                     audioResources,
-                    soundPreview));
+                    soundPreview,
+                    definition.Type == ResourceType.Utt ? triggerEditorServices : null);
+                Sections.Add(section);
+                PropertiesPage.Sections.Add(section);
             }
 
             // A row click in any section should update the 3D-view highlight
@@ -2256,23 +1873,6 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         private static readonly TimeSpan SceneBuildBannerDelay = TimeSpan.FromMilliseconds(250);
 
-        private static FieldViewModel CreateFieldViewModel(
-            FieldDescriptor descriptor, EditorFieldContext context, LookupOptionProvider lookups,
-            IScriptSlotHost? scriptSlotHost)
-        {
-            return descriptor.Kind switch
-            {
-                EditorKind.Integer => new IntegerFieldViewModel(descriptor, context),
-                EditorKind.Float => new FloatFieldViewModel(descriptor, context),
-                EditorKind.Check => new CheckFieldViewModel(descriptor, context),
-                EditorKind.LocString => new LocStringFieldViewModel(descriptor, context),
-                EditorKind.TwoDaDropdown => new DropdownFieldViewModel(
-                    descriptor, context, lookups.GetOptions(descriptor.LookupKey)),
-                EditorKind.ScriptSlot => new ScriptFieldViewModel(descriptor, context, scriptSlotHost),
-                _ => new TextFieldViewModel(descriptor, context)
-            };
-        }
-
         private bool RunAreEdit(string description, Action mutation, bool immediateSceneRefresh = false) =>
             RunEdit(_areSession, description, mutation, immediateSceneRefresh);
 
@@ -2288,29 +1888,16 @@ namespace SWLOR.Toolset.Editors
         {
             try
             {
-                var positionBefore = session.UndoStack.Position;
-                session.Execute(description, mutation);
+                var changed = ReferenceEquals(session, _areSession)
+                    ? _documentEdits.ExecuteArea(description, mutation)
+                    : _documentEdits.ExecuteInstances(description, mutation);
 
-                // An operation that captured no mutation (stamping the tile ID and orientation
-                // already present, say) pushed no undo entry. Recording it in _editOrder anyway
-                // would make this session look newest, so the next shell-level Ctrl+Z could undo
-                // an older edit from here instead of the other session's actual latest one - and
-                // a no-op has no business clearing anyone's redo history either.
-                if (session.UndoStack.Position == positionBefore)
+                // A no-op neither changes undo order nor clears the other document's redo history.
+                if (!changed)
                     return true;
 
-                // A fresh edit invalidates the redo side of both histories, exactly as each
-                // session's own undo stack does. Clearing _undoneOrder only drops the shell's ordering;
-                // the other session's stack kept its redo entries, and IEditorDocument.CanRedo let
-                // Ctrl+Y replay an abandoned edit on top of this newer one.
-                _editOrder.Add(session);
-                _undoneOrder.Clear();
-                foreach (var other in new[] { _areSession, _gitSession })
-                {
-                    if (!ReferenceEquals(other, session))
-                        other.UndoStack.DiscardRedo();
-                }
-
+                if (ReferenceEquals(session, _areSession))
+                    _tileEditor?.InvalidatePlacementValidity();
                 Interlocked.Increment(ref _sceneInputRevision);
                 RequestSceneRefresh(immediateSceneRefresh);
                 AfterHistoryChange();
@@ -2411,7 +1998,7 @@ namespace SWLOR.Toolset.Editors
                 if (!earlyResult.Success)
                 {
                     foreach (var write in staged)
-                        Services.SaveService.Discard(write);
+                        SwlorFileWriteAccess.Writer.Discard(write);
                     return false;
                 }
                 areReloadedEarly = true;
@@ -2533,9 +2120,9 @@ namespace SWLOR.Toolset.Editors
             SavePlan arePlan,
             SavePlan gitPlan,
             SavePlan gicPlan,
-            out List<Services.SaveService.StagedWrite> staged)
+            out List<AtomicFileGroupWriter.StagedWrite> staged)
         {
-            staged = new List<Services.SaveService.StagedWrite>(3);
+            staged = new List<AtomicFileGroupWriter.StagedWrite>(3);
 
             foreach (var (session, plan) in new[]
                      {
@@ -2549,13 +2136,13 @@ namespace SWLOR.Toolset.Editors
 
                 try
                 {
-                    staged.Add(Services.SaveService.Stage(session.FilePath, session.ToBytes()));
+                    staged.Add(SwlorFileWriteAccess.Writer.Stage(session.FilePath, session.ToBytes()));
                 }
                 catch (Exception ex)
                 {
                     _log.AppendLine($"Save failed for {session.FilePath}: {ex.Message}");
                     foreach (var done in staged)
-                        Services.SaveService.Discard(done);
+                        SwlorFileWriteAccess.Writer.Discard(done);
 
                     staged.Clear();
                     return false;
@@ -2570,7 +2157,7 @@ namespace SWLOR.Toolset.Editors
         /// later destination cannot be replaced.
         /// </summary>
         private bool CommitStagedWrites(
-            List<Services.SaveService.StagedWrite> staged,
+            List<AtomicFileGroupWriter.StagedWrite> staged,
             SavePlan arePlan,
             SavePlan gitPlan,
             SavePlan gicPlan)
@@ -2599,14 +2186,14 @@ namespace SWLOR.Toolset.Editors
                     if (mustRecheck && session.HasExternalChange())
                     {
                         foreach (var write in staged)
-                            Services.SaveService.Discard(write);
+                            SwlorFileWriteAccess.Writer.Discard(write);
                         _log.AppendLine(
                             $"Area save stopped because {session.FilePath} changed while the save was being prepared.");
                         return false;
                     }
                 }
 
-                Services.SaveService.CommitAll(staged);
+                SwlorFileWriteAccess.Writer.CommitAll(staged);
                 return true;
             }
             catch (Exception ex)
@@ -2656,8 +2243,8 @@ namespace SWLOR.Toolset.Editors
         {
             var reselect = CaptureReselectKey();
 
-            RecordUndo(_areSession);
-            _areSession.Undo();
+            _documentEdits.UndoArea();
+            _tileEditor?.InvalidatePlacementValidity();
             RefreshAreaPropertyFields();
 
             if (_sceneBuildRequested)
@@ -2666,15 +2253,15 @@ namespace SWLOR.Toolset.Editors
             AfterHistoryChange();
         }
 
-        public bool CanUndoAre => _areSession.UndoStack.CanUndo;
+        public bool CanUndoAre => _documentEdits.CanUndoArea;
 
         [RelayCommand(CanExecute = nameof(CanRedoAre))]
         private void RedoAre()
         {
             var reselect = CaptureReselectKey();
 
-            RecordRedo(_areSession);
-            _areSession.Redo();
+            _documentEdits.RedoArea();
+            _tileEditor?.InvalidatePlacementValidity();
             RefreshAreaPropertyFields();
 
             if (_sceneBuildRequested)
@@ -2683,7 +2270,7 @@ namespace SWLOR.Toolset.Editors
             AfterHistoryChange();
         }
 
-        public bool CanRedoAre => _areSession.UndoStack.CanRedo;
+        public bool CanRedoAre => _documentEdits.CanRedoArea;
 
         /// <summary>Undo/redo for the instance lists (.git) - the toolbar's primary pair, since
         /// placing/moving/removing instances is the bulk of this screen's editing. Also refreshes
@@ -2694,8 +2281,7 @@ namespace SWLOR.Toolset.Editors
         {
             var reselect = CaptureReselectKey();
 
-            RecordUndo(_gitSession);
-            _gitSession.Undo();
+            _documentEdits.UndoInstances();
             RefreshInstanceSections();
             RefreshGicDirty();
 
@@ -2705,15 +2291,14 @@ namespace SWLOR.Toolset.Editors
             AfterHistoryChange();
         }
 
-        public bool CanUndoInstances => _gitSession.UndoStack.CanUndo;
+        public bool CanUndoInstances => _documentEdits.CanUndoInstances;
 
         [RelayCommand(CanExecute = nameof(CanRedoInstances))]
         private void RedoInstances()
         {
             var reselect = CaptureReselectKey();
 
-            RecordRedo(_gitSession);
-            _gitSession.Redo();
+            _documentEdits.RedoInstances();
             RefreshInstanceSections();
             RefreshGicDirty();
 
@@ -2735,26 +2320,26 @@ namespace SWLOR.Toolset.Editors
             return index >= 0 ? (instance.Kind, index) : null;
         }
 
-        public bool CanRedoInstances => _gitSession.UndoStack.CanRedo;
+        public bool CanRedoInstances => _documentEdits.CanRedoInstances;
 
         // ----- Shell Edit menu / Ctrl+Z / Ctrl+Y -----
         //
         // Implemented explicitly so the toolbar keeps its unambiguous per-session buttons: the two
-        // histories stay separate, and only this single-command view of them collapses to one. That
-        // view walks the recorded edit order, so a shell Undo always takes back the newest edit
+        // histories stay separate, while this single-command view uses their shared ordering. That
+        // view takes back the newest edit
         // whichever file it landed in, and falls back to whichever session still has history so it is
         // never a no-op while an undoable edit exists.
 
-        bool IEditorDocument.CanUndo => CanUndoInstances || CanUndoAre;
+        bool IEditorDocument.CanUndo => _documentEdits.LastUndoableTarget != null;
 
-        bool IEditorDocument.CanRedo => CanRedoInstances || CanRedoAre;
+        bool IEditorDocument.CanRedo => _documentEdits.LastRedoableTarget != null;
 
         void IEditorDocument.Undo()
         {
-            var newest = LastUndoable();
-            if (newest == _areSession)
+            var newest = _documentEdits.LastUndoableTarget;
+            if (newest == AreaDocumentEditTarget.Area)
                 UndoAre();
-            else if (newest == _gitSession)
+            else if (newest == AreaDocumentEditTarget.Instances)
                 UndoInstances();
             else if (CanUndoInstances)
                 UndoInstances();
@@ -2764,61 +2349,15 @@ namespace SWLOR.Toolset.Editors
 
         void IEditorDocument.Redo()
         {
-            var newest = LastRedoable();
-            if (newest == _areSession)
+            var newest = _documentEdits.LastRedoableTarget;
+            if (newest == AreaDocumentEditTarget.Area)
                 RedoAre();
-            else if (newest == _gitSession)
+            else if (newest == AreaDocumentEditTarget.Instances)
                 RedoInstances();
             else if (CanRedoInstances)
                 RedoInstances();
             else if (CanRedoAre)
                 RedoAre();
-        }
-
-        /// <summary>The session holding the newest undoable edit, or null when the order is unknown.</summary>
-        private DocumentSession? LastUndoable()
-        {
-            for (var i = _editOrder.Count - 1; i >= 0; i--)
-            {
-                var session = _editOrder[i];
-                if (session.UndoStack.CanUndo)
-                    return session;
-            }
-
-            return null;
-        }
-
-        /// <summary>The session holding the most recently undone edit, or null when none is recorded.</summary>
-        private DocumentSession? LastRedoable()
-        {
-            for (var i = _undoneOrder.Count - 1; i >= 0; i--)
-            {
-                var session = _undoneOrder[i];
-                if (session.UndoStack.CanRedo)
-                    return session;
-            }
-
-            return null;
-        }
-
-        /// <summary>Moves one entry from the edit order to the undone order, for either undo route.</summary>
-        private void RecordUndo(DocumentSession session)
-        {
-            var index = _editOrder.LastIndexOf(session);
-            if (index >= 0)
-                _editOrder.RemoveAt(index);
-
-            _undoneOrder.Add(session);
-        }
-
-        /// <summary>The inverse of <see cref="RecordUndo"/>.</summary>
-        private void RecordRedo(DocumentSession session)
-        {
-            var index = _undoneOrder.LastIndexOf(session);
-            if (index >= 0)
-                _undoneOrder.RemoveAt(index);
-
-            _editOrder.Add(session);
         }
 
         /// <summary>Raised when the tab closes so the editor registry can forget this instance.</summary>
@@ -2857,9 +2396,7 @@ namespace SWLOR.Toolset.Editors
                 _mutationLock.Changed -= OnMutationLockChanged;
             foreach (var section in Sections)
                 section.Dispose();
-            _areSession.Dispose();
-            _gitSession.Dispose();
-            _gicSession.Dispose();
+            _documentEdits.Dispose();
             Closed?.Invoke(this);
             return base.OnClose();
         }
@@ -2883,24 +2420,10 @@ namespace SWLOR.Toolset.Editors
             }
         }
 
-        private void RefreshAreaPropertyFields()
-        {
-            foreach (var group in AreaPropertyGroups)
-            foreach (var field in group.Fields)
-                field.RefreshFromDocument();
-        }
+        private void RefreshAreaPropertyFields() => PropertiesPage.RefreshAreaPropertyFields();
 
         /// <summary>Re-resolves custom-TLK watermarks after the shared table is regenerated.</summary>
-        public void RefreshTlkLabels()
-        {
-            var fields = AreaPropertyGroups.SelectMany(group => group.Fields).ToArray();
-            foreach (var field in fields.OfType<LocStringFieldViewModel>())
-                field.RefreshFromDocument();
-            foreach (var field in fields.OfType<DropdownFieldViewModel>())
-                field.RefreshOptions(_lookups.GetOptions(field.Descriptor.LookupKey));
-            foreach (var section in Sections)
-                section.RefreshTlkLabels();
-        }
+        public void RefreshTlkLabels() => PropertiesPage.RefreshTlkLabels();
 
         private void RefreshInstanceSections()
         {

@@ -1,9 +1,11 @@
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using Nwn.Preview.Dds;
+using Nwn.Formats.Mtr;
+using Nwn.Formats.TwoDa;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.GameData.Resources;
-using SWLOR.NWN.Formats.TwoDA;
 
 namespace SWLOR.Toolset.Domain.Render
 {
@@ -16,35 +18,39 @@ namespace SWLOR.Toolset.Domain.Render
         private const string TintShader = "fs_plt_tinter";
         private const string NormalMappedTintShader = "fs_plt_tinter_nm";
         private const string HairTintShader = "fs_plt_hair_nm";
+        private const string CloakTintShader = "fs_cloaktint";
         private const int MaxCachedCloakTiles = 32;
         private static readonly ConditionalWeakTable<ResourceIndex, ConcurrentDictionary<string, TextureImage?>> CloakTiles = new();
 
-        public static bool IsTintMapMaterial(MtrMaterial? material)
+        public static bool IsTintMapMaterial(MtrDocument? material)
         {
             return material != null &&
-                   material.CustomShaders.Values.Any(shader =>
-                       shader.Equals(TintShader, StringComparison.OrdinalIgnoreCase) ||
-                       shader.Equals(NormalMappedTintShader, StringComparison.OrdinalIgnoreCase) ||
-                       shader.Equals("fs_cloaktint", StringComparison.OrdinalIgnoreCase) ||
-                       shader.Equals(HairTintShader, StringComparison.OrdinalIgnoreCase));
+                   material.RawShaderBindings.Values.Any(shader =>
+                       shader?.Equals(TintShader, StringComparison.OrdinalIgnoreCase) == true ||
+                       shader?.Equals(NormalMappedTintShader, StringComparison.OrdinalIgnoreCase) == true ||
+                       shader?.Equals(CloakTintShader, StringComparison.OrdinalIgnoreCase) == true ||
+                       shader?.Equals(HairTintShader, StringComparison.OrdinalIgnoreCase) == true);
         }
 
-        public static TextureImage? LoadTintMap(ResourceIndex resourceIndex, MtrMaterial material, string? textureName = null)
+        public static TextureImage? LoadTintMap(ResourceIndex resourceIndex, MtrDocument material, string? textureName = null)
         {
-            if (!material.CustomShaders.Values.Any(shader => shader.Equals("fs_cloaktint", StringComparison.OrdinalIgnoreCase)))
+            if (!material.RawShaderBindings.Values.Any(shader =>
+                    shader?.Equals(CloakTintShader, StringComparison.OrdinalIgnoreCase) == true))
             {
-                var mapName = material.GetTexture(7);
-                return string.IsNullOrWhiteSpace(mapName) ? null : TextureLoader.Load(resourceIndex, mapName);
+                var mapName = MaterialResolver.GetTexture(material, 7);
+                return string.IsNullOrWhiteSpace(mapName)
+                    ? null
+                    : TextureLoader.Load(resourceIndex, mapName, standardDdsRowOrder: DdsStoredRowOrder.BottomUp);
             }
 
             // Composed cloak bitmaps carry cloakmodel.TEXTURE while geometry/materials are shared.
             if (textureName == null || !int.TryParse(textureName.Split('_').Last(), out var texture) ||
                 !resourceIndex.TryLookup(new ResourceIdentity("cloaktint", ResourceIdentity.TypeFromExtension("2da")), out var handle))
                 return null;
-            var table = TwoDAReader.Read(handle.GetBytes());
-            if (texture < 0 || texture >= table.RowCount || !int.TryParse(table.GetValue(texture, "INDEX"), out var index) || index < 0 || index >= 128)
+            var table = TwoDaReader.Read(handle.GetBytes(), TwoDaReadOptions.EngineCompatible);
+            if (texture < 0 || texture >= table.Rows.Count || !int.TryParse(table.GetValue(texture, "INDEX"), out var index) || index < 0 || index >= 128)
                 return null;
-            var atlasName = material.GetTexture(6 + index / 32);
+            var atlasName = MaterialResolver.GetTexture(material, 6 + index / 32);
             if (string.IsNullOrWhiteSpace(atlasName))
                 return null;
             // Each tile otherwise decodes a whole 2048x4096 atlas on every dye change.
@@ -59,7 +65,7 @@ namespace SWLOR.Toolset.Domain.Render
 
         private static TextureImage? LoadCloakTile(ResourceIndex resourceIndex, string atlasName, int index)
         {
-            var atlas = TextureLoader.Load(resourceIndex, atlasName);
+            var atlas = TextureLoader.Load(resourceIndex, atlasName, standardDdsRowOrder: DdsStoredRowOrder.BottomUp);
             if (atlas == null || atlas.Width != 2048 || atlas.Height != 4096)
                 return null;
             var pixels = new byte[512 * 512 * 4];
@@ -74,7 +80,7 @@ namespace SWLOR.Toolset.Domain.Render
         public static TextureImage? Render(
             ResourceIndex resourceIndex,
             string materialName,
-            MtrMaterial material,
+            MtrDocument material,
             IReadOnlyDictionary<int, int>? layerColorIndices,
             IReadOnlyDictionary<string, int>? overrides,
             AppearanceArmor armorPart = AppearanceArmor.Invalid,
@@ -83,8 +89,8 @@ namespace SWLOR.Toolset.Domain.Render
             if (!IsTintMapMaterial(material))
                 return null;
 
-            var tintMapName = material.GetTexture(7);
-            var paletteName = material.GetTexture(10);
+            var tintMapName = MaterialResolver.GetTexture(material, 7);
+            var paletteName = MaterialResolver.GetTexture(material, 10);
             if (string.IsNullOrWhiteSpace(tintMapName) || string.IsNullOrWhiteSpace(paletteName))
                 return null;
 
@@ -93,9 +99,12 @@ namespace SWLOR.Toolset.Domain.Render
             if (tintMap == null || palette == null || palette.Width <= 0 || palette.Height <= 0)
                 return null;
 
-            var alphaSource = material.GetAlphaSource();
+            var alphaSource = MaterialResolver.GetAlphaSource(material);
             var alphaTexture = alphaSource is { } source
-                ? TextureLoader.Load(resourceIndex, source.TextureName)
+                ? TextureLoader.Load(
+                    resourceIndex,
+                    source.TextureName,
+                    standardDdsRowOrder: DdsStoredRowOrder.BottomUp)
                 : null;
 
             var output = new byte[checked(tintMap.Width * tintMap.Height * 4)];

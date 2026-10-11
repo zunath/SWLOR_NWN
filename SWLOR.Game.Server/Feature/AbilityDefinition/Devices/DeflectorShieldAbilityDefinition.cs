@@ -102,26 +102,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void DeflectorShield1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                ApplyShieldTemporaryHP(activator, friendly, 35, 6, 45f);
-            }
+            ApplyDeflectorShield(activator, target, 35, 6);
         }
 
         private static void DeflectorShield2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                ApplyShieldTemporaryHP(activator, friendly, 65, 9, 45f);
-            }
+            ApplyDeflectorShield(activator, target, 65, 9);
         }
 
         private static void DeflectorShield3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            ApplyDeflectorShield(activator, target, 100, 12);
+        }
+
+        private static void ApplyDeflectorShield(uint activator, uint target, int flatAmount, int percent)
+        {
+            var applied = false;
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                ApplyShieldTemporaryHP(activator, friendly, 100, 12, 45f);
+                ApplyShieldTemporaryHP(activator, friendly, flatAmount, percent, 45f);
+                applied = true;
             }
+
+            if (applied)
+                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices);
         }
 
         private static void ApplyShieldTemporaryHP(

@@ -67,17 +67,30 @@ and attack poses, muzzle direction, and different body sizes. Offline previews a
 do not establish live fit. Resource-only replacements require a weapon HAK rebuild;
 they do not require a module repack.
 
-`tools/RenderRifleGrip.py` reads the rifle pose from an ASCII `a_ba_med_weap.mdl`
-reference. Supply `--source <review.blend>`,
-`--hand <ASCII pmh0_handr001.mdl>`, `--animation <ASCII a_ba_med_weap.mdl>` and
-`--output <local review folder>`. For fitting rifles, also supply
+Rifles use three clips. A standing character with a rifle plays `xbowr` (from
+`a_ba_non_combat`), which is what players see most. Combat stance and attacks play
+`xbowrdy` and `xbowshot` (from `a_ba`). `a_ba_med_weap` is not in the player chain.
+
+Fit rifles to the male human (`pmh0`) only. Other bodies put the support hand
+somewhere else on the weapon: the female human's sits about 4 cm lower, and the
+Cathar male's sits about 11 cm further up the barrel. Do not fit a rifle to those
+bodies. `SWLOR_Haks/tools/GenerateRifleHoldAnimations.py` retargets the three clips
+for every playable body, so each support hand meets the weapon where `pmh0`'s does.
+The firing hand keeps its inherited weapon hook; keying the hook would split the
+shared robe `rhand` joint. Rerun the generator whenever those clips, body roots or
+default hands change, then follow the compile and robe refresh steps in its
+docstring.
+
+`tools/RenderRifleGrip.py` reads the rifle pose from an ASCII animation model.
+Supply `--source <review.blend>`, `--hand <ASCII pmh0_handr001.mdl>`,
+`--animation <ASCII a_ba_non_combat.mdl>` for `--pose xbowr`, or `a_ba.mdl` for
+`xbowrdy`/`xbowshot`, and `--output <local review folder>`. For fitting rifles, also supply
 `--skeleton <ASCII pmh0.mdl>` and `--left-hand <ASCII pmh0_handl001.mdl>`.
 This composes the complete arm hierarchy and shows both hands from both sides.
 Skeleton/animation node names must be matched case-insensitively: the skeleton's
 `Lbicep_g` and animation's `lbicep_g` are the same bone. Skipping this ancestor
 places the support hand incorrectly even when the right hand appears plausible.
-Use `--pose xbowrdy` for the holding pose or `--pose xbowshot` for the initial
-attack frame. Moving attack frames and body clearance still need client review.
+Moving attack frames and body clearance still need client review.
 
 Review every replacement separately. A shared attachment-axis correction does not
 establish a good fit for different fore-end thicknesses, stocks and grips. Small
@@ -85,3 +98,7 @@ vertical seating adjustments and pitch around the grip can close support-hand ga
 preserve uniform scale and inspect trigger contact after each adjustment. Record
 per-model fits locally and apply changes to the existing compiled node transforms
 where possible, preserving the verified geometry, UVs, normals and tangents.
+`tools/TranslateWeaponModel.py` does this: `--offset X Y Z` translates, and
+`--pitch DEGREES --pivot X Y Z` rotates about the weapon X axis through the grip
+contact (a positive pitch raises the muzzle). Imported rifle 161 uses `--pitch -4`
+and rifle 222 uses `--pitch -5`, both with pivot `0 0.02 0.01`.

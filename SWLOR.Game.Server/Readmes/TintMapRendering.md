@@ -21,7 +21,11 @@ as `fs_plt_tinter`, sampling only the selected tile. Native palette choices
 continue to update the inventory icon; custom RGB uses the existing item dye
 variables and survives editor reopening. The Toolset crops the same atlas tile
 for its viewport and thumbnails. `CloakTintAssets.py --check` validates the
-checked-in assets during a build; explicit authoring requires `--game-data`.
+checked-in assets during a build, including a binding for every cloak MDL;
+explicit authoring requires `--game-data`. The client draws every cloak mesh with
+the `cloakmodel.TEXTURE` PLT, even where its bitmap names the model, another PLT,
+or nothing that exists (model 007's only visible mesh is the `cala_cloak` skin), so
+every mesh is bound. Authoring refuses a mesh naming a real TGA, DDS, or MTR.
 
 Authored MTRs can inherit a same-name DDS/TGA without declaring `texture0`.
 `TintMapMaterialSources.json` records that input as `implicitTexture0`.
@@ -287,6 +291,9 @@ bone references and child/animation relationships.
 Generated robe phenotypes also need their own native cloak geometry resources.
 After changing the robe or cloak catalog, run
 `python -B SWLOR_Haks/tools/GenerateRobeCloakModels.py --game-data <installed-game-data-directory>`.
+It writes MDLs in place of its existing redirects, so then run
+`ModelLodAssets.py --apply --game-data` and `CloakTintAssets.py --game-data` in that order.
+The build rejects a cloak source recorded as unavailable once a HAK provides it.
 Commit `tools/RobeCloakModels.json`, canonical cloak MDLs and their phenotype-specific
 `.lod` redirects in `SWLOR_Haks/sw_pt_cloak`. They share the exact geometry, materials,
 skin binds and animation parents. `tools/ModelLodAssets.json` records each redirect's
@@ -308,6 +315,8 @@ from `SWLOR_Haks`, edit or regenerate the models, then run
 `python -B tools/ModelLodAssets.py --apply --game-data "<NWN>/data"` to publish
 checked-in redirects again. Overrides of base-game model names stay MDLs and are
 listed as `native_overrides`: an MDL-first lookup would otherwise load the stock model.
+The check fails if one of those MDLs is deleted, or if a redirect's name or target
+is defined by more than one HAK, since HAK priority could then load an unvalidated model.
 This is an authoring operation. Normal builds validate the checked-in LOD assets
 and package them with `nwn_erf --add-restypes lod:2078`; they never generate MDLs.
 `CheckPackedLods.py` then fails the build if a packer without that option dropped
@@ -796,7 +805,8 @@ hook restores the original field immediately after the synchronous writer.
 After changing body roots, neck meshes or phenotype fallbacks, run
 `python -B SWLOR_Haks/tools/GenerateNeckModels.py --game-data "<NWN>/data" --apply`,
 then repeat with `--check` and run `TestNeckModels.py --game-data "<NWN>/data"`.
-The HAK build rejects stale source/output hashes. Generated aliases must stay
+The HAK build rejects stale source/output hashes, a deleted repository input,
+and edits to the generator, skin remapping, or model parser code. Generated aliases must stay
 excluded from tint source discovery: they share the source neck's materials.
 Rebuild `sw_pt_neck.hak` and `sw_2da.hak` and deploy the matching server assembly.
 

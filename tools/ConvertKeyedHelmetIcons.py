@@ -3,8 +3,9 @@
 Each source PNG paints every dye region in one key hue (see KEY_LAYERS) over a
 flat #808080 background, shading only by brightness. The hue selects the PLT
 layer and the brightness becomes the PLT shade, so the icon takes the item's
-dye colors in game. Sources and the generation prompt live in
-SWLOR_Haks/sw_item_source/helmets/.
+dye colors in game. The generation prompt and key mapping are recorded in
+SWLOR_Haks/sw_item_source/helmets/helmet-artwork.json; the source images are not
+kept in the repository.
 """
 import argparse
 import struct
@@ -107,7 +108,7 @@ def convert(source, destination):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--source", type=Path, default=Path("SWLOR_Haks/sw_item_source/helmets"))
+    parser.add_argument("--source", type=Path, required=True, help="Folder of ihelm_<ID>.png key-colored images")
     parser.add_argument("--output", type=Path, default=Path("SWLOR_Haks/sw_pt_helm"))
     parser.add_argument("icons", nargs="*", help="Icon resrefs such as ihelm_302; default is every source")
     arguments = parser.parse_args()

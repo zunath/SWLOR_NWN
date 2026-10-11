@@ -54,23 +54,25 @@ public class DathomirGrottoApexDenPlacementTests
             .Should().Be("Exit the Apex Den");
     }
 
-    [Test]
-    public void ApexDenEntryGate_StandsOnTheLedgeFloorBesideItsArrivalPoint()
+    // Both gates once had origins inside rock (entry 0.6 m, exit 1.9 m off the walkmesh), so players
+    // stalled short of using them. Each must stand on open floor beside its own side's arrival point.
+    [TestCase(CavernAreaFile, "DATH_APEX_DEN_INSIDE", "DATH_APEX_DEN_OUTSIDE")]
+    [TestCase(DungeonAreaFile, "DATH_APEX_DEN_OUTSIDE", "DATH_APEX_DEN_INSIDE")]
+    public void ApexDenGates_StandOnTheFloorBesideTheirArrivalPoint(string areaFile, string destination, string arrivalTag)
     {
-        using var cavern = LoadModuleJson("git", CavernAreaFile);
-        var gate = EnumerateObjects(cavern.RootElement)
+        using var area = LoadModuleJson("git", areaFile);
+        var gate = EnumerateObjects(area.RootElement)
             .Single(element =>
                 GetString(element, "OnUsed") == "teleport" &&
-                GetOptionalLocalString(element, "DESTINATION") == "DATH_APEX_DEN_INSIDE");
-        var outside = cavern.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
-            .Single(waypoint => GetString(waypoint, "Tag") == "DATH_APEX_DEN_OUTSIDE");
+                GetOptionalLocalString(element, "DESTINATION") == destination);
+        var arrival = area.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
+            .Single(waypoint => GetString(waypoint, "Tag") == arrivalTag);
 
-        // At (24.6, 33.8) the origin sat 0.6 m inside the rock face and players stalled short of using it.
         var horizontal = Math.Sqrt(
-            Math.Pow(GetFloat(gate, "X") - GetFloat(outside, "XPosition"), 2) +
-            Math.Pow(GetFloat(gate, "Y") - GetFloat(outside, "YPosition"), 2));
-        horizontal.Should().BeLessThan(1.5, "the gate must stand on the same open ledge floor as its arrival point");
-        Math.Abs(GetFloat(gate, "Z") - GetFloat(outside, "ZPosition")).Should().BeLessThan(0.5);
+            Math.Pow(GetFloat(gate, "X") - GetFloat(arrival, "XPosition"), 2) +
+            Math.Pow(GetFloat(gate, "Y") - GetFloat(arrival, "YPosition"), 2));
+        horizontal.Should().BeLessThan(1.5, "the gate must stand on the same open floor as its arrival point");
+        Math.Abs(GetFloat(gate, "Z") - GetFloat(arrival, "ZPosition")).Should().BeLessThan(0.5);
     }
 
     [Test]

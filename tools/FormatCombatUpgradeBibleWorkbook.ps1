@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$WorkbookPath = "design\bible\SWLOR Design Bible - Combat Upgrade.xlsx",
+    [string]$WorkbookPath = "design\bible\SWLOR Design Bible.xlsx",
     [string]$LayoutPath = "tools\CombatUpgradeBibleWorkbookLayout.json"
 )
 

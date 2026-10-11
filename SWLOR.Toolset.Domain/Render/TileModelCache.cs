@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using Serilog;
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
+using Nwn.Preview.Scene;
 using SWLOR.Toolset.Domain.GameData.Resources;
 
 namespace SWLOR.Toolset.Domain.Render

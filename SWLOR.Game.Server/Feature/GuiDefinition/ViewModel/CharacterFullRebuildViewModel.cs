@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Area;
 using ClassType = SWLOR.NWN.API.NWScript.Enum.ClassType;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using RacialType = SWLOR.NWN.API.NWScript.Enum.RacialType;
@@ -83,76 +82,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var fallbackLocation = GetLocation(GetWaypointByTag("CZ220_LANDING"));
-            var location = fallbackLocation;
             var area = string.IsNullOrWhiteSpace(dbPlayer.LocationAreaResref)
                 ? OBJECT_INVALID
                 : Area.GetAreaByResref(dbPlayer.LocationAreaResref);
+            var position = Vector3(dbPlayer.LocationX, dbPlayer.LocationY, dbPlayer.LocationZ);
 
-            if (GetIsObjectValid(area) &&
-                IsPositionInsideArea(
-                    dbPlayer.LocationX,
-                    dbPlayer.LocationY,
-                    dbPlayer.LocationZ,
-                    GetAreaSize(Dimension.Width, area),
-                    GetAreaSize(Dimension.Height, area)))
-            {
-                var position = Vector3(dbPlayer.LocationX, dbPlayer.LocationY, dbPlayer.LocationZ);
-                location = Location(area, position, dbPlayer.LocationOrientation);
-            }
-            else if (!string.IsNullOrWhiteSpace(dbPlayer.LocationAreaResref))
-            {
-                LogInvalidSpendingExitLocation(playerId, dbPlayer);
-            }
+            var location = GetIsObjectValid(area)
+                ? Location(area, position, dbPlayer.LocationOrientation)
+                : GetLocation(GetWaypointByTag("CZ220_LANDING"));
 
             AssignCommand(player, () =>
             {
                 ClearAllActions();
                 ActionJumpToLocation(location);
             });
-
-            // The engine silently drops a jump it cannot resolve, which leaves the player stuck here.
-            DelayCommand(SpendingExitVerifyDelaySeconds, () =>
-            {
-                if (!GetIsObjectValid(player) || GetResRef(GetArea(player)) != SpendingAreaResref)
-                    return;
-
-                LogInvalidSpendingExitLocation(playerId, dbPlayer);
-                AssignCommand(player, () =>
-                {
-                    ClearAllActions();
-                    ActionJumpToLocation(fallbackLocation);
-                });
-            });
-        }
-
-        private const string SpendingAreaResref = "spending_area";
-        private const float SpendingExitVerifyDelaySeconds = 3f;
-
-        private static void LogInvalidSpendingExitLocation(string playerId, Player dbPlayer)
-        {
-            Log.WriteStructured(
-                LogGroup.Server,
-                "Spending area exit used fallback landing: PlayerId={PlayerId} AreaResref={AreaResref} X={X} Y={Y} Z={Z}",
-                playerId,
-                dbPlayer.LocationAreaResref,
-                dbPlayer.LocationX,
-                dbPlayer.LocationY,
-                dbPlayer.LocationZ);
-        }
-
-        /// <summary>
-        /// Determines whether a saved position is a finite point within an area's tile bounds.
-        /// </summary>
-        public static bool IsPositionInsideArea(float x, float y, float z, int widthTiles, int heightTiles)
-        {
-            if (!float.IsFinite(x) || !float.IsFinite(y) || !float.IsFinite(z))
-                return false;
-
-            const float TileSize = 10f;
-            return x >= 0f && y >= 0f &&
-                   x <= widthTiles * TileSize &&
-                   y <= heightTiles * TileSize;
         }
 
         public bool CanDistribute

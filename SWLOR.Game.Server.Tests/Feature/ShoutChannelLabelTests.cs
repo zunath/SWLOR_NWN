@@ -22,16 +22,19 @@ public class ShoutChannelLabelTests
         var source = File.ReadAllText(Path.Combine(root!.FullName, "SWLOR.Game.Server", "Service", "Communication.cs"));
         var handler = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
             .OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.ValueText == "ApplyShoutChannelName");
-        handler.AttributeLists.ToString().Should().Be("[NWNEventHandler(ScriptName.OnModuleEnter)]");
+        handler.AttributeLists.ToString().Should().Be("[NWNEventHandler(ScriptName.OnServerSendAreaBefore)]");
+        var registration = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "EventRegistration.cs"));
+        registration.Should().Contain("EventsPlugin.SubscribeEvent(\"NWNX_ON_SERVER_SEND_AREA_BEFORE\", ScriptName.OnServerSendAreaBefore);");
 
-        // Run the actual login handler with a recording NWNX boundary, rather than assert its text.
+        // Run the actual pre-area handler with a recording NWNX boundary. The client caches
+        // dropdown labels when opening its UI, so an OnModuleEnter override is too late.
         var harness = $$"""
             using System.Collections.Generic;
             public static class LoginHarness
             {
                 private static uint _entering;
                 private static bool _isPC, _isDM, _isPossessed;
-                private static uint GetEnteringObject() => _entering;
+                private static uint OBJECT_SELF => _entering;
                 private static bool GetIsPC(uint player) => _isPC;
                 private static bool GetIsDM(uint player) => _isDM;
                 private static bool GetIsDMPossessed(uint player) => _isPossessed;

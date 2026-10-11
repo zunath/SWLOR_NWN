@@ -335,6 +335,9 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("NWNX_ON_CLIENT_CONNECT_BEFORE", ScriptName.OnClientConnectBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_CLIENT_CONNECT_AFTER", ScriptName.OnClientConnectAfter);
 
+            // Apply client overrides before the area packet initializes the in-game UI.
+            EventsPlugin.SubscribeEvent("NWNX_ON_SERVER_SEND_AREA_BEFORE", ScriptName.OnServerSendAreaBefore);
+
             // Combat Round Start events
             EventsPlugin.SubscribeEvent("NWNX_ON_START_COMBAT_ROUND_BEFORE", ScriptName.OnStartCombatRoundBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_START_COMBAT_ROUND_AFTER", ScriptName.OnStartCombatRoundAfter);

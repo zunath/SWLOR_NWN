@@ -54,7 +54,7 @@ namespace SWLOR.CLI
                     : string.Empty;
         }
 
-        private const string PublicBibleWorkbook = "SWLOR Design Bible - Combat Upgrade.xlsx";
+        private const string PublicBibleWorkbook = "SWLOR Design Bible.xlsx";
         private const string PrivateSourceWorkbook = "SWLOR Design Bible - Private Source Data.xlsx";
         private const string Template = "Templates/beast_builder_template.txt";
         private const string LevelTemplate = "Templates/beast_level_template.txt";

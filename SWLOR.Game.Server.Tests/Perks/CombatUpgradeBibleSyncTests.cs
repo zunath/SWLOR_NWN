@@ -1416,7 +1416,7 @@ public class CombatUpgradeBibleSyncTests
         var templates = ReadDroidInstructionTemplates(root);
         var recipes = new DroidInstructionRecipes().BuildRecipes();
         using var archive = ZipFile.OpenRead(Path.Combine(
-            root.FullName, "design", "bible", "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            root.FullName, "design", "bible", "SWLOR Design Bible.xlsx"));
         var discs = ReadBibleWorksheetRows(archive, "Equipment - Droids")
             .Where(row => row.GetValueOrDefault("T", "").StartsWith("id_", StringComparison.Ordinal))
             .ToArray();

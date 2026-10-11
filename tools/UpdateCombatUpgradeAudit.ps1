@@ -3,7 +3,7 @@ param(
     [switch]$RefreshBible,
     [switch]$RefreshLocalBible,
     [string]$SpreadsheetId = "1rppEkwp2dX0oGKY1ftSbDTcg7GhopODseqbDb4cpNSU",
-    [string]$BibleWorkbookPath = "design\bible\SWLOR Design Bible - Combat Upgrade.xlsx",
+    [string]$BibleWorkbookPath = "design\bible\SWLOR Design Bible.xlsx",
     [string]$ManifestPath = "SWLOR.Game.Server\Readmes\CombatUpgradeBiblePerkManifest.csv",
     [string]$AuditPath = "SWLOR.Game.Server\Readmes\CombatUpgradePerkAudit.csv"
 )

@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I can only take someone who has mastered the Force discipline. Reach rank 50 before we discuss the work below.",
+          "Text": "I can only take someone who has mastered the Force discipline. Reach rank 50 before we discuss the work on Korriban.",
           "Style": 0,
           "Color": null
         }
@@ -285,6 +285,10 @@
         },
         {
           "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "neutral-ask",
           "Conditions": []
         }
       ]
@@ -349,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The key opens the sealed entrance to the Korriban Sith Crypt Depths. Start in the outer rite chambers. I am arranging passage for the wounded at the starport. The raiders move their stolen relics between several chambers; their records will tell us which routes remain open.",
+          "Text": "The key opens the sealed entrance to the Korriban Sith Crypt Depths. Start in the outer rite chambers. I am arranging onward passage for the wounded from the Promenade on Smuggler's Moon. The raiders move their stolen relics between several chambers; their records will tell us which routes remain open.",
           "Style": 0,
           "Color": null
         }
@@ -1211,7 +1215,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I am arranging passage for the wounded at the starport. The raiders move their stolen relics between several chambers; their records will tell us which routes remain open. When you return, the recovered records will let us account for what they stole.",
+          "Text": "I am arranging onward passage for the wounded from the Promenade on Smuggler's Moon. The raiders move their stolen relics between several chambers; their records will tell us which routes remain open. When you return, the recovered records will let us account for what they stole.",
           "Style": 0,
           "Color": null
         }
@@ -1291,6 +1295,32 @@
       ],
       "OnEnterActions": [],
       "Choices": []
+    },
+    "neutral-meeting": {
+      "Id": "neutral-meeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The Promenade on Smuggler's Moon lets me meet rescuers without sending them through an academy checkpoint. I judge what you do for the crews, not whose colors you wear. The work is still in the Korriban Sith Crypt Depths on Korriban; take the key there, then bring your findings back to me here.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "neutral-return",
+          "Conditions": []
+        }
+      ]
     }
   },
   "Choices": {
@@ -2138,6 +2168,52 @@
       "Next": [
         {
           "TargetNodeId": "entry-00041",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-ask": {
+      "Id": "neutral-ask",
+      "Text": {
+        "Text": "Why are we meeting here, and where is the trial?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "neutral-meeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-return": {
+      "Id": "neutral-return",
+      "Text": {
+        "Text": "Back to the assignment.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00002",
           "Conditions": []
         }
       ],

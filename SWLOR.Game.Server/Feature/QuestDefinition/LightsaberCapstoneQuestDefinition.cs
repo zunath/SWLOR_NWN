@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Storm Enclave Trial Slate is recovered. Return to Talan Rees at the Jedi Enclave on Dantooine.")
+                    "The Saber Storm Enclave Trial Slate is recovered. Return to Talan Rees at the Anchorhead - Spaceport on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Storm Kyber Focus Shard is recovered. Return to Talan Rees at the Jedi Enclave on Dantooine.")
+                    "The Saber Storm Kyber Focus Shard is recovered. Return to Talan Rees at the Anchorhead - Spaceport on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Storm Fractured Trial Sigil is recovered. Return to Talan Rees at the Jedi Enclave on Dantooine.")
+                    "The Saber Storm Fractured Trial Sigil is recovered. Return to Talan Rees at the Anchorhead - Spaceport on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Saber Storm Council Trial Chit is recovered. Return to Talan Rees at the Jedi Enclave on Dantooine.")
+                    "The Saber Storm Council Trial Chit is recovered. Return to Talan Rees at the Anchorhead - Spaceport on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Tempest Training Engine is defeated. Return to Talan Rees at the Jedi Enclave on Dantooine.")
+                    "The Tempest Training Engine is defeated. Return to Talan Rees at the Anchorhead - Spaceport on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Guardian Master Enclave Trial Slate is recovered. Return to Miris Aven at the Jedi Library on Dantooine.")
+                    "The Guardian Master Enclave Trial Slate is recovered. Return to Miris Aven at the Anchorhead - Verpex Bazaar on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Guardian Master Kyber Focus Shard is recovered. Return to Miris Aven at the Jedi Library on Dantooine.")
+                    "The Guardian Master Kyber Focus Shard is recovered. Return to Miris Aven at the Anchorhead - Verpex Bazaar on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Guardian Master Fractured Trial Sigil is recovered. Return to Miris Aven at the Jedi Library on Dantooine.")
+                    "The Guardian Master Fractured Trial Sigil is recovered. Return to Miris Aven at the Anchorhead - Verpex Bazaar on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Guardian Master Council Trial Chit is recovered. Return to Miris Aven at the Jedi Library on Dantooine.")
+                    "The Guardian Master Council Trial Chit is recovered. Return to Miris Aven at the Anchorhead - Verpex Bazaar on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Bastion Training Engine is defeated. Return to Miris Aven at the Jedi Library on Dantooine.")
+                    "The Bastion Training Engine is defeated. Return to Miris Aven at the Anchorhead - Verpex Bazaar on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

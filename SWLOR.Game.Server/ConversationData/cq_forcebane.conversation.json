@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "It's done, then. The forge answers to iron again, and every robe on this rock has to wonder if the spear behind them learned from you. Rule the last: a doctrine is only clean while someone keeps it clean. That's you now. Go be inconvenient to sorcerers.",
+          "Text": "It's done, then. The forge answers to iron again, and every robe on Korriban has to wonder if the spear behind them learned from you. Rule the last: a doctrine is only clean while someone keeps it clean. That's you now. Go be inconvenient to sorcerers.",
           "Style": 0,
           "Color": null
         }
@@ -285,6 +285,10 @@
         },
         {
           "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "neutral-ask",
           "Conditions": []
         }
       ]
@@ -1291,6 +1295,32 @@
       ],
       "OnEnterActions": [],
       "Choices": []
+    },
+    "neutral-meeting": {
+      "Id": "neutral-meeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Anchorhead's North District on Tatooine has room for a spear and no academy deciding who may learn its reach. Bring a willingness to practice; leave the uniform out of it. The people misusing my counters are in the Korriban Forge Caverns on Korriban. Their ledger comes back to me here.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "neutral-return",
+          "Conditions": []
+        }
+      ]
     }
   },
   "Choices": {
@@ -2138,6 +2168,52 @@
       "Next": [
         {
           "TargetNodeId": "entry-00041",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-ask": {
+      "Id": "neutral-ask",
+      "Text": {
+        "Text": "Why are we meeting here, and where is the trial?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "neutral-meeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-return": {
+      "Id": "neutral-return",
+      "Text": {
+        "Text": "Back to the assignment.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00002",
           "Conditions": []
         }
       ],

@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I can only take someone who has mastered the saberstaff discipline. Reach rank 50 before we discuss the work below.",
+          "Text": "I can only take someone who has mastered the saberstaff discipline. Reach rank 50 before we discuss the work on Dantooine.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Mind the stairs. A cyclone droid cut through the railing before we sealed the lower ring. Everyone got out; the machines stayed, repeating the last drill at full power. Disable 6 Cyclone Drill Droid units in the lower ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Cyclone Enclave Trial Slate.",
+          "Text": "The lower ring on Dantooine is sealed. A cyclone droid cut through the stair railing before we closed it. Everyone got out; the machines stayed, repeating the last drill at full power. Disable 6 Cyclone Drill Droid units in the lower ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Cyclone Enclave Trial Slate.",
           "Style": 0,
           "Color": null
         }
@@ -285,6 +285,10 @@
         },
         {
           "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "neutral-ask",
           "Conditions": []
         }
       ]
@@ -1291,6 +1295,32 @@
       ],
       "OnEnterActions": [],
       "Choices": []
+    },
+    "neutral-meeting": {
+      "Id": "neutral-meeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Tochee on Tatooine is far enough from the enclave for visitors to speak freely. I teach control of a saberstaff, not obedience to a gate guard. The damaged lower ring is still in the Jedi Enclave Trial Halls on Dantooine. Take the key there, and return to me in Tochee after the drill.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "neutral-return",
+          "Conditions": []
+        }
+      ]
     }
   },
   "Choices": {
@@ -2138,6 +2168,52 @@
       "Next": [
         {
           "TargetNodeId": "entry-00041",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-ask": {
+      "Id": "neutral-ask",
+      "Text": {
+        "Text": "Why are we meeting here, and where is the trial?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "neutral-meeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-return": {
+      "Id": "neutral-return",
+      "Text": {
+        "Text": "Back to the assignment.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00002",
           "Conditions": []
         }
       ],

@@ -13,12 +13,12 @@ public class CapstoneQuestGiverPlacementTests
     private static readonly (string Giver, string Area)[] Placements =
     {
         ("cq_invinc", "veles_sheriff"), ("cq_vitrupt", "veles_cantina"), ("cq_sysshut", "veles_cz_tower"),
-        ("cq_killbeacon", "v_repubbase_1"), ("cq_embunker", "v_repubbase_ext"), ("cq_deccommand", "v_repubbase_cd"),
-        ("cq_sabstorm", "dan_jedienclave"), ("cq_guardmst", "dan_jedlibrary"), ("cq_sabcycl", "dan_interiors"),
-        ("cq_emcocktail", "dan_repubmed"), ("cq_holdline", "dan_repgarrison"), ("cq_infconduit", "dan_medinterior"),
-        ("cq_absdef", "ar_scor_kacademy"), ("cq_soulasc", "scor_knwinterior"), ("cq_forcebane", "ar_scor_kortemp"),
-        ("cq_lightstand", "korribanlandingp"), ("cq_darkhung", "ar_scor_korrcan"), ("cq_eclipse", "scor_kscaves"),
-        ("cq_adamguard", "nanostation015"), ("cq_scraplock", "czs220_hangar"), ("cq_worldbrk", "dan_battlemon"),
+        ("cq_killbeacon", "pw_ar_narscorpd"), ("cq_embunker", "tat_anc_gocorpst"), ("cq_deccommand", "pw_ar_nsshipyard"),
+        ("cq_sabstorm", "tat_anc_astropor"), ("cq_guardmst", "tat_anc_verpexba"), ("cq_sabcycl", "tat_tocheemain"),
+        ("cq_emcocktail", "pw_ar_ns_medical"), ("cq_holdline", "pw_ar_ns_doffice"), ("cq_infconduit", "tat_anc_medical"),
+        ("cq_absdef", "pw_ar_nsficlub"), ("cq_soulasc", "pw_ar_narshahub"), ("cq_forcebane", "tat_anc_northdis"),
+        ("cq_lightstand", "pw_ar_narpromena"), ("cq_darkhung", "tat_anc_junix"), ("cq_eclipse", "pw_ar_nardocks"),
+        ("cq_adamguard", "nanostation015"), ("cq_scraplock", "czs220_hangar"), ("cq_worldbrk", "tat_anc_droidshp"),
         ("cq_unmovctr", "tat_anc_cantina"), ("cq_lastword", "tosche_cantina_s"), ("cq_deadhand", "tochee_cantina"),
         ("cq_killbox", "pw_ar_nsczgnstr"), ("cq_oneshot", "pw_ar_czoffice"), ("cq_rainsteel", "pw_ar_nscrafting"),
         ("cq_thermdet", "hutlar_outpost"), ("cq_overbarr", "sol_mandaloriani"), ("cq_perflurry", "sol_hutlarqcanyo"),
@@ -114,22 +114,77 @@ public class CapstoneQuestGiverPlacementTests
     }
 
     [Test]
-    public void WorldbreakerTurnInJournals_NameThePlacedGiversArea()
+    public void EveryTurnInJournal_NamesThePlacedGiversArea()
     {
-        var area = Placements.Single(p => p.Giver == "cq_worldbrk").Area;
-        using var are = LoadModuleJson("are", $"{area}.are.json");
-        var location = GetLocString(are.RootElement, "Name").Split(" - ", 2);
-        location.Should().HaveCount(2, "the giver's area name identifies its planet and location");
+        var quests = typeof(VibrobladeCapstoneQuestDefinition).Assembly.GetTypes()
+            .Where(type => type.IsClass && !type.IsAbstract &&
+                           typeof(SWLOR.Game.Server.Service.QuestService.IQuestListDefinition).IsAssignableFrom(type) &&
+                           type.Name.EndsWith("CapstoneQuestDefinition", StringComparison.Ordinal))
+            .SelectMany(type => ((SWLOR.Game.Server.Service.QuestService.IQuestListDefinition)
+                Activator.CreateInstance(type)!).BuildQuests())
+            .ToDictionary(pair => pair.Key, pair => pair.Value);
 
-        var quests = new StaffCapstoneQuestDefinition().BuildQuests()
-            .Where(q => q.Key.StartsWith("worldbreaker_", StringComparison.Ordinal))
-            .Select(q => q.Value)
-            .ToArray();
-        quests.Should().HaveCount(5);
-        foreach (var quest in quests)
+        foreach (var (giver, area) in Placements)
         {
-            quest.States[2].JournalText.Should().Contain($"{location[1]} on {location[0]}",
-                $"{quest.QuestId} must direct players to KX-17's placed hub");
+            var line = CapstoneQuestDefinitionTestData.Lines.Single(line => line.QuestGiver.Resref == giver);
+            using var are = LoadModuleJson("are", $"{area}.are.json");
+            var location = GetLocString(are.RootElement, "Name").Trim().Split(" - ", 2);
+            foreach (var questId in line.QuestIds)
+            {
+                var journal = quests[questId].States[2].JournalText;
+                journal.Should().Contain(line.QuestGiver.Name, questId);
+                // Existing journals also use the lore name Nar Shaddaa for Smuggler's Moon.
+                if (giver is "cq_lightstand" or "cq_darkhung" or "cq_eclipse" or "cq_absdef" or
+                    "cq_soulasc" or "cq_forcebane" or "cq_sabstorm" or "cq_guardmst" or
+                    "cq_sabcycl" or "cq_infconduit" or "cq_emcocktail" or "cq_holdline" or
+                    "cq_worldbrk" or "cq_killbeacon" or "cq_embunker" or "cq_deccommand")
+                {
+                    journal.Should().Contain($"{location[1]} on {location[0]}", questId);
+                }
+            }
+        }
+    }
+
+    [Test]
+    public void CapstoneQuestGivers_AvoidFactionHeadquartersAndPlanets()
+    {
+        foreach (var (_, area) in Placements)
+        {
+            using var are = LoadModuleJson("are", $"{area}.are.json");
+            var location = GetLocString(are.RootElement, "Name");
+            location.Should().NotStartWith("Dantooine - ");
+            location.Should().NotStartWith("Korriban - ");
+            location.Should().NotContain("Republic Base");
+        }
+    }
+
+    [Test]
+    public void RelocatedGivers_ExplainNeutralMeetingPointWithoutAdvancingQuests()
+    {
+        var relocatedAreas = new[]
+        {
+            "pw_ar_narpromena", "tat_anc_junix", "pw_ar_nardocks", "pw_ar_nsficlub",
+            "pw_ar_narshahub", "tat_anc_northdis", "tat_anc_astropor", "tat_anc_verpexba",
+            "tat_tocheemain", "tat_anc_medical", "pw_ar_ns_medical", "pw_ar_ns_doffice",
+            "tat_anc_droidshp", "pw_ar_narscorpd", "tat_anc_gocorpst", "pw_ar_nsshipyard",
+        };
+        foreach (var (giver, area) in Placements.Where(p => relocatedAreas.Contains(p.Area)))
+        {
+            var path = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server",
+                "ConversationData", $"{giver}.conversation.json");
+            using var graph = JsonDocument.Parse(File.ReadAllText(path));
+            var root = graph.RootElement;
+            var explanation = root.GetProperty("Nodes").GetProperty("neutral-meeting");
+            explanation.GetProperty("OnEnterActions").GetArrayLength().Should().Be(0);
+            foreach (var choiceId in new[] { "neutral-ask", "neutral-return" })
+            {
+                var choice = root.GetProperty("Choices").GetProperty(choiceId);
+                choice.GetProperty("Actions").GetArrayLength().Should().Be(0);
+                choice.GetProperty("EndsConversation").GetBoolean().Should().BeFalse();
+            }
+            using var are = LoadModuleJson("are", $"{area}.are.json");
+            var planet = GetLocString(are.RootElement, "Name").Split(" - ", 2)[0];
+            explanation.GetProperty("Text")[0].GetProperty("Text").GetString().Should().Contain(planet);
         }
     }
 

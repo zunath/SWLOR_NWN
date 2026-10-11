@@ -481,7 +481,6 @@ namespace SWLOR.Game.Server.Core
         public const string OnClientDisconnectBefore = "client_disc_bef";
         public const string OnClientDisconnectAfter = "client_disc_aft";
         public const string OnClientConnectAfter = "client_conn_aft";
-        public const string OnServerSendAreaBefore = "send_area_bef";
 
         // NWNX Events - Combat events
         public const string OnStartCombatRoundBefore = "comb_round_bef";

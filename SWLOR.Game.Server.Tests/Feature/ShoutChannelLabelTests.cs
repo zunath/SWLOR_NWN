@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class ShoutChannelLabelTests
 {
     private MethodInfo _login = null!;
+    private MethodInfo _confirmLogin = null!;
 
     [OneTimeSetUp]
     public void CompileLoginHandler()
@@ -22,19 +23,26 @@ public class ShoutChannelLabelTests
         var source = File.ReadAllText(Path.Combine(root!.FullName, "SWLOR.Game.Server", "Service", "Communication.cs"));
         var handler = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
             .OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.ValueText == "ApplyShoutChannelName");
-        handler.AttributeLists.ToString().Should().Be("[NWNEventHandler(ScriptName.OnServerSendAreaBefore)]");
-        var registration = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "EventRegistration.cs"));
-        registration.Should().Contain("EventsPlugin.SubscribeEvent(\"NWNX_ON_SERVER_SEND_AREA_BEFORE\", ScriptName.OnServerSendAreaBefore);");
+        handler.AttributeLists.ToString().Should().Be("[NWNEventHandler(ScriptName.OnModuleEnter)]");
+        var nativeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ChatChannelLabels.cs"));
+        var nativeMethods = CSharpSyntaxTree.ParseText(nativeSource).GetRoot().DescendantNodes()
+            .OfType<MethodDeclarationSyntax>().ToDictionary(method => method.Identifier.ValueText);
+        nativeMethods["RegisterHook"].ToString().Should().Contain("_ZN11CNWSMessage31SendServerToPlayerLogin_ConfirmEj");
+        // Replace only the unmanaged trampoline boundary with a recording client. Execute
+        // the production role lookup, personal override, exception handling, and send order.
+        var confirm = nativeMethods["ConfirmLogin"].WithAttributeLists(default).ToString()
+            .Replace("var original = (delegate* unmanaged<void*, uint, int>)_loginConfirmHook->m_trampoline;", "")
+            .Replace("original(message, playerId)", "RecordConfirmation(message, playerId)");
 
-        // Run the actual pre-area handler with a recording NWNX boundary. The client caches
-        // dropdown labels when opening its UI, so an OnModuleEnter override is too late.
+        // Run the actual login handler with a recording NWNX boundary, rather than assert its text.
         var harness = $$"""
+            using System;
             using System.Collections.Generic;
-            public static class LoginHarness
+            public static unsafe class LoginHarness
             {
                 private static uint _entering;
                 private static bool _isPC, _isDM, _isPossessed;
-                private static uint OBJECT_SELF => _entering;
+                private static uint GetEnteringObject() => _entering;
                 private static bool GetIsPC(uint player) => _isPC;
                 private static bool GetIsDM(uint player) => _isDM;
                 private static bool GetIsDMPossessed(uint player) => _isPossessed;
@@ -54,16 +62,63 @@ public class ShoutChannelLabelTests
                     return Overrides.ToArray();
                 }
                 {{handler.WithAttributeLists(default)}}
+                private static bool _missingInfo;
+                private static int _failures;
+                private static readonly Dictionary<uint, string> ClientLabels = new();
+                private static string _cachedLabel = "";
+                private sealed class PlayerInfo { public int m_bGameMasterPrivileges => _isDM ? 1 : 0; }
+                private sealed class Server
+                {
+                    public Server m_pServerExoApp => this;
+                    public Server GetNetLayer() => this;
+                    public PlayerInfo GetPlayerInfo(uint id) => _missingInfo ? null : new();
+                }
+                private static class NWNXLib { public static Server g_pAppManager = new(); }
+                private sealed class CExoString : IDisposable
+                {
+                    public string Text;
+                    public CExoString(string text) => Text = text;
+                    public void Dispose() { }
+                }
+                private sealed class CNWSMessage
+                {
+                    public static CNWSMessage FromPointer(void* message) => new();
+                    public int SendServerToPlayerSetTlkOverride(uint id, int strRef, CExoString text)
+                    {
+                        if (strRef != 66751) throw new Exception("Incorrect chat label strref");
+                        ClientLabels[id] = text.Text;
+                        return 1;
+                    }
+                }
+                private static class Log { public static void WriteError(Exception ex, string text) => _failures++; }
+                private static int RecordConfirmation(void* message, uint id)
+                {
+                    // Login/Confirm constructs the dropdown from the client's current TLK table.
+                    _cachedLabel = ClientLabels.GetValueOrDefault(id, "Shout");
+                    return 73;
+                }
+                public static (int Result, string CachedLabel, int Failures) Confirm(uint id, bool isDM, bool missingInfo)
+                {
+                    _isDM = isDM;
+                    _missingInfo = missingInfo;
+                    _failures = 0;
+                    var result = ConfirmLogin(null, id);
+                    return (result, _cachedLabel, _failures);
+                }
+                {{confirm}}
+                {{nativeMethods["SendLabel"].WithAttributeLists(default)}}
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
             .Split(Path.PathSeparator).Select(path => MetadataReference.CreateFromFile(path));
         var compilation = CSharpCompilation.Create("ShoutChannelLabelHarness", [CSharpSyntaxTree.ParseText(harness)],
-            references, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+            references, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: true));
         using var stream = new MemoryStream();
         var result = compilation.Emit(stream);
         result.Success.Should().BeTrue(string.Join(Environment.NewLine, result.Diagnostics));
-        _login = Assembly.Load(stream.ToArray()).GetType("LoginHarness")!.GetMethod("Login")!;
+        var type = Assembly.Load(stream.ToArray()).GetType("LoginHarness")!;
+        _login = type.GetMethod("Login")!;
+        _confirmLogin = type.GetMethod("Confirm")!;
     }
 
     [Test]
@@ -81,4 +136,21 @@ public class ShoutChannelLabelTests
 
     private (uint Player, int StrRef, string Label)[] Login(uint player, bool isPC, bool isDM, bool isPossessed) =>
         ((uint, int, string)[])_login.Invoke(null, [player, isPC, isDM, isPossessed])!;
+
+    [Test]
+    public void LoginConfirmation_CachesPersonalLabelBeforeAnyCharacterOrAreaExists()
+    {
+        Confirm(100, false).Should().Be((73, "Disabled", 0));
+        Confirm(200, true).Should().Be((73, "Shout", 0));
+        Confirm(100, false).Should().Be((73, "Disabled", 0), "DM logins must not change another client's TLK");
+    }
+
+    [Test]
+    public void LoginConfirmation_StillSendsConfirmationWhenPlayerInfoIsMissing()
+    {
+        Confirm(300, false, true).Should().Be((73, "Shout", 1));
+    }
+
+    private (int Result, string CachedLabel, int Failures) Confirm(uint player, bool isDM, bool missingInfo = false) =>
+        ((int, string, int))_confirmLogin.Invoke(null, [player, isDM, missingInfo])!;
 }

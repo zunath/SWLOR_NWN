@@ -64,16 +64,16 @@ namespace SWLOR.Game.Server.Service
             PlayerPlugin.SetTlkOverride(player, PartyChatMessagePrefixStrRef, CommsMessagePrefix);
         }
 
-        [NWNEventHandler(ScriptName.OnServerSendAreaBefore)]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ApplyShoutChannelName()
         {
-            var player = OBJECT_SELF;
+            var player = GetEnteringObject();
             var isDM = GetIsDM(player) || GetIsDMPossessed(player);
             if (!GetIsPC(player) && !isDM)
                 return;
 
-            // The dropdown caches its labels when the client opens the in-game UI. Send this
-            // before the area packet; OnModuleEnter only updates the live chat-input label.
+            // Refresh the input prompt after login. Native.ChatChannelLabels sends the same
+            // override before login confirmation, when the dropdown caches its labels.
             // Keep this per-client; a global override would also label DM Shout as disabled.
             PlayerPlugin.SetTlkOverride(player, 66751, isDM ? "Shout" : "Disabled");
         }

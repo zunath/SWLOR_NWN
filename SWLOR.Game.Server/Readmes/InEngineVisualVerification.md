@@ -1,7 +1,10 @@
 # In-engine visual verification
 
 Visual changes require inspection in the actual Neverwinter Nights: Enhanced
-Edition client before handoff. This applies to NPC and object placements,
+Edition client **running in the background through the isolated private-desktop
+workflow** before handoff. Never bring the client to the foreground, take user
+focus, or switch the user's desktop during this process. This applies to NPC
+and object placements,
 models, textures, equipment, VFX, and in-game UI. Inspect every changed placement
 and the relevant appearances or states of other visual changes. Include the
 screenshots in the user report and describe the validation in the pull request.
@@ -10,7 +13,8 @@ evidence; they do not prove the final in-game appearance.
 
 ## Standard background client workflow
 
-Use the isolated background NWN client approach established by Xenomech's
+Background client execution is mandatory for this process. Use the isolated
+background NWN client approach established by Xenomech's
 "Resume armor work" session and used for the capstone giver relocation work.
 The client renders on a private Windows desktop without taking focus or
 switching the user's desktop. Capture the owned client's native render.

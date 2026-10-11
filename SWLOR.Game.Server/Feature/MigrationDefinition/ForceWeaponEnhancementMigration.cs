@@ -49,6 +49,33 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return changed;
         }
 
+        public static bool MigrateRecipeKnowledge(JObject player)
+        {
+            var changed = MigrateRecipes(player[nameof(Player.UnlockedRecipes)] as JObject);
+            changed |= MigrateRecipes(player[nameof(Player.CraftedRecipes)] as JObject);
+            return changed;
+        }
+
+        private static bool MigrateRecipes(JObject recipes)
+        {
+            if (recipes == null) return false;
+            var changed = false;
+            foreach (var entry in recipes.Properties().ToArray())
+            {
+                if (!Enum.TryParse<RecipeType>(entry.Name, out var recipe)) continue;
+                var replacement = GetReplacementRecipe(recipe);
+                if (replacement == recipe) continue;
+
+                var name = replacement.ToString();
+                var numericKey = ((int)replacement).ToString();
+                if (recipes.Property(name) == null && recipes.Property(numericKey) == null)
+                    recipes[int.TryParse(entry.Name, out _) ? numericKey : name] = entry.Value.DeepClone();
+                entry.Remove();
+                changed = true;
+            }
+            return changed;
+        }
+
         private static bool MigrateRecipes(Dictionary<RecipeType, DateTime> recipes)
         {
             if (recipes == null) return false;

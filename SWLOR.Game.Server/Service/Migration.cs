@@ -91,8 +91,9 @@ namespace SWLOR.Game.Server.Service
             var sw = new Stopwatch();
             var migrations = GetMigrations(executionType).ToList();
 
-            foreach (var migration in migrations)
+            for (var index = 0; index < migrations.Count; index++)
             {
+                var migration = migrations[index];
                 sw.Reset();
                 try
                 {
@@ -100,7 +101,10 @@ namespace SWLOR.Game.Server.Service
                     {
                         Log.Write(
                             LogGroup.Migration,
-                            $"Starting server migration ({executionType}) #{migration.Version}.",
+                            $"Starting server migration ({executionType}) #{migration.Version}." +
+                            (migration.Version >= 24
+                                ? $" {migration.GetType().Name}; {migrations.Count - index - 1} migrations remain after this in {executionType}."
+                                : string.Empty),
                             true);
                     }
 

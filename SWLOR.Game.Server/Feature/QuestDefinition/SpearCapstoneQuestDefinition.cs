@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane Forge Heat Ledger is secured. Return it to Maar Veth at the Valley of the Dark Lords on Korriban.")
+                    "The Forcebane Forge Heat Ledger is secured. Return it to Maar Veth at the Anchorhead - North District on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane Sith Tempering Matrix is secured. Return it to Maar Veth at the Valley of the Dark Lords on Korriban.")
+                    "The Forcebane Sith Tempering Matrix is secured. Return it to Maar Veth at the Anchorhead - North District on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane Cracked Anvil Sigil is secured. Return it to Maar Veth at the Valley of the Dark Lords on Korriban.")
+                    "The Forcebane Cracked Anvil Sigil is secured. Return it to Maar Veth at the Anchorhead - North District on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane Overseer's Clearance Token is secured. Return it to Maar Veth at the Valley of the Dark Lords on Korriban.")
+                    "The Forcebane Overseer's Clearance Token is secured. Return it to Maar Veth at the Anchorhead - North District on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane master is defeated. Return to Maar Veth at the Valley of the Dark Lords on Korriban to complete the lesson.")
+                    "The Forcebane master is defeated. Return to Maar Veth at the Anchorhead - North District on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

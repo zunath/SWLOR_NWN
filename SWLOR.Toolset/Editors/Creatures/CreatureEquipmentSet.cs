@@ -1,7 +1,10 @@
+using NwnResRef = Nwn.Formats.Resources.ResourceReferenceRules;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.Editors.Creatures;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 
@@ -50,34 +53,74 @@ namespace SWLOR.Toolset.Editors.Creatures
             return opened;
         }
 
-        /// <summary>Creates and equips an economy-restricted stat item inside the caller's transaction.</summary>
-        public CreatureEquipmentDocument Ensure(int slotId, int baseItem, string suffix, string displayName)
+        /// <summary>Prepares the linked item document before its owning related edit begins.</summary>
+        public CreatureEquipmentDocument Prepare(int slotId, string suffix)
         {
             var existing = ForSlot(slotId);
             if (existing != null)
                 return existing;
 
             var creatureResRef = _creature.GetString(
-                Domain.Editors.Behaviors.BehaviorFieldStorage.Field,
+                Nwn.Authoring.Behaviors.BehaviorFieldStorage.Field,
                 "TemplateResRef");
             var resRef = UniqueResRef(creatureResRef, suffix);
             var path = Path.Combine(_itemDirectory, resRef + ".uti.json");
             var document = JsonGffDocument.Parse(
-                BlueprintTemplateFactory.CreateFileContent(ResourceType.Uti, resRef, displayName));
+                BlueprintTemplateFactory.CreateFileContent(ResourceType.Uti, resRef, string.Empty));
             var created = new CreatureEquipmentDocument(
                 resRef,
                 true,
                 new DocumentSession(path, document));
             _documents.Add(resRef, created);
-
-            var root = created.Session.Document.Root;
-            root.SetInt("BaseItem", GffFieldType.Int, baseItem);
-            root.SetString("Tag", GffFieldType.CExoString, resRef);
-            root.GetOrAddLocString("LocalizedName").Text = displayName;
-            _creature.SetEquippedResRef(slotId, resRef);
             return created;
         }
 
+        /// <summary>Initializes and links a new item inside the owning creature transaction.</summary>
+        public void InitializeIfNew(
+            CreatureEquipmentDocument document,
+            int slotId,
+            int baseItem,
+            string displayName)
+        {
+            ArgumentNullException.ThrowIfNull(document);
+            if (!document.IsNew)
+                return;
+
+            var root = document.Session.Document.Root;
+            if ((root.GetIntOrNull("BaseItem") ?? -1) != 0 ||
+                !string.Equals(root.GetStringOrNull("Tag"), document.ResRef, StringComparison.OrdinalIgnoreCase) ||
+                !string.Equals(root.GetLocStringOrNull("LocalizedName")?.Text, document.ResRef, StringComparison.Ordinal))
+            {
+                return;
+            }
+            root.SetInt("BaseItem", GffFieldType.Int, baseItem);
+            root.SetString("Tag", GffFieldType.CExoString, document.ResRef);
+            root.GetOrAddLocString("LocalizedName").Text = displayName;
+            _creature.SetEquippedResRef(slotId, document.ResRef);
+        }
+
+        /// <summary>Discards an unchanged new item when its owning edit is refused.</summary>
+        public void DiscardUnreferencedNew(CreatureEquipmentDocument document)
+        {
+            ArgumentNullException.ThrowIfNull(document);
+            if (!document.IsNew || document.HasUnsavedChanges ||
+                new[]
+                {
+                    CreaturePropertyCatalog.MainWeaponSlot,
+                    CreaturePropertyCatalog.OffWeaponSlot,
+                    CreaturePropertyCatalog.CreatureWeaponSlot,
+                    CreaturePropertyCatalog.StatSkinSlot
+                }.Any(slot => string.Equals(
+                    _creature.EquippedResRef(slot),
+                    document.ResRef,
+                    StringComparison.OrdinalIgnoreCase)))
+            {
+                return;
+            }
+
+            if (_documents.Remove(document.ResRef))
+                document.Dispose();
+        }
         public IReadOnlyList<CreatureEquipmentDocument> CurrentlyReferenced()
         {
             var referenced = new HashSet<string>(StringComparer.OrdinalIgnoreCase);

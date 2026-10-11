@@ -287,9 +287,9 @@ public class NPCEnemyBalanceAuditTests
             ["invictus"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
             ["ruptorvane"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
             ["blackoutwrd"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
-            ["sabraetrial"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
-            ["enclavesentl"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
-            ["cycloneadpt"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["sabraetrial"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = 100, [ResistanceType.Disruption] = 17 },
+            ["enclavesentl"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = 100, [ResistanceType.Disruption] = 17 },
+            ["cycloneadpt"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = 100, [ResistanceType.Disruption] = 17 },
             ["forgewright"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
             ["flameweaver"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
             ["banecaller"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
@@ -639,7 +639,7 @@ public class NPCEnemyBalanceAuditTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var worldNpcs = ReadWorksheetByName(archive, "World NPCs");
         var sharedStrings = ReadSharedStrings(archive);
         XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
@@ -1111,7 +1111,7 @@ public class NPCEnemyBalanceAuditTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var worldNpcs = ReadWorksheetByName(archive, "World NPCs");
         var mimicry = ReadWorksheetByName(archive, "Mimicry");
         var sharedStrings = ReadSharedStrings(archive);
@@ -1264,7 +1264,7 @@ public class NPCEnemyBalanceAuditTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var worksheet = ReadWorksheetByName(archive, "World NPCs");
         var weaponDelays = ReadWorksheetByName(archive, "World NPC Weapon Delays");
         var sharedStrings = ReadSharedStrings(archive);
@@ -1443,7 +1443,7 @@ public class NPCEnemyBalanceAuditTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var worksheet = ReadWorksheetByName(archive, "World NPCs");
         var sharedStrings = ReadSharedStrings(archive);
 
@@ -1482,8 +1482,11 @@ public class NPCEnemyBalanceAuditTests
                 var abilityPackage = GetWorkbookCellText(worksheet, sharedStrings, $"AP{row}");
                 abilityPackage.Should().NotBeNullOrWhiteSpace();
                 GetWorkbookCellText(worksheet, sharedStrings, $"AQ{row}").Should().Be(abilityPackage);
+                using var utc = ReadJson(root, "Module", "utc", $"{resref}.utc.json");
                 GetWorkbookCellText(worksheet, sharedStrings, $"B{row}")
-                    .Should().Contain(line.DisplayName, "the enemy-name column identifies its capstone line");
+                    .Should().Be(
+                        utc.RootElement.GetProperty("FirstName").GetProperty("value").GetProperty("0").GetString(),
+                        "the enemy-name column must match the name players see");
 
                 if (step == 4)
                 {

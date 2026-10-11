@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(shortName)
-                .Texture("iit_ess_084")
+                .Texture("iit_smminelaser")
                 .Type(ShipModuleType.MiningLaser)
                 .MaxDistance(20f)
                 .ValidTargetType(ObjectType.Placeable)

@@ -4,7 +4,7 @@ using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
-using SWLOR.Toolset.Domain.Render.Icons;
+using Nwn.Preview.Icons;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
 

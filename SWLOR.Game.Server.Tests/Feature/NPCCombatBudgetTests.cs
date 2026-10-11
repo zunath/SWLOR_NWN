@@ -115,7 +115,7 @@ public class NPCCombatBudgetTests
     [Test]
     public void LootBossModifier_IsAvailableInBuilderDropdownsAndFilter()
     {
-        using var archive = ZipFile.OpenRead(Path.Combine(FindRoot(), "design", "bible", "SWLOR Design Bible - Combat Upgrade.xlsx"));
+        using var archive = ZipFile.OpenRead(Path.Combine(FindRoot(), "design", "bible", "SWLOR Design Bible.xlsx"));
         var dropdowns = 0;
         foreach (var entry in archive.Entries.Where(e => e.FullName.StartsWith("xl/worksheets/") && e.FullName.EndsWith(".xml")))
         {
@@ -340,7 +340,7 @@ public class NPCCombatBudgetTests
 
     private static List<Dictionary<string, string>> ReadRows(string root, string name)
     {
-        using var archive = ZipFile.OpenRead(Path.Combine(root, "design", "bible", "SWLOR Design Bible - Combat Upgrade.xlsx"));
+        using var archive = ZipFile.OpenRead(Path.Combine(root, "design", "bible", "SWLOR Design Bible.xlsx"));
         XDocument Read(string path)
         {
             using var stream = archive.GetEntry(path)!.Open();

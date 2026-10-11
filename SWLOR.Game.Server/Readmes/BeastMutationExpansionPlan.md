@@ -33,7 +33,7 @@ Implementation starts only after these three gates are approved.
 
 ### Public Bible
 
-Path: `design/bible/SWLOR Design Bible - Combat Upgrade.xlsx`
+Path: `design/bible/SWLOR Design Bible.xlsx`
 
 The public Bible should list beast identity and stats only. Mutation requirement metadata must be removed from public-facing tabs.
 

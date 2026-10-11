@@ -66,6 +66,62 @@ public class ForceWeaponEnhancementMigrationTests
     }
 
     [Test]
+    public void RawRecipeMigrationPreservesLegacyPlayerFieldsAndIsIdempotent()
+    {
+        var player = JObject.Parse("""
+            {"Id":"legacy-player","Perks":{"GuardingBond":3},
+             "UnlockedPerks":{"RetiredPerk":true},"Skills":{"RetiredSkill":12},
+             "UnknownField":{"value":42},"UnlockedRecipes":{},"CraftedRecipes":{}}
+            """);
+        var original = (JObject)player.DeepClone();
+        var date = new JValue("2026-10-01T00:00:00Z");
+        foreach (var recipe in new[] { RecipeType.WeaponEnhancementDMGForce1,
+                     RecipeType.WeaponEnhancementDMGForce2, RecipeType.WeaponEnhancementDMGForce3 })
+        {
+            player[nameof(Player.UnlockedRecipes)][recipe.ToString()] = date.DeepClone();
+            player[nameof(Player.CraftedRecipes)][((int)recipe).ToString()] = date.DeepClone();
+        }
+        player[nameof(Player.UnlockedRecipes)]["UnknownRecipe"] = date.DeepClone();
+
+        ForceWeaponEnhancementMigration.MigrateRecipeKnowledge(player).Should().BeTrue();
+
+        foreach (var recipe in new[] { RecipeType.WeaponEnhancementDMGForce1,
+                     RecipeType.WeaponEnhancementDMGForce2, RecipeType.WeaponEnhancementDMGForce3 })
+        {
+            var replacement = ForceWeaponEnhancementMigration.GetReplacementRecipe(recipe);
+            player[nameof(Player.UnlockedRecipes)][replacement.ToString()].Should().BeEquivalentTo(date);
+            player[nameof(Player.CraftedRecipes)][((int)replacement).ToString()].Should().BeEquivalentTo(date);
+            player[nameof(Player.UnlockedRecipes)][recipe.ToString()].Should().BeNull();
+            player[nameof(Player.CraftedRecipes)][((int)recipe).ToString()].Should().BeNull();
+        }
+        player[nameof(Player.UnlockedRecipes)]["UnknownRecipe"].Should().BeEquivalentTo(date);
+        foreach (var property in original.Properties().Where(p => p.Name is not "UnlockedRecipes" and not "CraftedRecipes"))
+            JToken.DeepEquals(player[property.Name], property.Value).Should().BeTrue(property.Name);
+        ForceWeaponEnhancementMigration.MigrateRecipeKnowledge(player).Should().BeFalse();
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void RawRecipeMigrationKeepsExistingReplacementAcrossKeyFormats(bool numericReplacement)
+    {
+        var recipe = RecipeType.WeaponEnhancementDMGForce1;
+        var replacement = ForceWeaponEnhancementMigration.GetReplacementRecipe(recipe);
+        var targetKey = numericReplacement ? ((int)replacement).ToString() : replacement.ToString();
+        var recipes = new JObject
+        {
+            [recipe.ToString()] = "2026-10-01",
+            [((int)recipe).ToString()] = "2026-10-02",
+            [targetKey] = "2026-09-01"
+        };
+        var player = new JObject { [nameof(Player.UnlockedRecipes)] = recipes, [nameof(Player.CraftedRecipes)] = null };
+
+        ForceWeaponEnhancementMigration.MigrateRecipeKnowledge(player).Should().BeTrue();
+        recipes.Properties().Should().ContainSingle();
+        recipes[targetKey].Value<string>().Should().Be("2026-09-01");
+        ForceWeaponEnhancementMigration.MigrateRecipeKnowledge(player).Should().BeFalse();
+    }
+
+    [Test]
     public void SavedCreatureAndNestedInventoriesKeepTheirStateAndDamageWhileLosingForceConversion()
     {
         var weapon = Weapon();

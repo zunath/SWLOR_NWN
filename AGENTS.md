@@ -44,6 +44,7 @@ Before writing code in an unfamiliar area, find two or three existing examples o
 
 ## Build and Test
 
+- Visual changes (NPC/object placement, models, textures, equipment, VFX, or in-game UI) require actual NWN client screenshot evidence before handoff. **Run the NWN client in the background using the isolated private-desktop workflow; never bring it to the foreground, take user focus, or switch the user's desktop.** Read `SWLOR.Game.Server/Readmes/InEngineVisualVerification.md` first; verify every changed placement from a public approach with normal collision and include the images in the report. The owned background client is required for this verification and must be stopped afterward.
 - Always pass `-p:RunPostBuildEvent=Never` when building. Without it, building `SWLOR.Game.Server` runs a slow deploy to the local NWN install.
 - Build once, then run only the relevant tests without rebuilding:
   - `dotnet build SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj -p:RunPostBuildEvent=Never`
@@ -73,6 +74,7 @@ Before writing code in an unfamiliar area, find two or three existing examples o
 
 ## Content Rules
 
+- **Saber loot:** training sabers, training saberstaves, lightsabers, and saberstaves must never appear in regular loot tables, including rare, boss, chest, and steal tables. Their acquisition belongs to the dedicated progression/crafting systems. Validate loot by blueprint base item type, not display name.
 - **Conversations:** authored dialogue lives only in `SWLOR.Game.Server/ConversationData/*.conversation.json`. Edit those graphs directly; never create DLG sources or regenerate graphs from legacy files. `Module/dlg/dmfi_universal.dlg.json` and the empty `Module/dlg/x0_skill_ctrap.dlg.json` base-game crafting override are the native exceptions. Preserve NPC `Conversation` IDs and route through `dialog_start`. Read `SWLOR.Game.Server/Readmes/Conversations.md` first.
 - **Player identity:** player-facing surfaces never show raw character names, account names, or CD keys; they go through the `PlayerName` service. Read `SWLOR.Game.Server/Readmes/PlayerIdentity.md` before touching any surface that displays a player.
 - **Economy-restricted items:** NPC-only and unobtainable items must stay out of player search and economy surfaces. `Item.IsEconomyRestricted` is the only classifier; never hardcode resref lists. Read `SWLOR.Game.Server/Readmes/EconomyRestrictedItems.md` before adding item blueprints or item pickers.
@@ -83,7 +85,7 @@ Before writing code in an unfamiliar area, find two or three existing examples o
 
 - Read `SWLOR.Game.Server/Readmes/DesignBibleWorkbookRules.md` before editing any Design Bible workbook.
 - Never edit a workbook with `openpyxl` or any library that rewrites the whole file. It drops cached formula results and silently breaks formula-backed tabs and tests such as `NPCEnemyBalanceAuditTests`. Edit target cells at the zip/XML level (`<c r="G31" s="..." t="inlineStr"><is><t>TEXT</t></is></c>`) and copy every other zip entry byte-for-byte.
-- After editing `design/bible/SWLOR Design Bible - Combat Upgrade.xlsx`, run `powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible`.
+- After editing `design/bible/SWLOR Design Bible.xlsx`, run `powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible`.
 
 ## TLK and 2DA
 

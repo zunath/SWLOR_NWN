@@ -1,12 +1,16 @@
+using Avalonia.Headless.NUnit;
 using System.Text;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
+using Nwn.Authoring.Doors;
 using SWLOR.Toolset.Domain.Editors.Doors;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
@@ -453,17 +457,30 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void AppearancePickerWritesExactlyOneOfTheTwoDoorAppearanceFields()
         {
-            var store = Store(NewDoor());
+            var document = JsonGffDocument.Parse(Encoding.UTF8.GetBytes(
+                "{\"__data_type\":\"UTD \",\"Appearance\":{\"type\":\"dword\",\"value\":3}," +
+                "\"GenericType\":{\"type\":\"dword\",\"value\":8}," +
+                "\"GenericType_New\":{\"type\":\"dword\",\"value\":5}}"));
+            using var session = new DocumentSession("door-appearance.utd.json", document);
+            var store = Store(document.Root);
 
-            store.SetAppearance(new DoorAppearanceChoice(
-                DoorAppearanceKind.Generic, 12, "Generic", "model_generic"));
+            session.Execute("Select generic appearance", () =>
+                DoorAppearanceValueStore.Write(store, new DoorAppearanceSelection(DoorAppearanceKind.Generic, 12)));
             store.GetInteger(BehaviorFieldStorage.Field, "GenericType_New").Should().Be(12);
             store.GetInteger(BehaviorFieldStorage.Field, "Appearance").Should().Be(0);
+            store.GetInteger(BehaviorFieldStorage.Field, "GenericType").Should().Be(8);
 
-            store.SetAppearance(new DoorAppearanceChoice(
-                DoorAppearanceKind.Specific, 27, "Specific", "model_specific"));
+            session.Execute("Select specific appearance", () =>
+                DoorAppearanceValueStore.Write(store, new DoorAppearanceSelection(DoorAppearanceKind.Specific, 27)));
             store.GetInteger(BehaviorFieldStorage.Field, "Appearance").Should().Be(27);
             store.GetInteger(BehaviorFieldStorage.Field, "GenericType_New").Should().Be(0);
+            store.GetInteger(BehaviorFieldStorage.Field, "GenericType").Should().Be(8);
+            session.Undo();
+            DoorAppearanceValueStore.Read(store).Should()
+                .Be(new DoorAppearanceSelection(DoorAppearanceKind.Generic, 12));
+            session.Redo();
+            DoorAppearanceValueStore.Read(store).Should()
+                .Be(new DoorAppearanceSelection(DoorAppearanceKind.Specific, 27));
         }
 
         [Test]
@@ -479,7 +496,7 @@ namespace SWLOR.Toolset.Tests
                 .Should().Be("First paragraph.\n\nSecond paragraph.");
         }
 
-        [Test]
+        [AvaloniaTest]
         public async Task ASmallPictureSetIsShownOnThePageAndPaged()
         {
             using var row = PictureRow(60);
@@ -496,7 +513,7 @@ namespace SWLOR.Toolset.Tests
             row.GalleryChoices.Should().HaveCount(60);
         }
 
-        [Test]
+        [AvaloniaTest]
         public async Task ALargePictureSetStaysBehindItsPreviewUntilOpened()
         {
             using var row = PictureRow(400);

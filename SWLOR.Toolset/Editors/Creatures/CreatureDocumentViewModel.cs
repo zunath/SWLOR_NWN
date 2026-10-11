@@ -1,11 +1,12 @@
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.NWN.Formats.Common;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Editors.Appearance;
@@ -107,7 +108,8 @@ namespace SWLOR.Toolset.Editors.Creatures
                 log,
                 tintMapCatalog,
                 captureCoalesceOrigin: () => _session.UndoStack.CurrentAppliedEntry,
-                runCoalescedEdit: RunCoalescedEdit);
+                runCoalescedEdit: RunCoalescedEdit,
+                runRelatedEdit: RunRelatedEdit);
             UpdateTitle();
         }
 
@@ -116,6 +118,24 @@ namespace SWLOR.Toolset.Editors.Creatures
             try
             {
                 _session.Execute(description, mutation);
+                AfterHistoryChange();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Edit failed ({description}): {ex.Message}");
+                return false;
+            }
+        }
+
+        private bool RunRelatedEdit(
+            string description,
+            Action mutation,
+            DocumentSession relatedSession)
+        {
+            try
+            {
+                _session.ExecuteRelated(description, mutation, relatedSession);
                 AfterHistoryChange();
                 return true;
             }
@@ -177,7 +197,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                         return false;
                 }
 
-                var staged = new List<SaveService.StagedWrite>();
+                var staged = new List<AtomicFileGroupWriter.StagedWrite>();
                 var saved = new List<(DocumentSession Session, byte[] Bytes)>();
                 using (ModuleWriteLock.AcquireForResourcePath(_session.FilePath))
                 {
@@ -190,24 +210,24 @@ namespace SWLOR.Toolset.Editors.Creatures
                     try
                     {
                         var creatureBytes = _session.ToBytes();
-                        staged.Add(SaveService.Stage(_session.FilePath, creatureBytes));
+                        staged.Add(SwlorFileWriteAccess.Writer.Stage(_session.FilePath, creatureBytes));
                         saved.Add((_session, creatureBytes));
 
                         foreach (var item in equipment)
                         {
                             var bytes = item.Session.ToBytes();
                             staged.Add(item.IsNew
-                                ? SaveService.StageNew(item.Session.FilePath, bytes)
-                                : SaveService.Stage(item.Session.FilePath, bytes));
+                                ? SwlorFileWriteAccess.Writer.StageNew(item.Session.FilePath, bytes)
+                                : SwlorFileWriteAccess.Writer.Stage(item.Session.FilePath, bytes));
                             saved.Add((item.Session, bytes));
                         }
 
-                        SaveService.CommitAll(staged);
+                        SwlorFileWriteAccess.Writer.CommitAll(staged);
                     }
                     catch
                     {
                         foreach (var write in staged)
-                            SaveService.Discard(write);
+                            SwlorFileWriteAccess.Writer.Discard(write);
                         throw;
                     }
                 }

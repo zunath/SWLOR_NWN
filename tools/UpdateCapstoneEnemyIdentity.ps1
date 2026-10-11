@@ -9,7 +9,7 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 $culture = [Globalization.CultureInfo]::InvariantCulture
 $modulePath = Join-Path $Root "Module"
-$workbookPath = Join-Path $Root "design\bible\SWLOR Design Bible - Combat Upgrade.xlsx"
+$workbookPath = Join-Path $Root "design\bible\SWLOR Design Bible.xlsx"
 $capstoneSourcePath = Join-Path $Root "SWLOR.Game.Server\Feature\QuestDefinition\CapstoneQuestDefinition.cs"
 $featTypePath = Join-Path $Root "SWLOR.NWN.API\NWScript\Enum\FeatType.cs"
 $feat2daPath = Join-Path $Root "SWLOR_Haks\sw_2da\feat.2da"

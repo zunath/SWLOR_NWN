@@ -19,7 +19,7 @@ public class CapstoneQuestGiverPlacementTests
         ("cq_absdef", "pw_ar_nsficlub"), ("cq_soulasc", "pw_ar_narshahub"), ("cq_forcebane", "tat_anc_southent"),
         ("cq_lightstand", "pw_ar_narpromena"), ("cq_darkhung", "tat_anc_junix"), ("cq_eclipse", "pw_ar_nardocks"),
         ("cq_adamguard", "nanostation015"), ("cq_scraplock", "czs220_hangar"), ("cq_worldbrk", "tat_anc_droidshp"),
-        ("cq_unmovctr", "tat_anc_cantina"), ("cq_lastword", "tosche_cantina_s"), ("cq_deadhand", "tochee_cantina"),
+        ("cq_unmovctr", "tat_elevagiifarm"), ("cq_lastword", "smesks_palace"), ("cq_deadhand", "smesks_entry"),
         ("cq_killbox", "pw_ar_nsczgnstr"), ("cq_oneshot", "pw_ar_czoffice"), ("cq_rainsteel", "pw_ar_nscrafting"),
         ("cq_thermdet", "hutlar_outpost"), ("cq_overbarr", "sol_mandaloriani"), ("cq_perflurry", "sol_hutlarqcanyo"),
         ("cq_primover", "dath_landingpad"), ("cq_apexbite", "dath_landingpad"),
@@ -137,7 +137,8 @@ public class CapstoneQuestGiverPlacementTests
                 if (giver is "cq_lightstand" or "cq_darkhung" or "cq_eclipse" or "cq_absdef" or
                     "cq_soulasc" or "cq_forcebane" or "cq_sabstorm" or "cq_guardmst" or
                     "cq_sabcycl" or "cq_infconduit" or "cq_emcocktail" or "cq_holdline" or
-                    "cq_worldbrk" or "cq_killbeacon" or "cq_embunker" or "cq_deccommand")
+                    "cq_worldbrk" or "cq_killbeacon" or "cq_embunker" or "cq_deccommand" or
+                    "cq_unmovctr" or "cq_lastword" or "cq_deadhand")
                 {
                     journal.Should().Contain($"{location[1]} on {location[0]}", questId);
                 }

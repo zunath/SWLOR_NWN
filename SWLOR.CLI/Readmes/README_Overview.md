@@ -73,7 +73,7 @@ cd Module
 ## Input Files
 
 ### Required Input Files
-- `../design/bible/SWLOR Design Bible - Combat Upgrade.xlsx` - Public beast stat/listing data for BeastCodeBuilder
+- `../design/bible/SWLOR Design Bible.xlsx` - Public beast stat/listing data for BeastCodeBuilder
 - `../design/bible/SWLOR Design Bible - Private Source Data.xlsx` - Private mutation requirements for BeastCodeBuilder
 - `./InputFiles/droid_item_list.tsv` - Droid data for DroidItemBuilder
 - `./InputFiles/enhancement_list.tsv` - Enhancement data for EnhancementItemBuilder

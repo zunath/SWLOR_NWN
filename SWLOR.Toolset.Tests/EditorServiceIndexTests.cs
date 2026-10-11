@@ -2,6 +2,7 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
@@ -23,8 +24,7 @@ namespace SWLOR.Toolset.Tests
         {
             foreach (var root in _roots)
             {
-                if (Directory.Exists(root))
-                    Directory.Delete(root, recursive: true);
+                ScratchDirectory.Delete(root);
             }
         }
 

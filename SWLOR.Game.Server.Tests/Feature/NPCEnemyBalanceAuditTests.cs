@@ -26,6 +26,11 @@ public class NPCEnemyBalanceAuditTests
     private const int ItemPropertyFP = 91;
     private const int ItemPropertyStamina = 92;
     private const int ItemPropertyDMG = 93;
+    private const int HostileFactionId = 1;
+    private const int ItemPropertyOnHitProperties = 48;
+    private const int ItemPropertyOnMonsterHit = 72;
+    private const int ItemPropertyOnHitCastSpell = 82;
+    private const int OnHitUniquePowerSubtype = 125;
     private const int ItemPropertyDefense = 94;
     private const int ItemPropertyNPCHP = 96;
     private const int ItemPropertyDelay = 98;
@@ -110,6 +115,8 @@ public class NPCEnemyBalanceAuditTests
         [(int)FeatType.StimCanister] = ResistanceType.Poison,
         [(int)FeatType.BloodFrenzyFlurry] = ResistanceType.Trauma,
         [(int)FeatType.ConcussiveChallenge] = ResistanceType.Mind,
+        [(int)FeatType.ChainLightning] = ResistanceType.Electrical,
+        [(int)FeatType.BloodSiphon] = ResistanceType.Trauma,
     };
 
     private static readonly ExpectedEnemy[] ExpectedAlternateEnemies =
@@ -639,7 +646,7 @@ public class NPCEnemyBalanceAuditTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var worldNpcs = ReadWorksheetByName(archive, "World NPCs");
         var sharedStrings = ReadSharedStrings(archive);
         XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
@@ -996,6 +1003,44 @@ public class NPCEnemyBalanceAuditTests
     }
 
     [Test]
+    public void HostileCreatureWeapons_DoNotApplyNativeOnHitEffects()
+    {
+        var root = FindRepositoryRoot();
+        var failures = new List<string>();
+
+        foreach (var utcPath in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "utc"), "*.utc.json"))
+        {
+            using var utc = JsonDocument.Parse(File.ReadAllText(utcPath));
+            if (GetInt(utc.RootElement, "FactionID") != HostileFactionId)
+                continue;
+
+            foreach (var weaponResref in GetEquippedWeaponResrefs(utc.RootElement))
+            {
+                var weaponPath = Path.Combine(root.FullName, "Module", "uti", $"{weaponResref}.uti.json");
+                if (!File.Exists(weaponPath))
+                    continue;
+
+                using var weapon = JsonDocument.Parse(File.ReadAllText(weaponPath));
+                var nativeEffects = GetItemProperties(weapon.RootElement)
+                    .Where(property =>
+                    {
+                        var propertyName = GetInt(property, "PropertyName");
+                        return propertyName is ItemPropertyOnHitProperties or ItemPropertyOnMonsterHit ||
+                               propertyName == ItemPropertyOnHitCastSpell && GetInt(property, "Subtype") != OnHitUniquePowerSubtype;
+                    })
+                    .Select(property => $"{GetInt(property, "PropertyName")}:{GetInt(property, "Subtype")}")
+                    .ToArray();
+
+                if (nativeEffects.Length > 0)
+                    failures.Add($"{Path.GetFileName(utcPath)} -> {weaponResref}: {string.Join(", ", nativeEffects)}");
+            }
+        }
+
+        failures.Should().BeEmpty(
+            "hostile creature status pressure comes from Bible NPC abilities checked against Resistance, not native NWN on-hit saves");
+    }
+
+    [Test]
     public void BloodFrenzyEnemies_UseBibleAbilityPackages()
     {
         var root = FindRepositoryRoot();
@@ -1111,7 +1156,7 @@ public class NPCEnemyBalanceAuditTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var worldNpcs = ReadWorksheetByName(archive, "World NPCs");
         var mimicry = ReadWorksheetByName(archive, "Mimicry");
         var sharedStrings = ReadSharedStrings(archive);
@@ -1264,7 +1309,7 @@ public class NPCEnemyBalanceAuditTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var worksheet = ReadWorksheetByName(archive, "World NPCs");
         var weaponDelays = ReadWorksheetByName(archive, "World NPC Weapon Delays");
         var sharedStrings = ReadSharedStrings(archive);
@@ -1443,7 +1488,7 @@ public class NPCEnemyBalanceAuditTests
             root.FullName,
             "design",
             "bible",
-            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+            "SWLOR Design Bible.xlsx"));
         var worksheet = ReadWorksheetByName(archive, "World NPCs");
         var sharedStrings = ReadSharedStrings(archive);
 
@@ -1482,8 +1527,11 @@ public class NPCEnemyBalanceAuditTests
                 var abilityPackage = GetWorkbookCellText(worksheet, sharedStrings, $"AP{row}");
                 abilityPackage.Should().NotBeNullOrWhiteSpace();
                 GetWorkbookCellText(worksheet, sharedStrings, $"AQ{row}").Should().Be(abilityPackage);
+                using var utc = ReadJson(root, "Module", "utc", $"{resref}.utc.json");
                 GetWorkbookCellText(worksheet, sharedStrings, $"B{row}")
-                    .Should().Contain(line.DisplayName, "the enemy-name column identifies its capstone line");
+                    .Should().Be(
+                        utc.RootElement.GetProperty("FirstName").GetProperty("value").GetProperty("0").GetString(),
+                        "the enemy-name column must match the name players see");
 
                 if (step == 4)
                 {

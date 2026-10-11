@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "...and the blade is raised, and the blade is dry, and behold: a stranger arrives on the amen. Stand there. You fit the verse. Below us, in the Korriban Forge Caverns, a congregation I once led drinks from every edge they quench and offers nothing back. Their newest, six adepts with loud thirsts, keep my old ledger of heats beside the crucibles and read it like scripture. It is not scripture. It is an accounting. Cut the six down, bring back the Soul Ascension Forge Heat Ledger, and I will teach you the first verse of a blade that drinks.",
+          "Text": "...and the blade is raised, and the blade is dry, and behold: a stranger arrives on the amen. Stand there. You fit the verse. Back on Korriban, in the Forge Caverns, a congregation I once led drinks from every edge they quench and offers nothing back. Their newest, six adepts with loud thirsts, keep my old ledger of heats beside the crucibles and read it like scripture. It is not scripture. It is an accounting. Cut the six down, bring back the Soul Ascension Forge Heat Ledger, and I will teach you the first verse of a blade that drinks.",
           "Style": 0,
           "Color": null
         }
@@ -285,6 +285,10 @@
         },
         {
           "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "neutral-ask",
           "Conditions": []
         }
       ]
@@ -1291,6 +1295,32 @@
       ],
       "OnEnterActions": [],
       "Choices": []
+    },
+    "neutral-meeting": {
+      "Id": "neutral-meeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The Hub on Smuggler's Moon hears every creed and keeps none of them. That suits a confession. I ask what your blade has learned, not what banner follows it. My congregation still waits in the Korriban Forge Caverns on Korriban. Go there for the debt. Come back here to read it aloud.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "neutral-return",
+          "Conditions": []
+        }
+      ]
     }
   },
   "Choices": {
@@ -2138,6 +2168,52 @@
       "Next": [
         {
           "TargetNodeId": "entry-00041",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-ask": {
+      "Id": "neutral-ask",
+      "Text": {
+        "Text": "Why are we meeting here, and where is the trial?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "neutral-meeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-return": {
+      "Id": "neutral-return",
+      "Text": {
+        "Text": "Back to the assignment.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00002",
           "Conditions": []
         }
       ],

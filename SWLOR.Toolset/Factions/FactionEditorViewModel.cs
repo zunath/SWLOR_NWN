@@ -3,7 +3,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Editing;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
@@ -706,12 +708,12 @@ namespace SWLOR.Toolset.Factions
             var rewrites = idMap.Any(pair => pair.Key != pair.Value)
                 ? FactionReferenceRewriter.BuildRewrites(_moduleRoot, idMap)
                 : Array.Empty<FactionReferenceRewrite>();
-            var staged = new List<SaveService.StagedWrite>();
+            var staged = new List<AtomicFileGroupWriter.StagedWrite>();
             try
             {
-                staged.Add(SaveService.Stage(_factionPath, facBytes));
+                staged.Add(SwlorFileWriteAccess.Writer.Stage(_factionPath, facBytes));
                 foreach (var rewrite in rewrites)
-                    staged.Add(SaveService.Stage(rewrite.Path, rewrite.Bytes));
+                    staged.Add(SwlorFileWriteAccess.Writer.Stage(rewrite.Path, rewrite.Bytes));
 
                 var externallyChanged = rewrites.FirstOrDefault(
                     rewrite => !rewrite.SourceMatchesCurrentFile());
@@ -722,12 +724,12 @@ namespace SWLOR.Toolset.Factions
                         "Nothing was written.");
                 }
 
-                SaveService.CommitAll(staged);
+                SwlorFileWriteAccess.Writer.CommitAll(staged);
             }
             catch
             {
                 foreach (var write in staged)
-                    SaveService.Discard(write);
+                    SwlorFileWriteAccess.Writer.Discard(write);
                 throw;
             }
 

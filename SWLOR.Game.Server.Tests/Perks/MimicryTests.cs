@@ -640,11 +640,10 @@ public class MimicryTests
         }
     }
 
-    // The core completeness requirement: every NPC ability the game registers must be learnable
-    // through Mimicry, and every technique must copy a real NPC ability. Asserted bidirectionally
-    // and 1:1 so the pool can never drift out of sync with the NPC ability roster.
+    // Every technique must copy a real NPC ability, and no NPC ability may be learnable through more
+    // than one technique. NPC abilities without a technique are NPC-only.
     [Test]
-    public void MimicryTechniques_EveryRegisteredNpcAbilityHasExactlyOneTechniqueTwin()
+    public void MimicryTechniques_CopyRegisteredNpcAbilitiesAtMostOnceEach()
     {
         var npcAbilities = BuildAllAbilities(NpcAbilityNamespace);
         var techniques = BuildAllAbilities(MimicryTechniqueNamespace);
@@ -670,15 +669,10 @@ public class MimicryTests
                 $"{technique.Feat}'s MimicrySourceFeat ({technique.Detail.MimicrySourceFeat}) should be a registered NPC ability");
         }
 
-        // Every registered NPC ability must be learnable through exactly one technique.
-        foreach (var npc in npcAbilities)
+        foreach (var (sourceFeat, twins) in techniquesBySourceFeat)
         {
-            techniquesBySourceFeat.Should().ContainKey(npc.Feat,
-                $"NPC ability {npc.Feat} (from {npc.DefinitionType.Name}) has no Mimicry technique that copies it");
-
-            techniquesBySourceFeat[npc.Feat].Should().ContainSingle(
-                $"NPC ability {npc.Feat} should have exactly one Mimicry technique twin, " +
-                $"found {(techniquesBySourceFeat.TryGetValue(npc.Feat, out var twins) ? twins.Count : 0)}");
+            twins.Should().ContainSingle(
+                $"NPC ability {sourceFeat} should be learnable through at most one Mimicry technique, found {twins.Count}");
         }
     }
 

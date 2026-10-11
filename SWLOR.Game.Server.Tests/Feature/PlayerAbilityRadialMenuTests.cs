@@ -136,6 +136,30 @@ public class PlayerAbilityRadialMenuTests
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
     }
 
+    [Test]
+    public void FighterClassFeatRows_ReferenceValidFeats()
+    {
+        // The engine's class feat loader shortens the table by one row for every entry whose feat has
+        // no FEAT name, so each stale reference drops one row from the end of the table, radial included.
+        var root = FindRepositoryRoot();
+        var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var classFeatRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "CLS_FEAT_FIGHT.2da");
+        var failures = new List<string>();
+
+        foreach (var (rowNumber, row) in classFeatRows.OrderBy(row => row.Key))
+        {
+            var featIndexValue = row.GetValueOrDefault("FeatIndex", "****");
+            var featId = featIndexValue == "****" ? 0 : int.Parse(featIndexValue);
+
+            if (!featRows.TryGetValue(featId, out var featRow) || featRow.GetValueOrDefault("FEAT", "****") == "****")
+            {
+                failures.Add($"CLS_FEAT_FIGHT row {rowNumber} ({row.GetValueOrDefault("FeatLabel")}) references feat {featId}, which has no FEAT name in feat.2da.");
+            }
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
     private static Dictionary<FeatType, AbilityDetail> BuildPlayerAbilities()
     {
         var definitionType = typeof(IAbilityListDefinition);

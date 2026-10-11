@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Cocktail Triage Ward Ledger is secured. Return it to Kavi Dorn at the Dantooine Republic medical center.")
+                    "The Emergency Cocktail Triage Ward Ledger is secured. Return it to Kavi Dorn at the Medshed on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Cocktail Kolto Conduit Coupler is recovered. Return it to Kavi Dorn at the Dantooine Republic medical center.")
+                    "The Emergency Cocktail Kolto Conduit Coupler is recovered. Return it to Kavi Dorn at the Medshed on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The warden is defeated and the Emergency Cocktail Fractured Ward Sigil is secured. Return it to Kavi Dorn at the Dantooine Republic medical center.")
+                    "The warden is defeated and the Emergency Cocktail Fractured Ward Sigil is secured. Return it to Kavi Dorn at the Medshed on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The inner circle is defeated and the Emergency Cocktail Matron's Ward Token is secured. Return it to Kavi Dorn at the Dantooine Republic medical center.")
+                    "The inner circle is defeated and the Emergency Cocktail Matron's Ward Token is secured. Return it to Kavi Dorn at the Medshed on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Cocktail master is defeated. Return to Kavi Dorn at the Dantooine Republic medical center for the final lesson.")
+                    "The Emergency Cocktail master is defeated. Return to Kavi Dorn at the Medshed on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

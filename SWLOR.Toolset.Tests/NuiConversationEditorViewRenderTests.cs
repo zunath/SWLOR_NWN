@@ -384,6 +384,31 @@ public sealed class NuiConversationEditorViewRenderTests
     }
 
     [Test]
+    public void SharedDocumentHistoryTracksGraphEditsAndUndoToTheSavedBaseline()
+    {
+        var viewModel = OpenEditor();
+        viewModel.IsDirty.Should().BeFalse();
+
+        viewModel.TextBlocks[0].Text = "Edited through the shared history.";
+
+        viewModel.IsDirty.Should().BeTrue();
+        viewModel.CanUndo.Should().BeTrue();
+        viewModel.SnapshotGraph().Nodes["first"].Text[0].Text.Should()
+            .Be("Edited through the shared history.");
+
+        viewModel.Undo();
+
+        viewModel.IsDirty.Should().BeFalse();
+        viewModel.SnapshotGraph().Nodes["first"].Text[0].Text.Should().Be("Welcome, {{player.name}}.");
+
+        viewModel.Redo();
+
+        viewModel.IsDirty.Should().BeTrue();
+        viewModel.SnapshotGraph().Nodes["first"].Text[0].Text.Should()
+            .Be("Edited through the shared history.");
+    }
+
+    [Test]
     public void FormattedPassagesBelongToOneNpcLineAndCanBeRemoved()
     {
         var viewModel = OpenEditor();

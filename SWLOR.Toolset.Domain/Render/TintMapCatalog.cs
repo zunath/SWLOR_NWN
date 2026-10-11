@@ -1,5 +1,5 @@
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
-using SWLOR.NWN.Formats.TwoDA;
+using Nwn.Formats.TwoDa;
 using SWLOR.Toolset.Domain.GameData.Resources;
 
 namespace SWLOR.Toolset.Domain.Render
@@ -37,12 +37,12 @@ namespace SWLOR.Toolset.Domain.Render
 
             try
             {
-                var table = TwoDAReader.Read(handle.GetBytes());
+                var table = TwoDaReader.Read(handle.GetBytes(), TwoDaReadOptions.EngineCompatible);
                 var layersByMaterial = new Dictionary<string, HashSet<TintMapLayerType>>(
                     StringComparer.OrdinalIgnoreCase);
                 var materialsByModel = new Dictionary<string, List<TintMapMaterialDefinition>>(
                     StringComparer.OrdinalIgnoreCase);
-                for (var row = 0; row < table.RowCount; row++)
+                for (var row = 0; row < table.Rows.Count; row++)
                 {
                     var model = table.GetValue(row, "MODEL");
                     var material = table.GetValue(row, "MATERIAL");

@@ -664,6 +664,10 @@ namespace SWLOR.Game.Server.Service.AbilityService
         BloodFrenzyFlurry = 432,
         [RecastGroup("Concussive Challenge", "Conc. Chall.", true)]
         ConcussiveChallenge = 433,
+        [RecastGroup("Chain Lightning", "Chain Light.", true)]
+        ChainLightning = 574,
+        [RecastGroup("Blood Siphon", "Blood Siphon", true)]
+        BloodSiphon = 575,
         [RecastGroup("Force Sheath", "Force Sheath", true)]
         ForceSheath = 474,
         [RecastGroup("Shattering Strike", "Shatter Str.", true)]

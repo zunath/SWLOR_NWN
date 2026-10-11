@@ -9,25 +9,16 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Shell.Panels;
 using SWLOR.Toolset.Shell.Views;
 using SWLOR.Toolset.Workspace;
 
-[assembly: AvaloniaTestApplication(typeof(SWLOR.Toolset.Tests.HeadlessAppBuilder))]
+[assembly: AvaloniaTestApplication(typeof(SWLOR.Toolset.Tests.Support.HeadlessAppBuilder))]
 
 namespace SWLOR.Toolset.Tests
 {
-    /// <summary>
-    /// Boots the real <see cref="App"/> headlessly, so tests exercise the same styles, themes and
-    /// data templates the shipped application uses.
-    /// </summary>
-    public static class HeadlessAppBuilder
-    {
-        public static AppBuilder BuildAvaloniaApp() =>
-            AppBuilder.Configure<App>().UseHeadless(new AvaloniaHeadlessPlatformOptions());
-    }
-
     /// <summary>
     /// Proves the script editor actually renders.
     /// </summary>

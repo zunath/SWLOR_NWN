@@ -82,27 +82,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(dbPlayer.LocationAreaResref))
-            {
-                var location = GetLocation(GetWaypointByTag("CZ220_LANDING"));
-                AssignCommand(player, () =>
-                {
-                    ClearAllActions();
-                    ActionJumpToLocation(location);
-                });
-            }
-            else
-            {
-                var area = Area.GetAreaByResref(dbPlayer.LocationAreaResref);
-                var position = Vector3(dbPlayer.LocationX, dbPlayer.LocationY, dbPlayer.LocationZ);
-                var location = Location(area, position, dbPlayer.LocationOrientation);
-                AssignCommand(player, () =>
-                {
-                    ClearAllActions();
-                    ActionJumpToLocation(location);
-                });
-            }
+            var area = string.IsNullOrWhiteSpace(dbPlayer.LocationAreaResref)
+                ? OBJECT_INVALID
+                : Area.GetAreaByResref(dbPlayer.LocationAreaResref);
+            var position = Vector3(dbPlayer.LocationX, dbPlayer.LocationY, dbPlayer.LocationZ);
 
+            var location = GetIsObjectValid(area)
+                ? Location(area, position, dbPlayer.LocationOrientation)
+                : GetLocation(GetWaypointByTag("CZ220_LANDING"));
+
+            AssignCommand(player, () =>
+            {
+                ClearAllActions();
+                ActionJumpToLocation(location);
+            });
         }
 
         public bool CanDistribute

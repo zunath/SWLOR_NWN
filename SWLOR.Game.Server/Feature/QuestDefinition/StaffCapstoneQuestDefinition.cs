@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker Breaker Yard Work Order has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the Battle Monster Gym on Dantooine.")
+                    "The Worldbreaker Breaker Yard Work Order has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the Anchorhead - Droid Shop on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker Junkline Control Relay has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the Battle Monster Gym on Dantooine.")
+                    "The Worldbreaker Junkline Control Relay has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the Anchorhead - Droid Shop on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker Sheared Bay Sigil has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the Battle Monster Gym on Dantooine.")
+                    "The Worldbreaker Sheared Bay Sigil has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the Anchorhead - Droid Shop on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker Foreman's Override Chip has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the Battle Monster Gym on Dantooine.")
+                    "The Worldbreaker Foreman's Override Chip has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the Anchorhead - Droid Shop on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker master has been defeated. Return to Unit KX-17 at the Battle Monster Gym on Dantooine.")
+                    "The Worldbreaker master has been defeated. Return to Unit KX-17 at the Anchorhead - Droid Shop on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

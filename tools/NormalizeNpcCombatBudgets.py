@@ -16,7 +16,7 @@ from pathlib import Path
 from xml.etree import ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
-BOOK = ROOT / "design/bible/SWLOR Design Bible - Combat Upgrade.xlsx"
+BOOK = ROOT / "design/bible/SWLOR Design Bible.xlsx"
 NS = {"m": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
 REL = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id"
 SKIN_SLOT = 131072

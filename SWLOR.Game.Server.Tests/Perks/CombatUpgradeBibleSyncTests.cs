@@ -1105,14 +1105,6 @@ public class CombatUpgradeBibleSyncTests
             };
             expectedStats[stat] = int.Parse(procMatch.Groups["value"].Value, CultureInfo.InvariantCulture);
         }
-        else if (Regex.Match(
-                     row.Description,
-                     @"^Damage you deal restores HP equal to (?<value>\d+)% of the damage dealt\.$",
-                     RegexOptions.IgnoreCase | RegexOptions.CultureInvariant) is { Success: true } lifestealMatch)
-        {
-            expectedStats[StatType.DamageDealtHPPercentRestore] =
-                int.Parse(lifestealMatch.Groups["value"].Value, CultureInfo.InvariantCulture);
-        }
         else
         {
             var flatStatNames = new Dictionary<string, StatType>(StringComparer.OrdinalIgnoreCase)

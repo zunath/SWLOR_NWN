@@ -51,7 +51,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                         var beam = EffectBeam(VisualEffect.Vfx_Beam_Drain, target, BodyNode.Chest);
                         ApplyEffectToObject(DurationType.Temporary, beam, activator, 0.5f);
                     }
-                });
+                })
+                .ExcludedFromMimicry();
 
             return _builder.Build();
         }

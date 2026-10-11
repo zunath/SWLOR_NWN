@@ -57,10 +57,8 @@ function Set-TokenPreservingWhitespace {
 $techniques = [ordered]@{
     ApexCollapseStanceTechnique = [pscustomobject]@{ Name = "Apex Collapse Stance"; Icon = "ife_mapexcoll"; Category = "Self" }
     BloodFrenzyFlurryTechnique = [pscustomobject]@{ Name = "Blood Frenzy Flurry"; Icon = "ife_mbldfrenflur"; Category = "Harmful" }
-    BloodSiphonTechnique = [pscustomobject]@{ Name = "Blood Siphon"; Icon = "ife_mbldsiphon"; Category = "Passive" }
     BonecrusherBiteTechnique = [pscustomobject]@{ Name = "Bonecrusher Bite"; Icon = "ife_mbonebite"; Category = "Passive" }
     BraceBreakerTechnique = [pscustomobject]@{ Name = "Brace Breaker"; Icon = "ife_mbracebrk"; Category = "Control" }
-    ChainLightningTechnique = [pscustomobject]@{ Name = "Chain Lightning"; Icon = "ife_mchainltng"; Category = "Passive" }
     ChitinGuardTechnique = [pscustomobject]@{ Name = "Chitin Guard"; Icon = "ife_mchitinguard"; Category = "Passive" }
     ConcussiveChallengeTechnique = [pscustomobject]@{ Name = "Concussive Challenge"; Icon = "ife_mconcchal"; Category = "Control" }
     CripplingTalonsTechnique = [pscustomobject]@{ Name = "Crippling Talons"; Icon = "ife_mcriptalons"; Category = "Passive" }

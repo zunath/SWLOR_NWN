@@ -33,28 +33,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         {
             return new List<AbilityBehaviorCase>
             {
-                // BloodSiphonTechniqueAbilityDefinition - passive trait (DamageDealtHPPercentRestore).
-                new()
-                {
-                    Feat = FeatType.BloodSiphonTechnique,
-                    Target = AbilityTargetKind.Self,
-                    Notes = "Passive Mimicry trait: no ImpactAction/cost/recast is declared.",
-                },
-
                 // BonecrusherBiteTechniqueAbilityDefinition - passive trait (DamageDealtSunderChance).
                 new()
                 {
                     Feat = FeatType.BonecrusherBiteTechnique,
                     Target = AbilityTargetKind.Self,
                     Notes = "Passive Mimicry trait: no ImpactAction/cost/recast is declared. Its DamageDealtSunderChance stat bonus is read directly off the equipped-technique list (Mimicry.GetStatBonus), not granted by activation.",
-                },
-
-                // ChainLightningTechniqueAbilityDefinition - passive trait (DamageDealtShockChance).
-                new()
-                {
-                    Feat = FeatType.ChainLightningTechnique,
-                    Target = AbilityTargetKind.Self,
-                    Notes = "Passive Mimicry trait: no ImpactAction/cost/recast is declared.",
                 },
 
                 // ChitinGuardTechniqueAbilityDefinition - passive trait (defense + resistances).

@@ -1,6 +1,6 @@
 # Mimicry Balance (Re-tune)
 
-This document captures the ratified balance model for the Mimicry technique pool (the "Design Bible" → `Combat Upgrade` workbook, `Mimicry` tab, technique rows). All 90 techniques and all 10 core Mimicry perk ranks are mandatory Bible-review and combat-upgrade audit scope. They must never be treated as optional, excluded, or intentionally unimplemented.
+This document captures the ratified balance model for the Mimicry technique pool (the "Design Bible" → `Combat Upgrade` workbook, `Mimicry` tab, technique rows). All 88 techniques and all 10 core Mimicry perk ranks are mandatory Bible-review and combat-upgrade audit scope. They must never be treated as optional, excluded, or intentionally unimplemented.
 
 ## Resource Model
 
@@ -15,15 +15,15 @@ The handful of techniques with Force-flavored names (see below) are not exempt f
 
 ## Composition & scaling
 
-The pool is deliberately **not** a set of interchangeable damage nukes. Most active techniques deal no direct damage at all — they are control, debuffs, support, persistent zones, or stances — so that each technique is a distinct *kind* of ability rather than "damage in a shape with a different status." Composition of the 90-technique pool:
+The pool is deliberately **not** a set of interchangeable damage nukes. Most active techniques deal no direct damage at all — they are control, debuffs, support, persistent zones, or stances — so that each technique is a distinct *kind* of ability rather than "damage in a shape with a different status." Composition of the 88-technique pool:
 
 | Group | Count |
 |---|---|
-| Passive traits | 23 |
+| Passive traits | 21 |
 | Stances | 3 |
 | Damage-dealing combat actives | 27 |
 | Non-damage combat actives (control / debuff / support) | 37 |
-| **Total** | **90** |
+| **Total** | **88** |
 
 Only the **damage-dealing subset** scales off a core attribute (via `CombatImpactDamageAbility`), chosen by combat fantasy:
 
@@ -70,7 +70,7 @@ Individual utility and close-range techniques have exceptions to these starting 
 
 ### Passive trait techniques
 
-Twenty-three techniques are **passive traits** rather than activated abilities. They do not appear on the hotbar, cost no Stamina, and deal no direct damage; equipping one contributes static stats for as long as it occupies a technique slot (see the `IsMimicryTrait` model). A trait's power *is* its passive effect, listed here.
+Twenty-one techniques are **passive traits** rather than activated abilities. They do not appear on the hotbar, cost no Stamina, and deal no direct damage; equipping one contributes static stats for as long as it occupies a technique slot (see the `IsMimicryTrait` model). A trait's power *is* its passive effect, listed here.
 
 Traits declare their bonuses on the ability builder (`MimicryTraitStat` / `MimicryTraitResistance`) and the stat and resistance pipelines read them straight off the equipped loadout. Equipping a trait deliberately applies **no persistent status effect to the wearer**: the bonus never varies while the trait is slotted, so there is no transient state for the status icon bar to communicate, and no apply/remove lifecycle that could drift out of sync with the equipped set. The elemental-resonance set bonus is derived the same way.
 
@@ -102,8 +102,6 @@ Trait proc chances read the shared `DamageDealt*Chance` stats consumed by `Comba
 | Rime Pounce | Standard | 2 | 15% chance to inflict Freezing |
 | Serrated Slash | Standard | 2 | 10% chance to inflict Bleed |
 | Tactical Mark | Standard | 2 | +6% Attack |
-| Blood Siphon | Advanced | 2 | Damage dealt restores 4% of it as HP |
-| Chain Lightning | Advanced | 2 | 15% chance to inflict Shock |
 | Essence Scar | Advanced | 2 | +8% Force Attack |
 | Force Sunder | Advanced | 2 | 12% chance to inflict Sunder |
 | Opening Cut | Advanced | 2 | 12% chance to inflict Bleed |

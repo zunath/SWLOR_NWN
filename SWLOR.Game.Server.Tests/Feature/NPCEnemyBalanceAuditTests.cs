@@ -1251,7 +1251,7 @@ public class NPCEnemyBalanceAuditTests
             requirementsByTechnique[technique] = actualRequirement;
         }
 
-        requirementsByTechnique.Should().HaveCount(90, "the complete Mimicry technique pool must be audited against World NPCs");
+        requirementsByTechnique.Should().HaveCount(88, "the complete Mimicry technique pool must be audited against World NPCs");
         failures.Should().BeEmpty(
             "Mimicry requirements use player-accessible World NPC progression, excluding Additional and Training rows");
 

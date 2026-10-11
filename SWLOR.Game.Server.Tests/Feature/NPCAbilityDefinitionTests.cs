@@ -197,6 +197,18 @@ public class NPCAbilityDefinitionTests
         source.Should().NotContain("enmityBonus");
     }
 
+    [Test]
+    public void NPCAbilities_OnlyNativeOnHitReplacementsAreExcludedFromMimicry()
+    {
+        BuildAllNPCAbilities()
+            .Where(entry => entry.Value.Ability.IsExcludedFromMimicry)
+            .Select(entry => entry.Key)
+            .Should()
+            .BeEquivalentTo(
+                new[] { FeatType.ChainLightning, FeatType.BloodSiphon },
+                "Chain Lightning and Blood Siphon must stay NPC-only and never become learnable Mimicry techniques");
+    }
+
     private static Dictionary<FeatType, AbilityDetail> BuildNPCAbilities()
     {
         return BuildAllNPCAbilities()

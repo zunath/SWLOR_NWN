@@ -1030,6 +1030,16 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Marks the active NPC ability as NPC-only: it has no Mimicry technique twin and cannot be learned.
+        /// </summary>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder ExcludedFromMimicry()
+        {
+            _activeAbility.IsExcludedFromMimicry = true;
+            return this;
+        }
+
+        /// <summary>
         /// Declares the damage type a mimicked technique deals, used for damage-type loadout set
         /// bonuses (elemental resonance).
         /// </summary>

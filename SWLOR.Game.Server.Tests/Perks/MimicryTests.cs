@@ -112,7 +112,7 @@ public class MimicryTests
         }
     }
 
-    // Registry-driven contract check covering every technique in the (currently 90-strong) pool,
+    // Registry-driven contract check covering every technique in the (currently 88-strong) pool,
     // not just the original 10 pinned above. Discovers definitions by reflection so it stays valid
     // as the technique pool grows.
     [Test]
@@ -455,8 +455,7 @@ public class MimicryTests
             [StatType.DamageDealtFreezingChance] = 33,
             [StatType.DamageDealtHemorrhageChance] = 15,
             [StatType.DamageDealtPoisonChance] = 18,
-            [StatType.DamageDealtHPPercentRestore] = 4,
-            [StatType.DamageDealtShockChance] = 33,
+            [StatType.DamageDealtShockChance] = 18,
             [StatType.DamageDealtSunderChance] = 21,
             [StatType.ForceAttackPercentAdjustment] = 14,
             [StatType.ForceDefensePercentAdjustment] = 12,
@@ -642,8 +641,9 @@ public class MimicryTests
     }
 
     // The core completeness requirement: every NPC ability the game registers must be learnable
-    // through Mimicry, and every technique must copy a real NPC ability. Asserted bidirectionally
-    // and 1:1 so the pool can never drift out of sync with the NPC ability roster.
+    // through Mimicry unless it is explicitly declared NPC-only, and every technique must copy a real
+    // NPC ability. Asserted bidirectionally and 1:1 so the pool can never drift out of sync with the
+    // NPC ability roster.
     [Test]
     public void MimicryTechniques_EveryRegisteredNpcAbilityHasExactlyOneTechniqueTwin()
     {
@@ -674,6 +674,13 @@ public class MimicryTests
         // Every registered NPC ability must be learnable through exactly one technique.
         foreach (var npc in npcAbilities)
         {
+            if (npc.Detail.IsExcludedFromMimicry)
+            {
+                techniquesBySourceFeat.Should().NotContainKey(npc.Feat,
+                    $"NPC ability {npc.Feat} is NPC-only and must not have a Mimicry technique");
+                continue;
+            }
+
             techniquesBySourceFeat.Should().ContainKey(npc.Feat,
                 $"NPC ability {npc.Feat} (from {npc.DefinitionType.Name}) has no Mimicry technique that copies it");
 

@@ -2433,7 +2433,5 @@ namespace SWLOR.NWN.API.NWScript.Enum
         SoulAscensionBurst = 2902,
         ChainLightning = 2903,
         BloodSiphon = 2904,
-        ChainLightningTechnique = 2905,
-        BloodSiphonTechnique = 2906,
 }
 }

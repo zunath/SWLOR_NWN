@@ -36,7 +36,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 ResistanceType.Electrical,
                 VisualEffect.Vfx_Imp_Lightning_S,
                 maxRange: 10f,
-                afterSuccessfulHit: ArcLightning);
+                afterSuccessfulHit: ArcLightning)
+                .ExcludedFromMimicry();
 
             return _builder.Build();
         }

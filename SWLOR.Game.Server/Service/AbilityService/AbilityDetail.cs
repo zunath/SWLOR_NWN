@@ -131,6 +131,11 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool IsMimicryTrait { get; set; }
 
         /// <summary>
+        /// When true this NPC ability is deliberately not learnable through Mimicry and has no technique twin.
+        /// </summary>
+        public bool IsExcludedFromMimicry { get; set; }
+
+        /// <summary>
         /// Flat stat adjustments contributed by this trait while it is equipped. Read directly by the
         /// stat pipeline rather than applied as a status effect, so the bonus cannot drift out of sync
         /// with the equipped loadout (status effects are cleared on death and would need re-granting).

@@ -128,6 +128,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
             ForceControlHealingEffects.ApplyRestorativeControlPower(activator, friendly, targetWasBelowHalfHP);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
+            CombatPoint.AddSupportCombatPoint(activator, friendly, SkillType.Force);
         }
     }
 }

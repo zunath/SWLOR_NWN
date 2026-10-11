@@ -342,7 +342,16 @@ namespace SWLOR.Game.Server.Service
         /// <param name="supportedCreatures">The creatures the player repaired, healed, or otherwise supported.</param>
         /// <param name="skill">The skill to associate with the point.</param>
         /// <param name="amount">The number of points to add.</param>
-        public static void AddSupportCombatPoint(uint player, IEnumerable<uint> supportedCreatures, SkillType skill, int amount = 1)
+        /// <param name="alreadyCredited">
+        /// Optional per-cast record for support that applies over time. Creatures already in it are
+        /// skipped and newly credited creatures are added, so each enemy is credited once per cast.
+        /// </param>
+        public static void AddSupportCombatPoint(
+            uint player,
+            IEnumerable<uint> supportedCreatures,
+            SkillType skill,
+            int amount = 1,
+            ISet<uint> alreadyCredited = null)
         {
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
@@ -361,8 +370,24 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var creature in creatures)
             {
+                if (alreadyCredited != null && !alreadyCredited.Add(creature))
+                    continue;
+
                 AddCombatPoint(player, creature, skill, amount);
             }
+        }
+
+        /// <summary>
+        /// Adds a combat point for a player to every NPC they are tagged on and every NPC in combat
+        /// with the single creature they supported.
+        /// </summary>
+        /// <param name="player">The player receiving the point.</param>
+        /// <param name="supportedCreature">The creature the player repaired, healed, or otherwise supported.</param>
+        /// <param name="skill">The skill to associate with the point.</param>
+        /// <param name="amount">The number of points to add.</param>
+        public static void AddSupportCombatPoint(uint player, uint supportedCreature, SkillType skill, int amount = 1)
+        {
+            AddSupportCombatPoint(player, new[] { supportedCreature }, skill, amount);
         }
 
         /// <summary>

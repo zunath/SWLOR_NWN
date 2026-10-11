@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
             var duration = CapstoneAbility.ActiveDurationSeconds;
-            var combatPointAwarded = false;
+            var credited = new HashSet<uint>();
 
             AbilityAreaEffects.ScheduleFriendlyZoneStatus(
                 activator,
@@ -69,11 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 (friendly, remainingDuration) =>
                 {
                     ApplyBunkerTemporaryHP(activator, friendly, remainingDuration);
-                    if (combatPointAwarded)
-                        return;
-
-                    combatPointAwarded = true;
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices);
+                    CombatPoint.AddSupportCombatPoint(activator, new[] { friendly }, SkillType.Devices, alreadyCredited: credited);
                 },
                 EmergencyBunkerAreaMarkerVisualEffect,
                 EmergencyBunkerAreaMarkerVisualEffectScale);

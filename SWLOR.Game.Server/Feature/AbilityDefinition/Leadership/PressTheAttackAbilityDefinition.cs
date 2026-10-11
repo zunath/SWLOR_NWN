@@ -89,51 +89,51 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
             var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, 30f);
-            var affectedCount = 0;
+            var affected = new List<uint>();
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PressTheAttack1StatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
-                affectedCount++;
+                affected.Add(friendly);
             }
 
-            if (affectedCount > 0) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
+            if (affected.Count > 0) CombatPoint.AddSupportCombatPoint(activator, affected, SkillType.Leadership, 2);
         }
 
         private static void PressTheAttack2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
             var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, 30f);
-            var affectedCount = 0;
+            var affected = new List<uint>();
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PressTheAttack2StatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
-                affectedCount++;
+                affected.Add(friendly);
             }
 
-            if (affectedCount > 0) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
+            if (affected.Count > 0) CombatPoint.AddSupportCombatPoint(activator, affected, SkillType.Leadership, 2);
         }
 
         private static void PressTheAttack3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
             var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, 30f);
-            var affectedCount = 0;
+            var affected = new List<uint>();
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PressTheAttack3StatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
-                affectedCount++;
+                affected.Add(friendly);
             }
 
-            if (affectedCount > 0) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
+            if (affected.Count > 0) CombatPoint.AddSupportCombatPoint(activator, affected, SkillType.Leadership, 2);
         }
 
 

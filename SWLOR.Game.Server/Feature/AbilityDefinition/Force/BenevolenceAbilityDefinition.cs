@@ -123,6 +123,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             if (GetCurrentHitPoints(friendly) > hitPointsBeforeHealing)
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
             ForceControlHealingEffects.ApplyRestorativeControlPower(activator, friendly, targetWasBelowHalfHP);
+            CombatPoint.AddSupportCombatPoint(activator, friendly, SkillType.Force);
         }
     }
 }

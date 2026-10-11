@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
             FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
-            FirstAidTreatmentAdjustments.GrantCombatPoint(activator);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator, friendly);
         }
 
     }

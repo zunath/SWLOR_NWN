@@ -92,9 +92,12 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         var source = File.ReadAllText(
             (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / file).FullName);
 
-        source.Should().Contain(
-            "CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices);",
+        source.Should().MatchRegex(
+            @"CombatPoint\.AddSupportCombatPoint\(activator, [^;]*SkillType\.Devices",
             $"{file} has no hostile impact, so it must award Devices combat points itself or the skill never levels");
+        source.Should().NotContain(
+            "AddCombatPointToAllTagged",
+            $"{file} must also credit the enemies fighting the allies it supports, not only enemies the caster already hit");
     }
 
     [TestCase(true, 0, null, 45, 0)]

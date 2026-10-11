@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     Messaging.SendMessageNearbyToPlayers(
                         activator,
                         receiver => $"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} shield HP to {PlayerName.GetDisplayName(receiver, target)}'s ship.");
-                    CombatPoint.AddSupportCombatPoint(activator, new[] { target }, SkillType.Piloting);
+                    CombatPoint.AddSupportCombatPoint(activator, target, SkillType.Piloting);
                 });
         }
     }

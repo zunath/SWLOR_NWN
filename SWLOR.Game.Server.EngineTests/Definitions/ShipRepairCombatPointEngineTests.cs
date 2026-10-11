@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         /// A pilot who only repairs never tags an enemy with a weapon, so each repair must credit
         /// the enemies fighting the repaired ship for Piloting XP when they die.
         /// </summary>
-        [EngineTest("Ship repairs on an ally earn Piloting XP from the ally's enemies", Category = "ShipRepairXP", TimeoutSeconds = 60f)]
+        [EngineTest("Ship repairs on an ally earn Piloting XP from the ally's enemies", Category = "SupportXP", TimeoutSeconds = 60f)]
         public static async Task RepairsEarnXPFromAllyEnemies(EngineTestContext ctx)
         {
             using var repairer = await PlayerAbilityFixture.CreateAsync(ctx);
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         /// <summary>
         /// A repair with no fight in progress must not create combat credit.
         /// </summary>
-        [EngineTest("Ship repairs outside combat earn no combat points", Category = "ShipRepairXP", TimeoutSeconds = 30f)]
+        [EngineTest("Ship repairs outside combat earn no combat points", Category = "SupportXP", TimeoutSeconds = 30f)]
         public static async Task RepairsOutsideCombatEarnNothing(EngineTestContext ctx)
         {
             using var repairer = await PlayerAbilityFixture.CreateAsync(ctx);

@@ -17,16 +17,17 @@ public class PartialMatchSearchTextTests
     }
 
     [TestCase("Vibroblade I", "(Vibroblade* I)")]
-    [TestCase("Bob A", "(Bob* A)")]
+    [TestCase("Droid X 7", "(Droid* X 7)")]
     [TestCase("Perm Tester 1", "(Perm* Tester* 1)")]
     public void OneCharacterWordsStayExactBecauseRediSearchCannotPrefixThem(string search, string expected)
     {
         PartialMatchSearchText.Build(search).Should().Be(expected);
     }
 
-    [TestCase("The Hunter", "(The Hunter*)")]
-    [TestCase("Lord of War", "(Lord* of War*)")]
-    public void StopWordsStayExactBecauseTheyAreNeverIndexed(string search, string expected)
+    [TestCase("The Hunter", "(Hunter*)")]
+    [TestCase("Lord of War", "(Lord* War*)")]
+    [TestCase("Bob A", "(Bob*)")]
+    public void StopWordsAreIgnoredBecauseRediSearchRemovesThemFromIndexAndQuery(string search, string expected)
     {
         PartialMatchSearchText.Build(search).Should().Be(expected);
     }
@@ -34,9 +35,10 @@ public class PartialMatchSearchTextTests
     [TestCase("the", "the*")]
     [TestCase("a", "a*")]
     [TestCase("The A", "The A*")]
+    [TestCase("of X", "of X*")]
     public void SearchesWithoutAPrefixableWordKeepTheSinglePrefixForm(string search, string expected)
     {
-        // An all-exact group of stop words would match every record.
+        // Dropping the stop words would leave an empty or single-character group.
         PartialMatchSearchText.Build(search).Should().Be(expected);
     }
 

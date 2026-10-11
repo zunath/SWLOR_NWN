@@ -212,7 +212,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 if (partId <= 0)
                     continue;
 
-                var model = $"{prefix}{partName}{partId:D3}".ToLowerInvariant();
+                var model = part == CreaturePart.Neck
+                    ? ItemAppearance.NeckAppearance.GetModel(creature, partId)
+                    : $"{prefix}{partName}{partId:D3}".ToLowerInvariant();
                 AddModelSelections(
                     selections,
                     seenSelections,

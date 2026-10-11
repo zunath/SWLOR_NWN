@@ -755,6 +755,23 @@ Keep restored geometry and its palette mask paired. The base male hand models
 shading. The existing base male feet still use their matched stock models and
 masks. The material-profile tests protect both pairings.
 
+### Neck skins on robe skeletons
+
+External neck skins index bones by depth-first skeleton traversal, not animation
+part number. Inline robe bones shift that traversal. `neckrender.2da` selects
+compiled aliases whose bone tables match the wearer's actual root, preserving
+the original vertices, weights, inverse binds and material names. Both naked
+neck packets and equipped armor packets use these aliases; saved armor, body
+stats and outfit selections retain their authored IDs. The equipment packet
+hook restores the original field immediately after the synchronous writer.
+
+After changing body roots, neck meshes or phenotype fallbacks, run
+`python -B SWLOR_Haks/tools/GenerateNeckModels.py --game-data "<NWN>/data" --apply`,
+then repeat with `--check` and run `TestNeckModels.py --game-data "<NWN>/data"`.
+The HAK build rejects stale source/output hashes. Generated aliases must stay
+excluded from tint source discovery: they share the source neck's materials.
+Rebuild `sw_pt_neck.hak` and `sw_2da.hak` and deploy the matching server assembly.
+
 ### Exercise the reported NPCs
 
 The placed Bounty Hunter and Force Sensitive Civilian in `ooc_area` exercise

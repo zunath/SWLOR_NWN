@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -56,7 +58,41 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 changed |= MigrateModules(ship.Status?.ConfigurationModules);
                 return changed;
             });
-            MigrateRecords<Player>(ForceWeaponEnhancementMigration.MigrateRecipeKnowledge);
+            MigratePlayerRecipes();
+        }
+
+        private static void MigratePlayerRecipes()
+        {
+            var query = new DBQuery<Player>();
+            var count = checked((int)DB.SearchCount(query));
+            var changed = 0;
+            var scanned = 0;
+            // Retired perk/skill names can prevent Player deserialization before the full rebuild.
+            foreach (var json in DB.SearchRawJson(query.AddPaging(count, 0)))
+            {
+                var player = JObject.Parse(json);
+                var id = player[nameof(Player.Id)]?.Value<string>();
+                try
+                {
+                    if (ForceWeaponEnhancementMigration.MigrateRecipeKnowledge(player))
+                    {
+                        foreach (var property in new[] { nameof(Player.UnlockedRecipes), nameof(Player.CraftedRecipes) })
+                            if (player[property] is JObject recipes)
+                                DB.SetUnindexedJsonProperty<Player>(id, property, recipes.ToString(Formatting.None));
+                        changed++;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException($"Force weapon enhancement migration failed for Player {id}.", ex);
+                }
+                scanned++;
+                if (scanned % 100 == 0)
+                    Log.Write(LogGroup.Migration,
+                        $"Force weapon enhancements: Player {scanned}/{count} scanned, {changed} changed.", true);
+            }
+            Log.Write(LogGroup.Migration,
+                $"Force weapon enhancements: Player completed, {changed}/{scanned} records changed.", true);
         }
 
         /// <summary>

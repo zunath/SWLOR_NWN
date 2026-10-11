@@ -44,6 +44,7 @@ Before writing code in an unfamiliar area, find two or three existing examples o
 
 ## Build and Test
 
+- Visual changes (NPC/object placement, models, textures, equipment, VFX, or in-game UI) require actual NWN client screenshot evidence before handoff. Read `SWLOR.Game.Server/Readmes/InEngineVisualVerification.md` first; verify every changed placement from a public approach with normal collision and include the images in the report.
 - Always pass `-p:RunPostBuildEvent=Never` when building. Without it, building `SWLOR.Game.Server` runs a slow deploy to the local NWN install.
 - Build once, then run only the relevant tests without rebuilding:
   - `dotnet build SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj -p:RunPostBuildEvent=Never`

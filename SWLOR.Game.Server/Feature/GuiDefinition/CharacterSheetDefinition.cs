@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             AddBoundValueRow(combatCol, "Force Acc.", model => model.ForceAccuracy, "Underlying Force ability accuracy rating. Actual hit chance depends on target Evasion, Force affinity, and direct ability hit chance modifiers.", null, CombatLabelWidth);
                             AddBoundValueRow(combatCol, "Evasion", model => model.Evasion, "Evasion rating used to oppose attacks and detrimental abilities.", null, CombatLabelWidth);
                             AddBoundValueRow(combatCol, "Physical DEF", model => model.PhysicalDefense, "Defense against physical attacks.", null, CombatLabelWidth);
-                            AddBoundValueRow(combatCol, "Force DEF", model => model.ForceDefense, "Defense against Force attacks.", null, 94f);
+                            AddBoundValueRow(combatCol, "Force DEF", model => model.ForceDefense, "Defense against Force attacks.", null, CombatLabelWidth);
                         });
                     })
                         .SetWidth(CombatPanelWidth);

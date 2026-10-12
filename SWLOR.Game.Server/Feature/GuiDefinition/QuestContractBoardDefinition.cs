@@ -266,6 +266,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHeight(32f)
                                     .SetWidth(110f);
 
+                            });
+
+                            right.AddRow(r =>
+                            {
+                                r.BindIsVisible(model => model.IsMyActionsVisible);
+                                r.AddButton()
+                                    .SetText("Post Again")
+                                    .BindIsEnabled(model => model.IsPostAgainEnabled)
+                                    .SetDisabledTooltip("Select a completed, expired, or cancelled contract. Finish any existing draft first.")
+                                    .BindOnClicked(model => model.OnClickPostAgain())
+                                    .SetHeight(32f)
+                                    .SetWidth(110f);
+
                                 r.AddButton()
                                     .SetText("Claim Deliveries")
                                     .BindIsEnabled(model => model.IsClaimDeliveriesEnabled)

@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Service
         // count loose items and partial turn-ins, but this keeps an objective representable by one full stack.
         public const int MaxObjectiveQuantity = 99;
         public const int MaxRewardItems = 2;
+        public const int MaxBatches = 100;
         public const int MaxTitleLength = 60;
         public const int MaxDescriptionLength = 1000;
         public const int ContractDurationDays = 30;
@@ -147,6 +148,9 @@ namespace SWLOR.Game.Server.Service
         {
             var draft = GetOrCreateDraft(player);
 
+            if (draft.TotalCompletions > 1)
+                return "Multiple batches can only offer credit rewards. Set batches to 1 before adding an item reward.";
+
             if (draft.RewardItems.Count >= MaxRewardItems)
                 return $"A contract can have at most {MaxRewardItems} reward items.";
 
@@ -235,6 +239,57 @@ namespace SWLOR.Game.Server.Service
             return string.Empty;
         }
 
+        public static bool CanPostAgain(QuestContract contract)
+        {
+            return contract.Status == QuestContractStatus.Fulfilled ||
+                contract.Status == QuestContractStatus.Expired || contract.Status == QuestContractStatus.Cancelled;
+        }
+
+        public static QuestContract CreateRepostDraft(QuestContract source)
+        {
+            return new QuestContract
+            {
+                AuthorPlayerId = source.AuthorPlayerId,
+                AuthorCDKey = source.AuthorCDKey,
+                AuthorName = source.AuthorName,
+                Status = QuestContractStatus.Draft,
+                Title = source.Title,
+                Description = source.Description,
+                RewardCredits = source.RewardCredits,
+                TotalCompletions = source.TotalCompletions,
+                CompletionsRemaining = source.TotalCompletions,
+                Objectives = source.Objectives.Select(x => new QuestContractObjective
+                {
+                    ItemResref = x.ItemResref, ItemName = x.ItemName, Quantity = x.Quantity
+                }).ToList()
+            };
+        }
+
+        public static string PostAgain(uint player, string contractId)
+        {
+            var source = DB.Get<QuestContract>(contractId);
+            var error = ValidateRepost(source, GetObjectUUID(player), GetDraft(player) != null);
+            if (!string.IsNullOrEmpty(error))
+                return error;
+
+            var draft = CreateRepostDraft(source);
+            draft.AuthorCDKey = GetPCPublicCDKey(player);
+            draft.AuthorName = GetName(player);
+            DB.Set(draft);
+            return string.Empty;
+        }
+
+        public static string ValidateRepost(QuestContract source, string authorId, bool hasDraft)
+        {
+            if (source == null || source.AuthorPlayerId != authorId)
+                return "That contract could not be found.";
+            if (!CanPostAgain(source))
+                return "Only completed, expired, or cancelled contracts can be posted again.";
+            if (hasDraft)
+                return "Finish or delete your existing draft before posting another contract again.";
+            return string.Empty;
+        }
+
         /// <summary>
         /// Resolves the display icon for an escrowed contract item. Icons are captured at escrow time,
         /// so items escrowed before icon fixes may have an unusable placeholder stored; those are
@@ -265,7 +320,7 @@ namespace SWLOR.Game.Server.Service
             if (!string.IsNullOrEmpty(validationError))
                 return validationError;
 
-            var escrowCredits = draft.RewardCredits;
+            var escrowCredits = CalculateFundedReward(draft.RewardCredits, draft.TotalCompletions);
             var fee = CalculatePostingFee(escrowCredits);
             var totalCost = escrowCredits + fee;
 
@@ -286,8 +341,7 @@ namespace SWLOR.Game.Server.Service
             draft.Description = description;
             draft.AuthorName = GetName(player);
             draft.AuthorCDKey = cdKey;
-            // Contracts are single-completion: the first player to fulfill the objectives claims the reward.
-            draft.CompletionsRemaining = 1;
+            draft.CompletionsRemaining = draft.TotalCompletions;
             draft.Status = QuestContractStatus.Published;
             draft.DatePublished = DateTime.UtcNow;
             draft.DateExpires = DateTime.UtcNow.AddDays(ContractDurationDays);
@@ -324,6 +378,7 @@ namespace SWLOR.Game.Server.Service
             if (!isAuthor && !isDM)
                 return "You do not have permission to take down this contract.";
 
+            SettleCompletedContract(contract);
             RefundEscrowToAuthor(contract);
 
             if (isAuthor)
@@ -514,17 +569,18 @@ namespace SWLOR.Game.Server.Service
             return count == 0 ? new List<QuestContractDelivery>() : DB.Search(query.AddPaging(count, 0)).ToList();
         }
 
-        public static QuestContractDelivery GetOrCreateSubmission(string playerId, QuestContract contract)
+        public static QuestContractDelivery GetOrCreateSubmission(string playerId, QuestContract contract, int attempt = 1)
         {
             var query = new DBQuery<QuestContractDelivery>()
                 .AddFieldSearch(nameof(QuestContractDelivery.PlayerId), playerId, false)
                 .AddFieldSearch(nameof(QuestContractDelivery.SourceContractId), contract.Id, false);
-            return ReadDeliveries(query).FirstOrDefault(delivery => delivery.HeldForCompletion)
+            return ReadDeliveries(query).FirstOrDefault(delivery => delivery.HeldForCompletion && delivery.CompletionAttempt == attempt)
                 ?? new QuestContractDelivery
                 {
                     PlayerId = playerId,
                     SourceContractId = contract.Id,
                     SourceContractTitle = contract.Title,
+                    CompletionAttempt = attempt,
                     HeldForCompletion = true
                 };
         }
@@ -558,53 +614,44 @@ namespace SWLOR.Game.Server.Service
             if (abandoningPlayerId == null && contract?.Status == QuestContractStatus.Published)
                 return false;
 
-            if (contract?.Status == QuestContractStatus.Fulfilled && delivery.PlayerId == contract.CompletedByPlayerId)
+            if (contract?.Status == QuestContractStatus.Fulfilled && QuestContractSettlement.IsWinningSubmission(delivery, contract))
                 delivery.PlayerId = contract.AuthorPlayerId;
             delivery.HeldForCompletion = false;
             return true;
         }
 
-        public static void CompleteContract(QuestContract contract, string playerId)
+        public static bool CompleteContract(QuestContract contract, string playerId, int attempt = 1)
         {
-            if (contract.Status != QuestContractStatus.Published || contract.CompletionsRemaining <= 0)
-                return;
-            contract.CompletedByPlayerId = playerId;
-            contract.CompletionsRemaining = 0;
-            contract.Status = QuestContractStatus.Fulfilled;
-            contract.SettlementPending = 1;
-            DB.Set(contract);
-            Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
-            SettleCompletedContract(contract);
+            // All completions are synchronous on the game thread. Reload before reserving a batch
+            // so two turn-ins from stale board views cannot spend the same remaining reward.
+            contract = DB.Get<QuestContract>(contract.Id);
+            if (contract == null)
+                return false;
+            var completed = QuestContractSettlement.Complete(contract, playerId, attempt,
+                () => ReadContractDeliveries(contract.Id), DB.Set, SaveSettlementDelivery);
+            if (contract.Status == QuestContractStatus.Fulfilled)
+            {
+                Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
+                VoidActiveContractQuests(contract, "completed");
+            }
+            return completed;
         }
 
         public static void SettleCompletedContract(QuestContract contract)
         {
-            if (contract.Status != QuestContractStatus.Fulfilled || contract.SettlementPending == 0 ||
-                string.IsNullOrWhiteSpace(contract.CompletedByPlayerId))
-                return;
+            QuestContractSettlement.Settle(contract, () => ReadContractDeliveries(contract.Id), DB.Set, SaveSettlementDelivery);
+        }
 
-            // Published contracts have one completion. Persist the winner before materializing its
-            // payment. This deterministic, retained receipt makes restart recovery idempotent.
-            var receiptId = contract.Id + "-reward";
-            if (DB.Get<QuestContractDelivery>(receiptId) == null)
-            {
-                DB.Set(new QuestContractDelivery
-                {
-                    Id = receiptId,
-                    PlayerId = contract.CompletedByPlayerId,
-                    SourceContractId = contract.Id,
-                    SourceContractTitle = contract.Title,
-                    IsRewardPayment = true,
-                    Credits = contract.RewardCredits,
-                    Items = contract.RewardItems.ToList()
-                });
-                NotifyDeliveryRecipientIfOnline(contract.CompletedByPlayerId);
-            }
+        private static List<QuestContractDelivery> ReadContractDeliveries(string contractId)
+        {
+            return ReadDeliveries(new DBQuery<QuestContractDelivery>()
+                .AddFieldSearch(nameof(QuestContractDelivery.SourceContractId), contractId, false));
+        }
 
-            ReleaseSubmissions(contract.Id);
-            contract.RewardItems.Clear();
-            contract.SettlementPending = 0;
-            DB.Set(contract);
+        private static void SaveSettlementDelivery(QuestContractDelivery delivery)
+        {
+            DB.Set(delivery);
+            NotifyDeliveryRecipientIfOnline(delivery.PlayerId);
         }
 
         private static void RecoverSettlements()
@@ -625,12 +672,13 @@ namespace SWLOR.Game.Server.Service
                 var player = DB.Get<Player>(delivery.PlayerId);
                 var questId = QuestContractFactory.BuildQuestId(delivery.SourceContractId);
                 var quest = player?.Quests.GetValueOrDefault(questId);
-                if (contract?.Status == QuestContractStatus.Published && quest?.DateLastCompleted != null)
+                if (contract?.Status == QuestContractStatus.Published && quest?.DateLastCompleted != null &&
+                    quest.TimesCompleted == delivery.CompletionAttempt)
                 {
-                    CompleteContract(contract, delivery.PlayerId);
+                    CompleteContract(contract, delivery.PlayerId, delivery.CompletionAttempt);
                     continue;
                 }
-                if (TryReleaseSubmission(delivery, contract, quest == null ? delivery.PlayerId : null))
+                if (TryReleaseSubmission(delivery, contract, quest == null || quest.DateLastCompleted != null ? delivery.PlayerId : null))
                     DB.Set(delivery);
             }
         }
@@ -659,16 +707,22 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static int CalculatePostingFee(int rewardCredits)
         {
-            return Math.Max(MinimumPostingFee, rewardCredits * PostingFeePercent / 100);
+            return (int)Math.Max(MinimumPostingFee, (long)rewardCredits * PostingFeePercent / 100);
+        }
+
+        public static int CalculateFundedReward(int rewardCredits, int batches)
+        {
+            return checked(rewardCredits * batches);
         }
 
         /// <summary>
         /// Calculates the total credits a player must pay to publish a contract: the escrowed reward
         /// credits plus the posting fee.
         /// </summary>
-        public static int CalculateTotalPublishCost(int rewardCredits)
+        public static int CalculateTotalPublishCost(int rewardCredits, int batches = 1)
         {
-            return rewardCredits + CalculatePostingFee(rewardCredits);
+            var fundedReward = CalculateFundedReward(rewardCredits, batches);
+            return checked(fundedReward + CalculatePostingFee(fundedReward));
         }
 
         /// <summary>
@@ -707,6 +761,14 @@ namespace SWLOR.Game.Server.Service
 
             if (draft.RewardCredits < MinRewardCredits)
                 return $"Reward credits must be at least {MinRewardCredits}.";
+
+            if (draft.TotalCompletions < 1 || draft.TotalCompletions > MaxBatches)
+                return $"Batches must be between 1 and {MaxBatches}.";
+            if (draft.TotalCompletions > 1 && draft.RewardItems.Count > 0)
+                return "Multiple batches can only offer credit rewards. Remove item rewards or set batches to 1.";
+            var fundedReward = (long)draft.RewardCredits * draft.TotalCompletions;
+            if (fundedReward + Math.Max(MinimumPostingFee, fundedReward * PostingFeePercent / 100) > int.MaxValue)
+                return "The total publishing cost is too large. Reduce the reward or batch count.";
 
             return string.Empty;
         }
@@ -750,6 +812,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void ExpireContract(QuestContract contract)
         {
+            SettleCompletedContract(contract);
             RefundEscrowToAuthor(contract);
             contract.Status = QuestContractStatus.Expired;
             DB.Set(contract);

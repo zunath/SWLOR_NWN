@@ -172,6 +172,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
+        public string BatchesText
+        {
+            get => Get<string>();
+            set
+            {
+                var sanitized = SanitizeNumber(value, 1, QuestContractBoard.MaxBatches);
+                Set(sanitized);
+                if (sanitized != value)
+                    OnPropertyChanged();
+                UpdateCostSummary();
+            }
+        }
+
         public GuiBindingList<string> RewardItemIconResrefs
         {
             get => Get<GuiBindingList<string>>();
@@ -248,6 +261,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var draft = QuestContractBoard.GetDraft(Player);
             Title = draft?.Title ?? string.Empty;
             Description = draft?.Description ?? string.Empty;
+            BatchesText = (draft?.TotalCompletions ?? 1).ToString();
             RewardCreditsText = (draft?.RewardCredits ?? 0).ToString();
 
             LoadObjectives();
@@ -256,6 +270,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.Title);
             WatchOnClient(model => model.Description);
             WatchOnClient(model => model.RewardCreditsText);
+            WatchOnClient(model => model.BatchesText);
             WatchOnClient(model => model.ItemSearchText);
             WatchOnClient(model => model.NewObjectiveQuantityText);
             WatchOnClient(model => model.ObjectiveQuantityText);
@@ -324,7 +339,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             RewardItemIconResrefs = icons;
             RewardItemLabels = labels;
-            IsAddRewardItemEnabled = rewardItems.Count < QuestContractBoard.MaxRewardItems;
+            UpdateCostSummary();
         }
 
         private void UpdateCostSummary()
@@ -332,12 +347,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!int.TryParse(RewardCreditsText, out var credits) || credits < 0)
                 credits = 0;
 
-            var fee = QuestContractBoard.CalculatePostingFee(credits);
-            var totalCost = credits + fee;
+            var batches = int.TryParse(BatchesText, out var batchCount) ? batchCount : 1;
+            var escrowCredits = QuestContractBoard.CalculateFundedReward(credits, batches);
+            var fee = QuestContractBoard.CalculatePostingFee(escrowCredits);
+            var totalCost = QuestContractBoard.CalculateTotalPublishCost(credits, batches);
 
-            EscrowText = $"Reward Escrow: {credits} cr (paid to whoever completes the contract)";
+            EscrowText = $"Reward Escrow: {credits} cr x {batches} batches = {escrowCredits} cr";
             PostingFeeText = $"Posting Fee: {fee} cr (non-refundable)";
             TotalCostText = $"Total to Publish: {totalCost} cr";
+            IsAddRewardItemEnabled = batches == 1 && (RewardItemLabels?.Count ?? 0) < QuestContractBoard.MaxRewardItems;
         }
 
         private QuestContract SaveDetails()
@@ -349,7 +367,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!int.TryParse(RewardCreditsText, out var credits) || credits < 0)
                 credits = 0;
             draft.RewardCredits = credits;
-            draft.CompletionsRemaining = 1;
+            draft.TotalCompletions = int.TryParse(BatchesText, out var batches) ? batches : 1;
+            draft.CompletionsRemaining = draft.TotalCompletions;
 
             DB.Set(draft);
 
@@ -499,6 +518,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickAddRewardItem() => () =>
         {
+            SaveDetails();
+            if (!IsAddRewardItemEnabled)
+            {
+                StatusText = "Item rewards require one batch and an available reward item slot.";
+                return;
+            }
             Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory to escrow as a contract reward.", AddRewardItem);
             EnterTargetingMode(Player, ObjectType.Item);
         };
@@ -540,11 +565,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var escrowCredits = draft.RewardCredits;
+            var escrowCredits = QuestContractBoard.CalculateFundedReward(draft.RewardCredits, draft.TotalCompletions);
             var fee = QuestContractBoard.CalculatePostingFee(escrowCredits);
             var totalCost = escrowCredits + fee;
 
-            ShowModal($"Publish this contract?\n\nReward Escrow: {escrowCredits} cr\nPosting Fee: {fee} cr\nTotal: {totalCost} cr\n\nThe escrow is paid to whoever completes the contract. The posting fee is non-refundable.", () =>
+            ShowModal($"Publish this contract?\n\nReward per batch: {draft.RewardCredits} cr\nBatches: {draft.TotalCompletions}\nReward Escrow: {escrowCredits} cr\nPosting Fee: {fee} cr\nTotal: {totalCost} cr\n\nEach completed batch pays one reward. The posting fee is non-refundable.", () =>
             {
                 var error = QuestContractBoard.PublishContract(Player);
 
@@ -562,7 +587,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickClose() => () =>
         {
-            ShowModal("Close the contract editor? Any unsaved changes to the title, description, or reward credits will be lost.", () =>
+            ShowModal("Close the contract editor? Any unsaved changes to the title, description, reward credits, or batches will be lost.", () =>
             {
                 Gui.TogglePlayerWindow(Player, GuiWindowType.QuestContractEditor);
             });

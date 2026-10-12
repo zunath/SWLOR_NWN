@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.LogService;
@@ -18,7 +19,7 @@ namespace SWLOR.Game.Server.Service.QuestContractService
         public string MenuName => "Contract Reward";
 
         /// <summary>
-        /// Records the winner of a single-completion contract, settles its escrow into a recoverable
+        /// Records one completed batch, settles its escrow into a recoverable
         /// delivery, and attempts collection. Failed item transfers remain available at the board.
         /// </summary>
         public void GiveReward(uint player)
@@ -37,12 +38,17 @@ namespace SWLOR.Game.Server.Service.QuestContractService
                 return;
             }
 
-            QuestContractBoard.CompleteContract(contract, GetObjectUUID(player));
+            var playerId = GetObjectUUID(player);
+            var attempt = DB.Get<Player>(playerId)?.Quests.GetValueOrDefault(QuestContractFactory.BuildQuestId(_contractId))?.TimesCompleted ?? 1;
+            if (!QuestContractBoard.CompleteContract(contract, playerId, attempt))
+            {
+                SendMessageToPC(player, "This contract batch could not be paid. Any unfinished submissions remain returnable at the board.");
+                return;
+            }
             QuestContractBoard.ClaimDeliveries(player);
 
-            // Refresh the completing player's contract board (if open) so the fulfilled contract
-            // disappears from the Browse list immediately.
-            Gui.PublishRefreshEvent(player, new QuestContractPublishedRefreshEvent());
+            for (var observer = GetFirstPC(); GetIsObjectValid(observer); observer = GetNextPC())
+                Gui.PublishRefreshEvent(observer, new QuestContractPublishedRefreshEvent());
 
             SendMessageToPC(player, $"Your reward for '{contract.Title}' is ready. Any items or credits you could not receive remain claimable at any Contract Board.");
             Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{GetObjectUUID(player)}] completed contract '{contract.Id}' ('{contract.Title}'); {contract.RewardCredits} credits and its reward items were assigned to their delivery.");

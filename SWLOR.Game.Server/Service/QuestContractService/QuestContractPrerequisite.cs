@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.QuestService;
 
@@ -25,10 +26,14 @@ namespace SWLOR.Game.Server.Service.QuestContractService
             if (contract.Status != QuestContractStatus.Published)
                 return false;
 
-            if (contract.CompletionsRemaining <= 0)
+            if (contract.CompletionsRemaining <= 0 || contract.SettlementPending != 0)
                 return false;
 
             var playerId = GetObjectUUID(player);
+            var playerQuest = DB.Get<Player>(playerId)?.Quests.GetValueOrDefault(QuestContractFactory.BuildQuestId(_contractId));
+            if (playerQuest != null && playerQuest.DateLastCompleted == null)
+                return false;
+
             if (playerId == contract.AuthorPlayerId)
                 return false;
 

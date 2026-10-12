@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.LogService;
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Service.QuestContractService
                 // Prefixed so player-posted contracts are clearly distinguishable from standard
                 // quests in the journal and quest UIs.
                 Name = $"Contract: {contract.Title}",
-                IsRepeatable = false,
+                IsRepeatable = contract.TotalCompletions > 1,
                 AllowRewardSelection = false,
                 // Player-authored content would let players farm quest achievements.
                 CountsTowardAchievements = false,
@@ -63,9 +64,11 @@ namespace SWLOR.Game.Server.Service.QuestContractService
         private static string BuildJournalText(QuestContract contract)
         {
             var sb = new StringBuilder();
-            sb.Append("This is a player-posted contract. Deliver the requested items by using the Turn In option at any Contract Board.\n\n");
+            sb.Append("This is a player-posted contract. Deliver one batch of the requested items using Turn In at any Contract Board.\n");
+            sb.Append($"Reward per batch: {contract.RewardCredits} credits.\n");
+            sb.Append("Batches are first come, first served; accepting does not reserve a reward. Check the board for remaining batches.\n\n");
             sb.Append(contract.Description);
-            sb.Append("\n\nObjectives:\n");
+            sb.Append("\n\nItems per batch:\n");
 
             foreach (var objective in contract.Objectives)
             {
@@ -104,7 +107,9 @@ namespace SWLOR.Game.Server.Service.QuestContractService
                 return;
             }
 
-            var delivery = QuestContractBoard.GetOrCreateSubmission(GetObjectUUID(player), contract);
+            var submitterId = GetObjectUUID(player);
+            var playerQuest = DB.Get<Player>(submitterId)?.Quests.GetValueOrDefault(BuildQuestId(contract.Id));
+            var delivery = QuestContractBoard.GetOrCreateSubmission(submitterId, contract, (playerQuest?.TimesCompleted ?? 0) + 1);
             delivery.Items.Add(contractItem);
             DB.Set(delivery);
         }

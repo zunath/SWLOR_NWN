@@ -172,6 +172,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsPostAgainEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool IsClaimDeliveriesEnabled
         {
             get => Get<bool>();
@@ -241,7 +247,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var authorName = PlayerName.GetPlainDisplayNameByPlayerId(Player, contract.AuthorPlayerId, contract.AuthorName);
 
                 _rows.Add(contract);
-                labels.Add($"{contract.Title} - {authorName} - {contract.RewardCredits} cr");
+                labels.Add($"{contract.Title} - {authorName} - {contract.RewardCredits} cr/batch - {contract.CompletionsRemaining} left");
                 toggles.Add(false);
                 colors.Add(GuiColor.White);
             }
@@ -260,8 +266,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var playerId = GetObjectUUID(Player);
             var query = new DBQuery<QuestContract>()
-                .AddFieldSearch(nameof(QuestContract.AuthorPlayerId), playerId, false)
-                .AddFieldSearch(nameof(QuestContract.Status), new[] { (int)QuestContractStatus.Draft, (int)QuestContractStatus.Published });
+                .AddFieldSearch(nameof(QuestContract.AuthorPlayerId), playerId, false);
             var count = (int)DB.SearchCount(query);
             var results = count > 0 ? DB.Search(query.AddPaging(count, 0)) : Enumerable.Empty<QuestContract>();
 
@@ -270,13 +275,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var toggles = new GuiBindingList<bool>();
             var colors = new GuiBindingList<GuiColor>();
 
-            foreach (var contract in results.OrderByDescending(x => x.Status))
+            foreach (var contract in results.OrderBy(x => x.Status == QuestContractStatus.Draft ? 0 : x.Status == QuestContractStatus.Published ? 1 : 2)
+                .ThenByDescending(x => x.DatePublished))
             {
                 if (!string.IsNullOrWhiteSpace(SearchText) &&
                     !contract.Title.ToLower().Contains(SearchText.ToLower()))
                     continue;
 
-                var statusLabel = contract.Status == QuestContractStatus.Draft ? "Draft" : "Published";
+                var statusLabel = StatusLabel(contract.Status);
 
                 _rows.Add(contract);
                 labels.Add($"[{statusLabel}] {contract.Title}");
@@ -311,6 +317,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsAbandonVisible = false;
             IsTakeDownVisible = false;
             IsCancelEnabled = false;
+            IsPostAgainEnabled = false;
             CancelButtonText = "Cancel";
 
             if (_selectedIndex < 0 || _selectedIndex >= _rows.Count)
@@ -352,6 +359,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
+                IsPostAgainEnabled = QuestContractBoard.CanPostAgain(contract) && QuestContractBoard.GetDraft(Player) == null;
                 if (contract.Status == QuestContractStatus.Draft)
                 {
                     IsCancelEnabled = true;
@@ -369,6 +377,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var sb = new StringBuilder();
 
+            sb.Append($"Reward per batch: {contract.RewardCredits} credits\n");
+            sb.Append($"Batches: {contract.CompletionsRemaining} of {contract.TotalCompletions} remaining\n");
             sb.Append($"Title: {contract.Title}\n");
 
             if (_isBrowseTab)
@@ -378,20 +388,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                var statusLabel = contract.Status == QuestContractStatus.Draft ? "Draft" : "Published";
+                var statusLabel = StatusLabel(contract.Status);
                 sb.Append($"Status: {statusLabel}\n");
             }
 
             if (contract.Status == QuestContractStatus.Published)
                 sb.Append($"Expires: {contract.DateExpires:yyyy-MM-dd}\n");
 
-            if (contract.RewardCredits > 0)
-                sb.Append($"Reward: {contract.RewardCredits} credits\n");
+            if (contract.Status == QuestContractStatus.Published)
+                sb.Append("Accepting does not reserve a batch. First come, first served.\n");
 
             sb.Append('\n');
             sb.Append(string.IsNullOrWhiteSpace(contract.Description) ? "(No description)" : contract.Description);
 
             return sb.ToString();
+        }
+
+        private static string StatusLabel(QuestContractStatus status)
+        {
+            return status switch
+            {
+                QuestContractStatus.Fulfilled => "Completed",
+                QuestContractStatus.TakenDown => "Taken Down",
+                _ => status.ToString()
+            };
         }
 
         private void LoadDetailItems(QuestContract contract)
@@ -525,6 +545,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickEditDraft() => () =>
         {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.QuestContractEditor, null, TetherObject);
+        };
+
+        public Action OnClickPostAgain() => () =>
+        {
+            if (_isBrowseTab || _selectedIndex < 0 || _selectedIndex >= _rows.Count) return;
+            var error = QuestContractBoard.PostAgain(Player, _rows[_selectedIndex].Id);
+            if (!string.IsNullOrEmpty(error))
+            {
+                StatusText = error;
+                return;
+            }
+            LoadMyContracts();
             Gui.TogglePlayerWindow(Player, GuiWindowType.QuestContractEditor, null, TetherObject);
         };
 

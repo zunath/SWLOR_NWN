@@ -22,6 +22,9 @@ namespace SWLOR.Game.Server.Entity
         public string SourceContractTitle { get; set; }
         // Objective submissions remain owned by their submitter until that attempt wins.
         public bool HeldForCompletion { get; set; }
+        // TimesCompleted + 1 when the first item is submitted. Distinguishes repeat attempts,
+        // including an abandoned attempt after an earlier successful completion.
+        public int CompletionAttempt { get; set; } = 1;
         [Indexed]
         public int HeldSubmissionIndex => HeldForCompletion ? 1 : 0;
         // Keep an empty receipt after claiming so interrupted settlement cannot pay twice.

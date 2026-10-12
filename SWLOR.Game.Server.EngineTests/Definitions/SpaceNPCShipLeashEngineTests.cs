@@ -42,7 +42,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(target, () => Space.ApplyShipDamage(target, ship, 50));
             ctx.AssertEqual(shipStatus.MaxShield, shipStatus.Shield, "leashed ship's shield after taking damage");
 
+            // Delayed salvos route through ApplyShipDamage after activation, so a leashed attacker's damage must be dropped.
             var targetStatus = Space.GetShipStatus(target);
+            var shieldBeforeSalvo = targetStatus.Shield;
+            var hullBeforeSalvo = targetStatus.Hull;
+            ctx.Assert(AI.IsLeashEvading(ship), "ship is still returning home");
+            await ctx.ExecuteInCreatureContextAsync(ship, () =>
+            {
+                Space.ApplyShipDamage(ship, target, 50);
+                Space.ApplyHullDamage(ship, target, 50);
+            });
+            ctx.Assert(targetStatus.Shield >= shieldBeforeSalvo && targetStatus.Hull >= hullBeforeSalvo,
+                $"a leashed ship's delayed damage is dropped (shield {targetStatus.Shield}/{shieldBeforeSalvo}, hull {targetStatus.Hull}/{hullBeforeSalvo})");
+            ctx.Assert(!Space.CanShipFire(ship), "a leashed ship's repeating salvos stop");
+
             var previousShield = targetStatus.Shield;
             var previousHull = targetStatus.Hull;
             var deadline = DateTime.UtcNow.AddSeconds(5f);

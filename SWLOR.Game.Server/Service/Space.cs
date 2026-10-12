@@ -1701,8 +1701,8 @@ namespace SWLOR.Game.Server.Service
 
             var targetShipStatus = GetShipStatus(target);
 
-            // Leashed ships are immune while they return home, like plot-flagged ground enemies.
-            if (targetShipStatus == null || AI.IsLeashEvading(target))
+            // Leashed ships neither take nor deal damage while they return home, like plot-flagged ground enemies.
+            if (targetShipStatus == null || AI.IsLeashEvading(target) || AI.IsLeashEvading(attacker))
                 return;
 
             var remainingDamage = amount;
@@ -1802,8 +1802,8 @@ namespace SWLOR.Game.Server.Service
 
             var targetShipStatus = GetShipStatus(target);
 
-            // Leashed ships are immune while they return home, like plot-flagged ground enemies.
-            if (targetShipStatus == null || AI.IsLeashEvading(target))
+            // Leashed ships neither take nor deal damage while they return home, like plot-flagged ground enemies.
+            if (targetShipStatus == null || AI.IsLeashEvading(target) || AI.IsLeashEvading(attacker))
                 return;
 
             if (targetShipStatus.Hull > 0)
@@ -2011,10 +2011,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var (creature, shipStatus) in _shipNPCs)
             {
                 if (AI.IsLeashEvading(creature))
-                {
-                    RestoreLeashedShip(shipStatus);
                     continue;
-                }
 
                 ApplyAutoShipRecovery(creature, shipStatus);
 
@@ -2024,10 +2021,7 @@ namespace SWLOR.Game.Server.Service
 
                 // Ships follow the same combat leash as ground enemies.
                 if (AI.TryStartCombatLeashEvade(creature, target))
-                {
-                    RestoreLeashedShip(shipStatus);
                     continue;
-                }
 
                 // Determine which modules are available.
                 var highModules = shipStatus.HighPowerModules.Where(x =>
@@ -2126,10 +2120,23 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Leashed ships return home at full strength, matching the full heal ground enemies receive.
+        /// Whether a ship can keep firing a delayed salvo. Dead and leashed ships stop.
         /// </summary>
-        private static void RestoreLeashedShip(ShipStatus shipStatus)
+        public static bool CanShipFire(uint ship)
         {
+            return !GetIsDead(ship) && !AI.IsLeashEvading(ship);
+        }
+
+        /// <summary>
+        /// Leashed ships start and finish returning home at full strength, matching the full heal ground enemies receive.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnCreatureLeashStarted)]
+        [NWNEventHandler(ScriptName.OnCreatureLeashEnded)]
+        public static void RestoreLeashedShip()
+        {
+            if (!_shipNPCs.TryGetValue(OBJECT_SELF, out var shipStatus))
+                return;
+
             shipStatus.Shield = shipStatus.MaxShield;
             shipStatus.Hull = shipStatus.MaxHull;
         }

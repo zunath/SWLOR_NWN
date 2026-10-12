@@ -154,13 +154,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             where TViewModel : IGuiViewModel
         {
             var host = new GuiGroup<TViewModel>();
-            host.SetShowBorder(false).SetScrollbars(NuiScrollbars.None);
+            host.SetShowBorder(false)
+                .SetScrollbars(NuiScrollbars.None);
             host.SetHeight(height);
-            host.AddColumn(column => column.AddRow(row =>
+            host.AddColumn(column => column
+                .AddRow(row =>
             {
                 if (!Parse(text).Any(run => run.Color.R != 255 || run.Color.G != 255 || run.Color.B != 255))
                 {
-                    row.AddText().SetText(PlainText(text)).SetHeight(height);
+                    row.AddText()
+                        .SetText(PlainText(text))
+                        .SetHeight(height);
                     return;
                 }
 
@@ -168,17 +172,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.AddGroup(scroll =>
                 {
                     scroll.SetScrollbars(NuiScrollbars.Auto);
-                    scroll.AddColumn(content => content.AddRow(line => line.AddLabel()
-                        .SetText(string.Empty).SetWidth(width).SetMargin(0f)
+                    scroll.AddColumn(content => content
+                        .AddRow(line => line
+                        .AddLabel()
+                        .SetText(string.Empty)
+                        .SetWidth(width)
+                        .SetMargin(0f)
                         .SetHeight(Math.Max(LineHeight, runs.LastOrDefault()?.Y + LineHeight ?? LineHeight))
                         .AddDrawList(draw =>
                         {
                             draw.SetIsConstrainedToTargetBounds(true);
                             foreach (var run in runs)
-                                draw.AddText(item => item.SetText(run.Text).SetColor(run.Color)
+                                draw.AddText(item => item
+                                    .SetText(run.Text)
+                                    .SetColor(run.Color)
                                     .SetBounds(run.X, run.Y, width - run.X, LineHeight));
                         })));
-                }).SetHeight(height);
+                })
+                .SetHeight(height);
             }));
             return host.ToJson();
         }

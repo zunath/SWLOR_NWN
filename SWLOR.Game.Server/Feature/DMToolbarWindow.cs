@@ -30,11 +30,14 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void RefreshCurrentAreaWindows()
         {
-            var dm = GetEnteringObject();
-            if (GetIsDMPossessed(dm))
-                dm = GetMaster(dm);
+            var dm = DMPresence.GetDM(GetEnteringObject());
+            if (!GetIsDM(dm))
+                return;
 
-            if (GetIsDM(dm))
+            // Windows opened while possessing are shown on the creature; ones opened before are on the avatar.
+            var controlled = DMPresence.GetControlledCreature(dm);
+            Gui.PublishRefreshEvent(dm, new DMAreaChangedRefreshEvent(), controlled);
+            if (controlled != dm)
                 Gui.PublishRefreshEvent(dm, new DMAreaChangedRefreshEvent());
         }
 

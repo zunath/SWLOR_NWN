@@ -301,8 +301,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CanBringHere = category == DMObjectCategory.Creatures;
             CanExamine = category is DMObjectCategory.Creatures or DMObjectCategory.Placeables
                 or DMObjectCategory.Items or DMObjectCategory.Doors;
+            // A creature a DM is possessing is someone else's body for now.
             CanDestroy = category is DMObjectCategory.Creatures or DMObjectCategory.Placeables
-                or DMObjectCategory.Items;
+                or DMObjectCategory.Items && !GetIsDMPossessed(result.Object);
         }
 
         private static (string Icon, string Summary) GetRow(DMObjectSearchResult result)
@@ -420,6 +421,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (!GetIsObjectValid(result.Object))
                 {
                     DMPresence.SendMessage(Player, "That object no longer exists.");
+                }
+                else if (GetIsDMPossessed(result.Object))
+                {
+                    DMPresence.SendMessage(Player, "A DM is possessing that creature.");
                 }
                 else
                 {

@@ -437,11 +437,15 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to refresh.</param>
         /// <param name="payload">The refresh payload.</param>
-        public static void PublishRefreshEvent<T>(uint player, T payload)
+        /// <param name="uiTarget">Where the windows are shown, when that is not the player, such as a creature a DM possesses.</param>
+        public static void PublishRefreshEvent<T>(uint player, T payload, uint uiTarget = OBJECT_INVALID)
             where T : IGuiRefreshEvent
         {
-            if (!GetIsPC(player))
+            if (!GetIsPC(player) && uiTarget == OBJECT_INVALID)
                 return;
+
+            if (uiTarget == OBJECT_INVALID)
+                uiTarget = player;
 
             if (!_windowTypesByRefreshEvent.TryGetValue(typeof(T), out var windowTypes))
                 return;
@@ -457,7 +461,7 @@ namespace SWLOR.Game.Server.Service
 
                 var windowId = BuildWindowId(windowType);
 
-                if(NuiFindWindow(player, windowId) != 0)
+                if(NuiFindWindow(uiTarget, windowId) != 0)
                     ((IGuiRefreshable<T>)playerWindow.ViewModel).Refresh(payload);
             }
         }
@@ -565,13 +569,15 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player))
                 return;
 
+            // Windows shown on a creature a DM possesses are cached under the DM.
+            var owner = GetIsDMPossessed(player) ? GetMaster(player) : player;
             foreach (var (type, template) in _windowTemplates)
             {
                 if (template.KeepsOpenOnAreaChange)
                     continue;
 
                 if (IsWindowOpen(player, type))
-                    TogglePlayerWindow(player, type);
+                    TogglePlayerWindow(owner, type, uiTarget: player);
             }
         }
 

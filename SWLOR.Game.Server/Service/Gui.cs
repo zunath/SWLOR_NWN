@@ -556,7 +556,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a player enters an area, close all NUI windows.
+        /// When a player enters an area, close all NUI windows except those marked to stay open.
         /// </summary>
         [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void CloseAllWindows()
@@ -565,8 +565,11 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player))
                 return;
 
-            foreach (var (type, _) in _windowTemplates)
+            foreach (var (type, template) in _windowTemplates)
             {
+                if (template.KeepsOpenOnAreaChange)
+                    continue;
+
                 if (IsWindowOpen(player, type))
                     TogglePlayerWindow(player, type);
             }

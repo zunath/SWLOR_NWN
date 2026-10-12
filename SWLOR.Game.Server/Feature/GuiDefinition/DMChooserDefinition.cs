@@ -1,0 +1,228 @@
+using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service.DMToolService;
+using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
+
+namespace SWLOR.Game.Server.Feature.GuiDefinition
+{
+    /// <summary>
+    /// Searchable replacement for the native DM chooser.
+    /// </summary>
+    public class DMChooserDefinition : IGuiWindowDefinition
+    {
+        private readonly GuiWindowBuilder<DMChooserViewModel> _builder = new();
+
+        private const float ContentPanelWidth = 560f;
+        private const float SideRailWidth = 240f;
+        private const float ButtonHeight = 32f;
+        private const float RailButtonWidth = 220f;
+
+        public GuiConstructedWindow BuildWindow()
+        {
+            var window = _builder.CreateWindow(GuiWindowType.DMChooser)
+                .SetInitialGeometry(0, 0, 860f, 600f)
+                .SetTitle("Chooser")
+                .SetIsResizable(true)
+                .SetIsCollapsible(true)
+                .SetKeepsOpenOnAreaChange(true)
+                .DefinePartialView(DMChooserViewModel.MainContentPartial, AddMainContent);
+
+            window.AddStandardLayout(layout =>
+            {
+                layout.SetContentPartialElement(DMChooserViewModel.MainContentElement);
+                layout.AddSideColumn(AddActionRail, SideRailWidth);
+            });
+
+            return _builder.Build();
+        }
+
+        private static void AddMainContent(GuiGroup<DMChooserViewModel> host)
+        {
+            host.AddColumn(col =>
+            {
+                col.AddRow(row =>
+                {
+                    row.AddGroup(panel =>
+                    {
+                        panel.SetShowBorder(false);
+                        panel.SetScrollbars(NuiScrollbars.None);
+                        panel.AddColumn(content =>
+                        {
+                            content.AddRow(filters =>
+                            {
+                                filters.AddComboBox()
+                                    .AddOption("Areas", (int)DMObjectCategory.Areas)
+                                    .AddOption("Creatures", (int)DMObjectCategory.Creatures)
+                                    .AddOption("Placeables", (int)DMObjectCategory.Placeables)
+                                    .AddOption("Items", (int)DMObjectCategory.Items)
+                                    .AddOption("Doors", (int)DMObjectCategory.Doors)
+                                    .AddOption("Triggers", (int)DMObjectCategory.Triggers)
+                                    .AddOption("Waypoints", (int)DMObjectCategory.Waypoints)
+                                    .AddOption("Stores", (int)DMObjectCategory.Stores)
+                                    .AddOption("Encounters", (int)DMObjectCategory.Encounters)
+                                    .BindSelectedIndex(model => model.SelectedCategory)
+                                    .SetTooltip("What to list")
+                                    .SetWidth(200f)
+                                    .SetHeight(ButtonHeight);
+
+                                filters.AddComboBox()
+                                    .AddOption("Current Area", (int)DMObjectSearchScope.CurrentArea)
+                                    .AddOption("All Areas", (int)DMObjectSearchScope.AllAreas)
+                                    .BindSelectedIndex(model => model.SelectedScope)
+                                    .BindIsEnabled(model => model.IsScopeEnabled)
+                                    .SetDisabledTooltip("Areas are always listed from the whole module")
+                                    .SetWidth(200f)
+                                    .SetHeight(ButtonHeight);
+
+                                filters.AddSpacer();
+                            });
+
+                            content.AddRow(searchRow =>
+                            {
+                                searchRow.AddTextEdit()
+                                    .SetPlaceholder("Search by name, tag, or resref")
+                                    .BindValue(model => model.SearchText)
+                                    .SetMaxLength(64)
+                                    .SetHeight(ButtonHeight);
+
+                                searchRow.AddButton()
+                                    .SetText("X")
+                                    .SetTooltip("Clear the search")
+                                    .SetWidth(35f)
+                                    .SetHeight(ButtonHeight)
+                                    .BindOnClicked(model => model.OnClickClearSearch());
+
+                                searchRow.AddButton()
+                                    .SetText("Search")
+                                    .SetWidth(100f)
+                                    .SetHeight(ButtonHeight)
+                                    .BindOnClicked(model => model.OnClickSearch());
+                            });
+
+                            content.AddRow(header =>
+                            {
+                                header.AddLabel()
+                                    .SetText("Name")
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetHeight(20f);
+
+                                header.AddLabel()
+                                    .SetText("Tag")
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetWidth(140f)
+                                    .SetHeight(20f);
+
+                                header.AddLabel()
+                                    .BindText(model => model.ThirdColumnHeader)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetWidth(150f)
+                                    .SetHeight(20f);
+                            });
+
+                            content.AddRow(listRow =>
+                            {
+                                listRow.AddList(template =>
+                                {
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.AddToggleButton()
+                                            .BindText(model => model.ResultNames)
+                                            .BindIsToggled(model => model.ResultSelections)
+                                            .BindOnClicked(model => model.OnSelectResult());
+                                    });
+
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.SetIsVariable(false);
+                                        cell.SetWidth(140f);
+                                        cell.AddLabel()
+                                            .BindText(model => model.ResultTags)
+                                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                    });
+
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.SetIsVariable(false);
+                                        cell.SetWidth(150f);
+                                        cell.AddLabel()
+                                            .BindText(model => model.ResultAreas)
+                                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                    });
+                                })
+                                    .SetRowHeight(30f)
+                                    .BindRowCount(model => model.ResultNames);
+                            });
+
+                            content.AddPagination(
+                                model => model.PageNumbers,
+                                model => model.SelectedPageIndex,
+                                model => model.OnClickPreviousPage(),
+                                model => model.OnClickNextPage());
+
+                            content.AddRow(status =>
+                            {
+                                status.AddLabel()
+                                    .BindText(model => model.ResultSummary)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetHeight(20f);
+                            });
+                        });
+                    })
+                        .SetWidth(ContentPanelWidth);
+                });
+            });
+        }
+
+        private static void AddActionRail(GuiColumn<DMChooserViewModel> col)
+        {
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .SetText("SELECTED")
+                    .SetColor(221, 181, 93)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .SetHeight(20f);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddText()
+                    .BindText(model => model.SelectedDetails)
+                    .SetShowBorder(true)
+                    .SetScrollbars(NuiScrollbars.Auto)
+                    .SetHeight(150f);
+            });
+
+            AddActionButton(col, "Jump To", "Move to the selected area or object",
+                model => model.OnClickJumpTo(), model => model.CanJumpTo);
+            AddActionButton(col, "Bring Here", "Move the selected creature to you",
+                model => model.OnClickBringHere(), model => model.CanBringHere);
+            AddActionButton(col, "Examine", "Examine the selected object",
+                model => model.OnClickExamine(), model => model.CanExamine);
+            AddActionButton(col, "Destroy", "Destroy the selected creature, placeable, or item",
+                model => model.OnClickDestroy(), model => model.CanDestroy);
+
+            col.AddRow(row => row.AddSpacer());
+        }
+
+        private static void AddActionButton(
+            GuiColumn<DMChooserViewModel> col,
+            string text,
+            string tooltip,
+            System.Linq.Expressions.Expression<Func<DMChooserViewModel, Action>> onClick,
+            System.Linq.Expressions.Expression<Func<DMChooserViewModel, bool>> isEnabled)
+        {
+            col.AddRow(row =>
+            {
+                row.AddButton()
+                    .SetText(text)
+                    .SetTooltip(tooltip)
+                    .SetWidth(RailButtonWidth)
+                    .SetHeight(ButtonHeight)
+                    .BindIsEnabled(isEnabled)
+                    .BindOnClicked(onClick);
+            });
+        }
+    }
+}

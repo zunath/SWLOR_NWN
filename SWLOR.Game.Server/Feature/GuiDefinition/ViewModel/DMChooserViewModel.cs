@@ -1,0 +1,374 @@
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.DMToolService;
+using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.LogService;
+
+namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+{
+    public class DMChooserViewModel : GuiViewModelBase<DMChooserViewModel, GuiPayloadBase>
+    {
+        public const string MainContentElement = "dmchooser_content";
+        public const string MainContentPartial = "DMCHOOSER_MAIN";
+
+        private const int ResultsPerPage = 20;
+
+        private List<DMObjectSearchResult> _results = new();
+        private readonly List<DMObjectSearchResult> _pageResults = new();
+        private int _selectedIndex = -1;
+        private bool _isTruncated;
+        private bool _suppressSearch;
+
+        public int SelectedCategory
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                IsScopeEnabled = value != (int)DMObjectCategory.Areas;
+                ThirdColumnHeader = value == (int)DMObjectCategory.Areas ? "Resref" : "Area";
+                if (!_suppressSearch)
+                    RunSearch();
+            }
+        }
+
+        public int SelectedScope
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                if (!_suppressSearch)
+                    RunSearch();
+            }
+        }
+
+        public string ThirdColumnHeader
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public bool IsScopeEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string SearchText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> ResultNames
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> ResultTags
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> ResultAreas
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<bool> ResultSelections
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> PageNumbers
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public int SelectedPageIndex
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                if (!_suppressSearch)
+                    ShowPage();
+            }
+        }
+
+        public string ResultSummary
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string SelectedDetails
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public bool CanJumpTo
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool CanBringHere
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool CanExamine
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool CanDestroy
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        protected override void Initialize(GuiPayloadBase initialPayload)
+        {
+            Geometry = DMToolbarViewModel.PlaceBelowToolbar(Player, Geometry);
+            _suppressSearch = true;
+            SelectedCategory = (int)DMObjectCategory.Areas;
+            SelectedScope = (int)DMObjectSearchScope.CurrentArea;
+            SearchText = string.Empty;
+            ResultNames = new GuiBindingList<string>();
+            ResultTags = new GuiBindingList<string>();
+            ResultAreas = new GuiBindingList<string>();
+            ResultSelections = new GuiBindingList<bool>();
+            PageNumbers = new GuiBindingList<GuiComboEntry>();
+            SelectedPageIndex = 0;
+            ResultSummary = string.Empty;
+            SelectedDetails = string.Empty;
+            CanJumpTo = false;
+            CanBringHere = false;
+            CanExamine = false;
+            CanDestroy = false;
+            _suppressSearch = false;
+
+            WatchOnClient(model => model.SelectedCategory);
+            WatchOnClient(model => model.SelectedScope);
+            WatchOnClient(model => model.SearchText);
+            WatchOnClient(model => model.SelectedPageIndex);
+
+            ChangePartialView(MainContentElement, MainContentPartial);
+            RunSearch();
+        }
+
+        private void RunSearch()
+        {
+            if (Player == 0 || WindowToken <= 0)
+                return;
+
+            _results = DMObjectSearch.Search(
+                Player,
+                (DMObjectCategory)SelectedCategory,
+                (DMObjectSearchScope)SelectedScope,
+                SearchText,
+                out _isTruncated);
+
+            _suppressSearch = true;
+            SelectedPageIndex = 0;
+            _suppressSearch = false;
+            ShowPage();
+        }
+
+        private void ShowPage()
+        {
+            _suppressSearch = true;
+            var pagination = GuiPaginationState.Create(_results.Count, ResultsPerPage, SelectedPageIndex);
+            PageNumbers = pagination.PageNumbers;
+            SelectedPageIndex = pagination.SelectedPageIndex;
+            _suppressSearch = false;
+
+            _pageResults.Clear();
+            _pageResults.AddRange(_results
+                .Skip(SelectedPageIndex * ResultsPerPage)
+                .Take(ResultsPerPage));
+
+            var names = new GuiBindingList<string>();
+            var tags = new GuiBindingList<string>();
+            var areas = new GuiBindingList<string>();
+            var selections = new GuiBindingList<bool>();
+            foreach (var result in _pageResults)
+            {
+                names.Add(string.IsNullOrWhiteSpace(result.Name) ? result.Resref : result.Name);
+                tags.Add(result.Tag);
+                areas.Add(result.Category == DMObjectCategory.Areas ? result.Resref : result.AreaName);
+                selections.Add(false);
+            }
+
+            ResultNames = names;
+            ResultTags = tags;
+            ResultAreas = areas;
+            ResultSelections = selections;
+
+            ResultSummary = _results.Count == 0
+                ? "No matches."
+                : _isTruncated
+                    ? $"Showing the first {_results.Count} matches. Narrow the search to see the rest."
+                    : $"{_results.Count} match{(_results.Count == 1 ? string.Empty : "es")}.";
+
+            SelectResult(-1);
+        }
+
+        private void SelectResult(int index)
+        {
+            if (_selectedIndex >= 0 && _selectedIndex < ResultSelections.Count)
+                ResultSelections[_selectedIndex] = false;
+
+            _selectedIndex = index;
+            var result = GetSelectedResult();
+            if (result == null)
+            {
+                SelectedDetails = "Select a result to see its details and actions.";
+                CanJumpTo = false;
+                CanBringHere = false;
+                CanExamine = false;
+                CanDestroy = false;
+                return;
+            }
+
+            ResultSelections[_selectedIndex] = true;
+
+            var lines = new List<string>
+            {
+                $"Name: {result.Name}",
+                $"Tag: {result.Tag}",
+                $"Resref: {result.Resref}"
+            };
+            if (result.Category != DMObjectCategory.Areas)
+                lines.Add($"Area: {result.AreaName}");
+            SelectedDetails = string.Join("\n", lines);
+
+            var category = result.Category;
+            CanJumpTo = true;
+            CanBringHere = category == DMObjectCategory.Creatures;
+            CanExamine = category is DMObjectCategory.Creatures or DMObjectCategory.Placeables
+                or DMObjectCategory.Items or DMObjectCategory.Doors;
+            CanDestroy = category is DMObjectCategory.Creatures or DMObjectCategory.Placeables
+                or DMObjectCategory.Items;
+        }
+
+        private DMObjectSearchResult GetSelectedResult()
+        {
+            return _selectedIndex >= 0 && _selectedIndex < _pageResults.Count
+                ? _pageResults[_selectedIndex]
+                : null;
+        }
+
+        // Returns the selected object if it still exists, and tells the DM when it does not.
+        private DMObjectSearchResult GetLiveSelection()
+        {
+            var result = GetSelectedResult();
+            if (result == null)
+                return null;
+
+            if (GetIsObjectValid(result.Object))
+                return result;
+
+            SendMessageToPC(Player, "That object no longer exists.");
+            RunSearch();
+            return null;
+        }
+
+        public Action OnSelectResult() => () =>
+        {
+            var index = NuiGetEventArrayIndex();
+            if (index < 0 || index >= _pageResults.Count)
+                return;
+
+            SelectResult(index);
+        };
+
+        public Action OnClickSearch() => RunSearch;
+
+        public Action OnClickClearSearch() => () =>
+        {
+            SearchText = string.Empty;
+            RunSearch();
+        };
+
+        public Action OnClickPreviousPage() => () =>
+        {
+            SelectedPageIndex = Math.Max(0, SelectedPageIndex - 1);
+        };
+
+        public Action OnClickNextPage() => () =>
+        {
+            SelectedPageIndex = Math.Min(PageNumbers.Count - 1, SelectedPageIndex + 1);
+        };
+
+        public Action OnClickJumpTo() => () =>
+        {
+            var result = GetLiveSelection();
+            if (result == null)
+                return;
+
+            var location = result.Category == DMObjectCategory.Areas
+                ? DMObjectSearch.GetAreaJumpLocation(result.Object)
+                : GetLocation(result.Object);
+            DMPresence.JumpTo(Player, location);
+        };
+
+        public Action OnClickBringHere() => () =>
+        {
+            var result = GetLiveSelection();
+            if (result == null || result.Category != DMObjectCategory.Creatures)
+                return;
+
+            var error = DMPresence.Summon(Player, result.Object);
+            if (!string.IsNullOrEmpty(error))
+                SendMessageToPC(Player, error);
+        };
+
+        public Action OnClickExamine() => () =>
+        {
+            var result = GetLiveSelection();
+            if (result == null)
+                return;
+
+            var target = result.Object;
+            AssignCommand(Player, () => ActionExamine(target));
+        };
+
+        public Action OnClickDestroy() => () =>
+        {
+            var result = GetSelectedResult();
+            if (result == null || !CanDestroy)
+                return;
+
+            ShowModal($"Destroy {result.Name} ({result.Resref})? This cannot be undone.", () =>
+            {
+                if (!GetIsObjectValid(result.Object))
+                {
+                    SendMessageToPC(Player, "That object no longer exists.");
+                }
+                else
+                {
+                    Log.Write(LogGroup.DM,
+                        $"{DMPresence.DescribeDM(Player)} destroyed {result.Category} '{result.Name}' ({result.Resref}, tag '{result.Tag}') in {result.AreaName}.");
+                    DestroyObject(result.Object);
+                }
+
+                // DestroyObject finishes at the end of the script, so search again on the next tick.
+                DelayCommand(0.1f, RunSearch);
+            });
+        };
+    }
+}

@@ -1,0 +1,465 @@
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text.Json;
+using System.Threading.Tasks;
+using NWN.Native.API;
+using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service.DMToolService;
+using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.NWN.API.NWScript.Enum;
+using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
+
+namespace SWLOR.Game.Server.EngineTests.Definitions
+{
+    /// <summary>
+    /// Drives the NUI DM toolbar windows through real server NUI state on headless player fixtures.
+    /// Each test also exports window layouts and bind values so an offline client can render them.
+    /// </summary>
+    public static class DMToolbarEngineTests
+    {
+        private const string SnapshotFileName = "dm-toolbar-native-states.json";
+        private static readonly List<object> Snapshots = new();
+
+        private static readonly GuiWindowType[] DMWindowTypes =
+        {
+            GuiWindowType.DMToolbar,
+            GuiWindowType.DMChooser,
+            GuiWindowType.DMCreator,
+            GuiWindowType.DMPlayerSearch,
+            GuiWindowType.DMPlayerExamine
+        };
+
+        /// <summary>
+        /// A headless fixture cannot be made a DM, so this covers everything short of the native
+        /// visibility change: placement, the Appear label tracking the native manifest flag (including
+        /// the refresh raised by the native radial menu), the non-DM guard, and the window buttons.
+        /// </summary>
+        [EngineTest("DM toolbar sits in the corner, tracks Appear state and opens the DM windows", Category = "DMToolbar", TimeoutSeconds = 60f)]
+        public static async Task ToolbarTracksAppearStateAndOpensWindows(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+            var stats = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(player.Creature).m_pStats;
+            var originalManifested = stats.m_bDMManifested;
+            using var windows = RegisterWindows(ctx, player);
+            try
+            {
+                stats.m_bDMManifested = 0;
+                await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
+                    Gui.TogglePlayerWindow(player.Creature, GuiWindowType.DMToolbar));
+                await ctx.WaitFrameAsync();
+                var toolbar = (DMToolbarViewModel)windows.ViewModel(GuiWindowType.DMToolbar);
+                ctx.AssertEqual(DMToolbarViewModel.ToolbarX, toolbar.Geometry.X, "toolbar pinned to the left edge");
+                ctx.AssertEqual(DMToolbarViewModel.ToolbarY, toolbar.Geometry.Y, "toolbar pinned to the top edge");
+                ctx.AssertEqual("Appear", toolbar.AppearText, "label while hidden from players");
+                Capture(player.Creature, GuiWindowType.DMToolbar, "toolbar-hidden");
+
+                // The native radial menu changes the flag directly and raises the refresh event.
+                stats.m_bDMManifested = 1;
+                await InContext(ctx, player.Creature, () =>
+                    Gui.PublishRefreshEvent(player.Creature, new DMPresenceRefreshEvent()));
+                ctx.AssertEqual("Disappear", toolbar.AppearText, "label while visible to players");
+                Capture(player.Creature, GuiWindowType.DMToolbar, "toolbar-visible");
+
+                // Appear and Disappear only ever act on DM avatars.
+                await InContext(ctx, player.Creature, toolbar.OnClickToggleAppear());
+                ctx.Assert(DMPresence.GetIsManifested(player.Creature), "a non-DM's manifest state is left alone");
+
+                await InContext(ctx, player.Creature, toolbar.OnClickChooser());
+                await InContext(ctx, player.Creature, toolbar.OnClickCreator());
+                await InContext(ctx, player.Creature, toolbar.OnClickPlayers());
+                ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.DMChooser), "Chooser opens from the toolbar");
+                ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.DMCreator), "Creator opens from the toolbar");
+                ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.DMPlayerSearch), "Player Search opens from the toolbar");
+                ctx.Assert(windows.ViewModel(GuiWindowType.DMChooser).Geometry.Y >= DMToolbarViewModel.ToolbarHeight,
+                    "the Chooser opens below the toolbar");
+
+                await InContext(ctx, player.Creature, toolbar.OnClickChooser());
+                ctx.Assert(!Gui.IsWindowOpen(player.Creature, GuiWindowType.DMChooser), "a second click closes the Chooser");
+            }
+            finally
+            {
+                stats.m_bDMManifested = originalManifested;
+                WriteSnapshots();
+            }
+        }
+
+        [EngineTest("DM chooser searches, jumps to, summons and destroys objects", Category = "DMToolbar", TimeoutSeconds = 90f)]
+        public static async Task ChooserFindsAndActsOnObjects(EngineTestContext ctx)
+        {
+            using var dm = await PlayerAbilityFixture.CreateAsync(ctx);
+            var probe = ctx.SpawnCreature("nw_bandit001", 8f, 0f);
+            SetName(probe, "Chooser Probe Rancor");
+            SetTag(probe, "dm_chooser_probe");
+            using var windows = RegisterWindows(ctx, dm);
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(dm.Creature, () =>
+                    Gui.TogglePlayerWindow(dm.Creature, GuiWindowType.DMChooser));
+                await ctx.WaitFrameAsync();
+                var model = (DMChooserViewModel)windows.ViewModel(GuiWindowType.DMChooser);
+
+                // Areas list from the whole module and include the test arena.
+                var arenaResref = GetResRef(ctx.Arena);
+                await InContext(ctx, dm.Creature, () => model.SearchText = arenaResref);
+                await InContext(ctx, dm.Creature, model.OnClickSearch());
+                ctx.Assert(model.ResultAreas.Contains(arenaResref), $"area search for '{arenaResref}' lists the arena");
+                ctx.AssertEqual(ctx.Arena, GetAreaFromLocation(DMObjectSearch.GetAreaJumpLocation(ctx.Arena)), "area jump location");
+                Capture(dm.Creature, GuiWindowType.DMChooser, "chooser-areas");
+
+                await InContext(ctx, dm.Creature, () => model.SelectedCategory = (int)DMObjectCategory.Creatures);
+                await InContext(ctx, dm.Creature, () => model.SearchText = "probe RANCOR");
+                await InContext(ctx, dm.Creature, model.OnClickSearch());
+                ctx.AssertEqual(1, model.ResultNames.Count, "creature search result count");
+                ctx.AssertEqual("Chooser Probe Rancor", model.ResultNames[0], "creature search result");
+                ctx.AssertEqual("dm_chooser_probe", model.ResultTags[0], "creature tag column");
+
+                await SelectRow(ctx, dm.Creature, model, 0);
+                ctx.Assert(model.CanJumpTo && model.CanBringHere && model.CanDestroy, "creature actions enabled");
+                Capture(dm.Creature, GuiWindowType.DMChooser, "chooser-creature-selected");
+
+                // Player characters are left to the player search.
+                SetName(dm.Creature, "Chooser Excluded Player");
+                await InContext(ctx, dm.Creature, () => model.SearchText = "Chooser Excluded Player");
+                await InContext(ctx, dm.Creature, model.OnClickSearch());
+                ctx.AssertEqual(0, model.ResultNames.Count, "player characters are excluded from the creature list");
+
+                await InContext(ctx, dm.Creature, () => model.SearchText = "dm_chooser_probe");
+                await InContext(ctx, dm.Creature, model.OnClickSearch());
+                await SelectRow(ctx, dm.Creature, model, 0);
+                await InContext(ctx, dm.Creature, model.OnClickJumpTo());
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, probe) < 2.5f, 5f, "the DM to jump to the creature");
+
+                AssignCommand(dm.Creature, () => JumpToLocation(ctx.GetArenaLocation(-6f, 0f)));
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, probe) > 10f, 5f, "the DM to move away");
+                await InContext(ctx, dm.Creature, model.OnClickBringHere());
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, probe) < 3f, 5f, "the creature to be brought to the DM");
+
+                await InContext(ctx, dm.Creature, model.OnClickDestroy());
+                await InContext(ctx, dm.Creature, model.OnModalConfirmClick());
+                await ctx.WaitUntilAsync(() => !GetIsObjectValid(probe), 5f, "the creature to be destroyed");
+                await ctx.WaitUntilAsync(() => model.ResultNames.Count == 0, 5f, "the chooser to refresh after destroying");
+            }
+            finally
+            {
+                WriteSnapshots();
+            }
+        }
+
+        [EngineTest("DM creator lists named blueprints and creates objects", Category = "DMToolbar", TimeoutSeconds = 300f)]
+        public static async Task CreatorListsAndCreatesBlueprints(EngineTestContext ctx)
+        {
+            using var dm = await PlayerAbilityFixture.CreateAsync(ctx);
+            using var windows = RegisterWindows(ctx, dm);
+            await ctx.ExecuteInCreatureContextAsync(dm.Creature, () =>
+                Gui.TogglePlayerWindow(dm.Creature, GuiWindowType.DMCreator));
+            await ctx.WaitFrameAsync();
+            var model = (DMCreatorViewModel)windows.ViewModel(GuiWindowType.DMCreator);
+
+            await ctx.WaitUntilAsync(() => DMBlueprintCatalog.IsLoaded(DMBlueprintCategory.Creatures), 120f, "creature blueprints to load");
+            await ctx.WaitUntilAsync(() => model.ResultNames.Count > 0, 5f, "the creator to list creatures once loaded");
+            var creatures = DMBlueprintCatalog.GetBlueprints(DMBlueprintCategory.Creatures);
+            ctx.Log($"Loaded {creatures.Count} creature blueprints.");
+            var civilian = creatures.Single(blueprint => blueprint.Resref == "civilian");
+            ctx.AssertEqual(DMBlueprintSource.Custom, civilian.Source, "civilian palette");
+            ctx.AssertEqual("Civilian", civilian.Name, "custom creature name from its template");
+            var bandit = creatures.Single(blueprint => blueprint.Resref == "nw_bandit001");
+            ctx.AssertEqual(DMBlueprintSource.Standard, bandit.Source, "nw_bandit001 palette");
+            ctx.Assert(bandit.Name != bandit.Resref && bandit.Name.Length > 0, $"base game creature name resolves from the TLK (was '{bandit.Name}')");
+
+            await InContext(ctx, dm.Creature, () => model.SearchText = "civilian");
+            await InContext(ctx, dm.Creature, model.OnClickSearch());
+            var row = model.ResultResrefs.IndexOf("civilian");
+            ctx.Assert(row >= 0, "searching 'civilian' lists the civilian blueprint");
+            await SelectRow(ctx, dm.Creature, model, row);
+            ctx.Assert(model.HasSelection && !model.CanCreateInInventory, "creature create actions");
+            Capture(dm.Creature, GuiWindowType.DMCreator, "creator-creature-selected");
+
+            var before = CountNear(dm.Creature, ObjectType.Creature, "civilian");
+            await InContext(ctx, dm.Creature, model.OnClickCreateHere());
+            await ctx.WaitUntilAsync(() => CountNear(dm.Creature, ObjectType.Creature, "civilian") == before + 1, 5f, "a civilian to be created at the DM");
+            var created = FindNear(dm.Creature, ObjectType.Creature, "civilian");
+            ctx.Track(created);
+            ctx.AssertEqual("x2_def_ondeath", GetEventScript(created, EventScript.Creature_OnDeath), "DM spawn scripts applied");
+
+            await InContext(ctx, dm.Creature, () => model.SelectedSource = (int)DMBlueprintSource.Standard);
+            await InContext(ctx, dm.Creature, () => model.SearchText = "nw_bandit001");
+            await InContext(ctx, dm.Creature, model.OnClickSearch());
+            ctx.AssertEqual("nw_bandit001", model.ResultResrefs.FirstOrDefault(), "standard palette search");
+
+            await InContext(ctx, dm.Creature, () => model.SelectedCategory = (int)DMBlueprintCategory.Placeables);
+            await ctx.WaitUntilAsync(() => DMBlueprintCatalog.IsLoaded(DMBlueprintCategory.Placeables), 120f, "placeable blueprints to load");
+            await InContext(ctx, dm.Creature, () => model.SearchText = "plc_chair");
+            await InContext(ctx, dm.Creature, model.OnClickSearch());
+            row = model.ResultResrefs.IndexOf("plc_chair");
+            ctx.Assert(row >= 0, "standard placeable search lists plc_chair");
+            await SelectRow(ctx, dm.Creature, model, row);
+            await InContext(ctx, dm.Creature, model.OnClickCreateHere());
+            await ctx.WaitUntilAsync(() => GetIsObjectValid(FindNear(dm.Creature, ObjectType.Placeable, "plc_chair")), 5f, "a chair to be created");
+            var chair = FindNear(dm.Creature, ObjectType.Placeable, "plc_chair");
+            ctx.Track(chair);
+            ctx.AssertEqual(1, GetLocalInt(chair, "DM_SPAWNED_PLACEABLE"), "chair recorded as DM-spawned");
+            ctx.AssertEqual(GetObjectUUID(dm.Creature), GetLocalString(chair, "DM_SPAWNED_BY"), "chair records its DM");
+
+            await InContext(ctx, dm.Creature, () => model.SelectedSource = (int)DMBlueprintSource.Custom);
+            await InContext(ctx, dm.Creature, () => model.SelectedCategory = (int)DMBlueprintCategory.Items);
+            await ctx.WaitUntilAsync(() => DMBlueprintCatalog.IsLoaded(DMBlueprintCategory.Items), 180f, "item blueprints to load");
+            await InContext(ctx, dm.Creature, () => model.SearchText = "militia helmet");
+            await InContext(ctx, dm.Creature, model.OnClickSearch());
+            row = model.ResultResrefs.IndexOf("001");
+            ctx.Assert(row >= 0, "item search 'militia helmet' lists blueprint 001");
+            ctx.AssertEqual("Tatooine Militia Field Helmet", model.ResultNames[row], "custom item name prefers the template's own text");
+            await SelectRow(ctx, dm.Creature, model, row);
+            ctx.Assert(model.CanCreateInInventory, "items can be created in the DM's inventory");
+            Capture(dm.Creature, GuiWindowType.DMCreator, "creator-item-selected");
+            await InContext(ctx, dm.Creature, model.OnClickCreateInInventory());
+            await ctx.WaitUntilAsync(() => GetIsObjectValid(FindInventoryItem(dm.Creature, "001")), 5f, "the helmet to be created in the DM's inventory");
+            DestroyObject(FindInventoryItem(dm.Creature, "001"));
+            WriteSnapshots();
+        }
+
+        [EngineTest("DM player search finds online and offline characters and moves players", Category = "DMToolbar", TimeoutSeconds = 90f)]
+        public static async Task PlayerSearchFindsOnlineAndOfflineCharacters(EngineTestContext ctx)
+        {
+            using var dm = await PlayerAbilityFixture.CreateAsync(ctx);
+            using var target = await PlayerAbilityFixture.CreateAsync(ctx, 6f);
+            target.Update(record =>
+            {
+                record.Name = "Vexa Zyndari";
+                record.UnknownDisplayName = "A lanky Twi'lek";
+            });
+            SetName(target.Creature, "Vexa Zyndari");
+
+            var offlineId = Guid.NewGuid().ToString();
+            var savedAreaResref = Area.GetAreas().Keys.First();
+            DB.Set(new Player(offlineId)
+            {
+                Name = "Qorin Zyndari",
+                UnknownDisplayName = "A weathered Zabrak",
+                CDKey = "QZTEST01",
+                AccountName = "qorinaccount",
+                LocationAreaResref = savedAreaResref,
+                LocationX = 10f,
+                LocationY = 10f,
+                LastLoginDate = new DateTime(2026, 10, 1, 18, 30, 0, DateTimeKind.Utc)
+            });
+            using var windows = RegisterWindows(ctx, dm);
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(dm.Creature, () =>
+                    Gui.TogglePlayerWindow(dm.Creature, GuiWindowType.DMPlayerSearch));
+                await ctx.WaitFrameAsync();
+                var model = (DMPlayerSearchViewModel)windows.ViewModel(GuiWindowType.DMPlayerSearch);
+                ctx.Assert(model.ResultNames.Contains("Vexa Zyndari"), "online characters are listed when the window opens");
+
+                await InContext(ctx, dm.Creature, () => model.SearchText = "lanky");
+                await InContext(ctx, dm.Creature, model.OnClickSearch());
+                ctx.AssertEqual(1, model.ResultNames.Count, "descriptor search result count");
+                ctx.AssertEqual("Vexa Zyndari", model.ResultNames[0], "online descriptor search");
+                ctx.AssertEqual("Online", model.ResultStatuses[0], "online status");
+                await SelectRow(ctx, dm.Creature, model, 0);
+                ctx.Assert(model.SelectedDetails.Contains($"Player ID: {target.Id}"), "details include the player ID");
+                ctx.Assert(model.IsSelectedOnline, "online actions enabled");
+                Capture(dm.Creature, GuiWindowType.DMPlayerSearch, "players-online-selected");
+
+                await InContext(ctx, dm.Creature, model.OnClickJumpTo());
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) < 2.5f, 5f, "the DM to jump to the player");
+                AssignCommand(dm.Creature, () => JumpToLocation(ctx.GetArenaLocation(-6f, 0f)));
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) > 10f, 5f, "the DM to move away");
+                await InContext(ctx, dm.Creature, model.OnClickJumpHere());
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) < 3f, 5f, "the player to be brought to the DM");
+
+                await InContext(ctx, dm.Creature, model.OnClickExamine());
+                ctx.Assert(Gui.IsWindowOpen(dm.Creature, GuiWindowType.DMPlayerExamine), "Examine opens the DM examine window");
+                Gui.ClosePlayerWindow(dm.Creature, GuiWindowType.DMPlayerExamine);
+
+                await InContext(ctx, dm.Creature, () => model.SelectedScope = (int)DMPlayerSearchScope.Online);
+                await InContext(ctx, dm.Creature, () => model.SearchText = "Qorin");
+                await InContext(ctx, dm.Creature, model.OnClickSearch());
+                ctx.AssertEqual(0, model.ResultNames.Count, "offline characters are not in the online scope");
+
+                await InContext(ctx, dm.Creature, () => model.SelectedScope = (int)DMPlayerSearchScope.Offline);
+                await InContext(ctx, dm.Creature, () => model.SearchText = string.Empty);
+                await InContext(ctx, dm.Creature, model.OnClickSearch());
+                ctx.Assert(model.ResultSummary.StartsWith("Enter a name"), "offline scope asks for search text");
+
+                foreach (var search in new[] { "Qorin", "qorinacc", "QZTEST01", "weathered zab", offlineId })
+                {
+                    await InContext(ctx, dm.Creature, () => model.SearchText = search);
+                    await InContext(ctx, dm.Creature, model.OnClickSearch());
+                    ctx.Assert(model.ResultNames.Contains("Qorin Zyndari"), $"offline search '{search}' finds the character");
+                }
+
+                await InContext(ctx, dm.Creature, () => model.SelectedScope = (int)DMPlayerSearchScope.All);
+                await InContext(ctx, dm.Creature, () => model.SearchText = "Zyndari");
+                await InContext(ctx, dm.Creature, model.OnClickSearch());
+                var offlineRow = model.ResultNames.IndexOf("Qorin Zyndari");
+                ctx.Assert(offlineRow >= 0 && model.ResultNames.Contains("Vexa Zyndari"), "the combined scope lists online and offline matches");
+                ctx.Assert(model.ResultNames.IndexOf("Vexa Zyndari") < offlineRow, "online characters are listed first");
+                await SelectRow(ctx, dm.Creature, model, offlineRow);
+                ctx.Assert(!model.IsSelectedOnline && model.CanJumpTo, "offline characters only allow Jump To");
+                ctx.Assert(model.SelectedDetails.Contains("Account: qorinaccount") && model.SelectedDetails.Contains("CD Key: QZTEST01"),
+                    "offline details show the recorded account and CD key");
+                ctx.Assert(model.SelectedDetails.Contains("Last Login: 2026-10-01 18:30 UTC"), "offline details show the last login");
+                ctx.Assert(DMPlayerDirectory.TryGetLastLocation(offlineId, out var lastLocation) &&
+                           GetAreaFromLocation(lastLocation) == Area.GetAreaByResref(savedAreaResref),
+                    "offline Jump To resolves the saved area");
+                Capture(dm.Creature, GuiWindowType.DMPlayerSearch, "players-offline-selected");
+            }
+            finally
+            {
+                DB.Delete<Player>(offlineId);
+                WriteSnapshots();
+            }
+        }
+
+        private static async Task InContext(EngineTestContext ctx, uint creature, Action action)
+        {
+            await ctx.ExecuteInCreatureContextAsync(creature, action);
+            await ctx.WaitFrameAsync();
+        }
+
+        // A list click reports its row through NuiGetEventArrayIndex, which only exists inside a
+        // real NUI event, so select the row through the view model's own selection method.
+        private static Task SelectRow(EngineTestContext ctx, uint creature, object model, int row)
+        {
+            var method = model.GetType().GetMethod("SelectResult", BindingFlags.Instance | BindingFlags.NonPublic)
+                         ?? throw new InvalidOperationException($"{model.GetType().Name} has no SelectResult method.");
+            return InContext(ctx, creature, () => method.Invoke(model, new object[] { row }));
+        }
+
+        private static uint FindInventoryItem(uint creature, string resref)
+        {
+            for (var item = GetFirstItemInInventory(creature); GetIsObjectValid(item); item = GetNextItemInInventory(creature))
+            {
+                if (GetResRef(item) == resref)
+                    return item;
+            }
+
+            return OBJECT_INVALID;
+        }
+
+        private static int CountNear(uint dm, ObjectType type, string resref)
+        {
+            var count = 0;
+            for (var obj = GetFirstObjectInArea(GetArea(dm), type); GetIsObjectValid(obj); obj = GetNextObjectInArea(GetArea(dm), type))
+            {
+                if (obj != dm && GetResRef(obj) == resref && GetDistanceBetween(dm, obj) < 3f)
+                    count++;
+            }
+
+            return count;
+        }
+
+        private static uint FindNear(uint dm, ObjectType type, string resref)
+        {
+            for (var obj = GetFirstObjectInArea(GetArea(dm), type); GetIsObjectValid(obj); obj = GetNextObjectInArea(GetArea(dm), type))
+            {
+                if (obj != dm && GetResRef(obj) == resref && GetDistanceBetween(dm, obj) < 3f)
+                    return obj;
+            }
+
+            return OBJECT_INVALID;
+        }
+
+        // Headless fixtures do not pass through OnModuleEnter, so register this player's windows
+        // directly. Native watch events then route like a connected player's UI.
+        private static WindowRegistration RegisterWindows(EngineTestContext ctx, PlayerAbilityFixture player)
+        {
+            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
+                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            ctx.Assert(!windows.ContainsKey(player.Id), "fixture GUI registration must be isolated");
+            var registered = DMWindowTypes.ToDictionary(type => type, type =>
+            {
+                // Gui.CreatePlayerWindows gives every window its starting geometry; do the same here.
+                var template = Gui.GetWindowTemplate(type);
+                var playerWindow = template.CreatePlayerWindowAction();
+                var initial = template.InitialGeometry;
+                playerWindow.ViewModel.Geometry = new GuiRectangle(initial.X, initial.Y, initial.Width, initial.Height);
+                return playerWindow;
+            });
+            windows.Add(player.Id, registered);
+            return new WindowRegistration(player.Creature, player.Id, windows, registered);
+        }
+
+        private sealed class WindowRegistration : IDisposable
+        {
+            private readonly uint _creature;
+            private readonly string _playerId;
+            private readonly Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> _allWindows;
+            private readonly Dictionary<GuiWindowType, GuiPlayerWindow> _windows;
+
+            public WindowRegistration(uint creature, string playerId,
+                Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> allWindows,
+                Dictionary<GuiWindowType, GuiPlayerWindow> windows)
+            {
+                _creature = creature;
+                _playerId = playerId;
+                _allWindows = allWindows;
+                _windows = windows;
+            }
+
+            public IGuiViewModel ViewModel(GuiWindowType type) => _windows[type].ViewModel;
+
+            public void Dispose()
+            {
+                foreach (var type in DMWindowTypes)
+                    Gui.ClosePlayerWindow(_creature, type);
+                _allWindows.Remove(_playerId);
+            }
+        }
+
+        // Records exactly what the server sent: the window, the composed root layout and every bind value.
+        private static void Capture(uint player, GuiWindowType type, string name)
+        {
+            var window = Gui.GetPlayerWindow(player, type);
+            var token = window.WindowToken;
+            var template = Gui.GetWindowTemplate(type);
+            var baseType = window.ViewModel.GetType().BaseType!;
+            var rootPartial = (string)baseType.GetField("_rootPartial", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(window.ViewModel);
+            var groupLayouts = (Dictionary<string, string>)baseType.GetField("_groupLayouts", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(window.ViewModel)!;
+            var root = GuiLayoutComposer.Compose(template.PartialViewLayouts[rootPartial], groupLayouts);
+
+            var binds = new Dictionary<string, JsonElement>();
+            foreach (var watched in new[] { false, true })
+            {
+                for (var index = 0; ; index++)
+                {
+                    var bind = NuiGetNthBind(player, token, watched, index);
+                    if (string.IsNullOrEmpty(bind))
+                        break;
+                    using var json = JsonDocument.Parse(JsonDump(NuiGetBind(player, token, bind)));
+                    binds[bind] = json.RootElement.Clone();
+                }
+            }
+
+            using var windowJson = JsonDocument.Parse(JsonDump(template.Window));
+            using var rootJson = JsonDocument.Parse(root);
+            Snapshots.Add(new
+            {
+                name,
+                windowId = template.WindowId,
+                window = windowJson.RootElement.Clone(),
+                root = rootJson.RootElement.Clone(),
+                binds
+            });
+        }
+
+        private static void WriteSnapshots()
+        {
+            var directory = ApplicationSettings.Get().EngineTestResultsDirectory;
+            if (string.IsNullOrWhiteSpace(directory))
+                directory = "./engine_tests/";
+            Directory.CreateDirectory(directory);
+            File.WriteAllText(Path.Combine(directory, SnapshotFileName),
+                JsonSerializer.Serialize(Snapshots, new JsonSerializerOptions { WriteIndented = true }));
+        }
+    }
+}

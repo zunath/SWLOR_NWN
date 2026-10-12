@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.DMChooser)
-                .SetInitialGeometry(0, 0, 960f, 640f)
+                .SetInitialGeometry(0, 0, 960f, 600f)
                 .SetTitle("Chooser")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

@@ -15,11 +15,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const float ToolbarX = 1f;
         public const float ToolbarY = 1f;
         public const float ButtonWidth = 96f;
-        // Each button carries about 8 pixels of margin; the window adds about 16 of padding.
-        public const float ButtonSlotWidth = ButtonWidth + 8f;
+        // Measured in the client: each button takes 4 pixels of margin and the window about 14 of padding per side.
+        public const float ButtonSlotWidth = ButtonWidth + 4f;
         // Every DM sees these buttons; admins also get the Admin button at the end.
         public const int PublicButtonCount = 8;
-        public const float ToolbarWidth = PublicButtonCount * ButtonSlotWidth + 16f;
+        public const float ToolbarWidth = PublicButtonCount * ButtonSlotWidth + 28f;
         public const float AdminToolbarWidth = ToolbarWidth + ButtonSlotWidth;
         public const float ToolbarHeight = 52f;
 

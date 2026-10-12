@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.DMCreator)
-                .SetInitialGeometry(40, 0, 900f, 640f)
+                .SetInitialGeometry(40, 0, 900f, 600f)
                 .SetTitle("Creator")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

@@ -166114,151 +166114,6 @@
                     "__struct_id": 4,
                     "AddCost": {
                       "type": "dword",
-                      "value": 1000
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 24
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 1000
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "A pocket-sized holo-music player. Use it to browse the songs in your music collection and play them for yourself. Only you can hear it."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "A pocket-sized holo-music player. Use it to browse the songs in your music collection and play them for yourself. Only you can hear it."
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Portable Music Player"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 134
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 3
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 13
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 15
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 335
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "MUSIC_PLAYER"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "music_player"
-                    },
-                    "VarTable": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 134
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 0.0
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 5,
-                    "AddCost": {
-                      "type": "dword",
                       "value": 2500
                     },
                     "BaseItem": {
@@ -166349,7 +166204,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 5
+                      "value": 4
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -166417,7 +166272,7 @@
                     }
                   },
                   {
-                    "__struct_id": 6,
+                    "__struct_id": 5,
                     "AddCost": {
                       "type": "dword",
                       "value": 2500
@@ -166510,7 +166365,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 6
+                      "value": 5
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -166578,7 +166433,7 @@
                     }
                   },
                   {
-                    "__struct_id": 7,
+                    "__struct_id": 6,
                     "AddCost": {
                       "type": "dword",
                       "value": 2500
@@ -166671,7 +166526,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 7
+                      "value": 6
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -166739,7 +166594,7 @@
                     }
                   },
                   {
-                    "__struct_id": 8,
+                    "__struct_id": 7,
                     "AddCost": {
                       "type": "dword",
                       "value": 2500
@@ -166832,7 +166687,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 8
+                      "value": 7
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -166900,7 +166755,7 @@
                     }
                   },
                   {
-                    "__struct_id": 9,
+                    "__struct_id": 8,
                     "AddCost": {
                       "type": "dword",
                       "value": 2500
@@ -166993,7 +166848,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 9
+                      "value": 8
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -167061,7 +166916,7 @@
                     }
                   },
                   {
-                    "__struct_id": 10,
+                    "__struct_id": 9,
                     "AddCost": {
                       "type": "dword",
                       "value": 2500
@@ -167154,11 +167009,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 9
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 1
+                      "value": 0
                     },
                     "StackSize": {
                       "type": "word",
@@ -167222,7 +167077,7 @@
                     }
                   },
                   {
-                    "__struct_id": 11,
+                    "__struct_id": 10,
                     "AddCost": {
                       "type": "dword",
                       "value": 2500
@@ -167315,7 +167170,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 1
+                      "value": 0
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -167383,7 +167238,7 @@
                     }
                   },
                   {
-                    "__struct_id": 12,
+                    "__struct_id": 11,
                     "AddCost": {
                       "type": "dword",
                       "value": 2500
@@ -167476,7 +167331,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 2
+                      "value": 1
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -167544,7 +167399,7 @@
                     }
                   },
                   {
-                    "__struct_id": 13,
+                    "__struct_id": 12,
                     "AddCost": {
                       "type": "dword",
                       "value": 2500
@@ -167637,7 +167492,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 3
+                      "value": 2
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -167705,7 +167560,7 @@
                     }
                   },
                   {
-                    "__struct_id": 14,
+                    "__struct_id": 13,
                     "AddCost": {
                       "type": "dword",
                       "value": 2500
@@ -167798,7 +167653,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 4
+                      "value": 3
                     },
                     "Repos_Posy": {
                       "type": "word",

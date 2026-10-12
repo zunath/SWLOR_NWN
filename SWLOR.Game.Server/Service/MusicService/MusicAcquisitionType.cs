@@ -18,5 +18,8 @@ namespace SWLOR.Game.Server.Service.MusicService
 
         // Dropped only by bosses from the boss music disc loot table.
         BossDrop = 4,
+
+        // Crafted by Engineers from a song disc recipe. Never dropped or sold.
+        Crafted = 5,
     }
 }

@@ -505,7 +505,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "music_player"
+                "value": "song_339"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -524,7 +524,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "song_339"
+                "value": "song_340"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -543,7 +543,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "song_340"
+                "value": "song_341"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -562,7 +562,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "song_341"
+                "value": "song_510"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -581,7 +581,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "song_510"
+                "value": "song_560"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -600,7 +600,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "song_560"
+                "value": "song_575"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -619,7 +619,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "song_575"
+                "value": "song_576"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -638,7 +638,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "song_576"
+                "value": "song_577"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -657,7 +657,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "song_577"
+                "value": "song_457"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -676,30 +676,11 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "song_457"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 3
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 14,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
                 "value": "song_458"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 4
+                "value": 3
               },
               "Repos_Posy": {
                 "type": "word",

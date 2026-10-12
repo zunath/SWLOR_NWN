@@ -3,8 +3,11 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
+using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.MusicService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -48,6 +51,38 @@ public class MusicCollectionTests
         Songs.Count(song => song.Acquisition == MusicAcquisitionType.Store).Should().BeInRange(5, 15);
         Songs.Count(song => song.Acquisition == MusicAcquisitionType.BossDrop).Should().BeGreaterThan(0);
         Songs.Count(song => song.Acquisition == MusicAcquisitionType.Loot).Should().BeGreaterThan(0);
+        Songs.Count(song => song.Acquisition == MusicAcquisitionType.Crafted).Should().Be(50);
+    }
+
+    [Test]
+    public void CraftedSongs_AreEngineeringRecipesInTheirMusicCategory()
+    {
+        var recipes = new MusicRecipes().BuildRecipes().Values.ToList();
+        var categories = new Dictionary<MusicCategoryType, RecipeCategoryType>
+        {
+            [MusicCategoryType.Cantina] = RecipeCategoryType.CantinaMusicDiscs,
+            [MusicCategoryType.Battle] = RecipeCategoryType.BattleMusicDiscs,
+            [MusicCategoryType.Theme] = RecipeCategoryType.ThemeMusicDiscs,
+            [MusicCategoryType.Location] = RecipeCategoryType.LocationMusicDiscs,
+            [MusicCategoryType.Ambient] = RecipeCategoryType.AmbientMusicDiscs,
+        };
+
+        recipes.Should().OnlyContain(recipe => recipe.Skill == SkillType.Engineering);
+        recipes.Select(recipe => recipe.Resref).Should().OnlyHaveUniqueItems();
+        recipes.Should().ContainSingle(recipe => recipe.Resref == "music_player" &&
+                                                 recipe.Category == RecipeCategoryType.MusicPlayers);
+
+        var discRecipes = recipes.Where(recipe => recipe.Resref != "music_player").ToList();
+        discRecipes.Select(recipe => recipe.Resref).Should().BeEquivalentTo(DiscsFor(MusicAcquisitionType.Crafted),
+            "only crafted songs have recipes");
+        foreach (var song in Songs.Where(song => song.Acquisition == MusicAcquisitionType.Crafted))
+        {
+            var recipe = discRecipes.Single(x => x.Resref == $"song_{song.TrackId}");
+            recipe.Category.Should().Be(categories[song.Category], $"song_{song.TrackId} is a {song.Category} song");
+        }
+
+        discRecipes.Select(recipe => recipe.Level).Should().BeEquivalentTo(Enumerable.Range(1, 50),
+            "crafted discs are spread one per Engineering level");
     }
 
     [Test]
@@ -134,7 +169,7 @@ public class MusicCollectionTests
     }
 
     [Test]
-    public void GalaxyBar_SellsTheStoreSongsAndMusicPlayer()
+    public void GalaxyBar_SellsOnlyTheStoreSongs()
     {
         var root = FindRepositoryRoot();
         using var document = JsonDocument.Parse(File.ReadAllText(
@@ -146,9 +181,11 @@ public class MusicCollectionTests
             .Select(item => item.GetProperty("InventoryRes").GetProperty("value").GetString())
             .ToHashSet();
 
-        sold.Should().Contain("music_player");
+        sold.Should().NotContain("music_player", "the Portable Music Player is crafted only");
         sold.Should().Contain(DiscsFor(MusicAcquisitionType.Store));
-        sold.Should().NotContain(DiscsFor(MusicAcquisitionType.Loot).Concat(DiscsFor(MusicAcquisitionType.BossDrop)),
+        sold.Should().NotContain(DiscsFor(MusicAcquisitionType.Loot)
+                .Concat(DiscsFor(MusicAcquisitionType.BossDrop))
+                .Concat(DiscsFor(MusicAcquisitionType.Crafted)),
             "dropped songs are not sold");
     }
 

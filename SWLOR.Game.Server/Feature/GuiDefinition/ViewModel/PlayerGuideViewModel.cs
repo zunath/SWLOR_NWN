@@ -395,7 +395,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("XP Debt",
                             "XP debt is paid first. If earned XP is less than your debt, all of that XP removes debt and none goes to the skill."),
                         new ArticleBlock("Roleplay XP",
-                            "Qualifying in-character Talk, Whisper, and Comms around other players builds toward automatic RP XP awards. OOC text does not count. A few OOC messages each day are expected, with extra leeway during DM events; beyond that, each OOC message reduces your next RP XP award. Social and citizen Cantina upgrades improve the award. Available RP XP can be distributed to eligible skills from the Skills window or spent in the Training Store.")
+                            "Qualifying in-character Talk, Whisper, and Comms around other players builds toward automatic RP XP awards. OOC text does not count. Social and citizen Cantina upgrades improve the award. Available RP XP can be distributed to eligible skills from the Skills window or spent in the Training Store.")
                     },
                     new[]
                     {

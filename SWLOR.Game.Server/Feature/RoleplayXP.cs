@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Feature
             if (messageType == RoleplayMessageType.OutOfCharacter)
             {
                 RefreshRPMessageTimestamp(player, now);
-                OOCAllowance.RecordOOCMessage(dbPlayer.RoleplayProgress, now, IsDMEventInProgress(player));
+                OOCAllowance.RecordOOCMessage(dbPlayer.RoleplayProgress, now, GetOOCMessageContext(player));
                 DB.Set(dbPlayer);
                 return;
             }
@@ -156,17 +156,17 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// A DM event is in progress when the player is in a staff event area, or a DM or
-        /// DM-possessed creature is in the same area as the player.
+        /// Event areas allow unlimited OOC. A DM or DM-possessed creature in the player's area
+        /// grants a larger OOC allowance.
         /// </summary>
-        private static bool IsDMEventInProgress(uint player)
+        private static OOCMessageContext GetOOCMessageContext(uint player)
         {
             var area = GetArea(player);
             if (!GetIsObjectValid(area))
-                return false;
+                return OOCMessageContext.Standard;
 
             if (GetLocalBool(area, Communication.EventCommsAreaVariable))
-                return true;
+                return OOCMessageContext.EventArea;
 
             for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
             {
@@ -174,14 +174,14 @@ namespace SWLOR.Game.Server.Feature
                     continue;
 
                 if (GetArea(pc) == area)
-                    return true;
+                    return OOCMessageContext.DMPresent;
 
                 var possessed = Communication.GetDMPossessedCreature(pc);
                 if (GetIsObjectValid(possessed) && GetArea(possessed) == area)
-                    return true;
+                    return OOCMessageContext.DMPresent;
             }
 
-            return false;
+            return OOCMessageContext.Standard;
         }
 
         /// <summary>

@@ -111,7 +111,7 @@ public class RoleplayXPOOCPenaltyTests
     {
         var progress = new RoleplayProgress();
 
-        RecordMessages(progress, OOCAllowance.DailyAllowance, Morning, isDuringDMEvent: false);
+        RecordMessages(progress, OOCAllowance.DailyAllowance, Morning, OOCMessageContext.Standard);
 
         progress.DailyOOCMessageCount.Should().Be(OOCAllowance.DailyAllowance);
         progress.PendingOOCPenaltySteps.Should().Be(0);
@@ -123,7 +123,7 @@ public class RoleplayXPOOCPenaltyTests
     {
         var progress = new RoleplayProgress();
 
-        RecordMessages(progress, OOCAllowance.DailyAllowance + 3, Morning, isDuringDMEvent: false);
+        RecordMessages(progress, OOCAllowance.DailyAllowance + 3, Morning, OOCMessageContext.Standard);
 
         progress.PendingOOCPenaltySteps.Should().Be(3);
     }
@@ -133,47 +133,81 @@ public class RoleplayXPOOCPenaltyTests
     {
         var progress = new RoleplayProgress();
 
-        RecordMessages(progress, OOCAllowance.DailyAllowance + 50, Morning, isDuringDMEvent: false);
+        RecordMessages(progress, OOCAllowance.DailyAllowance + 50, Morning, OOCMessageContext.Standard);
 
         progress.PendingOOCPenaltySteps.Should().Be(OOCAllowance.MaxPenaltySteps);
         OOCAllowance.ApplyPenalty(1500, progress.PendingOOCPenaltySteps).Should().Be(0);
     }
 
     [Test]
-    public void RecordOOCMessage_DuringDMEvent_UsesEventAllowanceBeforeDailyAllowance()
+    public void RecordOOCMessage_WithDMPresent_UsesDMAllowanceBeforeDailyAllowance()
     {
         var progress = new RoleplayProgress();
 
-        RecordMessages(progress, OOCAllowance.DMEventAllowance, Morning, isDuringDMEvent: true);
+        RecordMessages(progress, OOCAllowance.DMPresentAllowance, Morning, OOCMessageContext.DMPresent);
 
-        progress.DailyDMEventOOCMessageCount.Should().Be(OOCAllowance.DMEventAllowance);
+        progress.DailyDMPresentOOCMessageCount.Should().Be(OOCAllowance.DMPresentAllowance);
         progress.DailyOOCMessageCount.Should().Be(0);
         progress.PendingOOCPenaltySteps.Should().Be(0);
 
-        RecordMessages(progress, OOCAllowance.DailyAllowance + 1, Morning, isDuringDMEvent: true);
+        RecordMessages(progress, OOCAllowance.DailyAllowance + 1, Morning, OOCMessageContext.DMPresent);
 
         progress.DailyOOCMessageCount.Should().Be(OOCAllowance.DailyAllowance + 1);
         progress.PendingOOCPenaltySteps.Should().Be(1);
     }
 
     [Test]
-    public void RecordOOCMessage_ResetsDailyCountsAtTheDailyServerRestart()
+    public void RecordOOCMessage_InEventArea_IsUnlimited()
+    {
+        var progress = new RoleplayProgress();
+
+        RecordMessages(progress, 500, Morning, OOCMessageContext.EventArea);
+
+        progress.DailyOOCMessageCount.Should().Be(0);
+        progress.DailyDMPresentOOCMessageCount.Should().Be(0);
+        progress.PendingOOCPenaltySteps.Should().Be(0);
+        progress.OOCMessageCount.Should().Be(500);
+    }
+
+    [Test]
+    public void RecordOOCMessage_ResetsDailyCountsAtTheScheduledRestartTime()
     {
         var progress = new RoleplayProgress();
         var beforeRestart = new DateTime(2026, 10, 13, 9, 59, 0, DateTimeKind.Utc);
         var afterRestart = new DateTime(2026, 10, 13, 10, 0, 0, DateTimeKind.Utc);
 
-        RecordMessages(progress, OOCAllowance.DailyAllowance, Morning, isDuringDMEvent: false);
-        RecordMessages(progress, 5, Morning, isDuringDMEvent: true);
-        OOCAllowance.RecordOOCMessage(progress, beforeRestart, isDuringDMEvent: false);
+        RecordMessages(progress, OOCAllowance.DailyAllowance, Morning, OOCMessageContext.Standard);
+        RecordMessages(progress, 5, Morning, OOCMessageContext.DMPresent);
+        OOCAllowance.RecordOOCMessage(progress, beforeRestart, OOCMessageContext.Standard);
 
         progress.PendingOOCPenaltySteps.Should().Be(1);
 
-        OOCAllowance.RecordOOCMessage(progress, afterRestart, isDuringDMEvent: false);
+        OOCAllowance.RecordOOCMessage(progress, afterRestart, OOCMessageContext.Standard);
 
         progress.DailyOOCMessageCount.Should().Be(1);
-        progress.DailyDMEventOOCMessageCount.Should().Be(0);
+        progress.DailyDMPresentOOCMessageCount.Should().Be(0);
         progress.PendingOOCPenaltySteps.Should().Be(1, "unspent penalties apply to the next award, not the next day");
+    }
+
+    [Test]
+    public void RecordOOCMessage_DoesNotResetAcrossTimesWithinTheSameDay()
+    {
+        var progress = new RoleplayProgress();
+        var times = new[]
+        {
+            new DateTime(2026, 10, 12, 10, 0, 0, DateTimeKind.Utc),
+            new DateTime(2026, 10, 12, 15, 30, 0, DateTimeKind.Utc),
+            new DateTime(2026, 10, 12, 23, 59, 0, DateTimeKind.Utc),
+            new DateTime(2026, 10, 13, 0, 0, 0, DateTimeKind.Utc),
+            new DateTime(2026, 10, 13, 9, 59, 59, DateTimeKind.Utc)
+        };
+
+        foreach (var time in times)
+        {
+            OOCAllowance.RecordOOCMessage(progress, time, OOCMessageContext.Standard);
+        }
+
+        progress.DailyOOCMessageCount.Should().Be(times.Length, "extra restarts and midnight do not start a new allowance day");
     }
 
     [TestCase(0, 1500)]
@@ -217,7 +251,11 @@ public class RoleplayXPOOCPenaltyTests
             "Components",
             "PlayerOverview.razor"));
 
+        var playerGuideSource = ReadServerSource("Feature", "GuiDefinition", "ViewModel", "PlayerGuideViewModel.cs");
+
         roleplayXpSource.Should().NotContain("OOC message detected");
+        playerGuideSource.Should().NotContainAny(new[] { "allowance", "OOC messages each day", "reduces your next RP XP" },
+            "OOC limits and penalties are not documented to players");
         allowanceSource.Should().NotContain("SendMessageToPC(");
         foreach (var adminView in new[] { adminPlayerAdvanced, adminPlayerOverview })
         {
@@ -226,11 +264,11 @@ public class RoleplayXPOOCPenaltyTests
         }
     }
 
-    private static void RecordMessages(RoleplayProgress progress, int count, DateTime utcNow, bool isDuringDMEvent)
+    private static void RecordMessages(RoleplayProgress progress, int count, DateTime utcNow, OOCMessageContext context)
     {
         for (var index = 0; index < count; index++)
         {
-            OOCAllowance.RecordOOCMessage(progress, utcNow, isDuringDMEvent);
+            OOCAllowance.RecordOOCMessage(progress, utcNow, context);
         }
     }
 

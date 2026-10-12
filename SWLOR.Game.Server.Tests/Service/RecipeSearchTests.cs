@@ -28,41 +28,45 @@ public class RecipeSearchTests
 
     private static string GetName(string resref) => ItemNames.TryGetValue(resref, out var name) ? name : string.Empty;
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public void RecipeName_MatchesIgnoringCase(bool includeComponents)
+    {
+        Assert.That(RecipeSearch.Matches(CreateRecipe(), " dhrg ", includeComponents, GetName), Is.True);
+    }
+
+    [Test]
+    public void ComponentNames_DoNotMatchByDefault()
+    {
+        Assert.That(RecipeSearch.Matches(CreateRecipe(), "veldite", false, GetName), Is.False);
+    }
+
     [TestCase("veldite")]
     [TestCase("REFINED VEL")]
     [TestCase("  electronics ")]
-    public void ComponentSearch_MatchesAnyComponentNameIgnoringCase(string searchText)
+    public void IncludeComponents_MatchesAnyComponentNameIgnoringCase(string searchText)
     {
-        Assert.That(RecipeSearch.Matches(CreateRecipe(), searchText, RecipeSearchType.Component, GetName), Is.True);
+        Assert.That(RecipeSearch.Matches(CreateRecipe(), searchText, true, GetName), Is.True);
     }
 
     [Test]
-    public void ComponentSearch_DoesNotMatchTheRecipeName()
+    public void IncludeComponents_StillRejectsTextFoundNowhere()
     {
-        Assert.That(RecipeSearch.Matches(CreateRecipe(), "DHRG", RecipeSearchType.Component, GetName), Is.False);
+        Assert.That(RecipeSearch.Matches(CreateRecipe(), "durasteel", true, GetName), Is.False);
     }
 
     [Test]
-    public void RecipeNameSearch_DoesNotMatchComponentNames()
-    {
-        var recipe = CreateRecipe();
-
-        Assert.That(RecipeSearch.Matches(recipe, "dhrg", RecipeSearchType.RecipeName, GetName), Is.True);
-        Assert.That(RecipeSearch.Matches(recipe, "veldite", RecipeSearchType.RecipeName, GetName), Is.False);
-    }
-
-    [Test]
-    public void ComponentSearch_HandlesRecipesWithoutComponents()
+    public void IncludeComponents_HandlesRecipesWithoutComponents()
     {
         var recipe = new RecipeDetail { Resref = "dhrg001", Components = new Dictionary<string, int>() };
 
-        Assert.That(RecipeSearch.Matches(recipe, "veldite", RecipeSearchType.Component, GetName), Is.False);
+        Assert.That(RecipeSearch.Matches(recipe, "veldite", true, GetName), Is.False);
     }
 
-    [TestCase(RecipeSearchType.RecipeName)]
-    [TestCase(RecipeSearchType.Component)]
-    public void BlankSearch_MatchesEveryRecipe(RecipeSearchType searchType)
+    [TestCase(false)]
+    [TestCase(true)]
+    public void BlankSearch_MatchesEveryRecipe(bool includeComponents)
     {
-        Assert.That(RecipeSearch.Matches(CreateRecipe(), "   ", searchType, GetName), Is.True);
+        Assert.That(RecipeSearch.Matches(CreateRecipe(), "   ", includeComponents, GetName), Is.True);
     }
 }

@@ -36,25 +36,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public int SelectedSearchTypeId
+        public bool IncludeComponents
         {
-            get => Get<int>();
+            get => Get<bool>();
             set
             {
                 Set(value);
-                SearchPlaceholder = (RecipeSearchType)value == RecipeSearchType.Component
-                    ? "Search by component"
-                    : "Search by recipe name";
 
                 if (!_skipPaginationSearch && !string.IsNullOrWhiteSpace(SearchText))
                     Search();
             }
-        }
-
-        public string SearchPlaceholder
-        {
-            get => Get<string>();
-            set => Set(value);
         }
 
         public GuiBindingList<GuiComboEntry> Skills
@@ -258,7 +249,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RecipeLevel = string.Empty;
             RecipeEnhancementSlots = string.Empty;
             SearchText = string.Empty;
-            SelectedSearchTypeId = (int)RecipeSearchType.RecipeName;
+            IncludeComponents = false;
             SelectedPageIndex = 0;
             SelectedSkillId = (int)_craftingFilter;
             SelectedCategoryId = 0;
@@ -271,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Search();
 
             WatchOnClient(model => model.SearchText);
-            WatchOnClient(model => model.SelectedSearchTypeId);
+            WatchOnClient(model => model.IncludeComponents);
             WatchOnClient(model => model.SelectedSkillId);
             WatchOnClient(model => model.SelectedCategoryId);
             WatchOnClient(model => model.SelectedLevelId);
@@ -380,9 +371,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Search text filter
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
-                var searchType = (RecipeSearchType)SelectedSearchTypeId;
                 recipes = recipes
-                    .Where(x => RecipeSearch.Matches(x.Value, SearchText, searchType, Cache.GetItemNameByResref))
+                    .Where(x => RecipeSearch.Matches(x.Value, SearchText, IncludeComponents, Cache.GetItemNameByResref))
                     .ToDictionary(x => x.Key, y => y.Value);
             }
 

@@ -1,6 +1,5 @@
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
@@ -21,14 +20,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     col.AddRow(row =>
                     {
-                        row.AddComboBox()
-                            .BindSelectedIndex(model => model.SelectedSearchTypeId)
-                            .AddOption("Recipe Name", (int)RecipeSearchType.RecipeName)
-                            .AddOption("Component", (int)RecipeSearchType.Component)
-                            .SetWidth(160f);
-
                         row.AddTextEdit()
-                            .BindPlaceholder(model => model.SearchPlaceholder)
+                            .SetPlaceholder("Search")
                             .BindValue(model => model.SearchText);
 
                         row.AddButton()
@@ -41,6 +34,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Search")
                             .SetHeight(35f)
                             .BindOnClicked(model => model.OnClickSearch());
+
+                        row.AddCheckBox()
+                            .SetText("Include Components")
+                            .BindIsChecked(model => model.IncludeComponents)
+                            .SetWidth(190f);
                     });
 
                     col.AddRow(row =>

@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Service
         private const string DroidItemId = "DROID_ITEM_ID";
         // Keep undeliverable returns in the existing inventory payloads so item migrations still visit them.
         private const string PendingItemReturnPrefix = "DROID_RETURN_ITEM:";
+        private const string PendingItemRestorePrefix = "DROID_RESTORE_ITEM:";
         private const float RecastDelaySeconds = 1800f;
 
         public static string GetInstructionDiscValidationError(uint user, uint item)
@@ -671,21 +672,28 @@ namespace SWLOR.Game.Server.Service
 
             // Inventory / Equipment
             var constructedDroid = LoadConstructedDroid(controller);
+            var savedInventory = constructedDroid.Inventory.ToArray();
 
             foreach (var (slot, serialized) in constructedDroid.EquippedItems)
             {
-                var deserialized = ObjectPlugin.Deserialize(serialized);
-                if (!GetIsObjectValid(deserialized))
-                    continue;
-
-                GetDroidItemId(deserialized);
-                ObjectPlugin.AcquireItem(droid, deserialized);
-                SetDroppableFlag(deserialized, false);
-
-                AssignCommand(droid, () => ActionEquipItem(deserialized, slot));
+                RestoreDroidItem(droid, constructedDroid, serialized, slot);
             }
 
-            foreach (var (id, serialized) in constructedDroid.Inventory.ToArray())
+            // Retry equipment before carried items so equipped gear does not consume repository space.
+            foreach (var (key, serialized) in savedInventory
+                         .Where(pair => pair.Key.StartsWith(PendingItemRestorePrefix, StringComparison.Ordinal))
+                         .OrderBy(pair => pair.Key.StartsWith(PendingItemRestorePrefix + (int)InventorySlot.Invalid + ":", StringComparison.Ordinal)))
+            {
+                var identity = key.Substring(PendingItemRestorePrefix.Length).Split(':', 2);
+                if (identity.Length != 2 || !int.TryParse(identity[0], out var slot) ||
+                    slot < (int)InventorySlot.Invalid || slot > (int)InventorySlot.Bolts)
+                    continue;
+
+                constructedDroid.Inventory.Remove(key);
+                RestoreDroidItem(droid, constructedDroid, serialized, (InventorySlot)slot, identity[1]);
+            }
+
+            foreach (var (id, serialized) in savedInventory.Where(pair => !pair.Key.StartsWith(PendingItemRestorePrefix, StringComparison.Ordinal)))
             {
                 var deserialized = ObjectPlugin.Deserialize(serialized);
                 if(!GetIsObjectValid(deserialized))
@@ -713,9 +721,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // The controller's key is authoritative for older serialized items.
-                SetLocalString(deserialized, DroidItemId, id);
-                ObjectPlugin.AcquireItem(droid, deserialized);
-                SetDroppableFlag(deserialized, false);
+                RestoreDroidItem(droid, constructedDroid, serialized, InventorySlot.Invalid, id, deserialized);
             }
             SaveConstructedDroid(controller, constructedDroid);
 
@@ -832,18 +838,43 @@ namespace SWLOR.Game.Server.Service
             // because it doesn't exist at the time of the droid being created.
             ExecuteScript(GetEventScript(droid, EventScript.Creature_OnSpawnIn), droid);
 
+            DeleteLocalBool(droid, DroidIsSpawning);
+            SaveItemSnapshot(droid);
             AssignCommand(GetModule(), () =>
             {
-                DelayCommand(0.1f, () =>
-                {
-                    DeleteLocalBool(droid, DroidIsSpawning);
-                    SaveItemSnapshot(droid);
-                });
                 DelayCommand(4f, () =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(droid)), droid);
                 });
             });
+        }
+
+        private static void RestoreDroidItem(uint droid, ConstructedDroid constructedDroid, string serialized,
+            InventorySlot slot, string id = null, uint item = OBJECT_INVALID)
+        {
+            if (!GetIsObjectValid(item))
+                item = ObjectPlugin.Deserialize(serialized);
+
+            id ??= GetIsObjectValid(item) ? GetDroidItemId(item) : Guid.NewGuid().ToString();
+            var retryKey = PendingItemRestorePrefix + (int)slot + ":" + id;
+            if (GetIsObjectValid(item))
+                SetLocalString(item, DroidItemId, id);
+
+            if (!GetIsObjectValid(item) || !ObjectPlugin.AcquireItem(droid, item) ||
+                (GetIsObjectValid(item) && GetItemPossessor(item, true) != droid))
+            {
+                constructedDroid.Inventory.Remove(id);
+                constructedDroid.Inventory[retryKey] = GetIsObjectValid(item) ? ObjectPlugin.Serialize(item) : serialized;
+                if (GetIsObjectValid(item))
+                    DestroyObject(item);
+                SendMessageToPC(GetMaster(droid), "Some droid items could not be restored. They remain saved and will be retried on the next summon.");
+                return;
+            }
+
+            constructedDroid.Inventory.Remove(retryKey);
+            SetDroppableFlag(item, false);
+            if (slot != InventorySlot.Invalid && GetIsObjectValid(item) && !GetIsObjectValid(GetItemInSlot(slot, droid)))
+                CreaturePlugin.RunEquip(droid, item, slot);
         }
 
         private static void ClearTemporaryData(uint player, uint droid)
@@ -1023,7 +1054,8 @@ namespace SWLOR.Game.Server.Service
             var constructedDroid = LoadConstructedDroid(controller);
             var equippedItems = new Dictionary<InventorySlot, string>();
             var inventory = constructedDroid.Inventory
-                .Where(pair => pair.Key.StartsWith(PendingItemReturnPrefix, StringComparison.Ordinal))
+                .Where(pair => pair.Key.StartsWith(PendingItemReturnPrefix, StringComparison.Ordinal) ||
+                               pair.Key.StartsWith(PendingItemRestorePrefix, StringComparison.Ordinal))
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
             var equippedObjects = new HashSet<uint>();
             var itemIds = new HashSet<string>();

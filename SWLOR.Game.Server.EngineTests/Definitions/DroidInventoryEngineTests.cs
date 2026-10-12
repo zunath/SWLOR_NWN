@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using NWNXLib = NWN.Native.API.NWNXLib;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -15,6 +16,163 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class DroidInventoryEngineTests
     {
+        private const string RepositoryFixture = "DROID_TEST_REPOSITORY";
+        private const string RepositoryHeight = "DROID_TEST_REPOSITORY_HEIGHT";
+
+        [NWNEventHandler(ScriptName.OnAssociateAddAfter)]
+        public static void ConfigureRepositoryFixture()
+        {
+            if (!GetLocalBool(OBJECT_SELF, RepositoryFixture))
+                return;
+
+            var droid = StringToObject(EventsPlugin.GetEventData("ASSOCIATE_OBJECT_ID"));
+            if (GetResRef(droid) != Droid.DroidResref)
+                return;
+
+            var repository = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(droid).AsNWSCreature().m_pcItemRepository;
+            repository.m_nWidth = 2;
+            repository.m_nHeight = (byte)GetLocalInt(OBJECT_SELF, RepositoryHeight);
+            repository.m_nBoundary = (byte)(repository.m_nHeight * 2);
+            repository.m_bScalable = 0;
+        }
+
+        [EngineTest("Droid restoration completes every equipment slot before immediate dismissal", Category = "DroidInventory")]
+        public static async Task ImmediateDismissalAfterRestoration(EngineTestContext ctx)
+        {
+            var owner = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            var controller = await CreateController(ctx, owner);
+            await SeedRestorationItems(ctx, owner, controller, 0);
+            for (var pass = 0; pass < 2; pass++)
+            {
+                var droid = OBJECT_INVALID;
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                {
+                    Droid.SpawnDroid(owner, controller);
+                    droid = Droid.GetDroid(owner);
+                    ctx.Track(droid);
+                    AssertRestoredItems(ctx, controller, droid, 0);
+                    Droid.RemoveAssociate();
+                    ctx.AssertEqual(5, Droid.LoadConstructedDroid(controller).EquippedItems.Count, "Same-script dismissal retains every intended equipment slot");
+                });
+                await ctx.WaitUntilAsync(() => !GetIsObjectValid(droid), 5f, "immediate dismissal to finish");
+            }
+        }
+
+        [EngineTest("Droid restoration retains a full repository alongside equipped gear", Category = "DroidInventory")]
+        public static async Task FullRepositoryRestoration(EngineTestContext ctx)
+        {
+            var owner = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            var controller = await CreateController(ctx, owner);
+            await SeedRestorationItems(ctx, owner, controller, 4);
+            SetLocalBool(owner, RepositoryFixture, true);
+            SetLocalInt(owner, RepositoryHeight, 2);
+            try
+            {
+                for (var pass = 0; pass < 2; pass++)
+                {
+                    var droid = await Spawn(ctx, owner, controller);
+                    AssertRestoredItems(ctx, controller, droid, 4);
+                    var overflow = await CreateRing(ctx, owner);
+                    await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                    {
+                        ctx.Assert(!ItemPlugin.MoveTo(overflow, droid), "The four carried items completely fill the restored repository");
+                        DestroyObject(overflow);
+                    });
+                    await Dismiss(ctx, owner, droid);
+                }
+            }
+            finally
+            {
+                DeleteLocalBool(owner, RepositoryFixture);
+                DeleteLocalInt(owner, RepositoryHeight);
+            }
+        }
+
+        [EngineTest("Failed droid restoration retains items and equipment slots for later retry", Category = "DroidInventory")]
+        public static async Task FailedRestorationRetry(EngineTestContext ctx)
+        {
+            var owner = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            var controller = await CreateController(ctx, owner);
+            await SeedRestorationItems(ctx, owner, controller, 1);
+            SetLocalBool(owner, RepositoryFixture, true);
+            SetLocalInt(owner, RepositoryHeight, 0);
+            try
+            {
+                for (var pass = 0; pass < 2; pass++)
+                {
+                    var droid = await Spawn(ctx, owner, controller);
+                    ctx.AssertEqual(0, Items(droid).Count(item => GetResRef(item) == "advent_ring"), "No fixture item fits in the disabled repository");
+                    var saved = Droid.LoadConstructedDroid(controller);
+                    ctx.AssertEqual(0, saved.EquippedItems.Count, "Failed acquisitions have no live equipment");
+                    ctx.AssertEqual(6, saved.Inventory.Count, "Every failed item retains one durable retry payload");
+                    ctx.Assert(saved.Inventory.Keys.All(key => key.StartsWith("DROID_RESTORE_ITEM:", System.StringComparison.Ordinal)), "Only retry payloads remain saved");
+                    await Dismiss(ctx, owner, droid);
+                    ctx.AssertEqual(6, Droid.LoadConstructedDroid(controller).Inventory.Count, "Dismissal cannot discard failed restorations");
+                }
+                SetLocalInt(owner, RepositoryHeight, 2);
+                for (var pass = 0; pass < 2; pass++)
+                {
+                    var droid = await Spawn(ctx, owner, controller);
+                    AssertRestoredItems(ctx, controller, droid, 1);
+                    ctx.Assert(!Droid.LoadConstructedDroid(controller).Inventory.Keys.Any(key => key.StartsWith("DROID_RESTORE_ITEM:", System.StringComparison.Ordinal)), "Successful restoration clears all retry payloads");
+                    await Dismiss(ctx, owner, droid);
+                }
+            }
+            finally
+            {
+                DeleteLocalBool(owner, RepositoryFixture);
+                DeleteLocalInt(owner, RepositoryHeight);
+            }
+        }
+
+        private static async Task SeedRestorationItems(EngineTestContext ctx, uint owner, uint controller, int carriedCount)
+        {
+            var saved = new ConstructedDroid();
+            foreach (var (slot, baseItem) in RestorationSlots())
+            {
+                var item = await CreateRing(ctx, owner);
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                {
+                    ItemPlugin.SetBaseItemType(item, baseItem);
+                    SetName(item, "Restored " + slot);
+                    saved.EquippedItems[slot] = ObjectPlugin.Serialize(item);
+                    DestroyObject(item);
+                });
+            }
+            for (var index = 0; index < carriedCount; index++)
+            {
+                var item = await CreateRing(ctx, owner);
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                {
+                    SetName(item, "Carried " + index);
+                    saved.Inventory["carried-" + index] = ObjectPlugin.Serialize(item);
+                    DestroyObject(item);
+                });
+            }
+            Droid.SaveConstructedDroid(controller, saved);
+            await ctx.WaitFrameAsync();
+        }
+
+        private static (InventorySlot Slot, BaseItem BaseItem)[] RestorationSlots() => new[]
+        {
+            (InventorySlot.RightRing, BaseItem.Ring), (InventorySlot.LeftRing, BaseItem.Ring),
+            (InventorySlot.Neck, BaseItem.Amulet), (InventorySlot.Belt, BaseItem.Belt), (InventorySlot.Boots, BaseItem.Boots)
+        };
+
+        private static void AssertRestoredItems(EngineTestContext ctx, uint controller, uint droid, int carriedCount)
+        {
+            foreach (var (slot, _) in RestorationSlots())
+                ctx.AssertEqual("Restored " + slot, GetName(GetItemInSlot(slot, droid)), "Every intended equipment slot is restored synchronously");
+            var saved = Droid.LoadConstructedDroid(controller);
+            ctx.AssertEqual(5, saved.EquippedItems.Count, "Every restored equipment slot is checkpointed");
+            ctx.AssertEqual(carriedCount, saved.Inventory.Count, "Only the actual carried items are saved");
+            ctx.AssertEqual(5 + carriedCount, Items(droid).Count(item => GetResRef(item) == "advent_ring"), "Each fixture item exists exactly once");
+            ctx.AssertEqual(5 + carriedCount, Items(droid).Where(item => GetResRef(item) == "advent_ring").Select(item => GetName(item)).Distinct().Count(), "Every distinct fixture item survives");
+        }
+
         [EngineTest("Migration preserves legacy droid inventory through equipping removal and resummoning", Category = "DroidInventory")]
         public static async Task LegacyInventoryIdentity(EngineTestContext ctx)
         {

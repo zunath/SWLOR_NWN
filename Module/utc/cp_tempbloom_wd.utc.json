@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Tempest Bloom in Smuggler's Moon Fight Club Backrooms."
+    "value": "Tempest Bloom warden in Smuggler's Moon - Fight Club Backrooms."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Tempest Bloom in Smuggler's Moon Fight Club Backrooms."
+      "0": "A human in a brown captain's coat, a pit champion of fourteen seasons without a loss who now keeps the deep door of the backrooms. The pit sigil he wears cracked down the middle the night his own trainer died on his twin blade."
     }
   },
   "Dex": {

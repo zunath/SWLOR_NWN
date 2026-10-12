@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Tempest Bloom in Smuggler's Moon Fight Club Backrooms."
+    "value": "Tempest Bloom inner circle member in Smuggler's Moon - Fight Club Backrooms."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Tempest Bloom in Smuggler's Moon Fight Club Backrooms."
+      "0": "A Zabrak of the promoter's inner circle, once one of Iven Brask's best students, now paid to fight and to teach the Tempest Bloom to the amateurs of the Fight Club Backrooms. He wields a twin blade and keeps the others close."
     }
   },
   "Dex": {

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Overload Barrage in Hutlar Qion Test Site."
+    "value": "Overload Barrage inner circle in Hutlar - Qion Test Site."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Overload Barrage in Hutlar Qion Test Site."
+      "0": "A Zabrak woman in armored colonist garb, blaster pistol in hand. She is one of the four who authorized the theft of a field engineer's charge tables, and her signature sits among the site's override records."
     }
   },
   "Dex": {

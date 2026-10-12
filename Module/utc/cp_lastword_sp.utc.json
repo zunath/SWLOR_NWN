@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Last Word in Anchorhead Canyon Range."
+    "value": "Last Word specialist in Tatooine - Anchorhead Canyon Range."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Last Word in Anchorhead Canyon Range."
+      "0": "A human marksman who works the long lanes of the Anchorhead Canyon Range with a blaster pistol and a great deal of patience. The old dueling sightlines there were zeroed for fair fights; his crew has dialed them into ambush angles."
     }
   },
   "Dex": {

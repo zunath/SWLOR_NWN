@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Last Word in Anchorhead Canyon Range."
+    "value": "Last Word warden in Tatooine - Anchorhead Canyon Range."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Last Word in Anchorhead Canyon Range."
+      "0": "A Rodian in armor who takes every challenge from a firing line scratched into the floor beside the altar in the middle of the Anchorhead Canyon Range. He was the best duelist the range's old marshal ever passed, and he wears the marshal's crest as if he earned all of it. Patience was once his discipline; now he collects it as a toll."
     }
   },
   "Dex": {

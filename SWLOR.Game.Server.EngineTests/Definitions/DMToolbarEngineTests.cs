@@ -307,6 +307,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await InContext(ctx, dm.Creature, model.OnClickCreateInInventory());
             await ctx.WaitUntilAsync(() => GetIsObjectValid(FindInventoryItem(dm.Creature, "001")), 5f, "the helmet to be created in the DM's inventory");
             DestroyObject(FindInventoryItem(dm.Creature, "001"));
+
+            // Triggers are listed and described like the other blueprint types.
+            await InContext(ctx, dm.Creature, () => model.SelectedType = (int)DMBlueprintCategory.Triggers);
+            await InContext(ctx, dm.Creature, () => model.SearchText = "anti_spawn");
+            await InContext(ctx, dm.Creature, model.OnClickSearch());
+            row = IndexOfResref(model, "anti_spawn_trigg");
+            ctx.Assert(row >= 0, "the custom trigger palette lists anti_spawn_trigg");
+            await SelectRow(ctx, dm.Creature, model, row);
+            ctx.Assert(model.DetailBody.Contains("Created as a 4 m square"), $"trigger details describe the shape (was '{model.DetailBody}')");
+            Capture(dm.Creature, GuiWindowType.DMCreator, "creator-trigger-selected");
             WriteSnapshots();
         }
 

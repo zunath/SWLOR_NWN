@@ -17,9 +17,94 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             QionFoothills();
             QionHive();
             HutlarQionTestSite();
+            DroidFoundry();
 
             HutqionRareElites();
             return _builder.Build();
+        }
+
+        private void DroidFoundry()
+        {
+            _builder.Create("HUTLAR_FOUNDRY_INTAKE", "Hutlar Droid Foundry - Intake")
+                .AddSpawn(ObjectType.Creature, "fdy_hauler")
+                .WithFrequency(30)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "fdy_sentry")
+                .WithFrequency(30)
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "fdy_welder")
+                .WithFrequency(25)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "fdy_smelter")
+                .WithFrequency(15)
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "fdy_sorter")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            _builder.Create("HUTLAR_FOUNDRY_ASSEMBLY", "Hutlar Droid Foundry - Assembly Line")
+                .AddSpawn(ObjectType.Creature, "fdy_linedef")
+                .WithFrequency(30)
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "fdy_riveter")
+                .WithFrequency(30)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "fdy_reclaim")
+                .WithFrequency(25)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "fdy_forgewd")
+                .WithFrequency(15)
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "fdy_foreman")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            _builder.Create("HUTLAR_FOUNDRY_CORE", "Hutlar Droid Foundry - Core")
+                .AddSpawn(ObjectType.Creature, "fdy_wardroid")
+                .WithFrequency(30)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "fdy_siege")
+                .WithFrequency(30)
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "fdy_hunter")
+                .WithFrequency(25)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "fdy_juggernt")
+                .WithFrequency(15)
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "fdy_inspector")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
+                .ReturnsHome();
+
+            _builder.Create("HUTLAR_FOUNDRY_OVERSEER", "Hutlar Droid Foundry - Overseer")
+                .AddSpawn(ObjectType.Creature, "fdy_overseer")
+                .WithFrequency(1)
+                .ReturnsHome()
+                .RespawnDelay(61, 160);
         }
 
         private void HutqionRareElites()

@@ -154,7 +154,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A lean spacer in a worn flight jacket who never looks up from his datapad for long. Telford Brelnak listens to the beacons over Viscara and passes on what he hears to anyone with a ship."
+    }
   },
   "Dex": {
     "type": "byte",

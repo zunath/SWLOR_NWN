@@ -562,6 +562,8 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         CapstoneForceBondedBeastCrackedApexTotem = 274,
         [KeyItem(KeyItemCategoryType.QuestItems, "Force-Bonded Beast Den-Mother's Fang Token", true, "A den-mother's fang token recovered in the Dathomir Grotto Apex Den during the Force-Bonded Beast trial.")]
         CapstoneForceBondedBeastDenMothersFangToken = 275,
+        [KeyItem(KeyItemCategoryType.Maps, "Hutlar - Droid Foundry Map", true, "Map of the droid foundry beneath the Abandoned Outpost on Hutlar.")]
+        HutlarDroidFoundryMap = 276,
 
         // Incubation field notes — one per mutation target beast. The declared Name is a
         // readable fallback; IncubationFieldNote injects the canonical Name and the full

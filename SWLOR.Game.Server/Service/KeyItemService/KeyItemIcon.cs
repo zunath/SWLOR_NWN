@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Service.KeyItemService
                 return CavernMap;
 
             if (ContainsAny(name,
-                    "Facility", "Base", "Maintenance", "Office", "Lab", "Warehouse",
+                    "Facility", "Base", "Maintenance", "Office", "Lab", "Warehouse", "Foundry",
                     "Hotel", "Casino", "Catwalk", "FightClub", "Cantina", "Medshed",
                     "Station", "Hub", "TiltedVisor", "CzerkaArms"))
                 return FacilityMap;

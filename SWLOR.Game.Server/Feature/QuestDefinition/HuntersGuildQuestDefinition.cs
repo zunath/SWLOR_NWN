@@ -83,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildKillTask("hun_tsk_223", NPCGroupType.MonCala_Octotench, 10, 1);
             BuildKillTask("hun_tsk_224", NPCGroupType.MonCala_Microtench, 10, 1);
             BuildKillTask("hun_tsk_225", NPCGroupType.MonCala_Scorchellus, 10, 1);
+            BuildKillTask("hun_tsk_226", NPCGroupType.AbandonedStation_Horror, 10, 1);
 
             // Tier 3 (Rank 2)
             BuildItemTask("hun_tsk_400", "amphi_brain", 6, 2);
@@ -176,6 +177,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildKillTask("hun_tsk_817", NPCGroupType.Dantooine_PlainsThune, 10, 4);
             BuildKillTask("hun_tsk_818", NPCGroupType.Dantooine_Bol, 10, 4);
             BuildKillTask("hun_tsk_819", NPCGroupType.Dantooine_DantariShaman, 10, 4);
+            BuildKillTask("hun_tsk_820", NPCGroupType.Hutlar_FoundryDroid, 10, 4);
 
 
 

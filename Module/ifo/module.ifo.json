@@ -3240,6 +3240,27 @@
           "type": "resref",
           "value": "veles_tradecon"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "hut_fdy_intake"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "hut_fdy_assembly"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "hut_fdy_core"
+        }
       }
     ]
   },

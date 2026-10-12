@@ -187,7 +187,7 @@ namespace SWLOR.Game.Server.Service
 
         private static int GetStoredResistance(uint creature, ResistanceType type)
         {
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Service
 
         private static int GetStoredResistanceNative(CNWSCreature creature, ResistanceType type)
         {
-            if (creature.m_bPlayerCharacter == 1)
+            if (creature.m_bPlayerCharacter == 1 && !GetIsDMPossessed(creature.m_idSelf))
             {
                 var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -231,6 +231,7 @@ namespace SWLOR.Game.Server.Service
 
             if (GetIsPC(creature) &&
                 !GetIsDM(creature) &&
+                !GetIsDMPossessed(creature) &&
                 resistance >= MaximumResistance &&
                 !HasTemporaryResistanceImmunity(creature, type))
             {

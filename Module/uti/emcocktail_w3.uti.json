@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A vambrace laced with conductive filaments that crackle with stray charge."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A vambrace laced with conductive filaments that crackle with stray charge."
     }
   },
   "Identified": {
@@ -42,7 +41,6 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 48320,
     "type": "cexolocstring",
     "value": {
       "0": "Voltaic Vambrace"

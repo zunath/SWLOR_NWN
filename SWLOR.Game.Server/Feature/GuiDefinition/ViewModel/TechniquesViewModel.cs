@@ -164,7 +164,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (MimicryLoadouts.EnsureDefault(record))
                 DB.Set(record);
             if (_draft == null || !record.MimicryLoadouts.Any(x => x.Id == _selectedLoadoutId))
+            {
                 LoadDraft(record.ActiveMimicryLoadoutId.Length > 0 ? record.ActiveMimicryLoadoutId : record.MimicryLoadouts[0].Id);
+                // Apply can persist an equipped set without overwriting its saved preset.
+                // A new window must show that set while retaining the preset for Save/Revert.
+                _draft = record.EquippedTechniques.ToList();
+            }
             RefreshLoadouts();
             StatusText = "Preview changes do not equip techniques. Save builds before logging out.";
             ChangePartialView(BodyElement, BodyPartial);

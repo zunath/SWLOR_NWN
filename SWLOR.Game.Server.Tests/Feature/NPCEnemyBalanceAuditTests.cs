@@ -1470,21 +1470,33 @@ public class NPCEnemyBalanceAuditTests
             }
         }
 
+        var lastWorldNpcRow = worksheet.Descendants(ns + "row")
+            .Where(row => row.Elements(ns + "c").Any(cell =>
+                cell.Attribute("r")?.Value == $"C{row.Attribute("r")!.Value}" &&
+                (cell.Element(ns + "v") != null || cell.Element(ns + "is") != null)))
+            .Max(row => int.Parse(row.Attribute("r")!.Value, CultureInfo.InvariantCulture));
         worksheet
             .Descendants(ns + "autoFilter")
             .Single()
             .Attribute("ref")?
             .Value
             .Should()
-            .Be("$A$1:$AR$444", "the reusable resistance override columns should be included in World NPCs filtering");
+            .Be($"$A$1:$AR${lastWorldNpcRow}", "every World NPCs row, including the resistance override columns, should be filterable");
 
         worksheet
             .Descendants(ns + "dataValidation")
-            .Single(validation => validation.Attribute("sqref")?.Value == "AE2:AL444")
+            .Single(validation => validation.Attribute("sqref")?.Value == $"AE2:AL{lastWorldNpcRow}")
             .Attribute("type")?
             .Value
             .Should()
             .Be("decimal", "resistance adjustments should be first-class numeric cells rather than text notes");
+        foreach (var column in new[] { "D", "E", "F", "G", "H" })
+        {
+            worksheet.Descendants(ns + "dataValidation")
+                .Should()
+                .Contain(validation => validation.Attribute("sqref")!.Value == $"{column}2:{column}{lastWorldNpcRow}",
+                    $"World NPCs column {column} should be validated on every row");
+        }
 
         var lastWeaponDelayRow = weaponDelays.Descendants(ns + "row")
             .Where(row => row.Elements(ns + "c").Any(cell =>

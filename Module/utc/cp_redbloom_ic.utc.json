@@ -359,6 +359,20 @@
           "type": "word",
           "value": 2727
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 44
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 45
+        }
       }
     ]
   },

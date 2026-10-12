@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 55
+    "value": 39
   },
   "Appearance_Type": {
     "type": "word",
@@ -351,6 +351,20 @@
         "Feat": {
           "type": "word",
           "value": 2724
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 44
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 45
         }
       }
     ]

@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Hold the Line Triage Ward Ledger. Return it to Edda Maln at the Shipping District, Foreman's Office on Smuggler's Moon.")
+                    "You recovered the Hold the Line Triage Ward Ledger. Return it to Edda Maln, outside the foreman's shack in the Shipping District on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Hold the Line Kolto Conduit Coupler. Bring it to Edda Maln at the Shipping District, Foreman's Office on Smuggler's Moon.")
+                    "You recovered the Hold the Line Kolto Conduit Coupler. Bring it to Edda Maln, outside the foreman's shack in the Shipping District on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Hold the Line Fractured Ward Sigil from the warden. Return it to Edda Maln at the Shipping District, Foreman's Office on Smuggler's Moon.")
+                    "You recovered the Hold the Line Fractured Ward Sigil from the warden. Return it to Edda Maln, outside the foreman's shack in the Shipping District on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Hold the Line Matron's Ward Token. Return it to Edda Maln at the Shipping District, Foreman's Office on Smuggler's Moon.")
+                    "You recovered the Hold the Line Matron's Ward Token. Return it to Edda Maln, outside the foreman's shack in the Shipping District on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You defeated the Hold the Line master. Return to Edda Maln at the Shipping District, Foreman's Office on Smuggler's Moon.")
+                    "You defeated the Hold the Line master. Return to Edda Maln, outside the foreman's shack in the Shipping District on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

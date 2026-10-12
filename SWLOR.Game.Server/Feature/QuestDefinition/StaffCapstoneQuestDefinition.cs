@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Marda Voss gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed cliff door in the Rocky Pass, right beside the trail in from Anchorhead's Southern Entrance. Defeat six Unmoving Center adepts and recover the Unmoving Center Canyon Range Tally.")
+                    "Marda Voss gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed door in the Rocky Pass, a short walk south of where the trail from Anchorhead's Southern Entrance comes in. Defeat six Unmoving Center adepts and recover the Unmoving Center Canyon Range Tally.")
                 .AddKillObjective(NPCGroupType.Tatooine_UnmovingCenter_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnmovingCenterCanyonRangeTally)
 

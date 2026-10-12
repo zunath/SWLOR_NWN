@@ -19592,55 +19592,55 @@
               },
               "ArmorPart_LBicep": {
                 "type": "byte",
-                "value": 247
+                "value": 109
               },
               "ArmorPart_LFArm": {
                 "type": "byte",
-                "value": 244
+                "value": 1
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
-                "value": 200
+                "value": 63
               },
               "ArmorPart_LHand": {
                 "type": "byte",
-                "value": 198
+                "value": 110
               },
               "ArmorPart_LShin": {
                 "type": "byte",
-                "value": 227
+                "value": 241
               },
               "ArmorPart_LShoul": {
                 "type": "byte",
-                "value": 186
+                "value": 0
               },
               "ArmorPart_LThigh": {
                 "type": "byte",
-                "value": 230
+                "value": 238
               },
               "ArmorPart_Neck": {
                 "type": "byte",
-                "value": 26
+                "value": 1
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
-                "value": 232
+                "value": 237
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
-                "value": 247
+                "value": 109
               },
               "ArmorPart_RFArm": {
                 "type": "byte",
-                "value": 244
+                "value": 1
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
-                "value": 200
+                "value": 63
               },
               "ArmorPart_RHand": {
                 "type": "byte",
-                "value": 198
+                "value": 110
               },
               "ArmorPart_Robe": {
                 "type": "byte",
@@ -19648,19 +19648,19 @@
               },
               "ArmorPart_RShin": {
                 "type": "byte",
-                "value": 227
+                "value": 241
               },
               "ArmorPart_RShoul": {
                 "type": "byte",
-                "value": 186
+                "value": 0
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
-                "value": 230
+                "value": 238
               },
               "ArmorPart_Torso": {
                 "type": "byte",
-                "value": 247
+                "value": 115
               },
               "BaseItem": {
                 "type": "int",
@@ -19672,11 +19672,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 23
+                "value": 22
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 127
+                "value": 23
               },
               "Cost": {
                 "type": "dword",
@@ -19692,9 +19692,7 @@
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {
-                  "0": ""
-                }
+                "value": {}
               },
               "Identified": {
                 "type": "byte",
@@ -19702,26 +19700,25 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 23
+                "value": 22
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 23
+                "value": 79
               },
               "LocalizedName": {
-                "id": 12835,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Mandalorian Vanguard Armor"
+                  "0": "Worker Outfit Black"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 11
+                "value": 8
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 15
+                "value": 39
               },
               "Plot": {
                 "type": "byte",
@@ -19741,11 +19738,11 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "Sol_MandoVanguardArmor"
+                "value": "WorkerOutfit2"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "sol_mandovangarm"
+                "value": "worker_outfit_2"
               },
               "xArmorPart_Belt": {
                 "type": "word",
@@ -19753,55 +19750,55 @@
               },
               "xArmorPart_LBice": {
                 "type": "word",
-                "value": 247
+                "value": 109
               },
               "xArmorPart_LFArm": {
                 "type": "word",
-                "value": 244
+                "value": 1
               },
               "xArmorPart_LFoot": {
                 "type": "word",
-                "value": 200
+                "value": 63
               },
               "xArmorPart_LHand": {
                 "type": "word",
-                "value": 198
+                "value": 110
               },
               "xArmorPart_LShin": {
                 "type": "word",
-                "value": 227
+                "value": 241
               },
               "xArmorPart_LShou": {
                 "type": "word",
-                "value": 186
+                "value": 0
               },
               "xArmorPart_LThig": {
                 "type": "word",
-                "value": 230
+                "value": 238
               },
               "xArmorPart_Neck": {
                 "type": "word",
-                "value": 26
+                "value": 1
               },
               "xArmorPart_Pelvi": {
                 "type": "word",
-                "value": 232
+                "value": 237
               },
               "xArmorPart_RBice": {
                 "type": "word",
-                "value": 247
+                "value": 109
               },
               "xArmorPart_RFArm": {
                 "type": "word",
-                "value": 244
+                "value": 1
               },
               "xArmorPart_RFoot": {
                 "type": "word",
-                "value": 200
+                "value": 63
               },
               "xArmorPart_RHand": {
                 "type": "word",
-                "value": 198
+                "value": 110
               },
               "xArmorPart_Robe": {
                 "type": "word",
@@ -19809,23 +19806,23 @@
               },
               "xArmorPart_RShin": {
                 "type": "word",
-                "value": 227
+                "value": 241
               },
               "xArmorPart_RShou": {
                 "type": "word",
-                "value": 186
+                "value": 0
               },
               "xArmorPart_RThig": {
                 "type": "word",
-                "value": 230
+                "value": 238
               },
               "xArmorPart_Torso": {
                 "type": "word",
-                "value": 247
+                "value": 115
               },
               "XOrientation": {
                 "type": "float",
-                "value": 8.238869249376293e-016
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",

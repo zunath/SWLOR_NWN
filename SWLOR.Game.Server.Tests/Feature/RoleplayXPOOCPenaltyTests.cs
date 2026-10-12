@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.RoleplayXPService;
 
@@ -20,7 +21,7 @@ public class RoleplayXPOOCPenaltyTests
     [TestCase("   //leading whitespace")]
     public void Classify_ExplicitOOCPrefix_IsOutOfCharacter(string message)
     {
-        RoleplayMessageClassifier.Classify(message).Should().Be(RoleplayMessageType.OutOfCharacter);
+        Classify(message).Should().Be(RoleplayMessageType.OutOfCharacter);
     }
 
     [TestCase("\"I'll catch you all later.\" //gotta bounce, work in the morning")]
@@ -30,7 +31,7 @@ public class RoleplayXPOOCPenaltyTests
     [TestCase("pretend we're normal//")]
     public void Classify_OOCMarkerAfterInCharacterText_IsOutOfCharacter(string message)
     {
-        RoleplayMessageClassifier.Classify(message).Should().Be(RoleplayMessageType.OutOfCharacter);
+        Classify(message).Should().Be(RoleplayMessageType.OutOfCharacter);
     }
 
     [TestCase("brb")]
@@ -48,7 +49,7 @@ public class RoleplayXPOOCPenaltyTests
     [TestCase("\"Fair enough.\" She grins. tbh I think that was the best roll all night")]
     public void Classify_ChatSpeakTypedAsNarration_IsOutOfCharacter(string message)
     {
-        RoleplayMessageClassifier.Classify(message).Should().Be(RoleplayMessageType.OutOfCharacter);
+        Classify(message).Should().Be(RoleplayMessageType.OutOfCharacter);
     }
 
     [TestCase("no problem buddy :)")]
@@ -59,7 +60,7 @@ public class RoleplayXPOOCPenaltyTests
     [TestCase("not the evil >:3c")]
     public void Classify_EmoticonInNarration_IsOutOfCharacter(string message)
     {
-        RoleplayMessageClassifier.Classify(message).Should().Be(RoleplayMessageType.OutOfCharacter);
+        Classify(message).Should().Be(RoleplayMessageType.OutOfCharacter);
     }
 
     [TestCase("\"Hello there.\" He waves.")]
@@ -78,7 +79,7 @@ public class RoleplayXPOOCPenaltyTests
     [TestCase("")]
     public void Classify_InCharacterText_IsInCharacter(string message)
     {
-        RoleplayMessageClassifier.Classify(message).Should().Be(RoleplayMessageType.InCharacter);
+        Classify(message).Should().Be(RoleplayMessageType.InCharacter);
     }
 
     [TestCase("/emote")]
@@ -87,7 +88,7 @@ public class RoleplayXPOOCPenaltyTests
     [TestCase("/ brb, afk")]
     public void Classify_ChatCommand_IsNotTreatedAsOOCChatter(string message)
     {
-        RoleplayMessageClassifier.Classify(message).Should().Be(RoleplayMessageType.ChatCommand);
+        Classify(message).Should().Be(RoleplayMessageType.ChatCommand);
     }
 
     [TestCase("their*")]
@@ -95,7 +96,7 @@ public class RoleplayXPOOCPenaltyTests
     [TestCase("Sergeant* ")]
     public void Classify_TypoCorrection_IsTypoCorrection(string message)
     {
-        RoleplayMessageClassifier.Classify(message).Should().Be(RoleplayMessageType.TypoCorrection);
+        Classify(message).Should().Be(RoleplayMessageType.TypoCorrection);
     }
 
     [TestCase("*waves*")]
@@ -103,7 +104,7 @@ public class RoleplayXPOOCPenaltyTests
     [TestCase("\"their\"*")]
     public void Classify_EmoteOrLongerTextEndingInAsterisk_IsNotATypoCorrection(string message)
     {
-        RoleplayMessageClassifier.Classify(message).Should().NotBe(RoleplayMessageType.TypoCorrection);
+        Classify(message).Should().NotBe(RoleplayMessageType.TypoCorrection);
     }
 
     [Test]
@@ -111,11 +112,11 @@ public class RoleplayXPOOCPenaltyTests
     {
         var progress = new RoleplayProgress();
 
-        RecordMessages(progress, OOCAllowance.DailyAllowance, Morning, OOCMessageContext.Standard);
+        RecordMessages(progress, OOCAllowance.DefaultDailyAllowance, Morning, OOCMessageContext.Standard);
 
-        progress.DailyOOCMessageCount.Should().Be(OOCAllowance.DailyAllowance);
+        progress.DailyOOCMessageCount.Should().Be(OOCAllowance.DefaultDailyAllowance);
         progress.PendingOOCPenaltySteps.Should().Be(0);
-        progress.OOCMessageCount.Should().Be((ulong)OOCAllowance.DailyAllowance);
+        progress.OOCMessageCount.Should().Be((ulong)OOCAllowance.DefaultDailyAllowance);
     }
 
     [Test]
@@ -123,7 +124,7 @@ public class RoleplayXPOOCPenaltyTests
     {
         var progress = new RoleplayProgress();
 
-        RecordMessages(progress, OOCAllowance.DailyAllowance + 3, Morning, OOCMessageContext.Standard);
+        RecordMessages(progress, OOCAllowance.DefaultDailyAllowance + 3, Morning, OOCMessageContext.Standard);
 
         progress.PendingOOCPenaltySteps.Should().Be(3);
     }
@@ -133,10 +134,10 @@ public class RoleplayXPOOCPenaltyTests
     {
         var progress = new RoleplayProgress();
 
-        RecordMessages(progress, OOCAllowance.DailyAllowance + 50, Morning, OOCMessageContext.Standard);
+        RecordMessages(progress, OOCAllowance.DefaultDailyAllowance + OOCAllowance.MaxPenaltySteps + 25, Morning, OOCMessageContext.Standard);
 
         progress.PendingOOCPenaltySteps.Should().Be(OOCAllowance.MaxPenaltySteps);
-        OOCAllowance.ApplyPenalty(1500, progress.PendingOOCPenaltySteps).Should().Be(0);
+        OOCAllowance.ApplyPenalty(1500, progress.PendingOOCPenaltySteps, 1).Should().Be(0);
     }
 
     [Test]
@@ -144,15 +145,15 @@ public class RoleplayXPOOCPenaltyTests
     {
         var progress = new RoleplayProgress();
 
-        RecordMessages(progress, OOCAllowance.DMPresentAllowance, Morning, OOCMessageContext.DMPresent);
+        RecordMessages(progress, OOCAllowance.DefaultDMPresentAllowance, Morning, OOCMessageContext.DMPresent);
 
-        progress.DailyDMPresentOOCMessageCount.Should().Be(OOCAllowance.DMPresentAllowance);
+        progress.DailyDMPresentOOCMessageCount.Should().Be(OOCAllowance.DefaultDMPresentAllowance);
         progress.DailyOOCMessageCount.Should().Be(0);
         progress.PendingOOCPenaltySteps.Should().Be(0);
 
-        RecordMessages(progress, OOCAllowance.DailyAllowance + 1, Morning, OOCMessageContext.DMPresent);
+        RecordMessages(progress, OOCAllowance.DefaultDailyAllowance + 1, Morning, OOCMessageContext.DMPresent);
 
-        progress.DailyOOCMessageCount.Should().Be(OOCAllowance.DailyAllowance + 1);
+        progress.DailyOOCMessageCount.Should().Be(OOCAllowance.DefaultDailyAllowance + 1);
         progress.PendingOOCPenaltySteps.Should().Be(1);
     }
 
@@ -176,13 +177,13 @@ public class RoleplayXPOOCPenaltyTests
         var beforeRestart = new DateTime(2026, 10, 13, 9, 59, 0, DateTimeKind.Utc);
         var afterRestart = new DateTime(2026, 10, 13, 10, 0, 0, DateTimeKind.Utc);
 
-        RecordMessages(progress, OOCAllowance.DailyAllowance, Morning, OOCMessageContext.Standard);
+        RecordMessages(progress, OOCAllowance.DefaultDailyAllowance, Morning, OOCMessageContext.Standard);
         RecordMessages(progress, 5, Morning, OOCMessageContext.DMPresent);
-        OOCAllowance.RecordOOCMessage(progress, beforeRestart, OOCMessageContext.Standard);
+        Record(progress, beforeRestart, OOCMessageContext.Standard);
 
         progress.PendingOOCPenaltySteps.Should().Be(1);
 
-        OOCAllowance.RecordOOCMessage(progress, afterRestart, OOCMessageContext.Standard);
+        Record(progress, afterRestart, OOCMessageContext.Standard);
 
         progress.DailyOOCMessageCount.Should().Be(1);
         progress.DailyDMPresentOOCMessageCount.Should().Be(0);
@@ -204,21 +205,90 @@ public class RoleplayXPOOCPenaltyTests
 
         foreach (var time in times)
         {
-            OOCAllowance.RecordOOCMessage(progress, time, OOCMessageContext.Standard);
+            Record(progress, time, OOCMessageContext.Standard);
         }
 
         progress.DailyOOCMessageCount.Should().Be(times.Length, "extra restarts and midnight do not start a new allowance day");
     }
 
-    [TestCase(0, 1500)]
-    [TestCase(1, 1350)]
-    [TestCase(5, 750)]
-    [TestCase(10, 0)]
-    [TestCase(25, 0)]
-    [TestCase(-3, 1500)]
-    public void ApplyPenalty_ReducesAwardByTenPercentPerStep(int steps, int expectedXP)
+    [TestCase(0, 10, 1500)]
+    [TestCase(1, 10, 1350)]
+    [TestCase(5, 10, 750)]
+    [TestCase(10, 10, 0)]
+    [TestCase(25, 10, 0)]
+    [TestCase(-3, 10, 1500)]
+    [TestCase(3, 25, 375)]
+    [TestCase(4, 25, 0)]
+    [TestCase(7, 0, 1500)]
+    public void ApplyPenalty_ReducesAwardByConfiguredPercentPerStep(int steps, int percentPerStep, int expectedXP)
     {
-        OOCAllowance.ApplyPenalty(1500, steps).Should().Be(expectedXP);
+        OOCAllowance.ApplyPenalty(1500, steps, percentPerStep).Should().Be(expectedXP);
+    }
+
+    [Test]
+    public void RecordOOCMessage_UsesConfiguredAllowances()
+    {
+        var progress = new RoleplayProgress();
+
+        for (var index = 0; index < 4; index++)
+        {
+            OOCAllowance.RecordOOCMessage(progress, Morning, OOCMessageContext.DMPresent, dailyAllowance: 1, dmPresentAllowance: 2);
+        }
+
+        progress.DailyDMPresentOOCMessageCount.Should().Be(2);
+        progress.DailyOOCMessageCount.Should().Be(2);
+        progress.PendingOOCPenaltySteps.Should().Be(1);
+    }
+
+    [Test]
+    public void Classify_ConfiguredTerms_ReplaceTheDefaultList()
+    {
+        var terms = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "holoskip", ":]" };
+
+        RoleplayMessageClassifier.Classify("She glances away. HOLOSKIP", terms).Should().Be(RoleplayMessageType.OutOfCharacter);
+        RoleplayMessageClassifier.Classify("Nice one :]", terms).Should().Be(RoleplayMessageType.OutOfCharacter);
+        RoleplayMessageClassifier.Classify("brb, food", terms).Should().Be(RoleplayMessageType.InCharacter);
+    }
+
+    [Test]
+    [NonParallelizable]
+    public void ApplicationSettings_ReadsOOCSettingsFromEnvironment()
+    {
+        var variables = new Dictionary<string, string>
+        {
+            ["SWLOR_RPXP_OOC_DAILY_ALLOWANCE"] = "35",
+            ["SWLOR_RPXP_OOC_DM_ALLOWANCE"] = "0",
+            ["SWLOR_RPXP_OOC_PENALTY_PERCENT"] = "250",
+            ["SWLOR_RPXP_OOC_TERMS"] = " Holoskip , ,:] "
+        };
+
+        var settings = CreateSettings(variables);
+
+        settings.RoleplayXPDailyOOCAllowance.Should().Be(35);
+        settings.RoleplayXPDMPresentOOCAllowance.Should().Be(0);
+        settings.RoleplayXPOOCPenaltyPercent.Should().Be(100);
+        settings.RoleplayXPOOCTerms.Should().BeEquivalentTo(new[] { "Holoskip", ":]" });
+        settings.RoleplayXPOOCTerms.Should().Contain("HOLOSKIP");
+    }
+
+    [Test]
+    [NonParallelizable]
+    public void ApplicationSettings_BlankOrInvalidOOCSettings_UseDefaults()
+    {
+        var variables = new Dictionary<string, string>
+        {
+            ["SWLOR_RPXP_OOC_DAILY_ALLOWANCE"] = "",
+            ["SWLOR_RPXP_OOC_DM_ALLOWANCE"] = "-5",
+            ["SWLOR_RPXP_OOC_PENALTY_PERCENT"] = "ten",
+            ["SWLOR_RPXP_OOC_TERMS"] = " , "
+        };
+
+        var settings = CreateSettings(variables);
+
+        settings.RoleplayXPDailyOOCAllowance.Should().Be(OOCAllowance.DefaultDailyAllowance);
+        settings.RoleplayXPDMPresentOOCAllowance.Should().Be(OOCAllowance.DefaultDMPresentAllowance);
+        settings.RoleplayXPOOCPenaltyPercent.Should().Be(OOCAllowance.DefaultPenaltyPercentPerMessage);
+        settings.RoleplayXPOOCTerms.Should().BeSameAs(RoleplayMessageClassifier.DefaultOOCTerms);
     }
 
     [Test]
@@ -227,7 +297,9 @@ public class RoleplayXPOOCPenaltyTests
         var roleplayXpSource = ReadServerSource("Feature", "RoleplayXP.cs");
         var awardMethod = ExtractMethod(roleplayXpSource, "private static void ProcessPlayerRoleplayXP(uint player)");
 
-        awardMethod.Should().Contain("xp = OOCAllowance.ApplyPenalty(xp, dbPlayer.RoleplayProgress.PendingOOCPenaltySteps);");
+        awardMethod.Should().Contain("xp = OOCAllowance.ApplyPenalty(");
+        awardMethod.Should().Contain("dbPlayer.RoleplayProgress.PendingOOCPenaltySteps,");
+        awardMethod.Should().Contain("ApplicationSettings.Get().RoleplayXPOOCPenaltyPercent);");
         awardMethod.Should().Contain("dbPlayer.RoleplayProgress.PendingOOCPenaltySteps = 0;");
         roleplayXpSource.Should().NotContain("SetLocalInt(player, RPTickVariable, -");
     }
@@ -264,11 +336,47 @@ public class RoleplayXPOOCPenaltyTests
         }
     }
 
+    private static RoleplayMessageType Classify(string message)
+    {
+        return RoleplayMessageClassifier.Classify(message, RoleplayMessageClassifier.DefaultOOCTerms);
+    }
+
+    private static void Record(RoleplayProgress progress, DateTime utcNow, OOCMessageContext context)
+    {
+        OOCAllowance.RecordOOCMessage(
+            progress,
+            utcNow,
+            context,
+            OOCAllowance.DefaultDailyAllowance,
+            OOCAllowance.DefaultDMPresentAllowance);
+    }
+
     private static void RecordMessages(RoleplayProgress progress, int count, DateTime utcNow, OOCMessageContext context)
     {
         for (var index = 0; index < count; index++)
         {
-            OOCAllowance.RecordOOCMessage(progress, utcNow, context);
+            Record(progress, utcNow, context);
+        }
+    }
+
+    private static ApplicationSettings CreateSettings(IReadOnlyDictionary<string, string> variables)
+    {
+        var previous = variables.Keys.ToDictionary(name => name, Environment.GetEnvironmentVariable);
+        try
+        {
+            foreach (var (name, value) in variables)
+            {
+                Environment.SetEnvironmentVariable(name, value);
+            }
+
+            return (ApplicationSettings)Activator.CreateInstance(typeof(ApplicationSettings), nonPublic: true);
+        }
+        finally
+        {
+            foreach (var (name, value) in previous)
+            {
+                Environment.SetEnvironmentVariable(name, value);
+            }
         }
     }
 

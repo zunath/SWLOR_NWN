@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Globalization;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.RoleplayXPService;
 
 namespace SWLOR.Game.Server
 {
@@ -28,6 +30,11 @@ namespace SWLOR.Game.Server
         public bool EngineTestShutdownOnCompletion { get; }
         public string EngineTestArenaResref { get; }
 
+        public int RoleplayXPDailyOOCAllowance { get; }
+        public int RoleplayXPDMPresentOOCAllowance { get; }
+        public int RoleplayXPOOCPenaltyPercent { get; }
+        public IReadOnlySet<string> RoleplayXPOOCTerms { get; }
+
         private static ApplicationSettings _settings;
         public static ApplicationSettings Get()
         {
@@ -54,6 +61,15 @@ namespace SWLOR.Game.Server
             EngineTestStartupDelaySeconds = ParseFloat(Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_STARTUP_DELAY_SECONDS"), 15f);
             EngineTestShutdownOnCompletion = ParseBool(Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_SHUTDOWN"), true);
             EngineTestArenaResref = Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_ARENA_RESREF");
+
+            RoleplayXPDailyOOCAllowance = ParseNonNegativeInt(
+                Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_DAILY_ALLOWANCE"), OOCAllowance.DefaultDailyAllowance);
+            RoleplayXPDMPresentOOCAllowance = ParseNonNegativeInt(
+                Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_DM_ALLOWANCE"), OOCAllowance.DefaultDMPresentAllowance);
+            RoleplayXPOOCPenaltyPercent = Math.Min(100, ParseNonNegativeInt(
+                Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_PENALTY_PERCENT"), OOCAllowance.DefaultPenaltyPercentPerMessage));
+            RoleplayXPOOCTerms = ParseTermSet(Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_TERMS"))
+                                 ?? RoleplayMessageClassifier.DefaultOOCTerms;
 
             var environment = Environment.GetEnvironmentVariable("SWLOR_ENVIRONMENT")?.Trim().ToLower() ?? string.Empty;
             if (environment == "prod" || environment == "production")
@@ -91,6 +107,28 @@ namespace SWLOR.Game.Server
             // than silently flipping it - a mistyped SWLOR_ENGINE_TEST_SHUTDOWN must not leave
             // a headless test server running forever.
             return defaultValue;
+        }
+
+        private static int ParseNonNegativeInt(string value, int defaultValue)
+        {
+            return int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) && parsed >= 0
+                ? parsed
+                : defaultValue;
+        }
+
+        /// <summary>
+        /// Parses a comma-separated list into a case-insensitive set. Returns null when the
+        /// value is blank so the caller's default applies.
+        /// </summary>
+        private static IReadOnlySet<string> ParseTermSet(string value)
+        {
+            var terms = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var term in (value ?? string.Empty).Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+            {
+                terms.Add(term);
+            }
+
+            return terms.Count > 0 ? terms : null;
         }
 
         private static float ParseFloat(string value, float defaultValue)

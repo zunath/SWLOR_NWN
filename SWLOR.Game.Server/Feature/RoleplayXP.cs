@@ -66,7 +66,10 @@ namespace SWLOR.Game.Server.Feature
                 var xp = BaseXP + bonusXP + socialModifier * (BaseXP / 4);
                 var cantinaBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.CantinaLevel);
                 xp += (int)(BaseXP * (cantinaBonus * 0.05f));
-                xp = OOCAllowance.ApplyPenalty(xp, dbPlayer.RoleplayProgress.PendingOOCPenaltySteps);
+                xp = OOCAllowance.ApplyPenalty(
+                    xp,
+                    dbPlayer.RoleplayProgress.PendingOOCPenaltySteps,
+                    ApplicationSettings.Get().RoleplayXPOOCPenaltyPercent);
 
                 dbPlayer.RoleplayProgress.RPPoints = 0;
                 dbPlayer.RoleplayProgress.PendingOOCPenaltySteps = 0;
@@ -111,11 +114,17 @@ namespace SWLOR.Game.Server.Feature
             var playerID = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerID) ?? new Player(playerID);
 
-            var messageType = RoleplayMessageClassifier.Classify(message);
+            var settings = ApplicationSettings.Get();
+            var messageType = RoleplayMessageClassifier.Classify(message, settings.RoleplayXPOOCTerms);
             if (messageType == RoleplayMessageType.OutOfCharacter)
             {
                 RefreshRPMessageTimestamp(player, now);
-                OOCAllowance.RecordOOCMessage(dbPlayer.RoleplayProgress, now, GetOOCMessageContext(player));
+                OOCAllowance.RecordOOCMessage(
+                    dbPlayer.RoleplayProgress,
+                    now,
+                    GetOOCMessageContext(player),
+                    settings.RoleplayXPDailyOOCAllowance,
+                    settings.RoleplayXPDMPresentOOCAllowance);
                 DB.Set(dbPlayer);
                 return;
             }

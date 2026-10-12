@@ -11,7 +11,11 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
     {
         private static readonly string[] OOCMarkers = { "((", "))", "[[", "]]", "{{", "}}", @"\\" };
 
-        private static readonly HashSet<string> OOCWords = new(StringComparer.OrdinalIgnoreCase)
+        /// <summary>
+        /// Words and emoticons treated as OOC outside quoted speech when swlor.env does not
+        /// configure its own list.
+        /// </summary>
+        public static readonly IReadOnlySet<string> DefaultOOCTerms = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             // Chat shorthand
             "afaik", "afk", "atm", "bbiab", "bbl", "brb", "btw", "g2g", "gg", "gtg", "idc", "idk", "iirc", "ikr",
@@ -21,11 +25,9 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
             // Game and player references
             "dm", "dms", "emote", "emotes", "emoting", "hotbar", "keybind", "keybinds", "npc", "npcs", "relog",
             "relogged", "relogging", "rp", "rping", "screenie", "screenies", "screenshot", "screenshots",
-            "toolset", "toon", "toons", "typo", "typos", "xp"
-        };
+            "toolset", "toon", "toons", "typo", "typos", "xp",
 
-        private static readonly HashSet<string> Emoticons = new(StringComparer.OrdinalIgnoreCase)
-        {
+            // Emoticons
             ":)", ":(", ":d", ":p", ":3", ":o", ":c", ":/", ":|", ";)", ";(", ";p", ";d", "=)", "=(", "=d", "=p",
             ":-)", ":-(", ":-d", ":-p", ";-)", ":')", ":'(", ">:)", ">:(", ">:3", ">:d", ":3c", ">:3c",
             "^^", "^_^", "<3", "</3", "o7", "t_t", ";_;", ";-;"
@@ -39,7 +41,7 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
         private static readonly char[] WordPunctuation = "*.,!?;:()[]{}<>~_-/\\'@#".ToCharArray();
         private static readonly char[] EmoticonPunctuation = "*.,!?".ToCharArray();
 
-        public static RoleplayMessageType Classify(string message)
+        public static RoleplayMessageType Classify(string message, IReadOnlySet<string> oocTerms)
         {
             var trimmed = message?.Trim() ?? string.Empty;
             if (trimmed.Length == 0)
@@ -50,7 +52,7 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
                 return RoleplayMessageType.ChatCommand;
 
             var narration = RemoveQuotedSpeech(trimmed);
-            if (ContainsOOCMarker(narration) || ContainsOOCWord(narration))
+            if (ContainsOOCMarker(narration) || ContainsOOCTerm(narration, oocTerms))
                 return RoleplayMessageType.OutOfCharacter;
 
             if (IsTypoCorrection(trimmed))
@@ -103,18 +105,19 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
             return false;
         }
 
-        private static bool ContainsOOCWord(string narration)
+        private static bool ContainsOOCTerm(string narration, IReadOnlySet<string> oocTerms)
         {
             foreach (var token in narration.Split((char[])null, StringSplitOptions.RemoveEmptyEntries))
             {
-                if (Emoticons.Contains(token.Trim(EmoticonPunctuation)))
+                // Emoticons keep their own punctuation, so they are matched before words are trimmed.
+                if (oocTerms.Contains(token.Trim(EmoticonPunctuation)))
                     return true;
 
                 var word = token.Trim(WordPunctuation);
                 if (word.Length == 0)
                     continue;
 
-                if (OOCWords.Contains(word) || StretchedLaughter.IsMatch(word))
+                if (oocTerms.Contains(word) || StretchedLaughter.IsMatch(word))
                     return true;
             }
 

@@ -4955,7 +4955,7 @@
                     },
                     "Subtype": {
                       "type": "word",
-                      "value": 2
+                      "value": 5
                     }
                   },
                   {
@@ -6025,7 +6025,7 @@
                     },
                     "Subtype": {
                       "type": "word",
-                      "value": 2
+                      "value": 5
                     }
                   },
                   {
@@ -17001,7 +17001,7 @@
                     },
                     "Subtype": {
                       "type": "word",
-                      "value": 2
+                      "value": 5
                     }
                   },
                   {
@@ -196549,16 +196549,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -196570,7 +196569,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DEBR-001"
@@ -203280,16 +203278,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -203301,7 +203298,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DEBR-002"
@@ -210032,16 +210028,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -210053,7 +210048,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DEBR-003"
@@ -219739,16 +219733,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -219760,7 +219753,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DEBR-004"
@@ -226741,16 +226733,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -226762,7 +226753,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DEBR-005"
@@ -236696,16 +236686,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -236717,7 +236706,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DFBR-001"
@@ -240943,16 +240931,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -240964,7 +240951,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DFBR-002"
@@ -245283,16 +245269,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -245304,7 +245289,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DFBR-003"
@@ -249716,16 +249700,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -249737,7 +249720,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DFBR-004"
@@ -254335,16 +254317,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -254356,7 +254337,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DFBR-005"

@@ -1417,9 +1417,8 @@ public class CombatDamageTests
                 .Select(property => TryGetNestedInt(property, "Subtype", "value", out var subtype) ? subtype : -1)
                 .ToList();
 
-            weaponDamageTypes.Should().Equal(
-                new[] { (int)CombatDamageType.Physical },
-                $"{resref} should not inherit or declare poison damage");
+            weaponDamageTypes.Should().BeEmpty(
+                $"{resref} deals Physical damage by default and should not inherit or declare poison damage");
         }
     }
 
@@ -1694,6 +1693,80 @@ public class CombatDamageTests
         Split2daColumns(itemPropDefLines.First(x => x.StartsWith("134")))
             .Should()
             .Contain(new[] { "16859986", "WeaponDamageType", "iprp_c_dmgtype", "16859986" });
+    }
+
+    [Test]
+    public void WeaponDamageTypeOptions_OnlyOfferElements()
+    {
+        var root = FindRepositoryRoot();
+        var rows = File.ReadAllLines(Path.Combine(root.FullName, "SWLOR_Haks", "sw_2da", "iprp_c_dmgtype.2da"))
+            .Skip(3)
+            .Select(Split2daColumns)
+            .Where(columns => columns.Length >= 3)
+            .ToDictionary(columns => int.Parse(columns[0]), columns => columns[2]);
+
+        rows[(int)CombatDamageType.Physical].Should().Be("****", "an item without a damage type already deals Physical damage");
+        rows[(int)CombatDamageType.Force].Should().Be("****", "Force conversion belongs to Imbuement Stance");
+        rows.Where(row => row.Value != "****").Select(row => (CombatDamageType)row.Key)
+            .Should().OnlyContain(type => type.IsElementalDamageType());
+    }
+
+    [TestCase(CombatDamageType.Physical, CombatDamageType.Physical)]
+    [TestCase(CombatDamageType.Force, CombatDamageType.Physical)]
+    [TestCase(CombatDamageType.Fire, CombatDamageType.Fire)]
+    [TestCase(CombatDamageType.Ice, CombatDamageType.Ice)]
+    public void WeaponDamageTypeProperty_OnlyElementsRetypeWeaponDamage(CombatDamageType subtype, CombatDamageType expected)
+    {
+        var resolve = typeof(SWLOR.Game.Server.Native.GetDamageRoll).GetMethod("ResolveWeaponDamageType",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!;
+
+        resolve.Invoke(null, new object[] { CombatDamageType.Physical, (int)subtype }).Should().Be(expected);
+    }
+
+    [Test]
+    public void ModuleItems_DoNotCarryRetiredWeaponDamageTypes()
+    {
+        var root = FindRepositoryRoot();
+        var offenders = new List<string>();
+
+        foreach (var folder in new[] { "uti", "utc", "utm", "utp", "git" })
+        foreach (var file in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", folder), "*.json"))
+        {
+            var text = ReadJsonText(file);
+            if (!text.Contains("\"value\": 134"))
+                continue;
+
+            using var document = JsonDocument.Parse(text);
+            foreach (var property in EnumerateObjects(document.RootElement))
+            {
+                if (TryGetNestedInt(property, "PropertyName", "value", out var name) &&
+                    name == (int)ItemPropertyType.WeaponDamageType &&
+                    TryGetNestedInt(property, "Subtype", "value", out var subtype) &&
+                    subtype is (int)CombatDamageType.Physical or (int)CombatDamageType.Force)
+                {
+                    offenders.Add($"{Path.GetFileName(file)} ({(CombatDamageType)subtype})");
+                }
+            }
+        }
+
+        offenders.Should().BeEmpty("Physical is the default and Force belongs to Imbuement Stance");
+    }
+
+    private static IEnumerable<JsonElement> EnumerateObjects(JsonElement element)
+    {
+        if (element.ValueKind == JsonValueKind.Object)
+        {
+            yield return element;
+            foreach (var child in element.EnumerateObject())
+            foreach (var nested in EnumerateObjects(child.Value))
+                yield return nested;
+        }
+        else if (element.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var child in element.EnumerateArray())
+            foreach (var nested in EnumerateObjects(child))
+                yield return nested;
+        }
     }
 
     [Test]

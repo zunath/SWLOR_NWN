@@ -25,10 +25,9 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "Ruptor Bracer"
+      "0": "Battle-worn bracer recovered from Ruptor Vane."
     }
   },
   "Description": {
@@ -42,7 +41,6 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 48320,
     "type": "cexolocstring",
     "value": {
       "0": "Ruptor Bracer"

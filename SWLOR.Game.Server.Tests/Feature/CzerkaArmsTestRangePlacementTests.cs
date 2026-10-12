@@ -14,8 +14,12 @@ public class CzerkaArmsTestRangePlacementTests
     [Test]
     public void CzerkaDungeon_UsesGeneratedCapstoneSpawnTable()
     {
+        // The table spawns from fixed waypoints tagged with its id, not the area local; see
+        // DungeonEncounterWalkmeshTests.CzerkaWeaponsFacility_UsesTwentyFixedGeneralSpawnsOnClearFloor.
         using var dungeon = LoadModuleJson("git", DungeonArea);
-        GetLocalString(dungeon.RootElement, "CREATURE_SPAWN_TABLE_ID").Should().Be("CAPSTONE_CZERKA_ARMS_TEST_RANGE");
+        dungeon.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
+            .Count(w => GetString(w, "Tag") == "CAPSTONE_CZERKA_ARMS_TEST_RANGE")
+            .Should().BeGreaterThan(0);
         GetLocalInt(dungeon.RootElement, "IS_DUNGEON").Should().Be(1);
     }
 

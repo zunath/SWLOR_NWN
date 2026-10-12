@@ -1,12 +1,88 @@
 {
   "__data_type": "UTC ",
+  "Appearance_Head": {
+    "type": "byte",
+    "value": 132
+  },
   "Appearance_Type": {
     "type": "word",
-    "value": 2123
+    "value": 6
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
     "value": 0
+  },
+  "BodyPart_Belt": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFoot": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Pelvis": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_RThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Torso": {
+    "type": "byte",
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -31,6 +107,22 @@
         }
       }
     ]
+  },
+  "Color_Hair": {
+    "type": "byte",
+    "value": 7
+  },
+  "Color_Skin": {
+    "type": "byte",
+    "value": 0
+  },
+  "Color_Tattoo1": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Tattoo2": {
+    "type": "byte",
+    "value": 1
   },
   "Comment": {
     "type": "cexostring",
@@ -77,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "vnpcabountyhunt"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -366,11 +465,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 68
+    "value": 4154
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 6
   },
   "refbonus": {
     "type": "short",
@@ -631,7 +730,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 448
+    "value": 413
   },
   "SpecAbilityList": {
     "type": "list",

@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 1
+    "value": 58
   },
   "Charges": {
     "type": "byte",
@@ -46,11 +46,11 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 33
+    "value": 21
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 73
+    "value": 61
   },
   "ModelPart3": {
     "type": "byte",
@@ -231,11 +231,11 @@
   },
   "xModelPart1": {
     "type": "word",
-    "value": 33
+    "value": 21
   },
   "xModelPart2": {
     "type": "word",
-    "value": 73
+    "value": 61
   },
   "xModelPart3": {
     "type": "word",

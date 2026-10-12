@@ -129,7 +129,10 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            if (messageType == RoleplayMessageType.TypoCorrection) return;
+            // Chat commands and typo corrections neither earn RP points nor count as OOC.
+            if (messageType == RoleplayMessageType.ChatCommand ||
+                messageType == RoleplayMessageType.TypoCorrection)
+                return;
 
             // Is the message too short?
             if (message.Length <= 3) return;

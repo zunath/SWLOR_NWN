@@ -292,6 +292,25 @@ public class RoleplayXPOOCPenaltyTests
     }
 
     [Test]
+    public void RoleplayXP_ChatCommandsAndTypoCorrections_ExitBeforePointsOrPenalties()
+    {
+        var roleplayXpSource = ReadServerSource("Feature", "RoleplayXP.cs");
+        var processMessage = ExtractMethod(roleplayXpSource, "public static void ProcessRPMessage()").Replace("\r\n", "\n");
+
+        var oocBranch = processMessage.IndexOf("if (messageType == RoleplayMessageType.OutOfCharacter)", StringComparison.Ordinal);
+        var nonRoleplayExit = processMessage.IndexOf(
+            "if (messageType == RoleplayMessageType.ChatCommand ||\n                messageType == RoleplayMessageType.TypoCorrection)\n                return;",
+            StringComparison.Ordinal);
+        var timestampRefresh = processMessage.IndexOf("var timestampString = RefreshRPMessageTimestamp(player, now);", StringComparison.Ordinal);
+        var pointAward = processMessage.IndexOf("dbPlayer.RoleplayProgress.RPPoints++;", StringComparison.Ordinal);
+
+        oocBranch.Should().BeGreaterThanOrEqualTo(0);
+        nonRoleplayExit.Should().BeGreaterThan(oocBranch, "chat commands must never reach the OOC penalty");
+        timestampRefresh.Should().BeGreaterThan(nonRoleplayExit);
+        pointAward.Should().BeGreaterThan(nonRoleplayExit, "chat commands must never earn RP points");
+    }
+
+    [Test]
     public void RoleplayXP_ClearsPendingPenaltyWhenAwardIsGranted()
     {
         var roleplayXpSource = ReadServerSource("Feature", "RoleplayXP.cs");

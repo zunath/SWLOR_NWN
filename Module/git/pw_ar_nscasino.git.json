@@ -25122,7 +25122,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Nyra Tane is a blood-price cutwoman tied to the Red Bloom capstone trials in Smuggler's Moon Fight Club Backrooms."
+            "0": "Nyra Tane sits apart from the gaming tables in the Casino, a lean, quiet man whose hands rest still on the counter in front of him. Old ring scars cross his knuckles and forearms, the marks of a paired-blade fighter who once held a title and walked away from it. He speaks little and measures every word, and he watches newcomers as if asking what they are willing to bleed."
           }
         },
         "Dex": {
@@ -25570,7 +25570,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 311
+          "value": 4164
         },
         "Race": {
           "type": "byte",

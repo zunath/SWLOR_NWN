@@ -7,6 +7,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Toolset.Domain.Conversations;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
@@ -67,11 +68,11 @@ public sealed class ConversationEditorOpeningTests
                 Path.Combine(dialogDirectory, id + ".dlg.json")))
             .ToArray();
 
-        routes.Should().HaveCount(343);
+        routes.Should().HaveCount(344);
         routes.Should().NotContain(route => route.Kind == ConversationEditorRouteKind.Missing);
         routes.Should().OnlyContain(route => route.OpensEditor,
             "every authored conversation shown in Module Contents must open an editor");
-        routes.Count(route => route.Kind == ConversationEditorRouteKind.NuiGraph).Should().Be(341);
+        routes.Count(route => route.Kind == ConversationEditorRouteKind.NuiGraph).Should().Be(342);
         routes.Where(route => route.Kind == ConversationEditorRouteKind.LegacyException)
             .Select(route => Path.GetFileName(route.Path))
             .Should().BeEquivalentTo(new[] { "dmfi_universal.dlg.json", "x0_skill_ctrap.dlg.json" },
@@ -288,6 +289,49 @@ public sealed class ConversationEditorOpeningTests
             prompts.ExternalChangePrompts.Should().Be(1);
             File.Exists(path).Should().BeFalse("cancel must preserve the external deletion");
             Directory.EnumerateFiles(scratch, "*.tmp").Should().BeEmpty();
+        }
+        finally
+        {
+            model.OnClose();
+            Directory.Delete(scratch, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task NuiConversationSavePreservesCleanBytesAndAcknowledgesTheSavedGraph()
+    {
+        var scratch = Path.Combine(Path.GetTempPath(), $"nui-conversation-history-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(scratch);
+        var path = Path.Combine(scratch, "test.conversation.json");
+        File.Copy(
+            Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Game.Server",
+                "ConversationData",
+                "cz_receptionist.conversation.json"),
+            path);
+        var originalBytes = File.ReadAllBytes(path);
+        var model = new NuiConversationEditorViewModel(
+            path, "test", SnippetCatalog.Build(), null, new OutputLogService(), new TrackingPrompts());
+
+        try
+        {
+            (await model.TrySaveAsync()).Should().BeTrue();
+            File.ReadAllBytes(path).Should().Equal(originalBytes,
+                "a clean save keeps the original JSON bytes unchanged");
+
+            model.SpeakerName = "Saved by shared history";
+            (await model.TrySaveAsync()).Should().BeTrue();
+            model.IsDirty.Should().BeFalse();
+            Directory.EnumerateFiles(scratch, "*.tmp").Should().BeEmpty();
+
+            var savedGraph = Newtonsoft.Json.JsonConvert.DeserializeObject<ConversationGraph>(File.ReadAllText(path));
+            savedGraph!.Nodes.Values.Should().Contain(node => node.SpeakerName == "Saved by shared history");
+
+            model.Undo();
+            model.IsDirty.Should().BeTrue("undo moves away from the exact saved graph");
+            model.Redo();
+            model.IsDirty.Should().BeFalse("redo returns to the exact graph acknowledged after save");
         }
         finally
         {

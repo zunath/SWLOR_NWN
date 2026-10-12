@@ -44,7 +44,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 Animation.ThrowGrenade,
                 20.0f,
                 AbilityType.Perception,
-                null);
+                null,
+                areaVisualEffect: VisualEffect.Fnf_Fireball);
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ExplosiveToss2, PerkType.ExplosiveToss)
@@ -72,7 +73,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 Animation.ThrowGrenade,
                 20.0f,
                 AbilityType.Perception,
-                null);
+                null,
+                areaVisualEffect: VisualEffect.Fnf_Fireball);
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ExplosiveToss3, PerkType.ExplosiveToss)
@@ -100,7 +102,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 Animation.ThrowGrenade,
                 20.0f,
                 AbilityType.Perception,
-                null);
+                null,
+                areaVisualEffect: VisualEffect.Fnf_Fireball);
 
             ConfigureWeaponAbility(
                 builder.Create(FeatType.ExplosiveToss4, PerkType.ExplosiveToss)
@@ -128,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 Animation.ThrowGrenade,
                 20.0f,
                 AbilityType.Perception,
-                null);
+                null,
+                areaVisualEffect: VisualEffect.Fnf_Fireball);
 
             return builder.Build();
         }

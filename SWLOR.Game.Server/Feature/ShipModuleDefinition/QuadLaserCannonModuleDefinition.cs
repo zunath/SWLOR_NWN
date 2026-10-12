@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             .Name(name)
             .ShortName(shortName)
             .Type(ShipModuleType.QuadLaser)
-            .Texture("iit_ess2_035")
+            .Texture("iit_smquadlaser")
             .Description(description)
             .MaxDistance(20f)
             .ValidTargetType(ObjectType.Creature)

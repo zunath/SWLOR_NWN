@@ -62,13 +62,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Maar Veth gave you the Korriban Forge Caverns Key. Kill six Forcebane adepts at the outer forges of the Korriban Forge Caverns on Korriban and secure the Forcebane Forge Heat Ledger.")
+                    "Maar Veth gave you the Korriban Forge Caverns Key. On Korriban, cross the Sith Fortress Forgeworks to the sealed passage in its far north-east corner and enter the Korriban Forge Caverns. Kill six Forcebane adepts and secure the Forcebane Forge Heat Ledger they keep by the crucibles.")
                 .AddKillObjective(NPCGroupType.Korriban_Forcebane_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneForgeHeatLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane Forge Heat Ledger is secured. Return it to Maar Veth at the Valley of the Dark Lords on Korriban.")
+                    "The Forcebane Forge Heat Ledger is secured. Return it to Maar Veth at the Anchorhead - Southern Entrance on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane Sith Tempering Matrix is secured. Return it to Maar Veth at the Valley of the Dark Lords on Korriban.")
+                    "The Forcebane Sith Tempering Matrix is secured. Return it to Maar Veth at the Anchorhead - Southern Entrance on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -104,13 +104,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill the Forcebane warden in the deep forge of the Korriban Forge Caverns on Korriban and secure the Forcebane Cracked Anvil Sigil.")
+                    "With at least two allies, kill the Forcebane warden at the trial altar on the east side of the Korriban Forge Caverns on Korriban and secure the Forcebane Cracked Anvil Sigil.")
                 .AddKillObjective(NPCGroupType.Korriban_Forcebane_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneCrackedAnvilSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane Cracked Anvil Sigil is secured. Return it to Maar Veth at the Valley of the Dark Lords on Korriban.")
+                    "The Forcebane Cracked Anvil Sigil is secured. Return it to Maar Veth at the Anchorhead - Southern Entrance on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane Overseer's Clearance Token is secured. Return it to Maar Veth at the Valley of the Dark Lords on Korriban.")
+                    "The Forcebane Overseer's Clearance Token is secured. Return it to Maar Veth at the Anchorhead - Southern Entrance on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -144,12 +144,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Forcebane master at the heart of the Korriban Forge Caverns on Korriban. His defeat is the only proof required.")
+                    "With at least two allies, defeat the Forcebane master in the Champion Forge, through the door at the north end of the Korriban Forge Caverns on Korriban. His defeat is the only proof required.")
                 .AddKillObjective(NPCGroupType.Korriban_Forcebane_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Forcebane master is defeated. Return to Maar Veth at the Valley of the Dark Lords on Korriban to complete the lesson.")
+                    "The Forcebane master is defeated. Return to Maar Veth at the Anchorhead - Southern Entrance on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -175,13 +175,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Dax Rell gave you the Smuggler's Moon Fight Club Backrooms Key. Kill six Crippling Defense adepts in the sign-up rooms of the Smuggler's Moon Fight Club Backrooms on Nar Shaddaa and secure the Crippling Defense Backroom Bout Ledger.")
+                    "Dax Rell gave you the Smuggler's Moon Fight Club Backrooms Key. Take the elevator down from The Slums to the Fight Club on Smuggler's Moon and use the key on the Back Rooms door on its far west wall. Kill six Crippling Defense adepts in the Smuggler's Moon Fight Club Backrooms and secure the Crippling Defense Backroom Bout Ledger.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_CripplingDefense_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneCripplingDefenseBackroomBoutLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Crippling Defense Backroom Bout Ledger is secured. Return it to Dax Rell at the Hyper Dive Cantina on Nar Shaddaa.")
+                    "The Crippling Defense Backroom Bout Ledger is secured. Return it to Dax Rell at the Hyper Dive Cantina on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -196,13 +196,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill five Crippling Defense specialists in the Smuggler's Moon Fight Club Backrooms on Nar Shaddaa and secure the Crippling Defense Ring Shock Regulator from the main pit's control box.")
+                    "Kill five Crippling Defense specialists in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and secure the Crippling Defense Ring Shock Regulator that runs their rigged rings.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_CripplingDefense_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneCripplingDefenseRingShockRegulator)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Crippling Defense Ring Shock Regulator is secured. Return it to Dax Rell at the Hyper Dive Cantina on Nar Shaddaa.")
+                    "The Crippling Defense Ring Shock Regulator is secured. Return it to Dax Rell at the Hyper Dive Cantina on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -217,13 +217,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill the Crippling Defense warden at the champion pit gate in the Smuggler's Moon Fight Club Backrooms on Nar Shaddaa and secure the Crippling Defense Cracked Pit Sigil.")
+                    "Kill the Crippling Defense warden at the champion pit gate in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and secure the Crippling Defense Cracked Pit Sigil. Dax Rell's rule stands: bring two fighters you trust.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_CripplingDefense_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneCripplingDefenseCrackedPitSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Crippling Defense Cracked Pit Sigil is secured. Return it to Dax Rell at the Hyper Dive Cantina on Nar Shaddaa.")
+                    "The Crippling Defense Cracked Pit Sigil is secured. Return it to Dax Rell at the Hyper Dive Cantina on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -238,13 +238,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill the four Crippling Defense inner circle promoters in the Smuggler's Moon Fight Club Backrooms on Nar Shaddaa and secure the Crippling Defense Promoter's Payout Chit.")
+                    "Kill the four Crippling Defense inner circle promoters in the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon, and secure the Crippling Defense Promoter's Payout Chit.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_CripplingDefense_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneCripplingDefensePromotersPayoutChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Crippling Defense Promoter's Payout Chit is secured. Return it to Dax Rell at the Hyper Dive Cantina on Nar Shaddaa.")
+                    "The Crippling Defense Promoter's Payout Chit is secured. Return it to Dax Rell at the Hyper Dive Cantina on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -257,12 +257,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Crippling Defense master past the last gate of the Smuggler's Moon Fight Club Backrooms on Nar Shaddaa. His defeat is the only proof required.")
+                    "Defeat the Crippling Defense master past the last gate of the Smuggler's Moon Fight Club Backrooms, behind the Fight Club on Smuggler's Moon. Nobody faces him alone; bring two fighters you trust. His defeat is the only proof required.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_CripplingDefense_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Crippling Defense master is defeated. Return to Dax Rell at the Hyper Dive Cantina on Nar Shaddaa to complete the lesson.")
+                    "The Crippling Defense master is defeated. Return to Dax Rell at the Hyper Dive Cantina on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

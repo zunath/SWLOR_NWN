@@ -1,5 +1,6 @@
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using Nwn.Preview.Cache;
 
 namespace SWLOR.Toolset.Domain.Render
 {
@@ -22,31 +23,30 @@ namespace SWLOR.Toolset.Domain.Render
     {
         /// <summary>Default budget for decoded pixels. Roughly sixteen 1024-square textures.</summary>
         public const long DefaultBudgetBytes = 64L * 1024 * 1024;
+        public const int DefaultMaximumEntries = 4096;
 
         private readonly ResourceIndex _resourceIndex;
-        private readonly long _budgetBytes;
+        private readonly BoundedLruCache<string, TextureImage> _cache;
 
-        private readonly object _gate = new();
-        private readonly Dictionary<string, LinkedListNode<Entry>> _entries =
-            new(StringComparer.OrdinalIgnoreCase);
-
-        /// <summary>Most recently used at the head.</summary>
-        private readonly LinkedList<Entry> _order = new();
-
-        private long _heldBytes;
-
-        public PreviewTextureCache(ResourceIndex resourceIndex, long budgetBytes = DefaultBudgetBytes)
+        public PreviewTextureCache(
+            ResourceIndex resourceIndex,
+            long budgetBytes = DefaultBudgetBytes,
+            int maximumEntries = DefaultMaximumEntries)
         {
             if (budgetBytes <= 0) throw new ArgumentOutOfRangeException(nameof(budgetBytes));
 
             _resourceIndex = resourceIndex ?? throw new ArgumentNullException(nameof(resourceIndex));
-            _budgetBytes = budgetBytes;
+            _cache = new BoundedLruCache<string, TextureImage>(
+                budgetBytes,
+                maximumEntries,
+                texture => texture?.Pixels.LongLength ?? 0,
+                StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>Decoded pixels held right now, for diagnostics.</summary>
         public long HeldBytes
         {
-            get { lock (_gate) return _heldBytes; }
+            get => _cache.HeldBytes;
         }
 
         /// <summary>
@@ -69,55 +69,17 @@ namespace SWLOR.Toolset.Domain.Render
                 tintMapOverrides,
                 resolveMaterial,
                 armorPart);
-            lock (_gate)
-            {
-                if (_entries.TryGetValue(key, out var node))
-                {
-                    _order.Remove(node);
-                    _order.AddFirst(node);
-                    return node.Value.Texture;
-                }
-            }
-
-            var decoded = Decode(
+            return _cache.GetOrAdd(key, () => Decode(
                 textureOrMaterialName,
                 layerColorIndices,
                 tintMapOverrides,
                 resolveMaterial,
-                armorPart);
-
-            lock (_gate)
-            {
-                if (_entries.TryGetValue(key, out var existing))
-                    return existing.Value.Texture; // Another thread decoded it first; keep one copy.
-
-                var size = decoded?.Pixels.LongLength ?? 0;
-                _entries[key] = _order.AddFirst(new Entry(key, decoded, size));
-                _heldBytes += size;
-
-                while (_heldBytes > _budgetBytes && _order.Count > 1)
-                {
-                    var oldest = _order.Last;
-                    if (oldest == null)
-                        break;
-
-                    _order.RemoveLast();
-                    _entries.Remove(oldest.Value.Key);
-                    _heldBytes -= oldest.Value.SizeBytes;
-                }
-
-                return decoded;
-            }
+                armorPart));
         }
 
         public void Clear()
         {
-            lock (_gate)
-            {
-                _entries.Clear();
-                _order.Clear();
-                _heldBytes = 0;
-            }
+            _cache.Clear();
         }
 
         /// <summary>
@@ -183,6 +145,5 @@ namespace SWLOR.Toolset.Domain.Render
             return $"{(resolveMaterial ? 'm' : 't')}|{textureOrMaterialName}|p:{(int)armorPart}|{layers}|{overrides}";
         }
 
-        private readonly record struct Entry(string Key, TextureImage? Texture, long SizeBytes);
     }
 }

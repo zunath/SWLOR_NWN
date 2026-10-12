@@ -136,9 +136,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             }
 
             LeadershipAbilityEffects.ApplyTriageProtocol(activator, target, durationSeconds);
-            LeadershipAbilityEffects.ApplyBolsterResolve(activator, durationSeconds);
+            var supported = LeadershipAbilityEffects.ApplyBolsterResolve(activator, durationSeconds);
+            supported.Add(target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Good_Help), target);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
+            CombatPoint.AddSupportCombatPoint(activator, supported, SkillType.Leadership, 2);
         }
 
         private static bool CanRousingShoutAffectTarget(uint activator, uint target)

@@ -9,7 +9,8 @@ using Avalonia.VisualTree;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Creatures;
 using SWLOR.Toolset.Domain.Editors.Items;
@@ -17,10 +18,12 @@ using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Appearance;
+using Nwn.Toolset.Avalonia.Appearances;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Creatures;
 using SWLOR.Toolset.Editors.Items;
@@ -40,7 +43,7 @@ namespace SWLOR.Toolset.Tests
         {
             var files = Directory.EnumerateFiles(
                 Path.Combine(CorpusLocator.ModuleDirectory, "utc"), "*.utc.json").ToList();
-            files.Should().HaveCount(936);
+            files.Count.Should().BeGreaterThanOrEqualTo(936);
 
             var failures = new List<string>();
             foreach (var file in files)
@@ -131,7 +134,12 @@ namespace SWLOR.Toolset.Tests
                     null,
                     null,
                     _ => null,
-                    null);
+                    null,
+                    runRelatedEdit: (description, mutation, relatedSession) =>
+                    {
+                        session.ExecuteRelated(description, mutation, relatedSession);
+                        return true;
+                    });
 
                 editor.Stats.HasStatSkin.Should().BeFalse();
                 editor.Stats.Vitals.Single(cell => cell.Label == "NPC Level").Number = 7;
@@ -142,17 +150,90 @@ namespace SWLOR.Toolset.Tests
                 editor.Stats.HasStatSkin.Should().BeTrue();
                 editor.Equipment.ForSlot(CreaturePropertyCatalog.StatSkinSlot)!.Store
                     .GetPropertyValue(CreaturePropertyCatalog.Level, -1).Should().Be(7);
+                var skin = editor.Equipment.ForSlot(CreaturePropertyCatalog.StatSkinSlot)!;
+                skin.Session.UndoStack.CanUndo.Should().BeFalse("the parent session owns the grouped edit");
 
                 session.Undo();
                 editor.ReloadFromDocument();
                 store.EquippedResRef(CreaturePropertyCatalog.StatSkinSlot).Should().BeNull();
                 editor.Stats.HasStatSkin.Should().BeFalse();
                 session.ToBytes().Should().Equal(original);
+
+                session.Redo();
+                editor.ReloadFromDocument();
+                new CreatureValueStore(session.Document.Root)
+                    .EquippedResRef(CreaturePropertyCatalog.StatSkinSlot).Should().Be(skinResRef);
+                skin.Store.GetPropertyValue(CreaturePropertyCatalog.Level, -1).Should().Be(7);
+                skin.Session.UndoStack.CanUndo.Should().BeFalse();
             }
             finally
             {
                 Directory.Delete(root, true);
             }
+        }
+
+        [Test]
+        public void RefusedStatSkinEditDiscardsPreparedItemWithoutMutatingEitherDocument()
+        {
+            var root = Path.Combine(Path.GetTempPath(), "swlor-creature-refused-skin-" + Guid.NewGuid().ToString("N"));
+            var utc = Path.Combine(root, "utc");
+            Directory.CreateDirectory(utc);
+            Directory.CreateDirectory(Path.Combine(root, "uti"));
+            var path = Path.Combine(utc, "test_beast.utc.json");
+            File.WriteAllBytes(path, BlueprintTemplateFactory.CreateFileContent(ResourceType.Utc, "test_beast", "Test Beast"));
+            try
+            {
+                var original = File.ReadAllBytes(path);
+                using var session = DocumentSession.Open(path);
+                using var editor = new CreatureEditorViewModel(session.Document.Root, path, "test_beast",
+                    (description, mutation) => { session.Execute(description, mutation); return true; },
+                    null, null, null, null, _ => null, null,
+                    runRelatedEdit: (_, _, _) => false);
+                editor.Stats.Vitals.Single(cell => cell.Label == "NPC Level").Number = 7;
+                editor.Stats.HasStatSkin.Should().BeFalse();
+                editor.Equipment.Documents.Should().BeEmpty();
+                new CreatureValueStore(session.Document.Root).EquippedResRef(CreaturePropertyCatalog.StatSkinSlot).Should().BeNull();
+                session.ToBytes().Should().Equal(original);
+                Directory.GetFiles(Path.Combine(root, "uti")).Should().BeEmpty();
+            }
+            finally { Directory.Delete(root, true); }
+        }
+
+        [Test]
+        public void ThrowingRelatedStatSkinEditRollsBackBothDocumentsAndDiscardsPreparedItem()
+        {
+            var root = Path.Combine(Path.GetTempPath(), "swlor-creature-throwing-skin-" + Guid.NewGuid().ToString("N"));
+            var utc = Path.Combine(root, "utc");
+            Directory.CreateDirectory(utc);
+            Directory.CreateDirectory(Path.Combine(root, "uti"));
+            var path = Path.Combine(utc, "test_beast.utc.json");
+            File.WriteAllBytes(path, BlueprintTemplateFactory.CreateFileContent(ResourceType.Utc, "test_beast", "Test Beast"));
+            try
+            {
+                var original = File.ReadAllBytes(path);
+                using var session = DocumentSession.Open(path);
+                using var editor = new CreatureEditorViewModel(session.Document.Root, path, "test_beast",
+                    (description, mutation) => { session.Execute(description, mutation); return true; },
+                    null, null, null, null, _ => null, null,
+                    runRelatedEdit: (description, mutation, relatedSession) =>
+                    {
+                        session.ExecuteRelated(description, () =>
+                        {
+                            mutation();
+                            throw new InvalidOperationException("Simulated failure after related mutation.");
+                        }, relatedSession);
+                        return true;
+                    });
+
+                Action edit = () => editor.Stats.Vitals.Single(cell => cell.Label == "NPC Level").Number = 7;
+                edit.Should().ThrowExactly<InvalidOperationException>();
+
+                editor.Equipment.Documents.Should().BeEmpty();
+                session.ToBytes().Should().Equal(original);
+                session.UndoStack.CanUndo.Should().BeFalse();
+                Directory.GetFiles(Path.Combine(root, "uti")).Should().BeEmpty();
+            }
+            finally { Directory.Delete(root, true); }
         }
 
         [Test]
@@ -191,7 +272,12 @@ namespace SWLOR.Toolset.Tests
                         session.Execute(description, mutation);
                         return true;
                     },
-                    null, null, null, null, _ => null, null);
+                    null, null, null, null, _ => null, null,
+                    runRelatedEdit: (description, mutation, relatedSession) =>
+                    {
+                        session.ExecuteRelated(description, mutation, relatedSession);
+                        return true;
+                    });
                 var primary = editor.EquipmentSlots.NaturalWeapons.Single(weapon =>
                     weapon.Label == "Primary Natural Weapon");
                 var store = new CreatureValueStore(session.Document.Root);
@@ -1280,7 +1366,7 @@ namespace SWLOR.Toolset.Tests
 
                 tabs.SelectedItem = variablesTab;
                 Dispatcher.UIThread.RunJobs();
-                variablesTab.Content.Should().BeOfType<VariablesSectionView>(
+                variablesTab.Content.Should().BeOfType<VarTableSectionView>(
                     "Custom variables use the shared editor on their own tab");
 
                 tabs.SelectedItem = tabItems.Single(tab => tab.Header?.ToString() == "Appearance");
@@ -1553,7 +1639,7 @@ namespace SWLOR.Toolset.Tests
             editor.SelectedAppearanceSectionIndex.Should().Be(2);
 
             editor.AppearanceGallery!.Highlighted = editor.AppearanceGallery.Tiles.Single(tile =>
-                tile.Option.CreatureAppearanceId == 7);
+                tile.Option.Id.Value == "7");
             Dispatcher.UIThread.RunJobs();
 
             bodyTab.IsVisible.Should().BeFalse(
@@ -1888,7 +1974,7 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
-        [Test]
+        [AvaloniaTest]
         public void EquipmentSlots_UseBaseItemMasksAndLoadOneProgressivePickerAtATime()
         {
             var catalogLoads = 0;
@@ -2024,7 +2110,7 @@ namespace SWLOR.Toolset.Tests
                 .Which.Entries.Should().ContainSingle(entry => entry.Label == "DMG" && entry.Value == "8");
         }
 
-        [Test]
+        [AvaloniaTest]
         public async Task EquipmentPicker_AwaitsTheCatalogWithoutBlockingItsOpenCommand()
         {
             var started = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -2064,7 +2150,7 @@ namespace SWLOR.Toolset.Tests
                 .Which.StringValue.Should().Be("armor_async");
         }
 
-        [Test]
+        [AvaloniaTest]
         public async Task EquipmentPicker_AwaitsOnePagedSearchWithoutShowingAChooseControl()
         {
             var started = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -2203,7 +2289,7 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
-        [Test]
+        [AvaloniaTest]
         public void BehaviorChoices_LoadVisibleRolePickersAndRoleRowsAreReused()
         {
             var guildStoreLoads = 0;

@@ -54,6 +54,27 @@ public class DathomirGrottoApexDenPlacementTests
             .Should().Be("Exit the Apex Den");
     }
 
+    // Both gates once had origins inside rock (entry 0.6 m, exit 1.9 m off the walkmesh), so players
+    // stalled short of using them. Each must stand on open floor beside its own side's arrival point.
+    [TestCase(CavernAreaFile, "DATH_APEX_DEN_INSIDE", "DATH_APEX_DEN_OUTSIDE")]
+    [TestCase(DungeonAreaFile, "DATH_APEX_DEN_OUTSIDE", "DATH_APEX_DEN_INSIDE")]
+    public void ApexDenGates_StandOnTheFloorBesideTheirArrivalPoint(string areaFile, string destination, string arrivalTag)
+    {
+        using var area = LoadModuleJson("git", areaFile);
+        var gate = EnumerateObjects(area.RootElement)
+            .Single(element =>
+                GetString(element, "OnUsed") == "teleport" &&
+                GetOptionalLocalString(element, "DESTINATION") == destination);
+        var arrival = area.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray()
+            .Single(waypoint => GetString(waypoint, "Tag") == arrivalTag);
+
+        var horizontal = Math.Sqrt(
+            Math.Pow(GetFloat(gate, "X") - GetFloat(arrival, "XPosition"), 2) +
+            Math.Pow(GetFloat(gate, "Y") - GetFloat(arrival, "YPosition"), 2));
+        horizontal.Should().BeLessThan(1.5, "the gate must stand on the same open floor as its arrival point");
+        Math.Abs(GetFloat(gate, "Z") - GetFloat(arrival, "ZPosition")).Should().BeLessThan(0.5);
+    }
+
     [Test]
     public void ApexDenDungeon_UsesGeneratedCapstoneSpawnTable()
     {
@@ -232,6 +253,11 @@ public class DathomirGrottoApexDenPlacementTests
         }
 
         return false;
+    }
+
+    private static double GetFloat(System.Text.Json.JsonElement json, string propertyName)
+    {
+        return json.GetProperty(propertyName).GetProperty("value").GetDouble();
     }
 
     private static string GetString(System.Text.Json.JsonElement json, string propertyName)

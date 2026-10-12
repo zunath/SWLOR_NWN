@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 
 namespace SWLOR.Toolset.Domain.Workspace
 {

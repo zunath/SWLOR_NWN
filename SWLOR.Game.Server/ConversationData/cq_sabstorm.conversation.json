@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I can only take someone who has mastered the lightsaber discipline. Reach rank 50 before we discuss the work below.",
+          "Text": "I only take students who have mastered the lightsaber. Come back when the blade answers you without thought, and we will talk about the work on Dantooine.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Drop the rear shoulder. There. Now look at this scorched training slate. The storm network has locked the instructors out and raised its droids to lethal output. Disable 6 Storm Drill Droid units in the outer ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Enclave Trial Slate.",
+          "Text": "Drop the rear shoulder. There. Now listen. The training network in the Jedi Enclave Trial Halls on Dantooine has locked out its keepers and raised its drill droids to lethal output. I wrote the recordings those droids fight from, so this is mine to answer for. Disable six Storm Drill Droids and recover the Saber Storm Enclave Trial Slate. It logged every shutdown that failed.",
           "Style": 0,
           "Color": null
         }
@@ -286,6 +286,10 @@
         {
           "ChoiceId": "reply-00005",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "neutral-ask",
+          "Conditions": []
         }
       ]
     },
@@ -302,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take the Dantooine Jedi Enclave Trial Halls Key. Disable 6 Storm Drill Droid units in the outer ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Enclave Trial Slate.",
+          "Text": "Take this key. It opens the sealed passage a few steps inside the Jedi Enclave Library on Dantooine. Disable six Storm Drill Droids and bring me the Saber Storm Enclave Trial Slate.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The key opens the sealed entrance to the Dantooine Jedi Enclave Trial Halls. Start in the outer ring. I am keeping the public training rooms shut and the shutdown line isolated. If I abandon that console, the faulty routines can reach the occupied wing.",
+          "Text": "From the Colony Central landing on Dantooine, go north through the Wild Plains to the Medical Safehouse, take the Hidden Trail to the Enclosed Mountain, and enter the Jedi Enclave. The sealed passage is a few steps inside the Library. I stay here because Malak's agents watch those ruins for any instructor who comes back. I will not lead them to you.",
           "Style": 0,
           "Color": null
         }
@@ -375,7 +379,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "They are training machines running recordings I supplied. No students remain inside. The chassis have stopped accepting a yield or a remote shutdown.",
+          "Text": "Training droids running recordings I supplied. No students remain inside. The chassis have stopped accepting a yield or a remote shutdown.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Disable 6 Storm Drill Droid units in the outer ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Enclave Trial Slate.",
+          "Text": "Six Storm Drill Droids, and the Saber Storm Enclave Trial Slate. The passage is inside the Enclave Library on Dantooine.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +473,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The outer units are down. Their timing controller still drives the next set of machines. Disable 5 Storm Duelist Droid units in the middle ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Kyber Focus Shard.",
+          "Text": "The first drills are down. Their timing controller still drives the next set of machines. Disable five Storm Duelist Droids deeper in the Trial Halls and recover the Saber Storm Kyber Focus Shard.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Disable 5 Storm Duelist Droid units in the middle ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Kyber Focus Shard.",
+          "Text": "Five Storm Duelist Droids, deeper in the Trial Halls. Bring back the Saber Storm Kyber Focus Shard.",
           "Style": 0,
           "Color": null
         }
@@ -584,7 +588,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Continue beyond the outer ring into the middle ring. Keep a way back to the stairs.",
+          "Text": "Past the halls you already cleared, deeper in. Keep a way back to the Library passage.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Disable 5 Storm Duelist Droid units in the middle ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Kyber Focus Shard.",
+          "Text": "Five Storm Duelist Droids, deeper in the Trial Halls. Bring back the Saber Storm Kyber Focus Shard.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The next gate has an independent controller. The remote shutdown still cannot reach it. Disable 1 Storm Gatekeeper Droid in the third trial door of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Fractured Trial Sigil. Bring at least two allies.",
+          "Text": "One gate runs on its own controller, and the remote shutdown still cannot reach it. A Storm Gatekeeper Droid holds the western halls. Disable it and recover the Saber Storm Fractured Trial Sigil. Bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +724,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Disable 1 Storm Gatekeeper Droid in the third trial door of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Fractured Trial Sigil. Bring at least two allies.",
+          "Text": "The Storm Gatekeeper Droid holds the western halls. Disable it and recover the Saber Storm Fractured Trial Sigil. Do not go without two allies.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +823,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Disable 1 Storm Gatekeeper Droid in the third trial door of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Fractured Trial Sigil. Bring at least two allies.",
+          "Text": "The Storm Gatekeeper Droid still holds the western halls. Disable it and recover the Saber Storm Fractured Trial Sigil. Do not go without two allies.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The gate is open, but four linked constructs still protect the control chamber. Disable 4 Storm Examiner Droid units in the high ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Council Trial Chit.",
+          "Text": "The gate is open, but four linked Storm Examiner Droids still guard the network's control systems. Disable all four and recover the Saber Storm Council Trial Chit.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +933,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Disable 4 Storm Examiner Droid units in the high ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Council Trial Chit.",
+          "Text": "Four Storm Examiner Droids guard the control systems in the Trial Halls. Disable them and recover the Saber Storm Council Trial Chit.",
           "Style": 0,
           "Color": null
         }
@@ -950,7 +954,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Saber Storm Council Trial Chit authorizes service access to the training network. Recover it so the instructors can restore service access.",
+          "Text": "The Saber Storm Council Trial Chit authorizes service access to the training network. With it, the instructors can get back into their own halls.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Disable 4 Storm Examiner Droid units in the high ring of the Dantooine Jedi Enclave Trial Halls. Recover the Saber Storm Council Trial Chit.",
+          "Text": "Four Storm Examiner Droids still guard the control systems in the Trial Halls. Disable them and recover the Saber Storm Council Trial Chit.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1079,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The token is secure. There is one final chamber to clear.",
+          "Text": "The chit is secure. One chamber remains.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Only the central training engine remains. Until it is disabled, it can restart the damaged routines. Disable 1 Tempest Training Engine in the deepest trial hall of the Dantooine Jedi Enclave Trial Halls. Bring at least two allies.",
+          "Text": "Only the central training engine remains, and while it runs it can restart every damaged routine. The Tempest Training Engine waits in the Saber Trial Chamber, through the door at the north end of the halls. Disable it. Bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1142,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Disable 1 Tempest Training Engine in the deepest trial hall of the Dantooine Jedi Enclave Trial Halls. Bring at least two allies.",
+          "Text": "The Tempest Training Engine waits in the Saber Trial Chamber at the north end of the Trial Halls. Disable it, and bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1241,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Disable 1 Tempest Training Engine in the deepest trial hall of the Dantooine Jedi Enclave Trial Halls. Bring at least two allies.",
+          "Text": "The Tempest Training Engine still waits in the Saber Trial Chamber at the north end of the Trial Halls. Disable it, and bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -1291,6 +1295,32 @@
       ],
       "OnEnterActions": [],
       "Choices": []
+    },
+    "neutral-meeting": {
+      "Id": "neutral-meeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I meet students at the Anchorhead spaceport on Tatooine now. A lethal training network is everyone's problem; an Enclave gate shouldn't decide who helps shut it down. Travel to the Jedi Enclave Trial Halls on Dantooine with the key, and bring the training records back to me at this spaceport.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "neutral-return",
+          "Conditions": []
+        }
+      ]
     }
   },
   "Choices": {
@@ -1320,7 +1350,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I will clear the outer chambers.",
+        "Text": "I will shut down the first drills.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1860,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I will clear the control chamber.",
+        "Text": "I will disable the examiners.",
         "Style": 4,
         "Color": null
       },
@@ -1860,7 +1890,7 @@
     "reply-00023": {
       "Id": "reply-00023",
       "Text": {
-        "Text": "What does the access token do?",
+        "Text": "What does the trial chit do?",
         "Style": 4,
         "Color": null
       },
@@ -1947,7 +1977,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here is the recovered token.",
+        "Text": "Here is the trial chit.",
         "Style": 4,
         "Color": null
       },
@@ -2117,7 +2147,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The final target is down. We made it out.",
+        "Text": "The training engine is down. We made it out.",
         "Style": 4,
         "Color": null
       },
@@ -2138,6 +2168,52 @@
       "Next": [
         {
           "TargetNodeId": "entry-00041",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-ask": {
+      "Id": "neutral-ask",
+      "Text": {
+        "Text": "Why are we meeting here, and where is the trial?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "neutral-meeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-return": {
+      "Id": "neutral-return",
+      "Text": {
+        "Text": "Back to the assignment.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00002",
           "Conditions": []
         }
       ],

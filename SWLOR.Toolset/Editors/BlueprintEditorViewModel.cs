@@ -1,11 +1,14 @@
+using NwnResRef = Nwn.Formats.Resources.ResourceReferenceRules;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
-using SWLOR.Toolset.Domain.Editing;
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Editing;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
@@ -13,9 +16,6 @@ using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Editors
 {
-    /// <summary>A titled group of field view models.</summary>
-    public sealed record EditorGroup(string Title, IReadOnlyList<FieldViewModel> Fields);
-
     /// <summary>
     /// The generic schema-driven blueprint editor, docked as a document tab. Every mutation
     /// flows through a one-step DocumentTransaction on the session's undo stack; Save writes
@@ -94,7 +94,7 @@ namespace SWLOR.Toolset.Editors
         /// The searchable appearance grid, for blueprint types that have one. Null leaves the
         /// schema's own appearance field as the only way to set it.
         /// </summary>
-        public Appearance.AppearanceGallerySectionViewModel? AppearanceGallery { get; }
+        public Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryViewModel? AppearanceGallery { get; }
 
         public Sources.ObjectSourceSectionViewModel? Source { get; }
         public TintMaps.TintMapEditorViewModel? TintMapEditor { get; }
@@ -136,7 +136,7 @@ namespace SWLOR.Toolset.Editors
                 Func<string?, IReadOnlyList<string>>, Placeables.PlaceableEditorSections?>? placeableSections = null,
             Func<Domain.Workspace.ModuleWorkspace?>? resourceLister = null,
             Func<EditorFieldContext, Func<string, Action, bool>,
-                Appearance.AppearanceGallerySectionViewModel?>? appearanceGallery = null,
+                Nwn.Toolset.Avalonia.Appearances.AppearanceGalleryViewModel?>? appearanceGallery = null,
             Func<EditorFieldContext, Func<string, Action, bool>,
                 TintMaps.TintMapEditorViewModel?>? tintMapEditor = null,
             BlueprintSaveCoordinator? saveCoordinator = null,
@@ -155,14 +155,16 @@ namespace SWLOR.Toolset.Editors
             BlueprintType = type;
             Id = $"editor:{filePath}";
             _session = DocumentSession.Open(filePath);
-            _context = new EditorFieldContext(_session.Document, RunEdit, resolveStrRef, openTlkRow);
+            _context = new EditorFieldContext(
+                _session.Document, RunEdit, resolveStrRef, openTlkRow,
+                Domain.GameData.Tlk.TlkService.IsEditableCustomStrRef);
 
             var tabbedGroups = new List<(string Tab, EditorGroup Group)>();
             foreach (var group in schema.Groups)
             {
                 var fields = group.Fields
                     .Select(descriptor => FieldViewModelFactory.Create(
-                        descriptor, _context, lookups, scriptSlotHost, ResourceChoices))
+                        descriptor, _context, lookups.GetOptions, scriptSlotHost, ResourceChoices))
                     .ToList();
                 var editorGroup = new EditorGroup(group.Title, fields);
                 Groups.Add(editorGroup);
@@ -171,7 +173,7 @@ namespace SWLOR.Toolset.Editors
 
             if (schema.HasVarTable)
             {
-                VarTableSection = new VarTableSectionViewModel(
+                VarTableSection = SwlorVarTablePolicy.Create(
                     _context.RunEdit, new VarTable(_session.Document.Root), gameCodeIndex);
             }
 
@@ -583,7 +585,7 @@ namespace SWLOR.Toolset.Editors
             if (VarTableSection == null)
                 return;
 
-            VarTableSection = new VarTableSectionViewModel(
+            VarTableSection = SwlorVarTablePolicy.Create(
                 _context.RunEdit, new VarTable(_session.Document.Root), _gameCodeIndex);
             OnPropertyChanged(nameof(VarTableSection));
             RebuildVariablesTab();

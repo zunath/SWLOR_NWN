@@ -87,8 +87,8 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Anchorhead - To Mos Eisley",
-      "2": "Anchorhead - Desert Road to Mos Eisley"
+      "0": "[Prefab] Tatooine - Anchorhead - To Mos Eisley",
+      "2": "[Prefab] Anchorhead - Desert Road to Mos Eisley"
     }
   },
   "NoRest": {

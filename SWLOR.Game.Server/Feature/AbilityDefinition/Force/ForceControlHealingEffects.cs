@@ -28,7 +28,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                    GetCurrentHitPoints(target) < GetMaxHitPoints(target) * 0.5f;
         }
 
-        public static void ApplyRestorativeControlPower(
+        /// <returns>The additional allies healed by Harmonic Restoration.</returns>
+        public static IReadOnlyList<uint> ApplyRestorativeControlPower(
             uint activator,
             uint target,
             bool targetWasBelowHalfHP)
@@ -38,12 +39,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 GetIsDead(target) ||
                 GetCurrentHitPoints(target) <= 0)
             {
-                return;
+                return Array.Empty<uint>();
             }
 
             ApplySereneFocus(activator, target);
             ApplyForceMend(activator, target);
-            ApplyHarmonicRestoration(activator, target, targetWasBelowHalfHP);
+            return ApplyHarmonicRestoration(activator, target, targetWasBelowHalfHP);
         }
 
         private static void ApplySereneFocus(uint activator, uint target)
@@ -81,13 +82,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), target);
         }
 
-        private static void ApplyHarmonicRestoration(uint activator, uint target, bool targetWasBelowHalfHP)
+        private static List<uint> ApplyHarmonicRestoration(uint activator, uint target, bool targetWasBelowHalfHP)
         {
+            var healed = new List<uint>();
             if (!targetWasBelowHalfHP ||
                 Stat.GetStatAdjustment(activator, StatType.HarmonicRestoration) <= 0 ||
                 !TryUseHarmonicRestoration(activator))
             {
-                return;
+                return healed;
             }
 
             foreach (var ally in AbilityTargeting
@@ -98,7 +100,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 AbilityEffectScaling.ApplyActivatedScaledHeal(activator, ally, 6);
                 StatusEffect.ApplyStatusEffect(activator, ally, typeof(HarmonicRestorationStatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), ally);
+                healed.Add(ally);
             }
+
+            return healed;
         }
 
         private static bool TryUseForceMend(uint activator, uint target)

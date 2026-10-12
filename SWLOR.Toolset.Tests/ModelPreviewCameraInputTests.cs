@@ -6,6 +6,7 @@ using Avalonia.Headless.NUnit;
 using Avalonia.Threading;
 using FluentAssertions;
 using NUnit.Framework;
+using Nwn.Toolset.Avalonia.Areas;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Viewport;
@@ -61,7 +62,7 @@ namespace SWLOR.Toolset.Tests
             };
             var source = new PreviewSource(scene);
             using var preview = new ModelPreviewControl { DataContext = source };
-            var modelView = (GlAreaControl)typeof(ModelPreviewControl)
+            var modelView = (AreaViewportControl)typeof(ModelPreviewControl)
                 .GetField("_modelView", BindingFlags.Instance | BindingFlags.NonPublic)!
                 .GetValue(preview)!;
             var window = new Window
@@ -89,9 +90,9 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
-        private static GlAreaControl PreviewControl()
+        private static AreaViewportControl PreviewControl()
         {
-            var control = new GlAreaControl();
+            var control = new AreaViewportControl();
             Write(control, "_target", Vector3.Zero);
             Write(control, "_azimuth", MathF.PI * 1.5f);
             Write(control, "_elevation", 0f);
@@ -100,14 +101,14 @@ namespace SWLOR.Toolset.Tests
             return control;
         }
 
-        private static T Read<T>(GlAreaControl control, string fieldName) =>
+        private static T Read<T>(AreaViewportControl control, string fieldName) =>
             (T)Field(fieldName).GetValue(control)!;
 
-        private static void Write<T>(GlAreaControl control, string fieldName, T value) =>
+        private static void Write<T>(AreaViewportControl control, string fieldName, T value) =>
             Field(fieldName).SetValue(control, value);
 
         private static FieldInfo Field(string fieldName) =>
-            typeof(GlAreaControl).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic)!;
+            typeof(AreaViewportControl).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic)!;
 
         private sealed class PreviewSource(AreaScene scene) : IModelPreviewSource
         {

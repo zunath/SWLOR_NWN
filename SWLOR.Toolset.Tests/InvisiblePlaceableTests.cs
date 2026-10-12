@@ -1,13 +1,16 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.NWN.Formats.Mdl;
+using Nwn.Formats.NativeModels;
+using Nwn.Preview.Scene;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Render;
+using Nwn.Preview.Thumbnails;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Tests;

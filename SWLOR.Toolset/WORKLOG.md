@@ -9,6 +9,125 @@ orchestration protocol, ground rules, corrected format specs) lives in-repo at
 `SWLOR.Toolset\PLAN.md`. One entry per work package; update the status line in place and
 append details as work happens. Statuses: `pending | in-progress | done | blocked`.
 
+## Shared conversation graph overview — done within the stated scope — 2026-10-01
+
+The later static-scene package update directly pins Formats `0.1.0-dev.19`
+and Preview `0.1.0-dev.16`; Authoring `dev.17` and Avalonia `dev.11` remain
+unchanged. Formats source is `73209d7bec73ac4bf41d2b7b60de1543c4a7b835`, archive
+SHA-256 `74b91e2e80ccdd2d041abfbede5fdd4f1dd52acefddaf336dfce8220cfeee639`
+(its nuspec stores the verified `73209d7` prefix). Preview source is
+`2ced6cf7132ba59d92ba2a0df4faf51ab0dcdde2`, archive SHA-256
+`f021274b528002b52b2b7f5636c47c1f1650b5c4b586da5623f82e9a7c945d0f`.
+Formats now reads compiled quaternions in native `X,Y,Z,W` order, bounds local
+hierarchies by the inherited node numbering count and retains pointer identities
+for duplicate native dummy names. Preview resolves those identities and scopes
+assembled scene materials without a game convention in the neutral library.
+
+The same selected 61 regressions pass with zero skips in Release package and
+explicit-source profiles: `compiled-quaternion-final-package.trx` and
+`compiled-quaternion-final-source.trx`. The package run's inspected real OpenGLES
+3.0 `pfa0_chest001` frame is 1200×900 with 144,655 colored pixels and one
+geometry/material upload reused on its second frame. Its attachment is
+`SWLOR.Toolset.Tests/bin/Release/net10.0/swlor-material-843049f0fde343cc9bc566c5b6fdd525.png`.
+All eight Debug/Release consumer locks were regenerated against the immutable
+local feed and remain unchanged through source verification and the final
+ordinary locked restore. This qualifies the existing rigid SWLOR part preview
+and the selected editor regressions; animated assembly and official-client
+comparison remain separate gates. Earlier package-update checks passed 16 cases;
+they are superseded by the complete 61-case selection above.
+
+The conversation editor's Graph button opens the shared directed graph control.
+The SWLOR adapter retains native entry/reply indices, opening and route order,
+conditions and reuse markers; disconnected nodes and unresolved targets remain
+visible. Selection shows the full original text, while canvas subtitles are
+bounded. Refresh rebuilds the overview from the current unsaved draft because
+native list edits can renumber node indices. Layout, selection and dragging are
+view state; authoring and saves remain in the existing editor.
+
+The shared UI package is `Nwn.Toolset.Avalonia` `0.1.0-dev.11`, source
+`f85cb5b25df8011f045cfcd336bcf7c836ec87fa`, SHA256
+`8E9B3010F4ACAFF09ADDAAC788321B7354213CFBD28CB8D8F22A5D2AB6DA43BC`.
+Its inspected nuspec retains minimum Preview `0.1.0-dev.13`; this consumer
+directly pins Preview `0.1.0-dev.14`. Formats and Authoring remain `dev.17`.
+The six affected Debug/Release locks are updated; all eight tracked locks are
+byte-identical before and after explicit-source verification.
+
+The final selected tests pass 61/61 with zero skips in source and ordinary locked
+package modes. They cover the native graph adapter, the toolbar, real Skia node
+selection/full-text/refresh, conversation/script editor regressions, module
+deletion controls and native material/OpenGL preview. The inspected 1100×750
+graph frame is `SWLOR.Toolset.Tests/bin/Debug/net10.0/swlor-conversation-graph-f9e3294e5d794329953115d3196c0524.png`,
+SHA256 `3254134056053D38C92BC4A685AA9F57EB36C16BC1BA321274E94CC7E509B167`.
+Later runs retain their own PNG attachments. The test application now uses real
+Skia drawing and the application's styles rather than the mock drawing backend.
+Adding the mirrored test namespace required disambiguating the older relative
+`Editors` references in `ModuleExplorerDeleteTests`; its regression cases pass.
+
+Commands from this checkout (`$source` selects the shared checkout, `$feed` its
+immutable `artifacts/packages` directory, `SWLOR_HAKS_ROOT` the read-only corpus):
+
+```powershell
+$filter = 'FullyQualifiedName~ConversationGraph|FullyQualifiedName~ConversationEditorViewRenderTests|FullyQualifiedName~ScriptEditorViewRenderTests|FullyQualifiedName~NativeModelPreviewAdapterTests|FullyQualifiedName~NativeMaterialViewportTests|FullyQualifiedName~ModuleExplorerDeleteTests'
+dotnet restore SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -p:Configuration=Release -p:NwnToolsetPackageFeed=$feed -p:RestoreLockedMode=false --force-evaluate -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+dotnet build SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -c Release --no-restore -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+dotnet restore SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -p:NwnToolsetSourceRoot=$source -p:NwnToolsetPackageFeed=$feed -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-restore -p:NwnToolsetSourceRoot=$source -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts= --filter $filter --logger 'trx;LogFileName=swlor-graph-final-source.trx' --blame-hang-timeout 60s
+dotnet restore SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -p:NwnToolsetPackageFeed=$feed -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-restore -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts= --filter $filter --logger 'trx;LogFileName=swlor-graph-final-locked-package.trx' --blame-hang-timeout 60s
+```
+
+Release builds with zero errors and eight existing API/server warnings. Earlier
+failed evidence includes a code-built window namescope lookup and a legacy
+namespace collision; both are corrected. An initial command accidentally invoked
+the unrelated server post-build script and failed to resolve `dotnet`; final
+commands explicitly disable that deployment event. This scope qualifies a
+read-only graph overview, not graph authoring, large-module performance or native
+dialogue/client behavior. Shared Windows tests pass 10/10; Linux portable tests
+pass 9/9, while the Linux software-render case timed out and remains unqualified.
+
+## Neutral material-reader adoption — done — 2026-10-01
+- `SWLOR.Toolset.Domain.Render.MaterialResolver` now adapts the shared
+  `Nwn.Formats.Mtr.MtrDocument`/`MtrReader` rather than maintaining a second MTR grammar.
+  SWLOR retains its tint alpha-channel/cutoff policy and resource-resolution behavior; raw
+  shader bindings, parameter source values, and unsupported directives remain available from
+  the shared document instead of being guessed or discarded.
+- Package mode pins `Nwn.Formats 0.1.0-dev.16`, `Nwn.Authoring 0.1.0-dev.17`,
+  `Nwn.Preview 0.1.0-dev.13`, and `Nwn.Toolset.Avalonia 0.1.0-dev.10`. The local immutable
+  packages are in Xenomech's `artifacts/worktrees/NWN.Toolset/artifacts/packages` feed.
+  Their SHA-256 hashes respectively are `535076EF2F85F8864A291268EC1837A7DD8AE9705A2B81E53ADA7B9D4998F742`,
+  `807B2A82C9AC1EBF12BD62D28D68AD9F111EA1C8EFD397790A4554CC7EEAA968`,
+  `13AE306FE6C1E7174CFFAEF76A472607B6DA2BEE24BF8D83EC999C8BFAB9BEB9`, and
+  `4439E6E629D807EF8CE07339096AFA6E8C4575F0E7CD10F612AB3BAAFF8B1DDA`. Formats/UI
+  record source commit `308528a8a9a17287064ad1777a38d43dd637798c`; Authoring/Preview record
+  `dc14a4d843c83dff9a7375d77778744b1981275d`. The six Debug/Release lock files were
+  regenerated; source-mode restore keeps tracked package locks unchanged and places source
+  locks under `obj`.
+- With `SWLOR_TEST_HAKS_ROOT` and `SWLOR_HAKS_ROOT` both explicitly set to
+  `C:\Projects\SWLOR_NWN\SWLOR_Haks`, the native material corpus adapter parsed all 8,843
+  discovered `.mtr` files. Unknown corpus directives remain inspectable. The focused package
+  consumer suite passed 71/71 with zero skips; the explicit-source consumer suite also passed
+  71/71 with zero skips. Debug and Release locked restores passed, and the final package-mode
+  Debug test-project build completed with zero warnings/errors.
+- Commands (from this worktree; the package feed and source root are explicit):
+
+  ```powershell
+  $feed = 'C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/worktrees/NWN.Toolset/artifacts/packages'
+  $source = 'C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/worktrees/NWN.Toolset'
+  $env:SWLOR_TEST_HAKS_ROOT = 'C:\Projects\SWLOR_NWN\SWLOR_Haks'
+  $env:SWLOR_HAKS_ROOT = $env:SWLOR_TEST_HAKS_ROOT
+  dotnet restore SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -p:NwnToolsetPackageFeed=$feed -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+  dotnet restore SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -p:Configuration=Release -p:NwnToolsetPackageFeed=$feed -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+  dotnet build SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-restore -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+  dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-build --no-restore --filter 'FullyQualifiedName~MaterialResolverAdapterTests|FullyQualifiedName~RenderPipelineTests|FullyQualifiedName~RenderReplacementPortableTests' -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts= --logger 'trx;LogFileName=mtr-adapter-native-package-final.trx'
+  dotnet restore SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -p:NwnToolsetSourceRoot=$source -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+  dotnet build SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-restore -p:NwnToolsetSourceRoot=$source -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+  dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-build --filter 'FullyQualifiedName~MaterialResolverAdapterTests|FullyQualifiedName~RenderPipelineTests|FullyQualifiedName~RenderReplacementPortableTests' -p:NwnToolsetSourceRoot=$source -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts= --logger 'trx;LogFileName=mtr-adapter-native-source.trx'
+  ```
+
+- TRX files are under `SWLOR.Toolset.Tests/TestResults/` with the names above. This qualifies
+  shared MTR parsing and this SWLOR adapter, not complete in-client tint/material appearance;
+  shader execution, engine material semantics, and full desktop acceptance remain separate.
+
 ## WP0.1 — done — 2026-07-19
 - Tier: Mid (controller-executed).
 - Files: `External/Radoub` submodule (pinned `radoub-v0.11.0`, commit `8dd65638`),
@@ -2147,6 +2266,179 @@ it: a builder is watching the area, not the log, so the click read as dead.
   deliberate addition for clarity rather than a copied behaviour; the red cursor remains the part
   that is confirmed against it.
 
+## Shared 2DA consumer - 2026-10-01 - Every complete corpus table must load
+
+The tolerant corpus test reported 748 loaded files and one failure while still
+passing. The failed file, `iprp_spells past.2da`, is a six-row scratch fragment
+without a 2DA signature or column header. It remains explicitly rejected; the
+primary HAK checkout is unchanged.
+
+`TwoDaCorpusQualificationTests` requires every other discovered table to load
+through the real SWLOR `TwoDaService` shared-format integration. Any additional
+parse failure fails this gate. It also verifies that the documented fragment
+remains unavailable; making it a complete table requires removing the exception.
+The corpus must be explicitly selected with `SWLOR_TEST_HAKS_ROOT`, and a missing
+fixture fails rather than skips.
+
+Qualification uses clean HAK commit `3ec67b47d533c06773a86596d917999029915db9`:
+748 complete tables pass, zero failures; fragment rejection passes separately.
+The two test methods pass with zero skipped against `Nwn.Formats 0.1.0-dev.14`.
+The build has eight existing warnings and zero errors. Command:
+
+```powershell
+$env:SWLOR_TEST_HAKS_ROOT = 'C:\Projects\SWLOR_NWN\SWLOR_Haks'
+dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-restore -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts= --filter FullyQualifiedName~TwoDaCorpusQualificationTests --logger 'trx;LogFileName=swlor-complete-two-da-corpus.trx' --results-directory C:\Users\Zunath\.codex\worktrees\7a40\Xenomech\artifacts\swlor-package-adoption-dev14-dev16-dev12-dev8 --blame-hang-timeout 60s
+```
+
+TRX: Xenomech qualification directory
+`artifacts/swlor-package-adoption-dev14-dev16-dev12-dev8/swlor-complete-two-da-corpus.trx`.
+This establishes parsing of all complete files in that source corpus, not native
+runtime semantics for each table or full SWLOR editor/appearance acceptance.
+
+## Shared dependency locks - 2026-10-01 - Reproducible package and source configurations
+
+The three toolset consumer projects commit their complete NuGet dependency graphs
+and default to locked restore in package mode. Debug uses `packages.lock.json`;
+Release uses `packages.Release.lock.json`, because desktop diagnostics are a
+Debug-only dependency. Intentional dependency updates require an explicit
+`RestoreLockedMode=false` restore and review of the changed locks.
+
+Explicit `NwnToolsetSourceRoot` development writes its own configuration-specific
+lock under each project's `obj` directory. It resolves all four shared assemblies
+as projects and leaves all six tracked package locks byte-identical. Switching
+back resolves only Formats `0.1.0-dev.14`, Authoring `0.1.0-dev.16`, Preview
+`0.1.0-dev.12` and Avalonia `0.1.0-dev.8` from the qualified immutable packages.
+
+Qualification:
+
+- Ordinary locked Debug and Release restores succeed. A Release restore initially
+  rejected the Debug-only graph with `NU1004`; separate locks close that defect.
+- The Release desktop build succeeds with eight existing warnings and zero errors.
+- Five selected checks pass with zero skipped after explicitly rebuilding source
+  mode, and the same five pass in package mode: the real native chest reader,
+  both strict full-corpus checks, and conversation undo/save history. The complete
+  table check reports 748 loaded and zero failed.
+- Source-mode Debug and Release restores preserve every tracked lock hash. Assets
+  inspection confirms four project references in source mode and four package
+  references in package mode.
+
+The first broad source test invocation omitted the corpus environment variables
+and failed fixture discovery. A later invocation also skipped the native fixture
+without its separate variable. Neither is acceptance evidence; the final rebuilt
+run configures both variables and has no failures or skips. TRX evidence is under
+Xenomech's `artifacts/swlor-package-adoption-dev14-dev16-dev12-dev8`:
+`swlor-locked-source-rebuilt.trx` and `swlor-locked-package-consumer.trx`.
+
+Commands from this worktree (the additional flags avoid unrelated server
+postbuild actions, vulnerability network access and Avalonia product prompts):
+
+```powershell
+$feed = 'C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/worktrees/NWN.Toolset/artifacts/packages'
+$source = 'C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/worktrees/NWN.Toolset'
+$results = 'C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/swlor-package-adoption-dev14-dev16-dev12-dev8'
+$project = 'SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj'
+$env:SWLOR_HAKS_ROOT = 'C:\Projects\SWLOR_NWN\SWLOR_Haks'
+$env:SWLOR_TEST_HAKS_ROOT = $env:SWLOR_HAKS_ROOT
+$filter = 'FullyQualifiedName~NativeModelPreviewAdapterTests|FullyQualifiedName~TwoDaCorpusQualificationTests|FullyQualifiedName~UndoRestoresTheLineAndTheCleanState|FullyQualifiedName~SavingDerivedWordCountsDoesNotAddAnUndoStep'
+dotnet restore $project -p:NwnToolsetPackageFeed=$feed -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+dotnet restore $project -p:Configuration=Release -p:NwnToolsetPackageFeed=$feed -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+dotnet build SWLOR.Toolset/SWLOR.Toolset.csproj -c Release --no-restore -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+dotnet restore $project -p:NwnToolsetSourceRoot=$source -p:NwnToolsetPackageFeed=$feed -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+dotnet test $project --no-restore -p:NwnToolsetSourceRoot=$source -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts= --filter $filter --logger 'trx;LogFileName=swlor-locked-source-rebuilt.trx' --results-directory $results --blame-hang-timeout 60s
+dotnet restore $project -p:NwnToolsetPackageFeed=$feed -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts=
+dotnet test $project --no-restore -p:RunPostBuildEvent=Never -p:NuGetAudit=false -p:UsedAvaloniaProducts= --filter $filter --logger 'trx;LogFileName=swlor-locked-package-consumer.trx' --results-directory $results --blame-hang-timeout 60s
+```
+
+These checks qualify dependency selection and the selected consumer behavior.
+Full SWLOR desktop, appearance and native-runtime acceptance remain separate.
+
+## Shared material viewport - 2026-10-01 - Actual SWLOR material adapter and GPU evidence
+
+The native-resource window now resolves explicit/bitmap-named MTR bindings and
+uses SWLOR's tint/palette policy before falling back to diffuse maps. It supports
+ASCII and compiled geometry, preserves authored TGA precedence and explicitly
+normalizes NWN DDS rows. Material failures stay visible as partial-material
+diagnostics. The window labels the result unlit; it does not evaluate skinning,
+native lighting or equipped animation.
+
+The five adapter cases cover the actual `pfa0_chest001` / `pfh0_chest001` tint
+path, asymmetric DDS row orientation, changed-byte cache invalidation, explicit
+material precedence, TGA precedence and the `NULL` material sentinel. An owned
+separate real desktop fixture is referenced by the test project and registered
+in `SWLOR.Game.Server.sln`. It requires explicit `SWLOR_HAKS_ROOT`, has bounded
+process/frame deadlines and retains its framebuffer image. No application
+settings, module sources, active client or services are changed by the fixture.
+
+Both package and explicit-source rebuilds pass all six adapter/GPU checks with
+zero skipped. TRX files: `SWLOR.Toolset.Tests/TestResults/swlor-native-material-package-gpu.trx`
+and `swlor-native-material-source-gpu.trx`. The source path selects neutral commit
+`f85cb5b25df8011f045cfcd336bcf7c836ec87fa`; package pins remain Formats dev.17,
+Authoring dev.17, Preview dev.14 and Avalonia dev.10. The OpenGLES 3.0 frame is
+1200×900 with 145,297 colored pixels and one geometry/one texture upload reused
+across two frames. Package/source PNGs have identical SHA-256:
+`dbbedcdb256481e63c1eba4d8c6e075bcfdfa8c1c4946938536627c1ec522cc2`.
+The package image was visually inspected. The native renderer's coordinates and
+shared texture orientation are measured here, not inferred from compilation.
+
+The new fixture adds Debug/Release locks (eight consumer locks total). The seven
+existing Debug/Release locks plus the initial fixture Debug lock are unchanged
+across source restore/build/test. Release regeneration and normal locked Debug
+restore pass. Rebuilding the game reference graph reports eight existing API/server
+warnings and zero errors; no warnings are attributed to this change. An initial
+native fixture omitted the separate material/palette resource layers and failed;
+the final fixture selects all four layers explicitly. Earlier failed TRX is retained.
+
+Example selected run (add `-p:NwnToolsetSourceRoot=<shared checkout>` after the
+matching source restore to test that mode):
+
+```powershell
+$env:SWLOR_HAKS_ROOT = 'C:/Projects/SWLOR_NWN/SWLOR_Haks'
+dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj --no-restore -p:RunPostBuildEvent=Never -p:UsedAvaloniaProducts= -p:NuGetAudit=false --filter 'FullyQualifiedName~NativeModelPreviewAdapterTests|FullyQualifiedName~NativeMaterialViewportTests' --blame-hang-timeout 60s
+```
+
+Native item editing/save/undo/reopen, six-fit assembly and official-client
+appearance remain wider acceptance work. This fixture changes no engine behavior.
+
+## Shared DDS decoding - 2026-10-01 - SWLOR texture previews use the neutral decoder
+
+`TextureLoader` now delegates standard and compact DDS decoding to
+`Nwn.Preview.Dds.DdsDecoder`; the duplicate DXT decoder and Pfim dependency are
+removed. The adapter retains the 512 MiB compressed-input limit and compact
+BioWare alpha-mean metadata. Standard NWN DDS inputs explicitly use bottom-up
+stored rows to preserve SWLOR's existing orientation; compact BioWare inputs
+use the shared format default. Tint-mask and alpha-mask callers make the
+standard row convention explicit. TGA and PLT decoding and SWLOR palette policy
+remain unchanged.
+
+Package mode pins Formats `0.1.0-dev.17` and Preview `0.1.0-dev.14`; Authoring
+`0.1.0-dev.17` and Avalonia `0.1.0-dev.10` remain unchanged. The six Debug and
+Release consumer locks were regenerated. Package SHA256 values were checked
+against the local feed: Formats `F723CE378F1FED414BB8361736476981F549EDA66796FF45D01060DF79E286AC`,
+Preview `E19BA97F8928367951A48EAC99F00F1408C1A127DA5AE398A056BE3CC1CB86DD`,
+Authoring `807B2A82C9AC1EBF12BD62D28D68AD9F111EA1C8EFD397790A4554CC7EEAA968`,
+and Avalonia `4439E6E629D807EF8CE07339096AFA6E8C4575F0E7CD10F612AB3BAAFF8B1DDA`.
+Formats and Preview declare source commit
+`0f2b05dad98880e32769b1c8d8f668b555f4cfbc`; Authoring remains from
+`dc14a4d843c83dff9a7375d77778744b1981275d` and Avalonia from
+`308528a8a9a17287064ad1777a38d43dd637798c`.
+
+The native `sw_tint0/tm_e99bcc752e32b.dds` fixture (512x512 ATI2) is verified
+against its source SHA256
+`40f5b64a6c8b5e03fdf625cc4da881a1e30a34df84f2934ad1d545c7aea10e6e` and the
+independently derived canonical top-down RGBA SHA256
+`c3def9de95a0b41bc28765529d2299d03b387b4e0f98e73e33ee538a7a995541`. Tests
+also verify asymmetric row orientation, ATI2 channels (`B=0`, `A=255`), and
+the `pfh0_chest001` material/tint composition path. The selected package and
+explicit-source test runs each pass 50/50 with zero skips; Debug and Release
+locked restores pass, and the final package-mode Debug build has zero warnings
+and errors. Synthetic fixtures initially exposed missing declared compact DDS
+mip payloads and a reversed expected BC5 channel pair; the fixtures were
+corrected and both modes pass the same final suite.
+
+This qualifies SWLOR's shared decoder adapter and the selected native ATI2
+fixture. Full shader material interpretation, all native textures, equipped
+client appearance, and game-runtime behavior remain separate acceptance gates.
+
 ## Area editor - 2026-07-28 - Group previews show their footprint, and a paint stops building walls
 
 Two things reported from live use:
@@ -2168,3 +2460,513 @@ Two things reported from live use:
   untouched, so a floor painted beside a corridor still meets it, and the crosser brush exempts the
   edge it is painting. A preference, not a filter: where every legal tile carries one, the cell
   still solves.
+
+## Shared area creation transaction - 2026-10-01
+
+`SWLOR.Toolset.Domain.NewAreaWriter` now adapts the shared
+`Nwn.Authoring.Areas.Creation.AreaCreationWriter` using SWLOR's lexical
+`NimGffDocumentCodec` and subfolder layout. Shared code owns the existing fill,
+byte-copy, registration, marker, fingerprint, recovery, and lock-order behavior.
+Host paths, template identity, and document codec remain explicit inputs. The
+XM consumer can supply its distinct GFF codec and flat layout; no common
+on-disk JSON representation is assumed.
+
+`ModuleWriteLock` moved to `Nwn.Formats.Io`, so SWLOR.NWN.Formats and the CLI
+do not gain an Authoring dependency. The CLI uses the shared pending-marker
+contract. SWLOR pins Formats `0.1.0-dev.21` SHA256
+`439E07F854170D805B9E69CBD0329F79B4BC2FDBF30E125DF508E08A896064FF` and
+Authoring `0.1.0-dev.20` SHA256
+`85CB0DD151AE2D166280A537CC0A57374C18A81AA26113D47223184408B5DEEC`. Both
+nuspecs identify shared source commit
+`151c164f7b4d80dc84aafb14d90c4acabfe75c47`; Authoring dev.20 depends on
+Formats dev.21. These local immutable packages were not published. Debug and
+Release package locks cover Domain, Toolset, Toolset.Tests, and PreviewRender
+(eight lock files); locked restores passed for all eight graphs.
+
+Validation used the primary HAK directory read-only with
+`SWLOR_TEST_REPOSITORY_ROOT=C:\Projects\SWLOR_NWN`,
+`SWLOR_TEST_HAKS_ROOT=C:\Projects\SWLOR_NWN\SWLOR_Haks`, and
+`SWLOR_HAKS_ROOT` set to the same path. Focused writer, module-lock, and packer
+tests passed 38/38 in source mode and 38/38 in package mode, with zero skips.
+This includes real tileset resolution, registration, recovery, and packer
+marker refusal. Package-mode Release builds of Toolset and CLI passed with
+zero warnings and errors. Shared regressions passed Formats 144/144 and
+Authoring 32/32, zero skips; the latest marker-alias change also passed the
+focused shared creation tests 2/2. Earlier runs without explicit corpus roots
+were retained and excluded from qualification.
+
+This qualifies the shared writer adapter, SWLOR package consumer, and selected
+HAK-backed creation tests. Native game activation and official-client behavior
+are outside this transaction boundary.
+
+## Neutral area-preview extraction - 2026-10-01
+
+Pure area-scene data, camera math, picking, manipulation, walkmesh queries and
+loading, gizmo math, door anchors, and draw batching now live in
+`Nwn.Preview.Areas`; neutral render-model, mesh, animation and emitter records
+live in `Nwn.Preview.Scene`. SWLOR keeps its ARE/GIT/resource readers, scene
+assembly adapters, model builders, GPU control and game-specific appearance
+policy. `AppearanceArmor` remains in SWLOR and is attached to shared meshes by
+reference through `SwlorRenderMeshMetadataStore`; tile-group composition copies
+that classification when it clones meshes. The existing scene and rendering
+algorithms remain the SWLOR behavior.
+
+Shared source commit is `d347acf7d5a8d24d4c3a6936682710b7000e6222`.
+`Nwn.Preview 0.1.0-dev.18` is the pinned package, SHA256
+`9A79EC2FC720D0B424E5EE80A0907F850A881FFABCCC8A2034430843DE56A31C`; its
+nuspec identifies that exact commit and depends on `Nwn.Formats 0.1.0-dev.21`.
+An earlier source-mode pack attempt produced a dev17 nuspec with the wrong
+Formats dependency; that archive was left untouched and is not referenced by
+SWLOR. SWLOR's conditional source mode still replaces shared package references
+with projects. Package-mode Debug/Release locks were regenerated for the four
+toolset consumers (eight files); the direct `SWLOR.NWN.Formats` Formats consumer
+also has a Debug lock. No other package versions changed.
+
+The read-only primary module and HAK roots were selected explicitly with
+`SWLOR_TEST_REPOSITORY_ROOT=C:/Projects/SWLOR_NWN`,
+`SWLOR_TEST_HAKS_ROOT=C:/Projects/SWLOR_NWN/SWLOR_Haks`,
+`SWLOR_HAKS_ROOT=C:/Projects/SWLOR_NWN/SWLOR_Haks`, and
+`XENOMECH_TEST_CONTENT_ROOT=C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/content`.
+The SWLOR source-mode Release test-project build passed with zero warnings and
+errors. Its focused area/render/tint suite passed 213/213 with zero skips,
+including the all-area assembly corpus gate and a clone/composition regression
+for SWLOR armor metadata. TRX:
+`SWLOR.Toolset.Tests/TestResults/preview-extraction-source-focused.trx`.
+Shared Preview Release tests passed 43/43 with zero skips, including synthetic
+area geometry/camera tests and actual model/texture corpus tests. TRX:
+`NWN.Toolset/tests/Nwn.Preview.Tests/TestResults/preview-extraction-source.trx`.
+
+The package-mode Release build passed with eight warnings and zero errors.
+Seven are CS8618 warnings on the four string properties in
+`SWLOR.NWN.API/NWNX/Enum/QuickBarSlot.cs` and the three string properties in
+`SWLOR.NWN.API/NWNX/JournalEntry.cs`; one is CS8632 in
+`SWLOR.Game.Server/Service/GuiService/Component/GuiWidget.cs:48`. All three
+files are unchanged in this worktree. The focused package-mode suite passed
+213/213 with zero skips in 7m49s. TRX:
+`SWLOR.Toolset.Tests/TestResults/preview-extraction-package-focused.trx`.
+Locked Debug/Release restores and the source/package tests qualify this SWLOR
+consumer slice. This extraction does not establish assembled-body appearance,
+native-client rendering, or later shared AreaSceneBuilder-core extraction.
+
+## Shared area-scene composition - 2026-10-01
+
+`SWLOR.Toolset.Domain.Render.AreaSceneBuilder` now adapts the shared
+`Nwn.Preview.Areas.AreaSceneComposer`. Shared composition owns tile placement,
+fallback diagnostics, trigger geometry and draping, lighting, marker grouping,
+model corrections, and door anchors. SWLOR retains resource resolution,
+instance appearance/tint policy, and the model and walkmesh producers. The
+existing transform order and fallback behavior are preserved.
+
+SWLOR pins `Nwn.Preview 0.1.0-dev.22`, SHA256
+`135F4DA507FCB304C4EC26332859FA9E03FCC8C72C79DBFA330010A67FC43A27`.
+Its nuspec records shared source commit
+`325381733a5508b83c784edf3014e93edd2f0ad4` and direct dependencies
+`Nwn.Authoring 0.1.0-dev.21` and `Nwn.Formats 0.1.0-dev.21`. The shared source
+test suite passed 44/44 with zero skips. SWLOR's focused source-mode and
+package-mode suites each passed 213/213 with zero skips using explicit
+repository, HAK, and content roots. TRX files:
+`SWLOR.Toolset.Tests/TestResults/area-composer-source-focused.trx` and
+`SWLOR.Toolset.Tests/TestResults/area-composer-package-focused.trx`.
+Locked Debug/Release package graphs were regenerated for the four toolset
+consumers. A source-mode lock rewrite in `SWLOR.NWN.Formats` was discarded;
+the package lock remains unchanged. This extraction does not establish native
+client appearance or move the SWLOR geometry/model producers into shared code.
+
+## Native MDL reader and mesh producer extraction - 2026-10-01
+
+SWLOR's mutable binary/ASCII model records and reader now come from
+`Nwn.Formats.NativeModels`; the old immutable `Nwn.Formats.Mdl` API remains
+separate. The shared package also owns the existing MDL guarded reader,
+allocation budget and text decoder, while SWLOR's remaining format readers
+continue using their local copies. Shared `NwnFormatException` preserves the
+original constructors, base type and messages; project aliases keep remaining
+SWLOR parser, consumer and test catches on that shared type.
+
+Animation sampling and the existing `MdlMeshBuilder` now come from
+`Nwn.Preview.Scene`. The builder preserves the current geometry, skinning,
+animation, emitter and placeable behavior. Typed options provide the existing
+purpose selectors and a callback that associates SWLOR mesh metadata without
+introducing game API types into Preview. The SWLOR toolset, tests and animation
+draft tools now consume the shared parser and producer; the duplicate source
+files are removed.
+
+Source-mode Release build passed with zero warnings/errors. Source regressions
+passed: Format `MdlReaderTests` 33/33; Preview 45/45; SWLOR animation,
+skinmesh, filtering and placeable tests 40/40; SWLOR render/composition filter
+53/53; explicit HAK MDL parse sweep 1/1. All passed with zero skips. The HAK
+sweep used `SWLOR_HAKS_CORPUS=C:/Projects/SWLOR_NWN/SWLOR_Haks`; render tests
+used `SWLOR_TEST_REPOSITORY_ROOT=C:/Projects/SWLOR_NWN` and
+`SWLOR_TEST_HAKS_ROOT=C:/Projects/SWLOR_NWN/SWLOR_Haks`. Shared Preview tests
+also used `XENOMECH_TEST_CONTENT_ROOT` for native Xenomech resources. Legacy
+hard-coded SWLOR corpus tests now honor those configured read-only paths.
+
+An initial broad render run against the isolated checkout's absent HAK folder
+failed five cases; after wiring the explicit fixture root, the affected native
+case filter passed 6/6 and the selected 53-case filter passed. The initial
+failure remains failed evidence, not a pass. The first corpus-sweep invocation
+also skipped because it lacked `SWLOR_HAKS_CORPUS`; rerunning with that exact
+selector passed.
+
+The local packages are `Nwn.Formats 0.1.0-dev.22`, SHA256
+`13F560F01A219D49B2E8EA7C3FD0FB5ABF3F528026203591EC52F874A1DD9C5F`, and
+`Nwn.Preview 0.1.0-dev.24`, SHA256
+`6F9461216A0770B3A12672D1F0640B71CD4A403E2787535CE8ADF70A8A67388E`.
+Formats22's nuspec records source commit
+`e721d5fa24e315511b9c858d8cbbcd3cbe485b6a`; Preview24 records
+`72258dd0cc91dadb0cf632bed2cde15bb8cacd55` and depends on Authoring 0.1.0-dev.21
+and Formats 0.1.0-dev.22. Package archives are immutable.
+
+Package-mode SWLOR regressions passed Formats 95/95, the MDL/parser/render
+filter 84/84, the explicit HAK MDL sweep 1/1 and the area/assembly/resource/
+appearance filter 94/94, all with zero skips. The last filter TRX is
+`SWLOR.Toolset.Tests/TestResults/mdl-area-adapter-package-final.trx`. It
+includes `AreaSceneBuilder`, incremental placement, lighting, walkmesh, draw
+batching, anchors, cache concurrency, resource indexing, appearance gallery,
+material resolution and native preview adapter checks. The two legacy anchor
+and cache tests now use `SWLOR_TEST_REPOSITORY_ROOT` and
+`SWLOR_TEST_HAKS_ROOT`, matching the other explicit-corpus tests.
+
+Offline Linux source qualification used the pinned SDK image
+`10.0.401@sha256:35d40304542c8689331f8cab17c65926cdf48fe711e289321d71924b230a7d29`,
+network none, and read-only source, package cache, SWLOR HAK and Xenomech
+content mounts. Shared Formats passed 144/144 and Preview 45/45 with zero
+skips. Results are under
+`C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/swlor-mdl-extraction/linux-final/`.
+
+An initial package area run failed four corpus assertions because two tests
+selected the isolated checkout instead of the configured HAK root. Those
+failures were preserved and the corrected run passed 94/94. An initial
+unconfigured source render run and corpus sweep are likewise retained as failed
+evidence; only corrected explicit-corpus runs count above. The extraction
+preserves the SWLOR mesh producer but does not qualify a full renderer move,
+assembled appearance or official-client behavior.
+
+Preview24 also fixes two option-overload parity defects: configured
+`PlaceablePreview` keeps hidden selection geometry, and `AnimatedPreview`
+collapses multi-pose input to the settled pose even when the named-clip list is
+empty. The shared Windows Preview suite passed 47/47 and offline Linux passed
+Formats 144/144 and Preview 47/47, zero skips; Linux TRX files are in
+`C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/swlor-mdl-extraction/linux-parity-review/`.
+With Preview24 locked, the focused SWLOR hidden-placeable, animation, skinmesh
+and composition filter passed 50/50, zero skips, in
+`SWLOR.Toolset.Tests/TestResults/mdl-options-parity-package.trx`.
+
+## Shared resource and texture pipeline adoption
+
+The SWLOR HAK index now uses shared `ResourceLayer`/`ResourceResolver` for
+loose and packed HAK resources. `TryLookup` retains lazy payload reads and
+applies the caller's byte limit before allocation; `Contains` is metadata-only.
+Reload still constructs a complete index before atomically publishing it, and
+old handles keep their selected source readable across that swap. SWLOR keeps
+module HAK discovery, precedence configuration, material parsing/tint policy,
+palette names and armor classification. Its base-game `KeyBifCatalog` remains
+the compatibility adapter for callers that directly query the native KEY/BIF
+catalog; moving that remaining reader is a later responsibility.
+
+`TextureLoader` now delegates resource preference, shared TGA/DDS/PLT decoding
+and palette composition to `Nwn.Preview/Textures/TextureResourceLoader`. The
+adapter supplies SWLOR palette resources, row choices, NWN standard-DDS
+BottomUp orientation and the existing compressed-input bound. `PreviewTextureCache`
+uses the shared count/byte-bounded LRU while retaining the SWLOR-specific tint
+and material cache key.
+
+Source mode was qualified with explicit read-only fixture roots. The shared
+Formats suite passed 146/146, Authoring 37/37 and Preview 51/51 with zero skips.
+SWLOR focused source tests passed ResourceIndex/orientation/material adapters
+28/28, native ATI2/MTR/PLT and tint/cache checks 4/4, and channel-order native
+checks 3/3 with zero skips in their separate corrected invocations. The first
+combined invocation also selected three unrelated channel-order rows without
+the explicit NWN install parameter; those rows skipped, then passed separately
+after the fixture honored its selector. The native mask test confirms the existing ATI2
+resource hash and canonical decoded-pixel hash. `TextureChannelOrderTests`
+now honors `NWN_INSTALL_PATH` and the explicit corpus selectors so it does not
+silently look under the isolated checkout for the primary HAK data. TRX files:
+`SWLOR.Toolset.Tests/TestResults/resource-index-source-qualified.trx`,
+`resource-texture-native-source-elevated.trx`, and
+`texture-channel-order-native-source-fixed.trx`.
+
+The first native run failed compilation because the test lacked the corpus
+helper namespace; the corrected run passed. An earlier shared suite omitted
+native selectors and failed those corpus rows; the corrected complete run
+passed without skips. These initial failures are retained and are not counted
+as passes.
+
+The immutable package train is Formats `0.1.0-dev.23` (`49F04AB87117CDA54D2F2FD55BA9FA8F97CBADC7CD2B6894E41FC691909A1C00`),
+Authoring `0.1.0-dev.22` (`DD3C063169A382152D8ACE247D077475BB95674FAE18D022A696B39FDC67417B`) and
+Preview `0.1.0-dev.25` (`62B10516074F589F1B035608CD6932CACCEC1014F50CC687CB472169A71BA85E`). Their nuspecs identify shared source commit
+`f6aacb570d970b85259094a97fffcc62eb23ef92`; Preview depends on Authoring22/Formats23 and Authoring depends on Formats23. Previous package files were left unchanged.
+
+Package mode regenerated and then successfully restored both Debug and Release lock graphs with the local feed and locked mode. The Release `SWLOR.Toolset.Tests` filter for ResourceIndex, texture orientation, material adapter, channel order, native ATI2/MTR/PLT, tint composition and cache passed 35/35 with zero skips in `SWLOR.Toolset.Tests/TestResults/resource-texture-package-focused.trx`. Command:
+
+```powershell
+$env:SWLOR_TEST_REPOSITORY_ROOT='C:/Projects/SWLOR_NWN'
+$env:SWLOR_TEST_HAKS_ROOT='C:/Projects/SWLOR_NWN/SWLOR_Haks'
+$env:SWLOR_HAKS_ROOT='C:/Projects/SWLOR_NWN/SWLOR_Haks'
+$env:NWN_INSTALL_PATH='C:/Program Files (x86)/Steam/steamapps/common/Neverwinter Nights'
+dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -c Release --filter 'FullyQualifiedName~ResourceIndexTests|FullyQualifiedName~TextureOrientationTests|FullyQualifiedName~MaterialResolverAdapterTests|FullyQualifiedName~TextureChannelOrderTests|FullyQualifiedName~TextureLoader_LoadDds_ForNativeTintAti2MatchesIndependentCanonicalPixels|FullyQualifiedName~TintMapTextureRenderer_ComposesNativeChestMaterialThroughSharedAti2Decoder|FullyQualifiedName~TextureLoader_LoadPlt_ForKnownCorpusTexture_DecodesToReportedDimensions|FullyQualifiedName~PreviewTextureCache_TintMapMaterial_AppliesRgbOverride' -p:NwnToolsetPackageFeed=C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/worktrees/NWN.Toolset/artifacts/packages -p:RunPostBuildEvent=Never -p:NuGetAudit=false -m:1
+```
+
+The source-mode Release toolset app build succeeded with eight existing SWLOR
+API/server nullable warnings and zero errors. An initial command named a
+nonexistent `SWLOR.Toolset.sln`; this checkout only has `SWLOR.Game.Server.sln`,
+so the actual toolset app project was built directly. The native package test
+uses the primary HAK corpus read-only; no primary checkout or service changed.
+
+## Shared OpenGL area viewport adoption
+
+`AreaViewportControl` now lives in `Nwn.Toolset.Avalonia` and consumes neutral scene
+objects plus explicit host material and mesh-metadata providers. The SWLOR adapter
+retains HAK/material/tint/armor interpretation; the shared renderer owns the GL
+control, camera, draw loop, and GPU caches. `SWLOR.Toolset` and model-preview XAML
+use the shared control directly, and the former SW-only `GlAreaControl` and its
+viewport-state/framebuffer/pick types were removed. The material adapter caches
+both parsed MTR results and resolved CPU surfaces by normalized resource/palette
+inputs, with revision-based invalidation.
+
+The shared Avalonia contract suite passed 12/12 in source mode. SWLOR focused
+source-mode viewport regressions passed 73/73, and the native production-chest
+shared-control render passed 1/1 with `pfa0_chest001` from the primary HAK corpus.
+The package-mode combined viewport regression passed 74/74; the locked package
+resource-index/material/XAML reflection filter passed 23/23. All runs used the
+explicit primary corpus roots and had zero skips. The 1200x900 native frame differs
+from the expected #666 single-preview background in 59,939 pixels and is retained
+at `artifacts/viewport-source-native-focused-final/.../swlor-material-5845c2ad633d4a339b1de34c6e800248.png`
+(SHA256 `83C111E457D98FC8EB268539AA8D7DB450A63BF0AA0DA39425A40C32994EA74E`). The
+initial gray-frame failures came from the test forcing focus to Z=1 m while the
+fixture model's bounds were approximately 0.32 m high; removing the forced focus
+uses the renderer's existing model-bounds framing. This is OpenGL control evidence,
+not official NWN-client appearance qualification.
+
+The immutable Avalonia package is `0.1.0-dev.12`, SHA256
+`CA876EF8EF9D4E8D7961D894C9F43D4A7A72F9B3F9294AE77CC5896F1EF25E48`, nuspec
+`repository.commit=b4bda64a0d1b15331de5e02064256cd6fbcf8d5c`, with direct dependencies
+Avalonia 11.3.17, Silk.NET.OpenGL 2.23.0, Serilog 4.4.0, Nwn.Authoring dev.22 and
+Nwn.Preview dev.25. Earlier package archives remain unchanged. SWLOR pins dev.12
+and regenerated the six affected Toolset/Toolset.Tests/PreviewRender Debug/Release
+package locks in package mode.
+
+The first native control test captured only the gray background because it
+explicitly focused above the actual chest bounds; that failure and its output are
+retained under `artifacts/viewport-source-native-diagnostics/` and
+`artifacts/viewport-source-native-bounds-retry/`. The initial shared test compile
+also caught use of a removed MSTest assertion API; it was changed to
+`Assert.ThrowsExactly` before the 12/12 run. The unrelated lock-file change emitted
+by source restore was restored before packaging.
+
+The focused package-mode viewport command was:
+
+```powershell
+$env:SWLOR_TEST_REPOSITORY_ROOT='C:/Projects/SWLOR_NWN'
+$env:SWLOR_TEST_HAKS_ROOT='C:/Projects/SWLOR_NWN/SWLOR_Haks'
+$env:SWLOR_HAKS_ROOT='C:/Projects/SWLOR_NWN/SWLOR_Haks'
+dotnet test SWLOR.Toolset.Tests/SWLOR.Toolset.Tests.csproj -m:1 -p:NwnToolsetSourceRoot='' -p:NwnToolsetPackageFeed='C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/worktrees/NWN.Toolset/artifacts/packages' -p:RunPostBuildEvent=Never -p:NuGetAudit=false --filter 'FullyQualifiedName~AreaViewportStateTests|FullyQualifiedName~AreaManipulationTests|FullyQualifiedName~ModelPreviewCameraInputTests|FullyQualifiedName~RenderReplacementPortableTests|FullyQualifiedName~NativeMaterialViewportTests' --logger 'trx;LogFileName=viewport-package-focused-final.trx' --results-directory artifacts/viewport-package-focused-final
+```
+
+Result: `artifacts/viewport-package-focused-final/viewport-package-focused-final.trx`
+(74 passed, zero skipped). Resource/reflection result:
+`artifacts/viewport-package-corpus-reflection/viewport-package-corpus-reflection.trx`
+(23 passed, zero skipped).
+
+The packaged Release `SWLOR.Toolset` app also built successfully against the locked
+dev.12 graph with zero errors and eight existing nullable warnings (seven in
+`SWLOR.NWN.API/NWNX/{Enum/QuickBarSlot.cs,JournalEntry.cs}` and one in
+`SWLOR.Game.Server/Service/GuiService/Component/GuiWidget.cs`). Debug/Release
+lock entries resolve Avalonia UI dev.12 to Preview dev.25; the existing F23/A22/P25
+pins are unchanged. Package-mode selected tests ran without a source root, so the
+results exercise the nupkg consumer path.
+
+Source regression details for this extraction: the SWLOR area-camera, picking,
+manipulation, ceiling visibility and render-replacement reflection filter passed
+73/73 in `artifacts/viewport-source-focused-final/viewport-source-focused-final.trx`;
+the source-mode native shared-control chest test passed 1/1 in
+`artifacts/viewport-source-native-focused-final/viewport-source-native-focused-final.trx`.
+The shared `Nwn.Toolset.Avalonia.Tests` source-mode suite passed 12/12 in
+`NWN.Toolset/artifacts/viewport-source-shared-tests-fixed/viewport-source-shared-tests-fixed.trx`.
+The package combined filter and corpus/reflection filter above were run in Debug
+with the six locked files active; the Release app build also used its regenerated
+locked package graph.
+
+## Shared ERF stream ownership
+
+The shared `Nwn.Formats` ERF reader now disposes streams it owns when parsing
+fails, while preserving borrowed streams. `ErfArchive.Open` and
+`ErfArchive.Read(..., ownsStream: true)` both cover this failure path. The
+shared source regression passed 17/17 with zero skips in
+`NWN.Toolset/artifacts/erf-owned-stream-final/erf-owned-stream-final.trx`.
+
+SWLOR package mode now pins `Nwn.Formats` 0.1.0-dev.25 in the formats and
+domain projects. The immutable package SHA256 is
+`ECA4211B341A21D1753B1BD48E2850C540D72047F260F8D90B223C212A823154`, built
+from source commit `0779949c9fa1db0c8c310fde7832ac617f0c78b8`; the nuspec has
+no package dependencies. Prior dev.24 remains unchanged. The package consumer
+resource/material/viewport filter passed 23/23 with zero skips in
+`artifacts/formats25-package-consumer/formats25-package-consumer.trx`, using
+the explicit primary HAK roots. The locked Release app build completed with
+zero errors and the same eight existing nullable warnings listed above.
+Affected package locks were regenerated for both Debug and Release graphs
+(formats has only a Debug lock). Source-mode locks remain untouched.
+
+## Shared area editor and grouped file saves
+
+SWLOR's existing area editor now routes tile selection/placement/painting,
+instance transforms, and interleaved ARE/GIT/GIC edit history through the shared
+`Nwn.Authoring` and `Nwn.Preview` contracts. `AreaEditorSurface` hosts the shared
+viewport in the production area view. SWLOR retains module discovery, door-snap
+policy, selection, UI messaging, and resource/appearance resolution. Grouped file
+staging, commit, rollback and recovery now use `Nwn.Authoring.Editing.AtomicFileGroupWriter`;
+`SwlorFileWriteAccess` retains module-lock and mutation authorization.
+
+The shared source is `2aee6c30472caec66c408218fd890dc3bf993c17`. Final packages
+are Authoring 0.1.0-dev.24 (`1C4D16CA0168A927EA35BF1871BA3F1000698AEE91C987BF458FF4FC953F16BB`),
+Preview 0.1.0-dev.28 (`F46D1B8015FCA13C128A0935F1A62C36011A16B54D434AC973BA0C980B4F58ED`),
+and Avalonia 0.1.0-dev.14 (`40BDC8890AD544ACF051AC8447867622CE0C8C47F6CB17A77EFC840C2B24E1FB`).
+Their nuspecs identify that source commit and pin Formats dev.25, Authoring dev.24,
+and Preview dev.28 at the expected package boundaries. SWLOR package mode pins
+Authoring dev.24, Preview dev.28 and Avalonia dev.14; six Debug/Release lock files
+were regenerated. The source-mode area/save filter passed 71/71 with zero skips;
+the packaged locked-mode filter also passed 71/71 with zero skips. Shared-source
+tests passed Authoring area/save 12/12, Preview area composition 4/4 and Avalonia
+area viewport contracts 2/2, all with zero skips. Both SWLOR filters used explicit
+`SWLOR_TEST_REPOSITORY_ROOT`, `SWLOR_TEST_HAKS_ROOT` and `SWLOR_HAKS_ROOT` inputs.
+The source-mode TRX is `SWLOR.Toolset.Tests/TestResults/area-writer-final-elevated.trx`;
+the packaged-mode TRX is `SWLOR.Toolset.Tests/TestResults/area-writer-packaged-final.trx`.
+Shared-source TRX files are `NWN.Toolset/tests/Nwn.Authoring.Tests/TestResults/area-writer-final.trx`,
+`NWN.Toolset/tests/Nwn.Preview.Tests/TestResults/area-scene-editor-final-source.trx`,
+and `NWN.Toolset/tests/Nwn.Toolset.Avalonia.Tests/TestResults/area-surface-final-source.trx`.
+
+An initial Preview dev.26 archive was created with incorrect transitive package
+versions during source-mode packing and was not adopted. Preview dev.27 was
+correctly repacked in package mode but superseded by the final F25-aligned dev.28
+train; all archives remain immutable.
+
+## Shared creature-part composition extraction
+
+The existing MIT creature-part composition, bone mapping, transform flattening and forward-axis correction now live in `Nwn.Preview.Scene`. The SWLOR composer/resolver retains resource lookup, appearance classification, tint metadata and game-specific policy; its existing production call sites consume the shared implementation. `MdlPartBoneMap` returns defensive read-only candidate collections and a read-only preferred-bone map.
+
+Shared source commit: `1e016953d34db71b646c2a7ed0a7467a54a76f3e`. Immutable local packages: Preview `0.1.0-dev.29`, SHA256 `1579BF8A364288C8C4AAE5DE8964934ADC0034951C55286D247BD2D71C67EF9E`; Avalonia `0.1.0-dev.15`, SHA256 `5A3D18015D1C0A8EA5CAE32932D8EA4487BBDB762612EC968E287C6C655CFAC6`. Both nuspecs identify that exact source commit. Preview pins Formats25 and Authoring24; Avalonia pins Authoring24 and Preview29. Earlier package archives remain unchanged.
+
+The affected SWLOR consumers pin Preview29 and Avalonia15. All eight package lock files (four consumers, Debug and Release) were intentionally regenerated; source-mode lock state remains under each project's `obj` directory. Ordinary locked restores passed for all four consumers in both configurations. The SWLOR source-mode parser/composition/attachment/HAK-corpus filter passed 59/59, zero skips, in `SWLOR.Toolset.Tests/TestResults/shared-native-composition-source.trx`. The same package-mode filter passed 59/59, zero skips, in `artifacts/shared-native-composition-package/shared-native-composition-package.trx`. The production Release app build succeeded with zero warnings and zero errors.
+
+The new shared tests passed 6/6 on Windows and 6/6 in the fixed offline Linux SDK `10.0.401@sha256:35d40304542c8689331f8cab17c65926cdf48fe711e289321d71924b230a7d29`, with network disabled. Linux headless Avalonia area/graph contracts passed 8/8, zero skips. Linux logs and TRX files are under `C:/Users/Zunath/.codex/worktrees/7a40/Xenomech/artifacts/preview-composition-linux-1e01695/output/`. These checks qualify the shared composition and data contracts; they do not establish an official-client appearance result.
+
+## Shared document mutation ownership
+
+The shared JSON GFF document sessions now guard mutation entry points by document
+ownership. Related GIT/GIC sessions share explicit transaction authorization, and
+their registrations must remain alive while either session retains undo/redo history.
+Registration bookkeeping uses weak node references so discarded history does not
+keep removed graphs alive. The legacy mutable `Entries`, `Elements` and
+`LocStringEntries` collections remain trusted-only escape hatches; direct collection
+mutation bypasses both ownership checks and transaction history.
+
+Shared source commit `8299d754ca7dd226b724cdb332c0caffe2121aad` was qualified on
+Windows and in the fixed offline Linux SDK image. Authoring passed 61/61 and Preview
+58/58 with zero skips in both environments. Linux logs and TRX files are under
+`artifacts/linux-document-ownership/`; the focused Avalonia package test passed 8/8
+with zero skips in `NWN.Toolset/tests/Nwn.Toolset.Avalonia.Tests/TestResults/document-ownership-ui-package.trx`.
+Immutable local packages are Authoring dev.25
+(`E237A38E27C3C7E3973FDF868DAFB878D2A611D461B86AF738F86F5400B34F96`), Preview
+dev.30 (`6B20D9A23537AD0D2F42AC88AC10B25D2AE54001AD63EC904F3F08FF81436570`), and
+Avalonia dev.16 (`0F4F15D9467ABB87C9792D5DB23496B8B800561EF3B1E6790CFB2831C89A051F`).
+Their nuspecs identify that source commit and the expected dependency versions.
+
+SWLOR package mode pins Authoring dev.25, Preview dev.30 and Avalonia dev.16; all
+eight Debug/Release lock files for the four package consumers were regenerated.
+Ordinary locked restores passed for all eight graphs. The source-mode and package-mode
+known composition/area regression filters each passed 59/59 with zero skips; the
+production Release app build succeeded with zero warnings and errors. TRX files are
+`SWLOR.Toolset.Tests/TestResults/document-ownership-source-known-regressions.trx`
+and `SWLOR.Toolset.Tests/TestResults/document-ownership-package-known-regressions.trx`.
+An exploratory broader source filter exceeded its seven-minute cap and was interrupted;
+it emitted no TRX and remains unqualified. That incomplete run is not counted as a pass.
+
+## Shared KEY/BIF reader adoption
+
+`KeyBifCatalog` now parses KEY and BIF data through the shared MIT
+`Nwn.Formats.Key.KeyReader`, `StockArchive` and its bounded BIF reader. SWLOR keeps
+the NWN:EE install archive list, ascending precedence, last-key override, data-directory
+fallback and its public `ResourceIdentity` catalog API. Stock resources with unrecognized
+type codes remain indexed through the shared KEY reader's raw code. The catalog limits KEY
+files, individual BIF files, retained BIF bytes per archive and selected resource payloads
+before their respective allocations.
+
+The focused source-mode filter passed 5/5 with zero skips in
+`SWLOR.Toolset.Tests/TestResults/key-bif-source-final.trx`. The same package-mode filter
+passed 5/5 with zero skips in
+`SWLOR.Toolset.Tests/TestResults/key-bif-package-final.trx`. Both runs used the explicit
+stock data directory `C:/Program Files (x86)/Steam/steamapps/common/Neverwinter Nights/data`
+and the primary SWLOR repository/HAK roots. Tests cover synthetic cross-KEY precedence,
+lazy missing-BIF lookup, the data-directory path fallback, bounded extraction, unknown raw
+resource type preservation and actual stock model extraction. The first source run exposed an
+invalid cache expectation in the test and was corrected; an earlier run also recorded the
+Avalonia telemetry access denial before its elevated retry passed. The package-mode filter
+including the existing concurrent first-load stock test passed 6/6 with zero skips in
+`SWLOR.Toolset.Tests/TestResults/key-bif-package-concurrency.trx`. No package versions changed
+for this adapter.
+
+## Shared area creation form
+
+The Module Explorer now hosts `Nwn.Toolset.Avalonia.Areas.AreaCreationForm`; the SW view model
+continues to own tileset discovery, validation, pack-write gating, area creation, and completion
+callbacks. The shared binding contract takes the host's field state, typed tileset options,
+seven localized labels, and create/cancel commands. `ResourceResolver.Resources` supplies a
+distinct, precedence-ordered inventory of configured resource identities without opening payloads,
+so both hosts can build a tileset picker from the same configured layers.
+
+The shared source commits are `b4df6cbb6ab133c55473554849a00a82c49b851a` (form),
+`d70aaad7a242d4bf518e90b050a46881058ec19a` (resource inventory and package graph), and
+`f1b62f6c5ff38009717fb0749aa12194a15f68af` (host-overridable panel/status brushes). Immutable
+packages are Authoring 0.1.0-dev.26 (SHA256
+`25E4CF91C90CF1FC1CA95AFA41F327994CD404C4D3544C316535A0CE7D7E2EA8`), Preview 0.1.0-dev.31
+(SHA256 `DDAE721731763DBEAC41F845D64E218655762B911AE0B62806A88947F329B3B1`), and Avalonia
+0.1.0-dev.19 (SHA256
+`3EC0E2B73081B0D6D6177B954F0ABBB16BC969F5B3B1E4C07639DB2B781CEC2E`). Authoring and Preview
+nuspecs record `d70aaad7a242d4bf518e90b050a46881058ec19a`; Avalonia records
+`f1b62f6c5ff38009717fb0749aa12194a15f68af`. Preview depends on Authoring dev.26, and Avalonia
+depends on Authoring dev.26 and Preview dev.31. SW package and transitive lockfiles were
+regenerated for Debug and Release.
+
+The shared Avalonia form test passed 1/1 in
+`NWN.Toolset/tests/Nwn.Toolset.Avalonia.Tests/TestResults/area-creation-form.trx`, and the
+shared resolver inventory suite passed 13/13 with zero skips in
+`NWN.Toolset/tests/Nwn.Authoring.Tests/TestResults/resolver-inventory-final.trx`. SW source mode
+and package mode each passed the bounded Module Explorer wizard and NewAreaWriter filter 18/18
+with zero skips, using explicit primary repository, HAK, and installed data roots. Reports are
+`SWLOR.Toolset.Tests/TestResults/area-creation-source-final.trx` and
+`SWLOR.Toolset.Tests/TestResults/area-creation-package-final.trx`. An initial package run lacked
+the explicit fixture roots and skipped one native tileset case; its report is preserved as
+incomplete at `SWLOR.Toolset.Tests/TestResults/area-creation-package.trx`.
+
+## Shared blueprint-to-placement synchronization
+
+The common authoring library now owns SWLOR's existing GFF blueprint-to-placement transforms:
+`BlueprintInstanceSynchronizer`, `StoreInstanceSynchronizer`, and
+`StoreInstanceSyncStatus` live in `Nwn.Authoring.Areas.Placement`. The source moved from
+`SWLOR.Toolset.Domain/Documents` at SWLOR commit
+`4d1db02cfb852923b88aad0d504b03647ef71615`, retaining the MIT notice in the shared package.
+The merchant editor supplies the existing `Func<string, JsonGffDocument?>` item-blueprint
+resolver; no SWLOR game, catalog, deployment, or resource policy moved. Rebuild synchronization
+preserves placement position/orientation and the existing trigger geometry and visual transforms;
+rename operations remain reference-only. Supported placed kinds remain UTC, UTD, UTI, UTP, UTS,
+UTM, UTT, and UTW.
+
+Shared source commit `ceefc61c3e8ad81b857180336ab356f969b802eb` produced immutable local
+packages Authoring `0.1.0-dev.27` (SHA-256
+`FD613B405B4B336EBDE1AB191533DC9BE7B0A67762A590684A66878DA951A5BC`), Preview
+`0.1.0-dev.32` (SHA-256
+`4301C5143D6240C32325A99F98E6F1CB17670BAA78A9F5B614308F2DC8FD4B97`), and Avalonia
+`0.1.0-dev.20` (SHA-256
+`0449A940782CB12CBD9CF168E52BA185E65C4227AA9771E89984523960E0A96E`). Their nuspecs
+all identify that exact source commit; Authoring depends on Formats25, Preview on Authoring27/
+Formats25, and Avalonia on Authoring27/Preview32. Debug and Release package locks were
+regenerated and the bounded Release package-mode test used locked restore.
+
+SWLOR source-mode and package-mode runs each passed 37/37 with zero skips using the explicit
+repository, HAK, and installed NWN data roots. They cover `BlueprintSaveCoordinatorTests` and
+`MerchantEditorTests`; reports are `SWLOR.Toolset.Tests/TestResults/placement-sync-source-final.trx`
+and `SWLOR.Toolset.Tests/TestResults/placement-sync-package-final.trx`. Shared Authoring passed
+64/64 on Windows and 64/64 in the pinned offline Linux SDK container; both have zero skips and
+include resolver inventory/lazy-resource tests. The focused placement/resolver subset passed
+15/15 on Windows. Linux logs and TRX are under
+`NWN.Toolset/artifacts/linux-placement-sync-retry/`. The broad HAK corpus was not part of this
+document-transform slice.

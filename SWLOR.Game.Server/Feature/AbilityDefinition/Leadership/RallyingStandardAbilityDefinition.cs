@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                     typeof(RallyingStandard1StatusEffect),
                     typeof(RallyingStandard2StatusEffect)))
             {
-                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
+                CombatPoint.AddSupportCombatPoint(activator, Ability.GetSelfAndPartyAuraRecipients(activator), SkillType.Leadership);
             }
         }
     }

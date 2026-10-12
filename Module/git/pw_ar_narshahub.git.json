@@ -210,7 +210,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Senn Dralok is a scarred heavy-blade ascetic tied to the Soul Ascension capstone trials in Korriban Forge Caverns."
+            "0": "Senn Dralok is a scarred, ascetic man who keeps to a quiet table at the edge of The Hub, murmuring half-finished verses under his breath. His hands carry the old burns and calluses of a heavy blade worked for decades. He speaks like a priest and watches passing fighters like a confessor, an exile from a congregation he once led in the forge caverns of Korriban."
           }
         },
         "Dex": {
@@ -1313,7 +1313,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 307
+          "value": 4187
         },
         "Race": {
           "type": "byte",

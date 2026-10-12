@@ -1687,7 +1687,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A ring of flat stones marks a staff circle on the canyon floor, worn smooth by years of footwork. The warden who holds it does not step out of the ring."
           }
         },
         "DisarmDC": {
@@ -3207,7 +3207,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A firing line is scratched into the canyon floor, spent power cells scattered behind it. The range warden takes every challenge offered from this mark."
           }
         },
         "DisarmDC": {
@@ -4727,7 +4727,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A sabacc table has been dragged into the range, a pistol laid across the last hand ever dealt on it. The warden plays anyone who sits down."
           }
         },
         "DisarmDC": {

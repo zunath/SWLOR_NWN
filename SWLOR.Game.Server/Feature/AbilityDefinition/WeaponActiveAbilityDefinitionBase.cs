@@ -1495,7 +1495,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             Animation impactAnimation,
             float maxRange,
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
-            WeaponAbilityProfile profile = null)
+            WeaponAbilityProfile profile = null,
+            VisualEffect areaVisualEffect = VisualEffect.None)
         {
             profile ??= WeaponAbilityProfile.Empty;
             var temporaryHPEffectKey = $"WEAPON_{ability.ActiveEffectiveLevelPerkType}";
@@ -1587,6 +1588,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                                 CenterAreaOnActivator(targetingFlags),
                                 profile.StatusEffectFactory,
                                 damageType: profile.DamageType,
+                                areaVisualEffect: areaVisualEffect,
                                 combatImpactDamageAbility: combatImpactDamageAbility,
                                 baseDamageAdjustment: impactedTarget => profile.GetBaseDamageAdjustment(
                                     activator,

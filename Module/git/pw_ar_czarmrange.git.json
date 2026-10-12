@@ -347881,7 +347881,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A Czerka fire-control lectern hums in standby, its target-lock feed still sweeping the lane for something to kill."
+            "0": "A Czerka fire-control lectern hums in standby on the deep range, its target-lock feed still sweeping the lane for something to kill."
           }
         },
         "DisarmDC": {
@@ -348248,7 +348248,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A test-ordnance rack bristles with primed munitions, humming for a live-fire trial."
+            "0": "A test-ordnance rack bristles with primed throwing munitions on the deep range, humming for a live-fire trial."
           }
         },
         "DisarmDC": {
@@ -351090,7 +351090,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A marksman's calibration rig waits with scope aligned, a single round chambered for the perfect shot."
+            "0": "A marksman's calibration rig waits at the head of the long lane, scope aligned and a single round chambered."
           }
         },
         "DisarmDC": {

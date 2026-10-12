@@ -75,13 +75,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Seris Nahl gave you the Korriban Sith Crypt Depths Key. Stop the independent tomb raiders attacking the survey crews. Defeat 6 Crypt Raider enemies in the outer rite chambers of the Korriban Sith Crypt Depths. Recover the Last Stand of the Light Crypt Trial Tablet.")
+                    "Seris Nahl gave you the Korriban Sith Crypt Depths Key. On Korriban, ride the elevator on the north-east side of the Wastelands North down into the Sith Crypt and enter the Depths through the sealed passage at the crypt's north end. Defeat six Crypt Raiders and recover the Last Stand of the Light Crypt Trial Tablet.")
                 .AddKillObjective(NPCGroupType.Korriban_CryptRaider, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightCryptTrialTablet)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Stand of the Light Crypt Trial Tablet is recovered. Return to Seris Nahl at the Promenade on Smuggler's Moon.")
+                    "You recovered the Last Stand of the Light Crypt Trial Tablet. Return it to Seris Nahl at the Promenade on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -96,13 +96,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 5 Crypt Marauder enemies in the narrow galleries of the Korriban Sith Crypt Depths. Recover the Last Stand of the Light Ritual Focus Shard.")
+                    "Defeat five Crypt Marauders in the Korriban Sith Crypt Depths on Korriban and recover the Last Stand of the Light Ritual Focus Shard.")
                 .AddKillObjective(NPCGroupType.Korriban_CryptMarauder, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightRitualFocusShard)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Stand of the Light Ritual Focus Shard is recovered. Return to Seris Nahl at the Promenade on Smuggler's Moon.")
+                    "You recovered the Last Stand of the Light Ritual Focus Shard. Return it to Seris Nahl at the Promenade on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -117,13 +117,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 1 Crypt Breach Captain in the deep tomb breach of the Korriban Sith Crypt Depths. Recover the Last Stand of the Light Splintered Tomb Sigil. Bring at least two allies.")
+                    "With at least two allies, defeat the Crypt Breach Captain at the trial altar on the west side of the Korriban Sith Crypt Depths. Recover the Last Stand of the Light Splintered Tomb Sigil.")
                 .AddKillObjective(NPCGroupType.Korriban_CryptBreachCaptain, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightSplinteredTombSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Stand of the Light Splintered Tomb Sigil is recovered. Return to Seris Nahl at the Promenade on Smuggler's Moon.")
+                    "You recovered the Last Stand of the Light Splintered Tomb Sigil. Return it to Seris Nahl at the Promenade on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -138,13 +138,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 4 Crypt Reaver enemies in the keeper chambers of the Korriban Sith Crypt Depths. Recover the Last Stand of the Light Keeper's Rite Token.")
+                    "Defeat four Crypt Reavers in the Korriban Sith Crypt Depths on Korriban and recover the Last Stand of the Light Keeper's Rite Token.")
                 .AddKillObjective(NPCGroupType.Korriban_CryptReaver, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightKeepersRiteToken)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Stand of the Light Keeper's Rite Token is recovered. Return to Seris Nahl at the Promenade on Smuggler's Moon.")
+                    "You recovered the Last Stand of the Light Keeper's Rite Token. Return it to Seris Nahl at the Promenade on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -157,12 +157,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 1 Crypt Expedition Leader in the lowest burial chamber of the Korriban Sith Crypt Depths. Bring at least two allies.")
+                    "With at least two allies, defeat the Crypt Expedition Leader in the Final Ritual Chamber, through the door at the north end of the Korriban Sith Crypt Depths.")
                 .AddKillObjective(NPCGroupType.Korriban_CryptExpeditionLeader, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Crypt Expedition Leader is defeated. Return to Seris Nahl at the Promenade on Smuggler's Moon.")
+                    "The Crypt Expedition Leader is dead. Return to Seris Nahl at the Promenade on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -188,13 +188,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Neth Kyr gave you the Korriban Sith Crypt Depths Key. Stop the independent tomb raiders attacking the survey crews. Defeat 6 Vitae Reaver Initiate enemies in the outer rite chambers of the Korriban Sith Crypt Depths. Recover the Hunger of the Dark Crypt Trial Tablet.")
+                    "Neth Kyr gave you the Korriban Sith Crypt Depths Key. On Korriban, ride the elevator on the north-east side of the Wastelands North down into the Sith Crypt and enter the Depths through the sealed passage at the crypt's north end. Defeat six Vitae Reaver Initiates and recover the Hunger of the Dark Crypt Trial Tablet.")
                 .AddKillObjective(NPCGroupType.Korriban_VitaeReaverInitiate, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHungerOfTheDarkCryptTrialTablet)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hunger of the Dark Crypt Trial Tablet is recovered. Return to Neth Kyr at the Anchorhead - Junix's Joint on Tatooine.")
+                    "You recovered the Hunger of the Dark Crypt Trial Tablet. Return it to Neth Kyr at Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -209,13 +209,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 5 Vitae Reaver Adept enemies in the narrow galleries of the Korriban Sith Crypt Depths. Recover the Hunger of the Dark Ritual Focus Shard.")
+                    "Defeat five Vitae Reaver Adepts in the Korriban Sith Crypt Depths on Korriban and recover the Hunger of the Dark Ritual Focus Shard.")
                 .AddKillObjective(NPCGroupType.Korriban_VitaeReaverAdept, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHungerOfTheDarkRitualFocusShard)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hunger of the Dark Ritual Focus Shard is recovered. Return to Neth Kyr at the Anchorhead - Junix's Joint on Tatooine.")
+                    "You recovered the Hunger of the Dark Ritual Focus Shard. Return it to Neth Kyr at Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -230,13 +230,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 1 Vitae Reaver Enforcer in the deep tomb breach of the Korriban Sith Crypt Depths. Recover the Hunger of the Dark Splintered Tomb Sigil. Bring at least two allies.")
+                    "With at least two allies, defeat the Vitae Reaver Enforcer at the trial altar on the east side of the Korriban Sith Crypt Depths. Recover the Hunger of the Dark Splintered Tomb Sigil.")
                 .AddKillObjective(NPCGroupType.Korriban_VitaeReaverEnforcer, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHungerOfTheDarkSplinteredTombSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hunger of the Dark Splintered Tomb Sigil is recovered. Return to Neth Kyr at the Anchorhead - Junix's Joint on Tatooine.")
+                    "You recovered the Hunger of the Dark Splintered Tomb Sigil. Return it to Neth Kyr at Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -251,13 +251,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 4 Vitae Reaver Binder enemies in the keeper chambers of the Korriban Sith Crypt Depths. Recover the Hunger of the Dark Keeper's Rite Token.")
+                    "Defeat four Vitae Reaver Binders in the Korriban Sith Crypt Depths on Korriban and recover the Hunger of the Dark Keeper's Rite Token.")
                 .AddKillObjective(NPCGroupType.Korriban_VitaeReaverBinder, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHungerOfTheDarkKeepersRiteToken)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hunger of the Dark Keeper's Rite Token is recovered. Return to Neth Kyr at the Anchorhead - Junix's Joint on Tatooine.")
+                    "You recovered the Hunger of the Dark Keeper's Rite Token. Return it to Neth Kyr at Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -270,12 +270,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 1 Vitae Reaver Chief in the lowest burial chamber of the Korriban Sith Crypt Depths. Bring at least two allies.")
+                    "With at least two allies, defeat the Vitae Reaver Chief in the Final Ritual Chamber, through the door at the north end of the Korriban Sith Crypt Depths.")
                 .AddKillObjective(NPCGroupType.Korriban_VitaeReaverChief, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vitae Reaver Chief is defeated. Return to Neth Kyr at the Anchorhead - Junix's Joint on Tatooine.")
+                    "The Vitae Reaver Chief is dead. Return to Neth Kyr at Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -301,13 +301,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Acolyte Varn gave you the Korriban Sith Crypt Depths Key. Stop the independent tomb raiders attacking the survey crews. Defeat 6 Umbral Raider Scout enemies in the outer rite chambers of the Korriban Sith Crypt Depths. Recover the Eclipse of Resolve Crypt Trial Tablet.")
+                    "Acolyte Varn gave you the Korriban Sith Crypt Depths Key. On Korriban, ride the elevator on the north-east side of the Wastelands North down into the Sith Crypt and enter the Depths through the sealed passage at the crypt's north end. Defeat six Umbral Raider Scouts and recover the Eclipse of Resolve Crypt Trial Tablet.")
                 .AddKillObjective(NPCGroupType.Korriban_UmbralRaiderScout, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEclipseOfResolveCryptTrialTablet)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Eclipse of Resolve Crypt Trial Tablet is recovered. Return to Acolyte Varn at the Shipping District on Smuggler's Moon.")
+                    "You recovered the Eclipse of Resolve Crypt Trial Tablet. Return it to Acolyte Varn in the Shipping District on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -322,13 +322,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 5 Umbral Raider Adept enemies in the narrow galleries of the Korriban Sith Crypt Depths. Recover the Eclipse of Resolve Ritual Focus Shard.")
+                    "Defeat five Umbral Raider Adepts in the Korriban Sith Crypt Depths on Korriban and recover the Eclipse of Resolve Ritual Focus Shard.")
                 .AddKillObjective(NPCGroupType.Korriban_UmbralRaiderAdept, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEclipseOfResolveRitualFocusShard)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Eclipse of Resolve Ritual Focus Shard is recovered. Return to Acolyte Varn at the Shipping District on Smuggler's Moon.")
+                    "You recovered the Eclipse of Resolve Ritual Focus Shard. Return it to Acolyte Varn in the Shipping District on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -343,13 +343,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 1 Umbral Raider Captain in the deep tomb breach of the Korriban Sith Crypt Depths. Recover the Eclipse of Resolve Splintered Tomb Sigil. Bring at least two allies.")
+                    "With at least two allies, defeat the Umbral Raider Captain at the trial altar in the north-west of the Korriban Sith Crypt Depths. Recover the Eclipse of Resolve Splintered Tomb Sigil.")
                 .AddKillObjective(NPCGroupType.Korriban_UmbralRaiderCaptain, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEclipseOfResolveSplinteredTombSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Eclipse of Resolve Splintered Tomb Sigil is recovered. Return to Acolyte Varn at the Shipping District on Smuggler's Moon.")
+                    "You recovered the Eclipse of Resolve Splintered Tomb Sigil. Return it to Acolyte Varn in the Shipping District on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -364,13 +364,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 4 Umbral Raider Saboteur enemies in the keeper chambers of the Korriban Sith Crypt Depths. Recover the Eclipse of Resolve Keeper's Rite Token.")
+                    "Defeat four Umbral Raider Saboteurs in the Korriban Sith Crypt Depths on Korriban and recover the Eclipse of Resolve Keeper's Rite Token.")
                 .AddKillObjective(NPCGroupType.Korriban_UmbralRaiderSaboteur, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEclipseOfResolveKeepersRiteToken)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Eclipse of Resolve Keeper's Rite Token is recovered. Return to Acolyte Varn at the Shipping District on Smuggler's Moon.")
+                    "You recovered the Eclipse of Resolve Keeper's Rite Token. Return it to Acolyte Varn in the Shipping District on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -383,12 +383,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat 1 Umbral Raider Commander in the lowest burial chamber of the Korriban Sith Crypt Depths. Bring at least two allies.")
+                    "With at least two allies, defeat the Umbral Raider Commander in the Final Ritual Chamber, through the door at the north end of the Korriban Sith Crypt Depths.")
                 .AddKillObjective(NPCGroupType.Korriban_UmbralRaiderCommander, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Umbral Raider Commander is defeated. Return to Acolyte Varn at the Shipping District on Smuggler's Moon.")
+                    "The Umbral Raider Commander is dead. Return to Acolyte Varn in the Shipping District on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

@@ -87,8 +87,8 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Mos Esper - South Entrance",
-      "2": "Tatooine - Mos Esper - South Entrance"
+      "0": "[Prefab] Tatooine - Mos Esper - South Entrance",
+      "2": "[Prefab] Tatooine - Mos Esper - South Entrance"
     }
   },
   "NoRest": {

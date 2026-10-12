@@ -88,13 +88,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Ruk Halven gave you the Hutlar Qion Test Site Key. Six Thermal Detonator adepts are stationed in Hutlar Qion Test Site on Hutlar. Defeat them and recover the Thermal Detonator Qion Test Log.")
+                    "Ruk Halven gave you the Hutlar Qion Test Site Key. Leave the Hutlar Outpost onto the Qion Tundra and head east through the Qion Foothills into the Qion Box Canyon; the test site entrance is just south of the road up to Fort Ka'ra. Defeat six Thermal Detonator adepts inside and recover the Thermal Detonator Qion Test Log.")
                 .AddKillObjective(NPCGroupType.Hutlar_ThermalDetonator_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneThermalDetonatorQionTestLog)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Thermal Detonator Qion Test Log has been recovered from Hutlar Qion Test Site. Return it to Ruk Halven at the Hutlar Outpost.")
+                    "You have the Thermal Detonator Qion Test Log. Return it to Ruk Halven at the Hutlar Outpost.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -109,13 +109,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Five Thermal Detonator specialists are stationed in Hutlar Qion Test Site on Hutlar. Defeat them and recover the Thermal Detonator Cryo-Range Regulator.")
+                    "Return to the Hutlar Qion Test Site in the Qion Box Canyon, defeat five Thermal Detonator specialists, and recover the Thermal Detonator Cryo-Range Regulator.")
                 .AddKillObjective(NPCGroupType.Hutlar_ThermalDetonator_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneThermalDetonatorCryoRangeRegulator)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Thermal Detonator Cryo-Range Regulator has been recovered from Hutlar Qion Test Site. Return it to Ruk Halven at the Hutlar Outpost.")
+                    "You have the Thermal Detonator Cryo-Range Regulator. Return it to Ruk Halven at the Hutlar Outpost.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -130,13 +130,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Thermal Detonator warden is stationed in Hutlar Qion Test Site on Hutlar. Defeat the warden and recover the Thermal Detonator Frostburned Test Crest.")
+                    "Bring two trusted fighters to the Hutlar Qion Test Site in the Qion Box Canyon, defeat the Thermal Detonator warden, and recover the Thermal Detonator Frostburned Test Crest.")
                 .AddKillObjective(NPCGroupType.Hutlar_ThermalDetonator_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneThermalDetonatorFrostburnedTestCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Thermal Detonator Frostburned Test Crest has been recovered from Hutlar Qion Test Site. Return it to Ruk Halven at the Hutlar Outpost.")
+                    "You have the Thermal Detonator Frostburned Test Crest. Return it to Ruk Halven at the Hutlar Outpost.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -151,13 +151,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Thermal Detonator inner circle, four in number, holds Hutlar Qion Test Site on Hutlar. Defeat them and recover the Thermal Detonator Site Chief's Override Chip.")
+                    "Return to the Hutlar Qion Test Site in the Qion Box Canyon, defeat the four members of the Thermal Detonator inner circle, and recover the Thermal Detonator Site Chief's Override Chip.")
                 .AddKillObjective(NPCGroupType.Hutlar_ThermalDetonator_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneThermalDetonatorSiteChiefsOverrideChip)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Thermal Detonator Site Chief's Override Chip has been recovered from Hutlar Qion Test Site. Return it to Ruk Halven at the Hutlar Outpost.")
+                    "You have the Thermal Detonator Site Chief's Override Chip. Return it to Ruk Halven at the Hutlar Outpost.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -170,12 +170,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Thermal Detonator master is stationed in Hutlar Qion Test Site on Hutlar. Defeat the master to complete the trial.")
+                    "Bring two trusted fighters to the Hutlar Qion Test Site in the Qion Box Canyon and defeat the Thermal Detonator master.")
                 .AddKillObjective(NPCGroupType.Hutlar_ThermalDetonator_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Thermal Detonator master has been defeated. Return to Ruk Halven at the Hutlar Outpost to complete the trial.")
+                    "The Thermal Detonator master is dead. Return to Ruk Halven at the Hutlar Outpost.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -201,13 +201,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Miri Koss gave you the Hutlar Qion Test Site Key. Six Overload Barrage adepts are stationed in Hutlar Qion Test Site on Hutlar. Defeat them and recover the Overload Barrage Qion Test Log.")
+                    "Miri Koss gave you the Hutlar Qion Test Site Key. Leave Fort Ka'ra and follow the road down into the Qion Box Canyon; the test site entrance is just south of the fort approach. Defeat six Overload Barrage adepts inside and recover the Overload Barrage Qion Test Log.")
                 .AddKillObjective(NPCGroupType.Hutlar_OverloadBarrage_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOverloadBarrageQionTestLog)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Overload Barrage Qion Test Log has been recovered from Hutlar Qion Test Site. Return it to Miri Koss at Fort Ka'ra on Hutlar.")
+                    "You have the Overload Barrage Qion Test Log. Return it to Miri Koss at Fort Ka'ra on Hutlar.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -222,13 +222,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Five Overload Barrage specialists are stationed in Hutlar Qion Test Site on Hutlar. Defeat them and recover the Overload Barrage Cryo-Range Regulator.")
+                    "Return to the Hutlar Qion Test Site in the Qion Box Canyon, defeat five Overload Barrage specialists, and recover the Overload Barrage Cryo-Range Regulator.")
                 .AddKillObjective(NPCGroupType.Hutlar_OverloadBarrage_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOverloadBarrageCryoRangeRegulator)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Overload Barrage Cryo-Range Regulator has been recovered from Hutlar Qion Test Site. Return it to Miri Koss at Fort Ka'ra on Hutlar.")
+                    "You have the Overload Barrage Cryo-Range Regulator. Return it to Miri Koss at Fort Ka'ra on Hutlar.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -243,13 +243,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Overload Barrage warden is stationed in Hutlar Qion Test Site on Hutlar. Defeat the warden and recover the Overload Barrage Frostburned Test Crest.")
+                    "Bring two trusted fighters to the Hutlar Qion Test Site in the Qion Box Canyon, defeat the Overload Barrage warden, and recover the Overload Barrage Frostburned Test Crest.")
                 .AddKillObjective(NPCGroupType.Hutlar_OverloadBarrage_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOverloadBarrageFrostburnedTestCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Overload Barrage Frostburned Test Crest has been recovered from Hutlar Qion Test Site. Return it to Miri Koss at Fort Ka'ra on Hutlar.")
+                    "You have the Overload Barrage Frostburned Test Crest. Return it to Miri Koss at Fort Ka'ra on Hutlar.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -264,13 +264,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Overload Barrage inner circle, four in number, holds Hutlar Qion Test Site on Hutlar. Defeat them and recover the Overload Barrage Site Chief's Override Chip.")
+                    "Return to the Hutlar Qion Test Site in the Qion Box Canyon, defeat the four members of the Overload Barrage inner circle, and recover the Overload Barrage Site Chief's Override Chip.")
                 .AddKillObjective(NPCGroupType.Hutlar_OverloadBarrage_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOverloadBarrageSiteChiefsOverrideChip)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Overload Barrage Site Chief's Override Chip has been recovered from Hutlar Qion Test Site. Return it to Miri Koss at Fort Ka'ra on Hutlar.")
+                    "You have the Overload Barrage Site Chief's Override Chip. Return it to Miri Koss at Fort Ka'ra on Hutlar.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -283,12 +283,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Overload Barrage master is stationed in Hutlar Qion Test Site on Hutlar. Defeat the master to complete the lesson.")
+                    "Bring two trusted fighters to the Hutlar Qion Test Site in the Qion Box Canyon and defeat the Overload Barrage master.")
                 .AddKillObjective(NPCGroupType.Hutlar_OverloadBarrage_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Overload Barrage master has been defeated. Return to Miri Koss at Fort Ka'ra on Hutlar to complete the lesson.")
+                    "The Overload Barrage master is dead. Return to Miri Koss at Fort Ka'ra on Hutlar.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -314,13 +314,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Aric Jorr gave you the Viscara Republic Engineering Bunker Key. Six Killzone Beacon adepts are stationed in Viscara Republic Engineering Bunker on Viscara. Defeat them and recover the Killzone Beacon Republic Bunker Docket.")
+                    "Aric Jorr gave you the Viscara Republic Engineering Bunker Key. Travel to Viscara, leave Veles by the south gate into the Wildlands, and head west through the Crossroads West to Outpost Hope; the bunker door is beside the elevator on the Combat Deck. Defeat six Killzone Beacon adepts inside and recover the Killzone Beacon Republic Bunker Docket.")
                 .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillzoneBeaconRepublicBunkerDocket)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon Republic Bunker Docket has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Corporate District on Smuggler's Moon.")
+                    "You have the Killzone Beacon Republic Bunker Docket. Return it to Aric Jorr in the Corporate District on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -335,13 +335,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Five Killzone Beacon specialists are stationed in Viscara Republic Engineering Bunker on Viscara. Defeat them and recover the Killzone Beacon Shield Grid Relay.")
+                    "Return to the Viscara Republic Engineering Bunker, beside the Combat Deck elevator in Outpost Hope on Viscara, defeat five Killzone Beacon specialists, and recover the Killzone Beacon Shield Grid Relay.")
                 .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillzoneBeaconShieldGridRelay)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon Shield Grid Relay has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Corporate District on Smuggler's Moon.")
+                    "You have the Killzone Beacon Shield Grid Relay. Return it to Aric Jorr in the Corporate District on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -356,13 +356,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon warden is stationed in Viscara Republic Engineering Bunker on Viscara. Defeat the warden and recover the Killzone Beacon Cracked Command Crest.")
+                    "Bring two trusted fighters to the Viscara Republic Engineering Bunker, beside the Combat Deck elevator in Outpost Hope on Viscara, defeat the Killzone Beacon warden, and recover the Killzone Beacon Cracked Command Crest.")
                 .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillzoneBeaconCrackedCommandCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon Cracked Command Crest has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Corporate District on Smuggler's Moon.")
+                    "You have the Killzone Beacon Cracked Command Crest. Return it to Aric Jorr in the Corporate District on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -377,13 +377,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon inner circle, four in number, holds Viscara Republic Engineering Bunker on Viscara. Defeat them and recover the Killzone Beacon Quartermaster Override Chip.")
+                    "Return to the Viscara Republic Engineering Bunker, beside the Combat Deck elevator in Outpost Hope on Viscara, defeat the four members of the Killzone Beacon inner circle, and recover the Killzone Beacon Quartermaster Override Chip.")
                 .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillzoneBeaconQuartermasterOverrideChip)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon Quartermaster Override Chip has been recovered from Viscara Republic Engineering Bunker. Return it to Aric Jorr at the Corporate District on Smuggler's Moon.")
+                    "You have the Killzone Beacon Quartermaster Override Chip. Return it to Aric Jorr in the Corporate District on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -396,12 +396,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon master is stationed in Viscara Republic Engineering Bunker on Viscara. Defeat the master to complete the briefing.")
+                    "Bring two trusted fighters to the Viscara Republic Engineering Bunker, beside the Combat Deck elevator in Outpost Hope on Viscara, and defeat the Killzone Beacon master.")
                 .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Killzone Beacon master has been defeated. Return to Aric Jorr at the Corporate District on Smuggler's Moon.")
+                    "The Killzone Beacon master is dead. Return to Aric Jorr in the Corporate District on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -427,13 +427,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Nella Voss gave you the Viscara Republic Engineering Bunker Key. Six Emergency Bunker adepts are stationed in Viscara Republic Engineering Bunker on Viscara. Defeat them and recover the Emergency Bunker Republic Bunker Docket.")
+                    "Nella Voss gave you the Viscara Republic Engineering Bunker Key. Travel to Viscara, leave Veles by the south gate into the Wildlands, and head west through the Crossroads West to Outpost Hope; the bunker door is beside the elevator on the Combat Deck. Defeat six Emergency Bunker adepts inside and recover the Emergency Bunker Republic Bunker Docket.")
                 .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyBunkerRepublicBunkerDocket)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker Republic Bunker Docket has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Anchorhead - Go-Corp Station on Tatooine.")
+                    "You have the Emergency Bunker Republic Bunker Docket. Return it to Nella Voss at the Anchorhead - Go-Corp Station on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -448,13 +448,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Five Emergency Bunker specialists are stationed in Viscara Republic Engineering Bunker on Viscara. Defeat them and recover the Emergency Bunker Shield Grid Relay.")
+                    "Return to the Viscara Republic Engineering Bunker, beside the Combat Deck elevator in Outpost Hope on Viscara, defeat five Emergency Bunker specialists, and recover the Emergency Bunker Shield Grid Relay.")
                 .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyBunkerShieldGridRelay)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker Shield Grid Relay has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Anchorhead - Go-Corp Station on Tatooine.")
+                    "You have the Emergency Bunker Shield Grid Relay. Return it to Nella Voss at the Anchorhead - Go-Corp Station on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -469,13 +469,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker warden is stationed in Viscara Republic Engineering Bunker on Viscara. Defeat the warden and recover the Emergency Bunker Cracked Command Crest.")
+                    "Bring two trusted fighters to the Viscara Republic Engineering Bunker, beside the Combat Deck elevator in Outpost Hope on Viscara, defeat the Emergency Bunker warden, and recover the Emergency Bunker Cracked Command Crest.")
                 .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyBunkerCrackedCommandCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker Cracked Command Crest has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Anchorhead - Go-Corp Station on Tatooine.")
+                    "You have the Emergency Bunker Cracked Command Crest. Return it to Nella Voss at the Anchorhead - Go-Corp Station on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -490,13 +490,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker inner circle, four in number, holds Viscara Republic Engineering Bunker on Viscara. Defeat them and recover the Emergency Bunker Quartermaster Override Chip.")
+                    "Return to the Viscara Republic Engineering Bunker, beside the Combat Deck elevator in Outpost Hope on Viscara, defeat the four members of the Emergency Bunker inner circle, and recover the Emergency Bunker Quartermaster Override Chip.")
                 .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyBunkerQuartermasterOverrideChip)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker Quartermaster Override Chip has been recovered from Viscara Republic Engineering Bunker. Return it to Nella Voss at the Anchorhead - Go-Corp Station on Tatooine.")
+                    "You have the Emergency Bunker Quartermaster Override Chip. Return it to Nella Voss at the Anchorhead - Go-Corp Station on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -509,12 +509,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker master is stationed in Viscara Republic Engineering Bunker on Viscara. Defeat the master to complete the certification.")
+                    "Bring two trusted fighters to the Viscara Republic Engineering Bunker, beside the Combat Deck elevator in Outpost Hope on Viscara, and defeat the Emergency Bunker master.")
                 .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Bunker master has been defeated. Return to Nella Voss at the Anchorhead - Go-Corp Station on Tatooine.")
+                    "The Emergency Bunker master is dead. Return to Nella Voss at the Anchorhead - Go-Corp Station on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

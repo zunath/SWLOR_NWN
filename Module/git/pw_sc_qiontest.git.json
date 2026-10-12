@@ -1687,7 +1687,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A throwing range is chalked onto the frozen floor, knife-scarred targets standing at the far end. The warden here throws at anyone who steps up."
           }
         },
         "DisarmDC": {
@@ -3207,7 +3207,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A blast-test pad scorched black, ringed by frost-cracked safety markers. The warden who runs the detonation trials still keeps it armed."
           }
         },
         "DisarmDC": {
@@ -4727,7 +4727,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A cluster of overloaded power cells is lashed to a test frame, humming dangerously in the cold. Its keeper is never far from it."
           }
         },
         "DisarmDC": {

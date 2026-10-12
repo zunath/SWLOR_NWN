@@ -98,7 +98,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A ritual circle at the center of the chamber, crowded with crates of stolen relics. The expedition's leader directs the plundering from here."
+          }
         },
         "DisarmDC": {
           "type": "byte",
@@ -463,7 +465,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A ritual basin at the heart of the chamber, its stone rim worn by grasping hands. The Vitae Reavers' chief holds court beside it."
+          }
         },
         "DisarmDC": {
           "type": "byte",
@@ -828,7 +832,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A sealed ritual door within the chamber, ringed with umbral sigils painted over the old Sith marks. The raiders' commander waits on the other side."
+          }
         },
         "DisarmDC": {
           "type": "byte",

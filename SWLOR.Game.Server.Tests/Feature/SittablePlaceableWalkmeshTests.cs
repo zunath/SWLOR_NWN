@@ -55,6 +55,27 @@ public class SittablePlaceableWalkmeshTests
         new[] { "x0_o2_use_chair", "x2_plc_used_sit", "zep_use_chair", "sit" }.Should().NotContain(onUsed);
     }
 
+    [Test]
+    public void CurvedWardrobe_BlocksWalkingThroughIt()
+    {
+        var path = StructureWalkmesh(FindRoot(), StructureType.WardrobeCurvedWhite);
+        var verts = new List<(float X, float Y)>();
+        var materials = new List<string>();
+        var section = string.Empty;
+        foreach (var raw in File.ReadLines(path))
+        {
+            var parts = raw.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0) continue;
+            if (parts[0] is "verts" or "faces" or "tverts" or "node" or "endnode") { section = parts[0]; continue; }
+            if (section == "verts") verts.Add((float.Parse(parts[0], CultureInfo.InvariantCulture), float.Parse(parts[1], CultureInfo.InvariantCulture)));
+            else if (section == "faces") materials.Add(parts[^1]);
+        }
+
+        materials.Should().NotBeEmpty().And.OnlyContain(material => material == "7", "every face of the cabinet's footprint is non-walkable");
+        (verts.Max(v => v.X) - verts.Min(v => v.X)).Should().BeGreaterThan(2.0f, "the cabinet is 2.1 m wide");
+        (verts.Max(v => v.Y) - verts.Min(v => v.Y)).Should().BeGreaterThan(0.75f, "the cabinet is 0.8 m deep");
+    }
+
     private static string StructureWalkmesh(string root, StructureType type)
     {
         var resref = type.GetAttribute<StructureType, StructureAttribute>().Resref;

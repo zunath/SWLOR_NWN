@@ -142,6 +142,14 @@ public class HutlarDroidFoundryPlacementTests
         AssertDoorLink(Tagged(core, "Door List", "PG_hut_fdy_core_DOOR_ENT_1"), assembly, "PG_hut_fdy_assembly_EXIT_1", 2);
         AssertDoorLink(Tagged(core, "Door List", "PG_hut_fdy_core_DOOR_EXIT_1"), outpost, OutpostDoor, 1);
 
+        var testSiteEntrance = List(Load("git", "hutlar_testsite"), "Placeable List")
+            .Single(p => Local(p, "DESTINATION")?.GetString() == "H_CloneBase_Entry");
+        Text(testSiteEntrance, "OnUsed").Should().Be("teleport", "the Cloning Test Site is the only way into the Outpost");
+        Number(testSiteEntrance, "Useable").Should().Be(1);
+        Number(testSiteEntrance, "Static").Should().Be(0, "a static placeable cannot be used");
+        Number(testSiteEntrance, "Plot").Should().Be(1);
+        List(outpost, "WaypointList").Count(w => Text(w, "Tag") == "H_CloneBase_Entry").Should().Be(1);
+
         var outpostExit = Tagged(outpost, "Placeable List", "InvisibleObjectLarge");
         Text(outpostExit, "OnUsed").Should().Be("teleport", "the Outpost is the foundry's hub and must lead back out");
         Number(outpostExit, "Plot").Should().Be(1, "players must not be able to destroy the Outpost's only exit");

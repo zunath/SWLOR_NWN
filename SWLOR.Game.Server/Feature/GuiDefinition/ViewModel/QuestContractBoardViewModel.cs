@@ -247,7 +247,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var authorName = PlayerName.GetPlainDisplayNameByPlayerId(Player, contract.AuthorPlayerId, contract.AuthorName);
 
                 _rows.Add(contract);
-                labels.Add($"{contract.Title} - {authorName} - {contract.RewardCredits} cr/batch - {contract.CompletionsRemaining} left");
+                labels.Add($"{contract.Title} - {authorName} - {contract.RewardCredits} cr");
                 toggles.Add(false);
                 colors.Add(GuiColor.White);
             }
@@ -377,8 +377,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var sb = new StringBuilder();
 
-            sb.Append($"Reward per batch: {contract.RewardCredits} credits\n");
-            sb.Append($"Batches: {contract.CompletionsRemaining} of {contract.TotalCompletions} remaining\n");
             sb.Append($"Title: {contract.Title}\n");
 
             if (_isBrowseTab)
@@ -395,8 +393,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (contract.Status == QuestContractStatus.Published)
                 sb.Append($"Expires: {contract.DateExpires:yyyy-MM-dd}\n");
 
-            if (contract.Status == QuestContractStatus.Published)
-                sb.Append("Accepting does not reserve a batch. First come, first served.\n");
+            if (contract.RewardCredits > 0)
+                sb.Append($"Reward: {contract.RewardCredits} credits\n");
 
             sb.Append('\n');
             sb.Append(string.IsNullOrWhiteSpace(contract.Description) ? "(No description)" : contract.Description);

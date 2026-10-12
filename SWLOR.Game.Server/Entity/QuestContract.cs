@@ -30,15 +30,13 @@ namespace SWLOR.Game.Server.Entity
         public List<QuestContractObjective> Objectives { get; set; }
         public int RewardCredits { get; set; }
         public List<QuestContractItem> RewardItems { get; set; }
-        public int TotalCompletions { get; set; } = 1;
         public int CompletionsRemaining { get; set; }
         public string CompletedByPlayerId { get; set; } = string.Empty;
-        public int CompletionAttempt { get; set; } = 1;
-        public string CompletedSubmissionId { get; set; } = string.Empty;
         [Indexed]
         public int SettlementPending { get; set; }
         public DateTime DatePublished { get; set; }
         public DateTime DateExpires { get; set; }
+        public DateTime? DateClosed { get; set; }
         public string TakedownPlayerId { get; set; }
         public string TakedownReason { get; set; }
     }

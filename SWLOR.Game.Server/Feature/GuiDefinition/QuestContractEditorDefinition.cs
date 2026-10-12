@@ -166,8 +166,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.SetHeight(40f);
 
                 row.AddLabel()
-                    .SetText("Credits per batch")
-                    .SetWidth(150f);
+                    .SetText("Reward Credits")
+                    .SetWidth(140f);
 
                 row.AddTextEdit()
                     .SetPlaceholder("Credits")
@@ -177,24 +177,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 row.AddSpacer();
             });
-
-            col.AddRow(row =>
-            {
-                row.AddLabel()
-                    .SetText($"Batches (1-{QuestContractBoard.MaxBatches})")
-                    .SetWidth(150f);
-                row.AddTextEdit()
-                    .SetPlaceholder("Batches")
-                    .BindValue(model => model.BatchesText)
-                    .SetHeight(32f)
-                    .SetWidth(140f);
-                row.AddSpacer();
-            });
-
-            col.AddRow(row => row.AddLabel()
-                .SetText("Multiple batches offer credits only. Objectives are per batch.")
-                .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                .SetHeight(20f));
 
             col.AddRow(row =>
             {

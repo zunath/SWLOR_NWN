@@ -163,80 +163,102 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
-        [EngineTest("Contract batches pay repeat deliveries separately and refund only unused funding", Category = "QuestContractEscrow")]
-        public static async Task RepeatedBatchesAndReposting(EngineTestContext ctx)
+        [EngineTest("Post Again opens an independent prefilled contract draft for editing", Category = "QuestContractEscrow")]
+        public static async Task PostAgainCreatesEditableDraft(EngineTestContext ctx)
         {
-            var worker = ctx.SpawnCreature("civilian");
             var author = ctx.SpawnCreature("civilian");
             await ctx.WaitFrameAsync();
-            var playerId = GetObjectUUID(worker);
-            var authorId = GetObjectUUID(author);
-            var dbPlayer = new Player(playerId);
-            var contract = new QuestContract
+            await ctx.ExecuteInCreatureContextAsync(author, () =>
             {
-                AuthorPlayerId = authorId, Status = QuestContractStatus.Published,
-                Title = "Repeat deliveries", Description = "One item per batch", TotalCompletions = 3,
-                CompletionsRemaining = 3, RewardCredits = 100,
-                Objectives = new List<QuestContractObjective> { new() { ItemResref = "nw_it_medkit001", ItemName = "Kit", Quantity = 1 } }
-            };
-            DB.Set(contract);
-            DB.Set(dbPlayer);
-            var quest = QuestContractFactory.BuildQuest(contract);
-            await ctx.ExecuteInCreatureContextAsync(worker, () =>
-            {
-                var gold = GetGold(worker);
-                var questId = quest.QuestId;
-                var item = CreateItemOnObject("nw_it_medkit001", worker);
-                ctx.Track(item);
+                var source = new QuestContract
+                {
+                    AuthorPlayerId = GetObjectUUID(author), Status = QuestContractStatus.Expired,
+                    Title = "Medical supplies", Description = "Deliver three medkits.", RewardCredits = 125,
+                    DateClosed = DateTime.UtcNow,
+                    Objectives = new() { new() { ItemResref = "nw_it_medkit001", ItemName = "Medkit", Quantity = 3 } }
+                };
+                QuestContract draft = null;
+                DB.Set(source);
                 try
                 {
-                    for (var attempt = 1; attempt <= 2; attempt++)
-                    {
-                        dbPlayer.Quests[questId] = new PlayerQuest { TimesCompleted = attempt - 1 };
-                        DB.Set(dbPlayer);
-                        quest.CollectedItemHandler(worker, item);
-                        dbPlayer.Quests[questId].TimesCompleted = attempt;
-                        dbPlayer.Quests[questId].DateLastCompleted = DateTime.UtcNow;
-                        DB.Set(dbPlayer);
-                        ctx.Assert(QuestContractBoard.CompleteContract(contract, playerId, attempt), "Fresh delivery consumes one funded batch");
-                        ClaimWithSnapshot(ctx, worker);
-                    }
-                    var settled = DB.Get<QuestContract>(contract.Id);
-                    ctx.AssertEqual(1, settled.CompletionsRemaining, "Two completions leave one batch");
-                    ctx.AssertEqual(QuestContractStatus.Published, settled.Status, "The board listing remains active");
-                    ctx.AssertEqual(gold + 200, GetGold(worker), "Two independent claims pay exactly two rewards");
-                    ctx.AssertEqual(2, Deliveries(contract.Id).Count(x => x.IsRewardPayment), "Claimed receipts are retained separately");
-                    ctx.Assert(!QuestContractBoard.CompleteContract(contract, playerId, 1), "An earlier attempt cannot spend another batch");
-
-                    // Abandoning after a successful batch must not look like another completion at boot.
-                    var abandoned = QuestContractBoard.GetOrCreateSubmission(playerId, settled, 3);
-                    abandoned.Items.Add(new QuestContractItem { Data = ObjectPlugin.Serialize(item) });
-                    DB.Set(abandoned);
-                    typeof(QuestContractBoard).GetMethod("RecoverSettlements", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, null);
-                    ctx.AssertEqual(1, DB.Get<QuestContract>(contract.Id).CompletionsRemaining, "Abandoned repeat progress does not earn another payment");
-                    ctx.Assert(!DB.Get<QuestContractDelivery>(abandoned.Id).HeldForCompletion, "Abandoned repeat submissions are returned");
-
-                    // A headless NPC has no account for the cancellation authorization check.
-                    // Expiry exercises the same remaining-escrow refund without a client login.
-                    typeof(QuestContractBoard).GetMethod("ExpireContract", BindingFlags.NonPublic | BindingFlags.Static)
-                        .Invoke(null, new object[] { DB.Get<QuestContract>(contract.Id) });
-                    ctx.AssertEqual(100, Deliveries(contract.Id).Where(x => x.PlayerId == authorId).Sum(x => x.Credits), "Only one unused reward is refunded");
-                    ctx.AssertEqual(string.Empty, QuestContractBoard.PostAgain(author, contract.Id), "Completed content can be copied into a new draft");
-                    var draft = QuestContractBoard.GetDraft(author);
-                    try
-                    {
-                        ctx.Assert(draft.Id != contract.Id, "Reposting uses a fresh identity");
-                        ctx.AssertEqual(3, draft.TotalCompletions, "Original batch count is copied");
-                        ctx.AssertEqual(0, draft.RewardItems.Count, "Escrow is never copied");
-                        ctx.AssertEqual(1, draft.Objectives.Count, "Objectives are preserved");
-                        ctx.Assert(QuestContractBoard.PostAgain(author, contract.Id) != string.Empty, "An existing draft is never overwritten");
-                    }
-                    finally { if (draft != null) Cleanup(draft); }
+                    ctx.AssertEqual(string.Empty, QuestContractBoard.PostAgain(author, source.Id), "Reposting creates a draft");
+                    draft = QuestContractBoard.GetDraft(author);
+                    ctx.Assert(draft.Id != source.Id && draft.Status == QuestContractStatus.Draft, "Reposting does not publish or reuse the old identity");
+                    ctx.AssertEqual(source.Title, draft.Title, "Title is prefilled");
+                    ctx.AssertEqual(source.Description, draft.Description, "Description is prefilled");
+                    ctx.AssertEqual(125, draft.RewardCredits, "Credit reward is prefilled");
+                    ctx.AssertEqual(3, draft.Objectives.Single().Quantity, "Objective is prefilled");
+                    ctx.Assert(draft.DateClosed == null, "The new draft has no closing date");
+                    draft.Title = "Edited supplies";
+                    draft.RewardCredits = 250;
+                    draft.Objectives[0].Quantity = 5;
+                    DB.Set(draft);
+                    ctx.AssertEqual("Edited supplies", QuestContractBoard.GetDraft(author).Title, "Edits persist before posting");
+                    ctx.AssertEqual(3, DB.Get<QuestContract>(source.Id).Objectives.Single().Quantity, "Editing does not change the original");
+                    ctx.Assert(QuestContractBoard.PostAgain(author, source.Id) != string.Empty, "An existing draft is never overwritten");
                 }
                 finally
                 {
-                    Cleanup(contract);
-                    DB.Delete<Player>(playerId);
+                    if (draft != null) Cleanup(draft);
+                    Cleanup(source);
+                }
+            });
+        }
+
+        [EngineTest("Contract history cleanup exceeds fifty rows and preserves claimable deliveries", Category = "QuestContractEscrow")]
+        public static async Task HistoryCleanupPreservesDeliveries(EngineTestContext ctx)
+        {
+            var worker = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            await ctx.ExecuteInCreatureContextAsync(worker, () =>
+            {
+                var now = DateTime.UtcNow;
+                var contracts = Enumerable.Range(0, 55).Select(_ => new QuestContract
+                {
+                    Status = QuestContractStatus.Fulfilled, DateClosed = now.AddDays(-31)
+                }).ToList();
+                var legacyExpired = new QuestContract { Status = QuestContractStatus.Expired, DateExpires = now.AddDays(-31) };
+                contracts.Add(legacyExpired);
+                var preserved = new[]
+                {
+                    new QuestContract { Status = QuestContractStatus.Draft, DateCreated = now.AddYears(-1) },
+                    new QuestContract { Status = QuestContractStatus.Published, DatePublished = now.AddYears(-1) },
+                    new QuestContract { Status = QuestContractStatus.Expired, DateClosed = now.AddDays(-29) },
+                    new QuestContract { Status = QuestContractStatus.Fulfilled, DateClosed = now.AddDays(-31), SettlementPending = 1 },
+                    new QuestContract { Status = QuestContractStatus.Fulfilled, DateClosed = now.AddDays(-31) },
+                    new QuestContract { Status = QuestContractStatus.Cancelled }
+                };
+                try
+                {
+                    foreach (var contract in contracts.Concat(preserved)) DB.Set(contract);
+                    var item = CreateItemOnObject("nw_it_medkit001", worker);
+                    ctx.Track(item);
+                    var pending = new QuestContractDelivery
+                    {
+                        PlayerId = GetObjectUUID(worker), SourceContractId = contracts[0].Id, SourceContractTitle = "Old reward",
+                        IsRewardPayment = true, Credits = 75, Items = new() { new() { Data = ObjectPlugin.Serialize(item) } }
+                    };
+                    DB.Set(pending);
+                    var emptyReceipt = new QuestContractDelivery { IsRewardPayment = true, SourceContractId = contracts[0].Id };
+                    DB.Set(emptyReceipt);
+                    DB.Set(new QuestContractDelivery { HeldForCompletion = true, SourceContractId = preserved[4].Id });
+                    typeof(QuestContractBoard).GetMethod("PruneHistory", BindingFlags.NonPublic | BindingFlags.Static)
+                        .Invoke(null, new object[] { now });
+                    foreach (var contract in contracts)
+                        ctx.Assert(DB.Get<QuestContract>(contract.Id) == null, "All old settled history rows are deleted, including rows beyond fifty");
+                    foreach (var contract in preserved)
+                        ctx.Assert(DB.Get<QuestContract>(contract.Id) != null, "Open, recent, unsettled, held, and undated history are preserved");
+                    ctx.Assert(DB.Get<QuestContract>(preserved[5].Id).DateClosed != null, "Undated legacy history starts its retention window");
+                    ctx.Assert(DB.Get<QuestContractDelivery>(emptyReceipt.Id) == null, "Empty receipts are deleted");
+                    ctx.AssertEqual("Old reward", DB.Get<QuestContractDelivery>(pending.Id).SourceContractTitle, "Pending deliveries retain their source title");
+                    var gold = GetGold(worker);
+                    ClaimWithSnapshot(ctx, worker);
+                    ctx.AssertEqual(gold + 75, GetGold(worker), "Pending items and credits can still be claimed after history deletion");
+                    ctx.Assert(DB.Get<QuestContractDelivery>(pending.Id) == null, "Claimed reward receipts no longer accumulate after their source is deleted");
+                }
+                finally
+                {
+                    foreach (var contract in contracts.Concat(preserved)) Cleanup(contract);
                 }
             });
         }

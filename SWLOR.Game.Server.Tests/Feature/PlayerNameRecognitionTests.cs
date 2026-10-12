@@ -14,13 +14,20 @@ public class PlayerNameRecognitionTests
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature",
             "GuiDefinition", "ViewModel", "DMPlayerExamineViewModel.cs"));
-        var examine = ExtractMethod(source, "public static void ExaminePlayer()");
+        var examine = ExtractMethod(source, "public static void ShowExamineWindow(uint dm, uint target)");
+        var nativeExamine = ExtractMethod(source, "public static void ExaminePlayer()");
+        var disabledExamine = ExtractMethod(source, "public static void ExamineDisabledPlayerPanel()");
         var initialize = ExtractMethod(source, "protected override void Initialize(DMPlayerExaminePayload initialPayload)");
         var details = ExtractMethod(source, "private void LoadTargetDetails()");
         var definition = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature",
             "GuiDefinition", "DMPlayerExamineDefinition.cs"));
 
+        nativeExamine.Should().Contain("ShowExamineWindow(OBJECT_SELF, StringToObject(EventsPlugin.GetEventData(\"EXAMINEE_OBJECT_ID\")))");
+        nativeExamine.Should().NotContain("Gui.TogglePlayerWindow");
+        disabledExamine.Should().Contain("ShowExamineWindow(GetLastGuiEventPlayer(), GetLastGuiEventObject())");
+        disabledExamine.Should().NotContain("Gui.TogglePlayerWindow");
         examine.Should().Contain("if (!GetIsDM(dm) && !GetIsDMPossessed(dm))");
+        examine.Should().Contain("Gui.TogglePlayerWindow");
         examine.IndexOf("return;", StringComparison.Ordinal).Should()
             .BeLessThan(examine.IndexOf("Gui.TogglePlayerWindow", StringComparison.Ordinal));
         initialize.Should().Contain("_target = initialPayload.Target;");

@@ -43,7 +43,10 @@ public class RecipeCategoryBaseItemTests
 
             var path = Path.Combine(root, "Module", "uti", $"{recipe.Resref}.uti.json");
             if (!File.Exists(path))
+            {
+                mismatches.Add($"{type} ({recipe.Category}) -> {recipe.Resref} has no blueprint");
                 continue;
+            }
 
             using var uti = JsonDocument.Parse(File.ReadAllText(path));
             var baseItem = (BaseItem)uti.RootElement.GetProperty("BaseItem").GetProperty("value").GetInt32();

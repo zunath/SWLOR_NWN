@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NWN.Native.API;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
@@ -10,6 +11,8 @@ namespace SWLOR.Game.Server.Service
     /// </summary>
     public static class DMPresence
     {
+        private static readonly Dictionary<(string DMId, GuiWindowType Type), uint> _windowTargets = new();
+
         /// <summary>
         /// Returns true when the DM's avatar is visible to players (the native "Appear" state).
         /// </summary>
@@ -128,7 +131,32 @@ namespace SWLOR.Game.Server.Service
         public static void ToggleWindow(uint actor, GuiWindowType type, GuiPayloadBase payload = null)
         {
             var dm = GetDM(actor);
-            Gui.TogglePlayerWindow(dm, type, payload, uiTarget: GetControlledCreature(dm));
+            var controlled = GetControlledCreature(dm);
+
+            // After possession starts or ends, the window can still be open on the object the DM no longer
+            // controls. Move it to the controlled creature instead of opening a second copy over the same view model.
+            var moved = false;
+            foreach (var target in GetWindowTargets(dm, type))
+            {
+                if (target == controlled || !GetIsObjectValid(target) || !Gui.IsWindowOpen(target, type))
+                    continue;
+
+                Gui.ClosePlayerWindow(dm, type, target);
+                moved = true;
+            }
+
+            if (!moved || !Gui.IsWindowOpen(controlled, type))
+                Gui.TogglePlayerWindow(dm, type, payload, uiTarget: controlled);
+
+            _windowTargets[(GetObjectUUID(dm), type)] = controlled;
+        }
+
+        // The DM avatar, and the object a window was last opened on through ToggleWindow.
+        private static IEnumerable<uint> GetWindowTargets(uint dm, GuiWindowType type)
+        {
+            yield return dm;
+            if (_windowTargets.TryGetValue((GetObjectUUID(dm), type), out var previous) && previous != dm)
+                yield return previous;
         }
 
         /// <summary>
@@ -150,6 +178,11 @@ namespace SWLOR.Game.Server.Service
         {
             var dm = GetDM(actor);
             Gui.ClosePlayerWindow(dm, type, GetControlledCreature(dm));
+            foreach (var target in GetWindowTargets(dm, type))
+            {
+                if (GetIsObjectValid(target))
+                    Gui.ClosePlayerWindow(dm, type, target);
+            }
         }
     }
 }

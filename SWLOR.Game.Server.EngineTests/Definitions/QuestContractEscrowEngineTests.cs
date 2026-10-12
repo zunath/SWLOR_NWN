@@ -163,6 +163,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        /// <summary>Verifies repost creation, independent persisted edits, and draft protection against NWNX and Redis.</summary>
         [EngineTest("Post Again opens an independent prefilled contract draft for editing", Category = "QuestContractEscrow")]
         public static async Task PostAgainCreatesEditableDraft(EngineTestContext ctx)
         {
@@ -205,6 +206,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        /// <summary>
+        /// Sweeps more than one default page of settled history, preserves unsettled records, and
+        /// claims a serialized item and credits after their source history has been removed.
+        /// </summary>
         [EngineTest("Contract history cleanup exceeds fifty rows and preserves claimable deliveries", Category = "QuestContractEscrow")]
         public static async Task HistoryCleanupPreservesDeliveries(EngineTestContext ctx)
         {
@@ -263,6 +268,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        /// <summary>
+        /// Removes more than fifty empty orphaned receipts with no closed history present while
+        /// retaining existing-source receipts, held submissions, items, and credits.
+        /// </summary>
         [EngineTest("Contract orphaned empty deliveries are swept without closed history and retain unclaimed value", Category = "QuestContractEscrow")]
         public static async Task OrphanedDeliveryCleanup(EngineTestContext ctx)
         {

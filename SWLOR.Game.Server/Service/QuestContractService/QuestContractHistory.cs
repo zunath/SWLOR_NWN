@@ -8,6 +8,11 @@ namespace SWLOR.Game.Server.Service.QuestContractService
     {
         public const int RetentionDays = 30;
 
+        /// <summary>
+        /// Removes an empty, unheld delivery only after its source contract is gone. Receipts whose
+        /// source still exists remain available to prevent duplicate payments during settlement recovery.
+        /// </summary>
+        /// <returns>Whether the delivery was deleted.</returns>
         public static bool PruneOrphanedDelivery(QuestContractDelivery delivery, Func<string, bool> sourceExists,
             Action<string> deleteDelivery)
         {
@@ -19,6 +24,12 @@ namespace SWLOR.Game.Server.Service.QuestContractService
             return true;
         }
 
+        /// <summary>
+        /// Removes terminal history at the retention boundary once settlement, escrow, and held
+        /// submissions are clear. Unclaimed deliveries keep their value independently of the history.
+        /// Undated legacy records receive a closing date before eligibility is checked.
+        /// </summary>
+        /// <returns>Whether the contract history was deleted.</returns>
         public static bool Prune(QuestContract contract, DateTime now,
             Func<List<QuestContractDelivery>> readDeliveries, Action<QuestContract> saveContract,
             Action<string> deleteContract, Action<string> deleteDelivery)

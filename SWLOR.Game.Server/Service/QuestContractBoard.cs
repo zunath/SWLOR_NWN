@@ -67,6 +67,10 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.QuestContract, $"Registered {registeredCount} quest contract(s).", true);
         }
 
+        /// <summary>
+        /// Sweeps all terminal contracts after settlement recovery, then removes empty orphaned
+        /// deliveries left by interrupted claims. Both queries include records beyond the default page.
+        /// </summary>
         private static void PruneHistory(DateTime now)
         {
             var query = new DBQuery<QuestContract>()
@@ -269,12 +273,21 @@ namespace SWLOR.Game.Server.Service
             return string.Empty;
         }
 
+        /// <summary>
+        /// Identifies reusable terminal statuses. Active drafts, published contracts, and moderated
+        /// takedowns cannot be copied through Post Again.
+        /// </summary>
         public static bool CanPostAgain(QuestContract contract)
         {
             return contract.Status == QuestContractStatus.Fulfilled ||
                 contract.Status == QuestContractStatus.Expired || contract.Status == QuestContractStatus.Cancelled;
         }
 
+        /// <summary>
+        /// Copies editable text, objectives, and credit reward into a new draft with its own identity.
+        /// Escrowed items and lifecycle state are not copied; item rewards must be supplied again.
+        /// The caller must validate authorization before persisting the draft.
+        /// </summary>
         public static QuestContract CreateRepostDraft(QuestContract source)
         {
             return new QuestContract
@@ -294,6 +307,11 @@ namespace SWLOR.Game.Server.Service
             };
         }
 
+        /// <summary>
+        /// Creates an editable repost draft for the source's author without overwriting an existing
+        /// draft. Creating the draft neither publishes the contract nor charges its posting cost.
+        /// </summary>
+        /// <returns>An empty string on success, otherwise a player-facing validation error.</returns>
         public static string PostAgain(uint player, string contractId)
         {
             var source = DB.Get<QuestContract>(contractId);
@@ -308,6 +326,11 @@ namespace SWLOR.Game.Server.Service
             return string.Empty;
         }
 
+        /// <summary>
+        /// Checks source ownership, reusable status, and the author's single-draft limit before a copy
+        /// is created. Missing and foreign contracts share the same error message.
+        /// </summary>
+        /// <returns>An empty string when reposting is allowed, otherwise a player-facing error.</returns>
         public static string ValidateRepost(QuestContract source, string authorId, bool hasDraft)
         {
             if (source == null || source.AuthorPlayerId != authorId)
@@ -499,6 +522,10 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
+        /// <summary>
+        /// Claims each delivery through a durable character checkpoint before persisting its remaining
+        /// value. Empty reward receipts remain only while their source can recover settlement.
+        /// </summary>
         private static void ClaimDeliveries(uint player, Action saveCharacter)
         {
             var playerId = GetObjectUUID(player);
@@ -651,6 +678,10 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        /// <summary>
+        /// Records the winner and closing date before settling a published contract. Persisting the
+        /// pending flag first allows boot recovery to finish an interrupted settlement without reopening it.
+        /// </summary>
         public static void CompleteContract(QuestContract contract, string playerId)
         {
             if (contract.Status != QuestContractStatus.Published || contract.CompletionsRemaining <= 0)

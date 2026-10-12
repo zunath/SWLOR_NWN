@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<QuestContractBoardViewModel> _builder = new();
 
+        /// <summary>Builds Browse and My Contracts with selection details, delivery claims, and Post Again.</summary>
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.QuestContractBoard)

@@ -15,6 +15,7 @@ public class QuestContractHistoryTests
     private int _failAt;
     private bool _failAfterWrite;
 
+    /// <summary>Starts each case with settled history exactly at the retention boundary and no write failures.</summary>
     [SetUp]
     public void SetUp()
     {
@@ -25,6 +26,7 @@ public class QuestContractHistoryTests
         _failAfterWrite = false;
     }
 
+    /// <summary>Checks every terminal status immediately before and exactly at thirty days.</summary>
     [TestCase(QuestContractStatus.Fulfilled)]
     [TestCase(QuestContractStatus.Expired)]
     [TestCase(QuestContractStatus.Cancelled)]
@@ -40,6 +42,7 @@ public class QuestContractHistoryTests
         _deleted.Should().BeTrue();
     }
 
+    /// <summary>Ensures an old closing date never makes a draft or published contract eligible for deletion.</summary>
     [TestCase(QuestContractStatus.Draft)]
     [TestCase(QuestContractStatus.Published)]
     public void OpenContractsAreNeverPruned(QuestContractStatus status)
@@ -51,6 +54,7 @@ public class QuestContractHistoryTests
         _writes.Should().Be(0);
     }
 
+    /// <summary>Verifies each unsettled ownership state independently blocks history deletion without writes.</summary>
     [Test]
     public void PendingSettlementEscrowAndHeldSubmissionsPreventDeletion()
     {
@@ -66,6 +70,7 @@ public class QuestContractHistoryTests
         _writes.Should().Be(0);
     }
 
+    /// <summary>Checks that pruning removes empty receipts while preserving claimable value and source labels.</summary>
     [Test]
     public void EmptyReceiptsAreDeletedAndUnclaimedCreditsItemsAndTitlesSurvive()
     {
@@ -80,6 +85,7 @@ public class QuestContractHistoryTests
         items.SourceContractTitle.Should().Be("Refund");
     }
 
+    /// <summary>Uses the persisted expiry date to age legacy expired history without an extra grace period.</summary>
     [Test]
     public void LegacyExpiredHistoryUsesItsKnownExpiryDate()
     {
@@ -90,6 +96,7 @@ public class QuestContractHistoryTests
         _contract.DateClosed.Should().Be(_contract.DateExpires);
     }
 
+    /// <summary>Starts one full retention window for undated legacy history and keeps it stable across sweeps.</summary>
     [TestCase(QuestContractStatus.Fulfilled)]
     [TestCase(QuestContractStatus.Cancelled)]
     [TestCase(QuestContractStatus.TakenDown)]
@@ -107,6 +114,7 @@ public class QuestContractHistoryTests
             DeleteContract, DeleteDelivery).Should().BeTrue();
     }
 
+    /// <summary>Injects failures before and after each deletion to verify retries preserve unpaid credits.</summary>
     [TestCase(1, false)]
     [TestCase(1, true)]
     [TestCase(2, false)]
@@ -129,6 +137,7 @@ public class QuestContractHistoryTests
         pending.Credits.Should().Be(75);
     }
 
+    /// <summary>Checks source existence protects both reward and refund receipts regardless of their age.</summary>
     [TestCase(true, true)]
     [TestCase(true, false)]
     [TestCase(false, true)]
@@ -148,6 +157,7 @@ public class QuestContractHistoryTests
             deletedIds.Should().Equal(receipt.Id);
     }
 
+    /// <summary>Prevents orphan cleanup from consulting the source or deleting value and held ownership.</summary>
     [TestCase(75, false, false)]
     [TestCase(0, true, false)]
     [TestCase(0, false, true)]
@@ -164,13 +174,20 @@ public class QuestContractHistoryTests
         delivery.HeldForCompletion.Should().Be(isHeld);
     }
 
+    /// <summary>Runs cleanup against the fixture's mutable store with failure-injecting write callbacks.</summary>
     private bool Prune() => QuestContractHistory.Prune(_contract, _now, () => _deliveries.ToList(), Save,
         DeleteContract, DeleteDelivery);
 
+    /// <summary>Persists the fixture contract through the same failure boundary used for deletions.</summary>
     private void Save(QuestContract contract) => Write(() => _contract = contract);
+
+    /// <summary>Marks source deletion while allowing failures immediately before or after the change.</summary>
     private void DeleteContract(string id) => Write(() => _deleted = true);
+
+    /// <summary>Removes the matching receipt through an idempotent, failure-injecting store operation.</summary>
     private void DeleteDelivery(string id) => Write(() => _deliveries.RemoveAll(delivery => delivery.Id == id));
 
+    /// <summary>Simulates a store interruption at one selected write, before or after its mutation.</summary>
     private void Write(Action write)
     {
         var fail = ++_writes == _failAt;

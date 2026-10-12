@@ -8,6 +8,10 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class QuestContractRepostTests
 {
+    /// <summary>
+    /// Checks reusable statuses produce a fresh draft whose editable values are independent of the
+    /// source, with no duplicated escrow or lifecycle state.
+    /// </summary>
     [TestCase(QuestContractStatus.Fulfilled)]
     [TestCase(QuestContractStatus.Expired)]
     [TestCase(QuestContractStatus.Cancelled)]
@@ -54,6 +58,7 @@ public class QuestContractRepostTests
         QuestContractBoard.ValidateDraft(draft, draft.Title, draft.Description, _ => "Ore").Should().BeEmpty();
     }
 
+    /// <summary>Rejects missing or foreign sources, existing drafts, active contracts, and moderated takedowns.</summary>
     [Test]
     public void PostAgainRejectsOtherAuthorsExistingDraftsAndModeratedOrActiveContracts()
     {

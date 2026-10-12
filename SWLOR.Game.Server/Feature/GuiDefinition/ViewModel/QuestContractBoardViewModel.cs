@@ -172,6 +172,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        /// <summary>Allows copying the selected reusable contract only when the author has no draft.</summary>
         public bool IsPostAgainEnabled
         {
             get => Get<bool>();
@@ -259,6 +260,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadDetail();
         }
 
+        /// <summary>
+        /// Lists every retained contract owned by the player, with drafts and published contracts first
+        /// and recent history next. Closed entries remain selectable for Post Again.
+        /// </summary>
         private void LoadMyContracts()
         {
             _selectedIndex = -1;
@@ -309,6 +314,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsClaimDeliveriesEnabled = QuestContractBoard.HasPendingDeliveries(playerId);
         }
 
+        /// <summary>
+        /// Refreshes the selected contract's details and actions, including repost eligibility and the
+        /// existing-draft restriction. Clears actions when there is no selected row.
+        /// </summary>
         private void LoadDetail()
         {
             IsAcceptVisible = false;
@@ -373,6 +382,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
+        /// <summary>Formats the selected contract's author, status, dates, and reward for the detail panel.</summary>
         private string BuildDetailText(QuestContract contract)
         {
             var sb = new StringBuilder();
@@ -402,6 +412,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return sb.ToString();
         }
 
+        /// <summary>Maps persisted statuses to the labels shared by the contract list and detail panel.</summary>
         private static string StatusLabel(QuestContractStatus status)
         {
             return status switch
@@ -546,6 +557,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.QuestContractEditor, null, TetherObject);
         };
 
+        /// <summary>
+        /// Creates a validated repost draft and reopens the editor so an already-open editor also loads
+        /// the new copy. Validation errors leave the current selection and draft untouched.
+        /// </summary>
         public Action OnClickPostAgain() => () =>
         {
             if (_isBrowseTab || _selectedIndex < 0 || _selectedIndex >= _rows.Count) return;

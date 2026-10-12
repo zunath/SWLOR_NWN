@@ -26,12 +26,51 @@ public class SittablePlaceableWalkmeshTests
     [TestCase(StructureType.CommandlineWorkStool)]
     public void SeatsOpeningTowardModelPlusY_SeatSittersFacingTheSeatFront(StructureType type)
     {
-        var useNode = ReadEngineUseNodes(StructureWalkmesh(FindRoot(), type)).Should().ContainSingle().Subject;
+        AssertFacesModelPlusY(ReadEngineUseNodes(StructureWalkmesh(FindRoot(), type)).Should().ContainSingle().Subject);
+    }
+
+    [Test]
+    public void Bench_IsApproachedFromItsFront()
+    {
+        var useNode = ReadEngineUseNodes(StructureWalkmesh(FindRoot(), StructureType.Bench)).Should().ContainSingle().Subject;
 
         useNode.Y.Should().BeGreaterThan(0.3f, "the seat opens toward model +Y, past its front edge");
+    }
+
+    [Test]
+    public void DiningChair_KeepsItsUsePointInsideTheSeat()
+    {
+        var useNode = ReadEngineUseNodes(StructureWalkmesh(FindRoot(), StructureType.ChairDiningGrey)).Should().ContainSingle().Subject;
+
+        // Mon Cala's dining chairs are tucked under their tables; a use point past the 0.25 m seat edge lands under the table,
+        // and players walking up from the side or across the table then stall instead of sitting.
+        useNode.Y.Should().BeLessThan(0.25f);
+    }
+
+    [TestCase("plc_chair2", 1)]
+    [TestCase("udp-p-164", -1)]
+    [TestCase("udp2-p-01", -1)]
+    [TestCase("udp2-p-02", -1)]
+    public void PlacedSeats_SeatSittersFacingTheSeatFront(string model, int seatFront)
+    {
+        var useNode = ReadEngineUseNodes(ModelWalkmesh(FindRoot(), model)).Should().ContainSingle(
+            "a sitter faces from the chair toward its use point and faces east without one").Subject;
+
+        if (seatFront > 0)
+            AssertFacesModelPlusY(useNode);
+        else
+        {
+            useNode.X.Should().BeApproximately(0f, 0.01f);
+            useNode.Y.Should().BeLessThan(-0.3f, "the seat opens toward model -Y, past its front edge");
+        }
+    }
+
+    private static void AssertFacesModelPlusY((float X, float Y) useNode)
+    {
+        useNode.Y.Should().BePositive("the seat opens toward model +Y");
         // A use point exactly on model +Y matches the seat's own facing, and the engine then leaves the sitter as they arrived.
         useNode.X.Should().NotBe(0f);
-        Math.Abs(useNode.X).Should().BeLessThan(0.05f);
+        Math.Abs(useNode.X).Should().BeLessThan(useNode.Y * 0.035f, "the sitter should face within 2 degrees of straight ahead");
     }
 
     [Test]
@@ -84,9 +123,14 @@ public class SittablePlaceableWalkmeshTests
         var appearances = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
         var model = appearances.GetValue(appearance, "ModelName");
 
+        return ModelWalkmesh(root, model!);
+    }
+
+    private static string ModelWalkmesh(string root, string model)
+    {
         return Directory.EnumerateFiles(Path.Combine(root, "SWLOR_Haks"), "*.pwk", SearchOption.AllDirectories)
             .Should().ContainSingle(path => string.Equals(Path.GetFileNameWithoutExtension(path), model, StringComparison.OrdinalIgnoreCase),
-                $"{type} uses model {model}, whose walkmesh must ship in the HAKs").Subject;
+                $"model {model}'s walkmesh must ship in the HAKs").Subject;
     }
 
     // The engine only reads a use node whose "node dummy" line has "pwk_use01"/"pwk_use02" at character 15 (a four-character prefix).

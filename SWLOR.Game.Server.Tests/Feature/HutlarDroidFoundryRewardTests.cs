@@ -151,8 +151,9 @@ public class HutlarDroidFoundryRewardTests
         foreach (var item in recipes)
             Text(Load("uti", item.Resref), "Tag").Should().Be("RECIPE", item.Resref);
 
-        new HutlarSpawnDefinition().BuildSpawnTables()["HUTLAR_FOUNDRY_OVERSEER"].RespawnDelayMinutes
-            .Should().BeInRange(61, 160, "premium world bosses respawn on the 60 + d100 minute timer");
+        var overseerTable = new HutlarSpawnDefinition().BuildSpawnTables()["HUTLAR_FOUNDRY_OVERSEER"];
+        overseerTable.RespawnDelayMinutes.Should().Be(61, "the Overseer uses the premium world-boss window, rolled per respawn");
+        overseerTable.RespawnDelayMaximumMinutes.Should().Be(160);
 
         LootLocals(Load("utc", "fdy_overseer")).Should().Contain(new[]
         {

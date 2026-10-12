@@ -141,6 +141,7 @@ public class HutlarDroidFoundryPlacementTests
 
         var outpostExit = Tagged(outpost, "Placeable List", "InvisibleObjectLarge");
         Text(outpostExit, "OnUsed").Should().Be("teleport", "the Outpost is the foundry's hub and must lead back out");
+        Number(outpostExit, "Plot").Should().Be(1, "players must not be able to destroy the Outpost's only exit");
         Local(outpostExit, "DESTINATION")!.Value.GetString().Should().Be("H_CloneBase_Exit");
         Local(outpostExit, "TELEPORT_PARTY_MEMBERS")!.Value.GetInt32().Should().Be(0);
     }

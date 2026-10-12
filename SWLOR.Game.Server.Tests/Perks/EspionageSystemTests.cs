@@ -137,6 +137,35 @@ public class EspionageSystemTests
     }
 
     [Test]
+    public void StealthEnteredInCombat_HidesPlayerFromEnemiesThatFailDetection()
+    {
+        var root = FindRepositoryRoot();
+        var stealthSource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Stealth.cs"));
+        var enmitySource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Enmity.cs"));
+
+        var hiddenStart = stealthSource.IndexOf("public static bool IsHiddenFrom(uint observer, uint target)", StringComparison.Ordinal);
+        var hiddenEnd = stealthSource.IndexOf("public static bool IsInvisible(uint creature)", StringComparison.Ordinal);
+        hiddenStart.Should().BeGreaterThanOrEqualTo(0);
+        hiddenEnd.Should().BeGreaterThan(hiddenStart);
+        var hiddenBody = stealthSource[hiddenStart..hiddenEnd];
+        hiddenBody.Should().Contain("IsHiddenByStealth(observer, target)",
+            "Ghost Protocol stealth must hide the player from enemies already fighting them");
+        hiddenBody.Should().Contain("return !ResolveDetection(observer, target, false);",
+            "hiding must use the cached Detection vs Stealth verdict, not skip the check");
+
+        var enteredStart = stealthSource.IndexOf("public static void OnStealthEntered()", StringComparison.Ordinal);
+        var enteredEnd = stealthSource.IndexOf("public static void RefreshActiveStatusAfterPerkLevelChange", StringComparison.Ordinal);
+        enteredStart.Should().BeGreaterThanOrEqualTo(0);
+        enteredEnd.Should().BeGreaterThan(enteredStart);
+        var enteredBody = stealthSource[enteredStart..enteredEnd];
+        enteredBody.IndexOf("Enmity.ReevaluateEnemyAttackTargets(creature);", StringComparison.Ordinal)
+            .Should().BeGreaterThan(enteredBody.IndexOf("ClearVerdictsForTarget(creature);", StringComparison.Ordinal),
+                "enemies must re-roll detection against the fresh stealth before re-choosing targets");
+
+        enmitySource.Should().Contain("!Stealth.IsHiddenFrom(enemy, creature);");
+    }
+
+    [Test]
     public void AlertnessRanks_ProvideTheDocumentedDetectionCounter()
     {
         var alertness = BuildPerkWithout2daLookup(

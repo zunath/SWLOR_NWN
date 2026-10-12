@@ -91,6 +91,15 @@ namespace SWLOR.Game.Server.Service
 
             ClearVerdictsForTarget(creature);
             StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);
+
+            // Enemies already fighting the player (Ghost Protocol) must roll detection now and
+            // drop the player as a target if they fail, instead of swinging until their next round.
+            // Deferred so a successful detection does not exit stealth inside this event.
+            DelayCommand(0f, () =>
+            {
+                if (GetIsObjectValid(creature) && GetActionMode(creature, ActionMode.Stealth))
+                    Enmity.ReevaluateEnemyAttackTargets(creature);
+            });
         }
 
         /// <summary>
@@ -215,14 +224,34 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool CanAcquireAggro(uint observer, uint target)
         {
+            return !IsHiddenByStealth(observer, target);
+        }
+
+        /// <summary>
+        /// Returns whether the observer cannot see the target, either through invisibility or
+        /// because the target is a stealthed player the observer has not detected.
+        /// </summary>
+        public static bool IsHiddenFrom(uint observer, uint target)
+        {
+            return IsHiddenByInvisibility(observer, target) ||
+                   IsHiddenByStealth(observer, target);
+        }
+
+        /// <summary>
+        /// Returns whether a stealthed player is hidden from the observer. Uses the same cached
+        /// Detection vs Stealth verdict as spot detection, so a successful hostile detection still
+        /// reveals the player.
+        /// </summary>
+        public static bool IsHiddenByStealth(uint observer, uint target)
+        {
             if (!GetIsPC(target) ||
                 GetIsDM(target) ||
                 !GetActionMode(target, ActionMode.Stealth))
             {
-                return true;
+                return false;
             }
 
-            return ResolveDetection(observer, target, false);
+            return !ResolveDetection(observer, target, false);
         }
 
         /// <summary>

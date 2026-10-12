@@ -59,6 +59,32 @@ public class PartialMatchSearchTextTests
         PartialMatchSearchText.Build(search).Should().Be(expected);
     }
 
+    [TestCase("AC\\DC", "(ACDC*)")]
+    [TestCase("a\\,b tail", "(a\\,b* tail*)")]
+    [TestCase("Bob\\", "(Bob*)")]
+    public void BackslashMakesTheNextCharacterLiteralAsInTheIndex(string search, string expected)
+    {
+        // The index stores "AC\DC" as the word "acdc" and "a\,b" as the word "a,b".
+        PartialMatchSearchText.Build(search).Should().Be(expected);
+    }
+
+    [TestCase("Alpha Beta", "(Alpha Beta*)")]
+    [TestCase("Alpha_Beta Gamma", "(Alpha_Beta* Gamma*)")]
+    public void OnlyAsciiSpaceAndTabSeparateWhitespace(string search, string expected)
+    {
+        // The tokenizer splits on space and tab only; a no-break space stays inside the word.
+        PartialMatchSearchText.Build(search).Should().Be(expected);
+    }
+
+    [TestCase("\U0001F600", "(\U0001F600)")]
+    [TestCase("\U0001F600 Grin", "(\U0001F600 Grin*)")]
+    [TestCase("Grin\U0001F600", "(Grin\U0001F600)")]
+    public void WordsWithCharactersBeyondTheBasicPlaneStayExact(string search, string expected)
+    {
+        // A single emoji is two UTF-16 code units, and RediSearch prefixes never match characters beyond U+FFFF.
+        PartialMatchSearchText.Build(search).Should().Be(expected);
+    }
+
     [TestCase(",", "(\\,)")]
     [TestCase(", .", "(\\,\\.)")]
     public void PunctuationOnlySearchesStayValid(string search, string expected)

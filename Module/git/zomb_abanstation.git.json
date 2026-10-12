@@ -5217,7 +5217,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -249542,7 +249542,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "Based on the appearance of it, the door here seems to be for an elevator. However, for the moment, no matter what you seem to do, it won't open. Checking the terminal next to it, it appears to require level 4 clearance or higher."
+                "value": "Based on the appearance of it, the door here is for an elevator. The terminal beside it still demands level 4 clearance, but someone has torn its lock panel open and wired the override. The doors answer to anyone now."
               }
             }
           ]

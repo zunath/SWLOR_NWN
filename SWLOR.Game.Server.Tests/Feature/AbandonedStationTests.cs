@@ -139,7 +139,10 @@ public class AbandonedStationTests
                 Local(door, "DESTINATION_WAYPOINT").Should().BeNull($"{area} {Text(door, "Tag")} relies on a deleted legacy door script");
                 Local(door, "DESTINATION_AREA_TAG").Should().BeNull();
                 if (Number(door, "LinkedToFlags") == 2)
+                {
                     waypoints.Count(t => t == Text(door, "LinkedTo")).Should().Be(1, $"{area} {Text(door, "Tag")}");
+                    Number(door, "Plot").Should().Be(1, $"{area} {Text(door, "Tag")} is the only way out of a section");
+                }
             }
         }
 

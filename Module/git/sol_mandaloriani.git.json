@@ -71679,7 +71679,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Miri Koss is a wiry human man with grease-blackened fingers and a diagnostic probe tucked behind one ear. Half-finished calculations are scrawled along the cuffs of his work coat, and he mutters to his instruments as often as to the people around him. Among the containment barrels of Fort Ka'ra, he has the restless look of a technician chasing an error he is sure someone else introduced."
+            "0": "Miri Koss is a wiry human man with grease-blackened fingers and a diagnostic probe tucked behind one ear. Half-finished calculations are scrawled along the cuffs of his work coat, and he mutters to his instruments as often as to the people around him. Pacing the bridge before Fort Ka'ra's sealed gate, he has the restless look of a technician chasing an error he is sure someone else introduced."
           }
         },
         "Dex": {
@@ -72523,23 +72523,23 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.7071066498756409
+          "value": 0.6000000238418579
         },
         "XPosition": {
           "type": "float",
-          "value": 103.3322219848633
+          "value": 73.5999984741211
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.70710688829422
+          "value": -0.800000011920929
         },
         "YPosition": {
           "type": "float",
-          "value": 95.34652709960938
+          "value": 28.600000381469727
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": 0.0
         }
       }
     ]

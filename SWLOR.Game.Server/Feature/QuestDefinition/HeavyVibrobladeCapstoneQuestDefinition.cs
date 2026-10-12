@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Valis Korr gave you the Korriban Forge Caverns Key. On Korriban, cross the Sith Fortress Forgeworks to the sealed passage in its far north-east corner and enter the Korriban Forge Caverns. Defeat 6 Absolute Defense adepts and secure the Absolute Defense Forge Heat Ledger they keep near the crucibles.")
+                    "Valis Korr gave you the Korriban Forge Caverns Key. On Korriban, take the Forgeworks key from the Sith Inquisitor in the Sith Fortress Courtyard, then cross the Forgeworks to the sealed passage in its far north-east corner and enter the Korriban Forge Caverns. Defeat 6 Absolute Defense adepts and secure the Absolute Defense Forge Heat Ledger they keep near the crucibles.")
                 .AddKillObjective(NPCGroupType.Korriban_AbsoluteDefense_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAbsoluteDefenseForgeHeatLedger)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Senn Dralok gave you the Korriban Forge Caverns Key. On Korriban, cross the Sith Fortress Forgeworks to the sealed passage in its far north-east corner and enter the Korriban Forge Caverns. Defeat 6 Soul Ascension adepts and secure the Soul Ascension Forge Heat Ledger kept near the crucibles.")
+                    "Senn Dralok gave you the Korriban Forge Caverns Key. On Korriban, take the Forgeworks key from the Sith Inquisitor in the Sith Fortress Courtyard, then cross the Forgeworks to the sealed passage in its far north-east corner and enter the Korriban Forge Caverns. Defeat 6 Soul Ascension adepts and secure the Soul Ascension Forge Heat Ledger kept near the crucibles.")
                 .AddKillObjective(NPCGroupType.Korriban_SoulAscension_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSoulAscensionForgeHeatLedger)
 

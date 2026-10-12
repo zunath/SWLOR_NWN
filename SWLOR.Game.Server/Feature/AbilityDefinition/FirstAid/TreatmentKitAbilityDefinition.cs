@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
         private static void TreatmentKit1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var affectedCount = 0;
+            var treated = new List<uint>();
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
@@ -113,15 +113,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
-                affectedCount++;
+                treated.Add(friendly);
             }
 
-            GrantFirstAidCombatPointIfApplied(activator, affectedCount);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated);
         }
 
         private static void TreatmentKit2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var affectedCount = 0;
+            var treated = new List<uint>();
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
@@ -131,15 +131,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
-                affectedCount++;
+                treated.Add(friendly);
             }
 
-            GrantFirstAidCombatPointIfApplied(activator, affectedCount);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated);
         }
 
         private static void TreatmentKit3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var affectedCount = 0;
+            var treated = new List<uint>();
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
@@ -151,18 +151,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
-                affectedCount++;
+                treated.Add(friendly);
             }
 
-            GrantFirstAidCombatPointIfApplied(activator, affectedCount);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated);
         }
-
-        private static void GrantFirstAidCombatPointIfApplied(uint activator, int affectedCount)
-        {
-            if (affectedCount > 0)
-                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);
-        }
-
-
     }
 }

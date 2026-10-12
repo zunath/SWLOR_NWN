@@ -531,7 +531,14 @@ namespace SWLOR.Toolset.Workspace
                 // bitmap-only meshes must retain their authored bitmap even when an unrelated MTR
                 // happens to share its resref.
                 resolveMaterial,
-                SwlorRenderMeshMetadataStore.GetArmorPart(mesh));
+                SwlorRenderMeshMetadataStore.GetArmorPart(mesh),
+                // Only the shared cloak material selects its atlas tile from the bitmap; other
+                // materials would just duplicate cache entries per bitmap.
+                surfaceName.Equals(
+                    SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.CloakTintRenderer.MaterialResref,
+                    StringComparison.OrdinalIgnoreCase)
+                    ? mesh.TextureName
+                    : null);
         }
 
         private bool IsGeneratedTintMaterial(string surfaceName)
@@ -1210,7 +1217,7 @@ namespace SWLOR.Toolset.Workspace
             if (_resourceIndex == null || string.IsNullOrWhiteSpace(resRef))
                 return null;
 
-            if (!_resourceIndex.TryLookup(ResourceIdentity.FromFileName(resRef + ".mdl"), out var handle))
+            if (!ModelResourceResolver.TryResolve(_resourceIndex, resRef, out var handle))
                 return null;
 
             try
@@ -1226,7 +1233,7 @@ namespace SWLOR.Toolset.Workspace
 
         private bool PartModelExists(string resRef) =>
             _resourceIndex != null &&
-            _resourceIndex.Contains(ResourceIdentity.FromFileName(resRef + ".mdl"));
+            ModelResourceResolver.TryResolve(_resourceIndex, resRef, out _);
 
         /// <summary>Loads an equipped item's root struct so armor can override a creature's body parts.</summary>
         private Nwn.Authoring.Documents.NimGff.JsonGffStruct? LoadItemBlueprintRoot(

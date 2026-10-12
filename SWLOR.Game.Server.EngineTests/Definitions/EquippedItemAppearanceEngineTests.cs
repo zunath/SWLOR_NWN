@@ -314,11 +314,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await AssignedAsync(ctx, creature, () => EquippedItemAppearance.Set(
                     GetItemInSlot(InventorySlot.Chest, creature), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 187));
             var item = GetItemInSlot(InventorySlot.Chest, creature);
+            var cloak = await ctx.EquipItemAsync(creature, "advent_cloak", InventorySlot.Cloak);
             using var observation = new EventObservation(creature);
             await VerifyGenuineEquipmentEventsAsync(ctx, creature, item, InventorySlot.Chest, observation);
-            await AssignedAsync(ctx, creature, () => SeedGameplaySentinels(ctx, creature, item));
+            await AssignedAsync(ctx, creature, () =>
+            {
+                EquippedItemAppearance.Set(cloak, ItemAppearanceType.SimpleModel, -1, 175);
+                SeedGameplaySentinels(ctx, creature, item);
+                SeedGameplaySentinels(ctx, creature, cloak);
+            });
             await ctx.DelaySecondsAsync(0.5f);
             var before = Snapshot(creature, item, InventorySlot.Chest);
+            var cloakBefore = Snapshot(creature, cloak, InventorySlot.Cloak);
             var originalAppearance = ItemPlugin.GetEntireItemAppearance(item);
             observation.Reset();
             var requested = new TintMapColor(205, 228, 197);
@@ -355,6 +362,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 TintMapEngineTests.AssertNativeRgb(ctx, creature, robe.Material.Resref, TintMapLayerType.Cloth1, requested);
             });
             await AssertSettledAsync(ctx, before, observation, "all robe layers and per-part RGB inheritance");
+            await AssertSettledAsync(ctx, cloakBefore, observation, "robe RGB retains the equipped cloak");
             // Repeat transitions so cumulative stat/effect application cannot hide
             // behind a single successful swap. Include custom coat animations and
             // the robes reported with detached hands, plus the native fallback.
@@ -401,6 +409,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     }
                 });
                 await AssertSettledAsync(ctx, before, observation, $"robe model {robeId}");
+                await AssertSettledAsync(ctx, cloakBefore, observation, $"robe model {robeId} retains the equipped cloak");
             }
             await AssignedAsync(ctx, creature, () =>
             {
@@ -418,7 +427,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(0, RobeModelRenderer.GetBasePhenotype(creature), "Logical body type stays normal after preset reset.");
             });
             await AssertSettledAsync(ctx, before, observation, "return to native presets");
-            ctx.SetResultDetail($"{(male ? "Male" : "Female")} body: four exact robe RGB channels; repeated swaps through {string.Join(", ", robeIds)}; global/per-part inheritance; and preset reset preserved item identity, gameplay sentinels, and zero equipment events. Genuine equip/unequip events were observed before the test. Client walking/sitting is verified separately.");
+            await AssertSettledAsync(ctx, cloakBefore, observation, "native presets retain the equipped cloak");
+            ctx.SetResultDetail($"{(male ? "Male" : "Female")} body: four exact robe RGB channels; repeated swaps through {string.Join(", ", robeIds)}; global/per-part inheritance; and preset reset preserved armor and cloak identity, gameplay sentinels, and zero equipment events. Genuine equip/unequip events were observed before the test. Client rendering is verified separately.");
         }
 
         [EngineTest("Equipped weapon model and color edits preserve gameplay and emit no equipment events", Category = "AppearanceEditor", TimeoutSeconds = 45f)]

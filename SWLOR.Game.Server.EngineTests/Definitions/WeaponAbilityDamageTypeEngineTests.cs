@@ -1,8 +1,12 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -10,84 +14,182 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class WeaponAbilityDamageTypeEngineTests
     {
+        private static readonly CombatDamageType[] ObservedTypes =
+        {
+            CombatDamageType.Physical,
+            CombatDamageType.Force,
+            CombatDamageType.Fire,
+            CombatDamageType.Ice
+        };
+
+        private static readonly Dictionary<CombatDamageType, int> _damage = new();
         private static uint _observedTarget = OBJECT_INVALID;
-        private static int _fireDamage;
-        private static int _physicalDamage;
 
         [EngineTest("Weapon abilities deal the equipped weapon's elemental damage type", Category = "WeaponAbilityDamageType", TimeoutSeconds = 30f)]
-        public static Task ElementalWeaponRetypesAbilityDamage(EngineTestContext ctx)
+        public static async Task ElementalWeaponRetypesAbilityDamage(EngineTestContext ctx)
         {
-            return RunDoubleShot(ctx, CombatDamageType.Fire);
+            var (caster, target, _) = await CreateFixture(ctx, "b_pistol", CombatDamageType.Fire);
+            await ApplyImpact(ctx, caster, target, FeatType.DoubleShot1, PerkType.DoubleShot, target);
+            AssertOnlyDamageType(ctx, CombatDamageType.Fire, "Double Shot from a Fire pistol");
         }
 
         [EngineTest("Weapon abilities stay Physical on a weapon without a damage type", Category = "WeaponAbilityDamageType", TimeoutSeconds = 30f)]
-        public static Task UntypedWeaponKeepsPhysicalAbilityDamage(EngineTestContext ctx)
+        public static async Task UntypedWeaponKeepsPhysicalAbilityDamage(EngineTestContext ctx)
         {
-            return RunDoubleShot(ctx, CombatDamageType.Physical);
+            var (caster, target, _) = await CreateFixture(ctx, "b_pistol", CombatDamageType.Physical);
+            await ApplyImpact(ctx, caster, target, FeatType.DoubleShot1, PerkType.DoubleShot, target);
+            AssertOnlyDamageType(ctx, CombatDamageType.Physical, "Double Shot from an untyped pistol");
         }
 
-        private static async Task RunDoubleShot(EngineTestContext ctx, CombatDamageType weaponDamageType)
+        [EngineTest("Area weapon abilities outside the shared weapon base use the weapon's damage type", Category = "WeaponAbilityDamageType", TimeoutSeconds = 30f)]
+        public static async Task AreaWeaponAbilityUsesWeaponDamageType(EngineTestContext ctx)
         {
-            var caster = ctx.SpawnCreature("nw_bandit001", -2f);
-            var target = ctx.SpawnCreature("nw_rat001", 2f);
-            await ctx.WaitFrameAsync();
-            var pistol = await ctx.EquipItemAsync(caster, "b_pistol", InventorySlot.RightHand);
-            await ctx.ExecuteInCreatureContextAsync(caster, () =>
-            {
-                for (var ip = GetFirstItemProperty(pistol); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(pistol))
-                {
-                    if (GetItemPropertyType(ip) == ItemPropertyType.WeaponDamageType)
-                        RemoveItemProperty(pistol, ip);
-                }
+            var (caster, target, _) = await CreateFixture(ctx, "nw_wswls001", CombatDamageType.Fire);
+            await ApplyImpact(ctx, caster, target, FeatType.SavageCleave1, PerkType.SavageCleave, caster);
+            AssertOnlyDamageType(ctx, CombatDamageType.Fire, "Savage Cleave from a Fire vibroblade");
+        }
 
-                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DMG, -1, 20), pistol);
-                if (weaponDamageType != CombatDamageType.Physical)
-                    AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)weaponDamageType), pistol);
-            });
+        [EngineTest("Weapon abilities authored as Force stay Force on an elemental weapon", Category = "WeaponAbilityDamageType", TimeoutSeconds = 30f)]
+        public static async Task AuthoredForceAbilityKeepsForce(EngineTestContext ctx)
+        {
+            var (caster, target, _) = await CreateFixture(ctx, "sabstorm_l1", CombatDamageType.Fire);
+            await ApplyImpact(ctx, caster, target, FeatType.Epicenter1, PerkType.Epicenter, caster);
+            AssertOnlyDamageType(ctx, CombatDamageType.Force, "Epicenter from a Fire lightsaber");
+        }
+
+        [EngineTest("Queued weapon abilities use the damage type of the weapon that triggered them", Category = "WeaponAbilityDamageType", TimeoutSeconds = 30f)]
+        public static async Task QueuedAbilityUsesTriggeringWeaponDamageType(EngineTestContext ctx)
+        {
+            var (caster, target, main) = await CreateFixture(ctx, "nw_wswss001", CombatDamageType.Fire);
+            var off = await ctx.EquipItemAsync(caster, "nw_wswss001", InventorySlot.LeftHand);
+            await ctx.ExecuteInCreatureContextAsync(caster, () => ConfigureWeapon(off, CombatDamageType.Ice));
             await ctx.WaitFrameAsync();
-            ctx.AssertEqual(weaponDamageType, WeaponDamage.GetDamageType(pistol), "Pistol damage type");
+
+            var ability = Ability.GetAbilityDetail(FeatType.PathogenStrike1);
+            ctx.SetNPCPerkLevel(caster, PerkType.PathogenStrike, 1);
+            await ObserveImpact(ctx, target, async () =>
+            {
+                Ability.BeginAbilityImpact(caster, ability, triggeringWeapon: off);
+                try
+                {
+                    await ctx.ExecuteInCreatureContextAsync(caster,
+                        () => ability.ImpactAction(caster, target, 1, GetLocation(target)));
+                }
+                finally
+                {
+                    Ability.EndAbilityImpact(caster);
+                }
+            });
+            AssertOnlyDamageType(ctx, CombatDamageType.Ice, "Pathogen Strike delivered by the Cold off-hand knife");
+            ctx.Assert(GetIsObjectValid(main), "Fire main-hand knife stays equipped");
+        }
+
+        [EngineTest("Queued weapon abilities consumed by a landed attack deal the weapon's damage type", Category = "WeaponAbilityDamageType", TimeoutSeconds = 45f)]
+        public static async Task LandedQueuedAbilityUsesWeaponDamageType(EngineTestContext ctx)
+        {
+            var (caster, target, knife) = await CreateFixture(ctx, "nw_wswss001", CombatDamageType.Fire);
+            ctx.ApplyStandardOnHitProperty(knife);
+            ctx.SetNPCResources(caster, 100, 100);
+            ctx.SetNPCPerkLevel(caster, PerkType.PathogenStrike, 1);
+            ResetDamage(target);
+            Combat.SetAutoAttackHitResolutionOverride(true);
+            Combat.SetAbilityHitResolutionOverride(true);
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(caster, () =>
+                {
+                    CreaturePlugin.AddFeat(caster, FeatType.PathogenStrike1);
+                    ctx.Assert(UsePerkFeat.TryUseAbility(caster, target, FeatType.PathogenStrike1, GetLocation(target)), "Pathogen Strike queues");
+                    ActionAttack(target);
+                });
+                await ctx.WaitUntilAsync(() => !UsePerkFeat.HasQueuedWeaponAbility(caster), 20f, "Pathogen Strike to consume on a landed hit");
+                await ctx.ExecuteInCreatureContextAsync(caster, () => ClearAllActions());
+                await ctx.WaitUntilAsync(() => _damage[CombatDamageType.Fire] > 0, 5f, "Fire damage to land");
+                await ctx.WaitFrameAsync();
+                AssertOnlyDamageType(ctx, CombatDamageType.Fire, "Pathogen Strike and auto-attacks from a Fire knife");
+            }
+            finally
+            {
+                AssignCommand(caster, () => ClearAllActions());
+                Combat.SetAutoAttackHitResolutionOverride(null);
+                Combat.SetAbilityHitResolutionOverride(null);
+                _observedTarget = OBJECT_INVALID;
+            }
+        }
+
+        private static async Task<(uint Caster, uint Target, uint Weapon)> CreateFixture(
+            EngineTestContext ctx,
+            string weaponResref,
+            CombatDamageType weaponDamageType)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001", -0.5f);
+            var target = ctx.SpawnCreature("nw_rat001", 1f);
+            await ctx.WaitFrameAsync();
+            var weapon = await ctx.EquipItemAsync(caster, weaponResref, InventorySlot.RightHand);
+            await ctx.ExecuteInCreatureContextAsync(caster, () => ConfigureWeapon(weapon, weaponDamageType));
+            await ctx.WaitFrameAsync();
+            ctx.AssertEqual(weaponDamageType, WeaponDamage.GetDamageType(weapon), $"{weaponResref} damage type");
 
             foreach (var creature in new[] { caster, target })
             {
                 ctx.SuppressNPCNaturalRegen(creature);
                 Stat.SetNPCMaxHitPoints(creature, 20000, true);
                 SetAILevel(creature, AILevel.VeryLow);
-                ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), creature, 60f);
             }
+            ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
+            TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 60f);
             ctx.MakeHostile(target);
-            ctx.SetNPCPerkLevel(caster, PerkType.DoubleShot, 1);
 
-            var doubleShot = Ability.GetAbilityDetail(FeatType.DoubleShot1);
-            _observedTarget = target;
-            _fireDamage = 0;
-            _physicalDamage = 0;
-            Combat.SetAbilityHitResolutionOverride(true);
-            try
+            return (caster, target, weapon);
+        }
+
+        private static void ConfigureWeapon(uint weapon, CombatDamageType damageType)
+        {
+            for (var ip = GetFirstItemProperty(weapon); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(weapon))
             {
-                Ability.BeginAbilityImpact(caster, doubleShot);
+                if (GetItemPropertyType(ip) == ItemPropertyType.WeaponDamageType)
+                    RemoveItemProperty(weapon, ip);
+            }
+
+            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DMG, -1, 20), weapon);
+            if (damageType != CombatDamageType.Physical)
+                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)damageType), weapon);
+        }
+
+        private static async Task ApplyImpact(
+            EngineTestContext ctx,
+            uint caster,
+            uint target,
+            FeatType feat,
+            PerkType perk,
+            uint impactTarget)
+        {
+            ctx.SetNPCPerkLevel(caster, perk, 1);
+            var ability = Ability.GetAbilityDetail(feat);
+            await ObserveImpact(ctx, target, async () =>
+            {
+                Ability.BeginAbilityImpact(caster, ability);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(caster,
-                        () => doubleShot.ImpactAction(caster, target, 1, GetLocation(target)));
+                        () => ability.ImpactAction(caster, impactTarget, 1, GetLocation(impactTarget)));
                 }
                 finally
                 {
                     Ability.EndAbilityImpact(caster);
                 }
+            });
+        }
 
-                await ctx.WaitUntilAsync(() => _fireDamage + _physicalDamage > 0, 10f, "Double Shot damage to land");
+        private static async Task ObserveImpact(EngineTestContext ctx, uint target, Func<Task> impact)
+        {
+            ResetDamage(target);
+            Combat.SetAbilityHitResolutionOverride(true);
+            try
+            {
+                await impact();
+                await ctx.WaitUntilAsync(() => _damage.Values.Sum() > 0, 10f, "ability damage to land");
                 await ctx.WaitFrameAsync();
-
-                if (weaponDamageType == CombatDamageType.Fire)
-                {
-                    ctx.Assert(_fireDamage > 0, "Double Shot deals Fire damage from a Fire pistol");
-                    ctx.AssertEqual(0, _physicalDamage, "Physical damage from a Fire pistol");
-                }
-                else
-                {
-                    ctx.Assert(_physicalDamage > 0, "Double Shot deals Physical damage from an untyped pistol");
-                    ctx.AssertEqual(0, _fireDamage, "Fire damage from an untyped pistol");
-                }
             }
             finally
             {
@@ -96,14 +198,28 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        private static void ResetDamage(uint target)
+        {
+            foreach (var type in ObservedTypes)
+                _damage[type] = 0;
+            _observedTarget = target;
+        }
+
+        private static void AssertOnlyDamageType(EngineTestContext ctx, CombatDamageType expected, string label)
+        {
+            ctx.Assert(_damage[expected] > 0, $"{label} deals {expected} damage");
+            foreach (var type in ObservedTypes.Where(type => type != expected))
+                ctx.AssertEqual(0, _damage[type], $"{label} {type} damage");
+        }
+
         [NWNEventHandler(ScriptName.OnCreatureDamagedAfter)]
         public static void ObserveAbilityDamage()
         {
-            if (OBJECT_SELF != _observedTarget || _observedTarget == OBJECT_INVALID)
+            if (_observedTarget == OBJECT_INVALID || OBJECT_SELF != _observedTarget)
                 return;
 
-            _fireDamage += Math.Max(0, GetDamageDealtByType(DamageType.Fire));
-            _physicalDamage += Math.Max(0, GetDamageDealtByType(CombatDamageType.Physical.GetNWScriptDamageType()));
+            foreach (var type in ObservedTypes)
+                _damage[type] += Math.Max(0, GetDamageDealtByType(type.GetNWScriptDamageType()));
         }
     }
 }

@@ -358,20 +358,12 @@ namespace SWLOR.Game.Server.Native
             if (damageTypeId > MaxValidDamageType || damageTypeId < MinValidDamageType)
                 return current;
 
+            // Only elements retype weapon damage; Force conversion belongs to Imbuement Stance.
             var candidate = (CombatDamageType)damageTypeId;
-            if (!candidate.IsCharacterDamageType())
+            if (!candidate.IsElementalDamageType() || current.IsElementalDamageType())
                 return current;
 
-            if (current.IsElementalDamageType())
-                return current;
-
-            if (candidate.IsElementalDamageType())
-                return candidate;
-
-            if (current.IsPhysicalDamageType() && candidate == CombatDamageType.Force)
-                return CombatDamageType.Force;
-
-            return current;
+            return candidate;
         }
 
         private static AbilityType GetWeaponDamageAbilityType(uint attacker, CNWSItem weapon)

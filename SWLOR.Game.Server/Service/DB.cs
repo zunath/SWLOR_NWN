@@ -202,16 +202,10 @@ namespace SWLOR.Game.Server.Service
                         case "attributes":
                             foreach (RedisResult[] attribute in (RedisResult[])info[i + 1])
                             {
-                                string name = null;
-                                string fieldType = null;
-                                for (var j = 0; j + 1 < attribute.Length; j += 2)
-                                {
-                                    if ((string)attribute[j] == "identifier")
-                                        name = (string)attribute[j + 1];
-                                    else if ((string)attribute[j] == "type")
-                                        fieldType = (string)attribute[j + 1];
-                                }
-                                fields.Add((name, fieldType));
+                                var tokens = attribute.Select(token => (string)token).ToList();
+                                if (!SearchIndexDefinition.TryReadLiveField(tokens, out var field))
+                                    return null;
+                                fields.Add(field);
                             }
                             break;
                         case "stopwords_list":
@@ -220,7 +214,7 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                if (keyType == null || prefixes == null || fields.Any(field => field.Name == null || field.Type == null))
+                if (keyType == null || prefixes == null)
                     return null;
 
                 return SearchIndexDefinition.Fingerprint(

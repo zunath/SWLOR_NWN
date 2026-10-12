@@ -93,6 +93,47 @@ namespace SWLOR.Game.Server.Service.DBService
             return args;
         }
 
+        /// <summary>
+        /// Reads one attribute entry of FT.INFO. Returns false when the field has an alias or any option this code
+        /// never sets (SORTABLE, NOSTEM, a non-default WEIGHT, ...), because queries would then not hit the field as built.
+        /// </summary>
+        public static bool TryReadLiveField(IReadOnlyList<string> tokens, out (string Name, string Type) field)
+        {
+            field = default;
+            string identifier = null;
+            string attribute = null;
+            string type = null;
+
+            for (var i = 0; i < tokens.Count; i++)
+            {
+                var hasValue = i + 1 < tokens.Count;
+                switch (tokens[i])
+                {
+                    case "identifier" when hasValue:
+                        identifier = tokens[++i];
+                        break;
+                    case "attribute" when hasValue:
+                        attribute = tokens[++i];
+                        break;
+                    case "type" when hasValue:
+                        type = tokens[++i];
+                        break;
+                    case "WEIGHT" when hasValue:
+                        if (tokens[++i] != "1")
+                            return false;
+                        break;
+                    default:
+                        return false;
+                }
+            }
+
+            if (identifier == null || type == null || attribute != identifier)
+                return false;
+
+            field = (identifier, type);
+            return true;
+        }
+
         public static string Fingerprint(IEnumerable<object> createArgs)
         {
             return string.Join(" ", createArgs);

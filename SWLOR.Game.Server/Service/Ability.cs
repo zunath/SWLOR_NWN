@@ -2503,7 +2503,8 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Weapon abilities authored as Physical deal the delivering weapon's damage type, matching auto-attacks.
+        /// An impact that adds weapon DMG also takes that weapon's element, matching auto-attacks.
+        /// Like native weapon resolution, an element only replaces Physical; authored non-Physical types stay.
         /// </summary>
         public static CombatDamageType GetWeaponAbilityDamageType(uint activator, SkillType skillType, CombatDamageType damageType)
         {
@@ -2516,11 +2517,19 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType damageType,
             TrackedAbilityImpact trackedImpact)
         {
-            if (damageType != CombatDamageType.Physical || !Combat.IsWeaponSkillType(skillType))
+            var usesQueuedNaturalWeapon = UsesQueuedNaturalWeapon(trackedImpact, skillType);
+            if (damageType != CombatDamageType.Physical ||
+                !Combat.IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon))
                 return damageType;
 
             return trackedImpact?.TriggeringWeaponDamageType ??
-                   Combat.GetCombatImpactWeaponDamageType(activator, skillType);
+                   Combat.GetCombatImpactWeaponDamageType(activator, skillType, usesQueuedNaturalWeapon);
+        }
+
+        private static bool UsesQueuedNaturalWeapon(TrackedAbilityImpact trackedImpact, SkillType skillType)
+        {
+            return trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon &&
+                   skillType == SkillType.BeastMastery;
         }
 
         private static int ApplyHostileCombatImpact(
@@ -2552,7 +2561,9 @@ namespace SWLOR.Game.Server.Service
         {
             using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
             var trackedImpact = GetTrackedAbilityImpact(activator);
-            damageType = ResolveWeaponAbilityDamageType(activator, skillType, damageType, trackedImpact);
+            // Unscaled impacts add no weapon DMG, so they keep their authored type.
+            if (!useUnscaledDamage)
+                damageType = ResolveWeaponAbilityDamageType(activator, skillType, damageType, trackedImpact);
             Combat.TrackHostileAbilityActivity(activator);
             Combat.TrackHostileDefensiveCombatEntryActivity(target, activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
@@ -2900,9 +2911,7 @@ namespace SWLOR.Game.Server.Service
             int lowHPAbilityDamagePercentAdjustment = 0)
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
-            var usesQueuedNaturalWeapon =
-                trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon &&
-                skillType == SkillType.BeastMastery;
+            var usesQueuedNaturalWeapon = UsesQueuedNaturalWeapon(trackedImpact, skillType);
             if (!HasCombatImpactDamage(baseDamage, trackedImpact?.NextAbilityDamageBonus ?? 0,
                     Combat.IsWeaponSkillType(skillType) || usesQueuedNaturalWeapon))
             {
@@ -3112,9 +3121,7 @@ namespace SWLOR.Game.Server.Service
             int lowHPAbilityDamagePercentAdjustment = 0)
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
-            var usesQueuedNaturalWeapon =
-                trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon &&
-                skillType == SkillType.BeastMastery;
+            var usesQueuedNaturalWeapon = UsesQueuedNaturalWeapon(trackedImpact, skillType);
             if (!HasCombatImpactDamage(baseDamage, trackedImpact?.NextAbilityDamageBonus ?? 0,
                     Combat.IsWeaponSkillType(skillType) || usesQueuedNaturalWeapon))
             {

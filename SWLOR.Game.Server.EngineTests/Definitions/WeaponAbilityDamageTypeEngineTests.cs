@@ -84,6 +84,43 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(GetIsObjectValid(main), "Fire main-hand knife stays equipped");
         }
 
+        [EngineTest("Queued natural weapon abilities deal the natural weapon's damage type", Category = "WeaponAbilityDamageType", TimeoutSeconds = 30f)]
+        public static async Task QueuedNaturalWeaponAbilityUsesNaturalWeaponDamageType(EngineTestContext ctx)
+        {
+            var beast = ctx.SpawnCreature("kath_hound", -0.5f);
+            var target = ctx.SpawnCreature("nw_rat001", 1f);
+            await ctx.WaitFrameAsync();
+            var claw = GetItemInSlot(InventorySlot.CreatureRight, beast);
+            ctx.Assert(GetIsObjectValid(claw), "Creature blueprint provides an equipped natural weapon");
+            await ctx.ExecuteInCreatureContextAsync(beast, () => ConfigureWeapon(claw, CombatDamageType.Fire));
+            await ctx.WaitFrameAsync();
+            foreach (var creature in new[] { beast, target })
+            {
+                ctx.SuppressNPCNaturalRegen(creature);
+                Stat.SetNPCMaxHitPoints(creature, 20000, true);
+                SetAILevel(creature, AILevel.VeryLow);
+            }
+            ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
+            ctx.MakeHostile(target);
+            ctx.SetNPCPerkLevel(beast, PerkType.Bite, 1);
+
+            var bite = Ability.GetAbilityDetail(FeatType.Bite1);
+            await ObserveImpact(ctx, target, async () =>
+            {
+                Ability.BeginAbilityImpact(beast, bite, triggeringWeapon: claw);
+                try
+                {
+                    await ctx.ExecuteInCreatureContextAsync(beast,
+                        () => bite.ImpactAction(beast, target, 1, GetLocation(target)));
+                }
+                finally
+                {
+                    Ability.EndAbilityImpact(beast);
+                }
+            });
+            AssertOnlyDamageType(ctx, CombatDamageType.Fire, "Bite delivered by a Fire natural weapon");
+        }
+
         [EngineTest("Queued weapon abilities consumed by a landed attack deal the weapon's damage type", Category = "WeaponAbilityDamageType", TimeoutSeconds = 45f)]
         public static async Task LandedQueuedAbilityUsesWeaponDamageType(EngineTestContext ctx)
         {

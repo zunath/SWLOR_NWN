@@ -11,7 +11,8 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class PlaceableWalkmeshUseNodeTests
 {
-    private static readonly Regex UseNodeName = new(@"use_?\d", RegexOptions.IgnoreCase);
+    // Anything named like a use node, including malformed slots, so the engine check below can reject it.
+    private static readonly Regex UseNodeName = new(@"pwk_(dp_)?use|use_?\d", RegexOptions.IgnoreCase);
 
     [Test]
     public void EveryWalkmeshUseNode_IsNamedSoTheEngineReadsIt()

@@ -13,10 +13,48 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             QionSlugs();
             QionTigers();
             QionHiveLoot();
+            DroidFoundry();
 
             CapstoneHutlarDungeonRares();
             HutqionRareElites();
             return _builder.Build();
+        }
+
+        private void DroidFoundry()
+        {
+            _builder.Create("HUTLAR_FOUNDRY_INTAKE")
+                .AddItem("elec_imperfect", 20)
+                .AddItem("scrap_metal", 25)
+                .AddGold(70, 20);
+
+            _builder.Create("HUTLAR_FOUNDRY_ASSEMBLY")
+                .AddItem("elec_imperfect", 10)
+                .AddItem("elec_high", 10)
+                .AddItem("scrap_metal", 20)
+                .AddGold(85, 25);
+
+            _builder.Create("HUTLAR_FOUNDRY_CORE")
+                .AddItem("elec_high", 20)
+                .AddItem("scrap_metal", 15)
+                .AddGold(100, 30);
+
+            _builder.Create("HUTLAR_FOUNDRY_RARES")
+                .IsRare()
+                .AddItem("ruby", 90, 1, true)
+                .AddItem("emerald", 5, 1, true)
+                .AddItem("lockbox_t5", 3, 1, true)
+                .AddItem("map_276", 2, 1, true);
+
+            _builder.Create("HUTLAR_FOUNDRY_OVERSEER_ELECTRONICS")
+                .AddItem("elec_high", 1, 2);
+
+            _builder.Create("HUTLAR_FOUNDRY_OVERSEER_LOCKBOX")
+                .AddItem("lockbox_t5", 1);
+
+            _builder.Create("HUTLAR_FOUNDRY_OVERSEER_RARES")
+                .IsRare()
+                .AddItem("emerald", 60, 1, true)
+                .AddItem("map_276", 40, 1, true);
         }
 
         private void HutqionRareElites()

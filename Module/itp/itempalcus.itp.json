@@ -10628,6 +10628,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Arc Welder Drone Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_welder_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Autoblaster"
                     },
                     "RESREF": {
@@ -10771,6 +10782,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Forge Warden Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_forgewd_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Foundry Overseer Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_overseer_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Foundry War Droid Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_wardroid_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hunter-Killer Unit Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_hunter_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Imperial Combot Rifle"
                     },
                     "RESREF": {
@@ -10831,6 +10886,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "impwarform2_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Intake Sentry Droid Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_sentry_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Juggernaut Droid Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_juggernt_wp"
                     }
                   },
                   {
@@ -12696,6 +12773,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Line Defender Droid Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_linedef_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Lord Nephthyra Lightsaber"
                     },
                     "RESREF": {
@@ -12828,6 +12916,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Reclamation Droid Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_reclaim_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Red Vein Scavenger Vibroblade"
                     },
                     "RESREF": {
@@ -12883,11 +12982,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Riveter Droid Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_riveter_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Salvage Hauler Droid Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_hauler_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sewer Patrol Droid Rifle"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "sewerpatrol_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Siege Droid Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_siege_wp"
                     }
                   },
                   {
@@ -13312,6 +13444,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Smelter Hulk Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_smelter_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Temple Council Guardian Lightsaber"
                     },
                     "RESREF": {
@@ -13476,6 +13619,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "aradile_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Arc Welder Drone Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_welder_sk"
                     }
                   },
                   {
@@ -13955,6 +14109,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Forge Warden Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_forgewd_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Foundry Overseer Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_overseer_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Foundry War Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_wardroid_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Gaping Spider Stat Skin"
                     },
                     "RESREF": {
@@ -14175,6 +14362,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hunter-Killer Unit Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_hunter_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Imperial Combot Stat Skin"
                     },
                     "RESREF": {
@@ -14263,6 +14461,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Intake Sentry Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_sentry_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Iriaz Stat Skin"
                     },
                     "RESREF": {
@@ -14301,6 +14510,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "jawaaddit_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Juggernaut Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_juggernt_sk"
                     }
                   },
                   {
@@ -16584,6 +16804,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Line Defender Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_linedef_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Lord Nephthyra Stat Skin"
                     },
                     "RESREF": {
@@ -17266,6 +17497,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Reclamation Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_reclaim_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Red Vein Scavenger Stat Skin"
                     },
                     "RESREF": {
@@ -17304,6 +17546,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "riktasha_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Riveter Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_riveter_sk"
                     }
                   },
                   {
@@ -17359,6 +17612,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sableq_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Salvage Hauler Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_hauler_sk"
                     }
                   },
                   {
@@ -17491,6 +17755,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shyrack_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Siege Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_siege_sk"
                     }
                   },
                   {
@@ -18129,6 +18404,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sithslave_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smelter Hulk Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_smelter_sk"
                     }
                   },
                   {
@@ -66613,6 +66899,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "fnote_2138"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar - Droid Foundry Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_276"
                     }
                   },
                   {

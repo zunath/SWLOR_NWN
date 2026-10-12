@@ -37,9 +37,9 @@ public class KeyItemIconTests
             .Where(x => x.Detail.Category == KeyItemCategoryType.FieldNotes)
             .ToList();
 
-        entries.Should().HaveCount(414);
+        entries.Should().HaveCount(415);
         uniqueIcons.Should().HaveCount(198);
-        maps.Should().HaveCount(77);
+        maps.Should().HaveCount(78);
         fieldNotes.Should().HaveCount(139);
 
         entries.Should().OnlyContain(x => !string.IsNullOrWhiteSpace(x.Resref));

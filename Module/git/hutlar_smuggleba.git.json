@@ -1225,11 +1225,11 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": ""
+          "value": "PG_hut_fdy_intake_DOOR_ENT_1"
         },
         "LinkedToFlags": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "LoadScreenID": {
           "type": "word",
@@ -1246,7 +1246,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Spaceship 5"
+            "0": "Foundry Access"
           }
         },
         "OnClick": {
@@ -1311,7 +1311,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -1323,7 +1323,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "_mdrn_dt_ship5"
+          "value": "HUT_FDY_OUTPOST_DOOR"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -20507,7 +20507,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "teleport"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -20604,6 +20604,21 @@
               "Value": {
                 "type": "cexostring",
                 "value": "H_CloneBase_Exit"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "TELEPORT_PARTY_MEMBERS"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
               }
             }
           ]

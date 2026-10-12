@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -13,11 +14,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Techniques)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 560f, 600f)
+                .SetInitialGeometry(0, 0, 1080f, 700f)
                 .SetTitle("Techniques")
-
-                .AddColumn(col =>
+                .DefinePartialView(TechniquesViewModel.BodyPartial, group => group.AddColumn(col =>
                 {
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel().BindText(model => model.ActiveLoadoutText)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left).SetHeight(26f);
+                        row.AddProgressBar().BindValue(model => model.BuildsProgress)
+                            .SetColor(90, 170, 230).SetWidth(270f).SetHeight(20f)
+                            .AddDrawList(draw => draw.AddText(text =>
+                            {
+                                text.BindText(model => model.BuildsText);
+                                text.SetBounds(6, 2, 270f, 20f);
+                                text.SetColor(255, 255, 255);
+                            }));
+                    });
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel().SetText("Loadout").SetWidth(80f).SetHeight(30f);
+                        row.AddComboBox().BindOptions(model => model.LoadoutOptions)
+                            .BindSelectedIndex(model => model.SelectedLoadoutIndex).SetHeight(32f);
+                        row.AddButton().SetText("Save").SetWidth(80f).SetHeight(32f)
+                            .BindOnClicked(model => model.OnClickSave());
+                        row.AddButton().SetText("Save As").SetWidth(100f).SetHeight(32f)
+                            .BindIsEnabled(model => model.CanSaveAs).BindOnClicked(model => model.OnClickSaveAs());
+                        row.AddButton().SetText("Manage").SetWidth(100f).SetHeight(32f)
+                            .BindOnClicked(model => model.OnClickManage());
+                    });
                     // Category filter + sort order, filtering/ordering the Learned list. Fixed-width
                     // combo boxes centered with flexing spacers (the Perks/Key Items pattern) so this
                     // row fills the window without pinning the content width.
@@ -111,7 +136,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 row2.AddSpacer();
                                 row2.AddButton()
-                                    .SetText("Equip ->")
+                                    .SetText("Add ->")
                                     .SetHeight(32f)
                                     .SetWidth(110f)
                                     .BindIsEnabled(model => model.IsEquipEnabled)
@@ -122,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 row2.AddSpacer();
                                 row2.AddButton()
-                                    .SetText("<- Unequip")
+                                    .SetText("<- Remove")
                                     .SetHeight(32f)
                                     .SetWidth(110f)
                                     .BindIsEnabled(model => model.IsUnequipEnabled)
@@ -138,7 +163,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             col2.AddRow(row2 =>
                             {
                                 row2.AddLabel()
-                                    .SetText("Equipped")
+                                    .BindText(model => model.PreviewTitle)
                                     .SetHeight(26f);
                             });
                             col2.AddRow(row2 =>
@@ -178,33 +203,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     // Fixed-height details pane so the lists above take all the flexible vertical space.
                     col.AddRow(row =>
                     {
-                        row.SetHeight(140f);
+                        row.SetHeight(100f);
                         row.AddText()
                             .BindText(model => model.SelectedDetails);
                     });
 
                     col.AddRow(row =>
                     {
-                        row.AddSpacer();
-                        row.AddLabel()
-                            .BindText(model => model.SlotsText)
-                            .BindColor(model => model.SlotsColor)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle)
-                            .SetHeight(26f);
-                        row.AddSpacer();
-                    });
-
-                    // Visual slot-usage bar beneath the "Slots: x / y" label.
-                    col.AddRow(row =>
-                    {
                         row.AddProgressBar()
                             .BindValue(model => model.SlotsProgress)
                             .BindColor(model => model.SlotsColor)
-                            .SetHeight(16f);
+                            .SetHeight(20f)
+                            .AddDrawList(draw => draw.AddText(text =>
+                            {
+                                text.BindText(model => model.SlotsText);
+                                text.SetBounds(6, 2, 900f, 20f);
+                                text.SetColor(255, 255, 255);
+                            }));
                     });
-                })
-                ;
+                    col.AddRow(row => row.AddLabel().BindText(model => model.StatusText)
+                        .SetColor(230, 180, 70).SetHeight(26f).SetHorizontalAlign(NuiHorizontalAlign.Left));
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel().BindText(model => model.ChangesText)
+                            .SetHeight(32f).SetHorizontalAlign(NuiHorizontalAlign.Left);
+                        row.AddButton().SetText("Revert").SetWidth(95f).SetHeight(32f)
+                            .BindOnClicked(model => model.OnClickRevert());
+                        row.AddButton().SetText("Apply Build").SetWidth(135f).SetHeight(32f)
+                            .SetIsEncouraged(true).BindOnClicked(model => model.OnClickApply());
+                    });
+                }))
+                .AddStandardLayout(layout => layout.SetContentPartialElement(TechniquesViewModel.BodyElement));
 
             return _builder.Build();
         }

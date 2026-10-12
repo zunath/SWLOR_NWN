@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -8,7 +9,8 @@ using SWLOR.Game.Server.Service.MusicService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class MusicPickerViewModel : GuiViewModelBase<MusicPickerViewModel, GuiPayloadBase>
+    public class MusicPickerViewModel : GuiViewModelBase<MusicPickerViewModel, GuiPayloadBase>,
+        IGuiRefreshable<KeyItemReceivedRefreshEvent>
     {
         public const string ContentElement = "music_picker_content";
         public const string PersonalContentPartial = "MUSIC_PICKER_PERSONAL";
@@ -82,8 +84,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _mode = MusicPickerMode.DungeonMaster;
 
             IsCollectionMode = _mode != MusicPickerMode.DungeonMaster;
-            _entries = BuildEntries(out var headerText);
-            HeaderText = headerText;
             WindowTitle = _mode switch
             {
                 MusicPickerMode.Personal => "Portable Music Player",
@@ -91,17 +91,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _ => "Area Music",
             };
 
-            _categories = new[] { string.Empty }
-                .Concat(_entries.Select(entry => entry.Category).Distinct().OrderBy(name => name))
-                .ToArray();
-            var categoryNames = new GuiBindingList<string>();
-            foreach (var category in _categories)
-            {
-                var count = _entries.Count(entry => category.Length == 0 || entry.Category == category);
-                categoryNames.Add($"{(category.Length == 0 ? "All Songs" : category)} ({count})");
-            }
-
-            CategoryNames = categoryNames;
+            LoadEntries();
             CategorySelected = new GuiBindingList<bool>();
             SongNames = new GuiBindingList<string>();
             SongCategories = new GuiBindingList<string>();
@@ -120,6 +110,40 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.ShowUncollected);
             WatchOnClient(model => model.SelectedPageIndex);
             ChangePartialView(ContentElement, _mode == MusicPickerMode.Personal ? PersonalContentPartial : AreaContentPartial);
+        }
+
+        private void LoadEntries()
+        {
+            _entries = BuildEntries(out var headerText);
+            HeaderText = headerText;
+
+            _categories = new[] { string.Empty }
+                .Concat(_entries.Select(entry => entry.Category).Distinct().OrderBy(name => name))
+                .ToArray();
+            var categoryNames = new GuiBindingList<string>();
+            foreach (var category in _categories)
+            {
+                var count = _entries.Count(entry => category.Length == 0 || entry.Category == category);
+                categoryNames.Add($"{(category.Length == 0 ? "All Songs" : category)} ({count})");
+            }
+
+            CategoryNames = categoryNames;
+        }
+
+        /// <summary>
+        /// Rebuilds the collection when the player collects a song while the window is open.
+        /// </summary>
+        public void Refresh(KeyItemReceivedRefreshEvent payload)
+        {
+            if (_mode == MusicPickerMode.DungeonMaster || !Music.TryGetCollectibleSong(payload.Type, out _))
+                return;
+
+            LoadEntries();
+            var categoryIndex = Array.IndexOf(_categories, _selectedCategory);
+            if (categoryIndex < 0)
+                SelectCategory(0);
+            else
+                RefreshResults();
         }
 
         private MusicPickerEntry[] BuildEntries(out string headerText)
@@ -322,9 +346,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_mode == MusicPickerMode.Personal)
             {
                 var trackId = Music.GetPersonalTrackId(Player);
-                NowPlayingText = trackId == null
-                    ? "Now playing: area music"
-                    : $"Now playing: {Music.GetTrackName(trackId.Value)}";
+                NowPlayingText = trackId != null
+                    ? $"Now playing: {Music.GetTrackName(trackId.Value)}"
+                    : Music.IsAreaMusicStopped(GetArea(Player))
+                        ? "Now playing: nothing (stopped)"
+                        : "Now playing: area music";
 
                 var battleThemeId = Music.GetBattleThemeId(Player);
                 BattleThemeText = battleThemeId == null

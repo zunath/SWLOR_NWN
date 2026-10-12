@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void DroidFoundry()
         {
             _builder.Create("HUTLAR_FOUNDRY_INTAKE")
-                .AddItem("elec_imperfect", 20)
+                .AddItem("elec_imperfect", 10)
+                .AddItem("elec_high", 10)
                 .AddItem("scrap_metal", 25)
                 .AddGold(70, 20);
 

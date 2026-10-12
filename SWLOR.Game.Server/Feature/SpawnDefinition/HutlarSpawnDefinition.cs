@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
+using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
@@ -104,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "fdy_overseer")
                 .WithFrequency(1)
                 .ReturnsHome()
-                .RespawnDelay(45, 75);
+                .RespawnDelay(60 + Random.D100(1));
         }
 
         private void HutqionRareElites()

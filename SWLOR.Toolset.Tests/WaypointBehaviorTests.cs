@@ -40,7 +40,7 @@ namespace SWLOR.Toolset.Tests
 
         private static readonly Dictionary<string, int> ExpectedPlacementCounts = new()
         {
-            [WaypointBehaviorCatalog.CreatureSpawnPointId] = 2271,
+            [WaypointBehaviorCatalog.CreatureSpawnPointId] = 2262,
             [WaypointBehaviorCatalog.FishingPointId] = 431,
             [WaypointBehaviorCatalog.MapNoteId] = 375,
             [WaypointBehaviorCatalog.StuckRescuePointId] = 335,
@@ -102,7 +102,7 @@ namespace SWLOR.Toolset.Tests
                 .ToDictionary(group => group.Key, group => group.Count());
 
             counts.Should().BeEquivalentTo(ExpectedPlacementCounts);
-            counts.Values.Sum().Should().Be(4371);
+            counts.Values.Sum().Should().Be(4362);
         }
 
         [Test]

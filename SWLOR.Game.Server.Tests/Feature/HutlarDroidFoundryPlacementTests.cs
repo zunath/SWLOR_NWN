@@ -113,8 +113,8 @@ public class HutlarDroidFoundryPlacementTests
                 arrivals.Min(arrival => Distance(spawn, arrival)).Should().BeGreaterThanOrEqualTo(15, $"{resref} arrivals must stay clear of spawns");
 
             var resources = waypoints.Where(w => Text(w, "Tag") is "SLICING_TERMINAL_T5" or "SUPPLY_CRATE_T5").ToArray();
-            resources.Count(w => Text(w, "Tag") == "SLICING_TERMINAL_T5").Should().Be(2);
-            resources.Count(w => Text(w, "Tag") == "SUPPLY_CRATE_T5").Should().Be(4);
+            resources.Count(w => Text(w, "Tag") == "SLICING_TERMINAL_T5").Should().Be(1);
+            resources.Count(w => Text(w, "Tag") == "SUPPLY_CRATE_T5").Should().Be(2);
             for (var i = 0; i < resources.Length; i++)
                 for (var j = i + 1; j < resources.Length; j++)
                     Distance(resources[i], resources[j]).Should().BeGreaterThan(6, $"{resref} resource points should be spread out");

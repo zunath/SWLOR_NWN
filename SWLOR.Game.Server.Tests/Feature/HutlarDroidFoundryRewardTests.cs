@@ -124,6 +124,7 @@ public class HutlarDroidFoundryRewardTests
     public void FloorDroids_RollTierFiveGearOnTheAssemblyLineAndCore()
     {
         var loot = new HutlarLootTableDefinition().BuildLootTables();
+        loot["HUTLAR_FOUNDRY_INTAKE"].Select(i => i.Resref).Should().Contain("elec_high", "level 41-45 enemies drop mostly tier 5 materials");
         loot["HUTLAR_FOUNDRY_GEAR"].Should().NotBeEmpty();
         loot["HUTLAR_FOUNDRY_GEAR"].Select(i => i.Resref)
             .Should().OnlyContain(resref => File.Exists(Path.Combine(Root, "Module", "uti", $"{resref}.uti.json")));
@@ -149,6 +150,9 @@ public class HutlarDroidFoundryRewardTests
         recipes.Select(i => i.Resref).Should().BeEquivalentTo(premiumGearRecipes);
         foreach (var item in recipes)
             Text(Load("uti", item.Resref), "Tag").Should().Be("RECIPE", item.Resref);
+
+        new HutlarSpawnDefinition().BuildSpawnTables()["HUTLAR_FOUNDRY_OVERSEER"].RespawnDelayMinutes
+            .Should().BeInRange(61, 160, "premium world bosses respawn on the 60 + d100 minute timer");
 
         LootLocals(Load("utc", "fdy_overseer")).Should().Contain(new[]
         {

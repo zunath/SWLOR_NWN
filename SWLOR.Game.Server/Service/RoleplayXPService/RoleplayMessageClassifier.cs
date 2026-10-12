@@ -67,9 +67,11 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
             if (IsTypoCorrection(trimmed))
                 return RoleplayMessageType.TypoCorrection;
 
-            // Messages of three characters or fewer never earn RP points, so they are not scored.
+            // Quoted speech is always in character, so a message with no narration is never scored.
+            // Messages of three characters or fewer never earn RP points, so they are not scored either.
             if (detection.HasScoring &&
                 trimmed.Length > 3 &&
+                !string.IsNullOrWhiteSpace(narration) &&
                 OOCMessageScorer.Score(trimmed, emoteStyle, detection.Weights) >= detection.Threshold)
                 return RoleplayMessageType.OutOfCharacter;
 

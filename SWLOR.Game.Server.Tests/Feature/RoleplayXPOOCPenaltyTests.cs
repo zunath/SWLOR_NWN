@@ -483,6 +483,19 @@ public class RoleplayXPOOCPenaltyTests
     }
 
     [Test]
+    public void Classify_QuoteOnlyMessage_IsNeverScoredAsOOC()
+    {
+        var detection = ScoringModel(
+            new Dictionary<string, double> { ["bias"] = 10, ["has_quote"] = 10, ["empty_narration"] = 10 },
+            threshold: 0.5);
+
+        RoleplayMessageClassifier.Classify("\"I'll return soon.\"", detection, EmoteStyle.Novel)
+            .Should().Be(RoleplayMessageType.InCharacter);
+        RoleplayMessageClassifier.Classify("  \"I'll return soon.\"  \"Truly.\"  ", detection, EmoteStyle.Regular)
+            .Should().Be(RoleplayMessageType.InCharacter);
+    }
+
+    [Test]
     public void Classify_Scoring_UsesThePlayersEmoteStyle()
     {
         var detection = ScoringModel(new Dictionary<string, double> { ["bias"] = -5, ["n:holoskip"] = 10 }, threshold: 0.5);
@@ -537,6 +550,34 @@ public class RoleplayXPOOCPenaltyTests
     }
 
     [Test]
+    public void OOCDetectionLoader_FromFile_EmptyTermListTurnsTermMatchingOff()
+    {
+        OOCDetectionLoader.FromFile(new OOCDetectionFile { Terms = new List<string>() }).Terms.Should().BeEmpty();
+        OOCDetectionLoader.FromFile(new OOCDetectionFile { Terms = new List<string> { "", "  " } }).Terms.Should().BeEmpty();
+
+        var detection = OOCDetectionLoader.FromFile(new OOCDetectionFile { Terms = new List<string>() });
+        RoleplayMessageClassifier.Classify("brb, food", detection, EmoteStyle.Novel)
+            .Should().Be(RoleplayMessageType.InCharacter);
+        RoleplayMessageClassifier.Classify("//brb, food", detection, EmoteStyle.Novel)
+            .Should().Be(RoleplayMessageType.OutOfCharacter, "OOC markers do not depend on the term list");
+    }
+
+    [TestCase(double.NaN)]
+    [TestCase(double.PositiveInfinity)]
+    [TestCase(double.NegativeInfinity)]
+    public void OOCDetectionLoader_FromFile_RejectsNonFiniteThresholdsAndWeights(double value)
+    {
+        var badThreshold = () => OOCDetectionLoader.FromFile(new OOCDetectionFile { Threshold = value });
+        var badWeight = () => OOCDetectionLoader.FromFile(new OOCDetectionFile
+        {
+            Weights = new Dictionary<string, double> { ["bias"] = value }
+        });
+
+        badThreshold.Should().Throw<InvalidDataException>();
+        badWeight.Should().Throw<InvalidDataException>();
+    }
+
+    [Test]
     public void OOCDetectionLoader_TryLoad_ReadsTheFileAndFallsBackWhenMissingOrInvalid()
     {
         var directory = Directory.CreateTempSubdirectory("rpxp-ooc-");
@@ -546,6 +587,8 @@ public class RoleplayXPOOCPenaltyTests
             File.WriteAllText(valid, "{\"threshold\":0.4,\"terms\":[\"holoskip\"],\"weights\":{\"bias\":-1.5}}");
             var invalid = Path.Combine(directory.FullName, "invalid.json");
             File.WriteAllText(invalid, "{ not json");
+            var notANumber = Path.Combine(directory.FullName, "nan.json");
+            File.WriteAllText(notANumber, "{\"threshold\":NaN,\"weights\":{\"bias\":-1.5}}");
 
             OOCDetectionLoader.TryLoad(valid, out var loaded, out var loadError).Should().BeTrue(loadError);
             loaded.Threshold.Should().Be(0.4);
@@ -558,6 +601,10 @@ public class RoleplayXPOOCPenaltyTests
             OOCDetectionLoader.TryLoad(invalid, out var broken, out var brokenError).Should().BeFalse();
             broken.Should().BeSameAs(OOCDetectionModel.Default);
             brokenError.Should().Contain("could not be read");
+
+            OOCDetectionLoader.TryLoad(notANumber, out var nan, out var nanError).Should().BeFalse();
+            nan.Should().BeSameAs(OOCDetectionModel.Default);
+            nanError.Should().Contain("threshold");
         }
         finally
         {

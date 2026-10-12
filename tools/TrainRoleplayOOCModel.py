@@ -1,7 +1,8 @@
 """Builds the RP XP OOC detection file (rpxp-ooc-detection.json) from server chat logs.
 
-Players' explicitly marked OOC lines (//, ((, [[, {{, OOC:) are used as examples of OOC chatter with the
-marker removed, and every other in-character channel line as an example of roleplay. Optional hand labels
+Lines with an OOC marker outside quoted speech (the same markers the server's rules catch: //, \\, ((, )),
+[[, ]], {{, }}, or a leading OOC: / [OOC] / (OOC) label) are used as examples of OOC chatter with the markers
+removed, and every other in-character channel line as an example of roleplay. Optional hand labels
 (a JSON array of {"msg", "style", "label"} where style is n/r/u and label is OOC/IC/MECH/UNSURE) are mixed
 in with extra weight. The output holds message-scoring weights plus a threshold; the server reads it at
 start from SWLOR_RPXP_OOC_DETECTION_FILE.
@@ -26,8 +27,8 @@ import re
 
 LOG_LINE = re.compile(r'^\d{4}-\d\d-\d\d \d\d:\d\d:\d\d\.\d+ \+00:00 \[INF\] (.*?) - (.*?) - .*? - .*? - (\w+): (.*)$')
 IC_CHANNELS = {'PlayerTalk', 'PlayerWhisper', 'PlayerParty'}
-EXPLICIT_PREFIXES = ('//', '((', '[[', '{{')
 EXPLICIT_LABELS = ('ooc:', '[ooc]', '(ooc)')
+MARKER_SCAN = ('((', '))', '[[', ']]', '{{', '}}', '\\\\')
 
 MARKERS = ('//', '\\\\', '((', '))', '[[', ']]', '{{', '}}')
 OOC_LABEL = re.compile(r'^\s*(\[ooc\]|\(ooc\)|ooc:)\s*', re.I)
@@ -66,8 +67,26 @@ PARITY_MESSAGES = [
 
 
 def is_explicit_ooc(message):
+    """Mirrors the server's marker rules: an OOC label prefix, or a marker anywhere outside quoted speech."""
     text = message.strip()
-    return text.startswith(EXPLICIT_PREFIXES) or text.lower().startswith(EXPLICIT_LABELS)
+    if text.lower().startswith(EXPLICIT_LABELS):
+        return True
+    narration = remove_quoted_speech(text)
+    if any(marker in narration for marker in MARKER_SCAN):
+        return True
+    index = narration.find('//')
+    while index >= 0:
+        if index == 0 or narration[index - 1] != ':':
+            return True
+        index = narration.find('//', index + 2)
+    return False
+
+
+def unit_interval(value):
+    number = float(value)
+    if not math.isfinite(number) or not 0.0 <= number <= 1.0:
+        raise argparse.ArgumentTypeError('must be a number from 0 to 1')
+    return number
 
 
 def is_chat_command(message):
@@ -257,7 +276,7 @@ def main():
     parser.add_argument('--logs', help='folder containing Chat_*.log files')
     parser.add_argument('--labels', help='optional hand-labeled examples (JSON array)')
     parser.add_argument('--out', default='rpxp-ooc-detection.json')
-    parser.add_argument('--threshold', type=float, default=0.4)
+    parser.add_argument('--threshold', type=unit_interval, default=0.4)
     parser.add_argument('--label-weight', type=float, default=5.0)
     parser.add_argument('--l2', type=float, default=5e-5)
     parser.add_argument('--epochs', type=int, default=4)

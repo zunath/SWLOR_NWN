@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
                 error = null;
                 return true;
             }
-            catch (Exception exception) when (exception is JsonException or IOException or UnauthorizedAccessException)
+            catch (Exception exception) when (exception is JsonException or IOException or UnauthorizedAccessException or InvalidDataException)
             {
                 error = $"'{path}' could not be read: {exception.Message}";
                 return false;
@@ -39,15 +39,24 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
             if (file == null)
                 return OOCDetectionModel.Default;
 
-            var terms = file.Terms?
-                .Where(term => !string.IsNullOrWhiteSpace(term))
-                .Select(term => term.Trim())
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var threshold = file.Threshold ?? OOCDetectionModel.DefaultThreshold;
+            if (!double.IsFinite(threshold))
+                throw new InvalidDataException("threshold must be a number from 0 to 1");
+            if (file.Weights != null && file.Weights.Values.Any(weight => !double.IsFinite(weight)))
+                throw new InvalidDataException("weights must be finite numbers");
+
+            // A missing list keeps the built-in terms; an empty list turns term matching off.
+            var terms = file.Terms == null
+                ? RoleplayMessageClassifier.DefaultOOCTerms
+                : file.Terms
+                    .Where(term => !string.IsNullOrWhiteSpace(term))
+                    .Select(term => term.Trim())
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
             return new OOCDetectionModel(
-                terms is { Count: > 0 } ? terms : RoleplayMessageClassifier.DefaultOOCTerms,
+                terms,
                 file.Weights ?? new Dictionary<string, double>(),
-                Math.Clamp(file.Threshold ?? OOCDetectionModel.DefaultThreshold, 0.0, 1.0));
+                Math.Clamp(threshold, 0.0, 1.0));
         }
     }
 }

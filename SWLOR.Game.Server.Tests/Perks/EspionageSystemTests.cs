@@ -160,7 +160,9 @@ public class EspionageSystemTests
         spotGateStart.Should().BeGreaterThanOrEqualTo(0);
         var spotGateBody = stealthSource[spotGateStart..hiddenEnd];
         spotGateBody.Should().Contain("GetArea(observer) == GetArea(target)");
-        spotGateBody.Should().Contain("GetDistanceBetween(observer, target) <= MaxSpotDetectionRange");
+        spotGateBody.Should().Contain("GetDistanceBetween(observer, target) <= GetSpotCheckDistance(observer)",
+            "each observer must use its own engine Spot range, not a global maximum");
+        stealthSource.Should().Contain("creature?.GetSpotCheckDistance() ?? 0f");
         spotGateBody.Should().Contain("LineOfSightObject(observer, target)");
 
         var enteredStart = stealthSource.IndexOf("public static void OnStealthEntered()", StringComparison.Ordinal);

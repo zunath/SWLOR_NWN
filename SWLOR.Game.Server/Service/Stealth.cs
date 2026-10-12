@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using NWNXLib = NWN.Native.API.NWNXLib;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -22,8 +23,6 @@ namespace SWLOR.Game.Server.Service
 
         private const float DetectionCheckIntervalSeconds = 30f;
         private const int CachePruneThreshold = 2000;
-        // Longest creature sight range in ranges.2da (PercepRngLng); the engine never runs a Spot check past it.
-        private const float MaxSpotDetectionRange = 35f;
 
         private static readonly Dictionary<(uint Observer, uint Target), (bool Detected, DateTime Expiry)> _verdicts = new();
 
@@ -275,8 +274,18 @@ namespace SWLOR.Game.Server.Service
         private static bool CanAttemptSpotDetection(uint observer, uint target)
         {
             return GetArea(observer) == GetArea(target) &&
-                   GetDistanceBetween(observer, target) <= MaxSpotDetectionRange &&
+                   GetDistanceBetween(observer, target) <= GetSpotCheckDistance(observer) &&
                    LineOfSightObject(observer, target);
+        }
+
+        /// <summary>
+        /// The observer's own Spot range, as the engine's perception update uses it: the creature's
+        /// configured sight range, or its longer in-combat range while it is in combat.
+        /// </summary>
+        private static float GetSpotCheckDistance(uint observer)
+        {
+            var creature = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(observer);
+            return creature?.GetSpotCheckDistance() ?? 0f;
         }
 
         /// <summary>

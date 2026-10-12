@@ -226764,16 +226764,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A bracer worn by seasoned fighters who have outlasted many battles."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A bracer worn by seasoned fighters who have outlasted many battles."
                       }
                     },
                     "Identified": {
@@ -226785,7 +226784,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Battlemaster Bracer"
@@ -226969,16 +226967,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A practical bracer issued to wardens who hold the line in the field."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A practical bracer issued to wardens who hold the line in the field."
                       }
                     },
                     "Identified": {
@@ -226990,7 +226987,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Warden Bracer"
@@ -232024,16 +232020,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -232045,7 +232040,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-001"
@@ -235676,16 +235670,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A reinforced forearm plate engineered to bolt onto a droid chassis, upgraded with improved shielding."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A reinforced forearm plate engineered to bolt onto a droid chassis, upgraded with improved shielding."
                       }
                     },
                     "Identified": {
@@ -235697,7 +235690,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-001 A"

@@ -1055,7 +1055,8 @@ namespace SWLOR.Game.Server.Service
 
             var previous = dbPlayer.EquippedTechniques.ToList();
             var outgoing = dbPlayer.MimicryLoadouts.FirstOrDefault(x => x.Id == dbPlayer.ActiveMimicryLoadoutId);
-            if (outgoing != null)
+            // A modified equipped set must not overwrite the saved preset's hotbar layout.
+            if (outgoing != null && MimicryLoadouts.Matches(outgoing.Techniques, previous))
                 CaptureLoadoutHotbar(player, outgoing);
 
             // Commit the whole set once. Revoke only outgoing feats so shared stances survive.

@@ -2851,6 +2851,234 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
+                            "value": 24.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Chief Varrick"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_zchief"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 23.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rakghoul"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_rakghoul"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 29.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rakghoul Alpha"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_rakalpha"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 27.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rakghoul Brute"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_rakbrute"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 25.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rakghoul Stalker"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_rakstalk"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 20.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Reanimated Dockhand"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_zdockhand"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 26.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Reanimated Geneticist"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_zgenetic"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 30.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Reanimated Rancor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_zrancor"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 22.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Reanimated Researcher"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_zresearch"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 24.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Reanimated Security Guard"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_zguard"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 21.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Reanimated Technician"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_ztech"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 28.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Subject Zero"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_subzero"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
                             "value": 32.0
                           },
                           "FACTION": {
@@ -2864,6 +3092,44 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "zomb_guard"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 30.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Reanimated Station Director"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_zdirector"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 28.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Reanimated Test Subject"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_zsubject"
                           }
                         },
                         {
@@ -7132,6 +7398,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cq_emcocktail"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kesa"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_kesa"
                     }
                   },
                   {
@@ -13407,6 +13692,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 43.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Arc Welder Drone"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_welder"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 55.0
                     },
                     "FACTION": {
@@ -13819,6 +14123,291 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cp_deccommand_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Foreman RX-12"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_foreman"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Forge Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_forgewd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Foundry Overseer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_overseer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 51.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Foundry War Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_wardroid"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 53.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hunter-Killer Unit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_hunter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Inspector Q-0"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_inspector"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 42.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Intake Sentry Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_sentry"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 54.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Juggernaut Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_juggernt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 46.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Line Defender Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_linedef"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 48.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reclamation Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_reclaim"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 47.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Riveter Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_riveter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 41.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Salvage Hauler Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_hauler"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Siege Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_siege"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smelter Hulk"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_smelter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sorter Prime"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_sorter"
                     }
                   },
                   {

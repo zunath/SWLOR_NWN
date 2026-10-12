@@ -26,7 +26,7 @@ public static partial class MigrationEngineTests
         var archiveId = Guid.NewGuid().ToString();
         const string questId = "saber_storm_foundation";
         const NPCGroupType oldGroup = NPCGroupType.Dantooine_SaberStorm_Adept;
-        const NPCGroupType newGroup = NPCGroupType.Dantooine_StormDrillDroid;
+        const NPCGroupType newGroup = NPCGroupType.Hutlar_StormDrillDroid;
         await ctx.ExecuteInCreatureContextAsync(creature, () =>
         {
             ctx.AssertEqual((int)newGroup, GetLocalInt(creature, "QUEST_NPC_GROUP_ID"), "Deployed blueprint uses the new group");

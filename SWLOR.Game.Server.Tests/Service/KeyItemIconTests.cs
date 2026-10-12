@@ -36,11 +36,15 @@ public class KeyItemIconTests
         var fieldNotes = entries
             .Where(x => x.Detail.Category == KeyItemCategoryType.FieldNotes)
             .ToList();
+        var songs = entries
+            .Where(x => x.Detail.Category == KeyItemCategoryType.Music)
+            .ToList();
 
-        entries.Should().HaveCount(414);
+        entries.Should().HaveCount(793);
         uniqueIcons.Should().HaveCount(198);
-        maps.Should().HaveCount(77);
+        maps.Should().HaveCount(78);
         fieldNotes.Should().HaveCount(139);
+        songs.Should().HaveCount(378);
 
         entries.Should().OnlyContain(x => !string.IsNullOrWhiteSpace(x.Resref));
         entries.Should().OnlyContain(x => x.Resref.Length <= 16,
@@ -56,6 +60,10 @@ public class KeyItemIconTests
         var fieldNoteResrefs = fieldNotes.Select(x => x.Resref).ToHashSet();
         fieldNoteResrefs.Should().BeEquivalentTo(KeyItemIcon.FieldNoteIconResrefs,
             "Field Notes intentionally reuse the six approved document categories");
+
+        var songResrefs = songs.Select(x => x.Resref).ToHashSet();
+        songResrefs.Should().BeEquivalentTo(KeyItemIcon.MusicIconResrefs,
+            "Songs intentionally reuse one icon per music category");
     }
 
     [Test]

@@ -2510,7 +2510,7 @@
     "InternalName": "sw_imbuestn",
     "Category": "Lightsaber",
     "Type": "Stance",
-    "Description": "While active, your hostile auto-attacks deal Force damage instead of physical and cost 2 FP each.",
+    "Description": "While active, your hostile auto-attacks deal Force damage instead of their normal damage type, including elemental damage, and cost 2 FP each.",
     "Reference": "",
     "BibleAnimationRow": 175,
     "PerkId": "ImbuementStance",

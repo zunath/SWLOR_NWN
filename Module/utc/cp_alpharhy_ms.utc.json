@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Alpha Rhythm in Dathomir Tarn Jungle Preserve."
+    "value": "Alpha Rhythm master in Dathomir - Alpha Beast Hollow."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Alpha Rhythm in Dathomir Tarn Jungle Preserve."
+      "0": "An old iriaz bull, broad and weathered, whose hoof-falls keep a steady, compelling rhythm that sounds almost right. The bull that drives the kinrath learned his beat from this one, and whole packs have followed it without noticing the wrongness."
     }
   },
   "Dex": {

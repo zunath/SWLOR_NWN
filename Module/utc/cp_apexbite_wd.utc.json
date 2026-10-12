@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Apex Bite in Dathomir Tarn Jungle Preserve."
+    "value": "Apex Bite warden in Dathomir - Tarn Jungle Preserve."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Apex Bite in Dathomir Tarn Jungle Preserve."
+      "0": "A lean, spined tukata in a heavy breeder's collar, a clawed-apart totem hanging from it. He was whelped in the preserve's own breeding program before the pit-breeders retrained him on fear, and he still knows every pen in the place."
     }
   },
   "Dex": {

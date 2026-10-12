@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Forcebane in Korriban Forge Caverns."
+    "value": "Forcebane master in Tatooine - Champion Forge."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Forcebane in Korriban Forge Caverns."
+      "0": "A Twi'lek spear master in a Sith officer's coat, once half of the hunting pair that wrote the Forcebane doctrine. He talks easily while he fights, and every escape you reach for, he has already closed."
     }
   },
   "Dex": {

@@ -211,35 +211,35 @@ namespace SWLOR.Game.Server.Service.NPCService
         [NPCGroup("Saber Cyclone Master")]
         Dantooine_SaberCyclone_Master = 101,
         [NPCGroup("Absolute Defense Adepts")]
-        Korriban_AbsoluteDefense_Adept = 102,
+        Tatooine_AbsoluteDefense_Adept = 102,
         [NPCGroup("Absolute Defense Specialists")]
-        Korriban_AbsoluteDefense_Specialist = 103,
+        Tatooine_AbsoluteDefense_Specialist = 103,
         [NPCGroup("Absolute Defense Warden")]
-        Korriban_AbsoluteDefense_Warden = 104,
+        Tatooine_AbsoluteDefense_Warden = 104,
         [NPCGroup("Absolute Defense Inner Circle")]
-        Korriban_AbsoluteDefense_InnerCircle = 105,
+        Tatooine_AbsoluteDefense_InnerCircle = 105,
         [NPCGroup("Absolute Defense Master")]
-        Korriban_AbsoluteDefense_Master = 106,
+        Tatooine_AbsoluteDefense_Master = 106,
         [NPCGroup("Soul Ascension Adepts")]
-        Korriban_SoulAscension_Adept = 107,
+        Tatooine_SoulAscension_Adept = 107,
         [NPCGroup("Soul Ascension Specialists")]
-        Korriban_SoulAscension_Specialist = 108,
+        Tatooine_SoulAscension_Specialist = 108,
         [NPCGroup("Soul Ascension Warden")]
-        Korriban_SoulAscension_Warden = 109,
+        Tatooine_SoulAscension_Warden = 109,
         [NPCGroup("Soul Ascension Inner Circle")]
-        Korriban_SoulAscension_InnerCircle = 110,
+        Tatooine_SoulAscension_InnerCircle = 110,
         [NPCGroup("Soul Ascension Master")]
-        Korriban_SoulAscension_Master = 111,
+        Tatooine_SoulAscension_Master = 111,
         [NPCGroup("Forcebane Adepts")]
-        Korriban_Forcebane_Adept = 112,
+        Tatooine_Forcebane_Adept = 112,
         [NPCGroup("Forcebane Specialists")]
-        Korriban_Forcebane_Specialist = 113,
+        Tatooine_Forcebane_Specialist = 113,
         [NPCGroup("Forcebane Warden")]
-        Korriban_Forcebane_Warden = 114,
+        Tatooine_Forcebane_Warden = 114,
         [NPCGroup("Forcebane Inner Circle")]
-        Korriban_Forcebane_InnerCircle = 115,
+        Tatooine_Forcebane_InnerCircle = 115,
         [NPCGroup("Forcebane Master")]
-        Korriban_Forcebane_Master = 116,
+        Tatooine_Forcebane_Master = 116,
         [NPCGroup("Crippling Defense Adepts")]
         SmugglersMoon_CripplingDefense_Adept = 117,
         [NPCGroup("Crippling Defense Specialists")]
@@ -451,35 +451,35 @@ namespace SWLOR.Game.Server.Service.NPCService
         [NPCGroup("Decisive Command Master")]
         Viscara_DecisiveCommand_Master = 221,
         [NPCGroup("Hold the Line Adepts")]
-        Dantooine_HoldTheLine_Adept = 222,
+        MonCala_HoldTheLine_Adept = 222,
         [NPCGroup("Hold the Line Specialists")]
-        Dantooine_HoldTheLine_Specialist = 223,
+        MonCala_HoldTheLine_Specialist = 223,
         [NPCGroup("Hold the Line Warden")]
-        Dantooine_HoldTheLine_Warden = 224,
+        MonCala_HoldTheLine_Warden = 224,
         [NPCGroup("Hold the Line Inner Circle")]
-        Dantooine_HoldTheLine_InnerCircle = 225,
+        MonCala_HoldTheLine_InnerCircle = 225,
         [NPCGroup("Hold the Line Master")]
-        Dantooine_HoldTheLine_Master = 226,
+        MonCala_HoldTheLine_Master = 226,
         [NPCGroup("Emergency Cocktail Adepts")]
-        Dantooine_EmergencyCocktail_Adept = 227,
+        MonCala_EmergencyCocktail_Adept = 227,
         [NPCGroup("Emergency Cocktail Specialists")]
-        Dantooine_EmergencyCocktail_Specialist = 228,
+        MonCala_EmergencyCocktail_Specialist = 228,
         [NPCGroup("Emergency Cocktail Warden")]
-        Dantooine_EmergencyCocktail_Warden = 229,
+        MonCala_EmergencyCocktail_Warden = 229,
         [NPCGroup("Emergency Cocktail Inner Circle")]
-        Dantooine_EmergencyCocktail_InnerCircle = 230,
+        MonCala_EmergencyCocktail_InnerCircle = 230,
         [NPCGroup("Emergency Cocktail Master")]
-        Dantooine_EmergencyCocktail_Master = 231,
+        MonCala_EmergencyCocktail_Master = 231,
         [NPCGroup("Infinite Conduit Adepts")]
-        Dantooine_InfiniteConduit_Adept = 232,
+        MonCala_InfiniteConduit_Adept = 232,
         [NPCGroup("Infinite Conduit Specialists")]
-        Dantooine_InfiniteConduit_Specialist = 233,
+        MonCala_InfiniteConduit_Specialist = 233,
         [NPCGroup("Infinite Conduit Warden")]
-        Dantooine_InfiniteConduit_Warden = 234,
+        MonCala_InfiniteConduit_Warden = 234,
         [NPCGroup("Infinite Conduit Inner Circle")]
-        Dantooine_InfiniteConduit_InnerCircle = 235,
+        MonCala_InfiniteConduit_InnerCircle = 235,
         [NPCGroup("Infinite Conduit Master")]
-        Dantooine_InfiniteConduit_Master = 236,
+        MonCala_InfiniteConduit_Master = 236,
         [NPCGroup("Apex Bite Adepts")]
         Dathomir_ApexBite_Adept = 237,
         [NPCGroup("Apex Bite Specialists")]
@@ -543,70 +543,74 @@ namespace SWLOR.Game.Server.Service.NPCService
 
         // Retain the historical groups above for persisted enum keys and migration.
         [NPCGroup("Storm Drill Droid")]
-        Dantooine_StormDrillDroid = 267,
+        Hutlar_StormDrillDroid = 267,
         [NPCGroup("Storm Duelist Droid")]
-        Dantooine_StormDuelistDroid = 268,
+        Hutlar_StormDuelistDroid = 268,
         [NPCGroup("Storm Gatekeeper Droid")]
-        Dantooine_StormGatekeeperDroid = 269,
+        Hutlar_StormGatekeeperDroid = 269,
         [NPCGroup("Storm Examiner Droid")]
-        Dantooine_StormExaminerDroid = 270,
+        Hutlar_StormExaminerDroid = 270,
         [NPCGroup("Tempest Training Engine")]
-        Dantooine_TempestTrainingEngine = 271,
+        Hutlar_TempestTrainingEngine = 271,
         [NPCGroup("Guardian Patrol Droid")]
-        Dantooine_GuardianPatrolDroid = 272,
+        Hutlar_GuardianPatrolDroid = 272,
         [NPCGroup("Guardian Bulwark Droid")]
-        Dantooine_GuardianBulwarkDroid = 273,
+        Hutlar_GuardianBulwarkDroid = 273,
         [NPCGroup("Guardian Gatekeeper Droid")]
-        Dantooine_GuardianGatekeeperDroid = 274,
+        Hutlar_GuardianGatekeeperDroid = 274,
         [NPCGroup("Guardian Shield Droid")]
-        Dantooine_GuardianShieldDroid = 275,
+        Hutlar_GuardianShieldDroid = 275,
         [NPCGroup("Bastion Training Engine")]
-        Dantooine_BastionTrainingEngine = 276,
+        Hutlar_BastionTrainingEngine = 276,
         [NPCGroup("Cyclone Drill Droid")]
-        Dantooine_CycloneDrillDroid = 277,
+        Hutlar_CycloneDrillDroid = 277,
         [NPCGroup("Cyclone Duelist Droid")]
-        Dantooine_CycloneDuelistDroid = 278,
+        Hutlar_CycloneDuelistDroid = 278,
         [NPCGroup("Cyclone Gatekeeper Droid")]
-        Dantooine_CycloneGatekeeperDroid = 279,
+        Hutlar_CycloneGatekeeperDroid = 279,
         [NPCGroup("Cyclone Examiner Droid")]
-        Dantooine_CycloneExaminerDroid = 280,
+        Hutlar_CycloneExaminerDroid = 280,
         [NPCGroup("Vortex Training Engine")]
-        Dantooine_VortexTrainingEngine = 281,
+        Hutlar_VortexTrainingEngine = 281,
         [NPCGroup("Crypt Raider")]
-        Korriban_CryptRaider = 282,
+        MonCala_CryptRaider = 282,
         [NPCGroup("Crypt Marauder")]
-        Korriban_CryptMarauder = 283,
+        MonCala_CryptMarauder = 283,
         [NPCGroup("Crypt Breach Captain")]
-        Korriban_CryptBreachCaptain = 284,
+        MonCala_CryptBreachCaptain = 284,
         [NPCGroup("Crypt Reaver")]
-        Korriban_CryptReaver = 285,
+        MonCala_CryptReaver = 285,
         [NPCGroup("Crypt Expedition Leader")]
-        Korriban_CryptExpeditionLeader = 286,
+        MonCala_CryptExpeditionLeader = 286,
         [NPCGroup("Vitae Reaver Initiate")]
-        Korriban_VitaeReaverInitiate = 287,
+        MonCala_VitaeReaverInitiate = 287,
         [NPCGroup("Vitae Reaver Adept")]
-        Korriban_VitaeReaverAdept = 288,
+        MonCala_VitaeReaverAdept = 288,
         [NPCGroup("Vitae Reaver Enforcer")]
-        Korriban_VitaeReaverEnforcer = 289,
+        MonCala_VitaeReaverEnforcer = 289,
         [NPCGroup("Vitae Reaver Binder")]
-        Korriban_VitaeReaverBinder = 290,
+        MonCala_VitaeReaverBinder = 290,
         [NPCGroup("Vitae Reaver Chief")]
-        Korriban_VitaeReaverChief = 291,
+        MonCala_VitaeReaverChief = 291,
         [NPCGroup("Umbral Raider Scout")]
-        Korriban_UmbralRaiderScout = 292,
+        MonCala_UmbralRaiderScout = 292,
         [NPCGroup("Umbral Raider Adept")]
-        Korriban_UmbralRaiderAdept = 293,
+        MonCala_UmbralRaiderAdept = 293,
         [NPCGroup("Umbral Raider Captain")]
-        Korriban_UmbralRaiderCaptain = 294,
+        MonCala_UmbralRaiderCaptain = 294,
         [NPCGroup("Umbral Raider Saboteur")]
-        Korriban_UmbralRaiderSaboteur = 295,
+        MonCala_UmbralRaiderSaboteur = 295,
         [NPCGroup("Umbral Raider Commander")]
-        Korriban_UmbralRaiderCommander = 296,
+        MonCala_UmbralRaiderCommander = 296,
+        [NPCGroup("Foundry Droid")]
+        Hutlar_FoundryDroid = 297,
+        [NPCGroup("Station Horror")]
+        AbandonedStation_Horror = 298,
 
         [NPCGroup("Eshan Dire Wolves")]
-        Eshan_DireWolf = 297,
+        Eshan_DireWolf = 309,
         [NPCGroup("Eshan Frost Dire Wolves")]
-        Eshan_FrostWolf = 298,
+        Eshan_FrostWolf = 310,
         [NPCGroup("Eshan Dire Wolf Alpha")]
         Eshan_DireWolfAlpha = 299,
         [NPCGroup("Eshan Neo-Crusader Scouts")]

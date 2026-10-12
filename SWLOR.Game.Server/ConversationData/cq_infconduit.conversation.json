@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "These pipes sound nothing like the conduits beneath my old ward on Dantooine. Those had a low note that kept time with a blade. Students I taught there, in the Dantooine Medical Sublevel, took the conduit form and dammed it. They pool the Force in their blades and let it stagnate, and stagnant power always finds somewhere to spill. Go to Dantooine, defeat six of their adepts, and bring me the Infinite Conduit Triage Ward Ledger. My patients' records are in it, and I cannot reach them anymore.",
+          "Text": "These pipes sound nothing like the conduits beneath my old ward on Mon Cala. Those had a low note that kept time with a blade, with the whole sea leaning on every line. Students I taught there, in the Medical Sublevel beneath the Coral Isles Facility, took the conduit form and dammed it. They pool the Force in their blades and let it stagnate, and stagnant power always finds somewhere to spill. Go to Mon Cala, defeat six of their adepts, and bring me the Infinite Conduit Triage Ward Ledger. My patients' records are in it, and I cannot reach them anymore.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then take this key, go quietly, and come back whole. It opens the sealed door on the far west wall of the Abandoned Warehouse on Dantooine; past it, follow the pipes down. Six adepts, the ledger, and back to me. I'll keep a bed ready. I always do.",
+          "Text": "Then take this key, go quietly, and come back whole. It works the service lift down to the sublevel. On Mon Cala, go east from Dac City through the Coral Isles to the facility on the south-west side of the outer isles. Eco-terrorists hold it now. Go through the sliding door off the entry hall; the lift stands in the red-walled bay just east of the office block. At the bottom, follow the pipes. Six adepts, the ledger, and back to me. I'll keep a bed ready. I always do.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "On Dantooine. The sublevel was cut as a kolto reserve beneath the Abandoned Warehouse on the Jungle Mountain. From the Colony Central landing, go north through the Wild Plains to the Medical Safehouse, west across the Iriaz Fields to the Ruined Farmlands, then north through the Forsaken Jungles to the mountain. The warehouse sits on its north-west side, and the sealed door is on the warehouse's far west wall. Take the work and the key is yours.",
+          "Text": "On Mon Cala. The sublevel was cut as a kolto reserve beneath the Coral Isles Facility. From the landing at the \"Elite\" Hotel in Dac City, go out through the surface streets and east into the Coral Isles, the inner isles and then the outer. The facility stands on the south-west side of the outer isles, held by eco-terrorists. Inside, take the sliding door off the entry hall; a service lift in the red-walled bay just east of the office block goes down. Take the work and the key to that lift is yours.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The ledger is still below, and six adepts stand between you and it. The sealed door is in the Abandoned Warehouse on Dantooine. Go gently. But go.",
+          "Text": "The ledger is still below, and six adepts stand between you and it. In the Coral Isles Facility on Mon Cala, take the sliding door off the entry hall to the service lift in the red-walled bay, just east of the office block. Go gently. But go.",
           "Style": 0,
           "Color": null
         }
@@ -562,7 +562,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Deeper than the adepts kept, where the main kolto lines run. Go back through the sealed door in the warehouse and follow the sound of water being made to wait. Their practice chamber leans against the main line, and you will feel the throttled current before you see them.",
+          "Text": "Deeper than the adepts kept, where the main kolto lines run. Go back down through the facility and follow the sound of water being made to wait. Their practice chamber leans against the main line, and you will feel the throttled current before you see them.",
           "Style": 0,
           "Color": null
         }
@@ -1309,7 +1309,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Anchorhead Medical Center on Tatooine gives me somewhere to work while my old ward is sealed. Power should circulate, and so should help. Your faction has no place on a patient's chart. The practitioners are still in the Dantooine Medical Sublevel on Dantooine. Bring the ledger back to me at this clinic.",
+          "Text": "Anchorhead Medical Center on Tatooine gives me somewhere to work while my old ward is sealed. Power should circulate, and so should help. Your faction has no place on a patient's chart. My old ward is the Medical Sublevel, beneath the Coral Isles Facility on Mon Cala, and the practitioners are still down there. Bring the ledger back to me at this clinic.",
           "Style": 0,
           "Color": null
         }
@@ -1350,7 +1350,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "Six adepts, one ledger. The stair opens today.",
+        "Text": "Six adepts, one ledger. The lift goes down today.",
         "Style": 4,
         "Color": null
       },

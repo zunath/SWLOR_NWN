@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Numerics;
+using NWNXLib = NWN.Native.API.NWNXLib;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX.Enum;
@@ -62,12 +64,14 @@ namespace SWLOR.Game.Server.Feature
             if (CompanionControl.IsRegisteredCompanion(activator))
                 return CompanionControl.PeekAuthorizedTarget(activator);
 
-            if (GetCurrentAction(activator) == ActionType.AttackObject)
-            {
-                var attackTarget = GetAttackTarget(activator);
-                if (GetIsObjectValid(attackTarget))
-                    return attackTarget;
-            }
+            // The current action is invalid between native AI updates even during an attack.
+            // Check the queue before activation clears it; a canceled attack can retain its target.
+            var attackTarget = GetAttackTarget(activator);
+            if (GetIsObjectValid(attackTarget) &&
+                WeaponAttackAnimation.HasQueuedAttack(
+                    NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(activator).AsNWSObject(),
+                    attackTarget))
+                return attackTarget;
 
             if (!GetIsPC(activator))
             {

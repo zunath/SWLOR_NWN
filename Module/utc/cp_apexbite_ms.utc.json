@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Apex Bite in Dathomir Tarn Jungle Preserve."
+    "value": "Apex Bite master in Dathomir - Alpha Beast Hollow."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Apex Bite in Dathomir Tarn Jungle Preserve."
+      "0": "An old tukata, his spines worn and his hide crossed with years of scars, who moves with unhurried certainty. He was the first animal the pit-breeders ever trained on fear and sired the tukata that guards their pens; when he strikes, he commits completely."
     }
   },
   "Dex": {

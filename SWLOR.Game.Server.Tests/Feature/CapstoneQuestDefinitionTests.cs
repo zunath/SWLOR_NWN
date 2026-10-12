@@ -157,16 +157,16 @@ public class CapstoneQuestDefinitionTests
             .Contain(new[]
             {
                 "Veles Militia Annex",
-                "Dantooine Jedi Enclave Trial Halls",
-                "Korriban Forge Caverns",
+                "Hutlar Jedi Trial Halls",
+                "Tatooine Forge Caverns",
                 "Smuggler's Moon Fight Club Backrooms",
                 "CZ-220 Breaker Yard",
                 "Anchorhead Canyon Range",
                 "Czerka Arms Test Range",
                 "Hutlar Qion Test Site",
-                "Korriban Sith Crypt Depths",
+                "Mon Cala Sith Crypt Depths",
                 "Viscara Republic Engineering Bunker",
-                "Dantooine Medical Sublevel",
+                "Mon Cala Medical Sublevel",
                 "Dathomir Tarn Jungle Preserve",
                 "Dathomir Grotto Apex Den",
             });

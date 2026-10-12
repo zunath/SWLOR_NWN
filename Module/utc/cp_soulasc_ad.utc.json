@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Soul Ascension in Korriban Forge Caverns."
+    "value": "Soul Ascension adept in Tatooine - Forge Caverns."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Soul Ascension in Korriban Forge Caverns."
+      "0": "A Zabrak adept of the forge congregation, loud with a thirst he has not learned to hide. He swings his heavy vibroblade as if every cut it lands is a debt owed to him."
     }
   },
   "Dex": {

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Unmoving Center in Anchorhead Canyon Range."
+    "value": "Unmoving Center inner circle member in Tatooine - Anchorhead Canyon Range."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Unmoving Center in Anchorhead Canyon Range."
+      "0": "A Twi'lek in plain dark work clothes, one of four who drill the same stillness together in the Anchorhead Canyon Range and call it a circle. They learned the form secondhand, from a student, and stand back to back so none of them has to be still alone."
     }
   },
   "Dex": {

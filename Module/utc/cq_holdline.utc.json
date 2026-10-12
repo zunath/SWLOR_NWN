@@ -137,7 +137,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest giver for Hold the Line in Dantooine Medical Sublevel."
+    "value": "Quest giver for the Hold the Line line in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",

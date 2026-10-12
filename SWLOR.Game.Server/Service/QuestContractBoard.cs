@@ -38,7 +38,8 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Runs after <see cref="Quest.RegisterQuests"/> finishes its reflection-based pass. Loads every
         /// published contract, expires (and refunds) any which are past their expiration date, and
-        /// registers the rest as runtime quests. Expiry is only swept here at boot rather than on a
+        /// registers the rest as runtime quests, then prunes settled history after 30 days. Expiry and
+        /// history are only swept here at boot rather than on a
         /// running timer because the server reboots daily, so a periodic sweep would spend CPU for at
         /// most a day of extra contract lifetime.
         /// </summary>
@@ -62,7 +63,44 @@ namespace SWLOR.Game.Server.Service
                 registeredCount++;
             }
 
+            PruneHistory(now);
             Log.Write(LogGroup.QuestContract, $"Registered {registeredCount} quest contract(s).", true);
+        }
+
+        /// <summary>
+        /// Sweeps all terminal contracts after settlement recovery, then removes empty orphaned
+        /// deliveries left by interrupted claims. Both queries include records beyond the default page.
+        /// </summary>
+        private static void PruneHistory(DateTime now)
+        {
+            var query = new DBQuery<QuestContract>()
+                .AddFieldSearch(nameof(QuestContract.Status), new[]
+                {
+                    (int)QuestContractStatus.Fulfilled, (int)QuestContractStatus.Expired,
+                    (int)QuestContractStatus.Cancelled, (int)QuestContractStatus.TakenDown
+                });
+            var count = (int)DB.SearchCount(query);
+            var contracts = count > 0 ? DB.Search(query.AddPaging(count, 0)).ToList() : new List<QuestContract>();
+
+            var prunedCount = 0;
+            foreach (var contract in contracts)
+            {
+                if (QuestContractHistory.Prune(contract, now, () => ReadDeliveries(new DBQuery<QuestContractDelivery>()
+                    .AddFieldSearch(nameof(QuestContractDelivery.SourceContractId), contract.Id, false)),
+                    DB.Set, DB.Delete<QuestContract>, DB.Delete<QuestContractDelivery>))
+                    prunedCount++;
+            }
+            // A claim can persist its empty delivery and stop before deleting it. Its source history
+            // may already be gone, so sweep these independently even when no closed contracts remain.
+            var orphanedCount = 0;
+            foreach (var delivery in ReadDeliveries(new DBQuery<QuestContractDelivery>()
+                .AddFieldSearch(nameof(QuestContractDelivery.HeldSubmissionIndex), "[0 0]", false)))
+            {
+                if (QuestContractHistory.PruneOrphanedDelivery(delivery, DB.Exists<QuestContract>, DB.Delete<QuestContractDelivery>))
+                    orphanedCount++;
+            }
+            if (prunedCount > 0 || orphanedCount > 0)
+                Log.Write(LogGroup.QuestContract, $"Pruned {prunedCount} quest contract history record(s) and {orphanedCount} orphaned empty delivery record(s).", true);
         }
 
         private static List<QuestContract> GetPublishedContracts()
@@ -236,6 +274,75 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Identifies reusable terminal statuses. Active drafts, published contracts, and moderated
+        /// takedowns cannot be copied through Post Again.
+        /// </summary>
+        public static bool CanPostAgain(QuestContract contract)
+        {
+            return contract.Status == QuestContractStatus.Fulfilled ||
+                contract.Status == QuestContractStatus.Expired || contract.Status == QuestContractStatus.Cancelled;
+        }
+
+        /// <summary>
+        /// Copies editable text, objectives, and credit reward into a new draft with its own identity.
+        /// Escrowed items and lifecycle state are not copied; item rewards must be supplied again.
+        /// The caller must validate authorization before persisting the draft.
+        /// </summary>
+        public static QuestContract CreateRepostDraft(QuestContract source)
+        {
+            return new QuestContract
+            {
+                AuthorPlayerId = source.AuthorPlayerId,
+                AuthorCDKey = source.AuthorCDKey,
+                AuthorName = source.AuthorName,
+                Status = QuestContractStatus.Draft,
+                Title = source.Title,
+                Description = source.Description,
+                RewardCredits = source.RewardCredits,
+                CompletionsRemaining = 1,
+                Objectives = source.Objectives.Select(x => new QuestContractObjective
+                {
+                    ItemResref = x.ItemResref, ItemName = x.ItemName, Quantity = x.Quantity
+                }).ToList()
+            };
+        }
+
+        /// <summary>
+        /// Creates an editable repost draft for the source's author without overwriting an existing
+        /// draft. Creating the draft neither publishes the contract nor charges its posting cost.
+        /// </summary>
+        /// <returns>An empty string on success, otherwise a player-facing validation error.</returns>
+        public static string PostAgain(uint player, string contractId)
+        {
+            var source = DB.Get<QuestContract>(contractId);
+            var error = ValidateRepost(source, GetObjectUUID(player), GetDraft(player) != null);
+            if (!string.IsNullOrEmpty(error))
+                return error;
+
+            var draft = CreateRepostDraft(source);
+            draft.AuthorCDKey = GetPCPublicCDKey(player);
+            draft.AuthorName = GetName(player);
+            DB.Set(draft);
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Checks source ownership, reusable status, and the author's single-draft limit before a copy
+        /// is created. Missing and foreign contracts share the same error message.
+        /// </summary>
+        /// <returns>An empty string when reposting is allowed, otherwise a player-facing error.</returns>
+        public static string ValidateRepost(QuestContract source, string authorId, bool hasDraft)
+        {
+            if (source == null || source.AuthorPlayerId != authorId)
+                return "That contract could not be found.";
+            if (!CanPostAgain(source))
+                return "Only completed, expired, or cancelled contracts can be posted again.";
+            if (hasDraft)
+                return "Finish or delete your existing draft before posting another contract again.";
+            return string.Empty;
+        }
+
+        /// <summary>
         /// Resolves the display icon for an escrowed contract item. Icons are captured at escrow time,
         /// so items escrowed before icon fixes may have an unusable placeholder stored; those are
         /// recomputed from the item's blueprint.
@@ -337,6 +444,7 @@ namespace SWLOR.Game.Server.Service
                 contract.TakedownReason = $"Removed by DM {GetName(requester)} [{requesterId}].";
             }
 
+            contract.DateClosed = DateTime.UtcNow;
             DB.Set(contract);
             ReleaseSubmissions(contract.Id);
             Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
@@ -401,7 +509,8 @@ namespace SWLOR.Game.Server.Service
         /// Gives the player all credits and items from every pending <see cref="QuestContractDelivery"/>
         /// addressed to them. Items are delivered one at a time; a delivery's credits are only paid out
         /// once all of its items have been successfully acquired. Reward payments retain an empty
-        /// receipt so settlement recovery cannot recreate a payment that was already claimed.
+        /// receipt while its source contract exists so settlement recovery cannot recreate a payment
+        /// that was already claimed. Claims after history cleanup no longer need that receipt.
         /// </summary>
         public static void ClaimDeliveries(uint player)
         {
@@ -413,6 +522,10 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
+        /// <summary>
+        /// Claims each delivery through a durable character checkpoint before persisting its remaining
+        /// value. Empty reward receipts remain only while their source can recover settlement.
+        /// </summary>
         private static void ClaimDeliveries(uint player, Action saveCharacter)
         {
             var playerId = GetObjectUUID(player);
@@ -449,7 +562,8 @@ namespace SWLOR.Game.Server.Service
                     totalCredits += delivery.Credits - remaining.Credits;
                     if (!IsClaimable(remaining))
                     {
-                        if (!remaining.IsRewardPayment) DB.Delete<QuestContractDelivery>(remaining.Id);
+                        if (!remaining.IsRewardPayment || DB.Get<QuestContract>(remaining.SourceContractId) == null)
+                            DB.Delete<QuestContractDelivery>(remaining.Id);
                         DeleteLocalString(player, checkpointName);
                     }
                 }
@@ -564,6 +678,10 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        /// <summary>
+        /// Records the winner and closing date before settling a published contract. Persisting the
+        /// pending flag first allows boot recovery to finish an interrupted settlement without reopening it.
+        /// </summary>
         public static void CompleteContract(QuestContract contract, string playerId)
         {
             if (contract.Status != QuestContractStatus.Published || contract.CompletionsRemaining <= 0)
@@ -571,6 +689,7 @@ namespace SWLOR.Game.Server.Service
             contract.CompletedByPlayerId = playerId;
             contract.CompletionsRemaining = 0;
             contract.Status = QuestContractStatus.Fulfilled;
+            contract.DateClosed = DateTime.UtcNow;
             contract.SettlementPending = 1;
             DB.Set(contract);
             Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
@@ -752,6 +871,7 @@ namespace SWLOR.Game.Server.Service
         {
             RefundEscrowToAuthor(contract);
             contract.Status = QuestContractStatus.Expired;
+            contract.DateClosed = contract.DateExpires == default ? DateTime.UtcNow : contract.DateExpires;
             DB.Set(contract);
             ReleaseSubmissions(contract.Id);
             Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));

@@ -15,7 +15,9 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         [KeyItemCategory("Keys", true)]
         Keys = 5,
         [KeyItemCategory("Incubation Field Notes", true)]
-        FieldNotes = 6
+        FieldNotes = 6,
+        [KeyItemCategory("Music", true)]
+        Music = 7
     }
 
     public class KeyItemCategoryAttribute : Attribute

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Scrapheap Lockdown in CZ-220 Breaker Yard."
+    "value": "Scrapheap Lockdown warden in CZ-220 - Breaker Bay."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Scrapheap Lockdown in CZ-220 Breaker Yard."
+      "0": "A human in Czerka militia gear who stands in the dead center of the sheared bay, arms down, waiting. The bay's old sigil plate hangs on him, and as long as it does, the station's oldest dock systems read his lockdown as lawful. He lets anyone in; it is leaving that he does not allow."
     }
   },
   "Dex": {

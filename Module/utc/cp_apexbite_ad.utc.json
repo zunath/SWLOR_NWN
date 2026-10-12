@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Apex Bite in Dathomir Tarn Jungle Preserve."
+    "value": "Apex Bite adept in Dathomir - Tarn Jungle Preserve."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Apex Bite in Dathomir Tarn Jungle Preserve."
+      "0": "A young scaled brute from the Tarn Jungle Preserve's pens, hunched low and baring its teeth at anything that moves. Off-world pit-breeders raised it on fear instead of feed, then fled when their brutes broke loose."
     }
   },
   "Dex": {

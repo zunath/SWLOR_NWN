@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for One Shot in Czerka Arms Test Range."
+    "value": "One Shot specialist in Smuggler's Moon - Czerka Weapons Testing Facility."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for One Shot in Czerka Arms Test Range."
+      "0": "A Rodian in a thug's patched jacket, his blaster rifle running hot on an overcharged cell. He works the mid-lanes in a pair, one spotting while the other fires, and puts round after round in the air hoping one lands true."
     }
   },
   "Dex": {

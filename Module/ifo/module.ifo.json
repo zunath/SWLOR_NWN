@@ -3245,6 +3245,27 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
+          "value": "hut_fdy_intake"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "hut_fdy_assembly"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "hut_fdy_core"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
           "value": "pw_ar_sc_eshanci"
         }
       },
@@ -3458,7 +3479,7 @@
   },
   "Mod_Entry_Dir_Y": {
     "type": "float",
-    "value": 7.549790126404332e-008
+    "value": 7.549790126404332e-08
   },
   "Mod_Entry_X": {
     "type": "float",

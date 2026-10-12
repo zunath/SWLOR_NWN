@@ -987,13 +987,6 @@
     "Call": "FloatingTextStringOnCreature(message, player, false)"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/DialogDefinition/JukeboxDialog.cs",
-    "Line": 23,
-    "Member": "Build",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"Song Selected: {song.DisplayName}\", Player, false)"
-  },
-  {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/LockedDoorDialog.cs",
     "Line": 52,
     "Member": "MainPageInit",
@@ -2038,10 +2031,24 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MusicPickerViewModel.cs",
-    "Line": 86,
-    "Member": "OnSelectSong",
+    "Line": 270,
+    "Member": "OnPlaySong",
     "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"Song Selected: {songName}\", Player, false)"
+    "Call": "FloatingTextStringOnCreature($\"Now playing: {entry.Name}\", Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MusicPickerViewModel.cs",
+    "Line": 280,
+    "Member": "OnSetBattleTheme",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"Battle theme: {entry.Name}\", Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MusicPickerViewModel.cs",
+    "Line": 332,
+    "Member": "CloseIfSourceIsGone",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, ColorToken.Red(message))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/NotesViewModel.cs",

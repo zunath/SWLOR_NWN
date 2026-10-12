@@ -14,6 +14,13 @@ public class EshanNPCGroupTests
             .Should().OnlyHaveUniqueItems("each enemy group must track quest progress independently");
     }
 
+    [TestCase(NPCGroupType.Hutlar_FoundryDroid, 297)]
+    [TestCase(NPCGroupType.AbandonedStation_Horror, 298)]
+    public void ExistingGroups_KeepPersistedIds(NPCGroupType group, int expected)
+    {
+        ((int)group).Should().Be(expected, "existing quest progress must retain its enemy group");
+    }
+
     [TestCase("esh_direwolf", NPCGroupType.Eshan_DireWolf)]
     [TestCase("esh_frostwolf", NPCGroupType.Eshan_FrostWolf)]
     [TestCase("esh_wolfalpha", NPCGroupType.Eshan_DireWolfAlpha)]

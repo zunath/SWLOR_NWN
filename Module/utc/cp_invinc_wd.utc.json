@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Invincible in Veles Militia Annex."
+    "value": "Invincible warden in Viscara - Veles Militia Annex."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Invincible in Veles Militia Annex."
+      "0": "Sarn, a Twi'lek swordsman who was Captain Renn's second for six years and stayed behind when she sealed the annex. He holds the inner gate with his vibroblade exactly the way she taught him, and the challenge badge he wears is etched with a perfect score."
     }
   },
   "Dex": {

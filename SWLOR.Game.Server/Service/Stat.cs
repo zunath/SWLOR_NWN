@@ -226,7 +226,7 @@ namespace SWLOR.Game.Server.Service
         public static int GetCurrentFP(uint creature, Player dbPlayer = null)
         {
             // Players
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 if (dbPlayer == null)
                 {
@@ -306,7 +306,7 @@ namespace SWLOR.Game.Server.Service
         public static int GetCurrentStamina(uint creature, Player dbPlayer = null)
         {
             // Players
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 if (dbPlayer == null)
                 {
@@ -389,7 +389,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (reduceBy <= 0) return;
 
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 if (dbPlayer == null)
@@ -480,7 +480,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (reduceBy <= 0) return;
 
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 if (dbPlayer == null)
@@ -1053,7 +1053,7 @@ namespace SWLOR.Game.Server.Service
             var skillLevel = 0;
             var stat = GetAbilityScore(creature, abilityType);
 
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1109,7 +1109,7 @@ namespace SWLOR.Game.Server.Service
             // Defense the hit is mitigated against. The weapon's own skill rank still governs the roll.
             var usesForceAttack = useForceAttack || skillType == SkillType.Force;
 
-            if (creature.m_bPlayerCharacter == 1)
+            if (creature.m_bPlayerCharacter == 1 && !GetIsDMPossessed(creature.m_idSelf))
             {
                 var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1179,7 +1179,7 @@ namespace SWLOR.Game.Server.Service
             var defenseBonus = 0;
             var equipmentDefense = defenseBonusOverride;
 
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1270,7 +1270,7 @@ namespace SWLOR.Game.Server.Service
             var defenseBonus = 0;
             var equipmentDefense = 0;
 
-            if (creature.m_bPlayerCharacter == 1)
+            if (creature.m_bPlayerCharacter == 1 && !GetIsDMPossessed(creature.m_idSelf))
             {
                 var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1391,7 +1391,7 @@ namespace SWLOR.Game.Server.Service
 
 
             // Creature skill level / NPC level, plus Accuracy granted by non-weapon equipment.
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1481,7 +1481,7 @@ namespace SWLOR.Game.Server.Service
 
 
             // Creature skill level / NPC level, plus Accuracy granted by non-weapon equipment.
-            if (creature.m_bPlayerCharacter == 1)
+            if (creature.m_bPlayerCharacter == 1 && !GetIsDMPossessed(creature.m_idSelf))
             {
                 var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1564,7 +1564,7 @@ namespace SWLOR.Game.Server.Service
 
             Log.Write(LogGroup.Attack, $"Evasion regular AC = {ac}");
 
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1599,7 +1599,7 @@ namespace SWLOR.Game.Server.Service
             var willpower = GetAbilityScore(creature, AbilityType.Willpower);
             var equipmentBonus = 0;
 
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1654,7 +1654,7 @@ namespace SWLOR.Game.Server.Service
             var agility = GetAbilityScore(creature, AbilityType.Agility);
             var equipmentBonus = 0;
 
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
@@ -1705,7 +1705,7 @@ namespace SWLOR.Game.Server.Service
 
             Log.Write(LogGroup.Attack, $"Native Evasion AC = {ac}");
 
-            if (creature.m_bPlayerCharacter == 1)
+            if (creature.m_bPlayerCharacter == 1 && !GetIsDMPossessed(creature.m_idSelf))
             {
                 var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
                 var dbPlayer = DB.Get<Player>(playerId);

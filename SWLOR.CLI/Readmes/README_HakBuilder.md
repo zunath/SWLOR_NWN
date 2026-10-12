@@ -8,7 +8,7 @@ The HakBuilder tool compiles NWN hak files from source directories. It includes 
 ### EnableChecksumChecking
 - **Type**: `boolean`
 - **Default**: `true`
-- **Description**: When enabled, the HakBuilder will calculate MD5 checksums of source folders and compare them with previously stored checksums to determine if haks need to be rebuilt. When disabled, all haks will be rebuilt every time.
+- **Description**: When enabled, the HakBuilder fingerprints source-folder contents and packer options to determine if haks need to be rebuilt. Legacy source-only checksum files trigger one rebuild. When disabled, all haks will be rebuilt every time.
 
 ### Usage Examples
 
@@ -39,4 +39,4 @@ The HakBuilder tool compiles NWN hak files from source directories. It includes 
 
 ## Backward Compatibility
 
-The `EnableChecksumChecking` property defaults to `true`, ensuring existing configurations continue to work without modification. 
+The `EnableChecksumChecking` property defaults to `true`, ensuring existing configurations continue to work without modification.

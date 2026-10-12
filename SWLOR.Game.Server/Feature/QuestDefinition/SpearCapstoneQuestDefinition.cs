@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Maar Veth gave you the Korriban Forge Caverns Key. On Korriban, cross the Sith Fortress Forgeworks to the sealed passage in its far north-east corner and enter the Korriban Forge Caverns. Kill six Forcebane adepts and secure the Forcebane Forge Heat Ledger they keep by the crucibles.")
+                    "Maar Veth gave you the Korriban Forge Caverns Key. On Korriban, take the Forgeworks key from the Sith Inquisitor in the Sith Fortress Courtyard, then cross the Forgeworks to the sealed passage in its far north-east corner and enter the Korriban Forge Caverns. Kill six Forcebane adepts and secure the Forcebane Forge Heat Ledger they keep by the crucibles.")
                 .AddKillObjective(NPCGroupType.Korriban_Forcebane_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneForgeHeatLedger)
 

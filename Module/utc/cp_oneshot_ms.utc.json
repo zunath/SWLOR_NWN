@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 111
+    "value": 143
   },
   "Appearance_Type": {
     "type": "word",
@@ -10,7 +10,7 @@
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 247
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -18,27 +18,27 @@
   },
   "BodyPart_Belt": {
     "type": "byte",
-    "value": 100
+    "value": 0
   },
   "BodyPart_LBicep": {
     "type": "byte",
-    "value": 112
+    "value": 1
   },
   "BodyPart_LFArm": {
     "type": "byte",
-    "value": 101
+    "value": 1
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 247
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 151
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
@@ -46,31 +46,31 @@
   },
   "BodyPart_LThigh": {
     "type": "byte",
-    "value": 240
+    "value": 1
   },
   "BodyPart_Neck": {
     "type": "byte",
-    "value": 104
+    "value": 1
   },
   "BodyPart_Pelvis": {
     "type": "byte",
-    "value": 237
+    "value": 1
   },
   "BodyPart_RBicep": {
     "type": "byte",
-    "value": 112
+    "value": 1
   },
   "BodyPart_RFArm": {
     "type": "byte",
-    "value": 101
+    "value": 1
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 151
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
@@ -78,11 +78,11 @@
   },
   "BodyPart_RThigh": {
     "type": "byte",
-    "value": 240
+    "value": 1
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 104
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 4151
+    "value": 4883
   },
   "DecayTime": {
     "type": "dword",
@@ -169,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "czerka_militia"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -396,7 +403,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 4043
+    "value": 4775
   },
   "Int": {
     "type": "byte",
@@ -430,7 +437,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 4151
+    "value": 4883
   },
   "NaturalAC": {
     "type": "byte",
@@ -458,11 +465,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 3612
+    "value": 3616
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 159
   },
   "refbonus": {
     "type": "short",
@@ -723,7 +730,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 448
+    "value": 938
   },
   "SpecAbilityList": {
     "type": "list",

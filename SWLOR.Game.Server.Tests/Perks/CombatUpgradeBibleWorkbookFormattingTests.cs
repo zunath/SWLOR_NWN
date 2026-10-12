@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using System.IO.Compression;
+using System.Text;
 using System.Text.Json;
 using System.Xml.Linq;
 using FluentAssertions;
@@ -12,6 +14,75 @@ public class CombatUpgradeBibleWorkbookFormattingTests
     private const decimal MinimumNotesColumnWidth = 45m;
     private static readonly XNamespace SpreadsheetNs = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
     private static readonly XNamespace RelationshipNs = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+    private static readonly DateTimeOffset FormatterFixtureTimestamp = new(2020, 1, 1, 0, 0, 0, TimeSpan.Zero);
+    private const string FormatterFixtureReformattedEntry = "xl/worksheets/sheet1.xml";
+
+    [Test]
+    public async Task Formatter_LeavesAlreadyFormattedWorkbookByteIdentical()
+    {
+        var root = FindRepositoryRoot();
+        var temporaryRoot = Path.Combine(Path.GetTempPath(), $"swlor-bible-format-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(temporaryRoot);
+
+        try
+        {
+            var workbookPath = Path.Combine(temporaryRoot, "workbook.xlsx");
+            var layoutPath = Path.Combine(temporaryRoot, "layout.json");
+            WriteFormatterFixture(workbookPath, layoutPath, reformattedSheetHasRowHeights: false);
+            var originalBytes = File.ReadAllBytes(workbookPath);
+
+            await RunFormatterAsync(root, workbookPath, layoutPath);
+
+            File.ReadAllBytes(workbookPath).Should().Equal(originalBytes,
+                "a workbook that already matches its layout must not be rewritten at all");
+        }
+        finally
+        {
+            Directory.Delete(temporaryRoot, true);
+        }
+    }
+
+    [Test]
+    public async Task Formatter_RewritesOnlyReformattedWorksheets_AndPreservesCellLineBreaks()
+    {
+        var root = FindRepositoryRoot();
+        var temporaryRoot = Path.Combine(Path.GetTempPath(), $"swlor-bible-format-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(temporaryRoot);
+
+        try
+        {
+            var workbookPath = Path.Combine(temporaryRoot, "workbook.xlsx");
+            var layoutPath = Path.Combine(temporaryRoot, "layout.json");
+            WriteFormatterFixture(workbookPath, layoutPath, reformattedSheetHasRowHeights: true);
+            var originalEntries = ReadEntrySnapshots(workbookPath);
+
+            await RunFormatterAsync(root, workbookPath, layoutPath);
+
+            var formattedEntries = ReadEntrySnapshots(workbookPath);
+            formattedEntries.Keys.Should().BeEquivalentTo(originalEntries.Keys);
+            foreach (var (entryName, original) in originalEntries)
+            {
+                if (entryName == FormatterFixtureReformattedEntry)
+                    continue;
+
+                var formatted = formattedEntries[entryName];
+                var because = $"{entryName} needed no formatting, so it must keep its exact bytes and zip metadata";
+                formatted.Content.Should().Equal(original.Content, because);
+                formatted.Crc32.Should().Be(original.Crc32, because);
+                formatted.CompressedLength.Should().Be(original.CompressedLength, because);
+                formatted.LastWriteTime.Should().Be(original.LastWriteTime, because);
+            }
+
+            Encoding.UTF8.GetString(formattedEntries[FormatterFixtureReformattedEntry].Content)
+                .Should()
+                .Be(BuildFormatterFixtureWorksheet(customRowHeight: false),
+                    "removing custom row heights must leave LF, CRLF, and whitespace-only cell text exactly as written");
+        }
+        finally
+        {
+            Directory.Delete(temporaryRoot, true);
+        }
+    }
 
     [Test]
     public void CombatUpgradeBibleWorkbook_UsesCompactReadableFormatting()
@@ -450,6 +521,101 @@ public class CombatUpgradeBibleWorkbookFormattingTests
     private static string FormatColumns(IEnumerable<(int Min, int Max, decimal Width)> columns)
     {
         return string.Join(", ", columns.Select(column => $"{column.Min}:{column.Max}:{column.Width}"));
+    }
+
+    private static void WriteFormatterFixture(string workbookPath, string layoutPath, bool reformattedSheetHasRowHeights)
+    {
+        File.WriteAllText(layoutPath,
+            """{"columnsBySheet":{"Reformatted":[{"min":1,"max":1,"width":12.5},{"min":2,"max":3,"width":45}],"Formatted":[{"min":1,"max":1,"width":12.5},{"min":2,"max":3,"width":45}]}}""");
+
+        using var archive = ZipFile.Open(workbookPath, ZipArchiveMode.Create);
+        AddFormatterFixtureEntry(archive, "[Content_Types].xml",
+            "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+            "<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\"/>");
+        AddFormatterFixtureEntry(archive, "xl/workbook.xml",
+            "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+            $"<workbook xmlns=\"{SpreadsheetNs.NamespaceName}\" xmlns:r=\"{RelationshipNs.NamespaceName}\"><sheets>" +
+            "<sheet name=\"Reformatted\" sheetId=\"1\" r:id=\"rId1\"/>" +
+            "<sheet name=\"Formatted\" sheetId=\"2\" r:id=\"rId2\"/>" +
+            "</sheets></workbook>");
+        AddFormatterFixtureEntry(archive, "xl/_rels/workbook.xml.rels",
+            "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+            "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">" +
+            $"<Relationship Id=\"rId1\" Type=\"{RelationshipNs.NamespaceName}/worksheet\" Target=\"worksheets/sheet1.xml\"/>" +
+            $"<Relationship Id=\"rId2\" Type=\"{RelationshipNs.NamespaceName}/worksheet\" Target=\"worksheets/sheet2.xml\"/>" +
+            "</Relationships>");
+        AddFormatterFixtureEntry(archive, FormatterFixtureReformattedEntry,
+            BuildFormatterFixtureWorksheet(reformattedSheetHasRowHeights));
+        AddFormatterFixtureEntry(archive, "xl/worksheets/sheet2.xml",
+            BuildFormatterFixtureWorksheet(customRowHeight: false));
+    }
+
+    private static string BuildFormatterFixtureWorksheet(bool customRowHeight)
+    {
+        var rowHeight = customRowHeight ? " ht=\"45\" customHeight=\"1\"" : string.Empty;
+        return "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" +
+               $"<worksheet xmlns=\"{SpreadsheetNs.NamespaceName}\">" +
+               "<cols><col min=\"1\" max=\"1\" width=\"12.5\" customWidth=\"1\" /><col min=\"2\" max=\"3\" width=\"45\" customWidth=\"1\" /></cols>" +
+               "<sheetData>" +
+               $"<row r=\"1\"{rowHeight}>" +
+               "<c r=\"A1\" t=\"inlineStr\"><is><t>Vibroblade\nHeavy Vibroblade\nSpear</t></is></c>" +
+               "<c r=\"B1\" t=\"inlineStr\"><is><t>Pulls enemies within 8m.\r\nEnmity generated is doubled.</t></is></c>" +
+               "<c r=\"C1\" t=\"inlineStr\"><is><t> </t></is></c>" +
+               "</row>" +
+               "</sheetData>" +
+               "</worksheet>";
+    }
+
+    private static void AddFormatterFixtureEntry(ZipArchive archive, string entryName, string content)
+    {
+        var entry = archive.CreateEntry(entryName, CompressionLevel.Optimal);
+        entry.LastWriteTime = FormatterFixtureTimestamp;
+        using var stream = entry.Open();
+        stream.Write(Encoding.UTF8.GetBytes(content));
+    }
+
+    private static Dictionary<string, (byte[] Content, uint Crc32, long CompressedLength, DateTimeOffset LastWriteTime)>
+        ReadEntrySnapshots(string workbookPath)
+    {
+        using var archive = ZipFile.OpenRead(workbookPath);
+        return archive.Entries.ToDictionary(
+            entry => entry.FullName,
+            entry =>
+            {
+                using var stream = entry.Open();
+                using var buffer = new MemoryStream();
+                stream.CopyTo(buffer);
+                return (buffer.ToArray(), entry.Crc32, entry.CompressedLength, entry.LastWriteTime);
+            });
+    }
+
+    private static async Task RunFormatterAsync(DirectoryInfo root, string workbookPath, string layoutPath)
+    {
+        var startInfo = new ProcessStartInfo("powershell.exe")
+        {
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+        startInfo.ArgumentList.Add("-NoProfile");
+        startInfo.ArgumentList.Add("-ExecutionPolicy");
+        startInfo.ArgumentList.Add("Bypass");
+        startInfo.ArgumentList.Add("-File");
+        startInfo.ArgumentList.Add(Path.Combine(root.FullName, "tools", "FormatCombatUpgradeBibleWorkbook.ps1"));
+        startInfo.ArgumentList.Add("-WorkbookPath");
+        startInfo.ArgumentList.Add(workbookPath);
+        startInfo.ArgumentList.Add("-LayoutPath");
+        startInfo.ArgumentList.Add(layoutPath);
+
+        using var process = Process.Start(startInfo)!;
+        var outputTask = process.StandardOutput.ReadToEndAsync();
+        var errorTask = process.StandardError.ReadToEndAsync();
+        await process.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(60));
+        var output = await outputTask;
+        var error = await errorTask;
+
+        process.ExitCode.Should().Be(0, $"the formatter should succeed. Output: {output} Error: {error}");
     }
 
     private static DirectoryInfo FindRepositoryRoot()

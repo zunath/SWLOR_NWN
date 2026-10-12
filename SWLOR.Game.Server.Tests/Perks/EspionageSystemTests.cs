@@ -137,6 +137,56 @@ public class EspionageSystemTests
     }
 
     [Test]
+    public void StealthEnteredInCombat_HidesPlayerFromEnemiesThatFailDetection()
+    {
+        var root = FindRepositoryRoot();
+        var stealthSource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Stealth.cs"));
+        var enmitySource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Enmity.cs"));
+
+        var hiddenStart = stealthSource.IndexOf("public static bool IsHiddenFrom(uint observer, uint target)", StringComparison.Ordinal);
+        var hiddenEnd = stealthSource.IndexOf("public static bool IsInvisible(uint creature)", StringComparison.Ordinal);
+        hiddenStart.Should().BeGreaterThanOrEqualTo(0);
+        hiddenEnd.Should().BeGreaterThan(hiddenStart);
+        var hiddenBody = stealthSource[hiddenStart..hiddenEnd];
+        hiddenBody.Should().Contain("IsHiddenByStealth(observer, target)",
+            "Ghost Protocol stealth must hide the player from enemies already fighting them");
+        hiddenBody.Should().Contain("return !ResolveDetection(observer, target, false);",
+            "hiding must use the cached Detection vs Stealth verdict, not skip the check");
+        hiddenBody.IndexOf("if (!CanAttemptSpotDetection(observer, target))", StringComparison.Ordinal)
+            .Should().BeGreaterThan(-1)
+            .And.BeLessThan(hiddenBody.IndexOf("return !ResolveDetection(observer, target, false);", StringComparison.Ordinal),
+                "an enemy out of sight range or line of sight must not roll and force the player out of stealth");
+        var spotGateStart = stealthSource.IndexOf("private static bool CanAttemptSpotDetection(uint observer, uint target)", StringComparison.Ordinal);
+        spotGateStart.Should().BeGreaterThanOrEqualTo(0);
+        var spotGateBody = stealthSource[spotGateStart..hiddenEnd];
+        spotGateBody.Should().Contain("GetArea(observer) == GetArea(target)");
+        spotGateBody.Should().Contain("GetDistanceBetween(observer, target) <= GetSpotCheckDistance(observer)",
+            "each observer must use its own engine Spot range, not a global maximum");
+        stealthSource.Should().Contain("creature?.GetSpotCheckDistance() ?? 0f");
+        spotGateBody.Should().Contain("LineOfSightObject(observer, target)");
+
+        var enteredStart = stealthSource.IndexOf("public static void OnStealthEntered()", StringComparison.Ordinal);
+        var enteredEnd = stealthSource.IndexOf("public static void RefreshActiveStatusAfterPerkLevelChange", StringComparison.Ordinal);
+        enteredStart.Should().BeGreaterThanOrEqualTo(0);
+        enteredEnd.Should().BeGreaterThan(enteredStart);
+        var enteredBody = stealthSource[enteredStart..enteredEnd];
+        enteredBody.IndexOf("Enmity.ReevaluateEnemyAttackTargets(creature);", StringComparison.Ordinal)
+            .Should().BeGreaterThan(enteredBody.IndexOf("ClearVerdictsForTarget(creature);", StringComparison.Ordinal),
+                "enemies must re-roll detection against the fresh stealth before re-choosing targets");
+
+        var exitedStart = stealthSource.IndexOf("public static void OnStealthExited()", StringComparison.Ordinal);
+        var exitedEnd = stealthSource.IndexOf("public static void ResolveSpotDetection()", StringComparison.Ordinal);
+        exitedStart.Should().BeGreaterThanOrEqualTo(0);
+        exitedEnd.Should().BeGreaterThan(exitedStart);
+        var exitedBody = stealthSource[exitedStart..exitedEnd];
+        exitedBody.IndexOf("Enmity.ReevaluateEnemyAttackTargets(creature);", StringComparison.Ordinal)
+            .Should().BeGreaterThan(exitedBody.IndexOf("ClearVerdictsForTarget(creature);", StringComparison.Ordinal),
+                "enemies holding for a hidden player must resume attacking as soon as stealth ends");
+
+        enmitySource.Should().Contain("!Stealth.IsHiddenFrom(enemy, creature);");
+    }
+
+    [Test]
     public void AlertnessRanks_ProvideTheDocumentedDetectionCounter()
     {
         var alertness = BuildPerkWithout2daLookup(

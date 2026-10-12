@@ -113,6 +113,23 @@ public class StanceStatusEffectTests
     }
 
     [Test]
+    public void WardenAura_AnnouncesOnlyTheFirstApplicationToEachAlly()
+    {
+        new WardenWallStanceAuraStatusEffect().SendsApplicationMessage.Should().BeTrue();
+        new WardenWallStanceAuraStatusEffect { AnnouncesApplication = false }.SendsApplicationMessage.Should().BeFalse();
+
+        var root = FindRepositoryRoot();
+        var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "WardenWallStanceStatusEffect.cs"))).GetRoot();
+        var aura = syntax.DescendantNodes().OfType<ObjectCreationExpressionSyntax>()
+            .Single(node => node.Type.ToString() == nameof(WardenWallStanceAuraStatusEffect));
+        aura.Initializer!.Expressions.OfType<AssignmentExpressionSyntax>().Should()
+            .ContainSingle(node => node.Left.ToString() == nameof(WardenWallStanceAuraStatusEffect.AnnouncesApplication) &&
+                                   node.Right.ToString() == "!StatusEffect.HasStatusEffect(ally, typeof(WardenWallStanceAuraStatusEffect), creature)",
+                "the periodic refresh must not re-broadcast the aura to allies who already have it");
+    }
+
+    [Test]
     public void ProtectiveAuras_DoNotMultiplyTheWearersPersonalDefense()
     {
         var stance = new WardenWallStanceStatusEffect();

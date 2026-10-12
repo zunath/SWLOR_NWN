@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A massive bracer built for those with the strength to wear it."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A massive bracer built for those with the strength to wear it."
     }
   },
   "Identified": {
@@ -42,7 +41,6 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 48320,
     "type": "cexolocstring",
     "value": {
       "0": "Titan Bracer"

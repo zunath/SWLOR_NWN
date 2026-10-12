@@ -13,7 +13,7 @@ Usage:
     python tools/FlagNpcEconomyItems.py            # stamp any missing flags
     python tools/FlagNpcEconomyItems.py --check     # audit only; exit 1 if any unflagged
 
-The EconomyEquipCoverageTests unit test enforces this in CI; run this script to fix
+The EconomyObtainabilityCoverageTests unit test enforces this in CI; run this script to fix
 a failure. Blueprints are edited by pure text insertion (VarTable added in its
 alphabetical position), preserving all other bytes. Requires a module repack on deploy.
 """
@@ -79,7 +79,8 @@ def collect():
         "SlicingTerminalFurnitureRecipes.cs", "ConcentratedVenomRecipes.cs",
     )
     for f in glob.glob(os.path.join(ROOT, "SWLOR.Game.Server", "**", "*.cs"), recursive=True):
-        if os.path.join(".claude", "worktrees") in f:
+        # Relative to ROOT so running from inside a worktree does not skip every file.
+        if os.path.join(".claude", "worktrees") in os.path.relpath(f, ROOT):
             continue
         try:
             s = read_text(f)
@@ -93,7 +94,8 @@ def collect():
                 add(obtainable, m)
 
     for r in ("beast_dna", "beast_egg", "blueprint", "survival_knife",
-              "fresh_bread", "dlarproto", "traveler_m", "traveler_f"):
+              "fresh_bread", "dlarproto", "traveler_m", "traveler_f",
+              "ls_custom", "ss_custom"):
         add(obtainable, r)
 
     return equipped, obtainable

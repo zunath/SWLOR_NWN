@@ -607,7 +607,7 @@ namespace SWLOR.Game.Server.Native
                 ? SkillType.Invalid
                 : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
 
-            if (attacker.m_bPlayerCharacter == 1)
+            if (attacker.m_bPlayerCharacter == 1 && !GetIsDMPossessed(attacker.m_idSelf))
             {
                 if (skillType == SkillType.Invalid)
                     return 0;

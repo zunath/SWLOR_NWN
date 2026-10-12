@@ -209,24 +209,19 @@ public class ForceWeaponEnhancementMigrationTests
     }
 
     [Test]
-    public void AuthoredPlayerItemsAndResearchRollsCannotProvideForceConversion()
+    public void AuthoredItemsAndResearchRollsCannotProvideForceConversion()
     {
         var root = FindRoot();
-        var checkedItems = 0;
+        var forceItems = new List<string>();
         foreach (var path in Directory.EnumerateFiles(Path.Combine(root, "Module", "uti"), "*.uti.json"))
         {
             var item = JObject.Parse(File.ReadAllText(path).TrimStart('\uFEFF'));
             var properties = item["PropertiesList"]?["value"] as JArray;
-            if (properties == null || !properties.Any(x => x["PropertyName"]?["value"]?.Value<int>() == 134 &&
-                x["Subtype"]?["value"]?.Value<int>() == 2)) continue;
-            var noEconomy = (item["VarTable"]?["value"] as JArray)?.Any(x =>
-                x["Name"]?["value"]?.Value<string>() == "NO_ECONOMY" && x["Value"]?["value"]?.Value<int>() == 1) == true;
-            Item.IsEconomyRestricted((BaseItem)item["BaseItem"]["value"].Value<int>(),
-                item["LocalizedName"]?["value"]?["0"]?.Value<string>(), noEconomy, true)
-                .Should().BeTrue(path);
-            checkedItems++;
+            if (properties?.Any(x => x["PropertyName"]?["value"]?.Value<int>() == 134 &&
+                    x["Subtype"]?["value"]?.Value<int>() == 2) == true)
+                forceItems.Add(Path.GetFileName(path));
         }
-        checkedItems.Should().BeGreaterThan(0, "NPC Force weapons remain authored");
+        forceItems.Should().BeEmpty("Force conversion belongs to Imbuement Stance, including on NPC weapons");
         File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "CraftService", "BlueprintBonuses.cs"))
             .Should().NotContain("CombatDamageType.Force");
         File.ReadAllLines(Path.Combine(root, "SWLOR.CLI", "InputFiles", "enhancement_list.tsv"))

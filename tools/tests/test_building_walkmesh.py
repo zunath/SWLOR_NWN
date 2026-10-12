@@ -17,6 +17,7 @@ PWK = ROOT / "SWLOR_Haks/sw_plc/swc_blg_corhis04.pwk"
 # Heights measured from the model geometry, not the placement's current Z.
 REPAIRED_ROOFS = {
     "swc_blg_corhis01": 15.56, "swc_blg_corhis02": 19.66,
+    "swc_news_bldg_01": 15.56,
     "swc_blg_corhis03": 17.27, "swc_blg_corhis04": 22.68,
     "swc_bld_bk_cor01": 29.56, "swc_bld_bk_cor02": 17.79,
     "swc_bld_bk_cor03": 17.79, "swc_bldg_b_sky04": 155.99,
@@ -397,6 +398,7 @@ class VelesCantinaRoofWalkmeshTests(unittest.TestCase):
         # boxes are not collision geometry; nor is the entire footprint a tower.
         samples = {
             "swc_blg_corhis01": ((0, 6, 13.58), (1.18, 0, 15.56)),
+            "swc_news_bldg_01": ((0, 6, 13.58), (1.18, 0, 15.56)),
             "swc_blg_corhis03": ((-7, -8.5, 15.33), (-3.89, -4.29, 17.27),
                                 (2.1, -14.5, 13.58)),
             "swc_blg_corhis04": ((6, -5, 14.45), (0.15, 3.72, 22.68),

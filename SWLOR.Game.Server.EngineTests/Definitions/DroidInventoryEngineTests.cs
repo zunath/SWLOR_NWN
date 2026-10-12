@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.NWN.API.NWNX;
@@ -142,6 +143,47 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(1, restored.Length, "One carried stack returns");
             ctx.AssertEqual(3, GetItemStackSize(restored[0]), "Resummoning cannot restore already consumed items");
             await Dismiss(ctx, owner, droid);
+        }
+
+        [EngineTest("Split droid stacks retain both quantities across repeated summons", Category = "DroidInventory")]
+        public static async Task SplitStacks(EngineTestContext ctx)
+        {
+            var owner = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            var controller = await CreateController(ctx, owner);
+            var droid = await Spawn(ctx, owner, controller);
+            var stack = OBJECT_INVALID;
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                stack = CreateItemOnObject("sardine_ball", owner, 6);
+                ctx.Assert(GetIsObjectValid(stack), "The stack fixture exists");
+            });
+            await ctx.WaitFrameAsync();
+            await Transfer(ctx, owner, stack, droid);
+            await ctx.ExecuteInCreatureContextAsync(droid, () => SplitStack(droid, stack, 2));
+            await ctx.WaitFrameAsync();
+            ctx.AssertEqual(2, Items(droid).Count(item => GetResRef(item) == "sardine_ball"), "The native split creates two live stacks");
+            for (var pass = 0; pass < 2; pass++)
+            {
+                await Dismiss(ctx, owner, droid);
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                {
+                    var saved = Droid.LoadConstructedDroid(controller);
+                    ctx.AssertEqual(2, saved.Inventory.Count, "Each half has its own saved inventory entry");
+                });
+                droid = await Spawn(ctx, owner, controller);
+                var restored = Items(droid).Where(item => GetResRef(item) == "sardine_ball").ToArray();
+                ctx.AssertEqual(2, restored.Length, "Both stack objects survive resummoning");
+                ctx.Assert(restored.Select(GetItemStackSize).OrderBy(amount => amount).SequenceEqual(new[] { 2, 4 }), "Both split quantities are preserved");
+                ctx.AssertEqual(2, restored.Select(item => GetLocalString(item, "DROID_ITEM_ID")).Distinct().Count(), "Each stack retains a distinct saved item ID");
+            }
+            await Dismiss(ctx, owner, droid);
+        }
+
+        private static unsafe void SplitStack(uint droid, uint item, int amount)
+        {
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            server.GetGameObject(droid).AsNWSCreature().SplitItem(server.GetGameObject(item).AsNWSItem(), amount);
         }
 
         private static async Task<uint> CreateController(EngineTestContext ctx, uint owner)

@@ -916,6 +916,17 @@ namespace SWLOR.Game.Server.Service
             return GetLocalString(item, DroidItemId);
         }
 
+        private static string GetDroidItemId(uint item, HashSet<string> itemIds)
+        {
+            var itemId = GetDroidItemId(item);
+            while (!itemIds.Add(itemId))
+            {
+                itemId = Guid.NewGuid().ToString();
+                SetLocalString(item, DroidItemId, itemId);
+            }
+            return itemId;
+        }
+
         private static bool IsStoredItem(uint item)
         {
             var itemType = GetBaseItemType(item);
@@ -938,6 +949,7 @@ namespace SWLOR.Game.Server.Service
             var equippedItems = new Dictionary<InventorySlot, string>();
             var inventory = new Dictionary<string, string>();
             var equippedObjects = new HashSet<uint>();
+            var itemIds = new HashSet<string>();
 
             for (var slot = InventorySlot.Head; slot <= InventorySlot.Bolts; slot++)
             {
@@ -945,7 +957,7 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(item) || !IsStoredItem(item))
                     continue;
 
-                GetDroidItemId(item);
+                GetDroidItemId(item, itemIds);
                 equippedItems[slot] = ObjectPlugin.Serialize(item);
                 equippedObjects.Add(item);
             }
@@ -955,7 +967,7 @@ namespace SWLOR.Game.Server.Service
                 if (equippedObjects.Contains(item) || !IsStoredItem(item))
                     continue;
 
-                var itemId = GetDroidItemId(item);
+                var itemId = GetDroidItemId(item, itemIds);
                 inventory[itemId] = ObjectPlugin.Serialize(item);
             }
 

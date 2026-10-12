@@ -245,6 +245,10 @@ namespace SWLOR.Game.Server.Service
             if (Space.IsStarshipAmmo(item))
                 return MarketCategoryType.StarshipAmmo;
 
+            // Song discs and music players
+            if (Music.IsMusicItem(item))
+                return MarketCategoryType.Music;
+
             return MarketCategoryType.Miscellaneous;
         }
     }

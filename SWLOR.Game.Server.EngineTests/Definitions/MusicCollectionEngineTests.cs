@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.MusicService;
+using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -42,6 +43,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(player.Creature,
                 () => KeyItem.GiveKeyItem(player.Creature, (KeyItemType)GetLocalInt(disc, "KEY_ITEM_ID")));
             ctx.Assert(Music.GetCollectedTrackIds(player.Id).Contains(song.TrackId), "song is in the collection after using the disc");
+        }
+
+        [EngineTest("Song discs and the music player list under the Music market category", Category = "MusicCollection", TimeoutSeconds = 30f)]
+        public static async Task MusicItemsUseMusicMarketCategory(EngineTestContext ctx)
+        {
+            await ctx.WaitFrameAsync();
+            foreach (var resref in new[] { "music_player", "song_339", "song_22", "song_516" })
+            {
+                var item = CreateObject(ObjectType.Item, resref, ctx.GetArenaLocation(1f, 1f));
+                ctx.Track(item);
+                ctx.Assert(GetIsObjectValid(item), $"{resref} creates an item");
+                ctx.AssertEqual(MarketCategoryType.Music, PlayerMarket.GetItemMarketCategory(item), $"{resref} market category");
+            }
+
+            var map = CreateObject(ObjectType.Item, "map_023", ctx.GetArenaLocation(1f, 1f));
+            ctx.Track(map);
+            ctx.Assert(PlayerMarket.GetItemMarketCategory(map) != MarketCategoryType.Music, "other key items stay out of Music");
         }
 
         [EngineTest("A jukebox in a property plays from its owner's collection", Category = "MusicCollection", TimeoutSeconds = 45f)]

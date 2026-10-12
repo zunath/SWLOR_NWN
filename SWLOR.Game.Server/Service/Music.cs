@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Service
 {
     public class Music
     {
+        public const string MusicPlayerTag = "MUSIC_PLAYER";
+
         private static readonly Dictionary<int, Song> _songs = new Dictionary<int,Song>();
         private static readonly Dictionary<KeyItemType, MusicSong> _collectibleSongsByKeyItem = MusicSongCatalog.Songs
             .ToDictionary(song => song.KeyItem);
@@ -134,6 +136,19 @@ namespace SWLOR.Game.Server.Service
         public static bool TryGetCollectibleSongByTrackId(int trackId, out MusicSong song)
         {
             return _collectibleSongsByTrackId.TryGetValue(trackId, out song);
+        }
+
+        /// <summary>
+        /// Whether an item is a song disc or a Portable Music Player.
+        /// </summary>
+        public static bool IsMusicItem(uint item)
+        {
+            var tag = GetTag(item);
+            if (tag == MusicPlayerTag)
+                return true;
+
+            return tag == "KEY_ITEM" &&
+                   _collectibleSongsByKeyItem.ContainsKey((KeyItemType)GetLocalInt(item, "KEY_ITEM_ID"));
         }
 
         /// <summary>

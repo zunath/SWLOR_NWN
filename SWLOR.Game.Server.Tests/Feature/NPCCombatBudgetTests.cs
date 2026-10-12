@@ -113,7 +113,7 @@ public class NPCCombatBudgetTests
     }
 
     [Test]
-    public void LootBossModifier_IsAvailableInBuilderDropdownsAndFilter()
+    public void BossModifiers_AreAvailableInBuilderDropdownsAndFilter()
     {
         using var archive = ZipFile.OpenRead(Path.Combine(FindRoot(), "design", "bible", "SWLOR Design Bible.xlsx"));
         var dropdowns = 0;
@@ -128,13 +128,14 @@ public class NPCCombatBudgetTests
                     continue;
                 choices.Should().Contain("Loot Boss", "builders must be able to select the reviewed group encounter budget");
                 choices.Should().Contain("Measured Loot Boss", "builders must be able to keep a reviewed premium fight on the earlier budget");
+                choices.Should().Contain("Group Boss", "builders must be able to select the party boss budget");
                 dropdowns++;
             }
         }
         dropdowns.Should().Be(2);
         using var bookStream = archive.GetEntry("xl/workbook.xml")!.Open();
         XDocument.Load(bookStream).Descendants(Ns + "definedName")
-            .Should().Contain(n => n.Value == "'Enemy Modifiers'!$A$1:$M$10");
+            .Should().Contain(n => n.Value == "'Enemy Modifiers'!$A$1:$M$11");
     }
 
     [Test]
@@ -193,6 +194,26 @@ public class NPCCombatBudgetTests
             row["H"].Should().BeOneOf(new[] { "High Damage", "Loot Boss" },
                 row["C"] + " fights rank-50 players from above the cap and must stay a real threat");
         rows.Count.Should().BeGreaterThan(10);
+    }
+
+    [Test]
+    public void CapstoneWardensAndMasters_UseGroupBossBudget()
+    {
+        var root = FindRoot();
+        var presets = ReadRows(root, "Enemy Stat Presets").ToDictionary(r => r["A"]);
+        var rows = ReadRows(root, "World NPCs")
+            .Where(r => r["C"].StartsWith("cp_") && (r["C"].EndsWith("_wd") || r["C"].EndsWith("_ms")))
+            .ToList();
+        foreach (var row in rows)
+        {
+            row["H"].Should().Be("Group Boss", row["C"] + " is a party boss and must threaten a solo player");
+            var preset = presets[$"{Number(row["D"])}|{row["E"]}|{row["F"]}"];
+            Number(row["N"]).Should().Be(Number(preset["K"]), row["C"]);
+            Number(row["Q"]).Should().Be((int)Math.Round(Number(preset["N"]) * 1.75m, MidpointRounding.AwayFromZero), row["C"]);
+            Number(row["R"]).Should().Be(Number(preset["O"]) + 20, row["C"]);
+            Number(row["S"]).Should().Be(Number(preset["P"]) + 20, row["C"]);
+        }
+        rows.Count.Should().Be(78, "every capstone line has one warden and one master");
     }
 
     [Test]

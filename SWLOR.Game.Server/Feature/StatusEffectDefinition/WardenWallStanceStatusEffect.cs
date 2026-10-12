@@ -41,7 +41,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             {
                 StatusEffect.ApplyStatusEffect(creature, ally, new WardenWallStanceAuraStatusEffect
                 {
-                    OriginatingAbility = OriginatingAbility
+                    OriginatingAbility = OriginatingAbility,
+                    AnnouncesApplication = !StatusEffect.HasStatusEffect(ally, typeof(WardenWallStanceAuraStatusEffect), creature)
                 }, AuraBuffDurationSeconds);
             }
         }

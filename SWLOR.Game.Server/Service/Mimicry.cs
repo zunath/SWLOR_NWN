@@ -931,6 +931,8 @@ namespace SWLOR.Game.Server.Service
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
 
             if (MimicryLoadouts.EnsureDefault(dbPlayer))
             {

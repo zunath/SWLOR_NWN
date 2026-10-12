@@ -16,223 +16,232 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, 1080f, 700f)
                 .SetTitle("Techniques")
-                .DefinePartialView(TechniquesViewModel.BodyPartial, group => group.AddColumn(col =>
+                .DefinePartialView(TechniquesViewModel.BodyPartial, group =>
                 {
-                    col.AddRow(row =>
+                    // Two technique lists need a shared minimum width; the standard host
+                    // supplies scrolling when the player makes the window smaller.
+                    group.SetWidth(1015f);
+                    group.AddColumn(col =>
                     {
-                        row.AddLabel().BindText(model => model.ActiveLoadoutText)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left).SetHeight(26f);
-                        row.AddProgressBar().BindValue(model => model.BuildsProgress)
-                            .SetColor(90, 170, 230).SetWidth(270f).SetHeight(20f)
-                            .AddDrawList(draw => draw.AddText(text =>
-                            {
-                                text.BindText(model => model.BuildsText);
-                                text.SetBounds(6, 2, 270f, 20f);
-                                text.SetColor(255, 255, 255);
-                            }));
-                    });
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel().SetText("Loadout").SetWidth(80f).SetHeight(30f);
-                        row.AddComboBox().BindOptions(model => model.LoadoutOptions)
-                            .BindSelectedIndex(model => model.SelectedLoadoutIndex).SetHeight(32f);
-                        row.AddButton().SetText("Save").SetWidth(80f).SetHeight(32f)
-                            .BindOnClicked(model => model.OnClickSave());
-                        row.AddButton().SetText("Save As").SetWidth(100f).SetHeight(32f)
-                            .BindIsEnabled(model => model.CanSaveAs).BindOnClicked(model => model.OnClickSaveAs());
-                        row.AddButton().SetText("Manage").SetWidth(100f).SetHeight(32f)
-                            .BindOnClicked(model => model.OnClickManage());
-                    });
-                    // Category filter + sort order, filtering/ordering the Learned list. Fixed-width
-                    // combo boxes centered with flexing spacers (the Perks/Key Items pattern) so this
-                    // row fills the window without pinning the content width.
-                    col.AddRow(row =>
-                    {
-                        row.SetHeight(32f);
-                        row.AddSpacer();
-                        row.AddComboBox()
-                            .BindSelectedIndex(model => model.SelectedCategoryId)
-                            .SetWidth(240f)
-                            .AddOption("All Types", 0)
-                            .AddOption("Single-Target", 1)
-                            .AddOption("Area", 2)
-                            .AddOption("Stance", 3)
-                            .AddOption("Support", 4)
-                            .AddOption("Passive Trait", 5);
-
-                        row.AddComboBox()
-                            .BindSelectedIndex(model => model.SelectedSortOrderId)
-                            .SetWidth(180f)
-                            .AddOption("Name (A-Z)", 0)
-                            .AddOption("Name (Z-A)", 1)
-                            .AddOption("Rank (Low-High)", 2)
-                            .AddOption("Rank (High-Low)", 3);
-                        row.AddSpacer();
-                    });
-
-                    // Search box (filters the Learned list by technique name as you type).
-                    col.AddRow(row =>
-                    {
-                        row.SetHeight(30f);
-                        row.AddTextEdit()
-                            .SetPlaceholder("Search")
-                            .BindValue(model => model.SearchText);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        // Learned list column: no fixed width, so it flexes to fill the space left
-                        // by the fixed-width button column and shares it evenly with the Equipped column.
-                        row.AddColumn(col2 =>
+                        col.SetWidth(1015f);
+                        col.AddRow(row =>
                         {
-                            col2.AddRow(row2 =>
-                            {
-                                row2.AddLabel()
-                                    .SetText("Learned")
-                                    .SetHeight(26f);
-                            });
-                            col2.AddRow(row2 =>
-                            {
-                                row2.AddList(template =>
+                            row.AddLabel().BindText(model => model.ActiveLoadoutText)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left).SetHeight(26f);
+                            row.AddProgressBar().BindValue(model => model.BuildsProgress)
+                                .SetColor(90, 170, 230).SetWidth(270f).SetHeight(20f)
+                                .AddDrawList(draw => draw.AddText(text =>
                                 {
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.AddGroup(group =>
-                                        {
-                                            group.AddImage()
-                                                .BindResref(model => model.UnequippedIcons)
-                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                                .SetVerticalAlign(NuiVerticalAlign.Middle)
-                                                .SetAspect(NuiAspect.Stretch);
-                                        });
+                                    text.BindText(model => model.BuildsText);
+                                    text.SetBounds(6, 2, 270f, 20f);
+                                    text.SetColor(255, 255, 255);
+                                }));
+                        });
+                        col.AddRow(row =>
+                        {
+                            row.AddLabel().SetText("Loadout").SetWidth(80f).SetHeight(30f);
+                            row.AddComboBox().BindOptions(model => model.LoadoutOptions)
+                                .BindSelectedIndex(model => model.SelectedLoadoutIndex).SetWidth(450f).SetHeight(32f);
+                            row.AddButton().SetText("Save").SetWidth(80f).SetHeight(32f)
+                                .BindOnClicked(model => model.OnClickSave());
+                            row.AddButton().SetText("Save As").SetWidth(100f).SetHeight(32f)
+                                .BindIsEnabled(model => model.CanSaveAs).BindOnClicked(model => model.OnClickSaveAs());
+                            row.AddButton().SetText("Manage").SetWidth(100f).SetHeight(32f)
+                                .BindOnClicked(model => model.OnClickManage());
+                        });
+                        // Category filter + sort order, filtering/ordering the Learned list. Fixed-width
+                        // combo boxes centered with flexing spacers (the Perks/Key Items pattern) so this
+                        // row fills the window without pinning the content width.
+                        col.AddRow(row =>
+                        {
+                            row.SetHeight(32f);
+                            row.AddSpacer();
+                            row.AddComboBox()
+                                .BindSelectedIndex(model => model.SelectedCategoryId)
+                                .SetWidth(240f)
+                                .AddOption("All Types", 0)
+                                .AddOption("Single-Target", 1)
+                                .AddOption("Area", 2)
+                                .AddOption("Stance", 3)
+                                .AddOption("Support", 4)
+                                .AddOption("Passive Trait", 5);
 
-                                        cell.SetWidth(40f);
-                                        cell.SetIsVariable(false);
-                                    });
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.AddToggleButton()
-                                            .BindText(model => model.UnequippedNames)
-                                            .BindIsToggled(model => model.UnequippedSelections)
-                                            .BindColor(model => model.UnequippedColors)
-                                            .BindOnClicked(model => model.OnSelectUnequipped());
-                                    });
-                                })
-                                .SetRowHeight(40f)
-                                .SetScrollbars(NuiScrollbars.Y)
-                                .BindRowCount(model => model.UnequippedNames);
-                            });
+                            row.AddComboBox()
+                                .BindSelectedIndex(model => model.SelectedSortOrderId)
+                                .SetWidth(180f)
+                                .AddOption("Name (A-Z)", 0)
+                                .AddOption("Name (Z-A)", 1)
+                                .AddOption("Rank (Low-High)", 2)
+                                .AddOption("Rank (High-Low)", 3);
+                            row.AddSpacer();
                         });
 
-                        // Fixed-width control column between the two lists. Pinning its width keeps
-                        // the buttons compact and lets the flanking lists claim the rest of the row.
-                        // The buttons carry their own fixed width and are centered with spacers so
-                        // they never overflow into the Equipped list on the right.
-                        row.AddColumn(col2 =>
+                        // Search box (filters the Learned list by technique name as you type).
+                        col.AddRow(row =>
                         {
-                            col2.SetWidth(130f);
-                            col2.AddRow(row2 => row2.AddSpacer());
-                            col2.AddRow(row2 =>
-                            {
-                                row2.AddSpacer();
-                                row2.AddButton()
-                                    .SetText("Add ->")
-                                    .SetHeight(32f)
-                                    .SetWidth(110f)
-                                    .BindIsEnabled(model => model.IsEquipEnabled)
-                                    .BindOnClicked(model => model.OnClickEquip());
-                                row2.AddSpacer();
-                            });
-                            col2.AddRow(row2 =>
-                            {
-                                row2.AddSpacer();
-                                row2.AddButton()
-                                    .SetText("<- Remove")
-                                    .SetHeight(32f)
-                                    .SetWidth(110f)
-                                    .BindIsEnabled(model => model.IsUnequipEnabled)
-                                    .BindOnClicked(model => model.OnClickUnequip());
-                                row2.AddSpacer();
-                            });
-                            col2.AddRow(row2 => row2.AddSpacer());
+                            row.SetHeight(30f);
+                            row.AddTextEdit()
+                                .SetPlaceholder("Search")
+                                .BindValue(model => model.SearchText);
                         });
 
-                        // Equipped list column: also flexes to fill the remaining space.
-                        row.AddColumn(col2 =>
+                        col.AddRow(row =>
                         {
-                            col2.AddRow(row2 =>
+                            // Learned list column: no fixed width, so it flexes to fill the space left
+                            // by the fixed-width button column and shares it evenly with the Equipped column.
+                            row.AddColumn(col2 =>
                             {
-                                row2.AddLabel()
-                                    .BindText(model => model.PreviewTitle)
-                                    .SetHeight(26f);
-                            });
-                            col2.AddRow(row2 =>
-                            {
-                                row2.AddList(template =>
+                                col2.SetWidth(435f);
+                                col2.AddRow(row2 =>
                                 {
-                                    template.AddCell(cell =>
+                                    row2.AddLabel()
+                                        .SetText("Learned")
+                                        .SetHeight(26f);
+                                });
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddList(template =>
                                     {
-                                        cell.AddGroup(group =>
+                                        template.AddCell(cell =>
                                         {
-                                            group.AddImage()
-                                                .BindResref(model => model.EquippedIcons)
-                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                                .SetVerticalAlign(NuiVerticalAlign.Middle)
-                                                .SetAspect(NuiAspect.Stretch);
-                                        });
+                                            cell.AddGroup(group =>
+                                            {
+                                                group.AddImage()
+                                                    .BindResref(model => model.UnequippedIcons)
+                                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                                    .SetAspect(NuiAspect.Stretch);
+                                            });
 
-                                        cell.SetWidth(40f);
-                                        cell.SetIsVariable(false);
-                                    });
-                                    template.AddCell(cell =>
+                                            cell.SetWidth(40f);
+                                            cell.SetIsVariable(false);
+                                        });
+                                        template.AddCell(cell =>
+                                        {
+                                            cell.AddToggleButton()
+                                                .BindText(model => model.UnequippedNames)
+                                                .BindIsToggled(model => model.UnequippedSelections)
+                                                .BindColor(model => model.UnequippedColors)
+                                                .BindOnClicked(model => model.OnSelectUnequipped());
+                                        });
+                                    })
+                                    .SetRowHeight(40f)
+                                    .SetScrollbars(NuiScrollbars.Y)
+                                    .BindRowCount(model => model.UnequippedNames);
+                                });
+                            });
+
+                            // Fixed-width control column between the two lists. Pinning its width keeps
+                            // the buttons compact and lets the flanking lists claim the rest of the row.
+                            // The buttons carry their own fixed width and are centered with spacers so
+                            // they never overflow into the Equipped list on the right.
+                            row.AddColumn(col2 =>
+                            {
+                                col2.SetWidth(130f);
+                                col2.AddRow(row2 => row2.AddSpacer());
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddSpacer();
+                                    row2.AddButton()
+                                        .SetText("Add ->")
+                                        .SetHeight(32f)
+                                        .SetWidth(110f)
+                                        .BindIsEnabled(model => model.IsEquipEnabled)
+                                        .BindOnClicked(model => model.OnClickEquip());
+                                    row2.AddSpacer();
+                                });
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddSpacer();
+                                    row2.AddButton()
+                                        .SetText("<- Remove")
+                                        .SetHeight(32f)
+                                        .SetWidth(110f)
+                                        .BindIsEnabled(model => model.IsUnequipEnabled)
+                                        .BindOnClicked(model => model.OnClickUnequip());
+                                    row2.AddSpacer();
+                                });
+                                col2.AddRow(row2 => row2.AddSpacer());
+                            });
+
+                            // Equipped list column: also flexes to fill the remaining space.
+                            row.AddColumn(col2 =>
+                            {
+                                col2.SetWidth(435f);
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddLabel()
+                                        .BindText(model => model.PreviewTitle)
+                                        .SetHeight(26f);
+                                });
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddList(template =>
                                     {
-                                        cell.AddToggleButton()
-                                            .BindText(model => model.EquippedNames)
-                                            .BindIsToggled(model => model.EquippedSelections)
-                                            .BindColor(model => model.EquippedColors)
-                                            .BindOnClicked(model => model.OnSelectEquipped());
-                                    });
-                                })
-                                .SetRowHeight(40f)
-                                .SetScrollbars(NuiScrollbars.Y)
-                                .BindRowCount(model => model.EquippedNames);
+                                        template.AddCell(cell =>
+                                        {
+                                            cell.AddGroup(group =>
+                                            {
+                                                group.AddImage()
+                                                    .BindResref(model => model.EquippedIcons)
+                                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                                    .SetAspect(NuiAspect.Stretch);
+                                            });
+
+                                            cell.SetWidth(40f);
+                                            cell.SetIsVariable(false);
+                                        });
+                                        template.AddCell(cell =>
+                                        {
+                                            cell.AddToggleButton()
+                                                .BindText(model => model.EquippedNames)
+                                                .BindIsToggled(model => model.EquippedSelections)
+                                                .BindColor(model => model.EquippedColors)
+                                                .BindOnClicked(model => model.OnSelectEquipped());
+                                        });
+                                    })
+                                    .SetRowHeight(40f)
+                                    .SetScrollbars(NuiScrollbars.Y)
+                                    .BindRowCount(model => model.EquippedNames);
+                                });
                             });
                         });
-                    });
 
-                    // Fixed-height details pane so the lists above take all the flexible vertical space.
-                    col.AddRow(row =>
-                    {
-                        row.SetHeight(100f);
-                        row.AddText()
-                            .BindText(model => model.SelectedDetails);
-                    });
+                        // Fixed-height details pane so the lists above take all the flexible vertical space.
+                        col.AddRow(row =>
+                        {
+                            row.SetHeight(100f);
+                            row.AddText()
+                                .BindText(model => model.SelectedDetails);
+                        });
 
-                    col.AddRow(row =>
-                    {
-                        row.AddProgressBar()
-                            .BindValue(model => model.SlotsProgress)
-                            .BindColor(model => model.SlotsColor)
-                            .SetHeight(20f)
-                            .AddDrawList(draw => draw.AddText(text =>
-                            {
-                                text.BindText(model => model.SlotsText);
-                                text.SetBounds(6, 2, 900f, 20f);
-                                text.SetColor(255, 255, 255);
-                            }));
+                        col.AddRow(row =>
+                        {
+                            row.AddProgressBar()
+                                .BindValue(model => model.SlotsProgress)
+                                .BindColor(model => model.SlotsColor)
+                                .SetHeight(20f)
+                                .AddDrawList(draw => draw.AddText(text =>
+                                {
+                                    text.BindText(model => model.SlotsText);
+                                    text.SetBounds(6, 2, 900f, 20f);
+                                    text.SetColor(255, 255, 255);
+                                }));
+                        });
+                        col.AddRow(row => row.AddLabel().BindText(model => model.StatusText)
+                            .SetColor(230, 180, 70).SetHeight(26f).SetHorizontalAlign(NuiHorizontalAlign.Left));
+                        col.AddRow(row =>
+                        {
+                            row.AddLabel().BindText(model => model.ChangesText)
+                                .SetHeight(32f).SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            row.AddButton().SetText("Revert").SetWidth(95f).SetHeight(32f)
+                                .BindOnClicked(model => model.OnClickRevert());
+                            row.AddButton().SetText("Apply Build").SetWidth(135f).SetHeight(32f)
+                                .SetIsEncouraged(true).BindOnClicked(model => model.OnClickApply());
+                        });
                     });
-                    col.AddRow(row => row.AddLabel().BindText(model => model.StatusText)
-                        .SetColor(230, 180, 70).SetHeight(26f).SetHorizontalAlign(NuiHorizontalAlign.Left));
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel().BindText(model => model.ChangesText)
-                            .SetHeight(32f).SetHorizontalAlign(NuiHorizontalAlign.Left);
-                        row.AddButton().SetText("Revert").SetWidth(95f).SetHeight(32f)
-                            .BindOnClicked(model => model.OnClickRevert());
-                        row.AddButton().SetText("Apply Build").SetWidth(135f).SetHeight(32f)
-                            .SetIsEncouraged(true).BindOnClicked(model => model.OnClickApply());
-                    });
-                }))
+                })
                 .AddStandardLayout(layout => layout.SetContentPartialElement(TechniquesViewModel.BodyElement));
 
             return _builder.Build();

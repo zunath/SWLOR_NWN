@@ -83,7 +83,9 @@ Sound must be disabled for the background client instance. The user is
 working on the same machine, and a hidden client must never play music,
 ambient audio, voices, or effects. NWN:EE has no master sound switch, so set
 all four volume channels to zero in the isolated `settings.tml` before launch.
-Mute only the task-owned profile; never change the user's normal
+Also disable the intro, splash, and movie playback: those movies play audio
+outside the four volume channels, so a client that reaches them is audible even
+at zero volume. Mute only the task-owned profile; never change the user's normal
 `settings.tml`, Windows volume mixer, or audio devices. If the client is heard
 during a run, stop it and fix the profile before relaunching.
 
@@ -98,6 +100,12 @@ volume=0.0
 volume=0.0
 [sound.voices]
 volume=0.0
+[graphics.intro.splash]
+enabled=false
+[graphics.movies]
+enabled=false
+[graphics.movies.intro]
+enabled=false
 [graphics.window]
 mode="windowed"
 [graphics.window.windowed]
@@ -110,6 +118,13 @@ enabled=true
 [graphics.video.vsync]
 mode="off"
 ```
+
+A `-dmc` (DM client) launch ignores `+TestNewModule` and plays the intro movies
+on its way to the main menu, so it needs the movie settings above. For DM-UI
+checks, a Player DM login works offline instead. In the task-owned profile, set
+`[server.login] dm-password` to a one-off value and
+`[server.login.player-dm] enabled=true`, then post `##dm_login <password>` to
+the owned private-desktop window.
 
 For each subject, set the camera after area loading settles, then wait for a
 fresh render before capturing. The capstone script set a close camera at four

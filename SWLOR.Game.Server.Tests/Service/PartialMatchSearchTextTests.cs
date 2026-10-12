@@ -76,6 +76,29 @@ public class PartialMatchSearchTextTests
         PartialMatchSearchText.Build(search).Should().Be(expected);
     }
 
+    [TestCase("AC\\@DC", "(AC\\\\*)")]
+    [TestCase("Q\\-R Tail", "(Q\\\\* Tail*)")]
+    [TestCase("\\@ Tail", "(Tail*)")]
+    public void WordsWithABackslashBeforePunctuationMatchUpToTheBackslash(string search, string expected)
+    {
+        // "AC\@DC" is stored as "AC\\@DC" and indexed as the word "ac\@dc", which no query can spell in full.
+        PartialMatchSearchText.Build(search).Should().Be(expected);
+    }
+
+    [TestCase("X\\\\Y", "(X\\\\Y*)")]
+    [TestCase("K\\\\ L", "(K\\\\L*)")]
+    public void BackslashesBeforeLettersAreSearchedInFull(string search, string expected)
+    {
+        // "K\\ L" is indexed as the single word "k\l": a separator right after a backslash does not split.
+        PartialMatchSearchText.Build(search).Should().Be(expected);
+    }
+
+    [Test]
+    public void ControlCharactersAreDroppedFromWords()
+    {
+        PartialMatchSearchText.Build("Al\nBe Cd").Should().Be("(AlBe* Cd*)");
+    }
+
     [TestCase("\U0001F600", "(\U0001F600)")]
     [TestCase("\U0001F600 Grin", "(\U0001F600 Grin*)")]
     [TestCase("Grin\U0001F600", "(Grin\U0001F600)")]

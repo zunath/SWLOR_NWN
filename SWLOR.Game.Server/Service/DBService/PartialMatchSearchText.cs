@@ -19,9 +19,6 @@ namespace SWLOR.Game.Server.Service.DBService
         // underscores, backslashes and non-ASCII characters stay inside a word.
         private const string IndexSeparators = " \t,./<>[]:;~#$%^&*+`?!@{}()|-='\"";
 
-        // DB.EscapeTokens escapes these in stored values, so they are part of indexed words, not separators.
-        private const string EscapedInStoredValues = "@!{}()|-=>'\"";
-
         /// <summary>
         /// Returns the escaped query text for a partial match on the given search.
         /// "Per Tes" becomes "(Per* Tes*)"; one-character words must match a whole word.
@@ -30,36 +27,37 @@ namespace SWLOR.Game.Server.Service.DBService
         public static string Build(string search)
         {
             search ??= string.Empty;
-            var words = SplitWords(search);
-            if (words.Count == 0)
+
+            // Stored values pass through DB.EscapeTokens before indexing, so split the search the same way.
+            var terms = SplitWords(DB.EscapeTokens(search))
+                .Select(BuildTerm)
+                .Where(term => term != null)
+                .ToList();
+
+            if (terms.Count == 0)
             {
-                // Only separators: escape every character so the query stays valid.
+                // Nothing searchable: escape every character so the query stays valid.
                 var escaped = string.Concat(search.Where(c => c != ' ' && c != '\t').Select(c => "\\" + c));
                 return "(" + escaped + ")";
             }
 
-            var terms = words.Select(word => CanPrefix(word) ? EscapeWord(word) + "*" : EscapeWord(word));
             return "(" + string.Join(" ", terms) + ")";
         }
 
-        private static List<string> SplitWords(string search)
+        // Mirrors the index tokenizer: a separator right after a backslash does not split, and inside a word
+        // an unpaired backslash makes the next character literal while control characters are dropped.
+        private static List<string> SplitWords(string indexedText)
         {
             var words = new List<string>();
             var current = new StringBuilder();
+            var escaped = false;
 
-            for (var index = 0; index < search.Length; index++)
+            for (var index = 0; index < indexedText.Length; index++)
             {
-                var character = search[index];
+                var character = indexedText[index];
+                var afterBackslash = index > 0 && indexedText[index - 1] == '\\';
 
-                // As in the index, a backslash makes the next character literal and is not part of the word.
-                if (character == '\\')
-                {
-                    if (index + 1 < search.Length)
-                        current.Append(search[++index]);
-                    continue;
-                }
-
-                if (IndexSeparators.IndexOf(character) >= 0 && EscapedInStoredValues.IndexOf(character) < 0)
+                if (IndexSeparators.IndexOf(character) >= 0 && !afterBackslash)
                 {
                     if (current.Length > 0)
                     {
@@ -69,7 +67,20 @@ namespace SWLOR.Game.Server.Service.DBService
                     continue;
                 }
 
+                if (character < 32 || character == 127 || (character == ' ' && !escaped))
+                {
+                    escaped = false;
+                    continue;
+                }
+
+                if (character == '\\' && !escaped)
+                {
+                    escaped = true;
+                    continue;
+                }
+
                 current.Append(character);
+                escaped = false;
             }
 
             if (current.Length > 0)
@@ -78,18 +89,46 @@ namespace SWLOR.Game.Server.Service.DBService
             return words;
         }
 
+        private static string BuildTerm(string word)
+        {
+            var backslash = FirstUnqueryableBackslash(word);
+            if (backslash < 0)
+                return CanPrefix(word) ? EscapeWord(word) + "*" : EscapeWord(word);
+
+            // A query cannot spell a backslash followed by punctuation, so match the word up to the backslash.
+            var prefix = word[..(backslash + 1)];
+            return CanPrefix(prefix) ? EscapeWord(prefix) + "*" : null;
+        }
+
+        // Queries only match a literal backslash that ends the word or precedes a letter, digit or non-ASCII character.
+        private static int FirstUnqueryableBackslash(string word)
+        {
+            for (var index = 0; index + 1 < word.Length; index++)
+            {
+                if (word[index] == '\\' && IsAsciiNonAlphanumeric(word[index + 1]))
+                    return index;
+            }
+
+            return -1;
+        }
+
         // Punctuation inside a word must be escaped in the query or RediSearch treats it as syntax.
         private static string EscapeWord(string word)
         {
             var builder = new StringBuilder(word.Length * 2);
             foreach (var character in word)
             {
-                if (character < 128 && !char.IsLetterOrDigit(character) && character != '_')
+                if (IsAsciiNonAlphanumeric(character) && character != '_')
                     builder.Append('\\');
                 builder.Append(character);
             }
 
             return builder.ToString();
+        }
+
+        private static bool IsAsciiNonAlphanumeric(char character)
+        {
+            return character < 128 && !char.IsLetterOrDigit(character);
         }
 
         // RediSearch prefix queries need two characters and do not match characters beyond U+FFFF.

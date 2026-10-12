@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private MusicPickerMode _mode;
         private uint _jukebox;
+        private uint _musicPlayer;
         private bool _suppressRefresh;
         private string _selectedCategory = string.Empty;
         private string[] _categories = Array.Empty<string>();
@@ -73,6 +74,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var payload = initialPayload as MusicPickerPayload ?? new MusicPickerPayload(MusicPickerMode.Personal);
             _jukebox = payload.Jukebox;
+            _musicPlayer = payload.MusicPlayer;
             _mode = payload.Mode;
 
             // DMs can always play any track, whether they open the window by chat command or jukebox.
@@ -233,7 +235,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnPlaySong() => () =>
         {
-            if (CloseIfJukeboxIsGone() || !TryGetSelectedEntry(out var entry))
+            if (CloseIfSourceIsGone() || !TryGetSelectedEntry(out var entry))
                 return;
 
             if (_mode == MusicPickerMode.Personal)
@@ -247,7 +249,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSetBattleTheme() => () =>
         {
-            if (_mode != MusicPickerMode.Personal || !TryGetSelectedEntry(out var entry))
+            if (_mode != MusicPickerMode.Personal || CloseIfSourceIsGone() || !TryGetSelectedEntry(out var entry))
                 return;
 
             Music.SetBattleTheme(Player, entry.TrackId);
@@ -257,7 +259,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClearBattleTheme() => () =>
         {
-            if (_mode != MusicPickerMode.Personal)
+            if (_mode != MusicPickerMode.Personal || CloseIfSourceIsGone())
                 return;
 
             Music.SetBattleTheme(Player, null);
@@ -266,7 +268,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnStop() => () =>
         {
-            if (CloseIfJukeboxIsGone())
+            if (CloseIfSourceIsGone())
                 return;
 
             if (_mode == MusicPickerMode.Personal)
@@ -289,14 +291,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         /// <summary>
-        /// A jukebox window only controls its jukebox's area, so it closes once the jukebox is destroyed.
+        /// A jukebox window closes once its jukebox is destroyed, and a music player window
+        /// closes once the player no longer carries the Portable Music Player that opened it.
         /// </summary>
-        private bool CloseIfJukeboxIsGone()
+        private bool CloseIfSourceIsGone()
         {
-            if (_mode != MusicPickerMode.Jukebox || GetIsObjectValid(_jukebox))
+            string message;
+            if (_mode == MusicPickerMode.Jukebox && !GetIsObjectValid(_jukebox))
+                message = "The jukebox is no longer here.";
+            else if (_mode == MusicPickerMode.Personal &&
+                     (!GetIsObjectValid(_musicPlayer) || GetItemPossessor(_musicPlayer) != Player))
+                message = "You no longer have the Portable Music Player.";
+            else
                 return false;
 
-            SendMessageToPC(Player, ColorToken.Red("The jukebox is no longer here."));
+            SendMessageToPC(Player, ColorToken.Red(message));
             Gui.CloseWindow(Player, WindowType, Player);
             return true;
         }

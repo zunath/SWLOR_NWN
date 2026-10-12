@@ -1123,7 +1123,15 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.MusicPicker, new MusicPickerPayload(MusicPickerMode.DungeonMaster));
+                    var player = user;
+                    var uiTarget = OBJECT_INVALID;
+                    if (GetIsDMPossessed(player))
+                    {
+                        uiTarget = player;
+                        player = GetMaster(player);
+                    }
+
+                    Gui.TogglePlayerWindow(player, GuiWindowType.MusicPicker, new MusicPickerPayload(MusicPickerMode.DungeonMaster), OBJECT_INVALID, uiTarget);
                 });
         }
 

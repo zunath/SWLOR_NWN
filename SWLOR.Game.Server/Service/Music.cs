@@ -261,6 +261,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Clears a player's personal track and restores the current area's music for them.
+        /// If the area's music was stopped, the player's music stays off.
         /// </summary>
         public static void StopForPlayer(uint player)
         {
@@ -273,6 +274,8 @@ namespace SWLOR.Game.Server.Service
 
             var area = GetArea(player);
             ApplyBackgroundTrackToPlayer(player, MusicBackgroundGetDayTrack(area), MusicBackgroundGetNightTrack(area));
+            if (IsAreaMusicStopped(area))
+                PlayerPlugin.MusicBackgroundToggle(player, false);
         }
 
         /// <summary>

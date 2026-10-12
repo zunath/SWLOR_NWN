@@ -20,7 +20,15 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(user))
                 return;
 
-            Gui.TogglePlayerWindow(user, GuiWindowType.MusicPicker, new MusicPickerPayload(MusicPickerMode.Jukebox, jukebox), jukebox);
+            var player = user;
+            var uiTarget = OBJECT_INVALID;
+            if (GetIsDMPossessed(player))
+            {
+                uiTarget = player;
+                player = GetMaster(player);
+            }
+
+            Gui.TogglePlayerWindow(player, GuiWindowType.MusicPicker, new MusicPickerPayload(MusicPickerMode.Jukebox, jukebox), jukebox, uiTarget);
         }
     }
 }

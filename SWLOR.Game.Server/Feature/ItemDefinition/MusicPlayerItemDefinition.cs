@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             _builder.Create(Music.MusicPlayerTag)
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.MusicPicker, new MusicPickerPayload(MusicPickerMode.Personal));
+                    Gui.TogglePlayerWindow(user, GuiWindowType.MusicPicker, new MusicPickerPayload(MusicPickerMode.Personal, musicPlayer: item));
                 });
         }
     }

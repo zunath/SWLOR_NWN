@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -201,6 +203,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<RecipeType, DateTime> CraftedRecipes { get; set; }
         public Dictionary<FeatType, DateTime> LearnedTechniques { get; set; }
         public List<FeatType> EquippedTechniques { get; set; }
+        [JsonConverter(typeof(RelocatedKeyItemsJsonConverter))]
         public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
         public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }
@@ -245,6 +248,7 @@ namespace SWLOR.Game.Server.Entity
         public int TimesCompleted { get; set; }
         public DateTime? DateLastCompleted { get; set; }
 
+        [JsonConverter(typeof(RelocatedKillProgressesJsonConverter))]
         public Dictionary<NPCGroupType, int> KillProgresses { get; set; } = new Dictionary<NPCGroupType, int>();
         public Dictionary<string, int> ItemProgresses { get; set; } = new Dictionary<string, int>();
     }

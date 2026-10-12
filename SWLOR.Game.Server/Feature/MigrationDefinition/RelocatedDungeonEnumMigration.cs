@@ -88,18 +88,22 @@ public static class RelocatedDungeonEnumMigration
 
     public static bool MigratePlayer(JObject player)
     {
-        var changed = RenameKeys(player[nameof(Player.KeyItems)] as JObject, KeyItemRenames, (existing, _) => existing);
+        var changed = RenameKeyItems(player[nameof(Player.KeyItems)] as JObject);
         if (player[nameof(Player.Quests)] is JObject quests)
         {
             foreach (var quest in quests.Properties().Select(property => property.Value).OfType<JObject>())
-            {
-                // Counters store kills remaining: the smaller value retains the most progress.
-                changed |= RenameKeys(quest[nameof(PlayerQuest.KillProgresses)] as JObject, NPCGroupRenames,
-                    (existing, renamed) => new JValue(Math.Min(existing.Value<int>(), renamed.Value<int>())));
-            }
+                changed |= RenameKillProgresses(quest[nameof(PlayerQuest.KillProgresses)] as JObject);
         }
         return changed;
     }
+
+    public static bool RenameKeyItems(JObject keyItems) =>
+        RenameKeys(keyItems, KeyItemRenames, (existing, _) => existing);
+
+    // Counters store kills remaining: the smaller value retains the most progress.
+    public static bool RenameKillProgresses(JObject killProgresses) =>
+        RenameKeys(killProgresses, NPCGroupRenames,
+            (existing, renamed) => new JValue(Math.Min(existing.Value<int>(), renamed.Value<int>())));
 
     private static bool RenameKeys<T>(JObject entries, IReadOnlyDictionary<string, T> renames, Func<JToken, JToken, JToken> merge)
         where T : struct, Enum

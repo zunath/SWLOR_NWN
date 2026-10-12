@@ -118,14 +118,20 @@ public class RelocatedDungeonEnumMigrationTests
             "\"saber_storm_foundation\":{\"CurrentState\":1,\"KillProgresses\":{\"Dantooine_StormDrillDroid\":5,\"" + beacon + "\":1},\"ItemProgresses\":{}}}," +
             "\"UnknownField\":{\"value\":42}}");
         var unknown = player["UnknownField"]!.DeepClone();
-        var stale = player.ToString();
-        FluentActions.Invoking(() => JsonConvert.DeserializeObject<Player>(stale)).Should().Throw<JsonSerializationException>();
+        // A record that skipped migration 28 (e.g. restored afterwards) still loads, with the former names mapped.
+        AssertMigrated(JsonConvert.DeserializeObject<Player>(player.ToString())!);
 
         RelocatedDungeonEnumMigration.MigratePlayer(player).Should().BeTrue();
         RelocatedDungeonEnumMigration.MigratePlayer(player).Should().BeFalse();
         JToken.DeepEquals(player["UnknownField"], unknown).Should().BeTrue();
 
-        var migrated = JsonConvert.DeserializeObject<Player>(player.ToString())!;
+        AssertMigrated(JsonConvert.DeserializeObject<Player>(player.ToString())!);
+        var reserialized = JObject.Parse(JsonConvert.SerializeObject(JsonConvert.DeserializeObject<Player>(player.ToString())));
+        reserialized[nameof(Player.KeyItems)]![nameof(KeyItemType.CapstoneTatooineForgeCavernsKey)].Should().NotBeNull();
+    }
+
+    private static void AssertMigrated(Player migrated)
+    {
         migrated.KeyItems.Should().ContainKey(KeyItemType.CapstoneTatooineForgeCavernsKey);
         migrated.KeyItems.Should().ContainKey(KeyItemType.CapstoneVelesMilitiaAnnexKey);
         migrated.KeyItems[KeyItemType.CapstoneMonCalaMedicalSublevelKey].Should().Be(new DateTime(2026, 8, 1, 0, 0, 0, DateTimeKind.Utc));

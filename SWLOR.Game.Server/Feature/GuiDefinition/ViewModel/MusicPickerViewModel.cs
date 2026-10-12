@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.MusicService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -17,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private MusicPickerMode _mode;
         private uint _jukebox;
-        private int _page;
+        private bool _suppressRefresh;
         private string _selectedCategory = string.Empty;
         private string[] _categories = Array.Empty<string>();
         private MusicPickerEntry[] _entries = Array.Empty<MusicPickerEntry>();
@@ -26,11 +27,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string WindowTitle { get => Get<string>(); set => Set(value); }
         public string HeaderText { get => Get<string>(); set => Set(value); }
         public string ResultText { get => Get<string>(); set => Set(value); }
-        public string PageText { get => Get<string>(); set => Set(value); }
         public string NowPlayingText { get => Get<string>(); set => Set(value); }
         public string BattleThemeText { get => Get<string>(); set => Set(value); }
-        public bool HasPrevious { get => Get<bool>(); set => Set(value); }
-        public bool HasNext { get => Get<bool>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> PageNumbers { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+
+        public int SelectedPageIndex
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                if (!_suppressRefresh)
+                    RefreshResults();
+            }
+        }
         public bool IsCollectionMode { get => Get<bool>(); set => Set(value); }
 
         public string SearchText
@@ -39,8 +49,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                _page = 0;
-                RefreshResults();
+                ResetToFirstPage();
             }
         }
 
@@ -50,8 +59,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                _page = 0;
-                RefreshResults();
+                ResetToFirstPage();
             }
         }
 
@@ -97,7 +105,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SongCategories = new GuiBindingList<string>();
             PlayEnabled = new GuiBindingList<bool>();
             ResultText = string.Empty;
-            PageText = string.Empty;
+            PageNumbers = new GuiBindingList<GuiComboEntry>();
+            _suppressRefresh = true;
+            SelectedPageIndex = 0;
+            _suppressRefresh = false;
             ShowUncollected = false;
             SearchText = string.Empty;
             SelectCategory(0);
@@ -105,6 +116,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.ShowUncollected);
+            WatchOnClient(model => model.SelectedPageIndex);
             ChangePartialView(ContentElement, _mode == MusicPickerMode.Personal ? PersonalContentPartial : AreaContentPartial);
         }
 
@@ -172,7 +184,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 selected.Add(i == index);
 
             CategorySelected = selected;
-            _page = 0;
+            ResetToFirstPage();
+        }
+
+        private void ResetToFirstPage()
+        {
+            _suppressRefresh = true;
+            SelectedPageIndex = 0;
+            _suppressRefresh = false;
             RefreshResults();
         }
 
@@ -185,9 +204,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .Where(entry => search.Length == 0 || entry.Name.Contains(search, StringComparison.OrdinalIgnoreCase))
                 .ToArray();
 
-            var pages = Math.Max(1, (matches.Length + PageSize - 1) / PageSize);
-            _page = Math.Clamp(_page, 0, pages - 1);
-            _visible = matches.Skip(_page * PageSize).Take(PageSize).ToArray();
+            var pagination = GuiPaginationState.Create(matches.Length, PageSize, SelectedPageIndex);
+            _suppressRefresh = true;
+            PageNumbers = pagination.PageNumbers;
+            SelectedPageIndex = pagination.SelectedPageIndex;
+            _suppressRefresh = false;
+            _visible = matches.Skip(SelectedPageIndex * PageSize).Take(PageSize).ToArray();
 
             var names = new GuiBindingList<string>();
             var categories = new GuiBindingList<string>();
@@ -203,14 +225,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SongCategories = categories;
             PlayEnabled = playEnabled;
             ResultText = matches.Length == 1 ? "1 song" : $"{matches.Length} songs";
-            PageText = $"Page {_page + 1} / {pages}";
-            HasPrevious = _page > 0;
-            HasNext = _page + 1 < pages;
         }
 
         public Action OnClearSearch() => () => SearchText = string.Empty;
-        public Action OnPreviousPage() => () => { _page--; RefreshResults(); };
-        public Action OnNextPage() => () => { _page++; RefreshResults(); };
+        public Action OnPreviousPage() => () => SelectedPageIndex = Math.Max(0, SelectedPageIndex - 1);
+        public Action OnNextPage() => () => SelectedPageIndex = Math.Min(PageNumbers.Count - 1, SelectedPageIndex + 1);
 
         public Action OnPlaySong() => () =>
         {

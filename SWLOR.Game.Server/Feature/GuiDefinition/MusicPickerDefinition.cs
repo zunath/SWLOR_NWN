@@ -136,26 +136,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetRowHeight(RowHeight)
                         .SetHeight(300f));
 
-                    content.AddRow(r =>
-                    {
-                        r.AddButton()
-                            .SetText("Previous")
-                            .SetWidth(90f)
-                            .SetHeight(RowHeight)
-                            .BindIsEnabled(model => model.HasPrevious)
-                            .BindOnClicked(model => model.OnPreviousPage());
-
-                        r.AddLabel()
-                            .BindText(model => model.PageText)
-                            .SetHeight(RowHeight);
-
-                        r.AddButton()
-                            .SetText("Next")
-                            .SetWidth(90f)
-                            .SetHeight(RowHeight)
-                            .BindIsEnabled(model => model.HasNext)
-                            .BindOnClicked(model => model.OnNextPage());
-                    });
+                    content.AddPagination(
+                        model => model.PageNumbers,
+                        model => model.SelectedPageIndex,
+                        model => model.OnPreviousPage(),
+                        model => model.OnNextPage());
 
                     content.AddRow(r =>
                     {

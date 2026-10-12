@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string ContentElement = "music_picker_content";
         public const string PersonalContentPartial = "MUSIC_PICKER_PERSONAL";
         public const string AreaContentPartial = "MUSIC_PICKER_AREA";
-        public const int PageSize = 10;
+        public const int PageSize = 8;
         private const string OtherCategoryName = "Other";
 
         private MusicPickerMode _mode;

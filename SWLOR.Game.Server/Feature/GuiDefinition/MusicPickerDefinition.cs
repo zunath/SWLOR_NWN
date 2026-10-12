@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.MusicPicker)
-                .SetInitialGeometry(0, 0, 790f, 600f)
+                .SetInitialGeometry(0, 0, 790f, 660f)
                 .BindTitle(model => model.WindowTitle)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindOnClicked(model => model.OnSelectCategory())))
                 .BindRowCount(model => model.CategoryNames)
                 .SetRowHeight(RowHeight)
-                .SetHeight(240f));
+                .SetHeight(480f));
         }
 
         // List templates own each cell's visibility, so personal-only controls get their own partial.
@@ -81,7 +81,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         r.AddCheckBox()
                             .SetText("Show songs not yet collected")
                             .BindIsChecked(model => model.ShowUncollected)
-                            .BindIsEnabled(model => model.IsCollectionMode);
+                            .BindIsEnabled(model => model.IsCollectionMode)
+                            .SetWidth(300f);
 
                         r.AddLabel()
                             .BindText(model => model.ResultText)
@@ -133,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     })
                         .BindRowCount(model => model.SongNames)
                         .SetRowHeight(RowHeight)
-                        .SetHeight(330f));
+                        .SetHeight(300f));
 
                     content.AddRow(r =>
                     {

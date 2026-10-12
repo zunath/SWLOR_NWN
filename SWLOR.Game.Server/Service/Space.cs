@@ -1701,7 +1701,8 @@ namespace SWLOR.Game.Server.Service
 
             var targetShipStatus = GetShipStatus(target);
 
-            if (targetShipStatus == null)
+            // Leashed ships are immune while they return home, like plot-flagged ground enemies.
+            if (targetShipStatus == null || AI.IsLeashEvading(target))
                 return;
 
             var remainingDamage = amount;
@@ -1801,7 +1802,8 @@ namespace SWLOR.Game.Server.Service
 
             var targetShipStatus = GetShipStatus(target);
 
-            if (targetShipStatus == null)
+            // Leashed ships are immune while they return home, like plot-flagged ground enemies.
+            if (targetShipStatus == null || AI.IsLeashEvading(target))
                 return;
 
             if (targetShipStatus.Hull > 0)
@@ -2008,11 +2010,24 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var (creature, shipStatus) in _shipNPCs)
             {
+                if (AI.IsLeashEvading(creature))
+                {
+                    RestoreLeashedShip(shipStatus);
+                    continue;
+                }
+
                 ApplyAutoShipRecovery(creature, shipStatus);
 
                 // Determine target
                 var target = Enmity.GetHighestEnmityTarget(creature);
                 if (!GetIsObjectValid(target)) continue;
+
+                // Ships follow the same combat leash as ground enemies.
+                if (AI.TryStartCombatLeashEvade(creature, target))
+                {
+                    RestoreLeashedShip(shipStatus);
+                    continue;
+                }
 
                 // Determine which modules are available.
                 var highModules = shipStatus.HighPowerModules.Where(x =>
@@ -2108,6 +2123,15 @@ namespace SWLOR.Game.Server.Service
                         ActionMoveAwayFromObject(target, true, holdDistance);
                 });
             }
+        }
+
+        /// <summary>
+        /// Leashed ships return home at full strength, matching the full heal ground enemies receive.
+        /// </summary>
+        private static void RestoreLeashedShip(ShipStatus shipStatus)
+        {
+            shipStatus.Shield = shipStatus.MaxShield;
+            shipStatus.Hull = shipStatus.MaxHull;
         }
 
         private static bool HasEnemyShipWithin(uint creature, float distance)

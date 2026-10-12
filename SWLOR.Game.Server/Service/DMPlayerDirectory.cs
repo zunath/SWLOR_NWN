@@ -15,7 +15,6 @@ namespace SWLOR.Game.Server.Service
     public static class DMPlayerDirectory
     {
         public const int MaxResults = 200;
-        private const int MaxOfflineMatchesPerField = 100;
 
         private static readonly string[] OfflineSearchFields =
         {
@@ -26,7 +25,9 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
-        /// Finds characters by name, descriptor, account name, CD key, or player ID.
+        /// Finds characters by name, descriptor, account name, or CD key, matching the start of each word, or by
+        /// their whole player ID. Online and offline characters match alike: offline characters are found through
+        /// the database index, which only matches word starts.
         /// Offline characters are only searched when search text is given.
         /// </summary>
         /// <param name="search">The search text.</param>
@@ -37,6 +38,7 @@ namespace SWLOR.Game.Server.Service
             var terms = DMSearchText.GetTerms(search);
             var results = new List<DMPlayerSearchResult>();
             var onlineIds = new HashSet<string>();
+            var offlineTruncated = false;
 
             foreach (var player in GetOnlinePlayers())
             {
@@ -45,41 +47,24 @@ namespace SWLOR.Game.Server.Service
                 if (scope == DMPlayerSearchScope.Offline)
                     continue;
 
-                if (DMSearchText.Matches(terms,
-                        result.Name,
-                        result.Descriptor,
-                        PlayerDescriptor.GetUnknownDisplayName(player),
-                        result.AccountName,
-                        result.CDKey,
-                        result.PlayerId))
-                {
+                if (Matches(search, terms, result, PlayerDescriptor.GetUnknownDisplayName(player)))
                     results.Add(result);
-                }
             }
 
             if (scope != DMPlayerSearchScope.Online && terms.Count > 0)
             {
-                foreach (var dbPlayer in SearchOfflineRecords(search.Trim(), terms))
+                foreach (var dbPlayer in SearchOfflineRecords(search.Trim(), terms, out offlineTruncated))
                 {
                     if (onlineIds.Contains(dbPlayer.Id))
                         continue;
 
-                    // Offline characters match the same way as online ones: every term, in any field.
                     var result = BuildOfflineResult(dbPlayer);
-                    if (DMSearchText.Matches(terms,
-                            result.Name,
-                            result.Descriptor,
-                            dbPlayer.UnknownDisplayName,
-                            result.AccountName,
-                            result.CDKey,
-                            result.PlayerId))
-                    {
+                    if (Matches(search, terms, result, dbPlayer.UnknownDisplayName))
                         results.Add(result);
-                    }
                 }
             }
 
-            isTruncated = results.Count > MaxResults;
+            isTruncated = results.Count > MaxResults || offlineTruncated;
             return results
                 .OrderByDescending(result => result.IsOnline)
                 .ThenBy(result => result.Name, StringComparer.OrdinalIgnoreCase)
@@ -138,22 +123,37 @@ namespace SWLOR.Game.Server.Service
             return players;
         }
 
+        // Player IDs are only found whole, because offline records are looked up by ID rather than searched.
+        private static bool Matches(string search, IReadOnlyList<string> terms, DMPlayerSearchResult result, string unknownDisplayName)
+        {
+            if (terms.Count == 1 && string.Equals(terms[0], result.PlayerId, StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            return DMSearchText.MatchesWordStarts(search,
+                result.Name,
+                result.Descriptor,
+                unknownDisplayName,
+                result.AccountName,
+                result.CDKey);
+        }
+
         // Returns candidates for Search to filter. The index only matches when every word of a query is in one
-        // field, so the longest term is also searched alone to find characters whose terms span several fields.
-        private static List<Player> SearchOfflineRecords(string search, IReadOnlyList<string> terms)
+        // field, so the longest word is also searched alone to find characters whose words span several fields.
+        private static List<Player> SearchOfflineRecords(string search, IReadOnlyList<string> terms, out bool isTruncated)
         {
             var players = new Dictionary<string, Player>();
-            var longestTerm = terms.OrderByDescending(term => term.Length).First();
+            isTruncated = false;
 
-            if (Guid.TryParse(longestTerm, out _))
+            if (terms.Count == 1 && Guid.TryParse(terms[0], out _))
             {
-                var dbPlayer = DB.Get<Player>(longestTerm);
+                var dbPlayer = DB.Get<Player>(terms[0]);
                 if (dbPlayer != null && !dbPlayer.IsDeleted)
                     players[dbPlayer.Id] = dbPlayer;
             }
 
-            var queryTexts = terms.Count > 1
-                ? new[] { search, longestTerm }
+            var words = PartialMatchSearchText.GetWords(search);
+            var queryTexts = words.Count > 1
+                ? new[] { search, words.OrderByDescending(word => word.Length).First() }
                 : new[] { search };
 
             foreach (var queryText in queryTexts)
@@ -163,12 +163,29 @@ namespace SWLOR.Game.Server.Service
                     var query = new DBQuery<Player>()
                         .AddFieldSearch(nameof(Player.IsDeleted), false)
                         .AddFieldSearch(field, queryText, true)
-                        .AddPaging(MaxOfflineMatchesPerField, 0);
+                        .AddPaging(MaxResults + 1, 0);
 
-                    foreach (var dbPlayer in DB.Search(query))
+                    var matches = DB.Search(query).ToList();
+                    isTruncated |= matches.Count > MaxResults;
+                    foreach (var dbPlayer in matches)
                     {
                         players[dbPlayer.Id] = dbPlayer;
                     }
+                }
+
+                // An active disguise shows its own descriptor, which is stored with the disguise.
+                var disguiseQuery = new DBQuery<PlayerDisguise>()
+                    .AddFieldSearch(nameof(PlayerDisguise.IsRetired), false)
+                    .AddFieldSearch(nameof(PlayerDisguise.Descriptor), queryText, true)
+                    .AddPaging(MaxResults + 1, 0);
+
+                var disguises = DB.Search(disguiseQuery).ToList();
+                isTruncated |= disguises.Count > MaxResults;
+                foreach (var disguise in disguises)
+                {
+                    var dbPlayer = DB.Get<Player>(disguise.PlayerId);
+                    if (dbPlayer != null && !dbPlayer.IsDeleted && dbPlayer.ActiveDisguiseId == disguise.Id)
+                        players[dbPlayer.Id] = dbPlayer;
                 }
             }
 

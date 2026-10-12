@@ -67,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 searchRow.AddTextEdit()
                                     .SetPlaceholder("Name, descriptor, account, CD key, or player ID")
+                                    .SetTooltip("Each word matches the start of a word. Player IDs must be entered whole.")
                                     .BindValue(model => model.SearchText)
                                     .SetMaxLength(64)
                                     .SetHeight(ButtonHeight);

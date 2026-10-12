@@ -156,6 +156,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual("Chooser Probe Rancor", model.DetailTitle, "details title");
                 Capture(dm.Creature, GuiWindowType.DMChooser, "chooser-creature-selected");
 
+                // The Chooser stays open across area changes, so a current-area list reruns when the DM changes areas.
+                var lateProbe = ctx.SpawnCreature("nw_bandit001", 10f, 2f);
+                SetName(lateProbe, "Chooser Probe Rancor Late");
+                await InContext(ctx, dm.Creature, () =>
+                    Gui.PublishRefreshEvent(dm.Creature, new DMAreaChangedRefreshEvent()));
+                ctx.AssertEqual(2, model.ResultNames.Count, "an area change reruns a current-area search");
+                DestroyObject(lateProbe);
+
                 // Player characters are left to the player search.
                 SetName(dm.Creature, "Chooser Excluded Player");
                 await InContext(ctx, dm.Creature, () => model.SearchText = "Chooser Excluded Player");
@@ -325,6 +333,27 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 LocationY = 10f,
                 LastLoginDate = new DateTime(2026, 10, 1, 18, 30, 0, DateTimeKind.Utc)
             });
+
+            // An offline character whose active disguise shows a different descriptor.
+            var disguisedId = Guid.NewGuid().ToString();
+            var disguise = new PlayerDisguise { PlayerId = disguisedId, Descriptor = "A hooded smuggler" };
+            DB.Set(disguise);
+            DB.Set(new Player(disguisedId)
+            {
+                Name = "Talen Orsk",
+                UnknownDisplayName = "A tall Human",
+                ActiveDisguiseId = disguise.Id
+            });
+
+            // More offline matches than the search shows.
+            var bulkIds = Enumerable.Range(0, DMPlayerDirectory.MaxResults + 1)
+                .Select(_ => Guid.NewGuid().ToString())
+                .ToList();
+            foreach (var bulkId in bulkIds)
+            {
+                DB.Set(new Player(bulkId) { Name = "Bulkprobe Character" });
+            }
+
             using var windows = RegisterWindows(ctx, dm);
             try
             {
@@ -377,7 +406,24 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await InContext(ctx, dm.Creature, model.OnClickSearch());
                 ctx.Assert(!model.ResultNames.Contains("Qorin Zyndari"), "every term must match an offline character");
 
+                await InContext(ctx, dm.Creature, () => model.SearchText = "hooded smug");
+                await InContext(ctx, dm.Creature, model.OnClickSearch());
+                ctx.Assert(model.ResultNames.Contains("Talen Orsk"), "offline search finds an active disguise's descriptor");
+
+                var bulk = DMPlayerDirectory.Search("Bulkprobe", DMPlayerSearchScope.Offline, out var bulkTruncated);
+                ctx.AssertEqual(DMPlayerDirectory.MaxResults, bulk.Count, "offline search returns up to the result limit");
+                ctx.Assert(bulkTruncated, "offline search reports matches beyond the result limit");
+
+                // Online and offline characters both match the start of a word, as the index does.
                 await InContext(ctx, dm.Creature, () => model.SelectedScope = (int)DMPlayerSearchScope.All);
+                await InContext(ctx, dm.Creature, () => model.SearchText = "ynd");
+                await InContext(ctx, dm.Creature, model.OnClickSearch());
+                ctx.AssertEqual(0, model.ResultNames.Count, "the middle of a word matches neither online nor offline characters");
+                await InContext(ctx, dm.Creature, () => model.SearchText = "zynd");
+                await InContext(ctx, dm.Creature, model.OnClickSearch());
+                ctx.Assert(model.ResultNames.Contains("Vexa Zyndari") && model.ResultNames.Contains("Qorin Zyndari"),
+                    "the start of a word matches online and offline characters");
+
                 await InContext(ctx, dm.Creature, () => model.SearchText = "Zyndari");
                 await InContext(ctx, dm.Creature, model.OnClickSearch());
                 var offlineRow = model.ResultNames.IndexOf("Qorin Zyndari");
@@ -396,6 +442,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally
             {
                 DB.Delete<Player>(offlineId);
+                DB.Delete<Player>(disguisedId);
+                DB.Delete<PlayerDisguise>(disguise.Id);
+                foreach (var bulkId in bulkIds)
+                {
+                    DB.Delete<Player>(bulkId);
+                }
+
                 WriteSnapshots();
             }
         }

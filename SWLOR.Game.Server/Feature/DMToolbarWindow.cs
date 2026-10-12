@@ -24,6 +24,17 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
+        /// DM windows stay open across area changes, so ones that list the current area's objects refresh here.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
+        public static void RefreshCurrentAreaWindows()
+        {
+            var dm = GetEnteringObject();
+            if (GetIsDM(dm))
+                Gui.PublishRefreshEvent(dm, new DMAreaChangedRefreshEvent());
+        }
+
+        /// <summary>
         /// Keeps the toolbar's Appear button in step when the DM uses the native radial menu instead.
         /// </summary>
         [NWNEventHandler(ScriptName.OnDMAppearAfter)]

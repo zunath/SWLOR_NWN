@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -8,7 +9,8 @@ using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class DMChooserViewModel : GuiViewModelBase<DMChooserViewModel, GuiPayloadBase>
+    public class DMChooserViewModel : GuiViewModelBase<DMChooserViewModel, GuiPayloadBase>,
+        IGuiRefreshable<DMAreaChangedRefreshEvent>
     {
         public const string MainContentElement = "dmchooser_content";
         public const string MainContentPartial = "DMCHOOSER_MAIN";
@@ -347,6 +349,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
 
         public Action OnClickSearch() => RunSearch;
+
+        public void Refresh(DMAreaChangedRefreshEvent payload)
+        {
+            // Results scoped to the current area belong to the area the DM just left.
+            if (SelectedScope == (int)DMObjectSearchScope.CurrentArea &&
+                SelectedCategory != (int)DMObjectCategory.Areas)
+            {
+                RunSearch();
+            }
+        }
 
         public Action OnClickClearSearch() => () =>
         {

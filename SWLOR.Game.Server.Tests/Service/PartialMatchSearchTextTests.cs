@@ -35,6 +35,23 @@ public class PartialMatchSearchTextTests
     }
 
     [Test]
+    public void GetWordsSplitsTextTheWayTheIndexStoresIt()
+    {
+        PartialMatchSearchText.GetWords("A lanky Twi'lek, Dark-Side/scout")
+            .Should().Equal("A", "lanky", "Twi'lek", "Dark-Side", "scout");
+    }
+
+    [TestCase("zyn", "Zyndari", true)]
+    [TestCase("ZYNDARI", "zyndari", true)]
+    [TestCase("ynd", "Zyndari", false)]
+    [TestCase("a", "A", true)]
+    [TestCase("a", "Abby", false)]
+    public void MatchesWordFollowsTheQueryRules(string searchWord, string storedWord, bool expected)
+    {
+        PartialMatchSearchText.MatchesWord(searchWord, storedWord).Should().Be(expected);
+    }
+
+    [Test]
     public void EachWordIsEscaped()
     {
         PartialMatchSearchText.Build("Dark-Side O'Neil").Should().Be("(Dark\\-Side* O\\'Neil*)");

@@ -42,6 +42,23 @@ public class DMToolWindowTests
     }
 
     [Test]
+    public void WordStartMatch_EveryWordStartsAWordInSomeField()
+    {
+        DMSearchText.MatchesWordStarts("qorinacc Qorin", "Qorin Zyndari", "qorinaccount").Should().BeTrue();
+        DMSearchText.MatchesWordStarts("zyn wea", "Qorin Zyndari", "A weathered Zabrak").Should().BeTrue();
+        DMSearchText.MatchesWordStarts("zyn nomatch", "Qorin Zyndari", "A weathered Zabrak").Should().BeFalse();
+    }
+
+    [Test]
+    public void WordStartMatch_FollowsTheIndexRules()
+    {
+        DMSearchText.MatchesWordStarts("ynd", "Qorin Zyndari").Should().BeFalse("the index only matches word starts");
+        DMSearchText.MatchesWordStarts("lek", "A lanky Twi'lek").Should().BeFalse("an apostrophe does not split a stored word");
+        DMSearchText.MatchesWordStarts("a", "Abby").Should().BeFalse("one-letter words must match whole words");
+        DMSearchText.MatchesWordStarts("a", "A lanky Twi'lek").Should().BeTrue();
+    }
+
+    [Test]
     public void DMWindows_StayOpenAcrossAreaChanges()
     {
         using var validationBuild = GuiLayoutValidator.BeginValidationOnlyBuild();

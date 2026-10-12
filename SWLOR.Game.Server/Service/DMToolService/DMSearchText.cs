@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Service.DBService;
 
 namespace SWLOR.Game.Server.Service.DMToolService
 {
@@ -51,6 +52,23 @@ namespace SWLOR.Game.Server.Service.DMToolService
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Returns true when every search word starts a word in at least one of the fields, following the
+        /// database's partial-match rules. Use this where live and stored records must match the same search alike.
+        /// </summary>
+        /// <param name="search">The text the DM typed.</param>
+        /// <param name="fields">The values to search.</param>
+        public static bool MatchesWordStarts(string search, params string[] fields)
+        {
+            var storedWords = fields
+                .Where(field => !string.IsNullOrEmpty(field))
+                .SelectMany(PartialMatchSearchText.GetWords)
+                .ToList();
+
+            return PartialMatchSearchText.GetWords(search)
+                .All(word => storedWords.Any(storedWord => PartialMatchSearchText.MatchesWord(word, storedWord)));
         }
     }
 }

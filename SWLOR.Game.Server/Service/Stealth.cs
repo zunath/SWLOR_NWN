@@ -22,6 +22,8 @@ namespace SWLOR.Game.Server.Service
 
         private const float DetectionCheckIntervalSeconds = 30f;
         private const int CachePruneThreshold = 2000;
+        // Longest creature sight range in ranges.2da (PercepRngLng); the engine never runs a Spot check past it.
+        private const float MaxSpotDetectionRange = 35f;
 
         private static readonly Dictionary<(uint Observer, uint Target), (bool Detected, DateTime Expiry)> _verdicts = new();
 
@@ -238,9 +240,10 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Returns whether a stealthed player is hidden from the observer. Uses the same cached
-        /// Detection vs Stealth verdict as spot detection, so a successful hostile detection still
-        /// reveals the player.
+        /// Returns whether a stealthed player is hidden from the observer. An observer that could
+        /// not make a native Spot check (out of sight range or no line of sight) cannot find the
+        /// player; otherwise this uses the same cached Detection vs Stealth verdict as spot
+        /// detection, so a successful hostile detection still reveals the player.
         /// </summary>
         public static bool IsHiddenByStealth(uint observer, uint target)
         {
@@ -251,7 +254,17 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            if (!CanAttemptSpotDetection(observer, target))
+                return true;
+
             return !ResolveDetection(observer, target, false);
+        }
+
+        private static bool CanAttemptSpotDetection(uint observer, uint target)
+        {
+            return GetArea(observer) == GetArea(target) &&
+                   GetDistanceBetween(observer, target) <= MaxSpotDetectionRange &&
+                   LineOfSightObject(observer, target);
         }
 
         /// <summary>

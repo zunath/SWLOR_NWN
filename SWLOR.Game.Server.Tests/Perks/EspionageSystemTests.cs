@@ -152,6 +152,16 @@ public class EspionageSystemTests
             "Ghost Protocol stealth must hide the player from enemies already fighting them");
         hiddenBody.Should().Contain("return !ResolveDetection(observer, target, false);",
             "hiding must use the cached Detection vs Stealth verdict, not skip the check");
+        hiddenBody.IndexOf("if (!CanAttemptSpotDetection(observer, target))", StringComparison.Ordinal)
+            .Should().BeGreaterThan(-1)
+            .And.BeLessThan(hiddenBody.IndexOf("return !ResolveDetection(observer, target, false);", StringComparison.Ordinal),
+                "an enemy out of sight range or line of sight must not roll and force the player out of stealth");
+        var spotGateStart = stealthSource.IndexOf("private static bool CanAttemptSpotDetection(uint observer, uint target)", StringComparison.Ordinal);
+        spotGateStart.Should().BeGreaterThanOrEqualTo(0);
+        var spotGateBody = stealthSource[spotGateStart..hiddenEnd];
+        spotGateBody.Should().Contain("GetArea(observer) == GetArea(target)");
+        spotGateBody.Should().Contain("GetDistanceBetween(observer, target) <= MaxSpotDetectionRange");
+        spotGateBody.Should().Contain("LineOfSightObject(observer, target)");
 
         var enteredStart = stealthSource.IndexOf("public static void OnStealthEntered()", StringComparison.Ordinal);
         var enteredEnd = stealthSource.IndexOf("public static void RefreshActiveStatusAfterPerkLevelChange", StringComparison.Ordinal);

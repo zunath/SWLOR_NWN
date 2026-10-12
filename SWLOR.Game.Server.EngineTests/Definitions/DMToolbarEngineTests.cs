@@ -15,6 +15,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -245,6 +246,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var created = FindNear(dm.Creature, ObjectType.Creature, "civilian");
             ctx.Track(created);
             ctx.AssertEqual("x2_def_ondeath", GetEventScript(created, EventScript.Creature_OnDeath), "DM spawn scripts applied");
+
+            // Spawn preparation gives an unarmed plot creature claws; they must be undroppable like its other items.
+            await ctx.WaitUntilAsync(() => GetIsObjectValid(GetItemInSlot(InventorySlot.CreatureRight, created)) &&
+                                           GetIsObjectValid(GetItemInSlot(InventorySlot.CreatureLeft, created)), 5f, "the civilian to equip its claws");
+            ctx.Assert(!GetDroppableFlag(GetItemInSlot(InventorySlot.CreatureRight, created)) &&
+                       !GetDroppableFlag(GetItemInSlot(InventorySlot.CreatureLeft, created)),
+                "claws added by spawn preparation are undroppable");
 
             // A creature with a stat skin shows the skin's stats.
             var skinned = palette.Blueprints.FirstOrDefault(blueprint =>
@@ -507,7 +515,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(model.ResultSummary.StartsWith("Enter a name"), "offline scope asks for search text");
 
                 // Terms may come from different fields and in any order, as with online characters.
-                foreach (var search in new[] { "Qorin", "qorinacc", "QZTEST01", "weathered zab", offlineId, "qorinacc Qorin", "Zyndari QZTEST01" })
+                foreach (var search in new[] { "Qorin", "qorinacc", "QZTEST01", "weathered zab", offlineId, offlineId.ToUpperInvariant(), "qorinacc Qorin", "Zyndari QZTEST01" })
                 {
                     await InContext(ctx, dm.Creature, () => model.SearchText = search);
                     await InContext(ctx, dm.Creature, model.OnClickSearch());

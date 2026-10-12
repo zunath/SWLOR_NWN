@@ -119,7 +119,8 @@ namespace SWLOR.Game.Server.Service
         // Player IDs are only found whole, because offline records are looked up by ID rather than searched.
         private static bool Matches(string search, IReadOnlyList<string> terms, DMPlayerSearchResult result, string unknownDisplayName)
         {
-            if (terms.Count == 1 && string.Equals(terms[0], result.PlayerId, StringComparison.OrdinalIgnoreCase))
+            if (terms.Count == 1 && Guid.TryParse(terms[0], out var searchedId) &&
+                Guid.TryParse(result.PlayerId, out var playerId) && searchedId == playerId)
                 return true;
 
             return DMSearchText.MatchesWordStarts(search,
@@ -174,8 +175,9 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (terms.Count == 1 && Guid.TryParse(terms[0], out _))
-                Consider(DB.Get<Player>(terms[0]));
+            // Player records are keyed by the lowercase GUID, whatever case or format the DM typed.
+            if (terms.Count == 1 && Guid.TryParse(terms[0], out var playerId))
+                Consider(DB.Get<Player>(playerId.ToString()));
 
             var seed = PartialMatchSearchText.GetWords(search)
                 .OrderBy(CountOfflineHits)

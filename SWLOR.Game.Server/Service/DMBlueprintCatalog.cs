@@ -70,12 +70,13 @@ namespace SWLOR.Game.Server.Service
 
             if (blueprint.Category == DMBlueprintCategory.Creatures)
             {
-                DMActions.MakeInventoryUndroppable(created);
+                // Preparation can add items, such as claws for an unarmed creature, so it runs first.
                 Spawn.PrepareDMSpawnedCreature(created);
+                DMActions.MakeInventoryUndroppable(created);
             }
             else if (blueprint.Category == DMBlueprintCategory.Placeables)
             {
-                DMActions.MarkDMSpawnedPlaceable(dm, created);
+                DMActions.MarkDMSpawnedPlaceable(DMPresence.GetDM(dm), created);
             }
 
             Log.Write(LogGroup.DM,

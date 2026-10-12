@@ -463,11 +463,19 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Counts the players in an area. DMs and creatures DMs possess are staff, not players.
+        /// </summary>
+        public static int CountPlayersInArea(uint area)
+        {
+            return Area.GetPlayersInArea(area).Count(player => !GetIsDM(player) && !GetIsDMPossessed(player));
+        }
+
+        /// <summary>
         /// Describes an area: who is in it and how big it is.
         /// </summary>
         public static DMDetails DescribeArea(uint area)
         {
-            var players = Area.GetPlayersInArea(area).Count(player => !GetIsDM(player));
+            var players = CountPlayersInArea(area);
             var lines = new List<string>
             {
                 $"{players} player{(players == 1 ? string.Empty : "s")} here",

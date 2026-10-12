@@ -342,8 +342,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!GetIsObjectValid(target))
                 return;
 
-            Gui.ClosePlayerWindow(Player, GuiWindowType.DMPlayerExamine);
-            Gui.TogglePlayerWindow(Player, GuiWindowType.DMPlayerExamine, new DMPlayerExaminePayload(target));
+            DMPresence.CloseWindow(Player, GuiWindowType.DMPlayerExamine);
+            DMPresence.ToggleWindow(Player, GuiWindowType.DMPlayerExamine, new DMPlayerExaminePayload(target));
         };
 
         public Action OnClickSendMessage() => () =>

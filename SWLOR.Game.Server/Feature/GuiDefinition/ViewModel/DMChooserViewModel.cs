@@ -313,7 +313,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (result.Category != DMObjectCategory.Areas)
                 return DMObjectDetails.GetObjectRow(result.Object);
 
-            var players = Area.GetPlayersInArea(result.Object).Count(player => !GetIsDM(player));
+            var players = DMObjectDetails.CountPlayersInArea(result.Object);
             return (DMObjectDetails.AreaIcon, players == 0 ? string.Empty : $"{players} player{(players == 1 ? string.Empty : "s")}");
         }
 

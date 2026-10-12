@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// <param name="player">The player to check.</param>
         public static bool CanUse(uint player)
         {
+            player = DMPresence.GetDM(player);
             // Staff are matched by CD key; a character without one cannot be an admin.
             return !string.IsNullOrEmpty(GetPCPublicCDKey(player)) &&
                    Authorization.GetAuthorizationLevel(player).HasFlag(AuthorizationLevel.Admin);
@@ -29,19 +30,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickManageStaff() => () =>
         {
             if (CanUse(Player))
-                Gui.TogglePlayerWindow(Player, GuiWindowType.ManageStaff);
+                DMPresence.ToggleWindow(Player, GuiWindowType.ManageStaff);
         };
 
         public Action OnClickManageBans() => () =>
         {
             if (CanUse(Player))
-                Gui.TogglePlayerWindow(Player, GuiWindowType.ManageBans);
+                DMPresence.ToggleWindow(Player, GuiWindowType.ManageBans);
         };
 
         public Action OnClickPropertyDiagnostics() => () =>
         {
             if (CanUse(Player))
-                Gui.TogglePlayerWindow(Player, GuiWindowType.PropertyDiagnostics);
+                DMPresence.ToggleWindow(Player, GuiWindowType.PropertyDiagnostics);
         };
     }
 }

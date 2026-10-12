@@ -92,43 +92,43 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickChooser() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.DMChooser);
+            DMPresence.ToggleWindow(Player, GuiWindowType.DMChooser);
         };
 
         public Action OnClickCreator() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.DMCreator);
+            DMPresence.ToggleWindow(Player, GuiWindowType.DMCreator);
         };
 
         public Action OnClickPlayers() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.DMPlayerSearch);
+            DMPresence.ToggleWindow(Player, GuiWindowType.DMPlayerSearch);
         };
 
         public Action OnClickCreatureManager() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.CreatureManager);
+            DMPresence.ToggleWindow(Player, GuiWindowType.CreatureManager);
         };
 
         public Action OnClickPlaceableTools() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.DMTools);
+            DMPresence.ToggleWindow(Player, GuiWindowType.DMTools);
         };
 
         public Action OnClickAreaNotes() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.AreaNotes);
+            DMPresence.ToggleWindow(Player, GuiWindowType.AreaNotes);
         };
 
         public Action OnClickMusic() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.MusicPicker, new MusicPickerPayload(MusicPickerMode.DungeonMaster));
+            DMPresence.ToggleWindow(Player, GuiWindowType.MusicPicker, new MusicPickerPayload(MusicPickerMode.DungeonMaster));
         };
 
         public Action OnClickAdmin() => () =>
         {
             if (DMAdminToolsViewModel.CanUse(Player))
-                Gui.TogglePlayerWindow(Player, GuiWindowType.DMAdminTools);
+                DMPresence.ToggleWindow(Player, GuiWindowType.DMAdminTools);
         };
 
         public Action OnClickToggleAppear() => () =>

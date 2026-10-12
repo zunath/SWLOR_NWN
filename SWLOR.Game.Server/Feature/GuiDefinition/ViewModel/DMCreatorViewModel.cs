@@ -313,16 +313,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ReportCreated(DMBlueprint blueprint, uint created)
         {
-            SendMessageToPC(Player, GetIsObjectValid(created)
+            SendMessageToPC(DMPresence.GetControlledCreature(Player), GetIsObjectValid(created)
                 ? $"Created {blueprint.Name} ({blueprint.Resref})."
                 : $"Could not create {blueprint.Name} ({blueprint.Resref}).");
         }
 
-        // New objects face the DM.
+        // New objects face the DM, or the creature the DM possesses.
         private Location BuildSpawnLocation(uint area, Vector3 position)
         {
-            var toDM = GetPosition(Player) - position;
-            var facing = toDM == Vector3() ? GetFacing(Player) : VectorToAngle(toDM);
+            var controlled = DMPresence.GetControlledCreature(Player);
+            var toDM = GetPosition(controlled) - position;
+            var facing = toDM == Vector3() ? GetFacing(controlled) : VectorToAngle(toDM);
             return Location(area, position, facing);
         }
 
@@ -359,15 +360,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (blueprint == null)
                 return;
 
-            Targeting.EnterTargetingMode(Player, ObjectType.All, $"Click where to create {blueprint.Name}.", target =>
+            // A DM possessing a creature targets and creates through that creature; the DM stays the creator of record.
+            var controlled = DMPresence.GetControlledCreature(Player);
+            var dm = DMPresence.GetDM(Player);
+            Targeting.EnterTargetingMode(controlled, ObjectType.All, $"Click where to create {blueprint.Name}.", target =>
             {
-                var area = GetArea(Player);
+                var area = GetArea(controlled);
                 var targetType = GetIsObjectValid(target) ? GetObjectType(target) : ObjectType.Invalid;
                 if (blueprint.Category == DMBlueprintCategory.Items &&
                     (targetType == ObjectType.Creature || targetType == ObjectType.Placeable) &&
                     GetHasInventory(target))
                 {
-                    ReportCreated(blueprint, DMBlueprintCatalog.CreateInInventory(Player, blueprint, target));
+                    ReportCreated(blueprint, DMBlueprintCatalog.CreateInInventory(dm, blueprint, target));
                     return;
                 }
 
@@ -378,7 +382,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (position == Vector3())
                     return;
 
-                var created = DMBlueprintCatalog.CreateAtLocation(Player, blueprint, BuildSpawnLocation(area, position));
+                var created = DMBlueprintCatalog.CreateAtLocation(dm, blueprint, BuildSpawnLocation(area, position));
                 ReportCreated(blueprint, created);
             }, true);
         };
@@ -389,7 +393,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (blueprint == null)
                 return;
 
-            var created = DMBlueprintCatalog.CreateAtLocation(Player, blueprint, GetLocation(Player));
+            var created = DMBlueprintCatalog.CreateAtLocation(
+                DMPresence.GetDM(Player), blueprint, GetLocation(DMPresence.GetControlledCreature(Player)));
             ReportCreated(blueprint, created);
         };
 
@@ -399,7 +404,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (blueprint == null || blueprint.Category != DMBlueprintCategory.Items)
                 return;
 
-            ReportCreated(blueprint, DMBlueprintCatalog.CreateInInventory(Player, blueprint, Player));
+            ReportCreated(blueprint, DMBlueprintCatalog.CreateInInventory(
+                DMPresence.GetDM(Player), blueprint, DMPresence.GetControlledCreature(Player)));
         };
     }
 }

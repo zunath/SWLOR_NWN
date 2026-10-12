@@ -21,17 +21,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void MainLevel()
         {
             _builder.Create("ABANDONED_STATION_MAIN", "Abandoned Station - Main Level")
-                .AddSpawn(ObjectType.Creature, "zomb_worker1")
+                .AddSpawn(ObjectType.Creature, "abs_zdockhand")
                 .WithFrequency(30)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "zomb_worker2")
+                .AddSpawn(ObjectType.Creature, "abs_ztech")
                 .WithFrequency(30)
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "zomb_scientist1")
+                .AddSpawn(ObjectType.Creature, "abs_zresearch")
                 .WithFrequency(20)
                 .ReturnsHome()
 
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome()
 
-                .AddSpawn(ObjectType.Creature, "zomb_guard")
+                .AddSpawn(ObjectType.Creature, "abs_zguard")
                 .WithFrequency(15)
                 .ReturnsHome();
         }
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void RancorContainment()
         {
             _builder.Create("ABANDONED_STATION_RANCOR", "Abandoned Station - Rancor Containment")
-                .AddSpawn(ObjectType.Creature, "zomb_rancor")
+                .AddSpawn(ObjectType.Creature, "abs_zrancor")
                 .WithFrequency(1)
                 .ReturnsHome()
                 .RespawnDelay(20, 40);

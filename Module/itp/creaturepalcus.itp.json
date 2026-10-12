@@ -2927,6 +2927,25 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
+                            "value": 20.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Reanimated Dockhand"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_zdockhand"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
                             "value": 26.0
                           },
                           "FACTION": {
@@ -2946,6 +2965,44 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
+                            "value": 30.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Reanimated Rancor"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_zrancor"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 22.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Reanimated Researcher"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_zresearch"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
                             "value": 24.0
                           },
                           "FACTION": {
@@ -2955,6 +3012,44 @@
                           "NAME": {
                             "type": "cexostring",
                             "value": "Reanimated Security Guard"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_zguard"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 21.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Reanimated Technician"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_ztech"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 32.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Zombie, Guard"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -3003,7 +3098,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 30.0
+                            "value": 101.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -3011,7 +3106,7 @@
                           },
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Reanimated Rancor"
+                            "value": "Zombie, Rancor"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -3022,7 +3117,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 22.0
+                            "value": 31.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -3030,7 +3125,7 @@
                           },
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Reanimated Researcher"
+                            "value": "Zombie, Scientist"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -3060,7 +3155,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 20.0
+                            "value": 31.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -3068,7 +3163,7 @@
                           },
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Reanimated Dockhand"
+                            "value": "Zombie, Worker"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -3079,7 +3174,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 21.0
+                            "value": 31.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -3087,7 +3182,7 @@
                           },
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Reanimated Technician"
+                            "value": "Zombie, Worker"
                           },
                           "RESREF": {
                             "type": "resref",

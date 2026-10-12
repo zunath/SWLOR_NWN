@@ -562,7 +562,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddKillObjective(NPCGroupType.AbandonedStation_Horror, 20)
 
                 .AddState()
-                .SetStateJournalText("Return to Telford Brelnak in the Veles shops on Viscara.")
+                .SetStateJournalText("Return to Telford Brelnak at the Veles starport on Viscara.")
 
                 .AddGoldReward(400)
                 .AddXPReward(950);

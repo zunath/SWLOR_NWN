@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 10
+    "value": 3
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 22.0
+    "value": 31.0
   },
   "ClassList": {
     "type": "list",
@@ -23,11 +23,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 13
+          "value": 19
         },
         "ClassLevel": {
           "type": "short",
-          "value": 4
+          "value": 8
         }
       }
     ]
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 14
+    "value": 15
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 314
+    "value": 361
   },
   "DecayTime": {
     "type": "dword",
@@ -63,12 +63,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "One of the researchers behind the station's reanimation trials, now one of its results. Its shriek rattles the deck plates."
+      "0": "Perhaps once a human, the creature before you lumbers about like a rotting fleshbag on strings. Its mouth hangs slack, covered in blood, both old and fresh. Its clothing is torn in many places, with various wounds covering its body, leaking an orange-yellow liquid mixed in with its coagulated blood. As it spots you, it lets out a high-pitched scream that sends the very definition of dread through you, with it going beyond what any human sound could reach."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 20
+    "value": 22
   },
   "Disarmable": {
     "type": "byte",
@@ -104,42 +104,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 2
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 3
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 4
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 44
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 45
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 46
+          "value": 408
         }
       },
       {
@@ -168,7 +133,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Reanimated Researcher"
+      "0": "Zombie, Scientist"
     }
   },
   "fortbonus": {
@@ -185,11 +150,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 306
+    "value": 345
   },
   "Int": {
     "type": "byte",
-    "value": 20
+    "value": 22
   },
   "Interruptable": {
     "type": "byte",
@@ -219,7 +184,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 314
+    "value": 361
   },
   "NaturalAC": {
     "type": "byte",
@@ -524,7 +489,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 14
+    "value": 15
   },
   "Subrace": {
     "type": "cexostring",
@@ -560,86 +525,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 25
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "STATION_MAIN,100,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "STATION_MAIN,40,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_3"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "STATION_RARES,5,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "QUEST_NPC_GROUP_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 298
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_4"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "MUSIC_DISCS,1,1"
-        }
-      }
-    ]
+    "value": 27
   }
 }

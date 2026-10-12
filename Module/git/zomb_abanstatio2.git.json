@@ -161033,7 +161033,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 5.0
+          "value": 54.73
         },
         "YOrientation": {
           "type": "float",
@@ -161041,7 +161041,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 154.57
+          "value": 35.01
         },
         "ZPosition": {
           "type": "float",
@@ -161094,7 +161094,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 54.73
+          "value": 5.0
         },
         "YOrientation": {
           "type": "float",
@@ -161102,7 +161102,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 35.01
+          "value": 144.62
         },
         "ZPosition": {
           "type": "float",
@@ -161765,76 +161765,15 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 16.04
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "YPosition": {
-          "type": "float",
           "value": 5.0
         },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 1
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "SUPPLY_CRATE_T3"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "SUPPLY_CRATE_T3"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "nw_waypoint001"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 94.92
-        },
         "YOrientation": {
           "type": "float",
           "value": 0.0
         },
         "YPosition": {
           "type": "float",
-          "value": 154.84
+          "value": 154.57
         },
         "ZPosition": {
           "type": "float",
@@ -161887,7 +161826,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 5.02
+          "value": 15.34
         },
         "YOrientation": {
           "type": "float",
@@ -161895,7 +161834,68 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 104.83
+          "value": 34.93
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "SUPPLY_CRATE_T3"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "SUPPLY_CRATE_T3"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_waypoint001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 55.06
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 45.61
         },
         "ZPosition": {
           "type": "float",

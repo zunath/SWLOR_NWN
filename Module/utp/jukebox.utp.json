@@ -142,7 +142,7 @@
   },
   "OnUsed": {
     "type": "resref",
-    "value": "generic_convo"
+    "value": "jukebox_used"
   },
   "OnUserDefined": {
     "type": "resref",
@@ -214,23 +214,7 @@
   },
   "VarTable": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "CONVERSATION"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "JukeboxDialog"
-        }
-      }
-    ]
+    "value": []
   },
   "Will": {
     "type": "byte",

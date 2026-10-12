@@ -261,6 +261,7 @@ namespace SWLOR.Game.Server.Entity
     public class PlayerSettings
     {
         public int? BattleThemeId { get; set; }
+        public int? PersonalMusicTrackId { get; set; }
         public bool DisplayAchievementNotification { get; set; }
         public bool ShowHelmet { get; set; }
         public bool ShowCloak { get; set; }

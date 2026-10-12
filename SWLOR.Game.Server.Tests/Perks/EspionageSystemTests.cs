@@ -172,6 +172,15 @@ public class EspionageSystemTests
             .Should().BeGreaterThan(enteredBody.IndexOf("ClearVerdictsForTarget(creature);", StringComparison.Ordinal),
                 "enemies must re-roll detection against the fresh stealth before re-choosing targets");
 
+        var exitedStart = stealthSource.IndexOf("public static void OnStealthExited()", StringComparison.Ordinal);
+        var exitedEnd = stealthSource.IndexOf("public static void ResolveSpotDetection()", StringComparison.Ordinal);
+        exitedStart.Should().BeGreaterThanOrEqualTo(0);
+        exitedEnd.Should().BeGreaterThan(exitedStart);
+        var exitedBody = stealthSource[exitedStart..exitedEnd];
+        exitedBody.IndexOf("Enmity.ReevaluateEnemyAttackTargets(creature);", StringComparison.Ordinal)
+            .Should().BeGreaterThan(exitedBody.IndexOf("ClearVerdictsForTarget(creature);", StringComparison.Ordinal),
+                "enemies holding for a hidden player must resume attacking as soon as stealth ends");
+
         enmitySource.Should().Contain("!Stealth.IsHiddenFrom(enemy, creature);");
     }
 

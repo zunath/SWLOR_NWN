@@ -196,6 +196,18 @@ namespace SWLOR.Game.Server.Service
             EspionageInfiltration.CancelPlayer(creature);
             StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);
             ClearVerdictsForTarget(creature);
+
+            if (!GetIsPC(creature) || GetIsDM(creature))
+                return;
+
+            // Enemies that lost the player while hidden hold without attacking; resume them now
+            // instead of waiting for their next AI event. Deferred because stealth can end inside
+            // the native Spot check.
+            DelayCommand(0f, () =>
+            {
+                if (GetIsObjectValid(creature) && !GetActionMode(creature, ActionMode.Stealth))
+                    Enmity.ReevaluateEnemyAttackTargets(creature);
+            });
         }
 
         /// <summary>

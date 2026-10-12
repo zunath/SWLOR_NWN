@@ -127,13 +127,14 @@ public class NPCCombatBudgetTests
                 if (choices?.Contains("Glass Cannon") != true)
                     continue;
                 choices.Should().Contain("Loot Boss", "builders must be able to select the reviewed group encounter budget");
+                choices.Should().Contain("Measured Loot Boss", "builders must be able to keep a reviewed premium fight on the earlier budget");
                 dropdowns++;
             }
         }
         dropdowns.Should().Be(2);
         using var bookStream = archive.GetEntry("xl/workbook.xml")!.Open();
         XDocument.Load(bookStream).Descendants(Ns + "definedName")
-            .Should().Contain(n => n.Value == "'Enemy Modifiers'!$A$1:$M$9");
+            .Should().Contain(n => n.Value == "'Enemy Modifiers'!$A$1:$M$10");
     }
 
     [Test]
@@ -158,13 +159,16 @@ public class NPCCombatBudgetTests
                           rewardTables.Contains(v.GetProperty("Value").GetProperty("value").GetString()!.Split(',')[0]));
             if (!hasPremiumRewards)
                 continue;
-            row["H"].Should().Be("Loot Boss", row["C"] + " carries premium rewards");
+            // The Rancor keeps the earlier budget: players rated that fight just right.
+            var expectedModifier = row["C"] == "vdatthrancor" ? "Measured Loot Boss" : "Loot Boss";
+            row["H"].Should().Be(expectedModifier, row["C"] + " carries premium rewards");
+            var (damageMultiplier, offenseBonus) = expectedModifier == "Loot Boss" ? (2m, 25) : (1.5m, 15);
             var level = Number(row["D"]);
             var preset = presets[$"{level}|Boss|{row["F"]}"];
             Number(row["N"]).Should().Be(Number(preset["K"]) * 3);
-            Number(row["Q"]).Should().Be((int)Math.Round(Number(preset["N"]) * 1.5m, MidpointRounding.AwayFromZero));
-            Number(row["R"]).Should().Be(Number(preset["O"]) + 15);
-            Number(row["S"]).Should().Be(Number(preset["P"]) + 15);
+            Number(row["Q"]).Should().Be((int)Math.Round(Number(preset["N"]) * damageMultiplier, MidpointRounding.AwayFromZero));
+            Number(row["R"]).Should().Be(Number(preset["O"]) + offenseBonus);
+            Number(row["S"]).Should().Be(Number(preset["P"]) + offenseBonus);
             Number(row["U"]).Should().Be(Number(preset["R"]) + 20);
             Number(row["V"]).Should().Be(Number(preset["S"]) + 20);
             var elite = presets[$"{level}|Elite|{row["F"]}"];
@@ -178,6 +182,17 @@ public class NPCCombatBudgetTests
             count++;
         }
         count.Should().Be(13, "all existing premium loot families must receive the group encounter budget");
+    }
+
+    [Test]
+    public void LevelSeventyPlusEnemies_UseOffensiveBudgets()
+    {
+        var root = FindRoot();
+        var rows = ReadRows(root, "World NPCs").Where(r => Number(r["D"]) >= 70).ToList();
+        foreach (var row in rows)
+            row["H"].Should().BeOneOf(new[] { "High Damage", "Loot Boss" },
+                row["C"] + " fights rank-50 players from above the cap and must stay a real threat");
+        rows.Count.Should().BeGreaterThan(10);
     }
 
     [Test]

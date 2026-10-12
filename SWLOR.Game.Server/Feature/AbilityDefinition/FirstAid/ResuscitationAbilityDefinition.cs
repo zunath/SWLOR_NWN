@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     playResurrectionVisual(target);
             });
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Raise_Dead), target);
-            FirstAidTreatmentAdjustments.GrantCombatPoint(activator);
+            CombatPoint.AddReviveSupportCombatPoint(activator, target, SkillType.FirstAid);
         }
 
         private static void Resuscitation2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     playResurrectionVisual(target);
             });
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Raise_Dead), target);
-            FirstAidTreatmentAdjustments.GrantCombatPoint(activator);
+            CombatPoint.AddReviveSupportCombatPoint(activator, target, SkillType.FirstAid);
         }
     }
 }

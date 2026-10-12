@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         private static void HoldTheLine1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
-            var affectedCount = 0;
+            var affected = new List<uint>();
 
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
@@ -63,10 +63,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(HoldTheLine1StatusEffect), CapstoneAbility.ActiveDurationSeconds))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
-                affectedCount++;
+                affected.Add(friendly);
             }
 
-            if (affectedCount > 0) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 3);
+            if (affected.Count > 0) CombatPoint.AddSupportCombatPoint(activator, affected, SkillType.Leadership, 3);
         }
 
         private static void ApplyTemporaryHP(uint target, int percent, float durationSeconds)

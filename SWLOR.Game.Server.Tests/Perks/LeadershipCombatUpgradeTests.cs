@@ -122,7 +122,7 @@ public class LeadershipCombatUpgradeTests
         var root = FindRepositoryRoot();
         var breakMorale = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Leadership" / "BreakMoraleAbilityDefinition.cs").FullName);
         (breakMorale.Split("LeadershipAbilityEffects.ApplyLeadershipCommandRadiusBonus").Length - 1).Should().Be(2);
-        var affectedTargetGuard = breakMorale.IndexOf("if (affectedCount <= 0)", StringComparison.Ordinal);
+        var affectedTargetGuard = breakMorale.IndexOf("if (affected.Count <= 0)", StringComparison.Ordinal);
         var markTargetRider = breakMorale.IndexOf("Combat.ApplyHostileAbilityPartyBuff(activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability, 0, true);", StringComparison.Ordinal);
         affectedTargetGuard.Should().BeGreaterThanOrEqualTo(0);
         markTargetRider.Should().BeGreaterThan(affectedTargetGuard,

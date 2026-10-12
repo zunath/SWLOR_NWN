@@ -45,6 +45,9 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly HashSet<uint> _playersInSpace = new();
 
+        private const float NPCShipKeepDistance = 15f;
+        private const float ShipDamageMessageRange = 10f;
+
         /// <summary>
         /// When the module loads, cache all space data into memory.
         /// </summary>
@@ -1239,6 +1242,14 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            if (!GetIsPC(activator) &&
+                IsOffensiveShipModule(shipModuleDetails.Type) &&
+                !shipModuleDetails.CanTargetSelf &&
+                GetDistanceBetween(activator, target) > maxDistance)
+            {
+                return;
+            }
+
             // Run any custom validation specific to the ship module.
             if (shipModuleDetails.ModuleValidationAction != null)
             {
@@ -1690,7 +1701,8 @@ namespace SWLOR.Game.Server.Service
 
             var targetShipStatus = GetShipStatus(target);
 
-            if (targetShipStatus == null)
+            // Leashed ships neither take nor deal damage while they return home, like plot-flagged ground enemies.
+            if (targetShipStatus == null || AI.IsLeashEvading(target) || AI.IsLeashEvading(attacker))
                 return;
 
             var remainingDamage = amount;
@@ -1767,8 +1779,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Notify nearby players of damage taken by target.
-            Messaging.SendMessageNearbyToPlayers(
+            NotifyShipDamage(
                 attacker,
+                target,
                 receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage to {PlayerName.GetDisplayName(receiver, target)}.");
 
             if(GetIsPC(attacker))
@@ -1789,7 +1802,8 @@ namespace SWLOR.Game.Server.Service
 
             var targetShipStatus = GetShipStatus(target);
 
-            if (targetShipStatus == null)
+            // Leashed ships neither take nor deal damage while they return home, like plot-flagged ground enemies.
+            if (targetShipStatus == null || AI.IsLeashEvading(target) || AI.IsLeashEvading(attacker))
                 return;
 
             if (targetShipStatus.Hull > 0)
@@ -1838,8 +1852,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Notify nearby players of damage taken by target.
-            Messaging.SendMessageNearbyToPlayers(
+            NotifyShipDamage(
                 attacker,
+                target,
                 receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage directly to hull of {PlayerName.GetDisplayName(receiver, target)}.");
 
             if (GetIsPC(attacker))
@@ -1984,13 +1999,29 @@ namespace SWLOR.Game.Server.Service
         {
             var now = DateTime.UtcNow;
 
+            // Ships destroyed or killed without their death event firing must stop acting.
+            var defunctShips = _shipNPCs.Keys
+                .Where(creature => !GetIsObjectValid(creature) || GetIsDead(creature))
+                .ToList();
+            foreach (var creature in defunctShips)
+            {
+                _shipNPCs.Remove(creature);
+            }
+
             foreach (var (creature, shipStatus) in _shipNPCs)
             {
+                if (AI.IsLeashEvading(creature))
+                    continue;
+
                 ApplyAutoShipRecovery(creature, shipStatus);
 
                 // Determine target
                 var target = Enmity.GetHighestEnmityTarget(creature);
                 if (!GetIsObjectValid(target)) continue;
+
+                // Ships follow the same combat leash as ground enemies.
+                if (AI.TryStartCombatLeashEvade(creature, target))
+                    continue;
 
                 // Determine which modules are available.
                 var highModules = shipStatus.HighPowerModules.Where(x =>
@@ -2015,16 +2046,24 @@ namespace SWLOR.Game.Server.Service
                 })
                     .Select(s => new Tuple<FeatType, ShipStatus.ShipStatusModule>(LowSlotToFeat(s.Key), s.Value));
 
-                var availableModules = highModules.Concat(lowModules);
-                // Keep distance from target.
-                AssignCommand(creature, () =>
-                {
-                    ClearAllActions();
-                    ActionMoveAwayFromObject(target, true, 15f);
-                });
+                var availableModules = highModules.Concat(lowModules).ToList();
+                var targetShipStatus = GetShipStatus(target);
+                var distance = GetDistanceBetween(creature, target);
+
+                // Engage at the range of the shortest weapon that can hit this target so every such weapon gets used.
+                var engagementDistance = shipStatus.HighPowerModules.Values
+                    .Concat(shipStatus.LowPowerModules.Values)
+                    .Where(x => CanNPCFireShipModule(creature, shipStatus, target, targetShipStatus, x))
+                    .Select(x => GetShipModuleMaxDistance(creature, shipStatus, target, targetShipStatus, x))
+                    .DefaultIfEmpty(0f)
+                    .Min();
+                var holdDistance = engagementDistance > 0f
+                    ? Math.Min(NPCShipKeepDistance, engagementDistance * 0.75f)
+                    : NPCShipKeepDistance;
 
                 // Determine which module(s) to activate
                 SetCurrentTarget(creature, target);
+                var featsToUse = new List<FeatType>();
                 foreach (var (feat, shipModule) in availableModules)
                 {
                     var shipModuleDetail = _shipModules[shipModule.ItemTag];
@@ -2047,28 +2086,126 @@ namespace SWLOR.Game.Server.Service
                             useModule = true;
                         }
                     }
-                    else if (shipModuleDetail.Type == ShipModuleType.LaserBattery ||
-                             shipModuleDetail.Type == ShipModuleType.AssaultConcussionMissile ||
-                             shipModuleDetail.Type == ShipModuleType.StormCannon ||
-                             shipModuleDetail.Type == ShipModuleType.QuadLaser ||
-                             shipModuleDetail.Type == ShipModuleType.ProtonBomb ||
-                             shipModuleDetail.Type == ShipModuleType.Missile ||
-                             shipModuleDetail.Type == ShipModuleType.IonCannon ||
-                             shipModuleDetail.Type == ShipModuleType.BeamLaser ||
-                             shipModuleDetail.Type == ShipModuleType.CombatLaser)
+                    else if (IsOffensiveShipModule(shipModuleDetail.Type))
                     {
-                        useModule = true;
+                        var maxDistance = GetShipModuleMaxDistance(creature, shipStatus, target, targetShipStatus, shipModule);
+                        // Self-centered weapons hit enemies around the firing ship rather than the selected target.
+                        useModule = CanNPCFireShipModule(creature, shipStatus, target, targetShipStatus, shipModule) &&
+                                    (shipModuleDetail.CanTargetSelf
+                                        ? HasEnemyShipWithin(creature, maxDistance)
+                                        : distance <= maxDistance);
                     }
 
                     if (useModule)
                     {
-                        AssignCommand(creature, () =>
-                        {
-                            ActionUseFeat(feat, target);
-                        });
+                        featsToUse.Add(feat);
                     }
                 }
+
+                // Fire from the current position first, then close in when beyond weapon range or keep distance.
+                AssignCommand(creature, () =>
+                {
+                    ClearAllActions();
+                    foreach (var feat in featsToUse)
+                    {
+                        ActionUseFeat(feat, target);
+                    }
+
+                    if (engagementDistance > 0f && distance > engagementDistance)
+                        ActionMoveToObject(target, true, holdDistance);
+                    else
+                        ActionMoveAwayFromObject(target, true, holdDistance);
+                });
             }
+        }
+
+        /// <summary>
+        /// Whether a ship can keep firing a delayed salvo. Dead and leashed ships stop.
+        /// </summary>
+        public static bool CanShipFire(uint ship)
+        {
+            return !GetIsDead(ship) && !AI.IsLeashEvading(ship);
+        }
+
+        /// <summary>
+        /// Leashed ships start and finish returning home at full strength, matching the full heal ground enemies receive.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnCreatureLeashStarted)]
+        [NWNEventHandler(ScriptName.OnCreatureLeashEnded)]
+        public static void RestoreLeashedShip()
+        {
+            if (!_shipNPCs.TryGetValue(OBJECT_SELF, out var shipStatus))
+                return;
+
+            shipStatus.Shield = shipStatus.MaxShield;
+            shipStatus.Hull = shipStatus.MaxHull;
+        }
+
+        private static bool HasEnemyShipWithin(uint creature, float distance)
+        {
+            return ObjectSnapshot.InShape(Shape.Sphere, distance, GetLocation(creature), true, ObjectType.Creature)
+                .Any(nearby => nearby != creature &&
+                               GetIsObjectValid(nearby) &&
+                               GetIsEnemy(nearby, creature) &&
+                               GetShipStatus(nearby) != null);
+        }
+
+        /// <summary>
+        /// Whether an NPC ship's offensive module passes its target validation against the given target.
+        /// </summary>
+        private static bool CanNPCFireShipModule(
+            uint creature,
+            ShipStatus shipStatus,
+            uint target,
+            ShipStatus targetShipStatus,
+            ShipStatus.ShipStatusModule shipModule)
+        {
+            var shipModuleDetail = _shipModules[shipModule.ItemTag];
+            if (!IsOffensiveShipModule(shipModuleDetail.Type) || targetShipStatus == null)
+                return false;
+
+            return string.IsNullOrWhiteSpace(shipModuleDetail.ModuleValidationAction?.Invoke(creature, shipStatus, target, targetShipStatus, shipModule.ModuleBonus));
+        }
+
+        /// <summary>
+        /// Notifies players near the attacker, plus a targeted pilot who is outside that radius, of ship damage.
+        /// </summary>
+        private static void NotifyShipDamage(uint attacker, uint target, Messaging.BuildMessageDelegate buildMessage)
+        {
+            Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange);
+
+            if (GetIsPC(target) &&
+                target != attacker &&
+                GetDistanceBetween(attacker, target) > ShipDamageMessageRange)
+            {
+                SendMessageToPC(target, buildMessage(target));
+            }
+        }
+
+        private static bool IsOffensiveShipModule(ShipModuleType type)
+        {
+            return type == ShipModuleType.LaserBattery ||
+                   type == ShipModuleType.AssaultConcussionMissile ||
+                   type == ShipModuleType.StormCannon ||
+                   type == ShipModuleType.QuadLaser ||
+                   type == ShipModuleType.ProtonBomb ||
+                   type == ShipModuleType.Missile ||
+                   type == ShipModuleType.IonCannon ||
+                   type == ShipModuleType.BeamLaser ||
+                   type == ShipModuleType.CombatLaser;
+        }
+
+        private static float GetShipModuleMaxDistance(
+            uint activator,
+            ShipStatus activatorShipStatus,
+            uint target,
+            ShipStatus targetShipStatus,
+            ShipStatus.ShipStatusModule shipModule)
+        {
+            var shipModuleDetail = _shipModules[shipModule.ItemTag];
+            return shipModuleDetail.ModuleMaxDistanceAction == null
+                ? 10f
+                : shipModuleDetail.ModuleMaxDistanceAction(activator, activatorShipStatus, target, targetShipStatus, shipModule.ModuleBonus);
         }
 
         /// <summary>

@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                 defense,
                                 defenderStat,
                                 0);
-                            if (!GetIsDead(activator))
+                            if (Space.CanShipFire(activator))
                             {
                                 if (isHit)
                                 {

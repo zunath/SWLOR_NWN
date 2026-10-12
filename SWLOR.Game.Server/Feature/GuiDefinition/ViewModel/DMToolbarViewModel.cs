@@ -1,7 +1,9 @@
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.MusicService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -12,7 +14,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // The client sometimes re-centers a window placed at exactly (0, 0), so the toolbar sits one pixel in.
         public const float ToolbarX = 1f;
         public const float ToolbarY = 1f;
-        public const float ToolbarWidth = 488f;
+        public const float ButtonWidth = 96f;
+        public const int ButtonCount = 9;
+        // Each button carries about 8 pixels of margin; the window adds about 16 of padding.
+        public const float ToolbarWidth = ButtonCount * (ButtonWidth + 8f) + 16f;
         public const float ToolbarHeight = 52f;
 
         public string AppearText
@@ -75,6 +80,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickPlayers() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.DMPlayerSearch);
+        };
+
+        public Action OnClickCreatureManager() => () =>
+        {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.CreatureManager);
+        };
+
+        public Action OnClickPlaceableTools() => () =>
+        {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.DMTools);
+        };
+
+        public Action OnClickAreaNotes() => () =>
+        {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.AreaNotes);
+        };
+
+        public Action OnClickMusic() => () =>
+        {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.MusicPicker, new MusicPickerPayload(MusicPickerMode.DungeonMaster));
+        };
+
+        public Action OnClickMore() => () =>
+        {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.DMToolbarMore);
         };
 
         public Action OnClickToggleAppear() => () =>

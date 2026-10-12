@@ -29,6 +29,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Set(value);
                 IsScopeEnabled = value != (int)DMObjectCategory.Areas;
                 ThirdColumnHeader = value == (int)DMObjectCategory.Areas ? "Resref" : "Area";
+                InfoHeader = (DMObjectCategory)value switch
+                {
+                    DMObjectCategory.Areas => "Players",
+                    DMObjectCategory.Creatures => "Level · HP",
+                    DMObjectCategory.Items => "Type",
+                    DMObjectCategory.Placeables or DMObjectCategory.Doors => "State",
+                    _ => string.Empty
+                };
                 if (!_suppressSearch)
                     RunSearch();
             }
@@ -69,9 +77,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public GuiBindingList<string> ResultTags
+        public GuiBindingList<string> ResultIcons
         {
             get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> ResultInfo
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public string InfoHeader
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string DetailIcon
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string DetailTitle
+        {
+            get => Get<string>();
             set => Set(value);
         }
 
@@ -147,14 +179,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedCategory = (int)DMObjectCategory.Areas;
             SelectedScope = (int)DMObjectSearchScope.CurrentArea;
             SearchText = string.Empty;
+            ResultIcons = new GuiBindingList<string>();
             ResultNames = new GuiBindingList<string>();
-            ResultTags = new GuiBindingList<string>();
+            ResultInfo = new GuiBindingList<string>();
             ResultAreas = new GuiBindingList<string>();
             ResultSelections = new GuiBindingList<bool>();
             PageNumbers = new GuiBindingList<GuiComboEntry>();
             SelectedPageIndex = 0;
             ResultSummary = string.Empty;
             SelectedDetails = string.Empty;
+            DetailIcon = DMObjectDetails.NoSelectionIcon;
+            DetailTitle = string.Empty;
             CanJumpTo = false;
             CanBringHere = false;
             CanExamine = false;
@@ -201,20 +236,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .Skip(SelectedPageIndex * ResultsPerPage)
                 .Take(ResultsPerPage));
 
+            var icons = new GuiBindingList<string>();
             var names = new GuiBindingList<string>();
-            var tags = new GuiBindingList<string>();
+            var info = new GuiBindingList<string>();
             var areas = new GuiBindingList<string>();
             var selections = new GuiBindingList<bool>();
             foreach (var result in _pageResults)
             {
+                var (icon, summary) = GetRow(result);
+                icons.Add(icon);
                 names.Add(string.IsNullOrWhiteSpace(result.Name) ? result.Resref : result.Name);
-                tags.Add(result.Tag);
+                info.Add(summary);
                 areas.Add(result.Category == DMObjectCategory.Areas ? result.Resref : result.AreaName);
                 selections.Add(false);
             }
 
+            ResultIcons = icons;
             ResultNames = names;
-            ResultTags = tags;
+            ResultInfo = info;
             ResultAreas = areas;
             ResultSelections = selections;
 
@@ -236,6 +275,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var result = GetSelectedResult();
             if (result == null)
             {
+                DetailIcon = DMObjectDetails.NoSelectionIcon;
+                DetailTitle = string.Empty;
                 SelectedDetails = "Select a result to see its details and actions.";
                 CanJumpTo = false;
                 CanBringHere = false;
@@ -246,15 +287,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ResultSelections[_selectedIndex] = true;
 
-            var lines = new List<string>
-            {
-                $"Name: {result.Name}",
-                $"Tag: {result.Tag}",
-                $"Resref: {result.Resref}"
-            };
-            if (result.Category != DMObjectCategory.Areas)
-                lines.Add($"Area: {result.AreaName}");
-            SelectedDetails = string.Join("\n", lines);
+            var details = result.Category == DMObjectCategory.Areas
+                ? DMObjectDetails.DescribeArea(result.Object)
+                : DMObjectDetails.DescribeObject(result.Object);
+            DetailIcon = details.IconResref;
+            DetailTitle = details.Title;
+            SelectedDetails = details.Body;
 
             var category = result.Category;
             CanJumpTo = true;
@@ -263,6 +301,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 or DMObjectCategory.Items or DMObjectCategory.Doors;
             CanDestroy = category is DMObjectCategory.Creatures or DMObjectCategory.Placeables
                 or DMObjectCategory.Items;
+        }
+
+        private static (string Icon, string Summary) GetRow(DMObjectSearchResult result)
+        {
+            if (!GetIsObjectValid(result.Object))
+                return (DMObjectDetails.NoSelectionIcon, "Gone");
+
+            if (result.Category != DMObjectCategory.Areas)
+                return DMObjectDetails.GetObjectRow(result.Object);
+
+            var players = Area.GetPlayersInArea(result.Object).Count(player => !GetIsDM(player));
+            return (DMObjectDetails.AreaIcon, players == 0 ? string.Empty : $"{players} player{(players == 1 ? string.Empty : "s")}");
         }
 
         private DMObjectSearchResult GetSelectedResult()

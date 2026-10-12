@@ -32,7 +32,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             GuiWindowType.DMChooser,
             GuiWindowType.DMCreator,
             GuiWindowType.DMPlayerSearch,
-            GuiWindowType.DMPlayerExamine
+            GuiWindowType.DMPlayerExamine,
+            GuiWindowType.DMToolbarMore,
+            GuiWindowType.CreatureManager,
+            GuiWindowType.DMTools,
+            GuiWindowType.AreaNotes,
+            GuiWindowType.MusicPicker
         };
 
         /// <summary>
@@ -81,6 +86,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 await InContext(ctx, player.Creature, toolbar.OnClickChooser());
                 ctx.Assert(!Gui.IsWindowOpen(player.Creature, GuiWindowType.DMChooser), "a second click closes the Chooser");
+
+                // The team's existing DM windows open from the toolbar too.
+                await InContext(ctx, player.Creature, toolbar.OnClickCreatureManager());
+                await InContext(ctx, player.Creature, toolbar.OnClickPlaceableTools());
+                await InContext(ctx, player.Creature, toolbar.OnClickAreaNotes());
+                await InContext(ctx, player.Creature, toolbar.OnClickMusic());
+                await InContext(ctx, player.Creature, toolbar.OnClickMore());
+                ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.CreatureManager), "Creature Manager opens from the toolbar");
+                ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.DMTools), "Placeable Tools open from the toolbar");
+                ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.AreaNotes), "Area Notes open from the toolbar");
+                ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.MusicPicker), "Music opens from the toolbar");
+                ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.DMToolbarMore), "More DM Tools opens from the toolbar");
+                var more = (DMToolbarMoreViewModel)windows.ViewModel(GuiWindowType.DMToolbarMore);
+                ctx.Assert(!more.IsAdmin, "admin tools stay disabled for a non-admin");
+                Capture(player.Creature, GuiWindowType.DMToolbarMore, "toolbar-more");
             }
             finally
             {
@@ -109,6 +129,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await InContext(ctx, dm.Creature, () => model.SearchText = arenaResref);
                 await InContext(ctx, dm.Creature, model.OnClickSearch());
                 ctx.Assert(model.ResultAreas.Contains(arenaResref), $"area search for '{arenaResref}' lists the arena");
+                ctx.Assert(model.ResultIcons.All(icon => icon == DMObjectDetails.AreaIcon), "areas show the area icon");
+                ctx.AssertEqual(DMObjectDetails.NoSelectionIcon, model.DetailIcon, "icon with nothing selected");
                 ctx.AssertEqual(ctx.Arena, GetAreaFromLocation(DMObjectSearch.GetAreaJumpLocation(ctx.Arena)), "area jump location");
                 Capture(dm.Creature, GuiWindowType.DMChooser, "chooser-areas");
 
@@ -117,10 +139,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await InContext(ctx, dm.Creature, model.OnClickSearch());
                 ctx.AssertEqual(1, model.ResultNames.Count, "creature search result count");
                 ctx.AssertEqual("Chooser Probe Rancor", model.ResultNames[0], "creature search result");
-                ctx.AssertEqual("dm_chooser_probe", model.ResultTags[0], "creature tag column");
+                ctx.Assert(model.ResultInfo[0].StartsWith("Lv "), $"creature row shows level and HP (was '{model.ResultInfo[0]}')");
 
                 await SelectRow(ctx, dm.Creature, model, 0);
                 ctx.Assert(model.CanJumpTo && model.CanBringHere && model.CanDestroy, "creature actions enabled");
+                ctx.Assert(model.SelectedDetails.Contains("Tag: dm_chooser_probe"), "details include the tag");
+                ctx.Assert(model.SelectedDetails.Contains("HP "), "details include hit points");
+                ctx.AssertEqual("Chooser Probe Rancor", model.DetailTitle, "details title");
                 Capture(dm.Creature, GuiWindowType.DMChooser, "chooser-creature-selected");
 
                 // Player characters are left to the player search.
@@ -151,7 +176,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
-        [EngineTest("DM creator lists named blueprints and creates objects", Category = "DMToolbar", TimeoutSeconds = 300f)]
+        [EngineTest("DM creator lists palette categories, shows details and creates objects", Category = "DMToolbar", TimeoutSeconds = 180f)]
         public static async Task CreatorListsAndCreatesBlueprints(EngineTestContext ctx)
         {
             using var dm = await PlayerAbilityFixture.CreateAsync(ctx);
@@ -161,23 +186,32 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             var model = (DMCreatorViewModel)windows.ViewModel(GuiWindowType.DMCreator);
 
-            await ctx.WaitUntilAsync(() => DMBlueprintCatalog.IsLoaded(DMBlueprintCategory.Creatures), 120f, "creature blueprints to load");
-            await ctx.WaitUntilAsync(() => model.ResultNames.Count > 0, 5f, "the creator to list creatures once loaded");
-            var creatures = DMBlueprintCatalog.GetBlueprints(DMBlueprintCategory.Creatures);
-            ctx.Log($"Loaded {creatures.Count} creature blueprints.");
-            var civilian = creatures.Single(blueprint => blueprint.Resref == "civilian");
-            ctx.AssertEqual(DMBlueprintSource.Custom, civilian.Source, "civilian palette");
-            ctx.AssertEqual("Civilian", civilian.Name, "custom creature name from its template");
-            var bandit = creatures.Single(blueprint => blueprint.Resref == "nw_bandit001");
-            ctx.AssertEqual(DMBlueprintSource.Standard, bandit.Source, "nw_bandit001 palette");
-            ctx.Assert(bandit.Name != bandit.Resref && bandit.Name.Length > 0, $"base game creature name resolves from the TLK (was '{bandit.Name}')");
+            // The custom creature palette keeps the toolset's categories.
+            var palette = DMBlueprintCatalog.GetPalette(DMBlueprintCategory.Creatures, DMBlueprintSource.Custom);
+            ctx.Log($"Custom creatures: {palette.Blueprints.Count} blueprints in {palette.CategoryPaths.Count} categories.");
+            ctx.Assert(palette.CategoryPaths.Any(path => path.StartsWith("World Creatures" + DMPaletteReader.PathSeparator)),
+                "custom creature palette has World Creatures sub-categories");
+            var humans = palette.CategoryPaths.FirstOrDefault(path => path.EndsWith(DMPaletteReader.PathSeparator + "Humans"));
+            ctx.Assert(humans != null, "custom creature palette has a Humans category");
+            ctx.AssertEqual(palette.CategoryPaths.Count + 1, model.CategoryOptions.Count, "category choices");
 
+            var humansOption = model.CategoryOptions.First(option => option.Label == humans);
+            await InContext(ctx, dm.Creature, () => model.SelectedCategoryIndex = humansOption.Value);
+            ctx.Assert(model.ResultNames.Count > 0, "the Humans category lists creatures");
+            ctx.Assert(GetResults(model).All(blueprint => blueprint.IsInCategory(humans)), "every result is in the Humans category");
+            Capture(dm.Creature, GuiWindowType.DMCreator, "creator-creature-category");
+
+            await InContext(ctx, dm.Creature, () => model.SelectedCategoryIndex = 0);
             await InContext(ctx, dm.Creature, () => model.SearchText = "civilian");
             await InContext(ctx, dm.Creature, model.OnClickSearch());
-            var row = model.ResultResrefs.IndexOf("civilian");
+            var row = IndexOfResref(model, "civilian");
             ctx.Assert(row >= 0, "searching 'civilian' lists the civilian blueprint");
+            ctx.AssertEqual("Civilian", model.ResultNames[row], "custom creature name");
             await SelectRow(ctx, dm.Creature, model, row);
             ctx.Assert(model.HasSelection && !model.CanCreateInInventory, "creature create actions");
+            ctx.Assert(model.DetailBody.Contains("Level ") && model.DetailBody.Contains("Faction:"),
+                $"creature details show level and faction (was '{model.DetailBody}')");
+            ctx.Assert(model.DetailBody.Contains("Resref: civilian"), "creature details keep the resref");
             Capture(dm.Creature, GuiWindowType.DMCreator, "creator-creature-selected");
 
             var before = CountNear(dm.Creature, ObjectType.Creature, "civilian");
@@ -187,18 +221,35 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Track(created);
             ctx.AssertEqual("x2_def_ondeath", GetEventScript(created, EventScript.Creature_OnDeath), "DM spawn scripts applied");
 
+            // A creature with a stat skin shows the skin's stats.
+            var skinned = palette.Blueprints.FirstOrDefault(blueprint =>
+                blueprint.CategoryPath.StartsWith("World Creatures") &&
+                DMObjectDetails.DescribeBlueprint(blueprint).Body.Contains("Attack "));
+            ctx.Assert(skinned != null, "a World Creatures blueprint shows stat skin combat stats");
+            ctx.Log($"{skinned.Resref}: {DMObjectDetails.DescribeBlueprint(skinned).Body.Replace("\n", " | ")}");
+            var skinnedOption = model.CategoryOptions.First(option => option.Label == skinned.CategoryPath);
+            await InContext(ctx, dm.Creature, () => model.SearchText = skinned.Resref);
+            await InContext(ctx, dm.Creature, () => model.SelectedCategoryIndex = skinnedOption.Value);
+            row = IndexOfResref(model, skinned.Resref);
+            ctx.Assert(row >= 0, "the skinned creature is listed in its category");
+            ctx.Assert(model.ResultInfo[row].StartsWith("Lv "), $"creature rows show level (was '{model.ResultInfo[row]}')");
+            await SelectRow(ctx, dm.Creature, model, row);
+            Capture(dm.Creature, GuiWindowType.DMCreator, "creator-world-creature-selected");
+
             await InContext(ctx, dm.Creature, () => model.SelectedSource = (int)DMBlueprintSource.Standard);
             await InContext(ctx, dm.Creature, () => model.SearchText = "nw_bandit001");
             await InContext(ctx, dm.Creature, model.OnClickSearch());
-            ctx.AssertEqual("nw_bandit001", model.ResultResrefs.FirstOrDefault(), "standard palette search");
+            row = IndexOfResref(model, "nw_bandit001");
+            ctx.Assert(row >= 0, "the standard palette lists nw_bandit001");
+            ctx.Assert(model.ResultNames[row] != "nw_bandit001", $"base game creature name resolves from the TLK (was '{model.ResultNames[row]}')");
 
-            await InContext(ctx, dm.Creature, () => model.SelectedCategory = (int)DMBlueprintCategory.Placeables);
-            await ctx.WaitUntilAsync(() => DMBlueprintCatalog.IsLoaded(DMBlueprintCategory.Placeables), 120f, "placeable blueprints to load");
+            await InContext(ctx, dm.Creature, () => model.SelectedType = (int)DMBlueprintCategory.Placeables);
             await InContext(ctx, dm.Creature, () => model.SearchText = "plc_chair");
             await InContext(ctx, dm.Creature, model.OnClickSearch());
-            row = model.ResultResrefs.IndexOf("plc_chair");
-            ctx.Assert(row >= 0, "standard placeable search lists plc_chair");
+            row = IndexOfResref(model, "plc_chair");
+            ctx.Assert(row >= 0, "the standard placeable palette lists plc_chair");
             await SelectRow(ctx, dm.Creature, model, row);
+            ctx.Assert(model.DetailBody.Contains("Appearance:"), $"placeable details show the appearance (was '{model.DetailBody}')");
             await InContext(ctx, dm.Creature, model.OnClickCreateHere());
             await ctx.WaitUntilAsync(() => GetIsObjectValid(FindNear(dm.Creature, ObjectType.Placeable, "plc_chair")), 5f, "a chair to be created");
             var chair = FindNear(dm.Creature, ObjectType.Placeable, "plc_chair");
@@ -207,20 +258,38 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(GetObjectUUID(dm.Creature), GetLocalString(chair, "DM_SPAWNED_BY"), "chair records its DM");
 
             await InContext(ctx, dm.Creature, () => model.SelectedSource = (int)DMBlueprintSource.Custom);
-            await InContext(ctx, dm.Creature, () => model.SelectedCategory = (int)DMBlueprintCategory.Items);
-            await ctx.WaitUntilAsync(() => DMBlueprintCatalog.IsLoaded(DMBlueprintCategory.Items), 180f, "item blueprints to load");
+            await InContext(ctx, dm.Creature, () => model.SelectedType = (int)DMBlueprintCategory.Items);
             await InContext(ctx, dm.Creature, () => model.SearchText = "militia helmet");
             await InContext(ctx, dm.Creature, model.OnClickSearch());
-            row = model.ResultResrefs.IndexOf("001");
+            row = IndexOfResref(model, "001");
             ctx.Assert(row >= 0, "item search 'militia helmet' lists blueprint 001");
-            ctx.AssertEqual("Tatooine Militia Field Helmet", model.ResultNames[row], "custom item name prefers the template's own text");
+            ctx.AssertEqual("Tatooine Militia Field Helmet", model.ResultNames[row], "custom item name from the palette");
+            ctx.Assert(!string.IsNullOrEmpty(model.ResultIcons[row]), "the item row shows its inventory icon");
             await SelectRow(ctx, dm.Creature, model, row);
             ctx.Assert(model.CanCreateInInventory, "items can be created in the DM's inventory");
+            ctx.Assert(model.DetailBody.Contains("Weight ") && model.DetailBody.Contains("Value "),
+                $"item details show weight and value (was '{model.DetailBody}')");
+            ctx.Assert(!string.IsNullOrEmpty(model.DetailIcon), "the item details show its icon");
             Capture(dm.Creature, GuiWindowType.DMCreator, "creator-item-selected");
             await InContext(ctx, dm.Creature, model.OnClickCreateInInventory());
             await ctx.WaitUntilAsync(() => GetIsObjectValid(FindInventoryItem(dm.Creature, "001")), 5f, "the helmet to be created in the DM's inventory");
             DestroyObject(FindInventoryItem(dm.Creature, "001"));
             WriteSnapshots();
+        }
+
+        private static List<DMBlueprint> GetResults(DMCreatorViewModel model)
+        {
+            return (List<DMBlueprint>)typeof(DMCreatorViewModel)
+                .GetField("_results", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(model)!;
+        }
+
+        private static int IndexOfResref(DMCreatorViewModel model, string resref)
+        {
+            var page = (List<DMBlueprint>)typeof(DMCreatorViewModel)
+                .GetField("_pageResults", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(model)!;
+            return page.FindIndex(blueprint => string.Equals(blueprint.Resref, resref, StringComparison.OrdinalIgnoreCase));
         }
 
         [EngineTest("DM player search finds online and offline characters and moves players", Category = "DMToolbar", TimeoutSeconds = 90f)]

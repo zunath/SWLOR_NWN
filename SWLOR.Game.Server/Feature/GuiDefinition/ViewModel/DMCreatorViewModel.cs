@@ -5,8 +5,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -16,24 +16,43 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string MainContentPartial = "DMCREATOR_MAIN";
 
         private const int ResultsPerPage = 20;
+        private const string AllCategories = "All categories";
 
+        private DMPalette _palette = new(new List<string>(), new List<DMBlueprint>());
         private List<DMBlueprint> _results = new();
         private readonly List<DMBlueprint> _pageResults = new();
         private int _selectedIndex = -1;
         private bool _suppressSearch;
 
-        public int SelectedCategory
+        public int SelectedType
         {
             get => Get<int>();
             set
             {
                 Set(value);
                 if (!_suppressSearch)
-                    RunSearch();
+                    LoadPalette();
             }
         }
 
         public int SelectedSource
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                if (!_suppressSearch)
+                    LoadPalette();
+            }
+        }
+
+        public GuiBindingList<GuiComboEntry> CategoryOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public int SelectedCategoryIndex
         {
             get => Get<int>();
             set
@@ -50,19 +69,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string InfoHeader
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> ResultIcons
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> ResultNames
         {
             get => Get<GuiBindingList<string>>();
             set => Set(value);
         }
 
-        public GuiBindingList<string> ResultResrefs
-        {
-            get => Get<GuiBindingList<string>>();
-            set => Set(value);
-        }
-
-        public GuiBindingList<string> ResultTags
+        public GuiBindingList<string> ResultInfo
         {
             get => Get<GuiBindingList<string>>();
             set => Set(value);
@@ -97,7 +122,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string SelectedDetails
+        public string DetailIcon
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string DetailTitle
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string DetailBody
         {
             get => Get<string>();
             set => Set(value);
@@ -119,28 +156,71 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             Geometry = DMToolbarViewModel.PlaceBelowToolbar(Player, Geometry);
             _suppressSearch = true;
-            SelectedCategory = (int)DMBlueprintCategory.Creatures;
+            SelectedType = (int)DMBlueprintCategory.Creatures;
             SelectedSource = (int)DMBlueprintSource.Custom;
+            CategoryOptions = new GuiBindingList<GuiComboEntry> { new(AllCategories, 0) };
+            SelectedCategoryIndex = 0;
             SearchText = string.Empty;
+            InfoHeader = string.Empty;
+            ResultIcons = new GuiBindingList<string>();
             ResultNames = new GuiBindingList<string>();
-            ResultResrefs = new GuiBindingList<string>();
-            ResultTags = new GuiBindingList<string>();
+            ResultInfo = new GuiBindingList<string>();
             ResultSelections = new GuiBindingList<bool>();
             PageNumbers = new GuiBindingList<GuiComboEntry>();
             SelectedPageIndex = 0;
             ResultSummary = string.Empty;
-            SelectedDetails = string.Empty;
+            DetailIcon = DMObjectDetails.NoSelectionIcon;
+            DetailTitle = string.Empty;
+            DetailBody = string.Empty;
             HasSelection = false;
             CanCreateInInventory = false;
             _suppressSearch = false;
 
-            WatchOnClient(model => model.SelectedCategory);
+            WatchOnClient(model => model.SelectedType);
             WatchOnClient(model => model.SelectedSource);
+            WatchOnClient(model => model.SelectedCategoryIndex);
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.SelectedPageIndex);
 
             ChangePartialView(MainContentElement, MainContentPartial);
+            LoadPalette();
+        }
+
+        // Reads the chosen palette and rebuilds the category list.
+        private void LoadPalette()
+        {
+            if (Player == 0 || WindowToken <= 0)
+                return;
+
+            var category = (DMBlueprintCategory)SelectedType;
+            _palette = DMBlueprintCatalog.GetPalette(category, (DMBlueprintSource)SelectedSource);
+            InfoHeader = category switch
+            {
+                DMBlueprintCategory.Creatures => "Level · Faction",
+                DMBlueprintCategory.Items => "Type",
+                DMBlueprintCategory.Placeables => "Use",
+                _ => "Category"
+            };
+
+            var options = new GuiBindingList<GuiComboEntry> { new(AllCategories, 0) };
+            for (var index = 0; index < _palette.CategoryPaths.Count; index++)
+            {
+                options.Add(new GuiComboEntry(_palette.CategoryPaths[index], index + 1));
+            }
+
+            _suppressSearch = true;
+            CategoryOptions = options;
+            SelectedCategoryIndex = 0;
+            _suppressSearch = false;
             RunSearch();
+        }
+
+        private string GetSelectedCategoryPath()
+        {
+            var index = SelectedCategoryIndex - 1;
+            return index >= 0 && index < _palette.CategoryPaths.Count
+                ? _palette.CategoryPaths[index]
+                : string.Empty;
         }
 
         private void RunSearch()
@@ -148,25 +228,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (Player == 0 || WindowToken <= 0)
                 return;
 
-            var category = (DMBlueprintCategory)SelectedCategory;
-            if (!DMBlueprintCatalog.IsLoaded(category))
-            {
-                _results = new List<DMBlueprint>();
-                ShowPage();
-                ResultSummary = $"Loading {category.ToString().ToLower()}. This happens once per server restart.";
-                DMBlueprintCatalog.Load(category, () =>
-                {
-                    if (Gui.IsWindowOpen(Player, GuiWindowType.DMCreator) && SelectedCategory == (int)category)
-                        RunSearch();
-                });
-                return;
-            }
-
+            var categoryPath = GetSelectedCategoryPath();
             var terms = DMSearchText.GetTerms(SearchText);
-            var source = (DMBlueprintSource)SelectedSource;
-            _results = DMBlueprintCatalog.GetBlueprints(category)
-                .Where(blueprint => blueprint.Source == source &&
-                                    DMSearchText.Matches(terms, blueprint.Name, blueprint.Resref, blueprint.Tag))
+            _results = _palette.Blueprints
+                .Where(blueprint => blueprint.IsInCategory(categoryPath) &&
+                                    DMSearchText.Matches(terms, blueprint.Name, blueprint.Resref, blueprint.CategoryPath))
                 .ToList();
 
             _suppressSearch = true;
@@ -188,21 +254,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .Skip(SelectedPageIndex * ResultsPerPage)
                 .Take(ResultsPerPage));
 
+            var icons = new GuiBindingList<string>();
             var names = new GuiBindingList<string>();
-            var resrefs = new GuiBindingList<string>();
-            var tags = new GuiBindingList<string>();
+            var info = new GuiBindingList<string>();
             var selections = new GuiBindingList<bool>();
             foreach (var blueprint in _pageResults)
             {
+                var (icon, summary) = DMObjectDetails.GetBlueprintRow(blueprint);
+                icons.Add(icon);
                 names.Add(blueprint.Name);
-                resrefs.Add(blueprint.Resref);
-                tags.Add(blueprint.Tag);
+                info.Add(summary);
                 selections.Add(false);
             }
 
+            ResultIcons = icons;
             ResultNames = names;
-            ResultResrefs = resrefs;
-            ResultTags = tags;
+            ResultInfo = info;
             ResultSelections = selections;
             ResultSummary = _results.Count == 0
                 ? "No matches."
@@ -220,18 +287,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var blueprint = GetSelectedBlueprint();
             if (blueprint == null)
             {
-                SelectedDetails = "Select a blueprint to create it.";
+                DetailIcon = DMObjectDetails.NoSelectionIcon;
+                DetailTitle = string.Empty;
+                DetailBody = "Select a blueprint to see its details and create it.";
                 HasSelection = false;
                 CanCreateInInventory = false;
                 return;
             }
 
             ResultSelections[_selectedIndex] = true;
-            SelectedDetails = string.Join("\n",
-                $"Name: {blueprint.Name}",
-                $"Resref: {blueprint.Resref}",
-                $"Tag: {blueprint.Tag}",
-                $"Palette: {blueprint.Source}");
+            var details = DMObjectDetails.DescribeBlueprint(blueprint);
+            DetailIcon = details.IconResref;
+            DetailTitle = details.Title;
+            DetailBody = details.Body;
             HasSelection = true;
             CanCreateInInventory = blueprint.Category == DMBlueprintCategory.Items;
         }

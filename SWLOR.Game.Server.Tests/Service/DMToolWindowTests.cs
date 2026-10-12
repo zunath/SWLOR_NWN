@@ -50,6 +50,7 @@ public class DMToolWindowTests
         new DMChooserDefinition().BuildWindow().KeepsOpenOnAreaChange.Should().BeTrue();
         new DMCreatorDefinition().BuildWindow().KeepsOpenOnAreaChange.Should().BeTrue();
         new DMPlayerSearchDefinition().BuildWindow().KeepsOpenOnAreaChange.Should().BeTrue();
+        new DMToolbarMoreDefinition().BuildWindow().KeepsOpenOnAreaChange.Should().BeTrue();
     }
 
     [Test]

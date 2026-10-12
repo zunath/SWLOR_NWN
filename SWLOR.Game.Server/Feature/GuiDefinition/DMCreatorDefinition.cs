@@ -7,21 +7,24 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     /// <summary>
-    /// Searchable replacement for the native DM creator.
+    /// Searchable replacement for the native DM creator, organized by the same palettes and categories.
     /// </summary>
     public class DMCreatorDefinition : IGuiWindowDefinition
     {
         private readonly GuiWindowBuilder<DMCreatorViewModel> _builder = new();
 
-        private const float ContentPanelWidth = 560f;
-        private const float SideRailWidth = 240f;
+        private const float ContentPanelWidth = 580f;
+        private const float SideRailWidth = 280f;
         private const float ButtonHeight = 32f;
-        private const float RailButtonWidth = 220f;
+        private const float RailButtonWidth = 250f;
+        private const float IconCellWidth = 40f;
+        private const float InfoCellWidth = 170f;
+        private const float CategoryComboWidth = 280f;
 
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.DMCreator)
-                .SetInitialGeometry(40, 0, 860f, 600f)
+                .SetInitialGeometry(40, 0, 900f, 640f)
                 .SetTitle("Creator")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -57,17 +60,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .AddOption("Items", (int)DMBlueprintCategory.Items)
                                     .AddOption("Stores", (int)DMBlueprintCategory.Stores)
                                     .AddOption("Waypoints", (int)DMBlueprintCategory.Waypoints)
-                                    .BindSelectedIndex(model => model.SelectedCategory)
+                                    .BindSelectedIndex(model => model.SelectedType)
                                     .SetTooltip("What to create")
-                                    .SetWidth(200f)
+                                    .SetWidth(140f)
                                     .SetHeight(ButtonHeight);
 
                                 filters.AddComboBox()
                                     .AddOption("Custom", (int)DMBlueprintSource.Custom)
                                     .AddOption("Standard", (int)DMBlueprintSource.Standard)
                                     .BindSelectedIndex(model => model.SelectedSource)
-                                    .SetTooltip("Custom: module and hak blueprints. Standard: base game blueprints.")
-                                    .SetWidth(200f)
+                                    .SetTooltip("Custom: the module's palette. Standard: the base game's palette.")
+                                    .SetWidth(110f)
+                                    .SetHeight(ButtonHeight);
+
+                                // A combo without a width shrinks the whole panel, so the category combo is fixed too.
+                                filters.AddComboBox()
+                                    .BindOptions(model => model.CategoryOptions)
+                                    .BindSelectedIndex(model => model.SelectedCategoryIndex)
+                                    .SetTooltip("Palette category")
+                                    .SetWidth(CategoryComboWidth)
                                     .SetHeight(ButtonHeight);
 
                                 filters.AddSpacer();
@@ -76,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             content.AddRow(searchRow =>
                             {
                                 searchRow.AddTextEdit()
-                                    .SetPlaceholder("Search by name, resref, or tag")
+                                    .SetPlaceholder("Search by name, category, or resref")
                                     .BindValue(model => model.SearchText)
                                     .SetMaxLength(64)
                                     .SetHeight(ButtonHeight);
@@ -97,21 +108,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             content.AddRow(header =>
                             {
+                                header.AddSpacer()
+                                    .SetWidth(IconCellWidth);
+
                                 header.AddLabel()
                                     .SetText("Name")
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
                                     .SetHeight(20f);
 
                                 header.AddLabel()
-                                    .SetText("Resref")
+                                    .BindText(model => model.InfoHeader)
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetWidth(140f)
-                                    .SetHeight(20f);
-
-                                header.AddLabel()
-                                    .SetText("Tag")
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetWidth(150f)
+                                    .SetWidth(InfoCellWidth)
                                     .SetHeight(20f);
                             });
 
@@ -119,6 +127,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 listRow.AddList(template =>
                                 {
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.SetIsVariable(false);
+                                        cell.SetWidth(IconCellWidth);
+                                        cell.AddGroup(group =>
+                                        {
+                                            group.AddImage()
+                                                .BindResref(model => model.ResultIcons)
+                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                                .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                                .SetAspect(NuiAspect.Fit);
+                                        })
+                                            .SetScrollbars(NuiScrollbars.None);
+                                    });
+
                                     template.AddCell(cell =>
                                     {
                                         cell.AddToggleButton()
@@ -130,22 +153,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     template.AddCell(cell =>
                                     {
                                         cell.SetIsVariable(false);
-                                        cell.SetWidth(140f);
+                                        cell.SetWidth(InfoCellWidth);
                                         cell.AddLabel()
-                                            .BindText(model => model.ResultResrefs)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                    });
-
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.SetIsVariable(false);
-                                        cell.SetWidth(150f);
-                                        cell.AddLabel()
-                                            .BindText(model => model.ResultTags)
+                                            .BindText(model => model.ResultInfo)
                                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                     });
                                 })
-                                    .SetRowHeight(30f)
+                                    .SetRowHeight(40f)
                                     .BindRowCount(model => model.ResultNames);
                             });
 
@@ -171,23 +185,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private static void AddActionRail(GuiColumn<DMCreatorViewModel> col)
         {
-            col.AddRow(row =>
-            {
-                row.AddLabel()
-                    .SetText("SELECTED")
-                    .SetColor(221, 181, 93)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                    .SetHeight(20f);
-            });
-
-            col.AddRow(row =>
-            {
-                row.AddText()
-                    .BindText(model => model.SelectedDetails)
-                    .SetShowBorder(true)
-                    .SetScrollbars(NuiScrollbars.Auto)
-                    .SetHeight(150f);
-            });
+            DMDetailsRail.AddHeader(col, model => model.DetailIcon, model => model.DetailTitle);
+            DMDetailsRail.AddBody(col, model => model.DetailBody, 250f);
 
             col.AddRow(row =>
             {

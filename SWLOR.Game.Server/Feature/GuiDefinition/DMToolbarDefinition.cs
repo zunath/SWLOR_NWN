@@ -1,5 +1,7 @@
+using System.Linq.Expressions;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -10,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<DMToolbarViewModel> _builder = new();
 
-        private const float ButtonWidth = 110f;
+        private const float ButtonWidth = DMToolbarViewModel.ButtonWidth;
         private const float ButtonHeight = 32f;
 
         public GuiConstructedWindow BuildWindow()
@@ -28,26 +30,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     col.AddRow(row =>
                     {
-                        row.AddButton()
-                            .SetText("Chooser")
-                            .SetTooltip("Search areas and objects")
-                            .SetWidth(ButtonWidth)
-                            .SetHeight(ButtonHeight)
-                            .BindOnClicked(model => model.OnClickChooser());
-
-                        row.AddButton()
-                            .SetText("Creator")
-                            .SetTooltip("Search and spawn blueprints")
-                            .SetWidth(ButtonWidth)
-                            .SetHeight(ButtonHeight)
-                            .BindOnClicked(model => model.OnClickCreator());
-
-                        row.AddButton()
-                            .SetText("Players")
-                            .SetTooltip("Search online and offline characters")
-                            .SetWidth(ButtonWidth)
-                            .SetHeight(ButtonHeight)
-                            .BindOnClicked(model => model.OnClickPlayers());
+                        AddButton(row, "Chooser", "Search areas and objects", model => model.OnClickChooser());
+                        AddButton(row, "Creator", "Search the palettes and spawn blueprints", model => model.OnClickCreator());
+                        AddButton(row, "Players", "Search online and offline characters", model => model.OnClickPlayers());
+                        AddButton(row, "Creatures", "Creature Manager: save and spawn customized creatures", model => model.OnClickCreatureManager());
+                        AddButton(row, "Placeables", "Placeable Tools: move, rotate and save placeable layouts", model => model.OnClickPlaceableTools());
+                        AddButton(row, "Notes", "Area notes", model => model.OnClickAreaNotes());
+                        AddButton(row, "Music", "Change the area music", model => model.OnClickMusic());
 
                         row.AddButton()
                             .BindText(model => model.AppearText)
@@ -55,10 +44,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetWidth(ButtonWidth)
                             .SetHeight(ButtonHeight)
                             .BindOnClicked(model => model.OnClickToggleAppear());
+
+                        AddButton(row, "More", "Animations and admin tools", model => model.OnClickMore());
                     });
                 });
 
             return _builder.Build();
+        }
+
+        private static void AddButton(
+            GuiRow<DMToolbarViewModel> row,
+            string text,
+            string tooltip,
+            Expression<Func<DMToolbarViewModel, Action>> onClick)
+        {
+            row.AddButton()
+                .SetText(text)
+                .SetTooltip(tooltip)
+                .SetWidth(ButtonWidth)
+                .SetHeight(ButtonHeight)
+                .BindOnClicked(onClick);
         }
     }
 }

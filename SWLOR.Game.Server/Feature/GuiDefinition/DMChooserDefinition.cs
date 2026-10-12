@@ -13,15 +13,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<DMChooserViewModel> _builder = new();
 
-        private const float ContentPanelWidth = 560f;
-        private const float SideRailWidth = 240f;
+        private const float ContentPanelWidth = 640f;
+        private const float SideRailWidth = 280f;
+        private const float IconCellWidth = 40f;
+        private const float InfoCellWidth = 150f;
+        private const float AreaCellWidth = 140f;
         private const float ButtonHeight = 32f;
-        private const float RailButtonWidth = 220f;
+        private const float RailButtonWidth = 250f;
 
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.DMChooser)
-                .SetInitialGeometry(0, 0, 860f, 600f)
+                .SetInitialGeometry(0, 0, 960f, 640f)
                 .SetTitle("Chooser")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -102,21 +105,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             content.AddRow(header =>
                             {
+                                header.AddSpacer()
+                                    .SetWidth(IconCellWidth);
+
                                 header.AddLabel()
                                     .SetText("Name")
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
                                     .SetHeight(20f);
 
                                 header.AddLabel()
-                                    .SetText("Tag")
+                                    .BindText(model => model.InfoHeader)
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetWidth(140f)
+                                    .SetWidth(InfoCellWidth)
                                     .SetHeight(20f);
 
                                 header.AddLabel()
                                     .BindText(model => model.ThirdColumnHeader)
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetWidth(150f)
+                                    .SetWidth(AreaCellWidth)
                                     .SetHeight(20f);
                             });
 
@@ -124,6 +130,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 listRow.AddList(template =>
                                 {
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.SetIsVariable(false);
+                                        cell.SetWidth(IconCellWidth);
+                                        cell.AddGroup(group =>
+                                        {
+                                            group.AddImage()
+                                                .BindResref(model => model.ResultIcons)
+                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                                .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                                .SetAspect(NuiAspect.Fit);
+                                        })
+                                            .SetScrollbars(NuiScrollbars.None);
+                                    });
+
                                     template.AddCell(cell =>
                                     {
                                         cell.AddToggleButton()
@@ -135,22 +156,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     template.AddCell(cell =>
                                     {
                                         cell.SetIsVariable(false);
-                                        cell.SetWidth(140f);
+                                        cell.SetWidth(InfoCellWidth);
                                         cell.AddLabel()
-                                            .BindText(model => model.ResultTags)
+                                            .BindText(model => model.ResultInfo)
                                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                     });
 
                                     template.AddCell(cell =>
                                     {
                                         cell.SetIsVariable(false);
-                                        cell.SetWidth(150f);
+                                        cell.SetWidth(AreaCellWidth);
                                         cell.AddLabel()
                                             .BindText(model => model.ResultAreas)
                                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                     });
                                 })
-                                    .SetRowHeight(30f)
+                                    .SetRowHeight(40f)
                                     .BindRowCount(model => model.ResultNames);
                             });
 
@@ -176,23 +197,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private static void AddActionRail(GuiColumn<DMChooserViewModel> col)
         {
-            col.AddRow(row =>
-            {
-                row.AddLabel()
-                    .SetText("SELECTED")
-                    .SetColor(221, 181, 93)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                    .SetHeight(20f);
-            });
-
-            col.AddRow(row =>
-            {
-                row.AddText()
-                    .BindText(model => model.SelectedDetails)
-                    .SetShowBorder(true)
-                    .SetScrollbars(NuiScrollbars.Auto)
-                    .SetHeight(150f);
-            });
+            DMDetailsRail.AddHeader(col, model => model.DetailIcon, model => model.DetailTitle);
+            DMDetailsRail.AddBody(col, model => model.SelectedDetails, 230f);
 
             AddActionButton(col, "Jump To", "Move to the selected area or object",
                 model => model.OnClickJumpTo(), model => model.CanJumpTo);

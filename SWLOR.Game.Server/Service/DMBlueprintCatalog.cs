@@ -11,91 +11,40 @@ using SWLOR.NWN.API.Engine;
 namespace SWLOR.Game.Server.Service
 {
     /// <summary>
-    /// Lists the blueprints the DM creator can spawn and creates objects from them.
-    /// Names are read from the templates a chunk at a time the first time a category is opened,
-    /// so the first open never stalls the server.
+    /// Lists the blueprints the DM creator can spawn, grouped by the same palettes and categories as the
+    /// native creator, and creates objects from them.
+    /// Custom palettes are the module's *palcus files; Standard palettes are the base game's *palstd files.
     /// </summary>
     public static class DMBlueprintCatalog
     {
-        private const int TemplatesPerChunk = 200;
-        private const float ChunkDelaySeconds = 0.1f;
+        public const string NotInPaletteCategory = "Not in palette";
 
-        private class CategoryState
-        {
-            public List<(string Resref, DMBlueprintSource Source)> Pending { get; set; } = new();
-            public List<DMBlueprint> Blueprints { get; set; } = new();
-            public int Resolved { get; set; }
-            public bool IsLoading { get; set; }
-            public bool IsLoaded { get; set; }
-            public List<Action> OnLoaded { get; } = new();
-        }
-
-        private static readonly Dictionary<DMBlueprintCategory, CategoryState> _states = new();
+        private static readonly Dictionary<(DMBlueprintCategory, DMBlueprintSource), DMPalette> _palettes = new();
 
         /// <summary>
-        /// Returns true once every blueprint name in the category has been read.
+        /// Returns a palette, reading it the first time it is asked for.
+        /// The custom palette also lists module blueprints that no palette category holds.
         /// </summary>
-        public static bool IsLoaded(DMBlueprintCategory category)
+        public static DMPalette GetPalette(DMBlueprintCategory category, DMBlueprintSource source)
         {
-            return _states.TryGetValue(category, out var state) && state.IsLoaded;
-        }
+            if (_palettes.TryGetValue((category, source), out var palette))
+                return palette;
 
-        /// <summary>
-        /// Returns how many of the category's templates have been read so far.
-        /// </summary>
-        public static (int Resolved, int Total) GetLoadProgress(DMBlueprintCategory category)
-        {
-            return _states.TryGetValue(category, out var state)
-                ? (state.Resolved, state.Pending.Count)
-                : (0, 0);
+            palette = ReadPalette(category, source);
+            if (source == DMBlueprintSource.Custom)
+                palette = AddUnlistedBlueprints(palette, category);
+
+            _palettes[(category, source)] = palette;
+            Log.Write(LogGroup.DM, $"Loaded the {source} {category} palette: {palette.Blueprints.Count} blueprints in {palette.CategoryPaths.Count} categories.");
+            return palette;
         }
 
         /// <summary>
-        /// Returns the category's blueprints sorted by name, or an empty list while it is still loading.
+        /// Reads a blueprint's template, or returns a JSON null when it cannot be read.
         /// </summary>
-        public static IReadOnlyList<DMBlueprint> GetBlueprints(DMBlueprintCategory category)
+        public static Json ReadTemplate(DMBlueprint blueprint)
         {
-            return _states.TryGetValue(category, out var state) && state.IsLoaded
-                ? state.Blueprints
-                : new List<DMBlueprint>();
-        }
-
-        /// <summary>
-        /// Starts reading the category's templates if needed and runs the action once they are all read.
-        /// The action runs right away when the category is already loaded.
-        /// </summary>
-        /// <param name="category">The category to load.</param>
-        /// <param name="onLoaded">Runs after loading finishes.</param>
-        public static void Load(DMBlueprintCategory category, Action onLoaded)
-        {
-            if (!_states.TryGetValue(category, out var state))
-            {
-                state = new CategoryState();
-                _states[category] = state;
-            }
-
-            if (state.IsLoaded)
-            {
-                onLoaded();
-                return;
-            }
-
-            state.OnLoaded.Add(onLoaded);
-            if (state.IsLoading)
-                return;
-
-            state.IsLoading = true;
-            var resrefType = GetResRefType(category);
-            var custom = ListResrefs(resrefType, true);
-            var standard = ListResrefs(resrefType, false)
-                .Where(resref => !custom.Contains(resref));
-
-            state.Pending = custom
-                .Select(resref => (resref, DMBlueprintSource.Custom))
-                .Concat(standard.Select(resref => (resref, DMBlueprintSource.Standard)))
-                .ToList();
-
-            ReadNextChunk(category);
+            return TemplateToJson(blueprint.Resref, GetResType(blueprint.Category));
         }
 
         /// <summary>
@@ -147,123 +96,76 @@ namespace SWLOR.Game.Server.Service
             return created;
         }
 
-        private static void ReadNextChunk(DMBlueprintCategory category)
+        private static DMPalette ReadPalette(DMBlueprintCategory category, DMBlueprintSource source)
         {
-            var state = _states[category];
-            var end = Math.Min(state.Resolved + TemplatesPerChunk, state.Pending.Count);
-            for (var index = state.Resolved; index < end; index++)
+            var resref = GetPaletteResref(category, source);
+            var template = TemplateToJson(resref, ResType.ITP);
+            if (JsonGetType(template) != JsonType.Object)
             {
-                var (resref, source) = state.Pending[index];
-                state.Blueprints.Add(ReadBlueprint(resref, category, source));
+                Log.Write(LogGroup.Error, $"DM creator could not read palette '{resref}'.");
+                return new DMPalette(new List<string>(), new List<DMBlueprint>());
             }
 
-            state.Resolved = end;
-            if (end < state.Pending.Count)
-            {
-                AssignCommand(GetModule(), () => DelayCommand(ChunkDelaySeconds, () => ReadNextChunk(category)));
-                return;
-            }
-
-            state.Blueprints = state.Blueprints
-                .OrderBy(blueprint => blueprint.Name, StringComparer.OrdinalIgnoreCase)
-                .ThenBy(blueprint => blueprint.Resref, StringComparer.OrdinalIgnoreCase)
-                .ToList();
-            state.IsLoading = false;
-            state.IsLoaded = true;
-
-            var callbacks = state.OnLoaded.ToList();
-            state.OnLoaded.Clear();
-            foreach (var callback in callbacks)
-            {
-                try
-                {
-                    callback();
-                }
-                catch (Exception exception)
-                {
-                    Log.Write(LogGroup.Error, $"DM creator refresh failed after loading {category}: {exception}");
-                }
-            }
+            return DMPaletteReader.Read(JsonDump(template), category, source, strRef => GetStringByStrRef(strRef));
         }
 
-        private static HashSet<string> ListResrefs(ResRefType type, bool customOnly)
+        // Blueprints added after the palette was last rebuilt in the toolset are in no category.
+        private static DMPalette AddUnlistedBlueprints(DMPalette palette, DMBlueprintCategory category)
         {
-            var resrefs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            for (var resref = UtilPlugin.GetFirstResRef(type, string.Empty, customOnly);
+            var listed = new HashSet<string>(palette.Blueprints.Select(blueprint => blueprint.Resref), StringComparer.OrdinalIgnoreCase);
+            var unlisted = new List<DMBlueprint>();
+            for (var resref = UtilPlugin.GetFirstResRef(GetResRefType(category), string.Empty, true);
                  !string.IsNullOrEmpty(resref);
                  resref = UtilPlugin.GetNextResRef())
             {
-                resrefs.Add(resref);
+                if (listed.Add(resref))
+                    unlisted.Add(new DMBlueprint(resref, resref, NotInPaletteCategory, category, DMBlueprintSource.Custom));
             }
 
-            return resrefs;
+            if (unlisted.Count == 0)
+                return palette;
+
+            var named = unlisted
+                .Select(blueprint => new DMBlueprint(blueprint.Resref, ReadTemplateName(blueprint), NotInPaletteCategory, category, DMBlueprintSource.Custom))
+                .OrderBy(blueprint => blueprint.Name, StringComparer.OrdinalIgnoreCase);
+            return new DMPalette(
+                palette.CategoryPaths.Append(NotInPaletteCategory).ToList(),
+                palette.Blueprints.Concat(named).ToList());
         }
 
-        private static DMBlueprint ReadBlueprint(string resref, DMBlueprintCategory category, DMBlueprintSource source)
+        private static string ReadTemplateName(DMBlueprint blueprint)
         {
-            var template = TemplateToJson(resref, GetResType(category));
+            var template = ReadTemplate(blueprint);
             if (JsonGetType(template) != JsonType.Object)
-                return new DMBlueprint(resref, resref, string.Empty, category, source);
+                return blueprint.Resref;
 
-            var name = category switch
+            var name = blueprint.Category switch
             {
                 DMBlueprintCategory.Creatures =>
-                    $"{ReadLocString(template, "FirstName")} {ReadLocString(template, "LastName")}".Trim(),
-                DMBlueprintCategory.Items => ReadLocString(template, "LocalizedName"),
-                DMBlueprintCategory.Waypoints => ReadLocString(template, "LocalizedName"),
-                _ => ReadLocString(template, "LocName")
+                    $"{DMTemplateFields.ReadLocString(template, "FirstName")} {DMTemplateFields.ReadLocString(template, "LastName")}".Trim(),
+                DMBlueprintCategory.Items => DMTemplateFields.ReadLocString(template, "LocalizedName"),
+                DMBlueprintCategory.Waypoints => DMTemplateFields.ReadLocString(template, "LocalizedName"),
+                _ => DMTemplateFields.ReadLocString(template, "LocName")
             };
 
             name = UtilPlugin.StripColors(name).Trim();
-            if (string.IsNullOrWhiteSpace(name))
-                name = resref;
-
-            return new DMBlueprint(resref, name, ReadString(template, "Tag"), category, source);
+            return string.IsNullOrWhiteSpace(name) ? blueprint.Resref : name;
         }
 
-        private static string ReadString(Json template, string field)
+        private static string GetPaletteResref(DMBlueprintCategory category, DMBlueprintSource source)
         {
-            var value = JsonObjectGet(JsonObjectGet(template, field), "value");
-            return JsonGetType(value) == JsonType.String
-                ? JsonGetString(value)
-                : string.Empty;
-        }
-
-        // Localized strings hold text per language and/or a TLK string reference. TemplateToJson
-        // nests the reference in "value" as "id"; GFF JSON tools put it beside "value".
-        private static string ReadLocString(Json template, string field)
-        {
-            var locString = JsonObjectGet(template, field);
-            if (JsonGetType(locString) != JsonType.Object)
-                return string.Empty;
-
-            var value = JsonObjectGet(locString, "value");
-            if (JsonGetType(value) == JsonType.Object)
+            var prefix = category switch
             {
-                var keys = JsonObjectKeys(value);
-                for (var index = 0; index < JsonGetLength(keys); index++)
-                {
-                    var key = JsonGetString(JsonArrayGet(keys, index));
-                    if (key == "id")
-                        continue;
+                DMBlueprintCategory.Creatures => "creature",
+                DMBlueprintCategory.Placeables => "placeable",
+                DMBlueprintCategory.Items => "item",
+                DMBlueprintCategory.Stores => "store",
+                DMBlueprintCategory.Waypoints => "waypoint",
+                _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
+            };
 
-                    var text = JsonGetString(JsonObjectGet(value, key));
-                    if (!string.IsNullOrWhiteSpace(text))
-                        return text;
-                }
-            }
-
-            foreach (var id in new[] { JsonObjectGet(value, "id"), JsonObjectGet(locString, "id") })
-            {
-                if (JsonGetType(id) != JsonType.Integer)
-                    continue;
-
-                var strRef = JsonGetInt(id);
-                if (strRef > 0)
-                    return GetStringByStrRef(strRef);
-            }
-
-            return string.Empty;
+            // The haks override the *pal skeletons, so Standard must read *palstd to get the base game's palette.
+            return prefix + (source == DMBlueprintSource.Custom ? "palcus" : "palstd");
         }
 
         private static ResRefType GetResRefType(DMBlueprintCategory category)
@@ -292,7 +194,10 @@ namespace SWLOR.Game.Server.Service
             };
         }
 
-        private static ObjectType GetObjectType(DMBlueprintCategory category)
+        /// <summary>
+        /// Returns the kind of object a blueprint category creates.
+        /// </summary>
+        public static ObjectType GetObjectType(DMBlueprintCategory category)
         {
             return category switch
             {

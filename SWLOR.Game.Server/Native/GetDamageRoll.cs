@@ -290,10 +290,6 @@ namespace SWLOR.Game.Server.Native
             if (defender.m_nObjectType != (int)ObjectType.Creature)
                 return damageProfile;
 
-            // Only physical auto-attacks are converted; anything already non-physical is left untouched.
-            if (!damageProfile.DamageType.IsPhysicalDamageType())
-                return damageProfile;
-
             var conversion = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.StanceHostileAutoAttackForceConversion);
             if (conversion <= 0)
                 return damageProfile;

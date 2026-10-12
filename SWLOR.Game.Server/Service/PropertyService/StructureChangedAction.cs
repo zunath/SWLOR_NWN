@@ -183,6 +183,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
                     foreach (var starshipId in dbInterior.ChildPropertyIds[PropertyChildType.Starship])
                     {
                         var dbStarship = DB.Get<WorldProperty>(starshipId);
+                        if (dbStarship == null)
+                            continue;
 
                         if (dbStarship.ChildPropertyIds.ContainsKey(PropertyChildType.RegisteredStarport))
                             dbStarship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();

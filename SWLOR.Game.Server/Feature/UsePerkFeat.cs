@@ -130,9 +130,9 @@ namespace SWLOR.Game.Server.Feature
                 GetArea(activator) != GetArea(target))
                 return;
 
-            // Attacking ends invisibility. An activator that is invisible once its ability resolves,
-            // such as from an ability that grants invisibility, keeps it instead of swinging again.
-            if (Stealth.IsInvisible(activator))
+            // Attacking ends invisibility and stealth. An activator that is hidden once its ability
+            // resolves, such as from Ghost Protocol, keeps it instead of swinging again.
+            if (Stealth.IsInvisible(activator) || GetActionMode(activator, ActionMode.Stealth))
                 return;
 
             if (!GetIsPC(activator))

@@ -31,14 +31,15 @@ namespace SWLOR.Game.Server.Service.DBService
         /// </summary>
         /// <param name="fieldName">The name of the field to search for</param>
         /// <param name="search">The text to search for</param>
-        /// <param name="allowPartialMatches">If true, partial matches are accepted.</param>
+        /// <param name="allowPartialMatches">If true, each word must match the start of a word in the field.</param>
         /// <returns>A configured DBQuery</returns>
         public DBQuery<T> AddFieldSearch(string fieldName, string search, bool allowPartialMatches)
         {
-            if (allowPartialMatches)
-                search += "*";
+            var criteria = allowPartialMatches
+                ? new SearchCriteria(PartialMatchSearchText.Build(search)) { SkipEscaping = true }
+                : new SearchCriteria(search);
 
-            FieldSearches.Add(fieldName, new SearchCriteria(search));
+            FieldSearches.Add(fieldName, criteria);
 
             return this;
         }

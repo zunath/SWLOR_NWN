@@ -2,11 +2,11 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 19
+    "value": 3
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10008
+    "value": 10006
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 7
+    "value": 9
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 38
+    "value": 5
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -381,11 +381,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 3868
+    "value": 4228
   },
   "Race": {
     "type": "byte",
-    "value": 160
+    "value": 158
   },
   "refbonus": {
     "type": "short",

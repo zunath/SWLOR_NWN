@@ -36,6 +36,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IncludeComponents
+        {
+            get => Get<bool>();
+            set
+            {
+                Set(value);
+
+                if (!_skipPaginationSearch && !string.IsNullOrWhiteSpace(SearchText))
+                    Search();
+            }
+        }
+
         public GuiBindingList<GuiComboEntry> Skills
         {
             get => Get<GuiBindingList<GuiComboEntry>>();
@@ -237,6 +249,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RecipeLevel = string.Empty;
             RecipeEnhancementSlots = string.Empty;
             SearchText = string.Empty;
+            IncludeComponents = false;
             SelectedPageIndex = 0;
             SelectedSkillId = (int)_craftingFilter;
             SelectedCategoryId = 0;
@@ -249,6 +262,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Search();
 
             WatchOnClient(model => model.SearchText);
+            WatchOnClient(model => model.IncludeComponents);
             WatchOnClient(model => model.SelectedSkillId);
             WatchOnClient(model => model.SelectedCategoryId);
             WatchOnClient(model => model.SelectedLevelId);
@@ -358,10 +372,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 recipes = recipes
-                    .Where(x =>
-                        Cache.GetItemNameByResref(x.Value.Resref)
-                            .ToLower()
-                            .Contains(SearchText.ToLower()))
+                    .Where(x => RecipeSearch.Matches(x.Value, SearchText, IncludeComponents, Cache.GetItemNameByResref))
                     .ToDictionary(x => x.Key, y => y.Value);
             }
 

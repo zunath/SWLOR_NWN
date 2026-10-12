@@ -161,7 +161,8 @@ public class HutlarDroidFoundryPlacementTests
     public void SpawnTables_UseEachFloorsDroidRosterAndLeashHome()
     {
         var tables = new HutlarSpawnDefinition().BuildSpawnTables();
-        var loot = new HutlarLootTableDefinition().BuildLootTables();
+        var loot = new HutlarLootTableDefinition().BuildLootTables().Keys
+            .Concat(new MusicLootTableDefinition().BuildLootTables().Keys).ToHashSet();
 
         foreach (var (_, _, spawnTable, roster) in Floors)
             AssertTable(spawnTable, roster);
@@ -184,7 +185,7 @@ public class HutlarDroidFoundryPlacementTests
                     .Select(v => Value(v, "Value").GetString()!.Split(',')[0])
                     .ToArray();
                 lootTables.Should().NotBeEmpty(resref);
-                lootTables.Should().OnlyContain(id => loot.ContainsKey(id), $"{resref} must drop from defined Hutlar loot tables");
+                lootTables.Should().OnlyContain(id => loot.Contains(id), $"{resref} must drop from defined Hutlar or song loot tables");
             }
         }
     }

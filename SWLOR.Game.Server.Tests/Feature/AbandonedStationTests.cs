@@ -170,7 +170,8 @@ public class AbandonedStationTests
     public void Floors_SpawnTheirRosterAwayFromArrivals()
     {
         var tables = new AbandonedStationSpawnDefinition().BuildSpawnTables();
-        var loot = new AbandonedStationLootTableDefinition().BuildLootTables();
+        var loot = new AbandonedStationLootTableDefinition().BuildLootTables().Keys
+            .Concat(new MusicLootTableDefinition().BuildLootTables().Keys).ToHashSet();
 
         foreach (var (table, area, minPoints, minLevel, maxLevel) in Floors)
         {
@@ -193,7 +194,7 @@ public class AbandonedStationTests
                 var creature = Load("utc", spawn.Resref);
                 Local(creature, "QUEST_NPC_GROUP_ID")!.Value.GetInt32().Should().Be((int)NPCGroupType.AbandonedStation_Horror, spawn.Resref);
                 foreach (var lootTable in Locals(creature).Where(v => Text(v, "Name").StartsWith("LOOT_TABLE_")))
-                    loot.Should().ContainKey(Value(lootTable, "Value").GetString()!.Split(',')[0], spawn.Resref);
+                    loot.Should().Contain(Value(lootTable, "Value").GetString()!.Split(',')[0], spawn.Resref);
 
                 var level = List(Load("uti", Text(List(creature, "Equip_ItemList").Single(e => e.GetProperty("__struct_id").GetInt32() == 131072), "EquippedRes")), "PropertiesList")
                     .Single(p => Number(p, "PropertyName") == ItemPropertyNpcLevel);

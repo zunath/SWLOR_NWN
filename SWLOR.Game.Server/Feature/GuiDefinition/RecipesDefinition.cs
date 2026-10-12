@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
@@ -13,15 +14,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Recipes)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 545f, 600f)
+                .SetInitialGeometry(0, 0, 620f, 600f)
                 .BindTitle(model => model.Title)
 
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>
                     {
+                        row.AddComboBox()
+                            .BindSelectedIndex(model => model.SelectedSearchTypeId)
+                            .AddOption("Recipe Name", (int)RecipeSearchType.RecipeName)
+                            .AddOption("Component", (int)RecipeSearchType.Component)
+                            .SetWidth(160f);
+
                         row.AddTextEdit()
-                            .SetPlaceholder("Search")
+                            .BindPlaceholder(model => model.SearchPlaceholder)
                             .BindValue(model => model.SearchText);
 
                         row.AddButton()

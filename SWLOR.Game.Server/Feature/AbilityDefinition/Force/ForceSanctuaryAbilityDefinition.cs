@@ -56,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void ForceSanctuary1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+            var credited = new HashSet<uint>();
 
             var pulseReceipts = new Dictionary<float, Action<uint>>();
             Action<uint> ReceiptForPulse(float delay)
@@ -88,10 +89,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 null,
                 VisualEffect.None,
                 onHealed: (friendly, targetWasBelowHalfHP) =>
-                    ForceControlHealingEffects.ApplyRestorativeControlPower(
+                {
+                    var healed = new List<uint>(ForceControlHealingEffects.ApplyRestorativeControlPower(
                         activator,
                         friendly,
-                        targetWasBelowHalfHP),
+                        targetWasBelowHalfHP)) { friendly };
+                    CombatPoint.AddSupportCombatPoint(activator, healed, SkillType.Force, alreadyCredited: credited);
+                },
                 pulseVisualEffects: ReceiptForPulse);
         }
     }

@@ -263,6 +263,47 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void WeaponAbilityDamage_TakesTheElementWheneverWeaponDmgIsIncluded()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+
+        ExtractMethod(combatSource, "public static int GetCombatImpactWeaponDamage")
+            .Should().Contain("if (!IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon))");
+        ExtractMethod(combatSource, "public static CombatDamageType GetCombatImpactWeaponDamageType")
+            .Should().Contain("IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon)", "the element applies exactly when the DMG does")
+            .And.Contain("WeaponDamage.GetDamageType(GetCombatImpactWeapon(activator, skillType, usesQueuedNaturalWeapon))",
+                "the element comes from the same weapon that supplies the DMG");
+
+        var resolve = ExtractMethod(abilitySource, "private static CombatDamageType ResolveWeaponAbilityDamageType");
+        resolve.Should().Contain("damageType != CombatDamageType.Physical",
+            "like native weapon resolution, an element only replaces Physical");
+        resolve.Should().Contain("!Combat.IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon)");
+        resolve.Should().Contain("trackedImpact?.TriggeringWeaponDamageType");
+        abilitySource.Should().Contain("if (!useUnscaledDamage)", "unscaled impacts add no weapon DMG");
+        abilitySource.Should().Contain("damageType = ResolveWeaponAbilityDamageType(activator, skillType, damageType, trackedImpact);");
+        abilitySource.Should().Contain("trackedImpact.TriggeringWeaponDamageType = WeaponDamage.GetDamageType(triggeringWeapon);");
+        abilitySource.Should().Contain("TriggeringWeaponDamageType = triggeringWeaponDamageType ?? sequenceOwner?.TriggeringWeaponDamageType");
+        Combat.IncludesCombatImpactWeaponDamage(SkillType.Pistol, false).Should().BeTrue();
+        Combat.IncludesCombatImpactWeaponDamage(SkillType.BeastMastery, true).Should().BeTrue("queued natural weapons add their DMG");
+        Combat.IncludesCombatImpactWeaponDamage(SkillType.BeastMastery, false).Should().BeFalse();
+        Combat.IncludesCombatImpactWeaponDamage(SkillType.Force, false).Should().BeFalse();
+    }
+
+    [TestCase(CombatDamageType.Physical, (int)CombatDamageType.Fire, CombatDamageType.Fire)]
+    [TestCase(CombatDamageType.Physical, (int)CombatDamageType.Force, CombatDamageType.Physical)]
+    [TestCase(CombatDamageType.Physical, (int)CombatDamageType.Thermal, CombatDamageType.Physical)]
+    [TestCase(CombatDamageType.Ice, (int)CombatDamageType.Fire, CombatDamageType.Ice)]
+    public void WeaponDamageResolveDamageType_MatchesNativeWeaponResolution(
+        CombatDamageType current,
+        int subtype,
+        CombatDamageType expected)
+    {
+        WeaponDamage.ResolveDamageType(current, subtype).Should().Be(expected);
+    }
+
+    [Test]
     public void QueuedWeaponDamage_UsesTheTriggeringItemAndPreservesReflectionWeaponSelection()
     {
         var root = FindRepositoryRoot();
@@ -725,17 +766,21 @@ public class CombatDamageTests
         var impactWeaponDamage = ExtractMethod(combatSource, "public static int GetCombatImpactWeaponDamage");
         var impactWeaponSelection = ExtractMethod(combatSource, "private static uint GetCombatImpactWeapon");
 
+        var queuedNaturalWeapon = ExtractMethod(abilitySource, "private static bool UsesQueuedNaturalWeapon");
+        queuedNaturalWeapon.Should().Contain(
+            "trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon");
+        queuedNaturalWeapon.Should().Contain("skillType == SkillType.BeastMastery");
+
         foreach (var damageCalculation in new[] { playerDamage, npcDamage })
         {
-            damageCalculation.Should().Contain(
-                "trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon");
-            damageCalculation.Should().Contain("skillType == SkillType.BeastMastery");
+            damageCalculation.Should().Contain("var usesQueuedNaturalWeapon = UsesQueuedNaturalWeapon(trackedImpact, skillType);");
             damageCalculation.Should().Contain("Combat.IsWeaponSkillType(skillType) || usesQueuedNaturalWeapon");
             damageCalculation.Should().Contain(
                 "Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: trackedImpact?.TriggeringWeaponDamage)");
         }
 
-        impactWeaponDamage.Should().Contain(
+        impactWeaponDamage.Should().Contain("IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon)");
+        ExtractMethod(combatSource, "public static bool IncludesCombatImpactWeaponDamage").Should().Contain(
             "usesQueuedNaturalWeapon && skillType == SkillType.BeastMastery");
         impactWeaponSelection.Should().Contain(
             "return GetCreatureNaturalWeapon(activator);");

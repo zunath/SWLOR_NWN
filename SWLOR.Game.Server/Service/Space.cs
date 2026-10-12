@@ -45,6 +45,9 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly HashSet<uint> _playersInSpace = new();
 
+        private const float NPCShipKeepDistance = 15f;
+        private const float ShipDamageMessageRange = 10f;
+
         /// <summary>
         /// When the module loads, cache all space data into memory.
         /// </summary>
@@ -1239,6 +1242,13 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            if (!GetIsPC(activator) &&
+                IsOffensiveShipModule(shipModuleDetails.Type) &&
+                GetDistanceBetween(activator, target) > maxDistance)
+            {
+                return;
+            }
+
             // Run any custom validation specific to the ship module.
             if (shipModuleDetails.ModuleValidationAction != null)
             {
@@ -1767,8 +1777,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Notify nearby players of damage taken by target.
-            Messaging.SendMessageNearbyToPlayers(
+            NotifyShipDamage(
                 attacker,
+                target,
                 receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage to {PlayerName.GetDisplayName(receiver, target)}.");
 
             if(GetIsPC(attacker))
@@ -1838,8 +1849,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Notify nearby players of damage taken by target.
-            Messaging.SendMessageNearbyToPlayers(
+            NotifyShipDamage(
                 attacker,
+                target,
                 receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage directly to hull of {PlayerName.GetDisplayName(receiver, target)}.");
 
             if (GetIsPC(attacker))
@@ -1984,6 +1996,15 @@ namespace SWLOR.Game.Server.Service
         {
             var now = DateTime.UtcNow;
 
+            // Ships destroyed or killed without their death event firing must stop acting.
+            var defunctShips = _shipNPCs.Keys
+                .Where(creature => !GetIsObjectValid(creature) || GetIsDead(creature))
+                .ToList();
+            foreach (var creature in defunctShips)
+            {
+                _shipNPCs.Remove(creature);
+            }
+
             foreach (var (creature, shipStatus) in _shipNPCs)
             {
                 ApplyAutoShipRecovery(creature, shipStatus);
@@ -2015,12 +2036,24 @@ namespace SWLOR.Game.Server.Service
                 })
                     .Select(s => new Tuple<FeatType, ShipStatus.ShipStatusModule>(LowSlotToFeat(s.Key), s.Value));
 
-                var availableModules = highModules.Concat(lowModules);
-                // Keep distance from target.
+                var availableModules = highModules.Concat(lowModules).ToList();
+                var targetShipStatus = GetShipStatus(target);
+                var distance = GetDistanceBetween(creature, target);
+                var maxWeaponDistance = shipStatus.HighPowerModules.Values
+                    .Concat(shipStatus.LowPowerModules.Values)
+                    .Where(x => IsOffensiveShipModule(_shipModules[x.ItemTag].Type))
+                    .Select(x => GetShipModuleMaxDistance(creature, shipStatus, target, targetShipStatus, x))
+                    .DefaultIfEmpty(0f)
+                    .Max();
+
+                // Close in when the target is beyond weapon range, otherwise keep distance from it.
                 AssignCommand(creature, () =>
                 {
                     ClearAllActions();
-                    ActionMoveAwayFromObject(target, true, 15f);
+                    if (maxWeaponDistance > 0f && distance > maxWeaponDistance)
+                        ActionMoveToObject(target, true, NPCShipKeepDistance);
+                    else
+                        ActionMoveAwayFromObject(target, true, NPCShipKeepDistance);
                 });
 
                 // Determine which module(s) to activate
@@ -2047,17 +2080,9 @@ namespace SWLOR.Game.Server.Service
                             useModule = true;
                         }
                     }
-                    else if (shipModuleDetail.Type == ShipModuleType.LaserBattery ||
-                             shipModuleDetail.Type == ShipModuleType.AssaultConcussionMissile ||
-                             shipModuleDetail.Type == ShipModuleType.StormCannon ||
-                             shipModuleDetail.Type == ShipModuleType.QuadLaser ||
-                             shipModuleDetail.Type == ShipModuleType.ProtonBomb ||
-                             shipModuleDetail.Type == ShipModuleType.Missile ||
-                             shipModuleDetail.Type == ShipModuleType.IonCannon ||
-                             shipModuleDetail.Type == ShipModuleType.BeamLaser ||
-                             shipModuleDetail.Type == ShipModuleType.CombatLaser)
+                    else if (IsOffensiveShipModule(shipModuleDetail.Type))
                     {
-                        useModule = true;
+                        useModule = distance <= GetShipModuleMaxDistance(creature, shipStatus, target, targetShipStatus, shipModule);
                     }
 
                     if (useModule)
@@ -2069,6 +2094,47 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Notifies players near the attacker, plus a targeted pilot who is outside that radius, of ship damage.
+        /// </summary>
+        private static void NotifyShipDamage(uint attacker, uint target, Messaging.BuildMessageDelegate buildMessage)
+        {
+            Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange);
+
+            if (GetIsPC(target) &&
+                target != attacker &&
+                GetDistanceBetween(attacker, target) > ShipDamageMessageRange)
+            {
+                SendMessageToPC(target, buildMessage(target));
+            }
+        }
+
+        private static bool IsOffensiveShipModule(ShipModuleType type)
+        {
+            return type == ShipModuleType.LaserBattery ||
+                   type == ShipModuleType.AssaultConcussionMissile ||
+                   type == ShipModuleType.StormCannon ||
+                   type == ShipModuleType.QuadLaser ||
+                   type == ShipModuleType.ProtonBomb ||
+                   type == ShipModuleType.Missile ||
+                   type == ShipModuleType.IonCannon ||
+                   type == ShipModuleType.BeamLaser ||
+                   type == ShipModuleType.CombatLaser;
+        }
+
+        private static float GetShipModuleMaxDistance(
+            uint activator,
+            ShipStatus activatorShipStatus,
+            uint target,
+            ShipStatus targetShipStatus,
+            ShipStatus.ShipStatusModule shipModule)
+        {
+            var shipModuleDetail = _shipModules[shipModule.ItemTag];
+            return shipModuleDetail.ModuleMaxDistanceAction == null
+                ? 10f
+                : shipModuleDetail.ModuleMaxDistanceAction(activator, activatorShipStatus, target, targetShipStatus, shipModule.ModuleBonus);
         }
 
         /// <summary>

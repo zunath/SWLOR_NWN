@@ -5139,17 +5139,17 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1737,
-    "Member": "ApplyShipDamage",
+    "Line": 2104,
+    "Member": "NotifyShipDamage",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                attacker,\n                receiver => $\"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage to {PlayerName.GetDisplayName(receiver, target)}.\")"
+    "Call": "Messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",
-    "Line": 1808,
-    "Member": "ApplyHullDamage",
+    "Line": 2110,
+    "Member": "NotifyShipDamage",
     "Delivery": "Retained",
-    "Call": "Messaging.SendMessageNearbyToPlayers(\n                attacker,\n                receiver => $\"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage directly to hull of {PlayerName.GetDisplayName(receiver, target)}.\")"
+    "Call": "SendMessageToPC(target, buildMessage(target))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Space.cs",

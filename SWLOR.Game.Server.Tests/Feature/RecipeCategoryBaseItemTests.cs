@@ -8,14 +8,15 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class RecipeCategoryBaseItemTests
 {
-    // Gloves and bracers share the arm slot, so either base item is accepted for those menus.
     private static readonly Dictionary<RecipeCategoryType, BaseItem[]> AllowedBaseItems = new()
     {
         [RecipeCategoryType.Helmet] = new[] { BaseItem.Helmet },
         [RecipeCategoryType.Cap] = new[] { BaseItem.Helmet },
         [RecipeCategoryType.Tunic] = new[] { BaseItem.Armor },
-        [RecipeCategoryType.Glove] = new[] { BaseItem.Gloves, BaseItem.Bracer },
-        [RecipeCategoryType.Bracer] = new[] { BaseItem.Gloves, BaseItem.Bracer },
+        [RecipeCategoryType.Glove] = new[] { BaseItem.Gloves },
+        [RecipeCategoryType.Bracer] = new[] { BaseItem.Bracer },
+        [RecipeCategoryType.Belt] = new[] { BaseItem.Belt },
+        [RecipeCategoryType.Cloak] = new[] { BaseItem.Cloak },
         [RecipeCategoryType.Boots] = new[] { BaseItem.Boots },
         [RecipeCategoryType.Necklace] = new[] { BaseItem.Amulet },
         [RecipeCategoryType.Ring] = new[] { BaseItem.Ring },

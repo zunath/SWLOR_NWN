@@ -6,6 +6,7 @@ using NWN.Native.API;
 using NWNX.NET;
 using NWNX.NET.Native;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -16,10 +17,10 @@ public static class PlayerListAttitudeEngineTests
     private static unsafe FunctionHook* _sendHook;
     private static readonly List<(uint Target, uint Source, int Like)> Updates = new();
     private static readonly Dictionary<uint, CNetLayerPlayerInfo> FixtureClients = new();
-    private static bool _listSent;
+    private static int _listsSent;
     private static bool _attitudeBeforeList;
 
-    [EngineTest("Player-list refresh restores unnamed hostility without changing reputation", Category = "PlayerList", TimeoutSeconds = 60f)]
+    [EngineTest("Name updates preserve unnamed hostility and one-sided choices", Category = "PlayerList", TimeoutSeconds = 60f)]
     public static async Task RestoreHostility(EngineTestContext ctx)
     {
         using var observer = await PlayerAbilityFixture.CreateAsync(ctx);
@@ -36,10 +37,17 @@ public static class PlayerListAttitudeEngineTests
             targetCreature.AddToPVPList(observer.Creature);
             ctx.Assert(!PlayerName.TryGetKnownName(observer.Creature, target.Creature, out _), "Target has no assigned name");
 
+            using var visibleTarget = new CLastUpdatePartyObject { m_nPlayerId = target.Creature };
+            var listed = false;
             try
             {
                 BeginCapture(observerClient.m_nPlayerID, targetClient.m_nPlayerID,
                     server.GetClientObjectByObjectId(bystander.Creature).m_nPlayerID);
+                // Rename only refreshes a target already on the player list and
+                // visible to the observer. Give the disconnected fixtures that state.
+                server.GetNWSMessage().SendServerToPlayerPlayerList_Add(uint.MaxValue, targetClient);
+                listed = true;
+                observerClient.m_lstActivePartyObjectsLastUpdate.Add(visibleTarget);
                 // A player may Like a character who still dislikes them. Preserve
                 // each direction independently rather than forcing mutual hostility.
                 foreach (var outgoing in new[] { 1, 0 })
@@ -48,13 +56,14 @@ public static class PlayerListAttitudeEngineTests
                     targetCreature.SetPVPPlayerLikesMe(observer.Creature, outgoing, 0);
                     observerCreature.SetPVPPlayerLikesMe(target.Creature, incoming, 0);
                     Updates.Clear();
-                    _listSent = false;
+                    _listsSent = 0;
                     _attitudeBeforeList = false;
-                    server.GetNWSMessage().SendServerToPlayerPlayerList_All(observerClient);
+                    PlayerName.SendChatMessageWithChatNameOverride(observer.Creature, target.Creature,
+                        () => ctx.AssertEqual(1, _listsSent, "Chat name applied before sending the message"));
 
-                    ctx.Assert(_listSent, "Native player-list refresh was sent");
+                    ctx.AssertEqual(2, _listsSent, "NWNX refreshed the list for chat name application and restoration");
                     ctx.Assert(!_attitudeBeforeList, "Attitudes follow the list that would otherwise reset them");
-                    ctx.AssertEqual((outgoing == 0 ? 1 : 0) + (incoming == 0 ? 1 : 0), Updates.Count,
+                    ctx.AssertEqual(2 * ((outgoing == 0 ? 1 : 0) + (incoming == 0 ? 1 : 0)), Updates.Count,
                         "Replay sends only hostile directions, with no bystander or self update");
                     ctx.AssertEqual(outgoing == 0,
                         Updates.Contains((targetClient.m_nPlayerID, observerClient.m_nPlayerID, 0)), "Outgoing Dislike replay");
@@ -64,7 +73,19 @@ public static class PlayerListAttitudeEngineTests
                     ctx.AssertEqual(incoming, observerCreature.GetPVPPlayerLikesMe(target.Creature), "Incoming server attitude is unchanged");
                 }
             }
-            finally { EndCapture(); }
+            finally
+            {
+                observerClient.m_lstActivePartyObjectsLastUpdate.Remove(visibleTarget);
+                try
+                {
+                    if (listed)
+                    {
+                        RenamePlugin.ClearPCNameOverride(target.Creature, clearAll: true);
+                        server.GetNWSMessage().SendServerToPlayerPlayerList_Delete(uint.MaxValue, targetClient);
+                    }
+                }
+                finally { EndCapture(); }
+            }
         });
     }
 
@@ -96,7 +117,7 @@ public static class PlayerListAttitudeEngineTests
     {
         if (FixtureClients.ContainsKey(player))
         {
-            if (major == (byte)MessageMajor.PlayerList && minor == 1) _listSent = true;
+            if (major == (byte)MessageMajor.PlayerList && minor == 1) _listsSent++;
             return 1; // Only the fixtures' disconnected transport is replaced.
         }
         return ((delegate* unmanaged<void*, uint, byte, byte, byte*, uint, int>)_sendHook->m_trampoline)(message, player, major, minor, data, size);
@@ -107,7 +128,7 @@ public static class PlayerListAttitudeEngineTests
     {
         if (FixtureClients.ContainsKey(target) && FixtureClients.ContainsKey(source))
         {
-            if (!_listSent) _attitudeBeforeList = true;
+            if (_listsSent == 0) _attitudeBeforeList = true;
             Updates.Add((target, source, like));
             return 1; // Disconnected fixture clients have no network transport.
         }

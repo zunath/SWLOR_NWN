@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
@@ -544,6 +545,9 @@ namespace SWLOR.Game.Server.Service
                 ApplyNameOverride(player, otherPlayer);
                 ApplyNameOverride(otherPlayer, player);
             }
+
+            // The global overrides above can refresh every observer's player list.
+            RefreshPlayerListAttitudes(OBJECT_INVALID);
         }
 
         private static void ApplyNameOverridesForDMObserver(uint dm)
@@ -572,6 +576,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             RenamePlugin.SetPCNameOverride(target, BuildStaffDisplayName(target), string.Empty, string.Empty, PlayerNameOverrideType.Default, observer);
+            RefreshPlayerListAttitudes(observer);
         }
 
         private static void ApplyNameOverride(uint observer, uint target)
@@ -591,6 +596,7 @@ namespace SWLOR.Game.Server.Service
             var suffix = isUnknown ? UnknownNameSuffix : string.Empty;
 
             RenamePlugin.SetPCNameOverride(target, displayName, prefix, suffix, PlayerNameOverrideType.Default, observer);
+            RefreshPlayerListAttitudes(observer);
         }
 
         private static string BuildStaffDisplayName(uint target)
@@ -620,6 +626,7 @@ namespace SWLOR.Game.Server.Service
             var suffix = isUnknown ? UnknownNameSuffix : string.Empty;
 
             RenamePlugin.SetPCNameOverride(target, displayName, prefix, suffix, PlayerNameOverrideType.Default, observer);
+            RefreshPlayerListAttitudes(observer);
         }
 
         private static void RestoreNameOverride(uint observer, uint target)
@@ -634,6 +641,7 @@ namespace SWLOR.Game.Server.Service
                     : GetName(target);
 
                 RenamePlugin.SetPCNameOverride(target, ownDisplayName, string.Empty, string.Empty, PlayerNameOverrideType.Default, observer);
+                RefreshPlayerListAttitudes(observer);
                 return;
             }
 
@@ -641,6 +649,34 @@ namespace SWLOR.Game.Server.Service
                 ApplyTrueNameOverride(observer, target);
             else
                 ApplyNameOverride(observer, target);
+        }
+
+        private static void RefreshPlayerListAttitudes(uint observer)
+        {
+            // NWNX_Rename's full-list refresh resets client attitudes to Like. Use
+            // the packaged API to resend the current hostile directions after our
+            // name updates; no engine hook or server reputation changes are needed.
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            var clients = server.GetPlayerList();
+            var message = server.GetNWSMessage();
+            foreach (var client in clients)
+            {
+                if (observer != OBJECT_INVALID && client.m_oidNWSObject != observer) continue;
+                var creature = client.GetGameObject()?.AsNWSCreature();
+                if (creature == null) continue;
+
+                foreach (var target in clients)
+                {
+                    if (target.m_nPlayerID == client.m_nPlayerID) continue;
+                    var targetCreature = target.GetGameObject()?.AsNWSCreature();
+                    if (targetCreature == null) continue;
+
+                    if (targetCreature.GetPVPPlayerLikesMe(client.m_oidNWSObject) == 0)
+                        message.SendServerToPlayerPVP_Attitude_Change(target.m_nPlayerID, client.m_nPlayerID, 0);
+                    if (creature.GetPVPPlayerLikesMe(target.m_oidNWSObject) == 0)
+                        message.SendServerToPlayerPVP_Attitude_Change(client.m_nPlayerID, target.m_nPlayerID, 0);
+                }
+            }
         }
 
         private static string ResolveChatDisplayName(uint observer, uint target, out bool isUnknown)

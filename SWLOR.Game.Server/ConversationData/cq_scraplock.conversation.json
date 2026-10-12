@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Where were you when the lower yard went into lockdown? Don't answer - I already pulled the records. You were off-station, which makes you the only katar hand on CZ-220 I can't place inside the breach. That makes you useful. A crew sealed the CZ-220 Breaker Yard's lower level and they're running katar drills behind my own containment doors. Six adepts hold the outer bays under a work order my office never issued. Put all six down and bring me the Scrapheap Lockdown Breaker Yard Work Order. The flimsi is forged, and forgeries name their forgers.",
+          "Text": "Where were you when the lower yard went into lockdown? Don't answer - I already pulled the records. You were off-station, which makes you the only katar hand on CZ-220 I can't place inside the breach. That makes you useful. A crew sealed off the CZ-220 Breaker Yard off the Maintenance Level and they're running katar drills behind my own containment doors. Six adepts hold the outer bays under a work order my office never issued. Put all six down and bring me the Scrapheap Lockdown Breaker Yard Work Order. The flimsi is forged, and forgeries name their forgers.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "No codes. A key - physical, logged to you, and if it walks I know exactly who walked it. The way down is the containment door my own board insists doesn't exist anymore. Six adepts. One flimsi. Anything else you touch down there ends up in my report, so touch carefully.",
+          "Text": "No codes. A key - physical, logged to you, and if it walks I know exactly who walked it. Through the hangar doors into the Offices & Labs, take the way down south of the command desks to the Maintenance Level, and cross to the far north-east corner. The Breaker Bay is behind the force-field wall my own board insists isn't there. Six adepts. One flimsi. Touch carefully.",
           "Style": 0,
           "Color": null
         }
@@ -422,7 +422,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You came up the south lift eight minutes faster than your last exit, and your hand hasn't left your pack since you stepped off it. That's evidence you're carrying. The work order. Now.",
+          "Text": "You came back through the hangar doors eight minutes faster than your last exit, and your hand hasn't left your pack since. That's evidence you're carrying. The work order. Now.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The reroute hub is north along the junkline. You'll hear it before you see it - belts running against their own load rating. The five keep a two-on watch, and they are better than the adepts you filed away. Assume everything I tell you is understatement. It usually is.",
+          "Text": "The reroute hub is along the junkline, deeper in the Breaker Bay. You'll hear it before you see it - belts running against their own load rating. The five keep a two-on watch, and they are better than the adepts you filed away. Assume everything I tell you is understatement. It usually is.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Seated. Verified. Mine. The chip clicks into the yardmaster's board, and half the alarm lights he has lived under go dark. \"The conspiracy charge closes at four counts. What's left below isn't a crew anymore - it's one man, one bay, and one conversation I've spent years not having. Collect your pay, then sleep. The last incident is the oldest one.\"",
+          "Text": "Seated. Verified. Mine. He seats the chip in his security board, and half the alarm lights he has lived under go dark. \"The conspiracy charge closes at four counts. What's left below isn't a crew anymore - it's one man, one bay, and one conversation I've spent years not having. Collect your pay, then sleep. The last incident is the oldest one.\"",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Final incident. The man who wrote the lockdown is all that's left below. He holds the deepest bay under the original protocol - his own, unrevised, the pure version he never let anyone file. I watch him through the one feed he permits me to keep, and you should understand what that means: he wants this. Everything you've fought down there was his doctrine secondhand. He is the doctrine, and the katar work you've bled to learn is his, finished. There's nothing to recover this time. He is the last item on the charge sheet, and the charge is everything. Take your two. No one has ever walked out of a room he decided to close - my three-strong regulation exists because of him, and it's the only part of his work I intend to keep.",
+          "Text": "Final incident. The man who wrote the lockdown is all that's left below. He holds the deepest bay under the original protocol - his own, unrevised, the pure version he never let anyone file. He leaves me exactly one feed, and you should understand what that means: he wants this. Everything you've fought down there was his doctrine secondhand. The katar work you've bled to learn is his, finished. There's nothing to recover this time. Take your two. No one has ever walked out of a room he decided to close - my three-strong regulation exists because of him.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The last door is at the bottom of everything - past the sheared bay, past the crane deck, the bay with no number. Your key will open it because he wants it to. Understand that going in: every door that opens for you down there is him accepting the appointment. Keep your two inside arm's reach, and do not let him choose the room.",
+          "Text": "The last door is at the bottom of everything - the Breaker Yard itself, past the sheared bay and the crane deck. Every door between you and him will open because he wants it to. Understand that going in: he is accepting the appointment. Keep your two inside arm's reach, and do not let him choose the room.",
           "Style": 0,
           "Color": null
         }

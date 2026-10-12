@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float TabPanelHeight = 76f;
         private const float AttributePanelWidth = 250f;
         private const float CombatPanelWidth = 250f;
+        private const float CombatLabelWidth = 120f;
         private const float StatsPanelWidth = 460f;
         private const float ResistancePanelWidth = 430f;
         private const float CraftingPanelWidth = 430f;
@@ -171,17 +172,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         combatGroup.AddColumn(combatCol =>
                         {
                             AddSectionHeader(combatCol, "Combat");
-                            AddBoundValueRow(combatCol, "Main Hand", model => model.MainHandDMG, "Estimated main-hand weapon damage.", model => model.MainHandTooltip, 94f);
-                            AddBoundValueRow(combatCol, "Off Hand", model => model.OffHandDMG, "Estimated off-hand weapon damage.", model => model.OffHandTooltip, 94f);
-                            AddBoundValueRow(combatCol, "Atk Delay", model => model.AttackDelay, "Estimated time between auto attacks.", model => model.AttackDelayTooltip, 94f);
-                            AddBoundValueRow(combatCol, "Attack", model => model.Attack, "Physical attack rating used to scale weapon and physical ability damage.", null, 94f);
-                            AddBoundValueRow(combatCol, "Force Attack", model => model.ForceAttack, "Force attack rating used to scale Force ability damage.", null, 94f);
-                            AddBoundValueRow(combatCol, "Main-hand Acc.", model => model.WeaponAccuracy, "Main-hand attack accuracy. Weapon bonuses do not combine.", null, 120f);
-                            AddBoundValueRow(combatCol, "Off-hand Acc.", model => model.OffHandAccuracy, "Off-hand attack accuracy, including double weapons. Weapon bonuses do not combine.", null, 120f);
-                            AddBoundValueRow(combatCol, "Force Acc.", model => model.ForceAccuracy, "Underlying Force ability accuracy rating. Actual hit chance depends on target Evasion, Force affinity, and direct ability hit chance modifiers.", null, 94f);
-                            AddBoundValueRow(combatCol, "Evasion", model => model.Evasion, "Evasion rating used to oppose attacks and detrimental abilities.", null, 94f);
-                            AddBoundValueRow(combatCol, "Physical DEF", model => model.PhysicalDefense, "Defense against physical attacks.", null, 94f);
-                            AddBoundValueRow(combatCol, "Force DEF", model => model.ForceDefense, "Defense against Force attacks.", null, 94f);
+                            AddBoundValueRow(combatCol, "Main Hand", model => model.MainHandDMG, "Estimated main-hand weapon damage.", model => model.MainHandTooltip, CombatLabelWidth);
+                            AddBoundValueRow(combatCol, "Off Hand", model => model.OffHandDMG, "Estimated off-hand weapon damage.", model => model.OffHandTooltip, CombatLabelWidth);
+                            AddBoundValueRow(combatCol, "Atk Delay", model => model.AttackDelay, "Estimated time between auto attacks.", model => model.AttackDelayTooltip, CombatLabelWidth);
+                            AddBoundValueRow(combatCol, "Attack", model => model.Attack, "Physical attack rating used to scale weapon and physical ability damage.", null, CombatLabelWidth);
+                            AddBoundValueRow(combatCol, "Force Attack", model => model.ForceAttack, "Force attack rating used to scale Force ability damage.", null, CombatLabelWidth);
+                            AddBoundValueRow(combatCol, "Main-hand Acc.", model => model.WeaponAccuracy, "Main-hand attack accuracy. Weapon bonuses do not combine.", null, CombatLabelWidth);
+                            AddBoundValueRow(combatCol, "Off-hand Acc.", model => model.OffHandAccuracy, "Off-hand attack accuracy, including double weapons. Weapon bonuses do not combine.", null, CombatLabelWidth);
+                            AddBoundValueRow(combatCol, "Force Acc.", model => model.ForceAccuracy, "Underlying Force ability accuracy rating. Actual hit chance depends on target Evasion, Force affinity, and direct ability hit chance modifiers.", null, CombatLabelWidth);
+                            AddBoundValueRow(combatCol, "Evasion", model => model.Evasion, "Evasion rating used to oppose attacks and detrimental abilities.", null, CombatLabelWidth);
+                            AddBoundValueRow(combatCol, "Physical DEF", model => model.PhysicalDefense, "Defense against physical attacks.", null, CombatLabelWidth);
+                            AddBoundValueRow(combatCol, "Force DEF", model => model.ForceDefense, "Defense against Force attacks.", null, CombatLabelWidth);
                         });
                     })
                         .SetWidth(CombatPanelWidth);

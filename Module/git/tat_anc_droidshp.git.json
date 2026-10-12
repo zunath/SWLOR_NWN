@@ -8255,7 +8255,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Unit KX-17 is a damaged breaker-yard droid tied to the Worldbreaker capstone trials in CZ-220 Breaker Yard."
+            "0": "A battered Czerka analysis droid, his chassis dented and still stenciled with faded breaker-yard load markings under a coat of Anchorhead dust. He stands motionless among the shop's malfunctioning droids, optical sensors tracking anyone who passes. Whenever someone walks in carrying a staff, his head turns and holds, as if he is calculating exactly where they would break."
           }
         },
         "Dex": {
@@ -8441,7 +8441,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 4150
+          "value": 4413
         },
         "Race": {
           "type": "byte",

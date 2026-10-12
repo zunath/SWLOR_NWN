@@ -87,8 +87,8 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Mos Esper - Cantina Quarter",
-      "2": "Tatooine - Mos Esper - Cantina Quarter"
+      "0": "[Prefab] Tatooine - Mos Esper - Cantina Quarter",
+      "2": "[Prefab] Tatooine - Mos Esper - Cantina Quarter"
     }
   },
   "NoRest": {

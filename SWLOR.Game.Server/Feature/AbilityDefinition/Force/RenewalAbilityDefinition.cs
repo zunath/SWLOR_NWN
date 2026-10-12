@@ -120,14 +120,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
             var targetWasBelowHalfHP = ForceControlHealingEffects.IsBelowHalfHP(friendly);
             var affinityAdjustedTotalPercent = totalPercent * Ability.GetActiveForceAffinityMagnitudeMultiplier(activator);
+            var credited = new HashSet<uint>();
             if (StatusEffect.ApplyStatusEffect(
                 activator,
                 friendly,
-                new RegenerativeHealingStatusEffect(name, affinityAdjustedTotalPercent, 10),
+                new RegenerativeHealingStatusEffect(name, affinityAdjustedTotalPercent, 10, supportSkill: SkillType.Force, supportCredited: credited),
                 30f))
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
-            ForceControlHealingEffects.ApplyRestorativeControlPower(activator, friendly, targetWasBelowHalfHP);
+            var healed = new List<uint>(ForceControlHealingEffects.ApplyRestorativeControlPower(activator, friendly, targetWasBelowHalfHP)) { friendly };
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
+            CombatPoint.AddSupportCombatPoint(activator, healed, SkillType.Force, alreadyCredited: credited);
         }
     }
 }

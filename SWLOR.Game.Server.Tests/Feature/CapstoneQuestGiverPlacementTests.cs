@@ -14,12 +14,12 @@ public class CapstoneQuestGiverPlacementTests
     {
         ("cq_invinc", "veles_sheriff"), ("cq_vitrupt", "veles_cantina"), ("cq_sysshut", "veles_cz_tower"),
         ("cq_killbeacon", "pw_ar_narscorpd"), ("cq_embunker", "tat_anc_gocorpst"), ("cq_deccommand", "pw_ar_nsshipyard"),
-        ("cq_sabstorm", "tat_anc_astropor"), ("cq_guardmst", "tat_anc_verpexba"), ("cq_sabcycl", "tat_tocheemain"),
+        ("cq_sabstorm", "tat_anc_astropor"), ("cq_guardmst", "tat_anc_southdis"), ("cq_sabcycl", "tat_tocheemain"),
         ("cq_emcocktail", "pw_ar_ns_medical"), ("cq_holdline", "pw_ar_ns_doffice"), ("cq_infconduit", "tat_anc_medical"),
-        ("cq_absdef", "pw_ar_nsficlub"), ("cq_soulasc", "pw_ar_narshahub"), ("cq_forcebane", "tat_anc_northdis"),
+        ("cq_absdef", "pw_ar_nsficlub"), ("cq_soulasc", "pw_ar_narshahub"), ("cq_forcebane", "tat_anc_southent"),
         ("cq_lightstand", "pw_ar_narpromena"), ("cq_darkhung", "tat_anc_junix"), ("cq_eclipse", "pw_ar_nardocks"),
         ("cq_adamguard", "nanostation015"), ("cq_scraplock", "czs220_hangar"), ("cq_worldbrk", "tat_anc_droidshp"),
-        ("cq_unmovctr", "tat_anc_cantina"), ("cq_lastword", "tosche_cantina_s"), ("cq_deadhand", "tochee_cantina"),
+        ("cq_unmovctr", "tat_elevagiifarm"), ("cq_lastword", "smesks_palace"), ("cq_deadhand", "smesks_entry"),
         ("cq_killbox", "pw_ar_nsczgnstr"), ("cq_oneshot", "pw_ar_czoffice"), ("cq_rainsteel", "pw_ar_nscrafting"),
         ("cq_thermdet", "hutlar_outpost"), ("cq_overbarr", "sol_mandaloriani"), ("cq_perflurry", "sol_hutlarqcanyo"),
         ("cq_primover", "dath_landingpad"), ("cq_apexbite", "dath_landingpad"),
@@ -137,7 +137,8 @@ public class CapstoneQuestGiverPlacementTests
                 if (giver is "cq_lightstand" or "cq_darkhung" or "cq_eclipse" or "cq_absdef" or
                     "cq_soulasc" or "cq_forcebane" or "cq_sabstorm" or "cq_guardmst" or
                     "cq_sabcycl" or "cq_infconduit" or "cq_emcocktail" or "cq_holdline" or
-                    "cq_worldbrk" or "cq_killbeacon" or "cq_embunker" or "cq_deccommand")
+                    "cq_worldbrk" or "cq_killbeacon" or "cq_embunker" or "cq_deccommand" or
+                    "cq_unmovctr" or "cq_lastword" or "cq_deadhand")
                 {
                     journal.Should().Contain($"{location[1]} on {location[0]}", questId);
                 }
@@ -164,7 +165,7 @@ public class CapstoneQuestGiverPlacementTests
         var relocatedAreas = new[]
         {
             "pw_ar_narpromena", "tat_anc_junix", "pw_ar_nardocks", "pw_ar_nsficlub",
-            "pw_ar_narshahub", "tat_anc_northdis", "tat_anc_astropor", "tat_anc_verpexba",
+            "pw_ar_narshahub", "tat_anc_southent", "tat_anc_astropor", "tat_anc_southdis",
             "tat_tocheemain", "tat_anc_medical", "pw_ar_ns_medical", "pw_ar_ns_doffice",
             "tat_anc_droidshp", "pw_ar_narscorpd", "tat_anc_gocorpst", "pw_ar_nsshipyard",
         };

@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Reaver chief has lost his excavation and his buyers will receive nothing. You controlled the fight instead of feeding it. That is a useful beginning for Hunger of the Dark; let us finish the lesson.",
+          "Text": "The Reaver chief is dead, his dig is lost, and his buyers will wait for a shipment that never comes. You controlled the fight instead of feeding it. That is the beginning of Hunger of the Dark. Sit. The rest of the lesson is mine to give.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I can only take someone who has mastered the Force discipline. Reach rank 50 before we discuss the work on Korriban.",
+          "Text": "You want to be fed before you can hold the spoon. Your command of the Force is not ready for what waits on Korriban. Go and sharpen it. When the Force comes to you without begging, find me at this table again.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Vitae Reavers have found a buyer for relics they barely understand. They are draining the survey crews to fuel their excavation. That makes their expedition my business, and perhaps yours. Defeat 6 Vitae Reaver Initiate enemies in the outer rite chambers of the Korriban Sith Crypt Depths. Recover the Hunger of the Dark Crypt Trial Tablet.",
+          "Text": "The Vitae Reavers have found a buyer for relics they barely understand. To fuel their dig in the Korriban Sith Crypt Depths, they drain the survey crews they caught down there, life and all. Crude. Wasteful. That makes them my business, and perhaps yours. Put down six Vitae Reaver Initiates and bring me the Hunger of the Dark Crypt Trial Tablet they took from the tombs.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take the Korriban Sith Crypt Depths Key. Defeat 6 Vitae Reaver Initiate enemies in the outer rite chambers of the Korriban Sith Crypt Depths. Recover the Hunger of the Dark Crypt Trial Tablet.",
+          "Text": "Take this key. It opens the sealed passage at the north end of the Sith Crypt on Korriban, the way into the Depths. Six initiates, and the tablet. Take only what you need from them.",
           "Style": 0,
           "Color": null
         }
@@ -327,7 +327,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Hunger of the Dark requires control over what you draw and what you spend. The Reavers squander both. Watch their methods, but do not mistake their excess for mastery.",
+          "Text": "Hunger of the Dark is the discipline of taking strength from a fight and spending only what the moment demands. The Reavers drain everything in reach and choke on it. Watch them, learn what not to do, and never mistake their excess for mastery.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The key opens the sealed entrance to the Korriban Sith Crypt Depths. Start in the outer rite chambers. I am intercepting their buyers above ground. Leave that route open and another shipment of captives and digging equipment will be down the stairs by morning.",
+          "Text": "Korriban. From the starport, go east into the Wastelands North and cross to the elevator on the north-east side of the wastes. It takes you down into the Sith Crypt; the sealed passage at the crypt's north end opens into the Depths. I stay because their buyers drink here in Anchorhead. While you cut the supply, I will starve the market.",
           "Style": 0,
           "Color": null
         }
@@ -379,7 +379,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "An independent band of Force-trained relic thieves. They have no academy commission. Their initiates use stolen draining techniques against anyone who approaches their dig.",
+          "Text": "An independent band of Force-trained relic thieves, with no academy commission and no master worth the name. Their initiates use stolen draining techniques on anyone who comes close. Their enforcer and their chief are Cathar, and they have bought Wookiee muscle to hold the deeper vaults.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 6 Vitae Reaver Initiate enemies in the outer rite chambers of the Korriban Sith Crypt Depths. Recover the Hunger of the Dark Crypt Trial Tablet.",
+          "Text": "Six Vitae Reaver Initiates and the tablet. The passage is at the north end of the Sith Crypt on Korriban. They will not starve themselves.",
           "Style": 0,
           "Color": null
         }
@@ -426,7 +426,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You have the Hunger of the Dark Crypt Trial Tablet. Let me see it.",
+          "Text": "You have the Hunger of the Dark Crypt Trial Tablet. Set it on the table.",
           "Style": 0,
           "Color": null
         }
@@ -452,7 +452,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The tablet identifies the stolen relics. Their handlers have moved deeper into the galleries.",
+          "Text": "Etched with the tombs they have emptied, and the ones they mean to empty next. Their adepts have moved deeper with the relics. Eat. Rest. You will need both.",
           "Style": 0,
           "Color": null
         }
@@ -473,7 +473,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The outer guards were only the beginning. The raiders are concentrating stolen relics farther down. Defeat 5 Vitae Reaver Adept enemies in the narrow galleries of the Korriban Sith Crypt Depths. Recover the Hunger of the Dark Ritual Focus Shard.",
+          "Text": "The initiates were the first course. Their adepts carry the Hunger of the Dark Ritual Focus Shard, a relic that lets them draw more than their bodies can hold. Put down five Vitae Reaver Adepts and bring the shard to me before one of them learns to use it properly.",
           "Style": 0,
           "Color": null
         }
@@ -515,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 5 Vitae Reaver Adept enemies in the narrow galleries of the Korriban Sith Crypt Depths. Recover the Hunger of the Dark Ritual Focus Shard.",
+          "Text": "Five Vitae Reaver Adepts and the focus shard. They hunt the Depths in small packs. Let them come to you.",
           "Style": 0,
           "Color": null
         }
@@ -536,7 +536,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Hunger of the Dark Ritual Focus Shard was taken from a sealed relic chamber. Recovering it denies the raiders a focus for their stolen techniques.",
+          "Text": "The shard sharpens a hunger into a blade. In a disciplined hand it is a tool. In theirs it is a crutch, and it is how they drain the crews so quickly. Take it, and they go back to being greedy amateurs.",
           "Style": 0,
           "Color": null
         }
@@ -562,7 +562,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Continue from the outer chambers into the narrow galleries. They keep the shard near their supplies so they can defend both.",
+          "Text": "Nowhere fixed. The adepts range through the Depths in small packs, and one of them always carries the shard. Thin the packs and it will come to you.",
           "Style": 0,
           "Color": null
         }
@@ -588,7 +588,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "These fighters support each other. Interrupt the one using the relic while your companions keep the others occupied.",
+          "Text": "They drain together, feeding one another. Break the chain. Finish the one who is drawing first, and do not let them feed on you while you are wounded.",
           "Style": 0,
           "Color": null
         }
@@ -614,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 5 Vitae Reaver Adept enemies in the narrow galleries of the Korriban Sith Crypt Depths. Recover the Hunger of the Dark Ritual Focus Shard.",
+          "Text": "Five Vitae Reaver Adepts and the shard, somewhere in the Korriban Sith Crypt Depths. They are still feeding.",
           "Style": 0,
           "Color": null
         }
@@ -635,7 +635,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You brought the Hunger of the Dark Ritual Focus Shard. Hand it over and we can finish this part.",
+          "Text": "You brought the Hunger of the Dark Ritual Focus Shard. Give it here. Slowly.",
           "Style": 0,
           "Color": null
         }
@@ -661,7 +661,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The focus shard is secure. We can now work on the sealed gate.",
+          "Text": "It still hums with what they took. I will see it emptied properly. Their enforcer is next, and he will not be a light meal.",
           "Style": 0,
           "Color": null
         }
@@ -682,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The raiders have fortified the breach to protect their excavation. Defeat 1 Vitae Reaver Enforcer in the deep tomb breach of the Korriban Sith Crypt Depths. Recover the Hunger of the Dark Splintered Tomb Sigil. Bring at least two allies.",
+          "Text": "Their enforcer, a Cathar who goes by Vitae Reaver Enforcer, guards the trial altar on the east side of the Depths. He broke the Hunger of the Dark Splintered Tomb Sigil off a sealed tomb, and he keeps it on him. Go to that altar and he will come to meet you. Bring at least two allies. Bring me the sigil.",
           "Style": 0,
           "Color": null
         }
@@ -724,7 +724,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 1 Vitae Reaver Enforcer in the deep tomb breach of the Korriban Sith Crypt Depths. Recover the Hunger of the Dark Splintered Tomb Sigil. Bring at least two allies.",
+          "Text": "Good. The altar is on the east side of the Korriban Sith Crypt Depths. Make him come to you, let your allies wear him down, and take the sigil when he falls.",
           "Style": 0,
           "Color": null
         }
@@ -745,7 +745,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Vitae Reaver Enforcer is the expedition's enforcer at the breach. The raiders put their strongest fighter there to hold off the survey crews.",
+          "Text": "A Cathar, the best they have. He has drained enough of the crews to stand through wounds that would drop most fighters. They placed him at the altar to keep anyone from following the dig.",
           "Style": 0,
           "Color": null
         }
@@ -771,7 +771,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The sigil was broken off a sealed tomb entrance. It will identify which chamber they forced and what still needs to be secured.",
+          "Text": "It was broken off a sealed tomb entrance. The markings will tell me which tomb they forced and what they carried out of it. Their buyers would like to know that too. They will not get the chance.",
           "Style": 0,
           "Color": null
         }
@@ -797,7 +797,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Bring two allies. One opponent is easy to pin against that doorway; a coordinated group can split the pressure and carry an injured companion out.",
+          "Text": "Because a lone fighter is exactly what the enforcer feeds on. Three of you can split his attention and keep one another standing. Hunger without discipline dies alone. You will not.",
           "Style": 0,
           "Color": null
         }
@@ -823,7 +823,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 1 Vitae Reaver Enforcer in the deep tomb breach of the Korriban Sith Crypt Depths. Recover the Hunger of the Dark Splintered Tomb Sigil. Bring at least two allies.",
+          "Text": "The enforcer still holds the altar on the east side of the Depths. Two allies at your side, then the sigil.",
           "Style": 0,
           "Color": null
         }
@@ -844,7 +844,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You brought the Hunger of the Dark Splintered Tomb Sigil. Hand it over and we can finish this part.",
+          "Text": "You brought the Hunger of the Dark Splintered Tomb Sigil. Show me.",
           "Style": 0,
           "Color": null
         }
@@ -870,7 +870,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The gate is clear. The sigil will let us identify the remaining control seals.",
+          "Text": "There. The tomb they forced, and the ones they have not reached. With the enforcer gone, only their binders stand between us and their chief.",
           "Style": 0,
           "Color": null
         }
@@ -891,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The breach is clear. Four senior raiders still control access to the sealed relic chambers. Defeat 4 Vitae Reaver Binder enemies in the keeper chambers of the Korriban Sith Crypt Depths. Recover the Hunger of the Dark Keeper's Rite Token.",
+          "Text": "Four Wookiees, the ones they call Vitae Reaver Binders, now hold the way to the deep vaults. They carry the Hunger of the Dark Keeper's Rite Token, an old keeper's mark that opens the last sealed chambers. Put down four Vitae Reaver Binders and bring me the token.",
           "Style": 0,
           "Color": null
         }
@@ -933,7 +933,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 4 Vitae Reaver Binder enemies in the keeper chambers of the Korriban Sith Crypt Depths. Recover the Hunger of the Dark Keeper's Rite Token.",
+          "Text": "Four Vitae Reaver Binders and the token. They range through the Depths. Take them one at a time.",
           "Style": 0,
           "Color": null
         }
@@ -954,7 +954,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The four senior raiders control the expedition's access to the remaining relics. They are guarding stolen property and their own escape route.",
+          "Text": "Wookiees, bound to the Reavers by debt and kept loyal with stolen strength. They do the heavy work of the dig and the heavy work of killing. Do not pity them.",
           "Style": 0,
           "Color": null
         }
@@ -980,7 +980,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Hunger of the Dark Keeper's Rite Token was stolen from the tomb custodians. Recovering it will let the custodians secure the next seal.",
+          "Text": "The tomb keepers carried it once. It opens the deepest vaults. As long as the Reavers hold it, nothing below is closed to them.",
           "Style": 0,
           "Color": null
         }
@@ -1006,7 +1006,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Do not let all four focus on one fighter. Separate their positions and keep watch on the gallery behind you.",
+          "Text": "Never let all four reach you together. Choose your ground, keep your allies close, and watch the passage behind you. A Wookiee who has fed on the Force does not tire easily.",
           "Style": 0,
           "Color": null
         }
@@ -1032,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 4 Vitae Reaver Binder enemies in the keeper chambers of the Korriban Sith Crypt Depths. Recover the Hunger of the Dark Keeper's Rite Token.",
+          "Text": "Four Vitae Reaver Binders and the token, somewhere in the Korriban Sith Crypt Depths.",
           "Style": 0,
           "Color": null
         }
@@ -1053,7 +1053,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You brought the Hunger of the Dark Keeper's Rite Token. Hand it over and we can finish this part.",
+          "Text": "You brought the Hunger of the Dark Keeper's Rite Token. Set it down.",
           "Style": 0,
           "Color": null
         }
@@ -1079,7 +1079,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The token is secure. There is one final chamber to clear.",
+          "Text": "Good. The vaults stay shut. Only their chief remains, and he has nowhere left to run.",
           "Style": 0,
           "Color": null
         }
@@ -1100,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their leader is preparing the last shipment from the lowest chamber. Stop the expedition before it can regroup. Defeat 1 Vitae Reaver Chief in the lowest burial chamber of the Korriban Sith Crypt Depths. Bring at least two allies.",
+          "Text": "Their chief, a Cathar they call the Vitae Reaver Chief, has taken the last relics into the Final Ritual Chamber, through the door at the north end of the Depths. He has been drinking from the crews for weeks, and he will be strong. Bring at least two allies and end him before he moves the shipment.",
           "Style": 0,
           "Color": null
         }
@@ -1142,7 +1142,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 1 Vitae Reaver Chief in the lowest burial chamber of the Korriban Sith Crypt Depths. Bring at least two allies.",
+          "Text": "Go together. The Final Ritual Chamber is through the north door of the Korriban Sith Crypt Depths. Take what you need from the fight, and nothing more.",
           "Style": 0,
           "Color": null
         }
@@ -1163,7 +1163,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Vitae Reaver Chief is a living Force-trained relic thief. He controls the expedition from the deepest chamber. Break his hold there and the surviving crews can withdraw.",
+          "Text": "The chief himself, gorged on what he drained from the crews and on the relics around him. Break him there, and the surviving crews can walk out.",
           "Style": 0,
           "Color": null
         }
@@ -1189,7 +1189,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The stolen relics support the leader's technique. Watch the timing, cover one another, and interrupt the attacks that would cut off your retreat.",
+          "Text": "He draws on the stolen relics and on everyone near him. He will try to wear you down and feed on whoever falters. Stay close, keep each other standing, and give him no moment's rest.",
           "Style": 0,
           "Color": null
         }
@@ -1215,7 +1215,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I am intercepting their buyers above ground. Leave that route open and another shipment of captives and digging equipment will be down the stairs by morning. When you return, the recovered records will let us account for what they stole.",
+          "Text": "I finish with their buyers here in Anchorhead. Once the chief is gone, there is no shipment left to buy. When you return, the records you recovered will tell us what they stole, and who wanted it.",
           "Style": 0,
           "Color": null
         }
@@ -1241,7 +1241,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 1 Vitae Reaver Chief in the lowest burial chamber of the Korriban Sith Crypt Depths. Bring at least two allies.",
+          "Text": "The Vitae Reaver Chief waits in the Final Ritual Chamber, at the north end of the Depths. Take your allies.",
           "Style": 0,
           "Color": null
         }
@@ -1262,7 +1262,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Vitae Reaver Chief is down. Tell me what happened.",
+          "Text": "The Vitae Reaver Chief is down. Tell me how it went.",
           "Style": 0,
           "Color": null
         }
@@ -1288,7 +1288,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Reaver chief has lost his excavation and his buyers will receive nothing. You controlled the fight instead of feeding it. That is a useful beginning for Hunger of the Dark; let us finish the lesson.",
+          "Text": "The Reaver chief is dead, his dig is lost, and his buyers will wait for a shipment that never comes. You controlled the fight instead of feeding it. That is the beginning of Hunger of the Dark. Sit. The rest of the lesson is mine to give.",
           "Style": 0,
           "Color": null
         }
@@ -1309,7 +1309,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Junix's Joint in Anchorhead has customers who know better than to ask who taught a stranger. My lessons aren't an academy commission. I care whether you can control what you take. The Vitae Reavers are still in the Korriban Sith Crypt Depths on Korriban. Return to this table on Tatooine with their records.",
+          "Text": "Junix's Joint in Anchorhead has customers who know better than to ask who taught a stranger. My lessons are no academy commission, and I don't care whose banner you carry. I care whether you can control what you take. The Vitae Reavers are in the Korriban Sith Crypt Depths on Korriban. Bring their records back to this table on Tatooine.",
           "Style": 0,
           "Color": null
         }
@@ -1350,7 +1350,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I will clear the outer chambers.",
+        "Text": "I'll go down and bring back the tablet.",
         "Style": 4,
         "Color": null
       },
@@ -1667,7 +1667,7 @@
     "reply-00014": {
       "Id": "reply-00014",
       "Text": {
-        "Text": "Explain the gate assignment again.",
+        "Text": "Go over the enforcer again.",
         "Style": 4,
         "Color": null
       },
@@ -1690,7 +1690,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I will bring two allies and clear the breach.",
+        "Text": "I'll bring two allies and take the sigil.",
         "Style": 4,
         "Color": null
       },
@@ -1720,7 +1720,7 @@
     "reply-00016": {
       "Id": "reply-00016",
       "Text": {
-        "Text": "What guards the gate?",
+        "Text": "Who is the enforcer?",
         "Style": 4,
         "Color": null
       },
@@ -1807,7 +1807,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "The gate is clear. Here is the sigil.",
+        "Text": "The enforcer is dead. Here is the sigil.",
         "Style": 4,
         "Color": null
       },
@@ -1837,7 +1837,7 @@
     "reply-00021": {
       "Id": "reply-00021",
       "Text": {
-        "Text": "Go over the four targets again.",
+        "Text": "Go over the four Binders again.",
         "Style": 4,
         "Color": null
       },
@@ -1860,7 +1860,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I will stop the four senior raiders.",
+        "Text": "I'll deal with the four Binders.",
         "Style": 4,
         "Color": null
       },
@@ -1890,7 +1890,7 @@
     "reply-00023": {
       "Id": "reply-00023",
       "Text": {
-        "Text": "Who are the four targets?",
+        "Text": "Who are these Binders?",
         "Style": 4,
         "Color": null
       },

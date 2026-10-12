@@ -115137,7 +115137,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A bloodstained fighter's mat lies rolled against the wall, spear-scarred and waiting for its next challenger."
+            "0": "A bloodstained fighter's mat lies rolled against the wall by the champion pit gate, spear-scarred and waiting for the next challenger."
           }
         },
         "DisarmDC": {
@@ -115504,7 +115504,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A crimson-splashed weapon rack holds a pair of notched blades, the crowd's roar still hanging in the air."
+            "0": "A weapon rack splashed with old blood holds a pair of notched blades by the deep gate. The crowd's roar seems to hang in the air."
           }
         },
         "DisarmDC": {
@@ -115871,7 +115871,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Chalk rings mark a duelist's floor, twin-blade arcs still fresh in the scuffed dust."
+            "0": "Chalk rings mark a duelist's floor by the deep door, twin-blade arcs still fresh in the scuffed dust."
           }
         },
         "DisarmDC": {

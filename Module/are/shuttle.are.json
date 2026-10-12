@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Starship Shuttle - Interior"
+      "0": "[Prefab] Starship Shuttle - Interior"
     }
   },
   "NoRest": {

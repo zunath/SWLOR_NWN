@@ -166,7 +166,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Miris Aven is a quiet ward instructor tied to the Guardian Master capstone trials in Dantooine Jedi Enclave Trial Halls."
+      "0": "A quiet human man in travel-worn robes stands with his back to a wall among the moisture vaporators of Anchorhead's South District, a lightsaber hilt at his belt. He has placed himself so that anyone heading for the nearby homes must pass him first. His eyes keep returning to the younger faces in the street, as if he is still counting them."
     }
   },
   "Dex": {
@@ -364,7 +364,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 304
+    "value": 4200
   },
   "Race": {
     "type": "byte",

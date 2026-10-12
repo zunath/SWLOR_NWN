@@ -79,9 +79,25 @@ explicit timeout, `on_start` to record the PID, and `until` to detect completion
 The helper must retain its private-desktop and zero-capability isolation.
 Track only the process created by this task; never terminate clients by name.
 
-The capstone run used these client settings in the isolated `settings.tml`:
+Sound must be disabled for the background client instance. The user is
+working on the same machine, and a hidden client must never play music,
+ambient audio, voices, or effects. NWN:EE has no master sound switch, so set
+all four volume channels to zero in the isolated `settings.tml` before launch.
+Mute only the task-owned profile; never change the user's normal
+`settings.tml`, Windows volume mixer, or audio devices. If the client is heard
+during a run, stop it and fix the profile before relaunching.
+
+Use these client settings in the isolated `settings.tml`:
 
 ```toml
+[sound.effects]
+volume=0.0
+[sound.music]
+volume=0.0
+[sound.streams]
+volume=0.0
+[sound.voices]
+volume=0.0
 [graphics.window]
 mode="windowed"
 [graphics.window.windowed]

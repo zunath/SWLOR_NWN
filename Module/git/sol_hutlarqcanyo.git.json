@@ -11954,7 +11954,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Selka Vorn is a frozen-range knife thrower tied to the Perfect Flurry capstone trials in Hutlar Qion Test Site."
+            "0": "Selka Vorn is a poised woman with a performer's posture and quick, restless hands that never quite stop counting. Slim throwing blades ride at her wrists and belt, polished bright despite the Hutlar cold. She lingers in the Qion Box Canyon near the test site gate, watching it like an old stage someone else has taken over."
           }
         },
         "Dex": {
@@ -12405,7 +12405,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 321
+          "value": 4014
         },
         "Race": {
           "type": "byte",

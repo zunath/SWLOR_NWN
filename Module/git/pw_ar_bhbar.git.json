@@ -14161,7 +14161,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Iven Brask is a arena floor fixer tied to the Tempest Bloom capstone trials in Smuggler's Moon Fight Club Backrooms."
+            "0": "Iven Brask holds court on a stool at The Tilted Visor, a man with a showman's voice that still carries like it is filling an arena. He spent fourteen seasons calling bouts at the Fight Club, and he still introduces strangers as if they were walking onto the card. Beneath the patter is an old announcer who knows exactly how many fighters died to the act he used to sell."
           }
         },
         "Dex": {
@@ -14799,7 +14799,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 310
+          "value": 4198
         },
         "Race": {
           "type": "byte",

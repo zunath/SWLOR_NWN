@@ -166,8 +166,50 @@ public class RoleplayXPOOCPenaltyTests
 
         progress.DailyOOCMessageCount.Should().Be(0);
         progress.DailyDMPresentOOCMessageCount.Should().Be(0);
+        progress.DailyEventAreaOOCMessageCount.Should().Be(0);
         progress.PendingOOCPenaltySteps.Should().Be(0);
         progress.OOCMessageCount.Should().Be(500);
+    }
+
+    [Test]
+    public void RecordOOCMessage_InEventAreaWithLimit_UsesEventThenDMThenDailyAllowance()
+    {
+        var progress = new RoleplayProgress();
+        var context = OOCMessageContext.EventArea | OOCMessageContext.DMPresent;
+
+        for (var index = 0; index < 7; index++)
+        {
+            OOCAllowance.RecordOOCMessage(
+                progress,
+                Morning,
+                context,
+                dailyAllowance: 1,
+                dmPresentAllowance: 2,
+                eventAreaAllowance: 3);
+        }
+
+        progress.DailyEventAreaOOCMessageCount.Should().Be(3);
+        progress.DailyDMPresentOOCMessageCount.Should().Be(2);
+        progress.DailyOOCMessageCount.Should().Be(2);
+        progress.PendingOOCPenaltySteps.Should().Be(1);
+    }
+
+    [Test]
+    public void RecordOOCMessage_InEventAreaWithZeroAllowance_UsesDailyAllowance()
+    {
+        var progress = new RoleplayProgress();
+
+        OOCAllowance.RecordOOCMessage(
+            progress,
+            Morning,
+            OOCMessageContext.EventArea,
+            dailyAllowance: 0,
+            dmPresentAllowance: 50,
+            eventAreaAllowance: 0);
+
+        progress.DailyEventAreaOOCMessageCount.Should().Be(0);
+        progress.DailyDMPresentOOCMessageCount.Should().Be(0, "no DM is present");
+        progress.PendingOOCPenaltySteps.Should().Be(1);
     }
 
     [Test]
@@ -179,6 +221,7 @@ public class RoleplayXPOOCPenaltyTests
 
         RecordMessages(progress, OOCAllowance.DefaultDailyAllowance, Morning, OOCMessageContext.Standard);
         RecordMessages(progress, 5, Morning, OOCMessageContext.DMPresent);
+        OOCAllowance.RecordOOCMessage(progress, Morning, OOCMessageContext.EventArea, 20, 50, eventAreaAllowance: 10);
         Record(progress, beforeRestart, OOCMessageContext.Standard);
 
         progress.PendingOOCPenaltySteps.Should().Be(1);
@@ -187,6 +230,7 @@ public class RoleplayXPOOCPenaltyTests
 
         progress.DailyOOCMessageCount.Should().Be(1);
         progress.DailyDMPresentOOCMessageCount.Should().Be(0);
+        progress.DailyEventAreaOOCMessageCount.Should().Be(0);
         progress.PendingOOCPenaltySteps.Should().Be(1, "unspent penalties apply to the next award, not the next day");
     }
 
@@ -232,7 +276,13 @@ public class RoleplayXPOOCPenaltyTests
 
         for (var index = 0; index < 4; index++)
         {
-            OOCAllowance.RecordOOCMessage(progress, Morning, OOCMessageContext.DMPresent, dailyAllowance: 1, dmPresentAllowance: 2);
+            OOCAllowance.RecordOOCMessage(
+                progress,
+                Morning,
+                OOCMessageContext.DMPresent,
+                dailyAllowance: 1,
+                dmPresentAllowance: 2,
+                eventAreaAllowance: null);
         }
 
         progress.DailyDMPresentOOCMessageCount.Should().Be(2);
@@ -258,6 +308,7 @@ public class RoleplayXPOOCPenaltyTests
         {
             ["SWLOR_RPXP_OOC_DAILY_ALLOWANCE"] = "35",
             ["SWLOR_RPXP_OOC_DM_ALLOWANCE"] = "0",
+            ["SWLOR_RPXP_OOC_EVENT_ALLOWANCE"] = "15",
             ["SWLOR_RPXP_OOC_PENALTY_PERCENT"] = "250",
             ["SWLOR_RPXP_OOC_TERMS"] = " Holoskip , ,:] "
         };
@@ -266,6 +317,7 @@ public class RoleplayXPOOCPenaltyTests
 
         settings.RoleplayXPDailyOOCAllowance.Should().Be(35);
         settings.RoleplayXPDMPresentOOCAllowance.Should().Be(0);
+        settings.RoleplayXPEventAreaOOCAllowance.Should().Be(15);
         settings.RoleplayXPOOCPenaltyPercent.Should().Be(100);
         settings.RoleplayXPOOCTerms.Should().BeEquivalentTo(new[] { "Holoskip", ":]" });
         settings.RoleplayXPOOCTerms.Should().Contain("HOLOSKIP");
@@ -279,6 +331,7 @@ public class RoleplayXPOOCPenaltyTests
         {
             ["SWLOR_RPXP_OOC_DAILY_ALLOWANCE"] = "",
             ["SWLOR_RPXP_OOC_DM_ALLOWANCE"] = "-5",
+            ["SWLOR_RPXP_OOC_EVENT_ALLOWANCE"] = "lots",
             ["SWLOR_RPXP_OOC_PENALTY_PERCENT"] = "ten",
             ["SWLOR_RPXP_OOC_TERMS"] = " , "
         };
@@ -287,6 +340,7 @@ public class RoleplayXPOOCPenaltyTests
 
         settings.RoleplayXPDailyOOCAllowance.Should().Be(OOCAllowance.DefaultDailyAllowance);
         settings.RoleplayXPDMPresentOOCAllowance.Should().Be(OOCAllowance.DefaultDMPresentAllowance);
+        settings.RoleplayXPEventAreaOOCAllowance.Should().BeNull("event areas default to unlimited OOC");
         settings.RoleplayXPOOCPenaltyPercent.Should().Be(OOCAllowance.DefaultPenaltyPercentPerMessage);
         settings.RoleplayXPOOCTerms.Should().BeSameAs(RoleplayMessageClassifier.DefaultOOCTerms);
     }
@@ -355,6 +409,18 @@ public class RoleplayXPOOCPenaltyTests
         }
     }
 
+    [TestCase("unlimited")]
+    [TestCase(" UNLIMITED ")]
+    [TestCase("-1")]
+    [TestCase("")]
+    [NonParallelizable]
+    public void ApplicationSettings_EventAllowance_SupportsUnlimited(string value)
+    {
+        var settings = CreateSettings(new Dictionary<string, string> { ["SWLOR_RPXP_OOC_EVENT_ALLOWANCE"] = value });
+
+        settings.RoleplayXPEventAreaOOCAllowance.Should().BeNull();
+    }
+
     private static RoleplayMessageType Classify(string message)
     {
         return RoleplayMessageClassifier.Classify(message, RoleplayMessageClassifier.DefaultOOCTerms);
@@ -367,7 +433,8 @@ public class RoleplayXPOOCPenaltyTests
             utcNow,
             context,
             OOCAllowance.DefaultDailyAllowance,
-            OOCAllowance.DefaultDMPresentAllowance);
+            OOCAllowance.DefaultDMPresentAllowance,
+            OOCAllowance.DefaultEventAreaAllowance);
     }
 
     private static void RecordMessages(RoleplayProgress progress, int count, DateTime utcNow, OOCMessageContext context)

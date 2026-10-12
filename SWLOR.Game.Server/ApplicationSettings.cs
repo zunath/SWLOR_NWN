@@ -32,6 +32,11 @@ namespace SWLOR.Game.Server
 
         public int RoleplayXPDailyOOCAllowance { get; }
         public int RoleplayXPDMPresentOOCAllowance { get; }
+
+        /// <summary>
+        /// Daily OOC allowance in event areas. Null means unlimited.
+        /// </summary>
+        public int? RoleplayXPEventAreaOOCAllowance { get; }
         public int RoleplayXPOOCPenaltyPercent { get; }
         public IReadOnlySet<string> RoleplayXPOOCTerms { get; }
 
@@ -66,6 +71,8 @@ namespace SWLOR.Game.Server
                 Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_DAILY_ALLOWANCE"), OOCAllowance.DefaultDailyAllowance);
             RoleplayXPDMPresentOOCAllowance = ParseNonNegativeInt(
                 Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_DM_ALLOWANCE"), OOCAllowance.DefaultDMPresentAllowance);
+            RoleplayXPEventAreaOOCAllowance = ParseAllowanceOrUnlimited(
+                Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_EVENT_ALLOWANCE"), OOCAllowance.DefaultEventAreaAllowance);
             RoleplayXPOOCPenaltyPercent = Math.Min(100, ParseNonNegativeInt(
                 Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_PENALTY_PERCENT"), OOCAllowance.DefaultPenaltyPercentPerMessage));
             RoleplayXPOOCTerms = ParseTermSet(Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_TERMS"))
@@ -112,6 +119,21 @@ namespace SWLOR.Game.Server
         private static int ParseNonNegativeInt(string value, int defaultValue)
         {
             return int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) && parsed >= 0
+                ? parsed
+                : defaultValue;
+        }
+
+        /// <summary>
+        /// Parses a non-negative allowance, or "unlimited" / "-1" for no limit (returned as null).
+        /// Blank or unrecognized values keep the default.
+        /// </summary>
+        private static int? ParseAllowanceOrUnlimited(string value, int? defaultValue)
+        {
+            var normalized = value?.Trim() ?? string.Empty;
+            if (normalized.Equals("unlimited", StringComparison.OrdinalIgnoreCase) || normalized == "-1")
+                return null;
+
+            return int.TryParse(normalized, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) && parsed >= 0
                 ? parsed
                 : defaultValue;
         }

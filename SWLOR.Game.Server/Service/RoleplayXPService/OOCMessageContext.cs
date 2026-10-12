@@ -1,9 +1,10 @@
 namespace SWLOR.Game.Server.Service.RoleplayXPService
 {
+    [Flags]
     public enum OOCMessageContext
     {
-        Standard = 1,
-        DMPresent = 2,
-        EventArea = 3
+        Standard = 0,
+        DMPresent = 1,
+        EventArea = 2
     }
 }

@@ -233,6 +233,7 @@ namespace SWLOR.Game.Server.Entity
         public DateTime? OOCAllowanceDay { get; set; }
         public int DailyOOCMessageCount { get; set; }
         public int DailyDMPresentOOCMessageCount { get; set; }
+        public int DailyEventAreaOOCMessageCount { get; set; }
         public int PendingOOCPenaltySteps { get; set; }
     }
 

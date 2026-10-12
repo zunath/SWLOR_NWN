@@ -124,7 +124,8 @@ namespace SWLOR.Game.Server.Feature
                     now,
                     GetOOCMessageContext(player),
                     settings.RoleplayXPDailyOOCAllowance,
-                    settings.RoleplayXPDMPresentOOCAllowance);
+                    settings.RoleplayXPDMPresentOOCAllowance,
+                    settings.RoleplayXPEventAreaOOCAllowance);
                 DB.Set(dbPlayer);
                 return;
             }
@@ -168,8 +169,8 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// Event areas allow unlimited OOC. A DM or DM-possessed creature in the player's area
-        /// grants a larger OOC allowance.
+        /// Flags whether the player is in an event area and whether a DM or DM-possessed
+        /// creature is in the player's area. Each grants its own OOC allowance.
         /// </summary>
         private static OOCMessageContext GetOOCMessageContext(uint player)
         {
@@ -177,23 +178,24 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsObjectValid(area))
                 return OOCMessageContext.Standard;
 
-            if (GetLocalBool(area, Communication.EventCommsAreaVariable))
-                return OOCMessageContext.EventArea;
+            var context = GetLocalBool(area, Communication.EventCommsAreaVariable)
+                ? OOCMessageContext.EventArea
+                : OOCMessageContext.Standard;
 
             for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
             {
                 if (!GetIsDM(pc) && !GetIsDMPossessed(pc))
                     continue;
 
-                if (GetArea(pc) == area)
-                    return OOCMessageContext.DMPresent;
-
                 var possessed = Communication.GetDMPossessedCreature(pc);
-                if (GetIsObjectValid(possessed) && GetArea(possessed) == area)
-                    return OOCMessageContext.DMPresent;
+                if (GetArea(pc) == area ||
+                    (GetIsObjectValid(possessed) && GetArea(possessed) == area))
+                {
+                    return context | OOCMessageContext.DMPresent;
+                }
             }
 
-            return OOCMessageContext.Standard;
+            return context;
         }
 
         /// <summary>

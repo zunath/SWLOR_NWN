@@ -3,14 +3,15 @@ using SWLOR.Game.Server.Entity;
 namespace SWLOR.Game.Server.Service.RoleplayXPService
 {
     /// <summary>
-    /// Each character gets a daily allowance of OOC messages, with more leeway while a DM is present
-    /// and no limit in event areas. Every OOC message past the allowance reduces the next RP XP award.
+    /// Each character gets a daily allowance of OOC messages, with extra allowances in event areas
+    /// and while a DM is present. Every OOC message past the allowances reduces the next RP XP award.
     /// The limits are configured in swlor.env (see ApplicationSettings); these are the fallbacks.
     /// </summary>
     public static class OOCAllowance
     {
         public const int DefaultDailyAllowance = 20;
         public const int DefaultDMPresentAllowance = 50;
+        public static readonly int? DefaultEventAreaAllowance = null; // null = unlimited
         public const int DefaultPenaltyPercentPerMessage = 10;
         public const int MaxPenaltySteps = 100;
 
@@ -23,12 +24,17 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
             return (utcNow - DailyResetTimeUtc).Date;
         }
 
+        /// <summary>
+        /// Records an OOC message. Event-area allowance is used first, then DM-present allowance,
+        /// then the daily allowance. A null event-area allowance means OOC in event areas is unlimited.
+        /// </summary>
         public static void RecordOOCMessage(
             RoleplayProgress progress,
             DateTime utcNow,
             OOCMessageContext context,
             int dailyAllowance,
-            int dmPresentAllowance)
+            int dmPresentAllowance,
+            int? eventAreaAllowance)
         {
             var allowanceDay = GetAllowanceDay(utcNow);
             if (progress.OOCAllowanceDay != allowanceDay)
@@ -36,14 +42,24 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
                 progress.OOCAllowanceDay = allowanceDay;
                 progress.DailyOOCMessageCount = 0;
                 progress.DailyDMPresentOOCMessageCount = 0;
+                progress.DailyEventAreaOOCMessageCount = 0;
             }
 
             progress.OOCMessageCount++;
 
-            if (context == OOCMessageContext.EventArea)
-                return;
+            if (context.HasFlag(OOCMessageContext.EventArea))
+            {
+                if (eventAreaAllowance == null)
+                    return;
 
-            if (context == OOCMessageContext.DMPresent && progress.DailyDMPresentOOCMessageCount < dmPresentAllowance)
+                if (progress.DailyEventAreaOOCMessageCount < eventAreaAllowance)
+                {
+                    progress.DailyEventAreaOOCMessageCount++;
+                    return;
+                }
+            }
+
+            if (context.HasFlag(OOCMessageContext.DMPresent) && progress.DailyDMPresentOOCMessageCount < dmPresentAllowance)
             {
                 progress.DailyDMPresentOOCMessageCount++;
                 return;

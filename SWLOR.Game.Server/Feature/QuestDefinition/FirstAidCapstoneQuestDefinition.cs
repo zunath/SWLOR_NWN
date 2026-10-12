@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kavi Dorn gave you the Mon Cala Medical Sublevel Key. On Mon Cala, travel east from Dac City through the Coral Isles and enter the Coral Isles Facility on the south-west side of the outer isles, held by eco-terrorists. Inside, go through the sliding door off the entry hall; the sealed door into the Medical Sublevel is in the south wall of the office block just past it. Defeat six Emergency Cocktail Adepts and recover the Emergency Cocktail Triage Ward Ledger.")
+                    "Kavi Dorn gave you the Mon Cala Medical Sublevel Key. On Mon Cala, travel east from Dac City through the Coral Isles and enter the Coral Isles Facility on the south-west side of the outer isles, held by eco-terrorists. Inside, go through the sliding door off the entry hall; the service lift down to the Medical Sublevel stands in the red-walled bay just east of the office block. Defeat six Emergency Cocktail Adepts and recover the Emergency Cocktail Triage Ward Ledger.")
                 .AddKillObjective(NPCGroupType.MonCala_EmergencyCocktail_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailTriageWardLedger)
 

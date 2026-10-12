@@ -226,9 +226,9 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         BloodFrenzyCharmFragments = 85,
         [KeyItem(KeyItemCategoryType.Keys, "Veles Militia Annex Key", true, "A militia keycard stamped with the Veles garrison seal. It opens the sealed door to the Veles Militia Annex, deep inside the Sheriff's Office in Veles on Viscara.")]
         CapstoneVelesMilitiaAnnexKey = 107,
-        [KeyItem(KeyItemCategoryType.Keys, "Hutlar Jedi Trial Halls Key", true, "A worn training chit etched with a Jedi sigil. It opens the sealed door in the ornate pillar where the big pipe from the concrete ruin ends, at the north end of the Cloning Test Site on Hutlar, the way down to the hidden Jedi Trial Halls.")]
+        [KeyItem(KeyItemCategoryType.Keys, "Hutlar Jedi Trial Halls Key", true, "A worn training chit etched with a Jedi sigil. It opens the blast door of the concrete entrance block on the east side of the ruin at the north end of the Cloning Test Site on Hutlar, the way down to the hidden Jedi Trial Halls.")]
         CapstoneHutlarJediTrialHallsKey = 108,
-        [KeyItem(KeyItemCategoryType.Keys, "Tatooine Forge Caverns Key", true, "A heavy iron key, its bit shaped like a forge glyph. It opens the sealed door in the wall of the old mine building just inside the North Mine Cliffs on Tatooine, as you come in from the Rocky Desert.")]
+        [KeyItem(KeyItemCategoryType.Keys, "Tatooine Forge Caverns Key", true, "A heavy iron key, its bit shaped like a forge glyph. It opens the old mine tunnel entrance in the canyon just inside the North Mine Cliffs on Tatooine, as you come in from the Rocky Desert.")]
         CapstoneTatooineForgeCavernsKey = 109,
         [KeyItem(KeyItemCategoryType.Keys, "Smuggler's Moon Fight Club Backrooms Key", true, "A greasy door code scratched onto a betting chit. It opens the Back Rooms door on the far west wall of the Fight Club, below the Slums on Smuggler's Moon.")]
         CapstoneSmugglersMoonFightClubBackroomsKey = 110,
@@ -244,11 +244,11 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         CapstoneMonCalaSithCryptDepthsKey = 115,
         [KeyItem(KeyItemCategoryType.Keys, "Viscara Republic Engineering Bunker Key", true, "A Republic engineering access card with a cracked corps insignia. It opens the sealed door of a weathered concrete bunker half-sunk in the Western Swamplands on Viscara, a short walk west of where you come in from the Eastern Swamplands.")]
         CapstoneViscaraRepublicEngineeringBunkerKey = 116,
-        [KeyItem(KeyItemCategoryType.Keys, "Mon Cala Medical Sublevel Key", true, "A medical keycard, its clip stained with old kolto. It opens the sealed door in the south wall of the office block, just past the sliding door off the entry hall of the Coral Isles Facility on Mon Cala, the way down to the Medical Sublevel.")]
+        [KeyItem(KeyItemCategoryType.Keys, "Mon Cala Medical Sublevel Key", true, "A medical keycard, its clip stained with old kolto. It works the service lift in the red-walled bay just east of the office block in the Coral Isles Facility on Mon Cala, past the sliding door off the entry hall, the way down to the Medical Sublevel.")]
         CapstoneMonCalaMedicalSublevelKey = 117,
         [KeyItem(KeyItemCategoryType.Keys, "Dathomir Tarn Jungle Preserve Key", true, "A carved hide tag strung with a preserve warden's knot. It opens the sealed gate to the Tarn Jungle Preserve in the north-east part of the Tarnished Jungles on Dathomir.")]
         CapstoneDathomirTarnJunglePreserveKey = 118,
-        [KeyItem(KeyItemCategoryType.Keys, "Dathomir Grotto Apex Den Key", true, "A bone key wrapped in grotto moss and old rancor hide. It opens the gate to the Grotto Apex Den on the west side of the Grotto Caverns on Dathomir, beside the cave water.")]
+        [KeyItem(KeyItemCategoryType.Keys, "Dathomir Grotto Apex Den Key", true, "A bone key wrapped in grotto moss and old rancor hide. It opens the way into the Grotto Apex Den through the dark cave mouth of the rock mound on the west side of the Grotto Caverns on Dathomir, beside the cave water.")]
         CapstoneDathomirGrottoApexDenKey = 119,
         [KeyItem(KeyItemCategoryType.QuestItems, "Invincible Veles Drill Ledger", true, "A militia drill ledger recovered in the Veles Militia Annex during the Invincible trial.")]
         CapstoneInvincibleVelesDrillLedger = 120,

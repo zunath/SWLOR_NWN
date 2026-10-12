@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then take this key, go quietly, and come back whole. On Mon Cala, go east from Dac City through the Coral Isles to the facility on the south-west side of the outer isles. Eco-terrorists hold it now. Go through the sliding door off the entry hall; the sealed door is in the south wall of the office block past it. Beyond that, follow the pipes down. Six adepts, the ledger, and back to me. I'll keep a bed ready. I always do.",
+          "Text": "Then take this key, go quietly, and come back whole. It works the service lift down to the sublevel. On Mon Cala, go east from Dac City through the Coral Isles to the facility on the south-west side of the outer isles. Eco-terrorists hold it now. Go through the sliding door off the entry hall; the lift stands in the red-walled bay just east of the office block. At the bottom, follow the pipes. Six adepts, the ledger, and back to me. I'll keep a bed ready. I always do.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "On Mon Cala. The sublevel was cut as a kolto reserve beneath the Coral Isles Facility. From the landing at the \"Elite\" Hotel in Dac City, go out through the surface streets and east into the Coral Isles, the inner isles and then the outer. The facility stands on the south-west side of the outer isles, held by eco-terrorists. Inside, take the sliding door off the entry hall; the sealed door is in the south wall of the office block past it. Take the work and the key is yours.",
+          "Text": "On Mon Cala. The sublevel was cut as a kolto reserve beneath the Coral Isles Facility. From the landing at the \"Elite\" Hotel in Dac City, go out through the surface streets and east into the Coral Isles, the inner isles and then the outer. The facility stands on the south-west side of the outer isles, held by eco-terrorists. Inside, take the sliding door off the entry hall; a service lift in the red-walled bay just east of the office block goes down. Take the work and the key to that lift is yours.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The ledger is still below, and six adepts stand between you and it. In the Coral Isles Facility on Mon Cala, the sealed door is in the south wall of the office block, through the sliding door off the entry hall. Go gently. But go.",
+          "Text": "The ledger is still below, and six adepts stand between you and it. In the Coral Isles Facility on Mon Cala, take the sliding door off the entry hall to the service lift in the red-walled bay, just east of the office block. Go gently. But go.",
           "Style": 0,
           "Color": null
         }
@@ -1350,7 +1350,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "Six adepts, one ledger. The stair opens today.",
+        "Text": "Six adepts, one ledger. The lift goes down today.",
         "Style": 4,
         "Color": null
       },

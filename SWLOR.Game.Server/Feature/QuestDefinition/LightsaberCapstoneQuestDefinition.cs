@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Talan Rees gave you the Hutlar Jedi Trial Halls Key. From the Hutlar Outpost, take the north exit onto the Qion Tundra, go north-west into the Qion Valley, then west into the Cloning Test Site. At the site's north end, follow the big pipe east from the concrete ruin to an ornate stone pillar; through the sealed door in the pillar's east face, disable six Storm Drill Droids in the Jedi Trial Halls and recover the Saber Storm Enclave Trial Slate.")
+                    "Talan Rees gave you the Hutlar Jedi Trial Halls Key. From the Hutlar Outpost, take the north exit onto the Qion Tundra, go north-west into the Qion Valley, then west into the Cloning Test Site. At the site's north end, find the concrete entrance block on the east side of the big ruin, just south of the big pipe; through its east-facing blast door, disable six Storm Drill Droids in the Jedi Trial Halls and recover the Saber Storm Enclave Trial Slate.")
                 .AddKillObjective(NPCGroupType.Hutlar_StormDrillDroid, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormEnclaveTrialSlate)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Miris Aven gave you the Hutlar Jedi Trial Halls Key. From the Hutlar Outpost, take the north exit onto the Qion Tundra, go north-west into the Qion Valley, then west into the Cloning Test Site. At the site's north end, follow the big pipe east from the concrete ruin to an ornate stone pillar; through the sealed door in the pillar's east face, disable six Guardian Patrol Droids in the Jedi Trial Halls and recover the Guardian Master Enclave Trial Slate.")
+                    "Miris Aven gave you the Hutlar Jedi Trial Halls Key. From the Hutlar Outpost, take the north exit onto the Qion Tundra, go north-west into the Qion Valley, then west into the Cloning Test Site. At the site's north end, find the concrete entrance block on the east side of the big ruin, just south of the big pipe; through its east-facing blast door, disable six Guardian Patrol Droids in the Jedi Trial Halls and recover the Guardian Master Enclave Trial Slate.")
                 .AddKillObjective(NPCGroupType.Hutlar_GuardianPatrolDroid, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterEnclaveTrialSlate)
 

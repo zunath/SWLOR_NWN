@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Valis Korr gave you the Tatooine Forge Caverns Key. On Tatooine, go south from the Anchorhead spaceport through the South District to the Southern Entrance, leave by its east side into the Rocky Desert, then head north into the North Mine Cliffs and enter the Forge Caverns through the sealed door in the wall of the old mine building just ahead. Defeat 6 Absolute Defense adepts and secure the Absolute Defense Forge Heat Ledger they keep near the crucibles.")
+                    "Valis Korr gave you the Tatooine Forge Caverns Key. On Tatooine, go south from the Anchorhead spaceport through the South District to the Southern Entrance, leave by its east side into the Rocky Desert, then head north into the North Mine Cliffs and take the ramp down into the Forge Caverns under the arched mine tunnel entrance a short walk ahead, beside an old mine cart. Defeat 6 Absolute Defense adepts and secure the Absolute Defense Forge Heat Ledger they keep near the crucibles.")
                 .AddKillObjective(NPCGroupType.Tatooine_AbsoluteDefense_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAbsoluteDefenseForgeHeatLedger)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Senn Dralok gave you the Tatooine Forge Caverns Key. On Tatooine, go south from the Anchorhead spaceport through the South District to the Southern Entrance, leave by its east side into the Rocky Desert, then head north into the North Mine Cliffs and enter the Forge Caverns through the sealed door in the wall of the old mine building just ahead. Defeat 6 Soul Ascension adepts and secure the Soul Ascension Forge Heat Ledger kept near the crucibles.")
+                    "Senn Dralok gave you the Tatooine Forge Caverns Key. On Tatooine, go south from the Anchorhead spaceport through the South District to the Southern Entrance, leave by its east side into the Rocky Desert, then head north into the North Mine Cliffs and take the ramp down into the Forge Caverns under the arched mine tunnel entrance a short walk ahead, beside an old mine cart. Defeat 6 Soul Ascension adepts and secure the Soul Ascension Forge Heat Ledger kept near the crucibles.")
                 .AddKillObjective(NPCGroupType.Tatooine_SoulAscension_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSoulAscensionForgeHeatLedger)
 

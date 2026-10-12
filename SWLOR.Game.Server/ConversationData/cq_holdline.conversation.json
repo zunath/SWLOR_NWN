@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then take the sublevel key. From Dac City on Mon Cala, go east through the Coral Isles, the inner isles and then the outer. The Coral Isles Facility stands on the south-west side of the outer isles. Eco-terrorists hold it now, so go in ready. Take the sliding door off the entry hall; the sealed door to my ward is in the south wall of the office block just past it. Start in the triage hall. And walk in like you belong to the ward. You do, now.",
+          "Text": "Then take the sublevel key; it works the service lift down to my ward. From Dac City on Mon Cala, go east through the Coral Isles, the inner isles and then the outer. The Coral Isles Facility stands on the south-west side of the outer isles. Eco-terrorists hold it now, so go in ready. Take the sliding door off the entry hall; the lift stands in the red-walled bay just east of the office block. Start in the triage hall. And walk in like you belong to the ward. You do, now.",
           "Style": 0,
           "Color": null
         }
@@ -980,7 +980,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A flat disc, worn smooth, older than the facility's charter. Whoever holds it answers for every bed. That is all it means, and that is everything. In their hands it says the ward belongs to them. In yours, on the way back up the stairs, it will say the ward belongs to its patients again. Do you see now why I sent you for a book first? You have been earning the right to carry that token since the day you walked in.",
+          "Text": "A flat disc, worn smooth, older than the facility's charter. Whoever holds it answers for every bed. That is all it means, and that is everything. In their hands it says the ward belongs to them. In yours, on the ride back up, it will say the ward belongs to its patients again. Do you see now why I sent you for a book first? You have been earning the right to carry that token since the day you walked in.",
           "Style": 0,
           "Color": null
         }
@@ -1189,7 +1189,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "When it is done, we open the sublevel. Sera's mother goes back to a real recovery bed. The far beds get sunlight lamps, and the triage hall gets its desk back. And the doctrine gets taught again - properly, by someone who has carried it up and down those stairs. I had planned to say by me. We both know I mean by you.",
+          "Text": "When it is done, we open the sublevel. Sera's mother goes back to a real recovery bed. The far beds get sunlight lamps, and the triage hall gets its desk back. And the doctrine gets taught again - properly, by someone who has carried it down into that ward and back up again. I had planned to say by me. We both know I mean by you.",
           "Style": 0,
           "Color": null
         }
@@ -1977,7 +1977,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Your token, matron. Carried up the stairs, like you said.",
+        "Text": "Your token, matron. Carried back up, like you said.",
         "Style": 4,
         "Color": null
       },

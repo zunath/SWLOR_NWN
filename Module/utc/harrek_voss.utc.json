@@ -822,6 +822,21 @@
           "type": "cexostring",
           "value": "VISCARA_HARREK_VOSS_PLATE,100,1"
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_7"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MUSIC_DISCS,1,1"
+        }
       }
     ]
   },

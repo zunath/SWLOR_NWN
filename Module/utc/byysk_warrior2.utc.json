@@ -679,6 +679,21 @@
           "type": "cexostring",
           "value": "HUTLAR_BYYSK_GEAR_RARES,10,1"
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_5"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MUSIC_DISCS,1,1"
+        }
       }
     ]
   },

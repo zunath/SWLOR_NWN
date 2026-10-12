@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Unbreakable Beast in Dathomir Tarn Jungle Preserve."
+    "value": "Unbreakable Beast specialist in Dathomir - Tarn Jungle Preserve."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Unbreakable Beast in Dathomir Tarn Jungle Preserve."
+      "0": "An older plated burrower, its plates scarred and its movements heavy with constant pain. The pit-breeders dosed its pen with a scent meant to keep it hurting, and it no longer seems to notice what hits it."
     }
   },
   "Dex": {

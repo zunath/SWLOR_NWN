@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Worldbreaker in CZ-220 Breaker Yard."
+    "value": "Worldbreaker specialist in CZ-220 - Breaker Bay."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Worldbreaker in CZ-220 Breaker Yard."
+      "0": "An Ugnaught in black yard coveralls who handles his staff with measured, repeatable form. Where rawer hands guess, he calculates, tuning each blow to break exactly what it hits. He keeps watch over the junkline, where his crew has misrouted the yard's power."
     }
   },
   "Dex": {

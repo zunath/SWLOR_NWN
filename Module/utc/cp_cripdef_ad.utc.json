@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Crippling Defense in Smuggler's Moon Fight Club Backrooms."
+    "value": "Crippling Defense adept in Smuggler's Moon - Fight Club Backrooms."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Crippling Defense in Smuggler's Moon Fight Club Backrooms."
+      "0": "A young Kel Dor in street clothes who runs sign-ups for a backroom stable in the Fight Club Backrooms and has spent months sparring bouts meant to end careers. He comes in low with his spear, works the knees, and does not stop when his opponent is down."
     }
   },
   "Dex": {

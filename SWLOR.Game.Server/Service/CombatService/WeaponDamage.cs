@@ -36,6 +36,36 @@ namespace SWLOR.Game.Server.Service.CombatService
             return CalculateEffectiveDMG(damage, qualifies ? GetSingleWeaponPercent(creature) : 0);
         }
 
+        /// <summary>Damage type a weapon deals, matching native auto-attack resolution.</summary>
+        public static CombatDamageType GetDamageType(uint weapon)
+        {
+            // A damage type only retypes a real DMG property; the DMG fallback stays Physical.
+            if (!GetIsObjectValid(weapon) || !GetItemHasItemProperty(weapon, ItemPropertyType.DMG))
+                return CombatDamageType.Physical;
+
+            var damageType = CombatDamageType.Physical;
+            for (var ip = GetFirstItemProperty(weapon); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(weapon))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.WeaponDamageType)
+                    damageType = ResolveDamageType(damageType, GetItemPropertySubType(ip));
+            }
+
+            return damageType;
+        }
+
+        public static CombatDamageType ResolveDamageType(CombatDamageType current, int damageTypeId)
+        {
+            if (damageTypeId > (int)CombatDamageType.Sonic || damageTypeId < (int)CombatDamageType.Physical)
+                return current;
+
+            // Only elements retype weapon damage; Force conversion belongs to Imbuement Stance.
+            var candidate = (CombatDamageType)damageTypeId;
+            if (!candidate.IsElementalDamageType() || current.IsElementalDamageType())
+                return current;
+
+            return candidate;
+        }
+
         public static int CalculateEffectiveDMG(int itemDamage, int percent)
         {
             if (itemDamage <= 0 || percent <= 0)

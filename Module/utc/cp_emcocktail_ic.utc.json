@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Emergency Cocktail in Dantooine Medical Sublevel."
+    "value": "Emergency Cocktail inner circle member in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Emergency Cocktail in Dantooine Medical Sublevel."
+      "0": "More implant than patient, this cyborg wears a mechanic's harness over plating bolted into his own chest. He is one of the four who wrote the crew's hot-batch doctrine, and he keeps his blaster pistol steady with hands that no longer shake for any reason."
     }
   },
   "Dex": {

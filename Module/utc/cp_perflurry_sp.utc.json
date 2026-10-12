@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Perfect Flurry in Hutlar Qion Test Site."
+    "value": "Perfect Flurry specialist in Hutlar - Qion Test Site."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Perfect Flurry in Hutlar Qion Test Site."
+      "0": "A Twi'lek woman in padded colonist garb with armored panels, throwing blades fanned between her fingers. She drills on the cryo range, where a performer's routine has been stripped down to release timings and arc spacing and paced by a chronometer instead of a pulse."
     }
   },
   "Dex": {

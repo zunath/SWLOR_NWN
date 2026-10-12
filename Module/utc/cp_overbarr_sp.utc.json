@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Overload Barrage in Hutlar Qion Test Site."
+    "value": "Overload Barrage specialist in Hutlar - Qion Test Site."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Overload Barrage in Hutlar Qion Test Site."
+      "0": "A Zabrak woman in a Czerka employee's uniform, blaster pistol in hand. She keeps the site's cryo-range regulator running off stolen charge tables whose safety curve was stripped out, so every barrage run through it either fizzles or cooks whoever fires it."
     }
   },
   "Dex": {

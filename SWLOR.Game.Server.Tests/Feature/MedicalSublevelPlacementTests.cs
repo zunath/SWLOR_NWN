@@ -6,9 +6,9 @@ using System.Text.Json;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class DantooineMedicalSublevelPlacementTests
+public class MedicalSublevelPlacementTests
 {
-    private const string AccessArea = "dan_warehouse.git.json";
+    private const string AccessArea = "moncalacifacilit.git.json";
     private const string DungeonArea = "pw_sc_dantmedsub.git.json";
     private const string ArenaArea = "pw_sc_dantprowar.git.json";
 
@@ -54,8 +54,8 @@ public class DantooineMedicalSublevelPlacementTests
         using var dungeon = LoadModuleJson("are", "pw_sc_dantmedsub.are.json");
         using var arena = LoadModuleJson("are", "pw_sc_dantprowar.are.json");
 
-        GetString(dungeon.RootElement, "Name").Should().Be("Dantooine - Medical Sublevel");
-        GetString(arena.RootElement, "Name").Should().Be("Dantooine - Protected Ward");
+        GetString(dungeon.RootElement, "Name").Should().Be("Mon Cala - Medical Sublevel");
+        GetString(arena.RootElement, "Name").Should().Be("Mon Cala - Protected Ward");
         GetString(dungeon.RootElement, "Tag").Should().Be("pw_sc_dantmedsubl");
         GetString(arena.RootElement, "Tag").Should().Be("pw_sc_dantproward");
         GetString(arena.RootElement, "Tag").Should().NotBe(GetString(dungeon.RootElement, "Tag"));
@@ -71,8 +71,8 @@ public class DantooineMedicalSublevelPlacementTests
         GetLocalInt(dungeon.RootElement, "IS_DUNGEON").Should().Be(1);
         GetLocalInt(dungeon.RootElement, "MINI_MAP_DISABLED").Should().Be(1);
         GetLocalInt(dungeon.RootElement, "MAP_KEY_ITEM_ID")
-            .Should().Be((int)KeyItemType.DantooineWarehouseMap);
-        GetLocalInt(dungeon.RootElement, "PLANET_TYPE_ID").Should().Be((int)PlanetType.Dantooine);
+            .Should().Be((int)KeyItemType.CoralIslesFacilityMap);
+        GetLocalInt(dungeon.RootElement, "PLANET_TYPE_ID").Should().Be((int)PlanetType.MonCala);
 
         EnumerateWaypointTags(dungeon.RootElement)
             .Should().Contain("DANTOOINE_MEDICAL_SUBLEVEL_RARES");
@@ -125,19 +125,19 @@ public class DantooineMedicalSublevelPlacementTests
     [Test]
     public void MedicalSublevelAccess_UsesTheStandardCapstoneKeyGate()
     {
-        ((int)KeyItemType.CapstoneDantooineMedicalSublevelKey).Should().Be(117);
+        ((int)KeyItemType.CapstoneMonCalaMedicalSublevelKey).Should().Be(117);
 
         using var accessArea = LoadModuleJson("git", AccessArea);
         var gate = FindTeleport(accessArea.RootElement, "to_medsublevel");
         var accessAreaProperties = accessArea.RootElement.GetProperty("AreaProperties").GetProperty("value");
 
-        GetLocalInt(accessAreaProperties, "PLANET_TYPE_ID").Should().Be((int)PlanetType.Dantooine);
+        GetLocalInt(accessAreaProperties, "PLANET_TYPE_ID").Should().Be((int)PlanetType.MonCala);
         GetString(gate, "Tag").Should().Be("tele_obj");
         GetString(gate, "TemplateResRef").Should().Be("tele_obj");
         GetString(gate, "OnHeartbeat").Should().BeEmpty();
-        GetLocalizedString(gate, "LocName").Should().Be("Dantooine Medical Sublevel");
+        GetLocalizedString(gate, "LocName").Should().Be("Medical Sublevel");
         GetLocalInt(gate, "KEY_ITEM_ID")
-            .Should().Be((int)KeyItemType.CapstoneDantooineMedicalSublevelKey);
+            .Should().Be((int)KeyItemType.CapstoneMonCalaMedicalSublevelKey);
         GetLocalInt(gate, "TELEPORT_PARTY_MEMBERS").Should().Be(1);
         GetLocalString(gate, "MISSING_KEY_ITEM_MESSAGE").Should().Contain("Medical Sublevel");
         GetLocalString(gate, "MISSING_KEY_ITEM_MESSAGE").Should().Contain("key");
@@ -180,7 +180,7 @@ public class DantooineMedicalSublevelPlacementTests
         GetLocalInt(arenaEntrance, "TELEPORT_PARTY_MEMBERS").Should().Be(0);
         GetLocalInt(arenaExit, "TELEPORT_PARTY_MEMBERS").Should().Be(0);
 
-        GetLocalInt(arena.RootElement, "PLANET_TYPE_ID").Should().Be((int)PlanetType.Dantooine);
+        GetLocalInt(arena.RootElement, "PLANET_TYPE_ID").Should().Be((int)PlanetType.MonCala);
     }
 
     [Test]

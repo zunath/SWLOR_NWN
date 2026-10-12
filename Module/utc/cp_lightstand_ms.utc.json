@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "A living tomb raider in the Korriban Sith Crypt Depths. This independent looting expedition attacks anyone who obstructs its theft of sealed relics. Its members have no authority from the Sith Academy."
+    "value": "Last Stand of the Light master in Mon Cala - Final Ritual Chamber."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A living tomb raider in the Korriban Sith Crypt Depths. This independent looting expedition attacks anyone who obstructs its theft of sealed relics. Its members have no authority from the Sith Academy."
+      "0": "A Cathar relic hunter in a bounty hunter's armor, with a blaster at his side and some training in the Force. He leads the looting of the Sith Crypt Depths and means to leave Mon Cala with the tomb's last relics."
     }
   },
   "Dex": {

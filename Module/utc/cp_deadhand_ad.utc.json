@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Dead Man's Hand in Anchorhead Canyon Range."
+    "value": "Dead Man's Hand adept in Tatooine - Anchorhead Canyon Range."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Dead Man's Hand in Anchorhead Canyon Range."
+      "0": "A Nautolan in a trader's clothes with a blaster pistol and an easy smile. He is one of the eager students at a crooked table in the Anchorhead Canyon Range, learning an old dealer's draw and the house's cheating along with it, and he bets like he holds aces."
     }
   },
   "Dex": {

@@ -9186,7 +9186,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 32
+          "value": 2
         }
       },
       {
@@ -9408,7 +9408,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - Absolute Defense Master Spawn"
+            "0": "Tatooine Forge Caverns - Absolute Defense Master Spawn"
           }
         },
         "MapNote": {
@@ -9479,7 +9479,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - Soul Ascension Master Spawn"
+            "0": "Tatooine Forge Caverns - Soul Ascension Master Spawn"
           }
         },
         "MapNote": {
@@ -9550,7 +9550,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns - Forcebane Master Spawn"
+            "0": "Tatooine Forge Caverns - Forcebane Master Spawn"
           }
         },
         "MapNote": {

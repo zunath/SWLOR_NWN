@@ -59,12 +59,23 @@ namespace SWLOR.Game.Server.Service
 
             if (scope != DMPlayerSearchScope.Online && terms.Count > 0)
             {
-                foreach (var dbPlayer in SearchOfflineRecords(search.Trim()))
+                foreach (var dbPlayer in SearchOfflineRecords(search.Trim(), terms))
                 {
                     if (onlineIds.Contains(dbPlayer.Id))
                         continue;
 
-                    results.Add(BuildOfflineResult(dbPlayer));
+                    // Offline characters match the same way as online ones: every term, in any field.
+                    var result = BuildOfflineResult(dbPlayer);
+                    if (DMSearchText.Matches(terms,
+                            result.Name,
+                            result.Descriptor,
+                            dbPlayer.UnknownDisplayName,
+                            result.AccountName,
+                            result.CDKey,
+                            result.PlayerId))
+                    {
+                        results.Add(result);
+                    }
                 }
             }
 
@@ -127,27 +138,37 @@ namespace SWLOR.Game.Server.Service
             return players;
         }
 
-        private static List<Player> SearchOfflineRecords(string search)
+        // Returns candidates for Search to filter. The index only matches when every word of a query is in one
+        // field, so the longest term is also searched alone to find characters whose terms span several fields.
+        private static List<Player> SearchOfflineRecords(string search, IReadOnlyList<string> terms)
         {
             var players = new Dictionary<string, Player>();
+            var longestTerm = terms.OrderByDescending(term => term.Length).First();
 
-            if (Guid.TryParse(search, out _))
+            if (Guid.TryParse(longestTerm, out _))
             {
-                var dbPlayer = DB.Get<Player>(search);
+                var dbPlayer = DB.Get<Player>(longestTerm);
                 if (dbPlayer != null && !dbPlayer.IsDeleted)
                     players[dbPlayer.Id] = dbPlayer;
             }
 
-            foreach (var field in OfflineSearchFields)
-            {
-                var query = new DBQuery<Player>()
-                    .AddFieldSearch(nameof(Player.IsDeleted), false)
-                    .AddFieldSearch(field, search, true)
-                    .AddPaging(MaxOfflineMatchesPerField, 0);
+            var queryTexts = terms.Count > 1
+                ? new[] { search, longestTerm }
+                : new[] { search };
 
-                foreach (var dbPlayer in DB.Search(query))
+            foreach (var queryText in queryTexts)
+            {
+                foreach (var field in OfflineSearchFields)
                 {
-                    players[dbPlayer.Id] = dbPlayer;
+                    var query = new DBQuery<Player>()
+                        .AddFieldSearch(nameof(Player.IsDeleted), false)
+                        .AddFieldSearch(field, queryText, true)
+                        .AddPaging(MaxOfflineMatchesPerField, 0);
+
+                    foreach (var dbPlayer in DB.Search(query))
+                    {
+                        players[dbPlayer.Id] = dbPlayer;
+                    }
                 }
             }
 

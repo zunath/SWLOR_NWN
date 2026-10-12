@@ -79,6 +79,24 @@ public class DMPaletteReaderTests
         blueprints.Single(blueprint => blueprint.Resref == "merchant").IsInCategory("NPCs / Humans").Should().BeFalse();
     }
 
+    [Test]
+    public void Read_SkipsMalformedValuesWithoutDroppingThePalette()
+    {
+        const string malformed = """
+            {"MAIN":{"type":"list","value":[
+              {"NAME":{"type":"cexostring","value":"NPCs"},"LIST":{"type":"list","value":[
+                {"RESREF":{"type":"resref","value":7},"NAME":{"type":"cexostring","value":"Numeric resref"}},
+                {"RESREF":{"type":"resref","value":"guard"},"NAME":{"type":"cexostring","value":"Guard"},"FACTION":{"type":"cexostring","value":3}}
+              ]}}
+            ]}}
+            """;
+
+        var palette = DMPaletteReader.Read(malformed, DMBlueprintCategory.Creatures, DMBlueprintSource.Custom, _ => string.Empty);
+
+        palette.Blueprints.Select(blueprint => blueprint.Resref).Should().Equal("guard");
+        palette.Blueprints[0].Faction.Should().BeEmpty();
+    }
+
     [TestCase("creaturepalcus", DMBlueprintCategory.Creatures)]
     [TestCase("itempalcus", DMBlueprintCategory.Items)]
     [TestCase("placeablepalcus", DMBlueprintCategory.Placeables)]

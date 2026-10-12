@@ -50,14 +50,14 @@ namespace SWLOR.Game.Server.Service.DMToolService
                 var name = ReadName(node, resolveStrRef);
                 if (TryGetValue(node, "RESREF", out var resrefValue))
                 {
-                    var resref = resrefValue.GetString() ?? string.Empty;
+                    var resref = ReadString(resrefValue);
                     if (string.IsNullOrWhiteSpace(resref))
                         continue;
 
                     float? challengeRating = TryGetValue(node, "CR", out var cr) && cr.ValueKind == JsonValueKind.Number
                         ? cr.GetSingle()
                         : null;
-                    var faction = TryGetValue(node, "FACTION", out var factionValue) ? factionValue.GetString() : string.Empty;
+                    var faction = TryGetValue(node, "FACTION", out var factionValue) ? ReadString(factionValue) : string.Empty;
                     blueprints.Add(new DMBlueprint(
                         resref,
                         string.IsNullOrWhiteSpace(name) ? resref : name,
@@ -105,6 +105,14 @@ namespace SWLOR.Game.Server.Service.DMToolService
             }
 
             return string.Empty;
+        }
+
+        // A malformed node must not stop the rest of the palette from loading.
+        private static string ReadString(JsonElement value)
+        {
+            return value.ValueKind == JsonValueKind.String
+                ? value.GetString() ?? string.Empty
+                : string.Empty;
         }
 
         // GFF JSON stores each field as {"type": ..., "value": ...}.

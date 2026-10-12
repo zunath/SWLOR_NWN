@@ -14,7 +14,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // The client sometimes re-centers a window placed at exactly (0, 0), so the toolbar sits one pixel in.
         public const float ToolbarX = 1f;
         public const float ToolbarY = 1f;
-        public const float ButtonWidth = 96f;
+        // The client keeps at least 720 UI pixels of height, so a 1280x1024 screen at its highest UI scale is
+        // about 914 wide. The admin toolbar must fit there without covering the portrait.
+        public const float ButtonWidth = 84f;
         // Measured in the client: each button takes 4 pixels of margin and the window about 14 of padding per side.
         public const float ButtonSlotWidth = ButtonWidth + 4f;
         // Every DM sees these buttons; admins also get the Admin button at the end.

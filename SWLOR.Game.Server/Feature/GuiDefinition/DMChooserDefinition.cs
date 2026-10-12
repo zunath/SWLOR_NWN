@@ -13,18 +13,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<DMChooserViewModel> _builder = new();
 
-        private const float ContentPanelWidth = 640f;
+        private const float ContentPanelWidth = 580f;
         private const float SideRailWidth = 280f;
         private const float IconCellWidth = 40f;
-        private const float InfoCellWidth = 150f;
-        private const float AreaCellWidth = 140f;
+        private const float InfoCellWidth = 140f;
+        private const float AreaCellWidth = 120f;
         private const float ButtonHeight = 32f;
         private const float RailButtonWidth = 250f;
 
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.DMChooser)
-                .SetInitialGeometry(0, 0, 960f, 600f)
+                .SetInitialGeometry(0, 0, 900f, 600f)
                 .SetTitle("Chooser")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

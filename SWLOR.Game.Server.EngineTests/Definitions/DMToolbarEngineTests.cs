@@ -365,12 +365,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await InContext(ctx, dm.Creature, model.OnClickSearch());
                 ctx.Assert(model.ResultSummary.StartsWith("Enter a name"), "offline scope asks for search text");
 
-                foreach (var search in new[] { "Qorin", "qorinacc", "QZTEST01", "weathered zab", offlineId })
+                // Terms may come from different fields and in any order, as with online characters.
+                foreach (var search in new[] { "Qorin", "qorinacc", "QZTEST01", "weathered zab", offlineId, "qorinacc Qorin", "Zyndari QZTEST01" })
                 {
                     await InContext(ctx, dm.Creature, () => model.SearchText = search);
                     await InContext(ctx, dm.Creature, model.OnClickSearch());
                     ctx.Assert(model.ResultNames.Contains("Qorin Zyndari"), $"offline search '{search}' finds the character");
                 }
+
+                await InContext(ctx, dm.Creature, () => model.SearchText = "Qorin nomatchxyz");
+                await InContext(ctx, dm.Creature, model.OnClickSearch());
+                ctx.Assert(!model.ResultNames.Contains("Qorin Zyndari"), "every term must match an offline character");
 
                 await InContext(ctx, dm.Creature, () => model.SelectedScope = (int)DMPlayerSearchScope.All);
                 await InContext(ctx, dm.Creature, () => model.SearchText = "Zyndari");

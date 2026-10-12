@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Nalka Rinn gave you the Dathomir Grotto Apex Den Key. Put down six Primal Overrun Adepts, young shell-backs in the Grotto Apex Den on Dathomir, and recover the Primal Overrun Grotto Track Slate from their nest. The den's gate is on the west side of the Grotto Caverns, a short walk south of the stairs down from the Grottos.")
+                    "Nalka Rinn gave you the Dathomir Grotto Apex Den Key. Put down six Primal Overrun Adepts, young shell-backs in the Grotto Apex Den on Dathomir, and recover the Primal Overrun Grotto Track Slate from their nest. From the Tribe Village, head north-east along the canyon to the Grottos' east entrance, which opens on the south end of the Grotto Caverns; the den's gate is a short walk north-west of there, on the west side of the Caverns by the cave water.")
                 .AddKillObjective(NPCGroupType.Dathomir_PrimalOverrun_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePrimalOverrunGrottoTrackSlate)
 
@@ -227,7 +227,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Voro Thane gave you the Dathomir Grotto Apex Den Key. Put down six Untouchable Instinct Adepts, young crystal spiders in the Grotto Apex Den on Dathomir, and recover the Untouchable Instinct Grotto Track Slate from their webs. The den's gate is on the west side of the Grotto Caverns, a short walk south of the stairs down from the Grottos.")
+                    "Voro Thane gave you the Dathomir Grotto Apex Den Key. Put down six Untouchable Instinct Adepts, young crystal spiders in the Grotto Apex Den on Dathomir, and recover the Untouchable Instinct Grotto Track Slate from their webs. From the Tribe Village, head north-east along the canyon to the Grottos' east entrance, which opens on the south end of the Grotto Caverns; the den's gate is a short walk north-west of there, on the west side of the Caverns by the cave water.")
                 .AddKillObjective(NPCGroupType.Dathomir_UntouchableInstinct_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUntouchableInstinctGrottoTrackSlate)
 
@@ -340,7 +340,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Eshka Korr gave you the Dathomir Grotto Apex Den Key. Put down six Force-Bonded Beast Adepts, young wyverns in the Grotto Apex Den on Dathomir, and recover the Force-Bonded Beast Grotto Track Slate from their roost. The den's gate is on the west side of the Grotto Caverns, a short walk south of the stairs down from the Grottos.")
+                    "Eshka Korr gave you the Dathomir Grotto Apex Den Key. Put down six Force-Bonded Beast Adepts, young wyverns in the Grotto Apex Den on Dathomir, and recover the Force-Bonded Beast Grotto Track Slate from their roost. From the Tribe Village, head north-east along the canyon to the Grottos' east entrance, which opens on the south end of the Grotto Caverns; the den's gate is a short walk north-west of there, on the west side of the Caverns by the cave water.")
                 .AddKillObjective(NPCGroupType.Dathomir_ForceBondedBeast_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForceBondedBeastGrottoTrackSlate)
 

@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 7
+    "value": 50
   },
   "Charges": {
     "type": "byte",
@@ -44,11 +44,11 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 71
+    "value": 12
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 201
+    "value": 24
   },
   "ModelPart3": {
     "type": "byte",
@@ -65,37 +65,6 @@
   "PropertiesList": {
     "type": "list",
     "value": [
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 14
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 1
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 61
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 1
-        }
-      },
       {
         "__struct_id": 0,
         "ChanceAppear": {
@@ -198,11 +167,11 @@
   },
   "xModelPart1": {
     "type": "word",
-    "value": 71
+    "value": 12
   },
   "xModelPart2": {
     "type": "word",
-    "value": 201
+    "value": 24
   },
   "xModelPart3": {
     "type": "word",

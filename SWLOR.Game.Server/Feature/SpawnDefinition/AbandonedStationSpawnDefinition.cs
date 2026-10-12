@@ -42,6 +42,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "abs_zguard")
                 .WithFrequency(15)
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "abs_zchief")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
                 .ReturnsHome();
         }
 
@@ -64,6 +70,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "abs_rakbrute")
                 .WithFrequency(15)
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "abs_subzero")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
                 .ReturnsHome();
         }
 

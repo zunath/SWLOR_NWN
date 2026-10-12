@@ -5597,6 +5597,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Quarantine Respirator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "quarantine_mask"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Quark Helmet"
                     },
                     "RESREF": {
@@ -5679,6 +5690,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "republictrooperh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Riot-Visor Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "riotvisor_helm"
                     }
                   },
                   {
@@ -8391,6 +8413,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Chief Varrick Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zchief_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Chirodactyl Bite"
                     },
                     "RESREF": {
@@ -9287,6 +9320,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "zomb_bite2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Subject Zero Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_subzero_wp"
                     }
                   },
                   {
@@ -13949,6 +13993,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "it_creitemunf001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chief Varrick Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zchief_sk"
                     }
                   },
                   {
@@ -18833,6 +18888,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "stormplume_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Subject Zero Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_subzero_sk"
                     }
                   },
                   {
@@ -25554,6 +25620,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Breach-Seal Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "breachseal_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Byysk Belt"
                           },
                           "RESREF": {
@@ -29667,6 +29744,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Lockdown Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "lockdown_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Majestic Bracer"
                           },
                           "RESREF": {
@@ -31008,6 +31096,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "inq_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Isolation Shroud"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "isolation_shroud"
                           }
                         },
                         {
@@ -49643,6 +49742,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Override Keyspike"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "override_spike"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Paprika I"
                     },
                     "RESREF": {
@@ -49945,6 +50055,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mb_shell"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plague Culture Vial"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "plague_culture"
                     }
                   },
                   {
@@ -57050,6 +57171,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Serum-Cell Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "serumcell_neck"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Shatterhide Charm"
                           },
                           "RESREF": {
@@ -62417,6 +62549,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Breach-Seal Belt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_breachbelt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Brineleaf Chowder"
                     },
                     "RESREF": {
@@ -64765,6 +64908,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "bpmbbraise"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Serum-Cell Necklace"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_serumneck"
                     }
                   },
                   {

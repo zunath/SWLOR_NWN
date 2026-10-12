@@ -3168,6 +3168,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         SalvagedSortingHarness = 5054,
         SalvagedAssemblyGauntlet = 5055,
         SalvagedNullFieldCollar = 5056,
+        SalvagedBreachSealBelt = 5057,
+        SalvagedSerumCellNecklace = 5058,
 
         #endregion
 

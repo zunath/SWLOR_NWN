@@ -282,6 +282,30 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("faultscan_optic", 1)
                 .Component("elec_high", 3)
                 .Component("fiberp_high", 2);
+
+            // Breach-Seal Belt (belt) - Abandoned Station
+            _builder.Create(RecipeType.SalvagedBreachSealBelt, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("breachseal_belt")
+                .Level(30)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("override_spike", 1)
+                .Component("lth_good", 3)
+                .Component("fiberp_good", 2);
+
+            // Serum-Cell Necklace (necklace) - Abandoned Station
+            _builder.Create(RecipeType.SalvagedSerumCellNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("serumcell_neck")
+                .Level(28)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("plague_culture", 1)
+                .Component("ref_plagionite", 2)
+                .Component("citrine", 1);
         }
     }
 }

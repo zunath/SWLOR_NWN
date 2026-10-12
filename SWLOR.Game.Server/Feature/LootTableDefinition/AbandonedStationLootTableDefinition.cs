@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             ZombieRancor();
             StationHorrors();
+            NamedRares();
 
             return _builder.Build();
         }
@@ -46,6 +47,26 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("STATION_DIRECTOR")
                 .AddItem("lockbox_t3", 1);
+        }
+
+        private void NamedRares()
+        {
+            // Named rare elites: unique gear plus a blueprint, and a guaranteed component that the blueprint's recipe requires.
+            _builder.Create("STATION_CHIEF_RARES")
+                .IsRare()
+                .AddItem("riotvisor_helm", 1, 1, true)
+                .AddItem("lockdown_bracer", 1, 1, true)
+                .AddItem("bp_breachbelt", 1, 1, true);
+            _builder.Create("STATION_SUBZERO_RARES")
+                .IsRare()
+                .AddItem("quarantine_mask", 1, 1, true)
+                .AddItem("isolation_shroud", 1, 1, true)
+                .AddItem("bp_serumneck", 1, 1, true);
+
+            _builder.Create("STATION_CHIEF_COMP")
+                .AddItem("override_spike", 1, 1);
+            _builder.Create("STATION_SUBZERO_COMP")
+                .AddItem("plague_culture", 1, 1);
         }
     }
 }

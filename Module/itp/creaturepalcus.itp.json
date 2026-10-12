@@ -2851,6 +2851,25 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
+                            "value": 24.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Chief Varrick"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_zchief"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
                             "value": 23.0
                           },
                           "FACTION": {
@@ -3035,6 +3054,25 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "abs_ztech"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "CR": {
+                            "type": "float",
+                            "value": 28.0
+                          },
+                          "FACTION": {
+                            "type": "cexostring",
+                            "value": "Hostile"
+                          },
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Subject Zero"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "abs_subzero"
                           }
                         },
                         {

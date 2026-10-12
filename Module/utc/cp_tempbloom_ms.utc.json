@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Tempest Bloom in Smuggler's Moon Fight Club Backrooms."
+    "value": "Tempest Bloom master in Smuggler's Moon - Private Pit."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Tempest Bloom in Smuggler's Moon Fight Club Backrooms."
+      "0": "A human who was Iven Brask's headliner in the years the Fight Club mattered, and who finishes the Tempest Bloom rather than merely knowing it. In his last main event his bloom emptied the club, and he has kept the Private Pit deep in the backrooms ever since, twin blade in hand."
     }
   },
   "Dex": {

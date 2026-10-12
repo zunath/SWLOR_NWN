@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ImbuementStance1)
-                .Description("While active, your hostile auto-attacks deal Force damage instead of physical and cost 2 FP each.")
+                .Description("While active, your hostile auto-attacks deal Force damage instead of their normal damage type, including elemental damage, and cost 2 FP each.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

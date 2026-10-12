@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Unbreakable Beast in Dathomir Tarn Jungle Preserve."
+    "value": "Unbreakable Beast master in Dathomir - Alpha Beast Hollow."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Unbreakable Beast in Dathomir Tarn Jungle Preserve."
+      "0": "The oldest shyrack in the preserve, broad-winged and seamed with scars that never seem to slow him. He sired the shyrack that keeps the deep pens, and the pit-breeders hardened the endurance the Unbreakable Beast tradition teaches into something in him that will not break."
     }
   },
   "Dex": {

@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Keep your voice down. Raiders have taken the Korriban Sith Crypt Depths, the sealed tombs below the Sith Crypt, and they fell on the survey crews working there. I brought the first of the wounded out, but others are still trapped below, and the raiders' rear guard holds the way out. Put down six Crypt Raiders and bring me the Last Stand of the Light Crypt Trial Tablet they took from the tombs. It will tell me what they are after.",
+          "Text": "Keep your voice down. Raiders have taken the Sith Crypt Depths, an old Sith tomb under the Sharptooth caves on Mon Cala that was only just broken open, and they fell on the survey crews cataloguing it. I brought the first of the wounded out, but others are still trapped below, and the raiders' rear guard holds the way out. Put down six Crypt Raiders and bring me the Last Stand of the Light Crypt Trial Tablet they took from the tombs. It will tell me what they are after.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then take this key. It opens the sealed passage at the north end of the Sith Crypt on Korriban. Six Crypt Raiders, and the tablet. If you find survivors, point them toward the way out before you go deeper.",
+          "Text": "Then take this key. It opens the sealed door in the old tomb wall, the purple stonework on the north side of the first cavern inside the Sharptooth Jungle Caves on Mon Cala. Six Crypt Raiders, and the tablet. If you find survivors, point them toward the way out before you go deeper.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Korriban. From the starport, go east into the Wastelands North and cross to the elevator on the north-east side of the wastes. It takes you down into the Sith Crypt; the sealed passage at the crypt's north end opens into the Depths. I stay because the wounded I brought out still need passage off Smuggler's Moon, and someone has to find pilots who will not sell them to the first Sith patrol that asks.",
+          "Text": "Mon Cala. From the landing in Dac City, take the surface streets east into the Coral Isles, through the inner isles to the outer ones. Go north-east into the Sharptooth Jungle and on to its northern reaches, where a cave mouth on the north-east side leads into the Sharptooth Jungle Caves. In the first cavern, a sealed door is set into purple stone on the north side. That is the tomb. I stay because the wounded I brought out still need passage off Smuggler's Moon, and pilots who will not sell them to the raiders' buyers.",
           "Style": 0,
           "Color": null
         }
@@ -379,7 +379,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Relic thieves. They answer to whoever pays for Sith artifacts, not to the academy and not to Malak. Most are hired muscle, Wookiee Crypt Raiders and Crypt Marauders who fight with staffs. Their captain is a Cathar, their hardest fighters are Wookiees too, and their leader has some training in the Force. They attacked the survey crews for refusing to hand over the tomb records.",
+          "Text": "Relic thieves. They answer to whoever pays for Sith artifacts, not to Malak and not to any master. Most are hired muscle, Wookiee Crypt Raiders and Crypt Marauders who fight with staffs. Their captain is a Cathar, their hardest fighters are Wookiees too, and their leader has some training in the Force. They attacked the survey crews for refusing to hand over the tomb records.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six Crypt Raiders and the trial tablet. The passage is at the north end of the Sith Crypt on Korriban. The people below are still waiting.",
+          "Text": "Six Crypt Raiders and the trial tablet. The sealed door is on the north side of the first cavern in the Sharptooth Jungle Caves on Mon Cala. The people below are still waiting.",
           "Style": 0,
           "Color": null
         }
@@ -614,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five Crypt Marauders and the focus shard, somewhere in the Korriban Sith Crypt Depths. Every hour they hold it, another seal breaks.",
+          "Text": "Five Crypt Marauders and the focus shard, somewhere in the Sith Crypt Depths. Every hour they hold it, another seal breaks.",
           "Style": 0,
           "Color": null
         }
@@ -724,7 +724,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then find your two. The altar is on the west side of the Korriban Sith Crypt Depths. When the captain falls, take the sigil, and see that all three of you come back.",
+          "Text": "Then find your two. The altar is on the west side of the Sith Crypt Depths. When the captain falls, take the sigil, and see that all three of you come back.",
           "Style": 0,
           "Color": null
         }
@@ -1032,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four Crypt Reavers and the Keeper's Rite Token. They are still somewhere in the Korriban Sith Crypt Depths.",
+          "Text": "Four Crypt Reavers and the Keeper's Rite Token. They are still somewhere in the Sith Crypt Depths.",
           "Style": 0,
           "Color": null
         }
@@ -1142,7 +1142,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then go together, and come back together. The Final Ritual Chamber is through the north door of the Korriban Sith Crypt Depths. I will be here when you return.",
+          "Text": "Then go together, and come back together. The Final Ritual Chamber is through the north door of the Sith Crypt Depths. I will be here when you return.",
           "Style": 0,
           "Color": null
         }
@@ -1309,7 +1309,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Promenade on Smuggler's Moon lets me meet rescuers without sending them through an academy checkpoint, and the wounded can find ships here that ask no questions. I judge what you do for the crews, not whose colors you wear. The work is in the Korriban Sith Crypt Depths on Korriban. Take the key there, then bring your findings back to me here.",
+          "Text": "The Promenade on Smuggler's Moon lets me meet rescuers of every allegiance in one place, and the wounded can find ships here that ask no questions. I judge what you do for the crews, not whose colors you wear. The work itself is on Mon Cala, in the Sith Crypt Depths beneath the Sharptooth Jungle Caves. Take the key there, then bring your findings back to me here.",
           "Style": 0,
           "Color": null
         }

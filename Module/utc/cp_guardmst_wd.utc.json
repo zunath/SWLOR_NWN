@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "A malfunctioning training construct in the sealed Dantooine Jedi Enclave Trial Halls. Its combat routines no longer obey the safety shutdown. Disable its chassis so the enclave can repair the training network."
+    "value": "Guardian Master warden in Hutlar - Jedi Trial Halls."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A malfunctioning training construct in the sealed Dantooine Jedi Enclave Trial Halls. Its combat routines no longer obey the safety shutdown. Disable its chassis so the enclave can repair the training network."
+      "0": "A tall, narrow gate droid with a long blade, holding a sealed door in the eastern halls under the ruin. Its shutdown channel is broken, and it will not give ground to anyone."
     }
   },
   "Dex": {

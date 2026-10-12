@@ -51,19 +51,19 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteSkill(SkillType.Lightsaber, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneDantooineJediEnclaveTrialHallsKey);
+                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneHutlarJediTrialHallsKey);
                 })
                 .OnAbandonAction(player =>
                 {
-                    RemoveDantooineJediEnclaveTrialHallsAccessIfNoLongerNeeded(player);
+                    RemoveHutlarJediTrialHallsAccessIfNoLongerNeeded(player);
                 })
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneSaberStormEnclaveTrialSlate)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneSaberStormEnclaveTrialSlate)
 
                 .AddState()
                 .SetStateJournalText(
-                    "Talan Rees gave you the Dantooine Jedi Enclave Trial Halls Key. Disable six Storm Drill Droids in the Dantooine Jedi Enclave Trial Halls, through the sealed passage just inside the Jedi Enclave Library on Dantooine, and recover the Saber Storm Enclave Trial Slate.")
-                .AddKillObjective(NPCGroupType.Dantooine_StormDrillDroid, 6)
+                    "Talan Rees gave you the Hutlar Jedi Trial Halls Key. From the Hutlar Outpost, take the north exit onto the Qion Tundra, go north-west into the Qion Valley, then west into the Cloning Test Site. At the site's north end, find the concrete entrance block on the east side of the big ruin, just south of the big pipe; through its east-facing blast door, disable six Storm Drill Droids in the Jedi Trial Halls and recover the Saber Storm Enclave Trial Slate.")
+                .AddKillObjective(NPCGroupType.Hutlar_StormDrillDroid, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormEnclaveTrialSlate)
 
                 .AddState()
@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable five Storm Duelist Droids deeper in the Dantooine Jedi Enclave Trial Halls on Dantooine and recover the Saber Storm Kyber Focus Shard.")
-                .AddKillObjective(NPCGroupType.Dantooine_StormDuelistDroid, 5)
+                    "Disable five Storm Duelist Droids deeper in the Jedi Trial Halls on Hutlar and recover the Saber Storm Kyber Focus Shard.")
+                .AddKillObjective(NPCGroupType.Hutlar_StormDuelistDroid, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormKyberFocusShard)
 
                 .AddState()
@@ -104,8 +104,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, disable the Storm Gatekeeper Droid in the western halls of the Dantooine Jedi Enclave Trial Halls on Dantooine and recover the Saber Storm Fractured Trial Sigil.")
-                .AddKillObjective(NPCGroupType.Dantooine_StormGatekeeperDroid, 1)
+                    "With at least two allies, disable the Storm Gatekeeper Droid in the western halls of the Jedi Trial Halls on Hutlar and recover the Saber Storm Fractured Trial Sigil.")
+                .AddKillObjective(NPCGroupType.Hutlar_StormGatekeeperDroid, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormFracturedTrialSigil)
 
                 .AddState()
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable four Storm Examiner Droids guarding the control systems of the Dantooine Jedi Enclave Trial Halls on Dantooine and recover the Saber Storm Council Trial Chit.")
-                .AddKillObjective(NPCGroupType.Dantooine_StormExaminerDroid, 4)
+                    "Disable four Storm Examiner Droids guarding the control systems of the Jedi Trial Halls on Hutlar and recover the Saber Storm Council Trial Chit.")
+                .AddKillObjective(NPCGroupType.Hutlar_StormExaminerDroid, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberStormCouncilTrialChit)
 
                 .AddState()
@@ -144,8 +144,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, disable the Tempest Training Engine in the Saber Trial Chamber at the north end of the Dantooine Jedi Enclave Trial Halls on Dantooine.")
-                .AddKillObjective(NPCGroupType.Dantooine_TempestTrainingEngine, 1)
+                    "With at least two allies, disable the Tempest Training Engine in the Saber Trial Chamber at the north end of the Jedi Trial Halls on Hutlar.")
+                .AddKillObjective(NPCGroupType.Hutlar_TempestTrainingEngine, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -164,19 +164,19 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteSkill(SkillType.Lightsaber, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneDantooineJediEnclaveTrialHallsKey);
+                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneHutlarJediTrialHallsKey);
                 })
                 .OnAbandonAction(player =>
                 {
-                    RemoveDantooineJediEnclaveTrialHallsAccessIfNoLongerNeeded(player);
+                    RemoveHutlarJediTrialHallsAccessIfNoLongerNeeded(player);
                 })
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneGuardianMasterEnclaveTrialSlate)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneGuardianMasterEnclaveTrialSlate)
 
                 .AddState()
                 .SetStateJournalText(
-                    "Miris Aven gave you the Dantooine Jedi Enclave Trial Halls Key. Disable six Guardian Patrol Droids in the Dantooine Jedi Enclave Trial Halls, through the sealed passage just inside the Jedi Enclave Library on Dantooine, and recover the Guardian Master Enclave Trial Slate.")
-                .AddKillObjective(NPCGroupType.Dantooine_GuardianPatrolDroid, 6)
+                    "Miris Aven gave you the Hutlar Jedi Trial Halls Key. From the Hutlar Outpost, take the north exit onto the Qion Tundra, go north-west into the Qion Valley, then west into the Cloning Test Site. At the site's north end, find the concrete entrance block on the east side of the big ruin, just south of the big pipe; through its east-facing blast door, disable six Guardian Patrol Droids in the Jedi Trial Halls and recover the Guardian Master Enclave Trial Slate.")
+                .AddKillObjective(NPCGroupType.Hutlar_GuardianPatrolDroid, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterEnclaveTrialSlate)
 
                 .AddState()
@@ -196,8 +196,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable five Guardian Bulwark Droids deeper in the Dantooine Jedi Enclave Trial Halls on Dantooine and recover the Guardian Master Kyber Focus Shard.")
-                .AddKillObjective(NPCGroupType.Dantooine_GuardianBulwarkDroid, 5)
+                    "Disable five Guardian Bulwark Droids deeper in the Jedi Trial Halls on Hutlar and recover the Guardian Master Kyber Focus Shard.")
+                .AddKillObjective(NPCGroupType.Hutlar_GuardianBulwarkDroid, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterKyberFocusShard)
 
                 .AddState()
@@ -217,8 +217,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, disable the Guardian Gatekeeper Droid in the eastern halls of the Dantooine Jedi Enclave Trial Halls on Dantooine and recover the Guardian Master Fractured Trial Sigil.")
-                .AddKillObjective(NPCGroupType.Dantooine_GuardianGatekeeperDroid, 1)
+                    "With at least two allies, disable the Guardian Gatekeeper Droid in the eastern halls of the Jedi Trial Halls on Hutlar and recover the Guardian Master Fractured Trial Sigil.")
+                .AddKillObjective(NPCGroupType.Hutlar_GuardianGatekeeperDroid, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterFracturedTrialSigil)
 
                 .AddState()
@@ -238,8 +238,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable four Guardian Shield Droids guarding the control systems of the Dantooine Jedi Enclave Trial Halls on Dantooine and recover the Guardian Master Council Trial Chit.")
-                .AddKillObjective(NPCGroupType.Dantooine_GuardianShieldDroid, 4)
+                    "Disable four Guardian Shield Droids guarding the control systems of the Jedi Trial Halls on Hutlar and recover the Guardian Master Council Trial Chit.")
+                .AddKillObjective(NPCGroupType.Hutlar_GuardianShieldDroid, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneGuardianMasterCouncilTrialChit)
 
                 .AddState()
@@ -257,8 +257,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, disable the Bastion Training Engine in the Saber Trial Chamber at the north end of the Dantooine Jedi Enclave Trial Halls on Dantooine.")
-                .AddKillObjective(NPCGroupType.Dantooine_BastionTrainingEngine, 1)
+                    "With at least two allies, disable the Bastion Training Engine in the Saber Trial Chamber at the north end of the Jedi Trial Halls on Hutlar.")
+                .AddKillObjective(NPCGroupType.Hutlar_BastionTrainingEngine, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        private static void RemoveDantooineJediEnclaveTrialHallsAccessIfNoLongerNeeded(uint player)
+        private static void RemoveHutlarJediTrialHallsAccessIfNoLongerNeeded(uint player)
         {
             var questIds = new[]
             {
@@ -292,7 +292,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 SaberstaffCapstoneQuestDefinition.SaberCycloneMasteryQuestId,
             };
 
-            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneDantooineJediEnclaveTrialHallsKey, questIds);
+            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneHutlarJediTrialHallsKey, questIds);
         }
 
         private static void RemoveAreaAccessIfNoLongerNeeded(

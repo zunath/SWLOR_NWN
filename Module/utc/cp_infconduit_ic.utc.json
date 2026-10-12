@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Infinite Conduit in Dantooine Medical Sublevel."
+    "value": "Infinite Conduit inner circle member in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Infinite Conduit in Dantooine Medical Sublevel."
+      "0": "One of the first four students of the conduit form, who grafted machinery into his own body to hold more of its current. Plating covers him from shoulder to hip, and he fights with a twin electroblade in close step with the rest of the circle."
     }
   },
   "Dex": {

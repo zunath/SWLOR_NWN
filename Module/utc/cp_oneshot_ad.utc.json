@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for One Shot in Czerka Arms Test Range."
+    "value": "One Shot adept in Smuggler's Moon - Czerka Weapons Testing Facility."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for One Shot in Czerka Arms Test Range."
+      "0": "A Rodian in rough street leathers, blaster rifle warm from rounds fired faster than he aims them. He is one of the range crew squatting on the near lanes of the Czerka Arms Test Range, who copied an old marksman's target logs and now sell the result as doctrine."
     }
   },
   "Dex": {

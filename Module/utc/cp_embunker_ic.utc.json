@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Emergency Bunker in Viscara Republic Engineering Bunker."
+    "value": "Emergency Bunker inner circle member in Viscara - Republic Engineering Bunker."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Emergency Bunker in Viscara Republic Engineering Bunker."
+      "0": "A human in armored colonist garb with a blaster pistol and a slate of requisition records. He is one of the four who authorized the sublevel's re-rigging, and he still guards the supply chamber that fed it."
     }
   },
   "Dex": {

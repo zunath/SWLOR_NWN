@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Worldbreaker in CZ-220 Breaker Yard."
+    "value": "Worldbreaker master in CZ-220 - Breaker Yard."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Worldbreaker in CZ-220 Breaker Yard."
+      "0": "A Nautolan in close-fitted armor who holds the floor of the Breaker Yard with a heavy staff. He drove his strikes past the point where body and weapon should have given out, and neither did. Whatever once held him back gave way long ago, and nothing has taken its place."
     }
   },
   "Dex": {

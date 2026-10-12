@@ -51,19 +51,19 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteSkill(SkillType.Leadership, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneDantooineMedicalSublevelKey);
+                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneMonCalaMedicalSublevelKey);
                 })
                 .OnAbandonAction(player =>
                 {
-                    RemoveDantooineMedicalSublevelAccessIfNoLongerNeeded(player);
+                    RemoveMonCalaMedicalSublevelAccessIfNoLongerNeeded(player);
                 })
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneHoldTheLineTriageWardLedger)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneHoldTheLineTriageWardLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "Edda Maln gave you the Dantooine Medical Sublevel Key. Travel to the Dantooine Medical Sublevel on Dantooine; its sealed door is on the far west wall of the Abandoned Warehouse, on the north-west side of the Jungle Mountain. Defeat six Hold the Line adepts inside and recover the Hold the Line Triage Ward Ledger.")
-                .AddKillObjective(NPCGroupType.Dantooine_HoldTheLine_Adept, 6)
+                    "Edda Maln gave you the Mon Cala Medical Sublevel Key. On Mon Cala, travel east from Dac City through the Coral Isles and enter the Coral Isles Facility on the south-west side of the outer isles, held by eco-terrorists. Inside, go through the sliding door off the entry hall; the service lift down to the Medical Sublevel stands in the red-walled bay just east of the office block. Defeat six Hold the Line adepts there and recover the Hold the Line Triage Ward Ledger.")
+                .AddKillObjective(NPCGroupType.MonCala_HoldTheLine_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHoldTheLineTriageWardLedger)
 
                 .AddState()
@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Return to the Dantooine Medical Sublevel on Dantooine. Defeat five Hold the Line specialists at the conduit junctions and recover the Hold the Line Kolto Conduit Coupler.")
-                .AddKillObjective(NPCGroupType.Dantooine_HoldTheLine_Specialist, 5)
+                    "Return to the Medical Sublevel on Mon Cala. Defeat five Hold the Line specialists at the conduit junctions and recover the Hold the Line Kolto Conduit Coupler.")
+                .AddKillObjective(NPCGroupType.MonCala_HoldTheLine_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHoldTheLineKoltoConduitCoupler)
 
                 .AddState()
@@ -104,8 +104,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Bring at least two people you trust to the heart of the Dantooine Medical Sublevel on Dantooine. Defeat the Hold the Line warden and recover the Hold the Line Fractured Ward Sigil he wears.")
-                .AddKillObjective(NPCGroupType.Dantooine_HoldTheLine_Warden, 1)
+                    "Bring at least two people you trust to the heart of the Medical Sublevel on Mon Cala. Defeat the Hold the Line warden and recover the Hold the Line Fractured Ward Sigil he wears.")
+                .AddKillObjective(NPCGroupType.MonCala_HoldTheLine_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHoldTheLineFracturedWardSigil)
 
                 .AddState()
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Hold the Line inner circle in the Dantooine Medical Sublevel on Dantooine and recover the Hold the Line Matron's Ward Token.")
-                .AddKillObjective(NPCGroupType.Dantooine_HoldTheLine_InnerCircle, 4)
+                    "Defeat the four members of the Hold the Line inner circle in the Medical Sublevel on Mon Cala and recover the Hold the Line Matron's Ward Token.")
+                .AddKillObjective(NPCGroupType.MonCala_HoldTheLine_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHoldTheLineMatronsWardToken)
 
                 .AddState()
@@ -144,8 +144,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Gather the people who have stood with you and defeat the Hold the Line master, the Anchor, in the Protected Ward, through the north-east door of the Dantooine Medical Sublevel on Dantooine.")
-                .AddKillObjective(NPCGroupType.Dantooine_HoldTheLine_Master, 1)
+                    "Gather the people who have stood with you and defeat the Hold the Line master, the Anchor, in the Protected Ward, through the north-east door of the Medical Sublevel on Mon Cala.")
+                .AddKillObjective(NPCGroupType.MonCala_HoldTheLine_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Varen Kell gave you the Viscara Republic Engineering Bunker Key. Travel to the Viscara Republic Engineering Bunker on Viscara; its door is beside the elevator on the Combat Deck of the Republic Base at Outpost Hope. Defeat six Decisive Command adepts in the outer galleries and recover the Decisive Command Republic Bunker Docket.")
+                    "Varen Kell gave you the Viscara Republic Engineering Bunker Key. Travel to Viscara, leave Veles by the south gate into the Wildlands, go south to the Lake, and head west through the Eastern Swamplands into the Western Swamplands, where a weathered concrete bunker sits half-sunk in the swamp a short walk west of where you arrive, its sealed door facing south. Defeat six Decisive Command adepts in the outer galleries and recover the Decisive Command Republic Bunker Docket.")
                 .AddKillObjective(NPCGroupType.Viscara_DecisiveCommand_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDecisiveCommandRepublicBunkerDocket)
 
@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        private static void RemoveDantooineMedicalSublevelAccessIfNoLongerNeeded(uint player)
+        private static void RemoveMonCalaMedicalSublevelAccessIfNoLongerNeeded(uint player)
         {
             var questIds = new[]
             {
@@ -292,7 +292,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 SaberstaffCapstoneQuestDefinition.InfiniteConduitMasteryQuestId,
             };
 
-            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneDantooineMedicalSublevelKey, questIds);
+            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneMonCalaMedicalSublevelKey, questIds);
         }
 
         private static void RemoveViscaraRepublicEngineeringBunkerAccessIfNoLongerNeeded(uint player)

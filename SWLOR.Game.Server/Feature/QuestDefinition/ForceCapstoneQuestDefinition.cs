@@ -64,19 +64,19 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteSkill(SkillType.Force, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneKorribanSithCryptDepthsKey);
+                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneMonCalaSithCryptDepthsKey);
                 })
                 .OnAbandonAction(player =>
                 {
-                    RemoveKorribanSithCryptDepthsAccessIfNoLongerNeeded(player);
+                    RemoveMonCalaSithCryptDepthsAccessIfNoLongerNeeded(player);
                 })
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneLastStandOfTheLightCryptTrialTablet)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneLastStandOfTheLightCryptTrialTablet)
 
                 .AddState()
                 .SetStateJournalText(
-                    "Seris Nahl gave you the Korriban Sith Crypt Depths Key. On Korriban, ride the elevator on the north-east side of the Wastelands North down into the Sith Crypt and enter the Depths through the sealed passage at the crypt's north end. Defeat six Crypt Raiders and recover the Last Stand of the Light Crypt Trial Tablet.")
-                .AddKillObjective(NPCGroupType.Korriban_CryptRaider, 6)
+                    "Seris Nahl gave you the Mon Cala Sith Crypt Depths Key. On Mon Cala, travel from Dac City east through the Coral Isles, then north-east through the Sharptooth Jungle to the cave mouth on the north-east side of the northern jungle. In the first cavern of the Sharptooth Jungle Caves, enter the Sith Crypt Depths through the sealed door in the purple stone on the north side. Defeat six Crypt Raiders and recover the Last Stand of the Light Crypt Trial Tablet.")
+                .AddKillObjective(NPCGroupType.MonCala_CryptRaider, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightCryptTrialTablet)
 
                 .AddState()
@@ -96,8 +96,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Crypt Marauders in the Korriban Sith Crypt Depths on Korriban and recover the Last Stand of the Light Ritual Focus Shard.")
-                .AddKillObjective(NPCGroupType.Korriban_CryptMarauder, 5)
+                    "Defeat five Crypt Marauders in the Sith Crypt Depths on Mon Cala and recover the Last Stand of the Light Ritual Focus Shard.")
+                .AddKillObjective(NPCGroupType.MonCala_CryptMarauder, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightRitualFocusShard)
 
                 .AddState()
@@ -117,8 +117,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Crypt Breach Captain at the trial altar on the west side of the Korriban Sith Crypt Depths. Recover the Last Stand of the Light Splintered Tomb Sigil.")
-                .AddKillObjective(NPCGroupType.Korriban_CryptBreachCaptain, 1)
+                    "With at least two allies, defeat the Crypt Breach Captain at the trial altar on the west side of the Sith Crypt Depths on Mon Cala. Recover the Last Stand of the Light Splintered Tomb Sigil.")
+                .AddKillObjective(NPCGroupType.MonCala_CryptBreachCaptain, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightSplinteredTombSigil)
 
                 .AddState()
@@ -138,8 +138,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat four Crypt Reavers in the Korriban Sith Crypt Depths on Korriban and recover the Last Stand of the Light Keeper's Rite Token.")
-                .AddKillObjective(NPCGroupType.Korriban_CryptReaver, 4)
+                    "Defeat four Crypt Reavers in the Sith Crypt Depths on Mon Cala and recover the Last Stand of the Light Keeper's Rite Token.")
+                .AddKillObjective(NPCGroupType.MonCala_CryptReaver, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightKeepersRiteToken)
 
                 .AddState()
@@ -157,8 +157,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Crypt Expedition Leader in the Final Ritual Chamber, through the door at the north end of the Korriban Sith Crypt Depths.")
-                .AddKillObjective(NPCGroupType.Korriban_CryptExpeditionLeader, 1)
+                    "With at least two allies, defeat the Crypt Expedition Leader in the Final Ritual Chamber, through the door at the north end of the Sith Crypt Depths on Mon Cala.")
+                .AddKillObjective(NPCGroupType.MonCala_CryptExpeditionLeader, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -177,19 +177,19 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteSkill(SkillType.Force, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneKorribanSithCryptDepthsKey);
+                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneMonCalaSithCryptDepthsKey);
                 })
                 .OnAbandonAction(player =>
                 {
-                    RemoveKorribanSithCryptDepthsAccessIfNoLongerNeeded(player);
+                    RemoveMonCalaSithCryptDepthsAccessIfNoLongerNeeded(player);
                 })
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneHungerOfTheDarkCryptTrialTablet)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneHungerOfTheDarkCryptTrialTablet)
 
                 .AddState()
                 .SetStateJournalText(
-                    "Neth Kyr gave you the Korriban Sith Crypt Depths Key. On Korriban, ride the elevator on the north-east side of the Wastelands North down into the Sith Crypt and enter the Depths through the sealed passage at the crypt's north end. Defeat six Vitae Reaver Initiates and recover the Hunger of the Dark Crypt Trial Tablet.")
-                .AddKillObjective(NPCGroupType.Korriban_VitaeReaverInitiate, 6)
+                    "Neth Kyr gave you the Mon Cala Sith Crypt Depths Key. On Mon Cala, travel from Dac City east through the Coral Isles, then north-east through the Sharptooth Jungle to the cave mouth on the north-east side of the northern jungle. In the first cavern of the Sharptooth Jungle Caves, enter the Sith Crypt Depths through the sealed door in the purple stone on the north side. Defeat six Vitae Reaver Initiates and recover the Hunger of the Dark Crypt Trial Tablet.")
+                .AddKillObjective(NPCGroupType.MonCala_VitaeReaverInitiate, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHungerOfTheDarkCryptTrialTablet)
 
                 .AddState()
@@ -209,8 +209,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Vitae Reaver Adepts in the Korriban Sith Crypt Depths on Korriban and recover the Hunger of the Dark Ritual Focus Shard.")
-                .AddKillObjective(NPCGroupType.Korriban_VitaeReaverAdept, 5)
+                    "Defeat five Vitae Reaver Adepts in the Sith Crypt Depths on Mon Cala and recover the Hunger of the Dark Ritual Focus Shard.")
+                .AddKillObjective(NPCGroupType.MonCala_VitaeReaverAdept, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHungerOfTheDarkRitualFocusShard)
 
                 .AddState()
@@ -230,8 +230,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Vitae Reaver Enforcer at the trial altar on the east side of the Korriban Sith Crypt Depths. Recover the Hunger of the Dark Splintered Tomb Sigil.")
-                .AddKillObjective(NPCGroupType.Korriban_VitaeReaverEnforcer, 1)
+                    "With at least two allies, defeat the Vitae Reaver Enforcer at the trial altar on the east side of the Sith Crypt Depths on Mon Cala. Recover the Hunger of the Dark Splintered Tomb Sigil.")
+                .AddKillObjective(NPCGroupType.MonCala_VitaeReaverEnforcer, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHungerOfTheDarkSplinteredTombSigil)
 
                 .AddState()
@@ -251,8 +251,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat four Vitae Reaver Binders in the Korriban Sith Crypt Depths on Korriban and recover the Hunger of the Dark Keeper's Rite Token.")
-                .AddKillObjective(NPCGroupType.Korriban_VitaeReaverBinder, 4)
+                    "Defeat four Vitae Reaver Binders in the Sith Crypt Depths on Mon Cala and recover the Hunger of the Dark Keeper's Rite Token.")
+                .AddKillObjective(NPCGroupType.MonCala_VitaeReaverBinder, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHungerOfTheDarkKeepersRiteToken)
 
                 .AddState()
@@ -270,8 +270,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Vitae Reaver Chief in the Final Ritual Chamber, through the door at the north end of the Korriban Sith Crypt Depths.")
-                .AddKillObjective(NPCGroupType.Korriban_VitaeReaverChief, 1)
+                    "With at least two allies, defeat the Vitae Reaver Chief in the Final Ritual Chamber, through the door at the north end of the Sith Crypt Depths on Mon Cala.")
+                .AddKillObjective(NPCGroupType.MonCala_VitaeReaverChief, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -290,19 +290,19 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteSkill(SkillType.Force, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneKorribanSithCryptDepthsKey);
+                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneMonCalaSithCryptDepthsKey);
                 })
                 .OnAbandonAction(player =>
                 {
-                    RemoveKorribanSithCryptDepthsAccessIfNoLongerNeeded(player);
+                    RemoveMonCalaSithCryptDepthsAccessIfNoLongerNeeded(player);
                 })
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneEclipseOfResolveCryptTrialTablet)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneEclipseOfResolveCryptTrialTablet)
 
                 .AddState()
                 .SetStateJournalText(
-                    "Acolyte Varn gave you the Korriban Sith Crypt Depths Key. On Korriban, ride the elevator on the north-east side of the Wastelands North down into the Sith Crypt and enter the Depths through the sealed passage at the crypt's north end. Defeat six Umbral Raider Scouts and recover the Eclipse of Resolve Crypt Trial Tablet.")
-                .AddKillObjective(NPCGroupType.Korriban_UmbralRaiderScout, 6)
+                    "Acolyte Varn gave you the Mon Cala Sith Crypt Depths Key. On Mon Cala, travel from Dac City east through the Coral Isles, then north-east through the Sharptooth Jungle to the cave mouth on the north-east side of the northern jungle. In the first cavern of the Sharptooth Jungle Caves, enter the Sith Crypt Depths through the sealed door in the purple stone on the north side. Defeat six Umbral Raider Scouts and recover the Eclipse of Resolve Crypt Trial Tablet.")
+                .AddKillObjective(NPCGroupType.MonCala_UmbralRaiderScout, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEclipseOfResolveCryptTrialTablet)
 
                 .AddState()
@@ -322,8 +322,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Umbral Raider Adepts in the Korriban Sith Crypt Depths on Korriban and recover the Eclipse of Resolve Ritual Focus Shard.")
-                .AddKillObjective(NPCGroupType.Korriban_UmbralRaiderAdept, 5)
+                    "Defeat five Umbral Raider Adepts in the Sith Crypt Depths on Mon Cala and recover the Eclipse of Resolve Ritual Focus Shard.")
+                .AddKillObjective(NPCGroupType.MonCala_UmbralRaiderAdept, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEclipseOfResolveRitualFocusShard)
 
                 .AddState()
@@ -343,8 +343,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Umbral Raider Captain at the trial altar in the north-west of the Korriban Sith Crypt Depths. Recover the Eclipse of Resolve Splintered Tomb Sigil.")
-                .AddKillObjective(NPCGroupType.Korriban_UmbralRaiderCaptain, 1)
+                    "With at least two allies, defeat the Umbral Raider Captain at the trial altar in the north-west of the Sith Crypt Depths on Mon Cala. Recover the Eclipse of Resolve Splintered Tomb Sigil.")
+                .AddKillObjective(NPCGroupType.MonCala_UmbralRaiderCaptain, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEclipseOfResolveSplinteredTombSigil)
 
                 .AddState()
@@ -364,8 +364,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat four Umbral Raider Saboteurs in the Korriban Sith Crypt Depths on Korriban and recover the Eclipse of Resolve Keeper's Rite Token.")
-                .AddKillObjective(NPCGroupType.Korriban_UmbralRaiderSaboteur, 4)
+                    "Defeat four Umbral Raider Saboteurs in the Sith Crypt Depths on Mon Cala and recover the Eclipse of Resolve Keeper's Rite Token.")
+                .AddKillObjective(NPCGroupType.MonCala_UmbralRaiderSaboteur, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEclipseOfResolveKeepersRiteToken)
 
                 .AddState()
@@ -383,8 +383,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Umbral Raider Commander in the Final Ritual Chamber, through the door at the north end of the Korriban Sith Crypt Depths.")
-                .AddKillObjective(NPCGroupType.Korriban_UmbralRaiderCommander, 1)
+                    "With at least two allies, defeat the Umbral Raider Commander in the Final Ritual Chamber, through the door at the north end of the Sith Crypt Depths on Mon Cala.")
+                .AddKillObjective(NPCGroupType.MonCala_UmbralRaiderCommander, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -397,7 +397,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        private static void RemoveKorribanSithCryptDepthsAccessIfNoLongerNeeded(uint player)
+        private static void RemoveMonCalaSithCryptDepthsAccessIfNoLongerNeeded(uint player)
         {
             var questIds = new[]
             {
@@ -418,7 +418,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 ForceCapstoneQuestDefinition.EclipseOfResolveMasteryQuestId,
             };
 
-            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneKorribanSithCryptDepthsKey, questIds);
+            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneMonCalaSithCryptDepthsKey, questIds);
         }
 
         private static void RemoveAreaAccessIfNoLongerNeeded(

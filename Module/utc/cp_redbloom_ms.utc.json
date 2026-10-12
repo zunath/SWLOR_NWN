@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Red Bloom in Smuggler's Moon Fight Club Backrooms."
+    "value": "Red Bloom master in Smuggler's Moon - Private Pit."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Red Bloom in Smuggler's Moon Fight Club Backrooms."
+      "0": "A Nautolan who was Nyra Tane's last student and now holds her old title in the Private Pit, throwing the Red Bloom with both cuts open and nothing held back. He wields a twin blade and reads the backrooms the way she taught him."
     }
   },
   "Dex": {

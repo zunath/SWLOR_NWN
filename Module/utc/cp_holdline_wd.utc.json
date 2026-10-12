@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Hold the Line in Dantooine Medical Sublevel."
+    "value": "Hold the Line warden in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Hold the Line in Dantooine Medical Sublevel."
+      "0": "Once the sublevel's night charge nurse, this Bothan has stood at the recovery ward's door so long he seems part of it. A fractured ward sigil hangs at his chest, and he holds his vibroblade like a bar across the doorway."
     }
   },
   "Dex": {

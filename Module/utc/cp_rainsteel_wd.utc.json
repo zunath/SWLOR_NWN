@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Rain of Steel in Czerka Arms Test Range."
+    "value": "Rain of Steel warden in Smuggler's Moon - Czerka Weapons Testing Facility."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Rain of Steel in Czerka Arms Test Range."
+      "0": "A human in a dark officer's coat, a scored range crest on his chest and throwing blades ready in his hand. Once Czerka range security, he kept the keys when the funding dried up and has drilled on a sealed floor with unlimited stock ever since, throwing like a man who has never had to buy a blade."
     }
   },
   "Dex": {

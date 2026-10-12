@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Unbreakable Beast in Dathomir Tarn Jungle Preserve."
+    "value": "Unbreakable Beast warden in Dathomir - Tarn Jungle Preserve."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Unbreakable Beast in Dathomir Tarn Jungle Preserve."
+      "0": "A large shyrack on leathery wings, his hide gone thick and knotted from years of beatings, a clawed-apart totem hanging from his harness. The pit-breeders raised him in the dark and beat him until nothing seemed to reach him anymore."
     }
   },
   "Dex": {

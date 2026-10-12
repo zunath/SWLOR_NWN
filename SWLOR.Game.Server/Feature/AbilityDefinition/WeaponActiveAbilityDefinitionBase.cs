@@ -1607,7 +1607,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                                 beforeImpact: captureSpreadPrerequisites,
                                 afterSuccessfulHit: impactedTarget =>
                                 {
-                                    profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType, spreadSnapshot);
+                                    profile.AfterSuccessfulHit(activator, impactedTarget, Ability.GetWeaponAbilityDamageType(activator, skill, profile.DamageType), spreadSnapshot);
                                     Combat.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
                                 },
                                 beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
@@ -1659,7 +1659,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             beforeImpact: captureSpreadPrerequisites,
                             afterSuccessfulHit: impactedTarget =>
                             {
-                                profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType, spreadSnapshot);
+                                profile.AfterSuccessfulHit(activator, impactedTarget, Ability.GetWeaponAbilityDamageType(activator, skill, profile.DamageType), spreadSnapshot);
                                 Combat.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
                             },
                             beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),

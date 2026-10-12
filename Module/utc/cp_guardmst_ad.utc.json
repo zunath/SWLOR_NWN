@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "A malfunctioning training construct in the sealed Dantooine Jedi Enclave Trial Halls. Its combat routines no longer obey the safety shutdown. Disable its chassis so the enclave can repair the training network."
+    "value": "Guardian Master adept in Hutlar - Jedi Trial Halls."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A malfunctioning training construct in the sealed Dantooine Jedi Enclave Trial Halls. Its combat routines no longer obey the safety shutdown. Disable its chassis so the enclave can repair the training network."
+      "0": "A humanoid patrol droid with a training blade, walking the same circuit through the hidden halls it has walked for years. It was built to challenge students on their rounds; now it treats anyone it meets as an intruder."
     }
   },
   "Dex": {

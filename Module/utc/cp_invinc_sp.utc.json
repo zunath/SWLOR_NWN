@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Invincible in Veles Militia Annex."
+    "value": "Invincible specialist in Viscara - Veles Militia Annex."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Invincible in Veles Militia Annex."
+      "0": "A Trandoshan in armored garb who earned his rank under Captain Renn by holding a guard through a full rotation without taking a scored hit. He works the open lanes of the annex range block with his vibroblade, timing how long an opponent's guard can last."
     }
   },
   "Dex": {

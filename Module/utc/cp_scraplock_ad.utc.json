@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Scrapheap Lockdown in CZ-220 Breaker Yard."
+    "value": "Scrapheap Lockdown adept in CZ-220 - Breaker Bay."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Scrapheap Lockdown in CZ-220 Breaker Yard."
+      "0": "A stocky Ugnaught in black yard coveralls with katars on both fists. He holds his corner of a sealed bay the way he was drilled: close the room around the fight and let nothing inside move without his leave. He is one of the crew's recruits, posted in the Breaker Yard's outer bays under a forged work order."
     }
   },
   "Dex": {

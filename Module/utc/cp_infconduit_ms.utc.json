@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Infinite Conduit in Dantooine Medical Sublevel."
+    "value": "Infinite Conduit master in Mon Cala - Protected Ward."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Infinite Conduit in Dantooine Medical Sublevel."
+      "0": "A Bothan master of the conduit form, the two blades of his twin electroblade moving as one endless stroke. He waits in the Protected Ward among the sublevel's stored kolto, and nothing that reaches him ever leaves."
     }
   },
   "Dex": {

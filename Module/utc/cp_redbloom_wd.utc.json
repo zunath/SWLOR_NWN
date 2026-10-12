@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Red Bloom in Smuggler's Moon Fight Club Backrooms."
+    "value": "Red Bloom warden in Smuggler's Moon - Fight Club Backrooms."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Red Bloom in Smuggler's Moon Fight Club Backrooms."
+      "0": "A Nautolan pit champion who held Nyra Tane's title for a season before losing it to her, and now guards the deep gate of the backrooms with a twin blade. He still wears the pit sigil she cracked, as a promise that no one will pass him carelessly."
     }
   },
   "Dex": {

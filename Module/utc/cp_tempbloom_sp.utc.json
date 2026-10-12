@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Tempest Bloom in Smuggler's Moon Fight Club Backrooms."
+    "value": "Tempest Bloom specialist in Smuggler's Moon - Fight Club Backrooms."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Tempest Bloom in Smuggler's Moon Fight Club Backrooms."
+      "0": "A Zabrak backroom fighter who has drilled the Tempest Bloom until it almost works, polishing one petal of it to a mirror shine. Faster and vainer than the adepts, he works the live pits with a twin blade and rotates with the others like a rehearsed finale."
     }
   },
   "Dex": {

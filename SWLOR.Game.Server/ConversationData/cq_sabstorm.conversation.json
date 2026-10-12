@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take this key. It opens the sealed blast door in the east wall of the concrete ruin at the north end of the Cloning Test Site on Hutlar, just south of the big pipe. The Trial Halls lie below. Disable six Storm Drill Droids and bring me the Saber Storm Enclave Trial Slate.",
+          "Text": "Take this key. At the north end of the Cloning Test Site on Hutlar, a big pipe runs east out of a concrete ruin and ends at an ornate stone pillar. The key opens the sealed door in the pillar's east face, and the Trial Halls lie below. Disable six Storm Drill Droids and bring me the Saber Storm Enclave Trial Slate.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Land at the Hutlar Outpost and take the north exit onto the Qion Tundra. Go north-west into the Qion Valley, then west into the Cloning Test Site. A concrete ruin stands at its north end. The sealed blast door is in the ruin's east wall, just south of the big pipe that runs out of it. I stay here because those droids learned every cut from me. They would read my attack before I made it.",
+          "Text": "Land at the Hutlar Outpost and take the north exit onto the Qion Tundra. Go north-west into the Qion Valley, then west into the Cloning Test Site. A concrete ruin stands at its north end, with a big pipe running east out of it. Follow the pipe to the ornate stone pillar where it ends; the sealed door is in the pillar's east face. I stay here because those droids learned every cut from me. They would read my attack before I made it.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six Storm Drill Droids, and the Saber Storm Enclave Trial Slate. The blast door is in the east wall of the concrete ruin at the north end of the Cloning Test Site on Hutlar, just south of the big pipe.",
+          "Text": "Six Storm Drill Droids, and the Saber Storm Enclave Trial Slate. The door is in the east face of the ornate stone pillar where the big pipe from the concrete ruin ends, at the north end of the Cloning Test Site on Hutlar.",
           "Style": 0,
           "Color": null
         }

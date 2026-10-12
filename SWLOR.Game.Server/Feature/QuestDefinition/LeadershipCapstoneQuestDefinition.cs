@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Edda Maln gave you the Mon Cala Medical Sublevel Key. On Mon Cala, travel east from Dac City through the Coral Isles and enter the Coral Isles Facility on the south-west side of the outer isles, held by eco-terrorists. The sealed door into the Medical Sublevel is on the north wall, just east of where the entry tube opens in. Defeat six Hold the Line adepts there and recover the Hold the Line Triage Ward Ledger.")
+                    "Edda Maln gave you the Mon Cala Medical Sublevel Key. On Mon Cala, travel east from Dac City through the Coral Isles and enter the Coral Isles Facility on the south-west side of the outer isles, held by eco-terrorists. Inside, go through the sliding door off the entry hall; the sealed door into the Medical Sublevel is in the south wall of the office block just past it. Defeat six Hold the Line adepts there and recover the Hold the Line Triage Ward Ledger.")
                 .AddKillObjective(NPCGroupType.MonCala_HoldTheLine_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHoldTheLineTriageWardLedger)
 

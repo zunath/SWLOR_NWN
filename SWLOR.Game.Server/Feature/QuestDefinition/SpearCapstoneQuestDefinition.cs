@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Maar Veth gave you the Tatooine Forge Caverns Key. On Tatooine, leave the Southern Entrance of Anchorhead by its east side into the Rocky Desert, then head north into the North Mine Cliffs and enter the Forge Caverns through the sealed blast door in the rock mesa straight ahead. Kill six Forcebane adepts and secure the Forcebane Forge Heat Ledger they keep by the crucibles.")
+                    "Maar Veth gave you the Tatooine Forge Caverns Key. On Tatooine, leave the Southern Entrance of Anchorhead by its east side into the Rocky Desert, then head north into the North Mine Cliffs and enter the Forge Caverns through the sealed door in the wall of the old mine building just ahead. Kill six Forcebane adepts and secure the Forcebane Forge Heat Ledger they keep by the crucibles.")
                 .AddKillObjective(NPCGroupType.Tatooine_Forcebane_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneForgeHeatLedger)
 

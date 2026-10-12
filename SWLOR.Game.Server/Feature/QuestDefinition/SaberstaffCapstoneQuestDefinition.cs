@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Jora Sel gave you the Hutlar Jedi Trial Halls Key. From the Hutlar Outpost, take the north exit onto the Qion Tundra, go north-west into the Qion Valley, then west into the Cloning Test Site. Through the sealed blast door in the east wall of the concrete ruin at the site's north end, just south of the big pipe, disable six Cyclone Drill Droids in the Jedi Trial Halls and recover the Saber Cyclone Enclave Trial Slate.")
+                    "Jora Sel gave you the Hutlar Jedi Trial Halls Key. From the Hutlar Outpost, take the north exit onto the Qion Tundra, go north-west into the Qion Valley, then west into the Cloning Test Site. At the site's north end, follow the big pipe east from the concrete ruin to an ornate stone pillar; through the sealed door in the pillar's east face, disable six Cyclone Drill Droids in the Jedi Trial Halls and recover the Saber Cyclone Enclave Trial Slate.")
                 .AddKillObjective(NPCGroupType.Hutlar_CycloneDrillDroid, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneEnclaveTrialSlate)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Tessa Quell gave you the Mon Cala Medical Sublevel Key. On Mon Cala, travel east from Dac City through the Coral Isles and enter the Coral Isles Facility on the south-west side of the outer isles, held by eco-terrorists. The sealed door into the Medical Sublevel is on the north wall, just east of where the entry tube opens in. Defeat six Infinite Conduit adepts there and recover the Infinite Conduit Triage Ward Ledger.")
+                    "Tessa Quell gave you the Mon Cala Medical Sublevel Key. On Mon Cala, travel east from Dac City through the Coral Isles and enter the Coral Isles Facility on the south-west side of the outer isles, held by eco-terrorists. Inside, go through the sliding door off the entry hall; the sealed door into the Medical Sublevel is in the south wall of the office block just past it. Defeat six Infinite Conduit adepts there and recover the Infinite Conduit Triage Ward Ledger.")
                 .AddKillObjective(NPCGroupType.MonCala_InfiniteConduit_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInfiniteConduitTriageWardLedger)
 

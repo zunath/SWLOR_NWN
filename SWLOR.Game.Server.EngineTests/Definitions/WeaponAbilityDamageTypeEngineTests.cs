@@ -24,6 +24,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static readonly Dictionary<CombatDamageType, int> _damage = new();
         private static uint _observedTarget = OBJECT_INVALID;
+        private static uint _observedAttacker = OBJECT_INVALID;
+        private static int _autoAttackDamageEvents;
 
         [EngineTest("Weapon abilities deal the equipped weapon's elemental damage type", Category = "WeaponAbilityDamageType", TimeoutSeconds = 30f)]
         public static async Task ElementalWeaponRetypesAbilityDamage(EngineTestContext ctx)
@@ -84,6 +86,32 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(GetIsObjectValid(main), "Fire main-hand knife stays equipped");
         }
 
+        [EngineTest("Delayed weapon ability impacts keep the damage type captured with their DMG", Category = "WeaponAbilityDamageType", TimeoutSeconds = 30f)]
+        public static async Task DelayedImpactKeepsCapturedDamageType(EngineTestContext ctx)
+        {
+            var (caster, target, pistol) = await CreateFixture(ctx, "b_pistol", CombatDamageType.Fire);
+            ctx.SetNPCPerkLevel(caster, PerkType.DoubleShot, 1);
+            var ability = Ability.GetAbilityDetail(FeatType.DoubleShot1);
+            await ObserveImpact(ctx, target, async () =>
+            {
+                Ability.BeginAbilityImpact(caster, ability);
+                try
+                {
+                    // The weapon's element changes after registration, as a weapon swap during a telegraph would.
+                    await ctx.ExecuteInCreatureContextAsync(caster, () => ConfigureWeapon(pistol, CombatDamageType.Ice));
+                    await ctx.WaitFrameAsync();
+                    ctx.AssertEqual(CombatDamageType.Ice, WeaponDamage.GetDamageType(pistol), "Pistol damage type after registration");
+                    await ctx.ExecuteInCreatureContextAsync(caster,
+                        () => ability.ImpactAction(caster, target, 1, GetLocation(target)));
+                }
+                finally
+                {
+                    Ability.EndAbilityImpact(caster);
+                }
+            });
+            AssertOnlyDamageType(ctx, CombatDamageType.Fire, "Double Shot registered while the pistol dealt Fire");
+        }
+
         [EngineTest("Queued natural weapon abilities deal the natural weapon's damage type", Category = "WeaponAbilityDamageType", TimeoutSeconds = 30f)]
         public static async Task QueuedNaturalWeaponAbilityUsesNaturalWeaponDamageType(EngineTestContext ctx)
         {
@@ -129,6 +157,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCResources(caster, 100, 100);
             ctx.SetNPCPerkLevel(caster, PerkType.PathogenStrike, 1);
             ResetDamage(target);
+            Ability.ClearLastCompletedAbilityImpactSummary(caster);
+            _observedAttacker = caster;
+            _autoAttackDamageEvents = 0;
             Combat.SetAutoAttackHitResolutionOverride(true);
             Combat.SetAbilityHitResolutionOverride(true);
             try
@@ -143,7 +174,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(caster, () => ClearAllActions());
                 await ctx.WaitUntilAsync(() => _damage[CombatDamageType.Fire] > 0, 5f, "Fire damage to land");
                 await ctx.WaitFrameAsync();
-                AssertOnlyDamageType(ctx, CombatDamageType.Fire, "Pathogen Strike and auto-attacks from a Fire knife");
+
+                // The consuming swing is replaced by the ability, and attacks stop once it lands. With no
+                // auto-attack damage in the window, every observed point came from Pathogen Strike.
+                ctx.AssertEqual(0, _autoAttackDamageEvents, "Auto-attack damage events while observing the queued ability");
+                var summary = Ability.GetLastCompletedAbilityImpactSummary(caster);
+                ctx.Assert(summary?.Ability == Ability.GetAbilityDetail(FeatType.PathogenStrike1) && summary.AttributedDamage > 0,
+                    "Pathogen Strike's own impact dealt damage");
+                AssertOnlyDamageType(ctx, CombatDamageType.Fire, "Pathogen Strike from a Fire knife");
             }
             finally
             {
@@ -151,6 +189,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Combat.SetAutoAttackHitResolutionOverride(null);
                 Combat.SetAbilityHitResolutionOverride(null);
                 _observedTarget = OBJECT_INVALID;
+                _observedAttacker = OBJECT_INVALID;
             }
         }
 
@@ -247,6 +286,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(_damage[expected] > 0, $"{label} deals {expected} damage");
             foreach (var type in ObservedTypes.Where(type => type != expected))
                 ctx.AssertEqual(0, _damage[type], $"{label} {type} damage");
+        }
+
+        [NWNEventHandler(ScriptName.OnSWLORDamage)]
+        public static void ObserveAutoAttackDamage()
+        {
+            if (_observedAttacker != OBJECT_INVALID && OBJECT_SELF == _observedAttacker)
+                _autoAttackDamageEvents++;
         }
 
         [NWNEventHandler(ScriptName.OnCreatureDamagedAfter)]

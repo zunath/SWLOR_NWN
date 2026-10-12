@@ -182,6 +182,9 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
 
+            var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
+            var usesQueuedNaturalWeapon =
+                ability.ActivationType == AbilityActivationType.Weapon && ability.SkillType == SkillType.BeastMastery;
             _trackedAbilityImpacts[activator] = new TrackedAbilityImpact(
                 ability,
                 nextAbilityDamageBonus,
@@ -196,9 +199,10 @@ namespace SWLOR.Game.Server.Service
             {
                 SequenceOwner = sequenceOwner?.SequenceOwner ?? sequenceOwner,
                 TriggeringWeaponDamage = triggeringWeaponDamage ?? sequenceOwner?.TriggeringWeaponDamage ?? Combat.GetCombatImpactWeaponDamage(
-                    activator, Combat.GetAbilitySkillType(activator, ability),
-                    ability.ActivationType == AbilityActivationType.Weapon && ability.SkillType == SkillType.BeastMastery),
-                TriggeringWeaponDamageType = triggeringWeaponDamageType ?? sequenceOwner?.TriggeringWeaponDamageType
+                    activator, abilitySkillType, usesQueuedNaturalWeapon),
+                // Captured with the DMG so a delayed impact cannot pair it with a weapon swapped in later.
+                TriggeringWeaponDamageType = triggeringWeaponDamageType ?? sequenceOwner?.TriggeringWeaponDamageType ??
+                    Combat.GetCombatImpactWeaponDamageType(activator, abilitySkillType, usesQueuedNaturalWeapon)
             };
             if (resolveDamageBonusesFromOwner && sequenceOwner != null)
             {

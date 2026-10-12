@@ -87,8 +87,8 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Anchorhead - North District",
-      "2": "Anchorhead - Downtown"
+      "0": "[Prefab] Tatooine - Anchorhead - North District",
+      "2": "[Prefab] Anchorhead - Downtown"
     }
   },
   "NoRest": {

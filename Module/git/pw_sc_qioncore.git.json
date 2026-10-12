@@ -98,7 +98,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A target wall of solid plating is pierced through by dozens of throwing blades, all grouped tight. The master who threw them answers any challenge."
+          }
         },
         "DisarmDC": {
           "type": "byte",
@@ -463,7 +465,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A sealed detonation cradle at the heart of the Overload Chamber, its charges primed and humming. The site's master demolitionist keeps it ready."
+          }
         },
         "DisarmDC": {
           "type": "byte",
@@ -828,7 +832,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "The chamber's main power junction is rigged to overload, cables sparking against the frost. The man who rigged it waits beside it."
+          }
         },
         "DisarmDC": {
           "type": "byte",

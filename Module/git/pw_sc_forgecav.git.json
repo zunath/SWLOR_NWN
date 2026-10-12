@@ -1687,7 +1687,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A trial altar of black stone sits on the west side of the forge floor. A hammer-scarred shield hangs above it, and the warden who keeps it answers any challenge struck against it."
           }
         },
         "DisarmDC": {
@@ -3207,7 +3207,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A trial altar in the north-west of the caverns, ringed by burned-out votive braziers. Prayers are carved into the stone in an old Sith hand, and someone still tends them."
           }
         },
         "DisarmDC": {
@@ -4727,7 +4727,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A spear rack stands before a trial altar, its weapons cold-forged and unadorned. The stone around it is strangely dead to the touch, as if the Force itself has been worn away."
           }
         },
         "DisarmDC": {

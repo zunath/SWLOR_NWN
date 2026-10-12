@@ -166,7 +166,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Marda Voss is a canyon staff instructor tied to the Unmoving Center capstone trials in Anchorhead Canyon Range."
+      "0": "A weathered human woman stands on the high ground of the Elevagii Farm among the moisture vaporators, a plain wooden staff planted beside her. She does not shift her weight even when the wind drags sand across the plateau, and her eyes rest on the canyons to the east. Her hands are calloused in two exact places, where the staff has sat for most of her life."
     }
   },
   "Dex": {
@@ -364,7 +364,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 315
+    "value": 4083
   },
   "Race": {
     "type": "byte",

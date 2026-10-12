@@ -49,13 +49,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Captain Tov Renn gave you the Veles Militia Annex Key. Enter the Veles Militia Annex on Viscara and defeat six Invincible adepts on the drill floor. Secure the Invincible Veles Drill Ledger.")
+                    "Captain Tov Renn gave you the Veles Militia Annex Key. Enter the Veles Militia Annex on Viscara through the sealed door inside the Sheriff's Office in Veles, north-east of where she stands. Defeat six Invincible adepts on the drill floor and secure the Invincible Veles Drill Ledger.")
                 .AddKillObjective(NPCGroupType.Viscara_Invincible_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInvincibleVelesDrillLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Invincible Veles Drill Ledger is secured. Return it to Captain Tov Renn at the Veles sheriff's office on Viscara.")
+                    "The Invincible Veles Drill Ledger is secured. Return it to Captain Tov Renn in the Sheriff's Office in Veles on Viscara.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Invincible Militia Range Relay is secured. Return it to Captain Tov Renn at the Veles sheriff's office on Viscara.")
+                    "The Invincible Militia Range Relay is secured. Return it to Captain Tov Renn in the Sheriff's Office in Veles on Viscara.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -91,13 +91,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Invincible warden at the inner gate of the Veles Militia Annex on Viscara and secure the Invincible Scored Challenge Badge. Bring allies; the warden is beyond any single fighter.")
+                    "Defeat the Invincible warden at the inner gate of the Veles Militia Annex on Viscara and secure the Invincible Scored Challenge Badge. Bring allies; no single fighter gets past him.")
                 .AddKillObjective(NPCGroupType.Viscara_Invincible_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInvincibleScoredChallengeBadge)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The warden is defeated and the Invincible Scored Challenge Badge is secured. Return it to Captain Tov Renn at the Veles sheriff's office on Viscara.")
+                    "The warden is defeated and the Invincible Scored Challenge Badge is secured. Return it to Captain Tov Renn in the Sheriff's Office in Veles on Viscara.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The inner circle is broken and the Invincible Captain's Challenge Chit is secured. Return it to Captain Tov Renn at the Veles sheriff's office on Viscara.")
+                    "The inner circle is broken and the Invincible Captain's Challenge Chit is secured. Return it to Captain Tov Renn in the Sheriff's Office in Veles on Viscara.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -131,12 +131,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat Serra Kel, the Invincible master, on the center floor of the Veles Militia Annex on Viscara. Bring allies; no one beats her guard alone.")
+                    "Defeat Haro Kel, the Invincible master, in the command room of the Veles Militia Annex on Viscara. Bring allies; no one beats his guard alone.")
                 .AddKillObjective(NPCGroupType.Viscara_Invincible_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Invincible master is defeated and the annex is quiet. Report to Captain Tov Renn at the Veles sheriff's office on Viscara.")
+                    "The Invincible master is defeated and the annex is quiet. Report to Captain Tov Renn in the Sheriff's Office in Veles on Viscara.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

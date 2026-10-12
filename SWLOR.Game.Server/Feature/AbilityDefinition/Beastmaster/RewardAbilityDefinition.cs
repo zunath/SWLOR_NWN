@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), beast);
 
             TakePetTreat(activator);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+            CombatPoint.AddSupportCombatPoint(activator, beast, SkillType.BeastMastery);
         }
 
         private void Reward1()

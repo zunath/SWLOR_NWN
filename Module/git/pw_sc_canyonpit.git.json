@@ -98,7 +98,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A single staff stands planted upright in a crack in the dueling pit floor. The master who set it there has never been moved from this spot."
+          }
         },
         "DisarmDC": {
           "type": "byte",
@@ -463,7 +465,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A weathered duel post stands at the center of the dueling pit, its wood pocked with blaster scars. The range master answers anyone who calls him out from here."
+          }
         },
         "DisarmDC": {
           "type": "byte",
@@ -828,7 +832,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A high-stakes table sits at the edge of the dueling pit, one chair empty and a hand dealt face down. The range master is waiting for someone to take the last seat."
+          }
         },
         "DisarmDC": {
           "type": "byte",

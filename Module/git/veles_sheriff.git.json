@@ -54288,7 +54288,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Captain Tov Renn is a hardened militia captain tied to the Invincible capstone trials in Veles Militia Annex."
+            "0": "Captain Tov Renn is a hard-faced militia officer who stands as if she is still on parade, a vibroblade at her hip and a battered drill ledger tucked under one arm. Her eyes go to a stranger's feet and grip before they reach the face. She keeps her post in the Veles Sheriff's Office, a short walk from the sealed door of the annex she once commanded."
           }
         },
         "Dex": {
@@ -54736,7 +54736,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 300
+          "value": 4098
         },
         "Race": {
           "type": "byte",

@@ -224,31 +224,31 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         BloodFrenzyAdrenalGlass = 84,
         [KeyItem(KeyItemCategoryType.QuestItems, "Blood Frenzy Charm Fragments", true, "Fragments recovered from the Blood Frenzy Duelists in the Viscara Sewers Depths.")]
         BloodFrenzyCharmFragments = 85,
-        [KeyItem(KeyItemCategoryType.Keys, "Veles Militia Annex Key", true, "This key grants access to the Veles Militia Annex capstone area on Viscara.")]
+        [KeyItem(KeyItemCategoryType.Keys, "Veles Militia Annex Key", true, "A militia keycard stamped with the Veles garrison seal. It opens the sealed door to the Veles Militia Annex, deep inside the Sheriff's Office in Veles on Viscara.")]
         CapstoneVelesMilitiaAnnexKey = 107,
-        [KeyItem(KeyItemCategoryType.Keys, "Dantooine Jedi Enclave Trial Halls Key", true, "This key grants access to the Dantooine Jedi Enclave Trial Halls capstone area on Dantooine.")]
+        [KeyItem(KeyItemCategoryType.Keys, "Dantooine Jedi Enclave Trial Halls Key", true, "A worn Enclave access chit etched with a training sigil. It opens the sealed passage to the Jedi Enclave Trial Halls, a few steps inside the Jedi Enclave Library on Dantooine.")]
         CapstoneDantooineJediEnclaveTrialHallsKey = 108,
-        [KeyItem(KeyItemCategoryType.Keys, "Korriban Forge Caverns Key", true, "This key grants access to the Korriban Forge Caverns capstone area on Korriban.")]
+        [KeyItem(KeyItemCategoryType.Keys, "Korriban Forge Caverns Key", true, "A heavy iron key, its bit shaped like a forge glyph. It opens the sealed passage to the Forge Caverns in the far north-east corner of the Sith Fortress Forgeworks on Korriban.")]
         CapstoneKorribanForgeCavernsKey = 109,
-        [KeyItem(KeyItemCategoryType.Keys, "Smuggler's Moon Fight Club Backrooms Key", true, "This key grants access to the Smuggler's Moon Fight Club Backrooms capstone area on Smuggler's Moon.")]
+        [KeyItem(KeyItemCategoryType.Keys, "Smuggler's Moon Fight Club Backrooms Key", true, "A greasy door code scratched onto a betting chit. It opens the Back Rooms door on the far west wall of the Fight Club, below the Slums on Smuggler's Moon.")]
         CapstoneSmugglersMoonFightClubBackroomsKey = 110,
-        [KeyItem(KeyItemCategoryType.Keys, "CZ-220 Breaker Yard Key", true, "This key grants access to the CZ-220 Breaker Yard capstone area on CZ-220.")]
+        [KeyItem(KeyItemCategoryType.Keys, "CZ-220 Breaker Yard Key", true, "A Czerka maintenance override card with a cracked holo-stripe. It drops the force-field wall into the Breaker Bay in the far north-east corner of the CZ-220 Maintenance Level.")]
         CapstoneCZ220BreakerYardKey = 111,
-        [KeyItem(KeyItemCategoryType.Keys, "Anchorhead Canyon Range Key", true, "This key grants access to the Anchorhead Canyon Range capstone area on Tatooine.")]
+        [KeyItem(KeyItemCategoryType.Keys, "Anchorhead Canyon Range Key", true, "A sand-scoured range pass on a leather cord. It opens the sealed cliff door to the Anchorhead Canyon Range, on the south edge of the Rocky Pass by the trail to the Southern Pass on Tatooine.")]
         CapstoneAnchorheadCanyonRangeKey = 112,
-        [KeyItem(KeyItemCategoryType.Keys, "Czerka Arms Test Range Key", true, "This key grants access to the Czerka Arms Test Range capstone area on Smuggler's Moon.")]
+        [KeyItem(KeyItemCategoryType.Keys, "Czerka Arms Test Range Key", true, "A Czerka range clearance card bearing a test-division stamp. It opens the Czerka Weapons Testing Facility door in the Corporate District on Smuggler's Moon, a short walk south of the GSI Tower doors.")]
         CapstoneCzerkaArmsTestRangeKey = 113,
-        [KeyItem(KeyItemCategoryType.Keys, "Hutlar Qion Test Site Key", true, "This key grants access to the Hutlar Qion Test Site capstone area on Hutlar.")]
+        [KeyItem(KeyItemCategoryType.Keys, "Hutlar Qion Test Site Key", true, "A frost-scarred site key with a blast-safety tag still wired to it. It opens the sealed Qion Test Site entrance in the Qion Box Canyon on Hutlar, south of the road up to Fort Ka'ra.")]
         CapstoneHutlarQionTestSiteKey = 114,
-        [KeyItem(KeyItemCategoryType.Keys, "Korriban Sith Crypt Depths Key", true, "This key grants access to the Korriban Sith Crypt Depths capstone area on Korriban.")]
+        [KeyItem(KeyItemCategoryType.Keys, "Korriban Sith Crypt Depths Key", true, "A cold, rune-cut key of dark stone. It opens the sealed passage to the Sith Crypt Depths at the north end of the Sith Crypt on Korriban.")]
         CapstoneKorribanSithCryptDepthsKey = 115,
-        [KeyItem(KeyItemCategoryType.Keys, "Viscara Republic Engineering Bunker Key", true, "This key grants access to the Viscara Republic Engineering Bunker capstone area on Viscara.")]
+        [KeyItem(KeyItemCategoryType.Keys, "Viscara Republic Engineering Bunker Key", true, "A Republic engineering access card with a cracked corps insignia. It opens the bunker door beside the elevator on the Combat Deck of Outpost Hope on Viscara.")]
         CapstoneViscaraRepublicEngineeringBunkerKey = 116,
-        [KeyItem(KeyItemCategoryType.Keys, "Dantooine Medical Sublevel Key", true, "This key grants access to the Dantooine Medical Sublevel capstone area on Dantooine.")]
+        [KeyItem(KeyItemCategoryType.Keys, "Dantooine Medical Sublevel Key", true, "A colony medical keycard, its clip stained with old kolto. It opens the way down to the Medical Sublevel on the far west wall of the Abandoned Warehouse on Dantooine's Jungle Mountain.")]
         CapstoneDantooineMedicalSublevelKey = 117,
-        [KeyItem(KeyItemCategoryType.Keys, "Dathomir Tarn Jungle Preserve Key", true, "This key grants access to the Dathomir Tarn Jungle Preserve capstone area on Dathomir.")]
+        [KeyItem(KeyItemCategoryType.Keys, "Dathomir Tarn Jungle Preserve Key", true, "A carved hide tag strung with a preserve warden's knot. It opens the sealed gate to the Tarn Jungle Preserve in the north-east part of the Tarnished Jungles on Dathomir.")]
         CapstoneDathomirTarnJunglePreserveKey = 118,
-        [KeyItem(KeyItemCategoryType.Keys, "Dathomir Grotto Apex Den Key", true, "This key grants access to the Dathomir Grotto Apex Den capstone area on Dathomir.")]
+        [KeyItem(KeyItemCategoryType.Keys, "Dathomir Grotto Apex Den Key", true, "A bone key wrapped in grotto moss and old rancor hide. It opens the gate to the Grotto Apex Den on the west side of the Grotto Caverns on Dathomir, beside the cave water.")]
         CapstoneDathomirGrottoApexDenKey = 119,
         [KeyItem(KeyItemCategoryType.QuestItems, "Invincible Veles Drill Ledger", true, "A militia drill ledger recovered in the Veles Militia Annex during the Invincible trial.")]
         CapstoneInvincibleVelesDrillLedger = 120,

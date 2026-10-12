@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Not yet, dear. I don't certify hands that haven't proven steady with Devices work first. Come back when that's settled and we'll talk about walls.",
+          "Text": "Not yet, dear. I don't certify hands that haven't proven steady with charges and field devices first. Come back when that's settled and we'll talk about walls.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Nobody respects a shelter drill until the day the roof's actually coming down, and then everybody wants to know why I run them. Well, here's why: a crew sealed off part of my own sublevel in the Viscara Republic Engineering Bunker and re-rigged it without my sign-off. Six of their adepts are holding it. Clear them out, bring me back the Republic Bunker Docket, and let's see exactly what they changed.",
+          "Text": "Nobody respects a shelter drill until the roof's actually coming down. Here's why I run them: a crew sealed off part of my own sublevel in the Republic Engineering Bunker on Viscara and re-rigged it without my sign-off. Six of their adepts are holding it. The bunker opens off the Combat Deck inside Outpost Hope, right beside the elevator. Clear them out, bring me back the Republic Bunker Docket, and let's see exactly what they changed.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take the bunker key. Other work can wait a beat, but fine, go when you're ready. Just don't go in without knowing your exit, that's the first rule of any bunker I've ever built.",
+          "Text": "Take the bunker key. Ships leave from the spaceport right outside; land at the Veles starport, take the south gate into the Wildlands, and head west through the Crossroads West to Outpost Hope. And don't go in without knowing your exit. That's the first rule of any bunker I've ever built.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That docket's still sitting in my own sublevel with six adepts standing on it. Go get it back.",
+          "Text": "That docket's still sitting in my sublevel on Viscara with six adepts standing on it. Combat Deck of Outpost Hope, beside the elevator. Go get it back.",
           "Style": 0,
           "Color": null
         }
@@ -515,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take your day. Just don't take two; every hour that relay stays crossed with my supports is an hour I'm not sure that sublevel holds.",
+          "Text": "Good. Don't dawdle; every hour that relay stays crossed with my supports is an hour I'm not sure that sublevel holds.",
           "Style": 0,
           "Color": null
         }
@@ -933,7 +933,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take your time. That chip isn't going anywhere, but I'd rather it stay lost to them a little longer than have you rush this and end up needing my protocol yourself.",
+          "Text": "Good. Go carefully. I'd rather that chip take a little longer than have you rush this and end up needing my protocol yourself.",
           "Style": 0,
           "Color": null
         }
@@ -1100,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He's taken the deepest room I ever built and decided the walls make him patient, like waiting out a rescue crew is a virtue instead of a trap closing on him. My protocol says three, minimum, and I am not bending that rule for the man who broke every other one I wrote. Bring your two. Finish what the bunker was always meant to do: hold, and hold him inside it.",
+          "Text": "He's taken the deepest room I ever built and decided the walls make him patient, like waiting out a rescue crew is a virtue instead of a trap closing on him. My protocol says three, minimum, and I am not bending that rule for the one who broke every other one I wrote. Bring your two. Finish what the bunker was always meant to do: hold, and hold him inside it.",
           "Style": 0,
           "Color": null
         }
@@ -1142,7 +1142,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take the time. This chamber's waited this long for the right hands; it can wait a little longer for the right three.",
+          "Text": "Good. This chamber's waited a long time for the right hands. Take the right three and finish it.",
           "Style": 0,
           "Color": null
         }
@@ -1215,7 +1215,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then Emergency Bunker goes back to what I built it for: holding people who need holding, not men who think walls make them untouchable. That's yours now, properly, and I trust you'll keep it that way.",
+          "Text": "Then Emergency Bunker goes back to what I built it for: holding people who need holding, not anyone who thinks walls make them untouchable. That's yours now, properly, and I trust you'll keep it that way.",
           "Style": 0,
           "Color": null
         }
@@ -1309,7 +1309,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Go-Corp Station in Anchorhead moves people for a living. People in transit need shelter drills as much as soldiers do, and nobody needs a Republic uniform to ask me about one. The sealed sublevel is still in the Republic Engineering Bunker on Viscara. Take the key there; bring their docket back to me here on Tatooine.",
+          "Text": "Go-Corp Station in Anchorhead moves people for a living, and people in transit need shelter drills as much as soldiers do. Nobody needs a Republic uniform to ask me about one. The sealed sublevel is in the Republic Engineering Bunker inside Outpost Hope on Viscara, and the spaceport is just outside that door. Bring their docket back to me here on Tatooine.",
           "Style": 0,
           "Color": null
         }

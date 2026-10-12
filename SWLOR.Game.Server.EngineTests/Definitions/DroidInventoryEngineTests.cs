@@ -180,6 +180,38 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await Dismiss(ctx, owner, droid);
         }
 
+        [EngineTest("Droid dismissal excludes containers awaiting their queued return", Category = "DroidInventory")]
+        public static async Task PendingContainerReturn(EngineTestContext ctx)
+        {
+            var owner = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            var controller = await CreateController(ctx, owner);
+            var droid = await Spawn(ctx, owner, controller);
+            var bag = OBJECT_INVALID;
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                SetLocalBool(droid, "DROID_IS_SPAWNING", true);
+                bag = CreateItemOnObject("bag_ex", droid);
+                ctx.Assert(GetIsObjectValid(bag) && GetHasInventory(bag), "The rejected container fixture exists");
+                ctx.Track(bag);
+            });
+            await ctx.WaitFrameAsync();
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                DeleteLocalBool(droid, "DROID_IS_SPAWNING");
+                Item.ReturnItem(owner, bag);
+                ctx.AssertEqual(droid, GetItemPossessor(bag), "The container remains carried until the queued return executes");
+                Droid.RemoveAssociate();
+                ctx.AssertEqual(0, Droid.LoadConstructedDroid(controller).Inventory.Count, "The dismissal checkpoint excludes the rejected container");
+                ctx.Assert(ItemPlugin.MoveTo(bag, owner), "Recover the fixture before the dismissed droid is destroyed");
+            });
+            await ctx.WaitUntilAsync(() => !GetIsObjectValid(droid), 5f, "the droid to be dismissed");
+            droid = await Spawn(ctx, owner, controller);
+            ctx.AssertEqual(0, Items(droid).Count(item => GetResRef(item) == "bag_ex"), "The rejected container cannot return on resummon");
+            ctx.AssertEqual(owner, GetItemPossessor(bag), "The returned fixture remains with its owner");
+            await Dismiss(ctx, owner, droid);
+        }
+
         private static unsafe void SplitStack(uint droid, uint item, int amount)
         {
             var server = NWNXLib.g_pAppManager.m_pServerExoApp;

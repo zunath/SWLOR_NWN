@@ -954,7 +954,7 @@ namespace SWLOR.Game.Server.Service
             for (var slot = InventorySlot.Head; slot <= InventorySlot.Bolts; slot++)
             {
                 var item = GetItemInSlot(slot, droid);
-                if (!GetIsObjectValid(item) || !IsStoredItem(item))
+                if (!GetIsObjectValid(item) || !IsStoredItem(item) || !string.IsNullOrWhiteSpace(CanGiveItemToDroid(item)))
                     continue;
 
                 GetDroidItemId(item, itemIds);
@@ -964,7 +964,7 @@ namespace SWLOR.Game.Server.Service
 
             for (var item = GetFirstItemInInventory(droid); GetIsObjectValid(item); item = GetNextItemInInventory(droid))
             {
-                if (equippedObjects.Contains(item) || !IsStoredItem(item))
+                if (equippedObjects.Contains(item) || !IsStoredItem(item) || !string.IsNullOrWhiteSpace(CanGiveItemToDroid(item)))
                     continue;
 
                 var itemId = GetDroidItemId(item, itemIds);

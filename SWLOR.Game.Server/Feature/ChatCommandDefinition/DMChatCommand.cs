@@ -1213,7 +1213,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var finalValue = float.TryParse(args[0], out var value) ? value : 1f;
 
                     SetObjectVisualTransform(target, ObjectVisualTransform.Scale, finalValue);
-                    PlayerCameraHeight.Apply(target);
 
                     // Lets the DM know what he set the scale to, but round it to the third decimal place.
                     var targetName = GetName(target);

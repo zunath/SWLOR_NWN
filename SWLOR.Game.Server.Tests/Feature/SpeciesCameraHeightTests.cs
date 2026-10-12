@@ -1,13 +1,12 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.Formats.TwoDA;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class PlayerCameraHeightTests
+public class SpeciesCameraHeightTests
 {
     // Stock dynamic rows whose HEIGHT matches each body model prefix's skeleton.
     private static readonly Dictionary<string, int> SkeletonBaseRows = new(StringComparer.OrdinalIgnoreCase)
@@ -20,22 +19,14 @@ public class PlayerCameraHeightTests
         ["H"] = 6, // Human
     };
 
+    // The camera ignores visual scale, so Wookiee keeps a taller camera for the heights players usually choose.
+    private static readonly Dictionary<AppearanceType, string> IntentionalHeights = new()
+    {
+        [AppearanceType.Wookiee] = "2.25",
+    };
+
     // Species on a custom skeleton with no stock row to compare against.
     private static readonly AppearanceType[] CustomSkeletonSpecies = { AppearanceType.Droid };
-
-    [TestCase(2.0f, 1.0f, 0f)]
-    [TestCase(2.0f, 1.0005f, 0f)]
-    [TestCase(2.0f, 1.15f, 1.725f)]
-    [TestCase(1.75f, 1.5f, 1.875f)]
-    [TestCase(1.5f, 0.86f, 0.86f)]
-    [TestCase(2.0f, 0.85f, 1.275f)]
-    [TestCase(0.3f, 1.2f, 0f)]
-    [TestCase(0f, 1.2f, 0f)]
-    [TestCase(2.0f, 0f, 0f)]
-    public void CameraHeightScalesTheRacialPivotWithTheBody(float racialHeight, float scale, float expected)
-    {
-        PlayerCameraHeight.CalculateCameraHeight(racialHeight, scale).Should().BeApproximately(expected, 0.0001f);
-    }
 
     [Test]
     public void PlayableSpeciesUseTheCameraHeightOfTheSkeletonTheyRenderWith()
@@ -54,10 +45,11 @@ public class PlayerCameraHeightTests
             }
 
             var height = appearances.GetValue((int)species, "HEIGHT");
-            var expected = appearances.GetValue(baseRow, "HEIGHT");
+            var expected = IntentionalHeights.TryGetValue(species, out var intentional)
+                ? intentional
+                : appearances.GetValue(baseRow, "HEIGHT");
             if (height != expected)
-                failures.Add($"{species} ({(int)species}) renders on skeleton '{race}' but has HEIGHT {height}; " +
-                             $"row {baseRow} uses {expected}.");
+                failures.Add($"{species} ({(int)species}) renders on skeleton '{race}' but has HEIGHT {height}; expected {expected}.");
         }
 
         failures.Should().BeEmpty("appearance.2da HEIGHT places the camera relative to the skeleton");

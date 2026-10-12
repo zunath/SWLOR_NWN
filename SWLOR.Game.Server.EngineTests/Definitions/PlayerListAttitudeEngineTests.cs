@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using NWN.Native.API;
@@ -15,10 +16,9 @@ public static class PlayerListAttitudeEngineTests
     private static unsafe FunctionHook* _attitudeHook;
     private static unsafe FunctionHook* _playerInfoHook;
     private static unsafe FunctionHook* _sendHook;
-    private static readonly List<(uint Target, uint Source, int Like)> Updates = new();
+    private static readonly List<(int ListRefresh, uint Target, uint Source, int Like)> Updates = new();
     private static readonly Dictionary<uint, CNetLayerPlayerInfo> FixtureClients = new();
     private static int _listsSent;
-    private static bool _attitudeBeforeList;
 
     [EngineTest("Name updates preserve unnamed hostility and one-sided choices", Category = "PlayerList", TimeoutSeconds = 60f)]
     public static async Task RestoreHostility(EngineTestContext ctx)
@@ -57,36 +57,46 @@ public static class PlayerListAttitudeEngineTests
                     observerCreature.SetPVPPlayerLikesMe(target.Creature, incoming, 0);
                     Updates.Clear();
                     _listsSent = 0;
-                    _attitudeBeforeList = false;
                     PlayerName.SendChatMessageWithChatNameOverride(observer.Creature, target.Creature,
-                        () => ctx.AssertEqual(1, _listsSent, "Chat name applied before sending the message"));
+                        () =>
+                        {
+                            ctx.AssertEqual(1, _listsSent, "Chat name applied before sending the message");
+                            AssertReplay(ctx, observerClient.m_nPlayerID, targetClient.m_nPlayerID, outgoing, incoming, 1);
+                        });
 
                     ctx.AssertEqual(2, _listsSent, "NWNX refreshed the list for chat name application and restoration");
-                    ctx.Assert(!_attitudeBeforeList, "Attitudes follow the list that would otherwise reset them");
+                    AssertReplay(ctx, observerClient.m_nPlayerID, targetClient.m_nPlayerID, outgoing, incoming, 2);
                     ctx.AssertEqual(2 * ((outgoing == 0 ? 1 : 0) + (incoming == 0 ? 1 : 0)), Updates.Count,
-                        "Replay sends only hostile directions, with no bystander or self update");
-                    ctx.AssertEqual(outgoing == 0,
-                        Updates.Contains((targetClient.m_nPlayerID, observerClient.m_nPlayerID, 0)), "Outgoing Dislike replay");
-                    ctx.AssertEqual(incoming == 0,
-                        Updates.Contains((observerClient.m_nPlayerID, targetClient.m_nPlayerID, 0)), "Incoming Dislike replay");
+                        "No extra attitudes are sent before or between the two refresh replays");
                     ctx.AssertEqual(outgoing, targetCreature.GetPVPPlayerLikesMe(observer.Creature), "Outgoing server attitude is unchanged");
                     ctx.AssertEqual(incoming, observerCreature.GetPVPPlayerLikesMe(target.Creature), "Incoming server attitude is unchanged");
                 }
             }
             finally
             {
-                observerClient.m_lstActivePartyObjectsLastUpdate.Remove(visibleTarget);
                 try
                 {
+                    observerClient.m_lstActivePartyObjectsLastUpdate.Remove(visibleTarget);
                     if (listed)
                     {
-                        RenamePlugin.ClearPCNameOverride(target.Creature, clearAll: true);
-                        server.GetNWSMessage().SendServerToPlayerPlayerList_Delete(uint.MaxValue, targetClient);
+                        try { RenamePlugin.ClearPCNameOverride(target.Creature, clearAll: true); }
+                        finally { server.GetNWSMessage().SendServerToPlayerPlayerList_Delete(uint.MaxValue, targetClient); }
                     }
                 }
                 finally { EndCapture(); }
             }
         });
+    }
+
+    private static void AssertReplay(EngineTestContext ctx, uint observer, uint target, int outgoing, int incoming, int listRefresh)
+    {
+        var updates = Updates.Where(update => update.ListRefresh == listRefresh).ToList();
+        ctx.AssertEqual((outgoing == 0 ? 1 : 0) + (incoming == 0 ? 1 : 0), updates.Count,
+            $"Refresh {listRefresh} replays only hostile directions, with no bystander or self update");
+        ctx.AssertEqual(outgoing == 0, updates.Contains((listRefresh, target, observer, 0)),
+            $"Refresh {listRefresh} outgoing Dislike replay");
+        ctx.AssertEqual(incoming == 0, updates.Contains((listRefresh, observer, target, 0)),
+            $"Refresh {listRefresh} incoming Dislike replay");
     }
 
     private static unsafe void BeginCapture(params uint[] clients)
@@ -128,8 +138,7 @@ public static class PlayerListAttitudeEngineTests
     {
         if (FixtureClients.ContainsKey(target) && FixtureClients.ContainsKey(source))
         {
-            if (_listsSent == 0) _attitudeBeforeList = true;
-            Updates.Add((target, source, like));
+            Updates.Add((_listsSent, target, source, like));
             return 1; // Disconnected fixture clients have no network transport.
         }
         return ((delegate* unmanaged<void*, uint, uint, int, int>)_attitudeHook->m_trampoline)(message, target, source, like);

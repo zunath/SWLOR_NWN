@@ -4,6 +4,7 @@ using System.Text;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.Engine;
 
@@ -146,9 +147,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             return value is >= ' ' and <= '~' ? GlyphAdvances[value - ' '] * (17f / 1080f) + 0.5f : 17f;
         }
 
-        public static Json BuildLayout(string text, float height)
+        public static Json BuildLayout(string text, float height) =>
+            BuildLayout<ExamineItemViewModel>(text, height);
+
+        public static Json BuildLayout<TViewModel>(string text, float height, float width = TextWidth)
+            where TViewModel : IGuiViewModel
         {
-            var host = new GuiGroup<ExamineItemViewModel>();
+            var host = new GuiGroup<TViewModel>();
             host.SetShowBorder(false).SetScrollbars(NuiScrollbars.None);
             host.SetHeight(height);
             host.AddColumn(column => column.AddRow(row =>
@@ -159,19 +164,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     return;
                 }
 
-                var runs = Wrap(text);
+                var runs = Wrap(text, width);
                 row.AddGroup(scroll =>
                 {
                     scroll.SetScrollbars(NuiScrollbars.Auto);
                     scroll.AddColumn(content => content.AddRow(line => line.AddLabel()
-                        .SetText(string.Empty).SetWidth(TextWidth).SetMargin(0f)
+                        .SetText(string.Empty).SetWidth(width).SetMargin(0f)
                         .SetHeight(Math.Max(LineHeight, runs.LastOrDefault()?.Y + LineHeight ?? LineHeight))
                         .AddDrawList(draw =>
                         {
                             draw.SetIsConstrainedToTargetBounds(true);
                             foreach (var run in runs)
                                 draw.AddText(item => item.SetText(run.Text).SetColor(run.Color)
-                                    .SetBounds(run.X, run.Y, TextWidth - run.X, LineHeight));
+                                    .SetBounds(run.X, run.Y, width - run.X, LineHeight));
                         })));
                 }).SetHeight(height);
             }));

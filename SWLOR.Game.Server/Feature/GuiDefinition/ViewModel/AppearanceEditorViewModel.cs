@@ -837,6 +837,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
             }
 
+            // Helmets and cloaks must use a model offered for the wearer's appearance.
+            if (SelectedItemTypeIndex == 1 || SelectedItemTypeIndex == 2) // 1 = Helmet, 2 = Cloak
+            {
+                var appearanceType = GetAppearanceType(_target);
+                var partIds = SelectedItemTypeIndex == 1
+                    ? _armorAppearances[appearanceType].Helmet
+                    : _armorAppearances[appearanceType].Cloak;
+
+                if (!partIds.Contains(GetItemAppearance(item, ItemAppearanceType.SimpleModel, -1)))
+                    return false;
+            }
+
             // Weapons must be registered in the weapon appearances list in order to show up.
             // Also, if it has an appearance on the top, middle,or bottom model which isn't available in the menu, we treat it as invalid.
             if (SelectedItemTypeIndex == 3 || SelectedItemTypeIndex == 4) // 3 = Weapon (Main Hand), 4 = Weapon (Off Hand)

@@ -25,10 +25,9 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": "Forge Gauntlets"
+      "0": "Crafted gauntlets salvaged from Forgewright Malak-Kin."
     }
   },
   "Description": {
@@ -42,7 +41,6 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 48320,
     "type": "cexolocstring",
     "value": {
       "0": "Forge Gauntlets"

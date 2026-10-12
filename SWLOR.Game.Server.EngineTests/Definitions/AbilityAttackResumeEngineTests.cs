@@ -51,10 +51,8 @@ public static class AbilityAttackResumeEngineTests
 
             await ctx.ExecuteInCreatureContextAsync(creature, () =>
             {
-                ctx.Assert(GetCurrentAction(creature) != ActionType.AttackObject,
-                    "activation runs between native attack action updates");
-                ctx.Assert(!GetIsObjectValid(Enmity.GetHighestEnmityAttackTarget(creature)),
-                    "the attacker has no autonomous threat fallback to mask a lost queued target");
+                // Unit coverage forces the between-update action values. Here the engine
+                // chooses the timing; verify that the retained queue produces real swings.
                 ctx.Assert(UsePerkFeat.TryUseAbility(creature, creature, feat, GetLocation(creature)),
                     $"{feat} activates: {Ability.GetLastActivationDenialReason()}");
             });

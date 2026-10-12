@@ -89,5 +89,61 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 DB.Delete<WorldProperty>(property.Id);
             }
         }
+
+        [EngineTest("A city jukebox plays from the current mayor's collection", Category = "MusicCollection", TimeoutSeconds = 45f)]
+        public static async Task CityJukeboxUsesCurrentMayor(EngineTestContext ctx)
+        {
+            await ctx.WaitFrameAsync();
+            var jukebox = CreateObject(ObjectType.Placeable, "jukebox", ctx.GetArenaLocation(2f, 2f));
+            ctx.Track(jukebox);
+
+            // Structures keep the owner they were placed under; an election only changes the city's owner.
+            var city = new WorldProperty
+            {
+                CustomName = "Music test city",
+                PropertyType = PropertyType.City,
+                OwnerPlayerId = "music-test-current-mayor",
+                ParentPropertyId = GetResRef(GetArea(jukebox)),
+            };
+            var structure = new WorldProperty
+            {
+                CustomName = "Music test city jukebox",
+                PropertyType = PropertyType.Structure,
+                OwnerPlayerId = "music-test-former-mayor",
+                ParentPropertyId = city.Id,
+                StructureType = StructureType.Jukebox,
+            };
+            DB.Set(city);
+            DB.Set(structure);
+            try
+            {
+                SetLocalString(jukebox, "PROPERTY_ID", structure.Id);
+                ctx.AssertEqual(city.OwnerPlayerId, Music.GetJukeboxOwnerId(jukebox), "city jukebox owner");
+            }
+            finally
+            {
+                DB.Delete<WorldProperty>(structure.Id);
+                DB.Delete<WorldProperty>(city.Id);
+            }
+        }
+
+        [EngineTest("Saved music settings the player has not collected are cleared", Category = "MusicCollection", TimeoutSeconds = 45f)]
+        public static async Task UncollectedMusicSettingsAreCleared(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
+            await ctx.ExecuteInCreatureContextAsync(player.Creature, () => Music.GrantStarterSongs(player.Creature));
+            var collected = MusicSongCatalog.Songs.First(song => song.Acquisition == MusicAcquisitionType.Starter);
+            var uncollected = MusicSongCatalog.Songs.First(song => song.Acquisition == MusicAcquisitionType.BossDrop);
+
+            var dbPlayer = DB.Get<Player>(player.Id);
+            dbPlayer.Settings.PersonalMusicTrackId = collected.TrackId;
+            dbPlayer.Settings.BattleThemeId = uncollected.TrackId;
+            DB.Set(dbPlayer);
+
+            Music.ClearUncollectedMusicSettings(player.Id);
+            dbPlayer = DB.Get<Player>(player.Id);
+            ctx.AssertEqual(collected.TrackId, dbPlayer.Settings.PersonalMusicTrackId, "collected personal track is kept");
+            ctx.Assert(dbPlayer.Settings.BattleThemeId == null, "uncollected battle theme is cleared");
+        }
     }
 }

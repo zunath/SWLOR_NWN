@@ -2031,17 +2031,24 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MusicPickerViewModel.cs",
-    "Line": 252,
+    "Line": 244,
     "Member": "OnPlaySong",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Now playing: {entry.Name}\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MusicPickerViewModel.cs",
-    "Line": 263,
+    "Line": 254,
     "Member": "OnSetBattleTheme",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Battle theme: {entry.Name}\", Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MusicPickerViewModel.cs",
+    "Line": 299,
+    "Member": "CloseIfJukeboxIsGone",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, ColorToken.Red(\"The jukebox is no longer here.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/NotesViewModel.cs",

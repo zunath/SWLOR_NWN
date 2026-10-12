@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Service
     public class Music
     {
         public const string MusicPlayerTag = "MUSIC_PLAYER";
+        private const string AreaMusicStoppedVariable = "MUSIC_BACKGROUND_STOPPED";
 
         private static readonly Dictionary<int, Song> _songs = new Dictionary<int,Song>();
         private static readonly Dictionary<KeyItemType, MusicSong> _collectibleSongsByKeyItem = MusicSongCatalog.Songs
@@ -61,6 +62,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters an area, grant any missing starter songs and reapply the player's
         /// personal music track and battle theme, which the area's own music otherwise replaces.
+        /// Saved tracks the player has not collected are cleared.
         /// </summary>
         [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void ApplyPlayerMusic()
@@ -70,11 +72,11 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            if (dbPlayer == null)
+            if (DB.Get<Player>(playerId) == null)
                 return;
 
             GrantStarterSongs(player);
+            var dbPlayer = ClearUncollectedMusicSettings(playerId);
 
             var area = OBJECT_SELF;
             var personalTrackId = dbPlayer.Settings.PersonalMusicTrackId;
@@ -103,6 +105,34 @@ namespace SWLOR.Game.Server.Service
                 if (!KeyItem.HasKeyItem(player, song.KeyItem))
                     KeyItem.GiveKeyItem(player, song.KeyItem);
             }
+        }
+
+        /// <summary>
+        /// Clears a player's personal track and battle theme when they are not in the player's
+        /// collection, such as battle themes saved before songs had to be collected.
+        /// </summary>
+        /// <param name="playerId">The player's ID</param>
+        /// <returns>The updated player, or null if the player is not found.</returns>
+        public static Player ClearUncollectedMusicSettings(string playerId)
+        {
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return null;
+
+            var collected = GetCollectedTrackIds(playerId);
+            var isPersonalTrackCollected = dbPlayer.Settings.PersonalMusicTrackId == null ||
+                                           collected.Contains(dbPlayer.Settings.PersonalMusicTrackId.Value);
+            var isBattleThemeCollected = dbPlayer.Settings.BattleThemeId == null ||
+                                         collected.Contains(dbPlayer.Settings.BattleThemeId.Value);
+            if (isPersonalTrackCollected && isBattleThemeCollected)
+                return dbPlayer;
+
+            if (!isPersonalTrackCollected)
+                dbPlayer.Settings.PersonalMusicTrackId = null;
+            if (!isBattleThemeCollected)
+                dbPlayer.Settings.BattleThemeId = null;
+            DB.Set(dbPlayer);
+            return dbPlayer;
         }
 
         /// <summary>
@@ -185,7 +215,9 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the player ID of the owner of a jukebox structure.
+        /// Retrieves the player ID of the owner of a jukebox structure: the owner of the top-level
+        /// property it sits in, such as the city, apartment or ship. Structures keep the owner they
+        /// were placed under, so a city's current mayor is only recorded on the city itself.
         /// Jukeboxes placed in the world rather than in a property have no owner.
         /// </summary>
         /// <param name="jukebox">The jukebox placeable</param>
@@ -197,6 +229,18 @@ namespace SWLOR.Game.Server.Service
                 return string.Empty;
 
             var property = DB.Get<WorldProperty>(propertyId);
+            var visited = new HashSet<string>();
+            while (property != null &&
+                   visited.Add(property.Id) &&
+                   !string.IsNullOrWhiteSpace(property.ParentPropertyId))
+            {
+                var parent = DB.Get<WorldProperty>(property.ParentPropertyId);
+                if (parent == null)
+                    break;
+
+                property = parent;
+            }
+
             return property?.OwnerPlayerId ?? string.Empty;
         }
 
@@ -272,6 +316,7 @@ namespace SWLOR.Game.Server.Service
             MusicBackgroundChangeDay(area, trackId);
             MusicBackgroundChangeNight(area, trackId);
             MusicBackgroundPlay(area);
+            DeleteLocalBool(area, AreaMusicStoppedVariable);
         }
 
         /// <summary>
@@ -280,6 +325,16 @@ namespace SWLOR.Game.Server.Service
         public static void StopInArea(uint area)
         {
             MusicBackgroundStop(area);
+            SetLocalBool(area, AreaMusicStoppedVariable, true);
+        }
+
+        /// <summary>
+        /// Whether an area's background music was stopped with <see cref="StopInArea"/>.
+        /// The area keeps its configured tracks while stopped.
+        /// </summary>
+        public static bool IsAreaMusicStopped(uint area)
+        {
+            return GetLocalBool(area, AreaMusicStoppedVariable);
         }
 
         /// <summary>

@@ -233,7 +233,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnPlaySong() => () =>
         {
-            if (!TryGetSelectedEntry(out var entry))
+            if (CloseIfJukeboxIsGone() || !TryGetSelectedEntry(out var entry))
                 return;
 
             if (_mode == MusicPickerMode.Personal)
@@ -266,6 +266,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnStop() => () =>
         {
+            if (CloseIfJukeboxIsGone())
+                return;
+
             if (_mode == MusicPickerMode.Personal)
                 Music.StopForPlayer(Player);
             else
@@ -285,9 +288,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return entry.IsAvailable;
         }
 
+        /// <summary>
+        /// A jukebox window only controls its jukebox's area, so it closes once the jukebox is destroyed.
+        /// </summary>
+        private bool CloseIfJukeboxIsGone()
+        {
+            if (_mode != MusicPickerMode.Jukebox || GetIsObjectValid(_jukebox))
+                return false;
+
+            SendMessageToPC(Player, ColorToken.Red("The jukebox is no longer here."));
+            Gui.CloseWindow(Player, WindowType, Player);
+            return true;
+        }
+
         private uint GetMusicArea()
         {
-            return _mode == MusicPickerMode.Jukebox && GetIsObjectValid(_jukebox)
+            return _mode == MusicPickerMode.Jukebox
                 ? GetArea(_jukebox)
                 : GetArea(Player);
         }
@@ -309,7 +325,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var area = GetMusicArea();
-            NowPlayingText = $"Now playing: {Music.GetTrackName(MusicBackgroundGetDayTrack(area))}";
+            NowPlayingText = Music.IsAreaMusicStopped(area)
+                ? "Now playing: nothing (stopped)"
+                : $"Now playing: {Music.GetTrackName(MusicBackgroundGetDayTrack(area))}";
             BattleThemeText = string.Empty;
         }
     }

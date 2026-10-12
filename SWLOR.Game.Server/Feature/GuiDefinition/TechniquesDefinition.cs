@@ -28,26 +28,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         {
                             row.AddLabel().BindText(model => model.ActiveLoadoutText)
                                 .SetHorizontalAlign(NuiHorizontalAlign.Left).SetHeight(26f);
-                            row.AddProgressBar().BindValue(model => model.BuildsProgress)
-                                .SetColor(90, 170, 230).SetWidth(270f).SetHeight(20f)
-                                .AddDrawList(draw => draw.AddText(text =>
-                                {
-                                    text.BindText(model => model.BuildsText);
-                                    text.SetBounds(6, 2, 270f, 20f);
-                                    text.SetColor(255, 255, 255);
-                                }));
                         });
                         col.AddRow(row =>
                         {
                             row.AddLabel().SetText("Loadout").SetWidth(80f).SetHeight(30f);
                             row.AddComboBox().BindOptions(model => model.LoadoutOptions)
-                                .BindSelectedIndex(model => model.SelectedLoadoutIndex).SetWidth(450f).SetHeight(32f);
+                                .BindSelectedIndex(model => model.SelectedLoadoutIndex).SetWidth(360f).SetHeight(32f);
                             row.AddButton().SetText("Save").SetWidth(80f).SetHeight(32f)
                                 .BindOnClicked(model => model.OnClickSave());
                             row.AddButton().SetText("Save As").SetWidth(100f).SetHeight(32f)
                                 .BindIsEnabled(model => model.CanSaveAs).BindOnClicked(model => model.OnClickSaveAs());
                             row.AddButton().SetText("Manage").SetWidth(100f).SetHeight(32f)
                                 .BindOnClicked(model => model.OnClickManage());
+                            row.AddColumn(capacity =>
+                            {
+                                capacity.SetWidth(220f);
+                                capacity.AddRow(labelRow => labelRow.AddLabel()
+                                    .BindText(model => model.BuildsText).SetHeight(20f));
+                                capacity.AddRow(barRow => barRow.AddProgressBar()
+                                    .BindValue(model => model.BuildsProgress)
+                                    .SetColor(90, 170, 230).SetHeight(10f).SetMargin(0f));
+                            });
                         });
                         // Category filter + sort order, filtering/ordering the Learned list. Fixed-width
                         // combo boxes centered with flexing spacers (the Perks/Key Items pattern) so this
@@ -87,8 +88,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         col.AddRow(row =>
                         {
-                            // Learned list column: no fixed width, so it flexes to fill the space left
-                            // by the fixed-width button column and shares it evenly with the Equipped column.
+                            // Equal list widths keep technique names readable.
                             row.AddColumn(col2 =>
                             {
                                 col2.SetWidth(435f);
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 col2.AddRow(row2 => row2.AddSpacer());
                             });
 
-                            // Equipped list column: also flexes to fill the remaining space.
+                            // Equipped list column matches the Learned list width.
                             row.AddColumn(col2 =>
                             {
                                 col2.SetWidth(435f);
@@ -218,16 +218,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         col.AddRow(row =>
                         {
+                            row.AddLabel().BindText(model => model.SlotsText)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left).SetWidth(230f).SetHeight(24f);
                             row.AddProgressBar()
                                 .BindValue(model => model.SlotsProgress)
                                 .BindColor(model => model.SlotsColor)
-                                .SetHeight(20f)
-                                .AddDrawList(draw => draw.AddText(text =>
-                                {
-                                    text.BindText(model => model.SlotsText);
-                                    text.SetBounds(6, 2, 900f, 20f);
-                                    text.SetColor(255, 255, 255);
-                                }));
+                                .SetHeight(14f);
                         });
                         col.AddRow(row => row.AddLabel().BindText(model => model.StatusText)
                             .SetColor(230, 180, 70).SetHeight(26f).SetHorizontalAlign(NuiHorizontalAlign.Left));

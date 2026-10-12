@@ -602,6 +602,8 @@ namespace SWLOR.Game.Server.Service.NPCService
         Korriban_UmbralRaiderSaboteur = 295,
         [NPCGroup("Umbral Raider Commander")]
         Korriban_UmbralRaiderCommander = 296,
+        [NPCGroup("Foundry Droid")]
+        Hutlar_FoundryDroid = 297,
 
     }
 

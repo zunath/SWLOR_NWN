@@ -7146,6 +7146,25 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Kesa"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_kesa"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Kieun"
                     },
                     "RESREF": {

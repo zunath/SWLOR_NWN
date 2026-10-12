@@ -176,6 +176,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildKillTask("hun_tsk_817", NPCGroupType.Dantooine_PlainsThune, 10, 4);
             BuildKillTask("hun_tsk_818", NPCGroupType.Dantooine_Bol, 10, 4);
             BuildKillTask("hun_tsk_819", NPCGroupType.Dantooine_DantariShaman, 10, 4);
+            BuildKillTask("hun_tsk_820", NPCGroupType.Hutlar_FoundryDroid, 10, 4);
 
 
 

@@ -183,6 +183,10 @@ public class ForceUniversalTests
         var calls = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
             .OfType<InvocationExpressionSyntax>().ToArray();
         var jump = calls.Single(call => call.Expression.ToString() == "JumpToLocation");
+        var interrupt = calls.Single(call => call.ToString() == "AssignCommand(target, () => ClearAllActions())");
+
+        interrupt.Ancestors().OfType<MethodDeclarationSyntax>().Single().Identifier.Text.Should().Be("CompleteLeap",
+            "a leap cancelled during its animation must not interrupt the target");
 
         jump.Ancestors().OfType<IfStatementSyntax>().Should().BeEmpty(
             "the jump must not be skipped when the impact damage kills the target");

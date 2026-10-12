@@ -121,7 +121,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target))
                 return false;
 
-            AssignCommand(target, () => ClearAllActions());
             AssignCommand(activator, () =>
             {
                 ClearAllActions();
@@ -135,6 +134,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void CompleteLeap(uint activator, uint target)
         {
             var destination = GetLeapDestination(activator, target);
+            AssignCommand(target, () => ClearAllActions());
             AssignCommand(activator, () =>
             {
                 JumpToLocation(destination);

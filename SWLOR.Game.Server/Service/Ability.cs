@@ -1016,6 +1016,21 @@ namespace SWLOR.Game.Server.Service
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst), activator);
         }
 
+        /// <summary>
+        /// Retrieves the creatures a self-and-party aura applies to: the activator and the party
+        /// members currently inside its aura range.
+        /// </summary>
+        /// <param name="activator">The creature whose aura is checked.</param>
+        /// <returns>The activator followed by its party members in aura range.</returns>
+        public static List<uint> GetSelfAndPartyAuraRecipients(uint activator)
+        {
+            var recipients = new List<uint> { activator };
+            if (_playerAuras.TryGetValue(activator, out var aura))
+                recipients.AddRange(aura.PartyMembersInRange.Where(member => Party.IsInParty(activator, member)));
+
+            return recipients;
+        }
+
         public static bool RemoveAura(uint activator, Type type, bool sendsWornOffMessage = false)
         {
             if (!_playerAuras.ContainsKey(activator))

@@ -66,6 +66,56 @@ public class DBIndexDefinitionTests
         SearchIndexDefinition.FingerprintKey("Player").Should().Be("IndexDefinition:Player");
     }
 
+    [Test]
+    public void LiveIndexBuiltByThisCodeMatchesTheFingerprint()
+    {
+        // FT.INFO reports STOPWORDS 0 as an empty stopwords_list, and field types as TEXT/NUMERIC.
+        var live = SearchIndexDefinition.DescribeLiveIndex("Player", "HASH", new[] { "Index:Player:" }, Array.Empty<string>(), LiveFields());
+
+        SearchIndexDefinition.Fingerprint(live).Should().Be(Fingerprint(PlayerFields));
+    }
+
+    [Test]
+    public void LiveIndexWithDefaultStopWordsDoesNotMatch()
+    {
+        // An earlier prefixed build kept RediSearch's default stop words; FT.INFO then omits stopwords_list.
+        var live = SearchIndexDefinition.DescribeLiveIndex("Player", "HASH", new[] { "Index:Player:" }, null, LiveFields());
+
+        SearchIndexDefinition.Fingerprint(live).Should().NotBe(Fingerprint(PlayerFields));
+    }
+
+    [Test]
+    public void LegacyUnprefixedLiveIndexDoesNotMatch()
+    {
+        // Legacy FT.CREATE without PREFIX reports a single empty prefix.
+        var live = SearchIndexDefinition.DescribeLiveIndex("Player", "HASH", new[] { string.Empty }, null, LiveFields());
+
+        SearchIndexDefinition.Fingerprint(live).Should().NotBe(Fingerprint(PlayerFields));
+    }
+
+    [Test]
+    public void LiveIndexWithAnotherSchemaDoesNotMatch()
+    {
+        var missingField = LiveFields().Where(field => field.Name != "Name");
+        var retyped = LiveFields().Select(field => field.Name == "Version" ? (field.Name, "TEXT") : field);
+        var customStopWords = new[] { "foo" };
+
+        Describe(missingField, Array.Empty<string>()).Should().NotBe(Fingerprint(PlayerFields));
+        Describe(retyped, Array.Empty<string>()).Should().NotBe(Fingerprint(PlayerFields));
+        Describe(LiveFields(), customStopWords).Should().NotBe(Fingerprint(PlayerFields));
+    }
+
+    private static IEnumerable<(string Name, string Type)> LiveFields()
+    {
+        return PlayerFields.Select(field => (field.Name, field.IsNumeric ? "NUMERIC" : "TEXT"));
+    }
+
+    private static string Describe(IEnumerable<(string Name, string Type)> fields, IReadOnlyList<string> stopWords)
+    {
+        return SearchIndexDefinition.Fingerprint(
+            SearchIndexDefinition.DescribeLiveIndex("Player", "HASH", new[] { "Index:Player:" }, stopWords, fields));
+    }
+
     private static string Fingerprint(IEnumerable<(string Name, bool IsNumeric)> fields)
     {
         return SearchIndexDefinition.Fingerprint(SearchIndexDefinition.BuildCreateArgs("Player", "Player", fields));

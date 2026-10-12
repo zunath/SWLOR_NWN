@@ -61,6 +61,38 @@ namespace SWLOR.Game.Server.Service.DBService
             return args;
         }
 
+        /// <summary>
+        /// Rebuilds the FT.CREATE arguments of a live index from its FT.INFO parts, in the same form as
+        /// BuildCreateArgs, so a live index can be compared with the one this code would create.
+        /// </summary>
+        /// <param name="stopWords">The index's own stop-word list, or null when it uses RediSearch's default list.</param>
+        public static List<object> DescribeLiveIndex(
+            string indexName,
+            string keyType,
+            IReadOnlyList<string> prefixes,
+            IReadOnlyList<string> stopWords,
+            IEnumerable<(string Name, string Type)> fields)
+        {
+            var args = new List<object> { indexName, "ON", keyType.ToUpperInvariant(), "PREFIX", prefixes.Count.ToString() };
+            args.AddRange(prefixes);
+
+            if (stopWords != null)
+            {
+                args.Add("STOPWORDS");
+                args.Add(stopWords.Count.ToString());
+                args.AddRange(stopWords);
+            }
+
+            args.Add("SCHEMA");
+            foreach (var (name, type) in fields.OrderBy(field => field.Name, StringComparer.Ordinal))
+            {
+                args.Add(name);
+                args.Add(type.ToUpperInvariant());
+            }
+
+            return args;
+        }
+
         public static string Fingerprint(IEnumerable<object> createArgs)
         {
             return string.Join(" ", createArgs);

@@ -158,21 +158,73 @@ namespace SWLOR.Game.Server.Service
 
         private static bool IsIndexCurrent(Type type, string fingerprint)
         {
+            // The stored fingerprint is written only after a rebuild finishes its resync.
             var stored = _multiplexer.GetDatabase().StringGet(SearchIndexDefinition.FingerprintKey(type.Name));
             if (stored != fingerprint)
                 return false;
 
-            // A build without prefixes (for example after a rollback) leaves a stale index behind a matching fingerprint.
-            var prefixes = GetLiveIndexPrefixes(type.Name);
-            return prefixes != null && prefixes.Contains(SearchIndexDefinition.KeyPrefix(_keyPrefixByType[type]));
+            // Another build (for example a rollback) can recreate the live index without updating the stored fingerprint.
+            return GetLiveIndexFingerprint(type.Name) == fingerprint;
         }
 
-        private static List<string> GetLiveIndexPrefixes(string indexName)
+        /// <summary>
+        /// Describes the live index from FT.INFO in the same form as the fingerprint, or returns null
+        /// when the index is missing, uses options this code never sets, or cannot be read.
+        /// </summary>
+        private static string GetLiveIndexFingerprint(string indexName)
         {
-            RedisResult[] info;
             try
             {
-                info = (RedisResult[])_multiplexer.GetDatabase().Execute("FT.INFO", indexName);
+                var info = (RedisResult[])_multiplexer.GetDatabase().Execute("FT.INFO", indexName);
+                string keyType = null;
+                List<string> prefixes = null;
+                List<string> stopWords = null;
+                var fields = new List<(string Name, string Type)>();
+
+                for (var i = 0; i + 1 < info.Length; i += 2)
+                {
+                    switch ((string)info[i])
+                    {
+                        case "index_options":
+                            if (((RedisResult[])info[i + 1]).Length > 0)
+                                return null;
+                            break;
+                        case "index_definition":
+                            var definition = (RedisResult[])info[i + 1];
+                            for (var j = 0; j + 1 < definition.Length; j += 2)
+                            {
+                                if ((string)definition[j] == "key_type")
+                                    keyType = (string)definition[j + 1];
+                                else if ((string)definition[j] == "prefixes")
+                                    prefixes = ((RedisResult[])definition[j + 1]).Select(prefix => (string)prefix).ToList();
+                            }
+                            break;
+                        case "attributes":
+                            foreach (RedisResult[] attribute in (RedisResult[])info[i + 1])
+                            {
+                                string name = null;
+                                string fieldType = null;
+                                for (var j = 0; j + 1 < attribute.Length; j += 2)
+                                {
+                                    if ((string)attribute[j] == "identifier")
+                                        name = (string)attribute[j + 1];
+                                    else if ((string)attribute[j] == "type")
+                                        fieldType = (string)attribute[j + 1];
+                                }
+                                fields.Add((name, fieldType));
+                            }
+                            break;
+                        case "stopwords_list":
+                            stopWords = ((RedisResult[])info[i + 1]).Select(word => (string)word).ToList();
+                            break;
+                    }
+                }
+
+                if (keyType == null || prefixes == null || fields.Any(field => field.Name == null || field.Type == null))
+                    return null;
+
+                return SearchIndexDefinition.Fingerprint(
+                    SearchIndexDefinition.DescribeLiveIndex(indexName, keyType, prefixes, stopWords, fields));
             }
             catch (Exception ex)
             {
@@ -180,21 +232,6 @@ namespace SWLOR.Game.Server.Service
                     Console.WriteLine($"Could not read index {indexName}. Exception: {ex.ToMessageAndCompleteStacktrace()}");
                 return null;
             }
-
-            for (var i = 0; i + 1 < info.Length; i += 2)
-            {
-                if ((string)info[i] != "index_definition")
-                    continue;
-
-                var definition = (RedisResult[])info[i + 1];
-                for (var j = 0; j + 1 < definition.Length; j += 2)
-                {
-                    if ((string)definition[j] == "prefixes")
-                        return ((RedisResult[])definition[j + 1]).Select(prefix => (string)prefix).ToList();
-                }
-            }
-
-            return new List<string>();
         }
 
         private static void DropIndex(Type type)

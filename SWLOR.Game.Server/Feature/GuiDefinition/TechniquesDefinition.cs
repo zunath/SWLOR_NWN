@@ -40,26 +40,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindIsEnabled(model => model.CanSaveAs).BindOnClicked(model => model.OnClickSaveAs());
                             row.AddButton().SetText("Manage").SetWidth(100f).SetHeight(32f)
                                 .BindOnClicked(model => model.OnClickManage());
-                            row.AddColumn(capacity =>
-                            {
-                                capacity.SetWidth(220f);
-                                capacity.AddRow(labelRow => labelRow.AddLabel()
-                                    .BindText(model => model.BuildsText).SetHeight(20f));
-                                capacity.AddRow(barRow => barRow.AddProgressBar()
-                                    .BindValue(model => model.BuildsProgress)
-                                    .SetColor(90, 170, 230).SetHeight(10f).SetMargin(0f));
-                            });
                         });
-                        // Category filter + sort order, filtering/ordering the Learned list. Fixed-width
-                        // combo boxes centered with flexing spacers (the Perks/Key Items pattern) so this
-                        // row fills the window without pinning the content width.
+                        // Saved-build capacity occupies the space left of the category and sort filters.
                         col.AddRow(row =>
                         {
-                            row.SetHeight(32f);
-                            row.AddSpacer();
+                            row.AddColumn(capacity =>
+                            {
+                                capacity.SetWidth(285f);
+                                capacity.AddRow(labelRow => labelRow.AddLabel()
+                                    .BindText(model => model.BuildsText).SetWidth(220f).SetHeight(20f));
+                                capacity.AddRow(barRow => barRow.AddProgressBar()
+                                    .BindValue(model => model.BuildsProgress)
+                                    .SetColor(90, 170, 230).SetWidth(220f).SetHeight(10f).SetMargin(0f));
+                            });
                             row.AddComboBox()
                                 .BindSelectedIndex(model => model.SelectedCategoryId)
                                 .SetWidth(240f)
+                                .SetHeight(32f)
                                 .AddOption("All Types", 0)
                                 .AddOption("Single-Target", 1)
                                 .AddOption("Area", 2)
@@ -70,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             row.AddComboBox()
                                 .BindSelectedIndex(model => model.SelectedSortOrderId)
                                 .SetWidth(180f)
+                                .SetHeight(32f)
                                 .AddOption("Name (A-Z)", 0)
                                 .AddOption("Name (Z-A)", 1)
                                 .AddOption("Rank (Low-High)", 2)

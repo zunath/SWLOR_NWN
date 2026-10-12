@@ -132,6 +132,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Sends feedback to the DM on the creature they control, so it reaches them while they possess one.
+        /// </summary>
+        /// <param name="actor">A DM avatar or the creature they possess.</param>
+        /// <param name="message">The message.</param>
+        public static void SendMessage(uint actor, string message)
+        {
+            SendMessageToPC(GetControlledCreature(actor), message);
+        }
+
+        /// <summary>
         /// Closes a DM window shown on the creature the DM controls.
         /// </summary>
         /// <param name="actor">A DM avatar or the creature they possess.</param>

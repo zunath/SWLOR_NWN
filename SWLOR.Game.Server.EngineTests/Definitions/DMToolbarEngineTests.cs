@@ -534,6 +534,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(DMPlayerDirectory.MaxResults, bulk.Count, "offline search returns up to the result limit");
                 ctx.Assert(bulkTruncated, "offline search reports matches beyond the result limit");
 
+                ctx.AssertEqual(0, DMPlayerDirectory.Search(", . *", DMPlayerSearchScope.All, out _).Count,
+                    "a search of only punctuation matches nobody, online or offline");
+
                 var crossField = DMPlayerDirectory.Search("Bulkprobe uniqbulk", DMPlayerSearchScope.Offline, out var crossFieldTruncated);
                 ctx.Assert(crossField.Any(result => result.Name == "Bulkprobe Target") && !crossFieldTruncated,
                     "a common word plus a rare word in another field finds the character");

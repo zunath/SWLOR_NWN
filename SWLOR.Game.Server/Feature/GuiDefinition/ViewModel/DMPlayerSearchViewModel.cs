@@ -259,7 +259,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var player = DMPlayerDirectory.GetOnlinePlayer(result.PlayerId);
             if (!GetIsObjectValid(player))
             {
-                SendMessageToPC(Player, $"{result.Name} is no longer online.");
+                DMPresence.SendMessage(Player, $"{result.Name} is no longer online.");
                 RunSearch();
             }
 
@@ -308,12 +308,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (DMPlayerDirectory.TryGetLastLocation(result.PlayerId, out var location))
             {
-                SendMessageToPC(Player, $"{result.Name} is offline. Jumping to their last saved location.");
+                DMPresence.SendMessage(Player, $"{result.Name} is offline. Jumping to their last saved location.");
                 DMPresence.JumpTo(Player, location);
             }
             else
             {
-                SendMessageToPC(Player, $"{result.Name} has no saved location in an area that still exists.");
+                DMPresence.SendMessage(Player, $"{result.Name} has no saved location in an area that still exists.");
             }
         };
 
@@ -329,7 +329,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var error = DMPresence.Summon(Player, target);
             if (!string.IsNullOrEmpty(error))
-                SendMessageToPC(Player, error);
+                DMPresence.SendMessage(Player, error);
         };
 
         public Action OnClickExamine() => () =>
@@ -362,8 +362,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (!GetIsObjectValid(target))
                     return;
 
-                ChatPlugin.SendMessage(ChatChannel.DMTell, message, Player, target);
-                SendMessageToPC(Player, $"To {result.Name}: {message}");
+                ChatPlugin.SendMessage(ChatChannel.DMTell, message, DMPresence.GetDM(Player), target);
+                DMPresence.SendMessage(Player, $"To {result.Name}: {message}");
                 Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(Player)} messaged {result.Name} ({result.PlayerId}): {message}");
             });
         };

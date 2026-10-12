@@ -41,6 +41,13 @@ public class PartialMatchSearchTextTests
             .Should().Equal("A", "lanky", "Twi'lek", "Dark-Side", "scout");
     }
 
+    [TestCase(", . *")]
+    [TestCase("/;:")]
+    public void GetWordsFindsNothingInPunctuationOnlyText(string text)
+    {
+        PartialMatchSearchText.GetWords(text).Should().BeEmpty();
+    }
+
     [TestCase("zyn", "Zyndari", true)]
     [TestCase("ZYNDARI", "zyndari", true)]
     [TestCase("ynd", "Zyndari", false)]

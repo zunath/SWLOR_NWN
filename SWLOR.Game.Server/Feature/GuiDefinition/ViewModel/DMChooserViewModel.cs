@@ -334,7 +334,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (GetIsObjectValid(result.Object))
                 return result;
 
-            SendMessageToPC(Player, "That object no longer exists.");
+            DMPresence.SendMessage(Player, "That object no longer exists.");
             RunSearch();
             return null;
         }
@@ -396,7 +396,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var error = DMPresence.Summon(Player, result.Object);
             if (!string.IsNullOrEmpty(error))
-                SendMessageToPC(Player, error);
+                DMPresence.SendMessage(Player, error);
         };
 
         public Action OnClickExamine() => () =>
@@ -406,7 +406,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var target = result.Object;
-            AssignCommand(Player, () => ActionExamine(target));
+            AssignCommand(DMPresence.GetControlledCreature(Player), () => ActionExamine(target));
         };
 
         public Action OnClickDestroy() => () =>
@@ -419,7 +419,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 if (!GetIsObjectValid(result.Object))
                 {
-                    SendMessageToPC(Player, "That object no longer exists.");
+                    DMPresence.SendMessage(Player, "That object no longer exists.");
                 }
                 else
                 {

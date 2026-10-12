@@ -20,7 +20,7 @@ public static class PlayerListAttitudeEngineTests
     private static readonly Dictionary<uint, CNetLayerPlayerInfo> FixtureClients = new();
     private static int _listsSent;
 
-    [EngineTest("Name updates preserve unnamed hostility and one-sided choices", Category = "PlayerList", TimeoutSeconds = 60f)]
+    [EngineTest("Name updates preserve unnamed hostility, one-sided choices, and bulk replays", Category = "PlayerList", TimeoutSeconds = 60f)]
     public static async Task RestoreHostility(EngineTestContext ctx)
     {
         using var observer = await PlayerAbilityFixture.CreateAsync(ctx);
@@ -31,6 +31,7 @@ public static class PlayerListAttitudeEngineTests
             var server = NWNXLib.g_pAppManager.m_pServerExoApp;
             var observerClient = server.GetClientObjectByObjectId(observer.Creature);
             var targetClient = server.GetClientObjectByObjectId(target.Creature);
+            var bystanderClient = server.GetClientObjectByObjectId(bystander.Creature);
             var observerCreature = observerClient.GetGameObject().AsNWSCreature();
             var targetCreature = targetClient.GetGameObject().AsNWSCreature();
             observerCreature.AddToPVPList(target.Creature);
@@ -38,16 +39,20 @@ public static class PlayerListAttitudeEngineTests
             ctx.Assert(!PlayerName.TryGetKnownName(observer.Creature, target.Creature, out _), "Target has no assigned name");
 
             using var visibleTarget = new CLastUpdatePartyObject { m_nPlayerId = target.Creature };
+            using var visibleObserver = new CLastUpdatePartyObject { m_nPlayerId = observer.Creature };
             var listed = false;
+            var observerListed = false;
             try
             {
-                BeginCapture(observerClient.m_nPlayerID, targetClient.m_nPlayerID,
-                    server.GetClientObjectByObjectId(bystander.Creature).m_nPlayerID);
+                BeginCapture(observerClient.m_nPlayerID, targetClient.m_nPlayerID, bystanderClient.m_nPlayerID);
                 // Rename only refreshes a target already on the player list and
                 // visible to the observer. Give the disconnected fixtures that state.
                 server.GetNWSMessage().SendServerToPlayerPlayerList_Add(uint.MaxValue, targetClient);
                 listed = true;
+                server.GetNWSMessage().SendServerToPlayerPlayerList_Add(uint.MaxValue, observerClient);
+                observerListed = true;
                 observerClient.m_lstActivePartyObjectsLastUpdate.Add(visibleTarget);
+                targetClient.m_lstActivePartyObjectsLastUpdate.Add(visibleObserver);
                 // A player may Like a character who still dislikes them. Preserve
                 // each direction independently rather than forcing mutual hostility.
                 foreach (var outgoing in new[] { 1, 0 })
@@ -71,19 +76,58 @@ public static class PlayerListAttitudeEngineTests
                     ctx.AssertEqual(outgoing, targetCreature.GetPVPPlayerLikesMe(observer.Creature), "Outgoing server attitude is unchanged");
                     ctx.AssertEqual(incoming, observerCreature.GetPVPPlayerLikesMe(target.Creature), "Incoming server attitude is unchanged");
                 }
+
+                var clients = new[] { observerClient, targetClient, bystanderClient };
+                foreach (var source in clients)
+                foreach (var other in clients)
+                {
+                    if (source.m_nPlayerID == other.m_nPlayerID) continue;
+                    var creature = other.GetGameObject().AsNWSCreature();
+                    creature.AddToPVPList(source.m_oidNWSObject);
+                    creature.SetPVPPlayerLikesMe(source.m_oidNWSObject, 0, 0);
+                }
+
+                Updates.Clear();
+                _listsSent = 0;
+                PlayerName.RefreshNameOverridesForPlayer(target.Creature);
+                ctx.Assert(_listsSent > 1, "Bulk overrides exercise multiple actual full-list refreshes");
+                ctx.AssertEqual(clients.Length * (clients.Length - 1), Updates.Count,
+                    "Bulk refresh sends each hostile direction once");
+                foreach (var source in clients)
+                foreach (var other in clients)
+                {
+                    if (source.m_nPlayerID == other.m_nPlayerID) continue;
+                    ctx.Assert(Updates.Contains((_listsSent, other.m_nPlayerID, source.m_nPlayerID, 0)),
+                        "Each direction is replayed after the final list refresh");
+                    ctx.AssertEqual(0, other.GetGameObject().AsNWSCreature().GetPVPPlayerLikesMe(source.m_oidNWSObject),
+                        "Bulk refresh leaves server hostility unchanged");
+                }
             }
             finally
             {
                 try
                 {
                     observerClient.m_lstActivePartyObjectsLastUpdate.Remove(visibleTarget);
+                    targetClient.m_lstActivePartyObjectsLastUpdate.Remove(visibleObserver);
                     if (listed)
                     {
-                        try { RenamePlugin.ClearPCNameOverride(target.Creature, clearAll: true); }
+                        try
+                        {
+                            try { RenamePlugin.ClearPCNameOverride(OBJECT_INVALID, target.Creature); }
+                            finally { RenamePlugin.ClearPCNameOverride(target.Creature, clearAll: true); }
+                        }
                         finally { server.GetNWSMessage().SendServerToPlayerPlayerList_Delete(uint.MaxValue, targetClient); }
                     }
                 }
-                finally { EndCapture(); }
+                finally
+                {
+                    try
+                    {
+                        if (observerListed)
+                            server.GetNWSMessage().SendServerToPlayerPlayerList_Delete(uint.MaxValue, observerClient);
+                    }
+                    finally { EndCapture(); }
+                }
             }
         });
     }

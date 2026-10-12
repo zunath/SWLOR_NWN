@@ -82,7 +82,7 @@ public class PlayerNameRecognitionTests
         var enterMethod = ExtractMethod(source, "public static void ApplyNameOverridesOnEnter()");
         var playerMethod = ExtractMethod(source, "private static void ApplyNameOverridesForPlayer(uint player)");
         var dmObserverMethod = ExtractMethod(source, "private static void ApplyNameOverridesForDMObserver(uint dm)");
-        var trueNameMethod = ExtractMethod(source, "private static void ApplyTrueNameOverride(uint observer, uint target)");
+        var trueNameMethod = ExtractMethod(source, "private static void ApplyTrueNameOverride(uint observer, uint target, bool refreshAttitudes = true)");
 
         // NWNX ignores staff overrides unless DM participation is enabled at startup.
         var environment = File.ReadAllLines(Path.Combine(root.FullName, "SWLOR.Game.Server", "Docker", "swlor.env"));
@@ -94,10 +94,10 @@ public class PlayerNameRecognitionTests
         enterMethod.Should().Contain("DelayCommand(1.0f, () => ApplyNameOverridesForDMObserver(player));");
 
         playerMethod.Should().Contain("if (GetIsDM(otherPlayer))");
-        playerMethod.Should().Contain("ApplyTrueNameOverride(otherPlayer, player);");
+        playerMethod.Should().Contain("ApplyTrueNameOverride(otherPlayer, player, refreshAttitudes: false);");
         playerMethod.Should().NotContain("!GetIsPC(otherPlayer) || GetIsDM(otherPlayer)");
 
-        dmObserverMethod.Should().Contain("ApplyTrueNameOverride(dm, player);");
+        dmObserverMethod.Should().Contain("ApplyTrueNameOverride(dm, player, refreshAttitudes: false);");
         trueNameMethod.Should().Contain("BuildStaffDisplayName(target)");
         trueNameMethod.Should().NotContain("PlayerPlugin.SetCreatureNameOverride");
     }
@@ -353,7 +353,7 @@ public class PlayerNameRecognitionTests
         ExtractMethod(descriptorSource, "public static void SetUnknownDisplayName(uint player, string name)")
             .Should().Contain("dbPlayer.UnknownDisplayName = sanitizedName;");
 
-        var nameOverrideMethod = ExtractMethod(source, "private static void ApplyNameOverride(uint observer, uint target)");
+        var nameOverrideMethod = ExtractMethod(source, "private static void ApplyNameOverride(uint observer, uint target, bool refreshAttitudes = true)");
         nameOverrideMethod.Should().Contain("UnknownNamePrefix");
         nameOverrideMethod.Should().Contain("UnknownNameSuffix");
         nameOverrideMethod.Should().Contain("RenamePlugin.SetPCNameOverride(target, displayName, prefix, suffix, PlayerNameOverrideType.Default, observer);");

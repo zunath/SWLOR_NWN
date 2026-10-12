@@ -538,12 +538,12 @@ namespace SWLOR.Game.Server.Service
 
                 if (GetIsDM(otherPlayer))
                 {
-                    ApplyTrueNameOverride(otherPlayer, player);
+                    ApplyTrueNameOverride(otherPlayer, player, refreshAttitudes: false);
                     continue;
                 }
 
-                ApplyNameOverride(player, otherPlayer);
-                ApplyNameOverride(otherPlayer, player);
+                ApplyNameOverride(player, otherPlayer, refreshAttitudes: false);
+                ApplyNameOverride(otherPlayer, player, refreshAttitudes: false);
             }
 
             // The global overrides above can refresh every observer's player list.
@@ -560,11 +560,13 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsPC(player) || GetIsDM(player))
                     continue;
 
-                ApplyTrueNameOverride(dm, player);
+                ApplyTrueNameOverride(dm, player, refreshAttitudes: false);
             }
+
+            RefreshPlayerListAttitudes(dm);
         }
 
-        private static void ApplyTrueNameOverride(uint observer, uint target)
+        private static void ApplyTrueNameOverride(uint observer, uint target, bool refreshAttitudes = true)
         {
             if (!GetIsObjectValid(observer) ||
                 !GetIsObjectValid(target) ||
@@ -576,10 +578,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             RenamePlugin.SetPCNameOverride(target, BuildStaffDisplayName(target), string.Empty, string.Empty, PlayerNameOverrideType.Default, observer);
-            RefreshPlayerListAttitudes(observer);
+            if (refreshAttitudes)
+                RefreshPlayerListAttitudes(observer);
         }
 
-        private static void ApplyNameOverride(uint observer, uint target)
+        private static void ApplyNameOverride(uint observer, uint target, bool refreshAttitudes = true)
         {
             if (!GetIsObjectValid(observer) ||
                 !GetIsObjectValid(target) ||
@@ -596,7 +599,8 @@ namespace SWLOR.Game.Server.Service
             var suffix = isUnknown ? UnknownNameSuffix : string.Empty;
 
             RenamePlugin.SetPCNameOverride(target, displayName, prefix, suffix, PlayerNameOverrideType.Default, observer);
-            RefreshPlayerListAttitudes(observer);
+            if (refreshAttitudes)
+                RefreshPlayerListAttitudes(observer);
         }
 
         private static string BuildStaffDisplayName(uint target)
@@ -667,7 +671,10 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var target in clients)
                 {
-                    if (target.m_nPlayerID == client.m_nPlayerID) continue;
+                    // An all-observer refresh visits each pair once; the sender
+                    // already notifies both clients about each directed attitude.
+                    if (target.m_nPlayerID == client.m_nPlayerID ||
+                        (observer == OBJECT_INVALID && target.m_nPlayerID < client.m_nPlayerID)) continue;
                     var targetCreature = target.GetGameObject()?.AsNWSCreature();
                     if (targetCreature == null) continue;
 

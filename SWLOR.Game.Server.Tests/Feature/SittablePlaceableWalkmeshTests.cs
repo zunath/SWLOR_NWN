@@ -20,13 +20,16 @@ public class SittablePlaceableWalkmeshTests
         useNode.Y.Should().BeLessThan(-0.3f, "the seat opens toward model -Y, past its front edge");
     }
 
-    [Test]
-    public void Bench_SeatsSittersFacingTheSeatFront()
+    [TestCase(StructureType.Bench)]
+    [TestCase(StructureType.ChairDiningGrey)]
+    [TestCase(StructureType.AshmarkWorkStool)]
+    [TestCase(StructureType.CommandlineWorkStool)]
+    public void SeatsOpeningTowardModelPlusY_SeatSittersFacingTheSeatFront(StructureType type)
     {
-        var useNode = ReadEngineUseNodes(StructureWalkmesh(FindRoot(), StructureType.Bench)).Should().ContainSingle().Subject;
+        var useNode = ReadEngineUseNodes(StructureWalkmesh(FindRoot(), type)).Should().ContainSingle().Subject;
 
         useNode.Y.Should().BeGreaterThan(0.3f, "the seat opens toward model +Y, past its front edge");
-        // A use point exactly on model +Y matches the bench's own facing, and the engine then leaves the sitter as they arrived.
+        // A use point exactly on model +Y matches the seat's own facing, and the engine then leaves the sitter as they arrived.
         useNode.X.Should().NotBe(0f);
         Math.Abs(useNode.X).Should().BeLessThan(0.05f);
     }
@@ -38,6 +41,18 @@ public class SittablePlaceableWalkmeshTests
 
         useNode.X.Should().BeApproximately(0f, 0.01f);
         useNode.Y.Should().BeLessThan(-0.25f, "the bench runs along model X, so sitters face across it rather than along it");
+    }
+
+    [TestCase(StructureType.WardrobeCurvedWhite)]
+    [TestCase(StructureType.WardrobeGreyLow)]
+    public void Wardrobes_AreNotSeats(StructureType type)
+    {
+        var resref = type.GetAttribute<StructureType, StructureAttribute>().Resref;
+        using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(FindRoot(), "Module", "utp", resref + ".utp.json")));
+
+        var onUsed = blueprint.RootElement.GetProperty("OnUsed").GetProperty("value").GetString();
+
+        new[] { "x0_o2_use_chair", "x2_plc_used_sit", "zep_use_chair", "sit" }.Should().NotContain(onUsed);
     }
 
     private static string StructureWalkmesh(string root, StructureType type)

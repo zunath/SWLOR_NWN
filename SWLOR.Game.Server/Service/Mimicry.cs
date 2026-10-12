@@ -929,6 +929,16 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
+            // Character initialization can run migrations that clear native feats later in
+            // this same module-enter event. Restore techniques after those handlers finish.
+            DelayCommand(0f, () => RestorePlayerTechniques(player));
+        }
+
+        private static void RestorePlayerTechniques(uint player)
+        {
+            if (!GetIsObjectValid(player))
+                return;
+
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             if (dbPlayer == null)
@@ -948,7 +958,6 @@ namespace SWLOR.Game.Server.Service
             {
                 GrantTechniqueFeat(player, feat);
             }
-
         }
 
         /// <summary>

@@ -98,7 +98,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "The chamber's central training engine sits idle in its housing, practice emitters folded against its frame. A trial rune on the floor in front of it still glows faintly."
+          }
         },
         "DisarmDC": {
           "type": "byte",
@@ -463,7 +465,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A raised trial dais where the bastion engine once tested Enclave guardians. Its sensors track movement across the chamber floor, waiting for someone to begin the trial."
+          }
         },
         "DisarmDC": {
           "type": "byte",
@@ -828,7 +832,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A spinning-arm training rig is anchored to the chamber floor, its blade arms locked in place. A worn activation plate lies just within reach."
+          }
         },
         "DisarmDC": {
           "type": "byte",

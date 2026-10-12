@@ -1,5 +1,6 @@
 using System.Text.Json;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 
 namespace SWLOR.Toolset.Domain.Workspace
 {
@@ -141,7 +142,7 @@ namespace SWLOR.Toolset.Domain.Workspace
         }
 
         /// <summary>Resolves a placed waypoint's own tag, falling back to its blueprint tag.</summary>
-        public string? ResolveWaypointTag(Gff.JsonGffStruct waypoint)
+        public string? ResolveWaypointTag(Nwn.Authoring.Documents.NimGff.JsonGffStruct waypoint)
         {
             ArgumentNullException.ThrowIfNull(waypoint);
             lock (_syncRoot)
@@ -528,7 +529,7 @@ namespace SWLOR.Toolset.Domain.Workspace
             {
                 var path = _workspace.GetResourcePath(type, resRef);
                 tag = File.Exists(path)
-                    ? Gff.JsonGffDocument.Load(path).Root.GetStringOrNull("Tag")
+                    ? Nwn.Authoring.Documents.NimGff.JsonGffDocument.Load(path).Root.GetStringOrNull("Tag")
                     : null;
             }
             catch (Exception)

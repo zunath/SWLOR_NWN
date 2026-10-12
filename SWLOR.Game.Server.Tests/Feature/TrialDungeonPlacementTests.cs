@@ -1,6 +1,9 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.LootTableDefinition;
+using SWLOR.Game.Server.Feature.SpawnDefinition;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -14,7 +17,7 @@ public class TrialDungeonPlacementTests
             new[] { "sabstorm", "guardmst", "sabcycl" }),
         new("pw_sc_forgecav", "pw_sc_korrforge", "valkorrdung1c", "wp_cap_kforge", 109, 32,
             new[] { "absdef", "soulasc", "forcebane" }),
-        new("pw_sc_canyonrng", "pw_sc_canyonpit", "anchor_entreenor", "wp_cap_tatcan", 112, 2,
+        new("pw_sc_canyonrng", "pw_sc_canyonpit", "tat_anc_rckpass2", "wp_cap_tatcan", 112, 2,
             new[] { "unmovctr", "lastword", "deadhand" }),
         new("pw_sc_qiontest", "pw_sc_qioncore", "sol_hutlarqcanyo", "wp_cap_hutlar", 114, 8,
             new[] { "perflurry", "thermdet", "overbarr" }),
@@ -127,6 +130,73 @@ public class TrialDungeonPlacementTests
             blood.Count(p => Math.Abs(Number(p, "Z") - Number(altar, "Z")) < .01).Should().BeGreaterThanOrEqualTo(2);
         }
         props.Where(p => Number(p, "Appearance") != 479).Should().OnlyContain(p => Number(p, "Static") == 1 && Number(p, "Useable") == 0 && Text(p, "OnUsed") == "");
+    }
+
+    [TestCaseSource(nameof(Dungeons))]
+    public void Dungeon_HasSpacedSlicingAndSupplyCrateSpawnPoints(Dungeon d)
+    {
+        var waypoints = List(Load("git", d.Area), "WaypointList");
+        var slicing = waypoints.Where(w => Text(w, "Tag") == "SLICING_TERMINAL_T5").ToArray();
+        var supplies = waypoints.Where(w => Text(w, "Tag") == "SUPPLY_CRATE_T5").ToArray();
+        slicing.Should().HaveCount(2, $"{d.Area} offers tier-five slicing at fixed wall-side spots");
+        supplies.Length.Should().BeInRange(3, 4, $"{d.Area} offers supply crates for gathering");
+        var points = slicing.Concat(supplies).ToArray();
+        for (var i = 0; i < points.Length; i++)
+        for (var j = i + 1; j < points.Length; j++)
+            Math.Sqrt(Math.Pow(Number(points[i], "XPosition") - Number(points[j], "XPosition"), 2) +
+                      Math.Pow(Number(points[i], "YPosition") - Number(points[j], "YPosition"), 2)).Should().BeGreaterThan(6,
+                $"{d.Area} spreads its crates through the dungeon instead of piling them together");
+    }
+
+    [TestCaseSource(nameof(Dungeons))]
+    public void SharedFootprints_AreStacksRestingOnTheirBase(Dungeon d)
+    {
+        // Model top heights of the props other dressing may rest on.
+        var tops = new Dictionary<string, double>
+        {
+            ["_mdrn_pl_crgc1m"] = 0.75,
+            ["swlor_0054"] = 1.09,
+            ["zep_monument001"] = 0.54,
+        };
+        // Floor coverings (rugs, scorch marks) lie under other dressing by design.
+        var floorCoverings = new[] { "aswtor_155", "aswtor_156", "_mdrn_pl_carpt04", "zep_bf_mark_001" };
+        var props = List(Load("git", d.Area), "Placeable List")
+            .Where(p => Number(p, "Appearance") != 479 && Text(p, "TemplateResRef") != "zep_altarevil3" &&
+                        !Text(p, "TemplateResRef").StartsWith("zep_bloodstain") &&
+                        !floorCoverings.Contains(Text(p, "TemplateResRef")))
+            .ToArray();
+        for (var i = 0; i < props.Length; i++)
+        for (var j = i + 1; j < props.Length; j++)
+        {
+            if (Distance(props[i], props[j]) >= 0.35)
+                continue;
+            var (lower, upper) = Number(props[i], "Z") <= Number(props[j], "Z") ? (props[i], props[j]) : (props[j], props[i]);
+            var resref = Text(lower, "TemplateResRef");
+            tops.Should().ContainKey(resref, $"{d.Area} only stacks dressing on crates, tables and slabs");
+            (Number(upper, "Z") - Number(lower, "Z")).Should().BeApproximately(tops[resref], 0.06,
+                $"{Text(upper, "TemplateResRef")} must rest on top of {resref} in {d.Area}, not hover or sink");
+        }
+    }
+
+    [Test]
+    public void SupplyCrates_AreTierFiveScavengePointsWithEndgameResources()
+    {
+        var table = new SupplyCrateSpawnDefinition().BuildSpawnTables()["SUPPLY_CRATE_T5"];
+        table.Spawns.Should().ContainSingle(s => s.Resref == "supply_crate_5" && s.Type == ObjectType.Placeable);
+        table.ResourceDespawnMinutes.Should().BePositive();
+
+        var crate = Load("utp", "supply_crate_5");
+        Text(crate, "OnOpen").Should().Be("scav_opened");
+        Text(crate, "OnInvDisturbed").Should().Be("scav_disturbed");
+        Number(crate, "Useable").Should().Be(1);
+        Number(crate, "HasInventory").Should().Be(1);
+        Local(crate, "SCAVENGE_POINT_LEVEL").GetInt32().Should().Be(5);
+        var lootTableId = Local(crate, "SCAVENGE_POINT_LOOT_TABLE_NAME").GetString();
+        var loot = new HarvestingLootTableDefinition().BuildLootTables();
+        loot.Should().ContainKey(lootTableId);
+        loot[lootTableId].Should().NotBeEmpty();
+        foreach (var item in loot[lootTableId])
+            File.Exists(Path.Combine(Root, "Module", "uti", item.Resref + ".uti.json")).Should().BeTrue(item.Resref);
     }
 
     [TestCaseSource(nameof(Dungeons))]

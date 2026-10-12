@@ -9,15 +9,30 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="SWLOR.Toolset.Tests" />
+    <Using Include="Nwn.Formats.Exceptions.NwnFormatException" Alias="NwnFormatException" />
+    <Using Include="Nwn.Authoring.Resources.TwoDaChoicePolicy" Alias="TwoDaChoicePolicy" />
+    <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Authoring\Nwn.Authoring.csproj"
+                      Condition="'$(NwnToolsetSourceRoot)' != ''" />
+    <PackageReference Include="Nwn.Authoring" Version="$(NwnToolsetPackageVersion)"
+                      Condition="'$(NwnToolsetSourceRoot)' == ''" />
+    <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Formats\Nwn.Formats.csproj"
+                      Condition="'$(NwnToolsetSourceRoot)' != ''" />
+    <PackageReference Include="Nwn.Formats" Version="$(NwnToolsetPackageVersion)"
+                      Condition="'$(NwnToolsetSourceRoot)' == ''" />
+    <ProjectReference Include="$(NwnToolsetSourceRoot)\src\Nwn.Preview\Nwn.Preview.csproj"
+                      Condition="'$(NwnToolsetSourceRoot)' != ''" />
+    <PackageReference Include="Nwn.Preview" Version="$(NwnToolsetPackageVersion)"
+                      Condition="'$(NwnToolsetSourceRoot)' == ''" />
     <ProjectReference Include="..\SWLOR.NWN.Formats\SWLOR.NWN.Formats.csproj" />
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj"
                       AdditionalProperties="RunPostBuildEvent=Never" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- BioWare's proprietary DDS variant is wrapped as standard DXT before Pfim decodes it. -->
-    <PackageReference Include="Pfim" Version="0.11.4" />
     <PackageReference Include="Serilog" Version="4.4.0" />
   </ItemGroup>
 
 </Project>
+
+

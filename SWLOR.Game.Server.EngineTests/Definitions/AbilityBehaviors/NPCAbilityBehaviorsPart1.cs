@@ -85,6 +85,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsRecast = true,
                 },
 
+                // BloodSiphonAbilityDefinition - hand-written single-target impact; heals the caster
+                // from damage dealt through the activated damage-derived healing budget.
+                new()
+                {
+                    Feat = FeatType.BloodSiphon,
+                    Target = AbilityTargetKind.HostileCreature,
+                    ExpectedTargetStatusEffects = new[] { typeof(WeakenedStatusEffect) },
+                    ExpectsTargetDamage = true,
+                    ExpectsActivatorHealing = true,
+                    ExpectsSTMCost = true,
+                    ExpectsRecast = true,
+                },
+
                 // BonecrusherBiteAbilityDefinition - InnateAbility.BuildSingleTarget.
                 new()
                 {
@@ -122,6 +135,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 new()
                 {
                     Feat = FeatType.CapacitorSurge,
+                    Target = AbilityTargetKind.HostileCreature,
+                    ExpectedTargetStatusEffects = new[] { typeof(ShockStatusEffect) },
+                    ExpectsTargetDamage = true,
+                    ExpectsSTMCost = true,
+                    ExpectsRecast = true,
+                },
+
+                // ChainLightningAbilityDefinition - InnateAbility.BuildSingleTarget; arcs to nearby hostiles.
+                new()
+                {
+                    Feat = FeatType.ChainLightning,
                     Target = AbilityTargetKind.HostileCreature,
                     ExpectedTargetStatusEffects = new[] { typeof(ShockStatusEffect) },
                     ExpectsTargetDamage = true,

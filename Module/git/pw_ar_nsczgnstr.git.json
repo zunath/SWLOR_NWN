@@ -178,7 +178,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "nima_poy"
+          "value": "talia_brenn"
         },
         "CRAdjust": {
           "type": "int",
@@ -563,7 +563,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Nima"
+            "0": "Talia"
           }
         },
         "fortbonus": {
@@ -601,7 +601,7 @@
         "LastName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Poy"
+            "0": "Brenn"
           }
         },
         "LawfulChaotic": {
@@ -923,7 +923,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "nima_poy"
+          "value": "talia_brenn"
         },
         "Tail_New": {
           "type": "dword",
@@ -939,23 +939,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "STORE_TAG"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VELES_GENERAL_STORE_MERCHANT"
-              }
-            }
-          ]
+          "value": []
         },
         "WalkRate": {
           "type": "int",
@@ -6254,7 +6238,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Ressa Vale is a Czerka range controller tied to the Kill Box capstone trials in Czerka Arms Test Range."
+            "0": "A sharp-featured human woman in a pressed Czerka jacket, a datapad tucked under one arm and a slim rifle slung across her back. She stands among the store's locked cases as if she owns each one, and on paper she nearly does. Her eyes measure every customer like a line item on an invoice."
           }
         },
         "Dex": {
@@ -6706,7 +6690,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 318
+          "value": 4099
         },
         "Race": {
           "type": "byte",
@@ -71217,7 +71201,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine General Store"
+            "0": "Smuggler's Moon General Store"
           }
         },
         "MarkDown": {
@@ -96197,11 +96181,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 191,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Basic Knife"
-                      },
-                      "id": 191
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -96413,11 +96397,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 191,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Field Knife"
-                      },
-                      "id": 191
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -96845,11 +96829,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 191,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Veteran Knife"
-                      },
-                      "id": 191
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -97061,11 +97045,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 191,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Delta Knife"
-                      },
-                      "id": 191
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -97277,11 +97261,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 191,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Prime Knife"
-                      },
-                      "id": 191
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -98361,11 +98345,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 167,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Field Great Sword"
-                      },
-                      "id": 167
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -98579,11 +98563,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 167,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Titan Great Sword"
-                      },
-                      "id": 167
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -98797,11 +98781,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 167,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Veteran Great Sword"
-                      },
-                      "id": 167
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -99015,11 +98999,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 167,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Delta Great Sword"
-                      },
-                      "id": 167
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -99233,11 +99217,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 167,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Prime Great Sword"
-                      },
-                      "id": 167
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -99887,11 +99871,11 @@
                       "value": 1
                     },
                     "LocalizedName": {
+                      "id": 167,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Ophidian Great Sword"
-                      },
-                      "id": 167
+                      }
                     },
                     "ModelPart1": {
                       "type": "byte",
@@ -127403,7 +127387,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -127471,7 +127455,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -127646,11 +127630,11 @@
                       "value": 0
                     },
                     "DescIdentified": {
+                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
-                      },
-                      "id": 64105
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
@@ -127816,7 +127800,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -127884,7 +127868,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -127977,7 +127961,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -128045,7 +128029,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -128138,7 +128122,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -128206,7 +128190,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -129344,7 +129328,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -129412,7 +129396,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -130309,7 +130293,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "TATOOINE_GENERAL_STORE_MERCHANT"
+          "value": "SMUGGLERS_MOON_GENERAL_STORE"
         },
         "WillNotBuy": {
           "type": "list",

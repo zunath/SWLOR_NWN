@@ -87,8 +87,8 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Mos Esper - Dowager Queen",
-      "2": "Tatooine - Mos Esper - Dowager Queen"
+      "0": "[Prefab] Tatooine - Mos Esper - Dowager Queen",
+      "2": "[Prefab] Tatooine - Mos Esper - Dowager Queen"
     }
   },
   "NoRest": {

@@ -87,8 +87,8 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Rocky Pass",
-      "2": "Anchorhead - The Chasm"
+      "0": "[Prefab] Tatooine - Rocky Pass",
+      "2": "[Prefab] Anchorhead - The Chasm"
     }
   },
   "NoRest": {

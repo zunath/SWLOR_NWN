@@ -3829,7 +3829,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "Bay One's blast door stands half open, its frame scarred by katar strikes. The wreck crew's foreman holds the bay behind it."
           }
         },
         "DisarmDC": {
@@ -4196,7 +4196,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A lockdown terminal glows at the back of the deepest bay, its protocol still running. The man who wrote it stands watch nearby."
           }
         },
         "DisarmDC": {
@@ -4563,7 +4563,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A breaker-yard crane cradle lies cracked down the middle, as if something struck it hard enough to split steel. Its keeper waits in the wreckage."
           }
         },
         "DisarmDC": {

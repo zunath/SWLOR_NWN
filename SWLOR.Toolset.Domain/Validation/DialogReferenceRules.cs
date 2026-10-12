@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Domain.Validation

@@ -1,3 +1,5 @@
+using Nwn.Authoring.Documents.Native;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 
@@ -49,7 +51,7 @@ namespace SWLOR.Toolset.Domain.Documents
 
             // A brand-new blueprint is on nobody's undo stack, but the guard is ambient per call
             // context, so with an editor open every field added below would otherwise throw.
-            using var construction = Editing.EditScope.EnterConstruction();
+            using var construction = Nwn.Authoring.Editing.EditScope.EnterConstruction();
 
             var document = CreateDocument(type);
             var root = document.Root;

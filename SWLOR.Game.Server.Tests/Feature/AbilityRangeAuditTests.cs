@@ -112,6 +112,7 @@ public class AbilityRangeAuditTests
 
         abilities[FeatType.ToxicSpit].MaxRange.Should().Be(8f);
         abilities[FeatType.StimCanister].MaxRange.Should().Be(8f);
+        abilities[FeatType.ChainLightning].MaxRange.Should().Be(10f);
     }
 
     private static Dictionary<FeatType, AbilityDetail> BuildAllAbilities()

@@ -91,11 +91,16 @@ public class CharacterSheetCombatUpgradeTests
 
         definition.Should().Contain("\"Physical DEF\", model => model.PhysicalDefense");
         definition.Should().Contain("\"Force DEF\", model => model.ForceDefense");
-        definition.Should().Contain("\"Weapon Acc.\", model => model.WeaponAccuracy");
+        definition.Should().Contain("\"Main-hand Acc.\", model => model.WeaponAccuracy");
+        definition.Should().Contain("\"Off-hand Acc.\", model => model.OffHandAccuracy");
+        definition.Should().Contain("Weapon bonuses do not combine.");
         definition.Should().Contain("\"Force Acc.\", model => model.ForceAccuracy");
         viewModel.Should().Contain("public int WeaponAccuracy");
         viewModel.Should().Contain("public int ForceAccuracy");
         viewModel.Should().Contain("WeaponAccuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);");
+        viewModel.Should().Contain("public string OffHandAccuracy");
+        viewModel.Should().Contain("OffHandAccuracy = GetIsObjectValid(offhandAttackWeapon) && Item.IsAttackWeaponType(GetBaseItemType(offhandAttackWeapon))");
+        viewModel.Replace("\r\n", "\n").Should().Contain("? Stat.GetAccuracy(_target, offhandAttackWeapon, AbilityType.Invalid, SkillType.Invalid).ToString()\n                : \"-\";", "an empty off-hand or shield must display a dash");
         viewModel.Should().Contain("ignoreWeaponAccuracyStatOverride: true");
         definition.Should().Contain("\"TYPE\", 90f, \"Resistance family.\"");
         definition.Should().Contain("model => model.ResistanceNames");
@@ -114,6 +119,24 @@ public class CharacterSheetCombatUpgradeTests
         selectWeapon.Should().NotBeNull();
         ((uint)selectWeapon!.Invoke(null, new object[] { 11u, 22u, true })!).Should().Be(11u);
         ((uint)selectWeapon.Invoke(null, new object[] { 11u, 22u, false })!).Should().Be(22u);
+    }
+
+    [Test]
+    public void BeastWeaponAccuracy_ReadsTheClawSoSkinAccuracyCountsOnce()
+    {
+        var viewModel = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "CharacterSheetViewModel.cs"));
+        var refresh = ExtractMethod(viewModel, "private void RefreshEquipmentStats()");
+        var beastBranch = ExtractMethod(refresh, "if (BeastMastery.IsPlayerBeast(_target))");
+
+        beastBranch.Should().Contain("mainHand = GetItemInSlot(InventorySlot.CreatureLeft, _target);");
+        beastBranch.Should().NotContain("InventorySlot.CreatureArmor",
+            "Stat.GetAccuracy already adds the skin's Accuracy through the NPC stats");
     }
 
     [Test]

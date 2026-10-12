@@ -3468,12 +3468,23 @@ def generate_ability_definitions(rows, feat_values, recast_values):
     # Authored impact art is declared in each ability, independently of generated balance data.
     ability_root = ROOT / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition"
     authored_impacts = {}
+    authored_area_impacts = {}
     for definition in ability_root.rglob("*AbilityDefinition.cs"):
-        bindings = set(re.findall(r"\.DisplaysVisualEffectOnSuccessfulImpact\(([^)]+)\)", definition.read_text()))
+        source = definition.read_text()
+        bindings = set(re.findall(r"\.DisplaysVisualEffectOnSuccessfulImpact\(([^)]+)\)", source))
         if len(bindings) > 1:
             raise ValueError(f"Conflicting authored impact bindings in {definition}")
         if bindings:
             authored_impacts[definition.stem] = next(iter(bindings))
+        area_bindings = (
+            set(re.findall(r"areaVisualEffect:\s*(VisualEffect\.\w+)", source))
+            if "ConfigureWeaponAbility(" in source
+            else set()
+        )
+        if len(area_bindings) > 1:
+            raise ValueError(f"Conflicting authored area impact bindings in {definition}")
+        if area_bindings:
+            authored_area_impacts[definition.stem] = next(iter(area_bindings))
 
     target_classes = {f"{pascal(base)}AbilityDefinition" for _, base in active_by_tab_base}
     delete_old_weapon_ability_definitions(target_classes)
@@ -3650,7 +3661,9 @@ def generate_ability_definitions(rows, feat_values, recast_values):
                 f"                Animation.{impact_animation},",
                 f"                {max_range_for_row(row, skill):.1f}f,",
                 f"                {'AbilityType.Perception' if skill in RANGED_COMBAT_IMPACT_SKILLS else 'AbilityType.Invalid'},",
-                f"                {profile});",
+                *([f"                {profile},",
+                   f"                areaVisualEffect: {authored_area_impacts[class_name]});"]
+                  if class_name in authored_area_impacts else [f"                {profile});"]),
                 "",
             ])
 

@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their commander is defeated, and the forged orders no longer have an army behind them. You kept your judgment while they tried to break it. I can now complete your Eclipse of Resolve instruction.",
+          "Text": "Their commander is dead, and the forged orders no longer have an army behind them. You kept your judgment while they tried to break it. I will record that you passed. I can now complete your Eclipse of Resolve instruction.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I can only take someone who has mastered the Force discipline. Reach rank 50 before we discuss the work below.",
+          "Text": "No. Your command of the Force is not yet sufficient. The Depths would test your fear, and you would fail before you understood the question. Train further. Return when the Force answers you without hesitation.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Umbral Raiders presented forged excavation orders. By the time the forgery was found, they had seized the lower galleries and turned the tomb defenses against the survey crews. Defeat 6 Umbral Raider Scout enemies in the outer rite chambers of the Korriban Sith Crypt Depths. Recover the Eclipse of Resolve Crypt Trial Tablet.",
+          "Text": "The Umbral Raiders presented forged excavation orders for the Korriban Sith Crypt Depths. By the time the forgery was found, they had seized the tombs below the Sith Crypt and turned the old defenses on the survey crews. I am tasked with correcting the error. Put down six Umbral Raider Scouts and recover the Eclipse of Resolve Crypt Trial Tablet. Their false claim begins with it.",
           "Style": 0,
           "Color": null
         }
@@ -286,6 +286,10 @@
         {
           "ChoiceId": "reply-00005",
           "Conditions": []
+        },
+        {
+          "ChoiceId": "neutral-ask",
+          "Conditions": []
         }
       ]
     },
@@ -302,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take the Korriban Sith Crypt Depths Key. Defeat 6 Umbral Raider Scout enemies in the outer rite chambers of the Korriban Sith Crypt Depths. Recover the Eclipse of Resolve Crypt Trial Tablet.",
+          "Text": "Take this key. It opens the sealed passage at the north end of the Sith Crypt on Korriban. Six scouts, one tablet. They will try to frighten you first. Note it, and proceed.",
           "Style": 0,
           "Color": null
         }
@@ -323,7 +327,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Eclipse of Resolve is the discipline of acting through fear without surrendering judgment. These raiders use intimidation to conceal weak positions. Learn to see past it.",
+          "Text": "Eclipse of Resolve is the discipline of acting through fear without surrendering judgment. These raiders use intimidation to hide weak positions. Fear is information. Learn to read it, then look past it.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The key opens the sealed entrance to the Korriban Sith Crypt Depths. Start in the outer rite chambers. I am checking their surface contacts and keeping the real crews out of the sealed stair. Their forged orders are still circulating.",
+          "Text": "Korriban. From the starport, go east into the Wastelands North and cross to the elevator on the north-east side of the wastes. It takes you down into the Sith Crypt; the sealed passage at the crypt's north end opens into the Depths. I remain here because their cargo moves through this district. I am tracing who bought the forged orders, and who is buying what they dig up.",
           "Style": 0,
           "Color": null
         }
@@ -375,7 +379,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Independent relic thieves and hired Force adepts. They are neither academy students nor an authorized excavation crew. They attack anyone who challenges their forged authority.",
+          "Text": "Independent relic thieves and hired Force adepts, neither academy students nor an authorized crew. Scouts and adepts make up most of them. Their captain and commander are Cathar, and they hired Wookiees to wreck the tomb seals. They attack anyone who questions their forged authority.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 6 Umbral Raider Scout enemies in the outer rite chambers of the Korriban Sith Crypt Depths. Recover the Eclipse of Resolve Crypt Trial Tablet.",
+          "Text": "Six Umbral Raider Scouts and the trial tablet. The passage is at the north end of the Sith Crypt on Korriban. Proceed.",
           "Style": 0,
           "Color": null
         }
@@ -448,7 +452,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The tablet identifies the stolen relics. Their handlers have moved deeper into the galleries.",
+          "Text": "It lists the tombs they claim under the forged orders. Several were never opened before. Their adepts have moved deeper with the relics. Your next assignment will follow.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +473,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The outer guards were only the beginning. The raiders are concentrating stolen relics farther down. Defeat 5 Umbral Raider Adept enemies in the narrow galleries of the Korriban Sith Crypt Depths. Recover the Eclipse of Resolve Ritual Focus Shard.",
+          "Text": "The scouts were the outer layer. Their adepts carry the Eclipse of Resolve Ritual Focus Shard and use it to cast dread over anyone who approaches. Put down five Umbral Raider Adepts and recover the shard.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 5 Umbral Raider Adept enemies in the narrow galleries of the Korriban Sith Crypt Depths. Recover the Eclipse of Resolve Ritual Focus Shard.",
+          "Text": "Five Umbral Raider Adepts and the focus shard. When the dread comes, do not mistake it for your own.",
           "Style": 0,
           "Color": null
         }
@@ -532,7 +536,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Eclipse of Resolve Ritual Focus Shard was taken from a sealed relic chamber. Recovering it denies the raiders a focus for their stolen techniques.",
+          "Text": "It was taken from a sealed relic chamber, and it amplifies fear. The adepts use it to drive the survey crews out of positions they could have held. Recovering it removes their best weapon.",
           "Style": 0,
           "Color": null
         }
@@ -558,7 +562,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Continue from the outer chambers into the narrow galleries. They keep the shard near their supplies so they can defend both.",
+          "Text": "Not in one place. The adepts patrol the Depths in small groups, and one of them carries the shard. Search the passages methodically.",
           "Style": 0,
           "Color": null
         }
@@ -584,7 +588,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "These fighters support each other. Interrupt the one using the relic while your companions keep the others occupied.",
+          "Text": "They project fear before they strike, then attack whoever hesitates. Do not hesitate. Choose one, finish it, and move to the next. Keep your companions where you can see them.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 5 Umbral Raider Adept enemies in the narrow galleries of the Korriban Sith Crypt Depths. Recover the Eclipse of Resolve Ritual Focus Shard.",
+          "Text": "Five Umbral Raider Adepts and the shard, in the Korriban Sith Crypt Depths. The forged orders are still in circulation.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +635,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You brought the Eclipse of Resolve Ritual Focus Shard. Hand it over and we can finish this part.",
+          "Text": "You brought the Eclipse of Resolve Ritual Focus Shard. Hand it over.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +661,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The focus shard is secure. We can now work on the sealed gate.",
+          "Text": "The shard is secured. Their captain has been holding the dig together through fear alone. He is next.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The raiders have fortified the breach to protect their excavation. Defeat 1 Umbral Raider Captain in the deep tomb breach of the Korriban Sith Crypt Depths. Recover the Eclipse of Resolve Splintered Tomb Sigil. Bring at least two allies.",
+          "Text": "Their captain, a Cathar listed as the Umbral Raider Captain, holds the trial altar in the north-west of the Depths. He broke the Eclipse of Resolve Splintered Tomb Sigil off a sealed tomb to prove their claim. Go to that altar and he will answer. Bring at least two allies, and recover the sigil.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +724,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 1 Umbral Raider Captain in the deep tomb breach of the Korriban Sith Crypt Depths. Recover the Eclipse of Resolve Splintered Tomb Sigil. Bring at least two allies.",
+          "Text": "Acceptable. The altar is in the north-west of the Korriban Sith Crypt Depths. Defeat the captain and bring me the sigil. All three of you, preferably.",
           "Style": 0,
           "Color": null
         }
@@ -741,7 +745,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Umbral Raider Captain is the expedition's enforcer at the breach. The raiders put their strongest fighter there to hold off the survey crews.",
+          "Text": "A Cathar mercenary who leads by intimidation and backs it with a blade. He was placed at the altar to stop the survey crews from reaching the forced tomb. He is good. Do not let his reputation do his work for him.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +771,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The sigil was broken off a sealed tomb entrance. It will identify which chamber they forced and what still needs to be secured.",
+          "Text": "It was broken off a sealed tomb entrance as proof of their claim. Its markings show which tomb they forced. It is also evidence of the forgery, which I need.",
           "Style": 0,
           "Color": null
         }
@@ -793,7 +797,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Bring two allies. One opponent is easy to pin against that doorway; a coordinated group can split the pressure and carry an injured companion out.",
+          "Text": "Because fear works best on the isolated. A lone fighter can be cornered and broken. Three can hold each other steady. That is the lesson, not a courtesy.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +823,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 1 Umbral Raider Captain in the deep tomb breach of the Korriban Sith Crypt Depths. Recover the Eclipse of Resolve Splintered Tomb Sigil. Bring at least two allies.",
+          "Text": "The captain still holds the altar in the north-west of the Depths. Two allies. Then the sigil.",
           "Style": 0,
           "Color": null
         }
@@ -840,7 +844,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You brought the Eclipse of Resolve Splintered Tomb Sigil. Hand it over and we can finish this part.",
+          "Text": "You brought the Eclipse of Resolve Splintered Tomb Sigil. Present it.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +870,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The gate is clear. The sigil will let us identify the remaining control seals.",
+          "Text": "Confirmed. This is the tomb named in their forged orders. With the captain gone, their saboteurs will try to bury what remains.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The breach is clear. Four senior raiders still control access to the sealed relic chambers. Defeat 4 Umbral Raider Saboteur enemies in the keeper chambers of the Korriban Sith Crypt Depths. Recover the Eclipse of Resolve Keeper's Rite Token.",
+          "Text": "Four Wookiees, recorded as Umbral Raider Saboteurs, are wrecking the remaining tomb seals so no one can prove what was taken. They carry the Eclipse of Resolve Keeper's Rite Token, the keepers' mark that opens the last vaults. Put down four Umbral Raider Saboteurs and recover the token.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +933,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 4 Umbral Raider Saboteur enemies in the keeper chambers of the Korriban Sith Crypt Depths. Recover the Eclipse of Resolve Keeper's Rite Token.",
+          "Text": "Four Umbral Raider Saboteurs and the token. They range through the Depths. Take them one at a time.",
           "Style": 0,
           "Color": null
         }
@@ -950,7 +954,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The four senior raiders control the expedition's access to the remaining relics. They are guarding stolen property and their own escape route.",
+          "Text": "Wookiee laborers the raiders hired to break seals and collapse passages behind them. They are strong, and they know the tunnels. They are destroying evidence. Stop them.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +980,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Eclipse of Resolve Keeper's Rite Token was stolen from the tomb custodians. Recovering it will let the custodians secure the next seal.",
+          "Text": "The tomb keepers carried it. It opens the deepest vaults and marks whoever holds it as entitled to enter. The raiders have been using it to make their forgery look legitimate.",
           "Style": 0,
           "Color": null
         }
@@ -1002,7 +1006,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Do not let all four focus on one fighter. Separate their positions and keep watch on the gallery behind you.",
+          "Text": "Do not let all four engage you at once. Choose your ground, keep your allies close, and watch the passages behind you. They know these tunnels better than you do.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 4 Umbral Raider Saboteur enemies in the keeper chambers of the Korriban Sith Crypt Depths. Recover the Eclipse of Resolve Keeper's Rite Token.",
+          "Text": "Four Umbral Raider Saboteurs and the Keeper's Rite Token, in the Korriban Sith Crypt Depths.",
           "Style": 0,
           "Color": null
         }
@@ -1049,7 +1053,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You brought the Eclipse of Resolve Keeper's Rite Token. Hand it over and we can finish this part.",
+          "Text": "You brought the Eclipse of Resolve Keeper's Rite Token. Present it.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1079,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The token is secure. There is one final chamber to clear.",
+          "Text": "The token is secured. Only their commander remains.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their leader is preparing the last shipment from the lowest chamber. Stop the expedition before it can regroup. Defeat 1 Umbral Raider Commander in the lowest burial chamber of the Korriban Sith Crypt Depths. Bring at least two allies.",
+          "Text": "Their commander, a Cathar recorded as the Umbral Raider Commander, has withdrawn into the Final Ritual Chamber, through the door at the north end of the Depths. He signed the forged orders, and he is preparing the last shipment. Stop him. Bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1142,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 1 Umbral Raider Commander in the lowest burial chamber of the Korriban Sith Crypt Depths. Bring at least two allies.",
+          "Text": "Go. The Final Ritual Chamber is through the north door of the Korriban Sith Crypt Depths. He will try to break your nerve before he breaks anything else.",
           "Style": 0,
           "Color": null
         }
@@ -1159,7 +1163,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Umbral Raider Commander is a living Force-trained relic thief. He controls the expedition from the deepest chamber. Break his hold there and the surviving crews can withdraw.",
+          "Text": "The commander himself. He wrote the forgery, recruited the raiders, and holds the last relics. Break his hold there and the surviving crews can withdraw.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1189,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The stolen relics support the leader's technique. Watch the timing, cover one another, and interrupt the attacks that would cut off your retreat.",
+          "Text": "He is Force-trained, and he uses fear as a weapon. He will make you doubt your footing, your allies, and your purpose. None of it is real. Keep your judgment, cover one another, and press forward.",
           "Style": 0,
           "Color": null
         }
@@ -1211,7 +1215,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I am checking their surface contacts and keeping the real crews out of the sealed stair. Their forged orders are still circulating. When you return, the recovered records will let us account for what they stole.",
+          "Text": "I finish tracing the forged orders through this district and close the matter. When you return, the recovered records will let us account for what they stole.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1241,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 1 Umbral Raider Commander in the lowest burial chamber of the Korriban Sith Crypt Depths. Bring at least two allies.",
+          "Text": "The Umbral Raider Commander is in the Final Ritual Chamber, at the north end of the Depths. Take your allies.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1262,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Umbral Raider Commander is down. Tell me what happened.",
+          "Text": "The Umbral Raider Commander is down. Report.",
           "Style": 0,
           "Color": null
         }
@@ -1284,13 +1288,39 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their commander is defeated, and the forged orders no longer have an army behind them. You kept your judgment while they tried to break it. I can now complete your Eclipse of Resolve instruction.",
+          "Text": "Their commander is dead, and the forged orders no longer have an army behind them. You kept your judgment while they tried to break it. I will record that you passed. I can now complete your Eclipse of Resolve instruction.",
           "Style": 0,
           "Color": null
         }
       ],
       "OnEnterActions": [],
       "Choices": []
+    },
+    "neutral-meeting": {
+      "Id": "neutral-meeting",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Cargo changes hands in this Shipping District every hour. Smuggler's Moon is where I can follow the buyers without making every visitor answer to the academy. Your allegiance doesn't clear the tombs; your work does. The Umbral Raiders remain in the Korriban Sith Crypt Depths on Korriban. Report back to me here.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "neutral-return",
+          "Conditions": []
+        }
+      ]
     }
   },
   "Choices": {
@@ -1320,7 +1350,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I will clear the outer chambers.",
+        "Text": "I'll go down and bring back the tablet.",
         "Style": 4,
         "Color": null
       },
@@ -1637,7 +1667,7 @@
     "reply-00014": {
       "Id": "reply-00014",
       "Text": {
-        "Text": "Explain the gate assignment again.",
+        "Text": "Go over the captain again.",
         "Style": 4,
         "Color": null
       },
@@ -1660,7 +1690,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I will bring two allies and clear the breach.",
+        "Text": "I'll bring two allies and take the sigil.",
         "Style": 4,
         "Color": null
       },
@@ -1690,7 +1720,7 @@
     "reply-00016": {
       "Id": "reply-00016",
       "Text": {
-        "Text": "What guards the gate?",
+        "Text": "Who is the captain?",
         "Style": 4,
         "Color": null
       },
@@ -1777,7 +1807,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "The gate is clear. Here is the sigil.",
+        "Text": "The captain is dead. Here is the sigil.",
         "Style": 4,
         "Color": null
       },
@@ -1807,7 +1837,7 @@
     "reply-00021": {
       "Id": "reply-00021",
       "Text": {
-        "Text": "Go over the four targets again.",
+        "Text": "Go over the four Saboteurs again.",
         "Style": 4,
         "Color": null
       },
@@ -1830,7 +1860,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I will stop the four senior raiders.",
+        "Text": "I'll stop the four Saboteurs.",
         "Style": 4,
         "Color": null
       },
@@ -1860,7 +1890,7 @@
     "reply-00023": {
       "Id": "reply-00023",
       "Text": {
-        "Text": "Who are the four targets?",
+        "Text": "Who are these Saboteurs?",
         "Style": 4,
         "Color": null
       },
@@ -2138,6 +2168,52 @@
       "Next": [
         {
           "TargetNodeId": "entry-00041",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-ask": {
+      "Id": "neutral-ask",
+      "Text": {
+        "Text": "Why are we meeting here, and where is the trial?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "neutral-meeting",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "neutral-return": {
+      "Id": "neutral-return",
+      "Text": {
+        "Text": "Back to the assignment.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00002",
           "Conditions": []
         }
       ],

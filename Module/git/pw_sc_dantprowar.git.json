@@ -16079,7 +16079,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A den-mother's fang hangs from a sinew cord looped over a rock spur. The bone thrums like a growl held too long."
+            "0": "A barricaded nurses' station anchors the Protected Ward, every approach covered. The Anchor holds it and has never stepped back."
           }
         },
         "DisarmDC": {
@@ -16446,7 +16446,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A den-mother's fang hangs from a sinew cord looped over a rock spur. The bone thrums like a growl held too long."
+            "0": "A pharmacy station in the Protected Ward, its shelves emptied into one overflowing mixing bench. The ward's master mixes his doses here."
           }
         },
         "DisarmDC": {
@@ -16813,7 +16813,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A den-mother's fang hangs from a sinew cord looped over a rock spur. The bone thrums like a growl held too long."
+            "0": "A web of conduit cable runs from the ward's life-support units into a single, humming chair. Its occupant draws on every line."
           }
         },
         "DisarmDC": {

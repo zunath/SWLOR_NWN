@@ -114,13 +114,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Nalka Rinn gave you the Dathomir Grotto Apex Den Key. Nalka Rinn wants six Primal Overrun adepts cleared out of the Dathomir Grotto Apex Den on Dathomir. Secure the Primal Overrun Grotto Track Slate they carry.")
+                    "Nalka Rinn gave you the Dathomir Grotto Apex Den Key. Put down six Primal Overrun Adepts, young shell-backs in the Grotto Apex Den on Dathomir, and recover the Primal Overrun Grotto Track Slate from their nest. The den's gate is on the west side of the Grotto Caverns, a short walk south of the stairs down from the Grottos.")
                 .AddKillObjective(NPCGroupType.Dathomir_PrimalOverrun_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePrimalOverrunGrottoTrackSlate)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are down and the Primal Overrun Grotto Track Slate is secured. Return to Nalka Rinn at the Dathomir Jungle Landing.")
+                    "You have the Primal Overrun Grotto Track Slate. Return to Nalka Rinn at the Jungle Landing on Dathomir.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -135,13 +135,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Track down five Primal Overrun specialists in the Dathomir Grotto Apex Den on Dathomir and defeat them. Secure the Primal Overrun Resonant Fang Charm one of them carries.")
+                    "Put down five Primal Overrun Specialists, the older shell-backs in the Grotto Apex Den on Dathomir, and recover the Primal Overrun Resonant Fang Charm one of them wears.")
                 .AddKillObjective(NPCGroupType.Dathomir_PrimalOverrun_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePrimalOverrunResonantFangCharm)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The five specialists are defeated and the Primal Overrun Resonant Fang Charm is secured. Return to Nalka Rinn at the Dathomir Jungle Landing.")
+                    "You have the Primal Overrun Resonant Fang Charm. Return to Nalka Rinn at the Jungle Landing on Dathomir.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -156,13 +156,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Primal Overrun warden in the Dathomir Grotto Apex Den on Dathomir. Secure the Primal Overrun Cracked Apex Totem it carries.")
+                    "With two allies you trust, put down the Primal Overrun Warden, a bull rancor in the Grotto Apex Den on Dathomir, and recover the Primal Overrun Cracked Apex Totem from his harness.")
                 .AddKillObjective(NPCGroupType.Dathomir_PrimalOverrun_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePrimalOverrunCrackedApexTotem)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Primal Overrun warden is defeated and the Primal Overrun Cracked Apex Totem is secured. Return to Nalka Rinn at the Dathomir Jungle Landing.")
+                    "You have the Primal Overrun Cracked Apex Totem. Return to Nalka Rinn at the Jungle Landing on Dathomir.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -177,13 +177,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Primal Overrun inner circle in the Dathomir Grotto Apex Den on Dathomir. Secure the Primal Overrun Den-Mother's Fang Token they hold.")
+                    "With your allies, put down the four shell-backs of the Primal Overrun Inner Circle in the Grotto Apex Den on Dathomir and recover the Primal Overrun Den-Mother's Fang Token from their deep nest.")
                 .AddKillObjective(NPCGroupType.Dathomir_PrimalOverrun_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstonePrimalOverrunDenMothersFangToken)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Primal Overrun inner circle is defeated and the Primal Overrun Den-Mother's Fang Token is secured. Return to Nalka Rinn at the Dathomir Jungle Landing.")
+                    "You have the Primal Overrun Den-Mother's Fang Token. Return to Nalka Rinn at the Jungle Landing on Dathomir.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -196,12 +196,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Primal Overrun master in the Dathomir Grotto Apex Den on Dathomir. There is no item to recover; the master's defeat is the proof.")
+                    "With your allies, put down the Primal Overrun Master, the old rancor bull who sired the warden, in the Grotto Apex Den on Dathomir. His fall is all the proof Nalka Rinn needs.")
                 .AddKillObjective(NPCGroupType.Dathomir_PrimalOverrun_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Primal Overrun master is defeated. Return to Nalka Rinn at the Dathomir Jungle Landing to complete the trial.")
+                    "The Primal Overrun Master is dead. Return to Nalka Rinn at the Jungle Landing on Dathomir.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void UntouchableInstinctFoundation()
         {
-            _builder.Create(UntouchableInstinctFoundationQuestId, "First Frost")
+            _builder.Create(UntouchableInstinctFoundationQuestId, "First Silent Track")
                 .PrerequisiteSkill(SkillType.BeastMastery, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -227,13 +227,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Voro Thane gave you the Dathomir Grotto Apex Den Key. Voro Thane wants six Untouchable Instinct adepts cleared out of the Dathomir Grotto Apex Den on Dathomir. Secure the Untouchable Instinct Grotto Track Slate they carry.")
+                    "Voro Thane gave you the Dathomir Grotto Apex Den Key. Put down six Untouchable Instinct Adepts, young crystal spiders in the Grotto Apex Den on Dathomir, and recover the Untouchable Instinct Grotto Track Slate from their webs. The den's gate is on the west side of the Grotto Caverns, a short walk south of the stairs down from the Grottos.")
                 .AddKillObjective(NPCGroupType.Dathomir_UntouchableInstinct_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUntouchableInstinctGrottoTrackSlate)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are down and the Untouchable Instinct Grotto Track Slate is secured. Return to Voro Thane at the Czerka base on Dathomir.")
+                    "You have the Untouchable Instinct Grotto Track Slate. Return to Voro Thane at the Czerka Base on Dathomir.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -248,13 +248,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Track down five Untouchable Instinct specialists in the Dathomir Grotto Apex Den on Dathomir and defeat them. Secure the Untouchable Instinct Resonant Fang Charm one of them carries.")
+                    "Put down five Untouchable Instinct Specialists, the older crystal spiders in the Grotto Apex Den on Dathomir, and recover the Untouchable Instinct Resonant Fang Charm one of them wears.")
                 .AddKillObjective(NPCGroupType.Dathomir_UntouchableInstinct_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUntouchableInstinctResonantFangCharm)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The five specialists are defeated and the Untouchable Instinct Resonant Fang Charm is secured. Return to Voro Thane at the Czerka base on Dathomir.")
+                    "You have the Untouchable Instinct Resonant Fang Charm. Return to Voro Thane at the Czerka Base on Dathomir.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -269,13 +269,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Untouchable Instinct warden, a fast and elusive single foe, in the Dathomir Grotto Apex Den on Dathomir. Secure the Untouchable Instinct Cracked Apex Totem it carries.")
+                    "With two allies you trust, put down the Untouchable Instinct Warden, a giant brown lizard in the Grotto Apex Den on Dathomir, and recover the Untouchable Instinct Cracked Apex Totem from his harness.")
                 .AddKillObjective(NPCGroupType.Dathomir_UntouchableInstinct_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUntouchableInstinctCrackedApexTotem)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Untouchable Instinct warden is defeated and the Untouchable Instinct Cracked Apex Totem is secured. Return to Voro Thane at the Czerka base on Dathomir.")
+                    "You have the Untouchable Instinct Cracked Apex Totem. Return to Voro Thane at the Czerka Base on Dathomir.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -290,13 +290,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Untouchable Instinct inner circle in the Dathomir Grotto Apex Den on Dathomir. Secure the Untouchable Instinct Den-Mother's Fang Token they hold.")
+                    "With your allies, put down the four crystal spiders of the Untouchable Instinct Inner Circle in the Grotto Apex Den on Dathomir and recover the Untouchable Instinct Den-Mother's Fang Token from their nest.")
                 .AddKillObjective(NPCGroupType.Dathomir_UntouchableInstinct_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUntouchableInstinctDenMothersFangToken)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Untouchable Instinct inner circle is defeated and the Untouchable Instinct Den-Mother's Fang Token is secured. Return to Voro Thane at the Czerka base on Dathomir.")
+                    "You have the Untouchable Instinct Den-Mother's Fang Token. Return to Voro Thane at the Czerka Base on Dathomir.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -309,12 +309,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Untouchable Instinct master, a fast and elusive single foe, in the Dathomir Grotto Apex Den on Dathomir. There is no item to recover; the master's defeat is the proof.")
+                    "With your allies, put down the Untouchable Instinct Master, the giant lizard who sired the warden, in the Grotto Apex Den on Dathomir. His fall is all the proof Voro Thane needs.")
                 .AddKillObjective(NPCGroupType.Dathomir_UntouchableInstinct_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Untouchable Instinct master is defeated. Return to Voro Thane at the Czerka base on Dathomir to complete the trial.")
+                    "The Untouchable Instinct Master is dead. Return to Voro Thane at the Czerka Base on Dathomir.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -340,13 +340,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Eshka Korr gave you the Dathomir Grotto Apex Den Key. Eshka Korr wants six Force-Bonded Beast adepts cleared out of the Dathomir Grotto Apex Den on Dathomir. Secure the Force-Bonded Beast Grotto Track Slate they carry.")
+                    "Eshka Korr gave you the Dathomir Grotto Apex Den Key. Put down six Force-Bonded Beast Adepts, young wyverns in the Grotto Apex Den on Dathomir, and recover the Force-Bonded Beast Grotto Track Slate from their roost. The den's gate is on the west side of the Grotto Caverns, a short walk south of the stairs down from the Grottos.")
                 .AddKillObjective(NPCGroupType.Dathomir_ForceBondedBeast_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForceBondedBeastGrottoTrackSlate)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are down and the Force-Bonded Beast Grotto Track Slate is secured. Return to Eshka Korr at the Waterfall Ruins on Dathomir.")
+                    "You have the Force-Bonded Beast Grotto Track Slate. Return to Eshka Korr at the Waterfall Ruins on Dathomir.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -361,13 +361,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Track down five Force-Bonded Beast specialists in the Dathomir Grotto Apex Den on Dathomir and defeat them. Secure the Force-Bonded Beast Resonant Fang Charm one of them carries.")
+                    "Put down five Force-Bonded Beast Specialists, the older wyverns in the Grotto Apex Den on Dathomir, and recover the Force-Bonded Beast Resonant Fang Charm one of them wears.")
                 .AddKillObjective(NPCGroupType.Dathomir_ForceBondedBeast_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForceBondedBeastResonantFangCharm)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The five specialists are defeated and the Force-Bonded Beast Resonant Fang Charm is secured. Return to Eshka Korr at the Waterfall Ruins on Dathomir.")
+                    "You have the Force-Bonded Beast Resonant Fang Charm. Return to Eshka Korr at the Waterfall Ruins on Dathomir.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -382,13 +382,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Force-Bonded Beast warden in the Dathomir Grotto Apex Den on Dathomir. Secure the Force-Bonded Beast Cracked Apex Totem it carries.")
+                    "With two allies you trust, put down the Force-Bonded Beast Warden, a wraid in the Grotto Apex Den on Dathomir, and recover the Force-Bonded Beast Cracked Apex Totem bound to his harness.")
                 .AddKillObjective(NPCGroupType.Dathomir_ForceBondedBeast_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForceBondedBeastCrackedApexTotem)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Force-Bonded Beast warden is defeated and the Force-Bonded Beast Cracked Apex Totem is secured. Return to Eshka Korr at the Waterfall Ruins on Dathomir.")
+                    "You have the Force-Bonded Beast Cracked Apex Totem. Return to Eshka Korr at the Waterfall Ruins on Dathomir.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -403,13 +403,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Force-Bonded Beast inner circle in the Dathomir Grotto Apex Den on Dathomir. Secure the Force-Bonded Beast Den-Mother's Fang Token they hold.")
+                    "With your allies, put down the four wyverns of the Force-Bonded Beast Inner Circle in the Grotto Apex Den on Dathomir and recover the Force-Bonded Beast Den-Mother's Fang Token from their roost.")
                 .AddKillObjective(NPCGroupType.Dathomir_ForceBondedBeast_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForceBondedBeastDenMothersFangToken)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Force-Bonded Beast inner circle is defeated and the Force-Bonded Beast Den-Mother's Fang Token is secured. Return to Eshka Korr at the Waterfall Ruins on Dathomir.")
+                    "You have the Force-Bonded Beast Den-Mother's Fang Token. Return to Eshka Korr at the Waterfall Ruins on Dathomir.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -422,12 +422,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Force-Bonded Beast master in the Dathomir Grotto Apex Den on Dathomir. There is no item to recover; the master's defeat is the proof.")
+                    "With your allies, put down the Force-Bonded Beast Master, the eldest wraid, in the Grotto Apex Den on Dathomir. His fall is all the proof Eshka Korr needs.")
                 .AddKillObjective(NPCGroupType.Dathomir_ForceBondedBeast_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Force-Bonded Beast master is defeated. Return to Eshka Korr at the Waterfall Ruins on Dathomir to complete the trial.")
+                    "The Force-Bonded Beast Master is dead. Return to Eshka Korr at the Waterfall Ruins on Dathomir.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -453,13 +453,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Talra Venn gave you the Dathomir Tarn Jungle Preserve Key. Talra Venn wants six Apex Bite adepts cleared out of the Dathomir Tarn Jungle Preserve on Dathomir. Secure the Apex Bite Tarn Hunt Tally they carry.")
+                    "Talra Venn gave you the Dathomir Tarn Jungle Preserve Key. Put down six Apex Bite Adepts, young scaled brutes in the Tarn Jungle Preserve on Dathomir, and recover the Apex Bite Tarn Hunt Tally from their pen. The preserve's gate is in the north-east part of the Tarnished Jungles, reached by the trail out the north-west side of the Jungle Landing.")
                 .AddKillObjective(NPCGroupType.Dathomir_ApexBite_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneApexBiteTarnHuntTally)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are down and the Apex Bite Tarn Hunt Tally is secured. Return to Talra Venn at the Dathomir Jungle Landing.")
+                    "You have the Apex Bite Tarn Hunt Tally. Return to Talra Venn at the Jungle Landing on Dathomir.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -474,20 +474,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Track down five Apex Bite specialists in the Dathomir Tarn Jungle Preserve on Dathomir and defeat them. Secure the Apex Bite Beast-Pen Scent Vial they are using.")
+                    "Put down five Apex Bite Specialists, the older scaled brutes in the Tarn Jungle Preserve on Dathomir, and recover the Apex Bite Beast-Pen Scent Vial from their pen.")
                 .AddKillObjective(NPCGroupType.Dathomir_ApexBite_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneApexBiteBeastPenScentVial)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The five specialists are defeated and the Apex Bite Beast-Pen Scent Vial is secured. Return to Talra Venn at the Dathomir Jungle Landing.")
+                    "You have the Apex Bite Beast-Pen Scent Vial. Return to Talra Venn at the Jungle Landing on Dathomir.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void ApexBiteBreach()
         {
-            _builder.Create(ApexBiteBreachQuestId, "Warden's Notice: Bay Sealed")
+            _builder.Create(ApexBiteBreachQuestId, "Warden's Notice: Pen Sealed")
                 .PrerequisiteQuest(ApexBiteMeasureQuestId)
                 .PrerequisiteSkill(SkillType.BeastMastery, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneApexBiteClawedAlphaTotem)
@@ -495,13 +495,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Apex Bite warden in the Dathomir Tarn Jungle Preserve on Dathomir. Secure the Apex Bite Clawed Alpha Totem it carries.")
+                    "With two allies you trust, put down the Apex Bite Warden, a tukata in the Tarn Jungle Preserve on Dathomir, and recover the Apex Bite Clawed Alpha Totem from his collar.")
                 .AddKillObjective(NPCGroupType.Dathomir_ApexBite_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneApexBiteClawedAlphaTotem)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Apex Bite warden is defeated and the Apex Bite Clawed Alpha Totem is secured. Return to Talra Venn at the Dathomir Jungle Landing.")
+                    "You have the Apex Bite Clawed Alpha Totem. Return to Talra Venn at the Jungle Landing on Dathomir.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -516,13 +516,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Apex Bite inner circle in the Dathomir Tarn Jungle Preserve on Dathomir. Secure the Apex Bite Preserve Keeper's Token they hold.")
+                    "With your allies, put down the four scaled brutes of the Apex Bite Inner Circle in the Tarn Jungle Preserve on Dathomir and recover the Apex Bite Preserve Keeper's Token from the den they hold.")
                 .AddKillObjective(NPCGroupType.Dathomir_ApexBite_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneApexBitePreserveKeepersToken)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Apex Bite inner circle is defeated and the Apex Bite Preserve Keeper's Token is secured. Return to Talra Venn at the Dathomir Jungle Landing.")
+                    "You have the Apex Bite Preserve Keeper's Token. Return to Talra Venn at the Jungle Landing on Dathomir.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -535,12 +535,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Apex Bite master in the Dathomir Tarn Jungle Preserve on Dathomir. There is no item to recover; the master's defeat is the proof.")
+                    "With your allies, put down the Apex Bite Master, the old tukata who sired the warden, in the Tarn Jungle Preserve on Dathomir. His fall is all the proof Talra Venn needs.")
                 .AddKillObjective(NPCGroupType.Dathomir_ApexBite_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Apex Bite master is defeated. Return to Talra Venn at the Dathomir Jungle Landing to complete the trial.")
+                    "The Apex Bite Master is dead. Return to Talra Venn at the Jungle Landing on Dathomir.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -566,20 +566,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Oren Krast gave you the Dathomir Tarn Jungle Preserve Key. Oren Krast wants six Unbreakable Beast adepts cleared out of the Dathomir Tarn Jungle Preserve on Dathomir. Secure the Unbreakable Beast Tarn Hunt Tally they carry.")
+                    "Oren Krast gave you the Dathomir Tarn Jungle Preserve Key. Put down six Unbreakable Beast Adepts, young plated burrowers in the Tarn Jungle Preserve on Dathomir, and recover the Unbreakable Beast Tarn Hunt Tally from their pen. The preserve's gate is in the north-east part of the Tarnished Jungles, reached by the trail out the north-west side of the Jungle Landing.")
                 .AddKillObjective(NPCGroupType.Dathomir_UnbreakableBeast_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnbreakableBeastTarnHuntTally)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are down and the Unbreakable Beast Tarn Hunt Tally is secured. Return to Oren Krast at the Czerka base on Dathomir.")
+                    "You have the Unbreakable Beast Tarn Hunt Tally. Return to Oren Krast at the Czerka Base on Dathomir.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void UnbreakableBeastMeasure()
         {
-            _builder.Create(UnbreakableBeastMeasureQuestId, "Six Scars, Still Standing")
+            _builder.Create(UnbreakableBeastMeasureQuestId, "Five Scars, Still Standing")
                 .PrerequisiteQuest(UnbreakableBeastFoundationQuestId)
                 .PrerequisiteSkill(SkillType.BeastMastery, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneUnbreakableBeastBeastPenScentVial)
@@ -587,13 +587,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Track down five Unbreakable Beast specialists in the Dathomir Tarn Jungle Preserve on Dathomir and defeat them. Secure the Unbreakable Beast Beast-Pen Scent Vial they are using.")
+                    "Put down five Unbreakable Beast Specialists, the older plated burrowers in the Tarn Jungle Preserve on Dathomir, and recover the Unbreakable Beast Beast-Pen Scent Vial from their pen.")
                 .AddKillObjective(NPCGroupType.Dathomir_UnbreakableBeast_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnbreakableBeastBeastPenScentVial)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The five specialists are defeated and the Unbreakable Beast Beast-Pen Scent Vial is secured. Return to Oren Krast at the Czerka base on Dathomir.")
+                    "You have the Unbreakable Beast Beast-Pen Scent Vial. Return to Oren Krast at the Czerka Base on Dathomir.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -608,13 +608,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Unbreakable Beast warden in the Dathomir Tarn Jungle Preserve on Dathomir. Secure the Unbreakable Beast Clawed Alpha Totem it carries.")
+                    "With two allies you trust, put down the Unbreakable Beast Warden, a shyrack in the Tarn Jungle Preserve on Dathomir, and recover the Unbreakable Beast Clawed Alpha Totem from his harness.")
                 .AddKillObjective(NPCGroupType.Dathomir_UnbreakableBeast_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnbreakableBeastClawedAlphaTotem)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unbreakable Beast warden is defeated and the Unbreakable Beast Clawed Alpha Totem is secured. Return to Oren Krast at the Czerka base on Dathomir.")
+                    "You have the Unbreakable Beast Clawed Alpha Totem. Return to Oren Krast at the Czerka Base on Dathomir.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -629,13 +629,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Unbreakable Beast inner circle in the Dathomir Tarn Jungle Preserve on Dathomir. Secure the Unbreakable Beast Preserve Keeper's Token they hold.")
+                    "With your allies, put down the four plated burrowers of the Unbreakable Beast Inner Circle in the Tarn Jungle Preserve on Dathomir and recover the Unbreakable Beast Preserve Keeper's Token from their den.")
                 .AddKillObjective(NPCGroupType.Dathomir_UnbreakableBeast_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnbreakableBeastPreserveKeepersToken)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unbreakable Beast inner circle is defeated and the Unbreakable Beast Preserve Keeper's Token is secured. Return to Oren Krast at the Czerka base on Dathomir.")
+                    "You have the Unbreakable Beast Preserve Keeper's Token. Return to Oren Krast at the Czerka Base on Dathomir.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -648,12 +648,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Unbreakable Beast master in the Dathomir Tarn Jungle Preserve on Dathomir. There is no item to recover; the master's defeat is the proof.")
+                    "With your allies, put down the Unbreakable Beast Master, the old shyrack who sired the warden, in the Tarn Jungle Preserve on Dathomir. His fall is all the proof Oren Krast needs.")
                 .AddKillObjective(NPCGroupType.Dathomir_UnbreakableBeast_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unbreakable Beast master is defeated. Return to Oren Krast at the Czerka base on Dathomir to complete the trial.")
+                    "The Unbreakable Beast Master is dead. Return to Oren Krast at the Czerka Base on Dathomir.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -679,13 +679,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Mira Syth gave you the Dathomir Tarn Jungle Preserve Key. Mira Syth wants six Alpha Rhythm adepts cleared out of the Dathomir Tarn Jungle Preserve on Dathomir. Secure the Alpha Rhythm Tarn Hunt Tally they carry.")
+                    "Mira Syth gave you the Dathomir Tarn Jungle Preserve Key. Put down six Alpha Rhythm Adepts, young kinrath in the Tarn Jungle Preserve on Dathomir, and recover the Alpha Rhythm Tarn Hunt Tally from their nest. The preserve's gate is in the north-east part of the Tarnished Jungles, reached by heading south from the Waterfall Ruins through the Tarnished Jungles North.")
                 .AddKillObjective(NPCGroupType.Dathomir_AlphaRhythm_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAlphaRhythmTarnHuntTally)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The six adepts are down and the Alpha Rhythm Tarn Hunt Tally is secured. Return to Mira Syth at the Waterfall Ruins on Dathomir.")
+                    "You have the Alpha Rhythm Tarn Hunt Tally. Return to Mira Syth at the Waterfall Ruins on Dathomir.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -700,13 +700,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Track down five Alpha Rhythm specialists in the Dathomir Tarn Jungle Preserve on Dathomir and defeat them. Secure the Alpha Rhythm Beast-Pen Scent Vial they are using.")
+                    "Put down five Alpha Rhythm Specialists, the older kinrath in the Tarn Jungle Preserve on Dathomir, and recover the Alpha Rhythm Beast-Pen Scent Vial from their pen.")
                 .AddKillObjective(NPCGroupType.Dathomir_AlphaRhythm_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAlphaRhythmBeastPenScentVial)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The five specialists are defeated and the Alpha Rhythm Beast-Pen Scent Vial is secured. Return to Mira Syth at the Waterfall Ruins on Dathomir.")
+                    "You have the Alpha Rhythm Beast-Pen Scent Vial. Return to Mira Syth at the Waterfall Ruins on Dathomir.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -721,13 +721,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Alpha Rhythm warden in the Dathomir Tarn Jungle Preserve on Dathomir. Secure the Alpha Rhythm Clawed Alpha Totem it carries.")
+                    "With two allies you trust, put down the Alpha Rhythm Warden, an iriaz bull in the Tarn Jungle Preserve on Dathomir, and recover the Alpha Rhythm Clawed Alpha Totem from his harness.")
                 .AddKillObjective(NPCGroupType.Dathomir_AlphaRhythm_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAlphaRhythmClawedAlphaTotem)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Alpha Rhythm warden is defeated and the Alpha Rhythm Clawed Alpha Totem is secured. Return to Mira Syth at the Waterfall Ruins on Dathomir.")
+                    "You have the Alpha Rhythm Clawed Alpha Totem. Return to Mira Syth at the Waterfall Ruins on Dathomir.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -742,13 +742,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Alpha Rhythm inner circle in the Dathomir Tarn Jungle Preserve on Dathomir. Secure the Alpha Rhythm Preserve Keeper's Token they hold.")
+                    "With your allies, put down the four kinrath of the Alpha Rhythm Inner Circle in the Tarn Jungle Preserve on Dathomir and recover the Alpha Rhythm Preserve Keeper's Token from their nest.")
                 .AddKillObjective(NPCGroupType.Dathomir_AlphaRhythm_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAlphaRhythmPreserveKeepersToken)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Alpha Rhythm inner circle is defeated and the Alpha Rhythm Preserve Keeper's Token is secured. Return to Mira Syth at the Waterfall Ruins on Dathomir.")
+                    "You have the Alpha Rhythm Preserve Keeper's Token. Return to Mira Syth at the Waterfall Ruins on Dathomir.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -761,12 +761,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Alpha Rhythm master in the Dathomir Tarn Jungle Preserve on Dathomir. There is no item to recover; the master's defeat is the proof.")
+                    "With your allies, put down the Alpha Rhythm Master, the old iriaz bull the warden learned from, in the Tarn Jungle Preserve on Dathomir. His fall is all the proof Mira Syth needs.")
                 .AddKillObjective(NPCGroupType.Dathomir_AlphaRhythm_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Alpha Rhythm master is defeated. Return to Mira Syth at the Waterfall Ruins on Dathomir to complete the trial.")
+                    "The Alpha Rhythm Master is dead. Return to Mira Syth at the Waterfall Ruins on Dathomir.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

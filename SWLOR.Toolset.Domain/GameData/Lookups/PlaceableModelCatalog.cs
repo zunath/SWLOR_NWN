@@ -1,4 +1,5 @@
 using SWLOR.Toolset.Domain.GameData.Tlk;
+using Nwn.Authoring.Placeables;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 
 namespace SWLOR.Toolset.Domain.GameData.Lookups
@@ -100,7 +101,6 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         {
             var definition = TwoDaLookupTables.PlaceableModel;
             var requiredColumns = definition.RequiredColumns!;
-            var modelColumn = requiredColumns.Single();
 
             // A missing or column-less table is a build failure, not an empty catalog: the caller
             // records it on BuildFailure so the editor can say why the grid is empty instead of
@@ -118,27 +118,15 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                     $"2DA table '{definition.TableName}' is missing required columns.");
             }
 
-            var rows = new List<PlaceableModelRow>();
-
-            for (var row = 0; row < table.RowCount; row++)
-            {
-                var model = table.GetString(row, modelColumn);
-                if (!TwoDaChoicePolicy.IsSelectableLabel(model))
-                    continue;
-
-                var label = table.GetString(row, definition.LabelColumn);
-                var hasLabel = !string.IsNullOrWhiteSpace(label);
-                if (hasLabel && !TwoDaChoicePolicy.IsSelectableLabel(label))
-                    continue;
-
-                var displayName = hasLabel
-                    ? DisplayNameResolver.Resolve(tlk, table.GetInt(row, definition.StrRefColumn!), label!)
-                    : model!;
-
-                rows.Add(new PlaceableModelRow(row, model!, displayName, hasLabel));
-            }
-
-            return rows;
+            return PlaceableAppearanceCatalogReader.Read(table.NativeTable)
+                .Select(option =>
+                {
+                    var displayName = option.HasLabel
+                        ? DisplayNameResolver.Resolve(tlk, option.StringRef, option.Label!)
+                        : option.ModelName;
+                    return new PlaceableModelRow(option.RowIndex, option.ModelName, displayName, option.HasLabel);
+                })
+                .ToArray();
         }
     }
 }

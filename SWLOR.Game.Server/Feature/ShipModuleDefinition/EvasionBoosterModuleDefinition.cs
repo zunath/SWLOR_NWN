@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(name)
-                .Texture("iit_ess_018")
+                .Texture("iit_smevaboost")
                 .Description($"Improves a ship's evasion by {evasionBoostAmount}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)

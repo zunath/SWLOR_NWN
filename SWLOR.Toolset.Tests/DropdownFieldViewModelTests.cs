@@ -2,6 +2,7 @@ using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Editors;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors;
 

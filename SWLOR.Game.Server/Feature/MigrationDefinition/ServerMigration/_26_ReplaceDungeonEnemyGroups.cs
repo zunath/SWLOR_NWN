@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service.MigrationService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 
-public sealed class _26_ReplaceDungeonEnemyGroups : IServerMigration
+public sealed class _26_ReplaceDungeonEnemyGroups : ServerMigrationBase, IServerMigration
 {
     public int Version => 26;
     public MigrationExecutionType ExecutionType => MigrationExecutionType.PostCacheLoad;
@@ -24,6 +24,7 @@ public sealed class _26_ReplaceDungeonEnemyGroups : IServerMigration
             creature.Data = migrated;
             return true;
         });
+        GrantRebuildTokenToAllPlayers();
     }
 
     private static void MigrateRecords<T>(ServerMigrationProgress progress, Func<T, bool> migrate) where T : EntityBase

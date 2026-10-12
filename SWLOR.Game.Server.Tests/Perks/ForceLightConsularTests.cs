@@ -330,8 +330,8 @@ public class ForceLightConsularTests
         source.Should().Contain("ApplyRenewal(activator, target, \"Renewal II\", 20f);");
         source.Should().Contain("ApplyRenewal(activator, target, \"Renewal III\", 30f);");
         source.Should().Contain("totalPercent * Ability.GetActiveForceAffinityMagnitudeMultiplier(activator)");
-        source.Should().Contain("new RegenerativeHealingStatusEffect(name, affinityAdjustedTotalPercent, 10)");
-        source.Should().MatchRegex(@"new RegenerativeHealingStatusEffect\(name, affinityAdjustedTotalPercent, 10\),\s*30f\)");
+        source.Should().Contain("new RegenerativeHealingStatusEffect(name, affinityAdjustedTotalPercent, 10, supportSkill: SkillType.Force, supportCredited: credited)");
+        source.Should().MatchRegex(@"new RegenerativeHealingStatusEffect\(name, affinityAdjustedTotalPercent, 10, [^)]*\),\s*30f\)");
         new RegenerativeHealingStatusEffect("Renewal", 30f, 10).Frequency.Should().Be(3f);
     }
 

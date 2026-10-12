@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(shortName)
-                .Texture("iit_ess_020")
+                .Texture("iit_smhullrepair")
                 .Type(ShipModuleType.HullRepairer)
                 .ValidTargetType(ObjectType.Creature)
                 .CanTargetSelf()
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     Messaging.SendMessageNearbyToPlayers(
                         activator,
                         receiver => $"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} hull HP to {PlayerName.GetDisplayName(receiver, target)}'s ship.");
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
+                    CombatPoint.AddSupportCombatPoint(activator, target, SkillType.Piloting);
                 });
 
         }

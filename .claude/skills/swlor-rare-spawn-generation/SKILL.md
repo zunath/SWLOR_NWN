@@ -32,7 +32,7 @@ Use this skill when a task adds or changes rare enemies selected from SWLOR spaw
 
 ## Bible Stats
 
-Use `design/bible/SWLOR Design Bible - Combat Upgrade.xlsx` as the stats source when creating named or elite enemies.
+Use `design/bible/SWLOR Design Bible.xlsx` as the stats source when creating named or elite enemies.
 
 - For `World NPCs`, hand-enter columns `A:H`, `AE:AL`, and `AP:AR` as appropriate. Preserve formulas in `I:AD` and `AM:AO`.
 - Choose level, rank, role, species, and modifier from the Bible tables. Confirm the derived values from `Enemy Stat Presets`, `Enemy Resistance Packages`, `Enemy Ability Packages`, and `Enemy Modifiers`.

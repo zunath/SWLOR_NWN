@@ -62,13 +62,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Valis Korr gave you the Korriban Forge Caverns Key. Enter the Korriban Forge Caverns on Korriban and defeat 6 Absolute Defense adepts. Secure the Absolute Defense Forge Heat Ledger they keep near the crucibles.")
+                    "Valis Korr gave you the Korriban Forge Caverns Key. On Korriban, cross the Sith Fortress Forgeworks to the sealed passage in its far north-east corner and enter the Korriban Forge Caverns. Defeat 6 Absolute Defense adepts and secure the Absolute Defense Forge Heat Ledger they keep near the crucibles.")
                 .AddKillObjective(NPCGroupType.Korriban_AbsoluteDefense_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAbsoluteDefenseForgeHeatLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Absolute Defense Forge Heat Ledger is in hand. Return it to Valis Korr at the Korriban Sith Academy.")
+                    "The Absolute Defense Forge Heat Ledger is in hand. Return it to Valis Korr at the Fight Club on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Absolute Defense Sith Tempering Matrix. Bring it to Valis Korr at the Korriban Sith Academy.")
+                    "You recovered the Absolute Defense Sith Tempering Matrix. Bring it to Valis Korr at the Fight Club on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -104,13 +104,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Absolute Defense warden in the Korriban Forge Caverns on Korriban and take the Absolute Defense Cracked Anvil Sigil he wears. The warden is a deadly opponent; bring allies.")
+                    "With at least two allies, defeat the Absolute Defense warden at the trial altar on the west side of the Korriban Forge Caverns on Korriban and take the Absolute Defense Cracked Anvil Sigil he wears.")
                 .AddKillObjective(NPCGroupType.Korriban_AbsoluteDefense_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAbsoluteDefenseCrackedAnvilSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The warden is defeated and the Absolute Defense Cracked Anvil Sigil is yours. Return to Valis Korr at the Korriban Sith Academy.")
+                    "The warden is defeated and the Absolute Defense Cracked Anvil Sigil is yours. Return to Valis Korr at the Fight Club on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You took the Absolute Defense Overseer's Clearance Token from the inner circle. Deliver it to Valis Korr at the Korriban Sith Academy.")
+                    "You took the Absolute Defense Overseer's Clearance Token from the inner circle. Deliver it to Valis Korr at the Fight Club on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -144,12 +144,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Absolute Defense master in the innermost ring of the Korriban Forge Caverns on Korriban. He is far too strong to face alone; bring trusted allies.")
+                    "With at least two trusted allies, defeat the Absolute Defense master in the Champion Forge, through the door at the north end of the Korriban Forge Caverns on Korriban.")
                 .AddKillObjective(NPCGroupType.Korriban_AbsoluteDefense_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Absolute Defense master is defeated. Return to Valis Korr at the Korriban Sith Academy.")
+                    "The Absolute Defense master is defeated. Return to Valis Korr at the Fight Club on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -175,13 +175,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Senn Dralok gave you the Korriban Forge Caverns Key. Enter the Korriban Forge Caverns on Korriban and defeat 6 Soul Ascension adepts. Secure the Soul Ascension Forge Heat Ledger kept near the crucibles.")
+                    "Senn Dralok gave you the Korriban Forge Caverns Key. On Korriban, cross the Sith Fortress Forgeworks to the sealed passage in its far north-east corner and enter the Korriban Forge Caverns. Defeat 6 Soul Ascension adepts and secure the Soul Ascension Forge Heat Ledger kept near the crucibles.")
                 .AddKillObjective(NPCGroupType.Korriban_SoulAscension_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSoulAscensionForgeHeatLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Soul Ascension Forge Heat Ledger is in hand. Return it to Senn Dralok at the Korriban wasteland outpost.")
+                    "The Soul Ascension Forge Heat Ledger is in hand. Return it to Senn Dralok at The Hub on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Soul Ascension Sith Tempering Matrix. Bring it to Senn Dralok at the Korriban wasteland outpost.")
+                    "You recovered the Soul Ascension Sith Tempering Matrix. Bring it to Senn Dralok at The Hub on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -217,13 +217,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Soul Ascension warden in the Korriban Forge Caverns on Korriban and take the Soul Ascension Cracked Anvil Sigil he wears. The warden is a deadly opponent; bring allies.")
+                    "With at least two allies, defeat the Soul Ascension warden at the trial altar in the north-west of the Korriban Forge Caverns on Korriban and take the Soul Ascension Cracked Anvil Sigil he wears.")
                 .AddKillObjective(NPCGroupType.Korriban_SoulAscension_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSoulAscensionCrackedAnvilSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The warden is defeated and the Soul Ascension Cracked Anvil Sigil is yours. Return to Senn Dralok at the Korriban wasteland outpost.")
+                    "The warden is defeated and the Soul Ascension Cracked Anvil Sigil is yours. Return to Senn Dralok at The Hub on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You took the Soul Ascension Overseer's Clearance Token from the inner circle. Deliver it to Senn Dralok at the Korriban wasteland outpost.")
+                    "You took the Soul Ascension Overseer's Clearance Token from the inner circle. Deliver it to Senn Dralok at The Hub on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -257,12 +257,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Soul Ascension master in his sanctum in the Korriban Forge Caverns on Korriban. He is far too strong to face alone; bring trusted allies.")
+                    "With at least two trusted allies, defeat the Soul Ascension master in the Champion Forge, through the door at the north end of the Korriban Forge Caverns on Korriban.")
                 .AddKillObjective(NPCGroupType.Korriban_SoulAscension_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Soul Ascension master is defeated. Return to Senn Dralok at the Korriban wasteland outpost.")
+                    "The Soul Ascension master is defeated. Return to Senn Dralok at The Hub on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

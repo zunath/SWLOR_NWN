@@ -166,7 +166,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tressa Kade is a scrap-yard guard trainer tied to the Adamantine Guard capstone trials in CZ-220 Breaker Yard."
+      "0": "A sharp-eyed woman in a grease-marked Czerka uniform, a flimsi work order always within reach of her hand. She moves between the desks and terminals like she owns the clock, and on CZ-220 she very nearly does. Old cutting-torch scars mark her knuckles from years on the breaker floor. Lately her glance keeps drifting to the deck plating, as if she can feel something wrong in the bays far below."
     }
   },
   "Dex": {
@@ -364,7 +364,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 312
+    "value": 4012
   },
   "Race": {
     "type": "byte",

@@ -9,46 +9,21 @@
           "children": [
             {
               "name": "Anchorhead",
-              "children": [
-                {
-                  "name": "Sandy Dune Desert",
-                  "members": [
-                    "anchor_road_est"
-                  ]
-                }
-              ],
               "members": [
-                "anchor_entreenor",
-                "anchor_entreesud",
-                "anc_dsrt_speeder",
                 "tat_anc_astropor",
-                "tat_anc_cantina",
                 "tat_anc_droidshp",
                 "tat_anc_gocorpst",
                 "tat_anc_junix",
                 "tat_anc_medical",
-                "tat_anc_northdis",
                 "tat_anc_southdis",
                 "tat_anc_southent",
-                "tat_anc_verpexba",
-                "tochee_cantina",
-                "tosche_cantina_s",
                 "pw_sc_canyonpit",
                 "pw_sc_canyonrng"
               ]
             },
             {
-              "name": "Mos Eisley",
-              "members": [
-                "moseis_dow_ca001"
-              ]
-            },
-            {
               "name": "Mos Esper",
               "members": [
-                "moseis_dow_can",
-                "moseis_exit_sud",
-                "moseis_lucky",
                 "smesks_palace"
               ]
             },
@@ -62,9 +37,7 @@
             }
           ],
           "members": [
-            "anchor_roche01",
             "canyon_001",
-            "moseis_sand_001",
             "moseis_sand_003",
             "moseis_sand_004",
             "moseis_sand_005",
@@ -92,11 +65,8 @@
             "tat_brokenjawa",
             "tat_chasmpass",
             "tat_elevagiifarm",
-            "tat_rancorcave",
-            "tat_rockypasslge",
             "tat_smeskspalace",
             "tat_tocheemain",
-            "tat_tomoseisley1",
             "tat_wormden"
           ]
         },
@@ -153,13 +123,6 @@
               ]
             },
             {
-              "name": "Swamp Base",
-              "members": [
-                "sol_swampsbase",
-                "sol_swampstemple"
-              ]
-            },
-            {
               "name": "Wildwoods",
               "members": [
                 "viscara_wwnorth",
@@ -184,12 +147,6 @@
                 "v_repubbase_off",
                 "pw_sc_repubcmd",
                 "pw_sc_repubeng"
-              ]
-            },
-            {
-              "name": "Swamplands",
-              "members": [
-                "v_swamp_base"
               ]
             }
           ],
@@ -220,7 +177,6 @@
             "v_cox_base",
             "v_jediforest_cav",
             "v_jeditemple_v2",
-            "v_sithlake_int",
             "v_swamp_ruins001",
             "v_swamp_undergro"
           ]
@@ -356,13 +312,119 @@
             {
               "name": "Tatooine",
               "members": [
-                "vrotrtatdescamp"
+                "vrotrtatdescamp",
+                "anchor_roche01",
+                "moseis_sand_001",
+                "tat_rancorcave",
+                "tat_rockypasslge",
+                "tat_tomoseisley1"
+              ],
+              "children": [
+                {
+                  "name": "Anchorhead",
+                  "members": [
+                    "anc_dsrt_speeder",
+                    "anchor_entreenor",
+                    "anchor_entreesud",
+                    "tat_anc_cantina",
+                    "tat_anc_northdis",
+                    "tat_anc_verpexba",
+                    "tochee_cantina",
+                    "tosche_cantina_s"
+                  ],
+                  "children": [
+                    {
+                      "name": "Sandy Dune Desert",
+                      "members": [
+                        "anchor_road_est"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Mos Eisley",
+                  "members": [
+                    "moseis_dow_ca001"
+                  ]
+                },
+                {
+                  "name": "Mos Esper",
+                  "members": [
+                    "moseis_dow_can",
+                    "moseis_exit_sud",
+                    "moseis_lucky"
+                  ]
+                }
               ]
             },
             {
               "name": "Viscara",
               "members": [
-                "vrotrviscvokouts"
+                "vrotrviscvokouts",
+                "v_sithlake_int"
+              ],
+              "children": [
+                {
+                  "name": "Swamp Base",
+                  "members": [
+                    "sol_swampsbase",
+                    "sol_swampstemple"
+                  ]
+                },
+                {
+                  "name": "Swamplands",
+                  "members": [
+                    "v_swamp_base"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Kashyyyk",
+              "members": [
+                "kash_village",
+                "kashyyyk_camp",
+                "kashyyykpaths",
+                "kashyyykshadow",
+                "pw_ar_kashyk"
+              ]
+            },
+            {
+              "name": "Ossus",
+              "members": [
+                "ossu_wastesruin",
+                "ossus_cavefacili",
+                "ossus_landstart",
+                "ossus_tempinisde",
+                "ossus_wastejungl",
+                "ossustemp"
+              ]
+            },
+            {
+              "name": "Starship",
+              "members": [
+                "ship_secchan_int",
+                "starship3_int"
+              ],
+              "children": [
+                {
+                  "name": "Heavy Freighter",
+                  "members": [
+                    "starship4_int"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Starship Shuttle",
+              "members": [
+                "shuttle"
+              ]
+            },
+            {
+              "name": "Force Vision",
+              "members": [
+                "visc_forcevision"
               ]
             }
           ],
@@ -656,16 +718,6 @@
           ]
         },
         {
-          "name": "Kashyyyk",
-          "members": [
-            "kashyyykpaths",
-            "kashyyykshadow",
-            "kashyyyk_camp",
-            "kash_village",
-            "pw_ar_kashyk"
-          ]
-        },
-        {
           "name": "Smuggler\u0027s Moon",
           "members": [
             "ka_ar_czweaparen",
@@ -724,17 +776,6 @@
           ]
         },
         {
-          "name": "Ossus",
-          "members": [
-            "ossustemp",
-            "ossus_cavefacili",
-            "ossus_landstart",
-            "ossus_tempinisde",
-            "ossus_wastejungl",
-            "ossu_wastesruin"
-          ]
-        },
-        {
           "name": "Twilight Praxeum",
           "members": [
             "r_prax_centralsp",
@@ -746,14 +787,6 @@
         },
         {
           "name": "Starship",
-          "children": [
-            {
-              "name": "Heavy Freighter",
-              "members": [
-                "starship4_int"
-              ]
-            }
-          ],
           "members": [
             "ship_basi_v",
             "ship_condor_z",
@@ -766,18 +799,10 @@
             "ship_mule_z",
             "ship_panth_z",
             "ship_saber_z",
-            "ship_secchan_int",
             "ship_strike_z",
             "ship_throne_z",
             "starship1_int",
-            "starship2_int",
-            "starship3_int"
-          ]
-        },
-        {
-          "name": "Starship Shuttle",
-          "members": [
-            "shuttle"
+            "starship2_int"
           ]
         },
         {
@@ -785,12 +810,6 @@
           "members": [
             "spacenarshaddung",
             "spacenarshalower"
-          ]
-        },
-        {
-          "name": "Force Vision",
-          "members": [
-            "visc_forcevision"
           ]
         },
         {
@@ -942,6 +961,7 @@
             "nar_datasmg_q",
             "nar_pirate_q",
             "nar_slaver_q",
+            "talia_brenn",
             "veles_colonist1",
             "veles_colonist2"
           ]

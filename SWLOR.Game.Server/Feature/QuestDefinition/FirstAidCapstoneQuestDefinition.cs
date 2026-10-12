@@ -49,13 +49,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kavi Dorn gave you the Dantooine Medical Sublevel Key. Use Kavi Dorn's key to enter the Dantooine Medical Sublevel on Dantooine. Defeat six Emergency Cocktail adepts and secure the Emergency Cocktail Triage Ward Ledger.")
+                    "Kavi Dorn gave you the Dantooine Medical Sublevel Key. On Dantooine, travel from Colony Central to the Jungle Mountain and enter the Abandoned Warehouse on its north-west side; the way down into the Dantooine Medical Sublevel is on the warehouse's far west wall. Defeat six Emergency Cocktail Adepts and recover the Emergency Cocktail Triage Ward Ledger.")
                 .AddKillObjective(NPCGroupType.Dantooine_EmergencyCocktail_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailTriageWardLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Cocktail Triage Ward Ledger is secured. Return it to Kavi Dorn at the Dantooine Republic medical center.")
+                    "You recovered the Emergency Cocktail Triage Ward Ledger. Return it to Kavi Dorn at the Medshed on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -70,13 +70,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Emergency Cocktail specialists in the Dantooine Medical Sublevel on Dantooine and recover the Emergency Cocktail Kolto Conduit Coupler from their conduit splice.")
+                    "Defeat five Emergency Cocktail Specialists in the Dantooine Medical Sublevel on Dantooine and recover the Emergency Cocktail Kolto Conduit Coupler.")
                 .AddKillObjective(NPCGroupType.Dantooine_EmergencyCocktail_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailKoltoConduitCoupler)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Cocktail Kolto Conduit Coupler is recovered. Return it to Kavi Dorn at the Dantooine Republic medical center.")
+                    "You recovered the Emergency Cocktail Kolto Conduit Coupler. Return it to Kavi Dorn at the Medshed on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -91,13 +91,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Emergency Cocktail warden guarding the sealed clean room in the Dantooine Medical Sublevel on Dantooine and secure the Emergency Cocktail Fractured Ward Sigil. Kavi Dorn advises bringing two trusted companions.")
+                    "With two trusted companions, defeat the Emergency Cocktail Warden in the south-west wing of the Dantooine Medical Sublevel on Dantooine. Recover the Emergency Cocktail Fractured Ward Sigil.")
                 .AddKillObjective(NPCGroupType.Dantooine_EmergencyCocktail_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailFracturedWardSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The warden is defeated and the Emergency Cocktail Fractured Ward Sigil is secured. Return it to Kavi Dorn at the Dantooine Republic medical center.")
+                    "The warden is dead and you hold the Emergency Cocktail Fractured Ward Sigil. Return it to Kavi Dorn at the Medshed on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -112,13 +112,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Emergency Cocktail inner circle in the matron's ward of the Dantooine Medical Sublevel on Dantooine and secure the Emergency Cocktail Matron's Ward Token.")
+                    "Defeat the four members of the Emergency Cocktail Inner Circle in the Dantooine Medical Sublevel on Dantooine and recover the Emergency Cocktail Matron's Ward Token.")
                 .AddKillObjective(NPCGroupType.Dantooine_EmergencyCocktail_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailMatronsWardToken)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The inner circle is defeated and the Emergency Cocktail Matron's Ward Token is secured. Return it to Kavi Dorn at the Dantooine Republic medical center.")
+                    "The inner circle is finished and you hold the Emergency Cocktail Matron's Ward Token. Return it to Kavi Dorn at the Medshed on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -131,12 +131,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Emergency Cocktail master in the deepest room of the Dantooine Medical Sublevel on Dantooine. His defeat is the only proof required. Kavi Dorn warns that this is not a fight for one person; bring companions.")
+                    "With companions at your side, defeat the Emergency Cocktail Master in the Protected Ward, reached from the north-east corner of the Dantooine Medical Sublevel. His death is the only proof Kavi Dorn needs.")
                 .AddKillObjective(NPCGroupType.Dantooine_EmergencyCocktail_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Emergency Cocktail master is defeated. Return to Kavi Dorn at the Dantooine Republic medical center for the final lesson.")
+                    "The Emergency Cocktail Master is dead. Return to Kavi Dorn at the Medshed on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

@@ -2,9 +2,11 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Documents;
+using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Triggers;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using Nwn.Authoring.Documents.NimGff;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Behaviors;
 
@@ -325,7 +327,7 @@ namespace SWLOR.Toolset.Editors.Triggers
                 BehaviorRows.Add(CreateRow(definition));
 
             Variables = Behavior.AllowsVariables
-                ? new VarTableSectionViewModel(_runEdit, _store.Locals, _gameCodeIndex)
+                ? SwlorVarTablePolicy.Create(_runEdit, _store.Locals, _gameCodeIndex)
                 : null;
 
             BehaviorListItemViewModel.Select(BehaviorList, Behavior.Id);

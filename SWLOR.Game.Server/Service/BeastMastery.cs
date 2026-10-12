@@ -355,9 +355,9 @@ namespace SWLOR.Game.Server.Service
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Social, level.Stats[AbilityType.Social]);
             Stat.SetNPCMaxHitPoints(beast, level.HP);
 
-            var attackBonus = (int)(level.MaxAttackBonus * (dbBeast.AttackPurity * 0.01f));
-            var accuracyBonus = (int)(level.MaxAccuracyBonus * (dbBeast.AccuracyPurity * 0.01f));
-            var evasionBonus = (int)(level.MaxEvasionBonus * (dbBeast.EvasionPurity * 0.01f));
+            var attackBonus = BeastCombatStatCalculator.CalculateAttackBonus(level, dbBeast);
+            var accuracyBonus = BeastCombatStatCalculator.CalculateAccuracyBonus(level, dbBeast);
+            var evasionBonus = BeastCombatStatCalculator.CalculateEvasionBonus(level, dbBeast);
 
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Attack, -1, attackBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPRemoveMatchingItemProperties(skin, ItemPropertyType.AccuracyBonus, DurationType.Invalid, -1);

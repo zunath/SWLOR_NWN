@@ -304,6 +304,29 @@ public class RoleplayXPOOCPenaltyTests
         RoleplayMessageClassifier.Classify("She glances away. HOLOSKIP", terms).Should().Be(RoleplayMessageType.OutOfCharacter);
         RoleplayMessageClassifier.Classify("Nice one :]", terms).Should().Be(RoleplayMessageType.OutOfCharacter);
         RoleplayMessageClassifier.Classify("brb, food", terms).Should().Be(RoleplayMessageType.InCharacter);
+        RoleplayMessageClassifier.Classify("lolol", terms).Should().Be(RoleplayMessageType.InCharacter);
+        RoleplayMessageClassifier.Classify("lmaooo", terms).Should().Be(RoleplayMessageType.InCharacter);
+        RoleplayMessageClassifier.Classify("xDD", terms).Should().Be(RoleplayMessageType.InCharacter);
+    }
+
+    [TestCase("lololol", "lol")]
+    [TestCase("LMAOOOO", "lmao")]
+    [TestCase("lmfaooo", "lmfao")]
+    [TestCase("xDDD", "xd")]
+    public void Classify_StretchedLaughter_MatchesWhenBaseTermIsConfigured(string message, string baseTerm)
+    {
+        var terms = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { baseTerm };
+
+        RoleplayMessageClassifier.Classify(message, terms).Should().Be(RoleplayMessageType.OutOfCharacter);
+    }
+
+    [TestCase("brb*")]
+    [TestCase("afk for food*")]
+    [TestCase("rp*")]
+    public void Classify_OOCTermInCorrectionForm_StillCountsAsOOC(string message)
+    {
+        Classify(message).Should().Be(RoleplayMessageType.OutOfCharacter,
+            "appending * must not hide OOC chatter from the allowance");
     }
 
     [Test]

@@ -19,8 +19,8 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
         {
             // Chat shorthand
             "afaik", "afk", "atm", "bbiab", "bbl", "brb", "btw", "g2g", "gg", "gtg", "idc", "idk", "iirc", "ikr",
-            "imho", "imo", "irl", "jk", "lul", "ngl", "np", "nvm", "ofc", "omfg", "omg", "ooc", "pls", "plz",
-            "rofl", "rq", "smh", "tbh", "thx", "ty", "tyvm", "wtf",
+            "imho", "imo", "irl", "jk", "lmao", "lmfao", "lol", "lul", "ngl", "np", "nvm", "ofc", "omfg", "omg",
+            "ooc", "pls", "plz", "rofl", "rq", "smh", "tbh", "thx", "ty", "tyvm", "wtf", "xd",
 
             // Game and player references
             "dm", "dms", "emote", "emotes", "emoting", "hotbar", "keybind", "keybinds", "npc", "npcs", "relog",
@@ -33,9 +33,16 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
             "^^", "^_^", "<3", "</3", "o7", "t_t", ";_;", ";-;"
         };
 
-        // lol, lolol, lmao, lmfaooo, xD, xDD
-        private static readonly Regex StretchedLaughter = new(
-            "^(l(o+l)+|lmf?a+o+|x+d+)$",
+        // Stretched laughter such as "lolol", "lmaooo", and "xDD" is reduced to its base term so it
+        // only matches when that base term is in the configured list.
+        private static readonly Regex StretchedLol = new(
+            "^l(o+l)+$",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        private static readonly Regex StretchedLmao = new(
+            "^lm(f?)a+o+$",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        private static readonly Regex StretchedXD = new(
+            "^x+d+$",
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
         private static readonly char[] WordPunctuation = "*.,!?;:()[]{}<>~_-/\\'@#".ToCharArray();
@@ -118,7 +125,7 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
                 if (word.Length == 0)
                     continue;
 
-                if (oocTerms.Contains(word) || StretchedLaughter.IsMatch(word))
+                if (oocTerms.Contains(word) || oocTerms.Contains(ReduceStretchedLaughter(word)))
                     return true;
             }
 
@@ -154,8 +161,21 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
             return false;
         }
 
+        private static string ReduceStretchedLaughter(string word)
+        {
+            if (StretchedLol.IsMatch(word))
+                return "lol";
+
+            var lmao = StretchedLmao.Match(word);
+            if (lmao.Success)
+                return lmao.Groups[1].Length > 0 ? "lmfao" : "lmao";
+
+            return StretchedXD.IsMatch(word) ? "xd" : word;
+        }
+
         /// <summary>
-        /// A short follow-up such as "their*" that fixes a typo in the previous message.
+        /// A short follow-up such as "their*" that fixes a typo in the previous message. This is checked
+        /// after OOC detection so appending "*" to OOC chatter such as "brb*" cannot hide it.
         /// </summary>
         private static bool IsTypoCorrection(string message)
         {

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Adamantine Guard in CZ-220 Breaker Yard."
+    "value": "Adamantine Guard master in CZ-220 - Breaker Yard."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Adamantine Guard in CZ-220 Breaker Yard."
+      "0": "The wreck crew's foreman, a Trandoshan who has made Bay One, the oldest bay in the Breaker Yard, his private drill floor. Cutters, riggers, and a swinging wreck ball have all met his crossed katars, and his feet have not moved in a week. Everything his crew drilled at, he already is."
     }
   },
   "Dex": {

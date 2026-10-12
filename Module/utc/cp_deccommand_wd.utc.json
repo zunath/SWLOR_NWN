@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Decisive Command in Viscara Republic Engineering Bunker."
+    "value": "Decisive Command warden, Captain Grenn Vhon, in Viscara - Republic Engineering Bunker."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Decisive Command in Viscara Republic Engineering Bunker."
+      "0": "Captain Grenn Vhon, an Ugnaught breach officer in Republic elite armor, carries a blaster pistol and wears a cracked command crest at his shoulder. He holds the bunker's inner blast doors for Halden Rhee and meets every assault head-on."
     }
   },
   "Dex": {

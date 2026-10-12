@@ -13,17 +13,17 @@ public class TrialDungeonPlacementTests
 
     private static readonly Dungeon[] Dungeons =
     {
-        new("pw_sc_jedihalls", "pw_sc_jeditrial", "dan_jedienlibry", "wp_cap_dantjedi", 108, 128,
+        new("pw_sc_jedihalls", "pw_sc_jeditrial", "hutlar_testsite", "wp_cap_dantjedi", 108, 8,
             new[] { "sabstorm", "guardmst", "sabcycl" }),
-        new("pw_sc_forgecav", "pw_sc_korrforge", "valkorrdung1c", "wp_cap_kforge", 109, 32,
+        new("pw_sc_forgecav", "pw_sc_korrforge", "tat_anc_nminecli", "wp_cap_kforge", 109, 2,
             new[] { "absdef", "soulasc", "forcebane" }),
         new("pw_sc_canyonrng", "pw_sc_canyonpit", "tat_anc_rckpass2", "wp_cap_tatcan", 112, 2,
             new[] { "unmovctr", "lastword", "deadhand" }),
         new("pw_sc_qiontest", "pw_sc_qioncore", "sol_hutlarqcanyo", "wp_cap_hutlar", 114, 8,
             new[] { "perflurry", "thermdet", "overbarr" }),
-        new("pw_sc_cryptdeep", "pw_sc_sithritual", "korr_crypt_zil", "wp_cap_kcrypt", 115, 32,
+        new("pw_sc_cryptdeep", "pw_sc_sithritual", "moncaladungeon1", "wp_cap_kcrypt", 115, 4,
             new[] { "lightstand", "darkhung", "eclipse" }),
-        new("pw_sc_repubeng", "pw_sc_repubcmd", "v_repubbase_cd", "wp_cap_vrepub", 116, 1,
+        new("pw_sc_repubeng", "pw_sc_repubcmd", "viscaranwswamp", "wp_cap_vrepub", 116, 1,
             new[] { "killbeacon", "embunker", "deccommand" }),
         new("pw_sc_tarnpres", "pw_sc_tarnalpha", "dath_tarnjungles", "wp_cap_dtarn", 118, 64,
             new[] { "apexbite", "unbrbeast", "alpharhy" }),

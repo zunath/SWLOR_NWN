@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Killzone Beacon in Viscara Republic Engineering Bunker."
+    "value": "Killzone Beacon master in Viscara - Engineering Command Room."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Killzone Beacon in Viscara Republic Engineering Bunker."
+      "0": "An Ugnaught in a Republic commander's uniform, blaster pistol in hand and beacon emitters strapped across his chest. He has taken killzone doctrine further than the Republic ever cleared it, and from this abandoned bunker he rehearses painting real targets instead of range markers."
     }
   },
   "Dex": {

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Thermal Detonator in Hutlar Qion Test Site."
+    "value": "Thermal Detonator warden in Hutlar - Qion Test Site."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Thermal Detonator in Hutlar Qion Test Site."
+      "0": "A hulking Trandoshan in heavy gunner's armor, blaster pistol in his claw and a frostburned test crest on his chest. He runs the test site like his own private range and stages his detonators in pairs, the second set for whoever survives the first."
     }
   },
   "Dex": {

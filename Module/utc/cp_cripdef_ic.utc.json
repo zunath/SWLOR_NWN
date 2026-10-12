@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Crippling Defense in Smuggler's Moon Fight Club Backrooms."
+    "value": "Crippling Defense inner circle member in Smuggler's Moon - Fight Club Backrooms."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Crippling Defense in Smuggler's Moon Fight Club Backrooms."
+      "0": "A human promoter, one of the four who seat the stable's table in the Fight Club Backrooms and decide whose career ends on which night. He carries a spear and fights like a business protecting itself, never far from the others."
     }
   },
   "Dex": {

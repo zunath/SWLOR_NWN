@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Hold the Line in Dantooine Medical Sublevel."
+    "value": "Hold the Line adept in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Hold the Line in Dantooine Medical Sublevel."
+      "0": "A Rodian orderly in work clothes, holding a vibroblade low the way he was once taught to hold a stretcher pole. He guards the triage hall's intake as if the sick on the other side were the threat, and he will not step back from it."
     }
   },
   "Dex": {

@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Absolute Defense in Korriban Forge Caverns."
+    "value": "Absolute Defense warden in Tatooine - Forge Caverns."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Absolute Defense in Korriban Forge Caverns."
+      "0": "A towering Trandoshan anvil-keeper with a shard of a cracked anvil hung at his chest. He plants his back foot and his heavy vibroblade and waits, patient as rust, for challengers to break themselves against him."
     }
   },
   "Dex": {

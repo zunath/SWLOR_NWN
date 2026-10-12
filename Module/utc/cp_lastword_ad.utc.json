@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Last Word in Anchorhead Canyon Range."
+    "value": "Last Word adept in Tatooine - Anchorhead Canyon Range."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Last Word in Anchorhead Canyon Range."
+      "0": "A young human in ragged clothes with a blaster pistol held loose and ready. He is a student of the school that sells the Last Word in the Anchorhead Canyon Range, fast and sloppy, and he talks to bait an opponent into drawing first."
     }
   },
   "Dex": {

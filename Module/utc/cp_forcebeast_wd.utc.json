@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Force-Bonded Beast in Dathomir Grotto Apex Den."
+    "value": "Force-Bonded Beast warden in Dathomir - Grotto Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Force-Bonded Beast in Dathomir Grotto Apex Den."
+      "0": "A great wraid on powerful forelegs, his eyes strangely vacant, a cracked totem bound to his harness. The handlers bound him before any of the wyverns, and every forced bond in the den was tied through him until his own no longer looks like a bond at all."
     }
   },
   "Dex": {

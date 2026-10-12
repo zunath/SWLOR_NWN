@@ -137,7 +137,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest giver for Eclipse of Resolve in Korriban Sith Crypt Depths."
+    "value": "Capstone quest giver for Eclipse of Resolve in Mon Cala - Sith Crypt Depths."
   },
   "Con": {
     "type": "byte",
@@ -166,7 +166,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A human man in the sober dark robes of a Korriban acolyte, Varn stands among the crates and scaffolding of the Shipping District with a datapad full of cargo manifests. He studies every passing shipment with the cold patience of an examiner grading an answer. Nothing about him hurries, and nothing seems to frighten him."
+      "0": "A human man in the sober dark robes of a Sith acolyte, Varn stands among the crates and scaffolding of the Shipping District with a datapad full of cargo manifests. He studies every passing shipment with the cold patience of an examiner grading an answer. Nothing about him hurries, and nothing seems to frighten him."
     }
   },
   "Dex": {

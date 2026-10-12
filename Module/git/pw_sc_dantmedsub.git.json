@@ -94887,7 +94887,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 77
+          "value": 27
         }
       },
       {
@@ -94917,7 +94917,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 128
+          "value": 4
         }
       }
     ]
@@ -95255,7 +95255,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Medical Sublevel - Rare Elites"
+            "0": "Mon Cala Medical Sublevel - Rare Elites"
           }
         },
         "MapNote": {

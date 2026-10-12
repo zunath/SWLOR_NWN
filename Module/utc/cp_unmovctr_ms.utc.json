@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Unmoving Center in Anchorhead Canyon Range."
+    "value": "Unmoving Center master in Tatooine - Canyon Dueling Pit."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Unmoving Center in Anchorhead Canyon Range."
+      "0": "A Zabrak in close-fitted armor who stands at the center of the Canyon Dueling Pit as if rooted there, staff in hand. He found a perfect stillness and never came back out of it. They say he has not moved his feet in years, and he has never needed to."
     }
   },
   "Dex": {

@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Primal Overrun in Dathomir Grotto Apex Den."
+    "value": "Primal Overrun warden in Dathomir - Grotto Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Primal Overrun in Dathomir Grotto Apex Den."
+      "0": "A massive bull rancor, scarred from chains, with a cracked totem hanging from the harness across his shoulders. He is the calf of the last rancor a Dathomir clan ever bonded, taken with the den and raised by off-world handlers to shove instead of bond."
     }
   },
   "Dex": {

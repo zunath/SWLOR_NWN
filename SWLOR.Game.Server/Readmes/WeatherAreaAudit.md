@@ -276,16 +276,16 @@ not an in-client inspection of every tile. See [Weather.md](Weather.md) for depl
 | `pw_sc_aboveland` | [Prefab] Above the Land | 0 | Authored native only |  |
 | `pw_sc_abovewater` | [Prefab] Above the Water | 0 | Authored native only |  |
 | `pw_sc_canyonpit` | Tatooine - Canyon Dueling Pit | 4 | Scripted: Tatooine | Reviewed open-air layout |
-| `pw_sc_dantmedsub` | Dantooine - Medical Sublevel | 7 | Sheltered |  |
-| `pw_sc_dantprowar` | Dantooine - Protected Ward | 3 | Sheltered |  |
+| `pw_sc_dantmedsub` | Mon Cala - Medical Sublevel | 7 | Sheltered |  |
+| `pw_sc_dantprowar` | Mon Cala - Protected Ward | 3 | Sheltered |  |
 | `pw_sc_dath_apexd` | Dathomir - Grotto Apex Den | 7 | Sheltered |  |
 | `pw_sc_dath_sden` | Dathomir - Sealed Apex Den | 7 | Sheltered |  |
 | `pw_sc_emfbackr` | Smuggler's Moon - Fight Club Backrooms | 3 | Sheltered |  |
-| `pw_sc_jeditrial` | Dantooine - Saber Trial Chamber | 1 | Sheltered |  |
-| `pw_sc_korrforge` | Korriban - Champion Forge | 7 | Sheltered |  |
+| `pw_sc_jeditrial` | Hutlar - Saber Trial Chamber | 1 | Sheltered |  |
+| `pw_sc_korrforge` | Tatooine - Champion Forge | 7 | Sheltered |  |
 | `pw_sc_qioncore` | Hutlar - Overload Chamber | 1 | Sheltered |  |
 | `pw_sc_repubcmd` | Viscara - Engineering Command Room | 3 | Sheltered |  |
-| `pw_sc_sithritual` | Korriban - Final Ritual Chamber | 3 | Sheltered |  |
+| `pw_sc_sithritual` | Mon Cala - Final Ritual Chamber | 3 | Sheltered |  |
 | `pw_sc_smarena` | Smuggler's Moon - Private Pit | 3 | Sheltered |  |
 | `pw_sc_tarnalpha` | Dathomir - Alpha Beast Hollow | 4 | Scripted: Dathomir |  |
 | `pw_sc_velescmd` | Viscara - Militia Command Room | 1 | Sheltered |  |

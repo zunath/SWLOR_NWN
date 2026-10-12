@@ -172,6 +172,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        /// <summary>Allows copying the selected reusable contract only when the author has no draft.</summary>
+        public bool IsPostAgainEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool IsClaimDeliveriesEnabled
         {
             get => Get<bool>();
@@ -253,6 +260,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadDetail();
         }
 
+        /// <summary>
+        /// Lists every retained contract owned by the player, with drafts and published contracts first
+        /// and recent history next. Closed entries remain selectable for Post Again.
+        /// </summary>
         private void LoadMyContracts()
         {
             _selectedIndex = -1;
@@ -260,8 +271,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var playerId = GetObjectUUID(Player);
             var query = new DBQuery<QuestContract>()
-                .AddFieldSearch(nameof(QuestContract.AuthorPlayerId), playerId, false)
-                .AddFieldSearch(nameof(QuestContract.Status), new[] { (int)QuestContractStatus.Draft, (int)QuestContractStatus.Published });
+                .AddFieldSearch(nameof(QuestContract.AuthorPlayerId), playerId, false);
             var count = (int)DB.SearchCount(query);
             var results = count > 0 ? DB.Search(query.AddPaging(count, 0)) : Enumerable.Empty<QuestContract>();
 
@@ -270,13 +280,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var toggles = new GuiBindingList<bool>();
             var colors = new GuiBindingList<GuiColor>();
 
-            foreach (var contract in results.OrderByDescending(x => x.Status))
+            foreach (var contract in results.OrderBy(x => x.Status == QuestContractStatus.Draft ? 0 : x.Status == QuestContractStatus.Published ? 1 : 2)
+                .ThenByDescending(x => x.DatePublished))
             {
                 if (!string.IsNullOrWhiteSpace(SearchText) &&
                     !contract.Title.ToLower().Contains(SearchText.ToLower()))
                     continue;
 
-                var statusLabel = contract.Status == QuestContractStatus.Draft ? "Draft" : "Published";
+                var statusLabel = StatusLabel(contract.Status);
 
                 _rows.Add(contract);
                 labels.Add($"[{statusLabel}] {contract.Title}");
@@ -303,6 +314,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsClaimDeliveriesEnabled = QuestContractBoard.HasPendingDeliveries(playerId);
         }
 
+        /// <summary>
+        /// Refreshes the selected contract's details and actions, including repost eligibility and the
+        /// existing-draft restriction. Clears actions when there is no selected row.
+        /// </summary>
         private void LoadDetail()
         {
             IsAcceptVisible = false;
@@ -311,6 +326,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsAbandonVisible = false;
             IsTakeDownVisible = false;
             IsCancelEnabled = false;
+            IsPostAgainEnabled = false;
             CancelButtonText = "Cancel";
 
             if (_selectedIndex < 0 || _selectedIndex >= _rows.Count)
@@ -352,6 +368,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
+                IsPostAgainEnabled = QuestContractBoard.CanPostAgain(contract) && QuestContractBoard.GetDraft(Player) == null;
                 if (contract.Status == QuestContractStatus.Draft)
                 {
                     IsCancelEnabled = true;
@@ -365,6 +382,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
+        /// <summary>Formats the selected contract's author, status, dates, and reward for the detail panel.</summary>
         private string BuildDetailText(QuestContract contract)
         {
             var sb = new StringBuilder();
@@ -378,7 +396,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                var statusLabel = contract.Status == QuestContractStatus.Draft ? "Draft" : "Published";
+                var statusLabel = StatusLabel(contract.Status);
                 sb.Append($"Status: {statusLabel}\n");
             }
 
@@ -392,6 +410,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             sb.Append(string.IsNullOrWhiteSpace(contract.Description) ? "(No description)" : contract.Description);
 
             return sb.ToString();
+        }
+
+        /// <summary>Maps persisted statuses to the labels shared by the contract list and detail panel.</summary>
+        private static string StatusLabel(QuestContractStatus status)
+        {
+            return status switch
+            {
+                QuestContractStatus.Fulfilled => "Completed",
+                QuestContractStatus.TakenDown => "Taken Down",
+                _ => status.ToString()
+            };
         }
 
         private void LoadDetailItems(QuestContract contract)
@@ -525,6 +554,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickEditDraft() => () =>
         {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.QuestContractEditor, null, TetherObject);
+        };
+
+        /// <summary>
+        /// Creates a validated repost draft and reopens the editor so an already-open editor also loads
+        /// the new copy. Validation errors leave the current selection and draft untouched.
+        /// </summary>
+        public Action OnClickPostAgain() => () =>
+        {
+            if (_isBrowseTab || _selectedIndex < 0 || _selectedIndex >= _rows.Count) return;
+            var error = QuestContractBoard.PostAgain(Player, _rows[_selectedIndex].Id);
+            if (!string.IsNullOrEmpty(error))
+            {
+                StatusText = error;
+                return;
+            }
+            LoadMyContracts();
+            Gui.ClosePlayerWindow(Player, GuiWindowType.QuestContractEditor);
             Gui.TogglePlayerWindow(Player, GuiWindowType.QuestContractEditor, null, TetherObject);
         };
 

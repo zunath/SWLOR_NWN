@@ -147,7 +147,7 @@ public class NPCCombatBudgetTests
             "DATHOMIR_CHIRODACTYL_RECIPES", "DANTOOINE_KINRATH_QUEEN_RECIPES",
             "DANTOOINE_BOL_BOSS_RECIPES", "QIONHIVE_BROODMOTHER_RECIPE",
             "TATOOINE_ANCIENT_WORM_STOLEN_GOODS", "FROG_BOSS_RECIPE",
-            "KORRIBAN_MASTER_RECIPE", "KORRIBAN_MASTER_RESOURCE",
+            "KORRIBAN_MASTER_RECIPE", "KORRIBAN_MASTER_RESOURCE", "HUTLAR_FOUNDRY_OVERSEER_RECIPES",
             "NARSHADDAA_GREAT_ARKANIAN_DRAGON_GEMS", "NARSHADDAA_GREAT_ARKANIAN_DRAGON_RARES",
         };
         var presets = ReadRows(root, "Enemy Stat Presets").ToDictionary(r => r["A"]);
@@ -193,7 +193,7 @@ public class NPCCombatBudgetTests
             }
             count++;
         }
-        count.Should().Be(14, "all existing premium loot families, including the Great Arkanian Dragon, must receive the group encounter budget");
+        count.Should().Be(15, "all existing premium loot families, including the Great Arkanian Dragon and Foundry Overseer, must receive the group encounter budget");
     }
 
     [Test]

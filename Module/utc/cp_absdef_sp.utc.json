@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Absolute Defense in Korriban Forge Caverns."
+    "value": "Absolute Defense specialist in Tatooine - Forge Caverns."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Absolute Defense in Korriban Forge Caverns."
+      "0": "A human journeyman of the forge, soot-black to the elbows from working the tempering racks. He fights with a heavy vibroblade he quenched himself, and his guard closes before you can find the gap in it."
     }
   },
   "Dex": {

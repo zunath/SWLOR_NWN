@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Thermal Detonator in Hutlar Qion Test Site."
+    "value": "Thermal Detonator master in Hutlar - Overload Chamber."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Thermal Detonator in Hutlar Qion Test Site."
+      "0": "A Trandoshan in Mandalorian armor, blaster pistol steady in his claw, waiting in the Overload Chamber at the far end of the Qion Test Site. He learned his ordnance work from a range instructor who now regrets teaching it, and he no longer tests charges, only the people standing where he places them."
     }
   },
   "Dex": {

@@ -163,6 +163,155 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        /// <summary>Verifies repost creation, independent persisted edits, and draft protection against NWNX and Redis.</summary>
+        [EngineTest("Post Again opens an independent prefilled contract draft for editing", Category = "QuestContractEscrow")]
+        public static async Task PostAgainCreatesEditableDraft(EngineTestContext ctx)
+        {
+            var author = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            await ctx.ExecuteInCreatureContextAsync(author, () =>
+            {
+                var source = new QuestContract
+                {
+                    AuthorPlayerId = GetObjectUUID(author), Status = QuestContractStatus.Expired,
+                    Title = "Medical supplies", Description = "Deliver three medkits.", RewardCredits = 125,
+                    DateClosed = DateTime.UtcNow,
+                    Objectives = new() { new() { ItemResref = "nw_it_medkit001", ItemName = "Medkit", Quantity = 3 } }
+                };
+                QuestContract draft = null;
+                DB.Set(source);
+                try
+                {
+                    ctx.AssertEqual(string.Empty, QuestContractBoard.PostAgain(author, source.Id), "Reposting creates a draft");
+                    draft = QuestContractBoard.GetDraft(author);
+                    ctx.Assert(draft.Id != source.Id && draft.Status == QuestContractStatus.Draft, "Reposting does not publish or reuse the old identity");
+                    ctx.AssertEqual(source.Title, draft.Title, "Title is prefilled");
+                    ctx.AssertEqual(source.Description, draft.Description, "Description is prefilled");
+                    ctx.AssertEqual(125, draft.RewardCredits, "Credit reward is prefilled");
+                    ctx.AssertEqual(3, draft.Objectives.Single().Quantity, "Objective is prefilled");
+                    ctx.Assert(draft.DateClosed == null, "The new draft has no closing date");
+                    draft.Title = "Edited supplies";
+                    draft.RewardCredits = 250;
+                    draft.Objectives[0].Quantity = 5;
+                    DB.Set(draft);
+                    ctx.AssertEqual("Edited supplies", QuestContractBoard.GetDraft(author).Title, "Edits persist before posting");
+                    ctx.AssertEqual(3, DB.Get<QuestContract>(source.Id).Objectives.Single().Quantity, "Editing does not change the original");
+                    ctx.Assert(QuestContractBoard.PostAgain(author, source.Id) != string.Empty, "An existing draft is never overwritten");
+                }
+                finally
+                {
+                    if (draft != null) Cleanup(draft);
+                    Cleanup(source);
+                }
+            });
+        }
+
+        /// <summary>
+        /// Sweeps more than one default page of settled history, preserves unsettled records, and
+        /// claims a serialized item and credits after their source history has been removed.
+        /// </summary>
+        [EngineTest("Contract history cleanup exceeds fifty rows and preserves claimable deliveries", Category = "QuestContractEscrow")]
+        public static async Task HistoryCleanupPreservesDeliveries(EngineTestContext ctx)
+        {
+            var worker = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            await ctx.ExecuteInCreatureContextAsync(worker, () =>
+            {
+                var now = DateTime.UtcNow;
+                var contracts = Enumerable.Range(0, 55).Select(_ => new QuestContract
+                {
+                    Status = QuestContractStatus.Fulfilled, DateClosed = now.AddDays(-31)
+                }).ToList();
+                var legacyExpired = new QuestContract { Status = QuestContractStatus.Expired, DateExpires = now.AddDays(-31) };
+                contracts.Add(legacyExpired);
+                var preserved = new[]
+                {
+                    new QuestContract { Status = QuestContractStatus.Draft, DateCreated = now.AddYears(-1) },
+                    new QuestContract { Status = QuestContractStatus.Published, DatePublished = now.AddYears(-1) },
+                    new QuestContract { Status = QuestContractStatus.Expired, DateClosed = now.AddDays(-29) },
+                    new QuestContract { Status = QuestContractStatus.Fulfilled, DateClosed = now.AddDays(-31), SettlementPending = 1 },
+                    new QuestContract { Status = QuestContractStatus.Fulfilled, DateClosed = now.AddDays(-31) },
+                    new QuestContract { Status = QuestContractStatus.Cancelled }
+                };
+                try
+                {
+                    foreach (var contract in contracts.Concat(preserved)) DB.Set(contract);
+                    var item = CreateItemOnObject("nw_it_medkit001", worker);
+                    ctx.Track(item);
+                    var pending = new QuestContractDelivery
+                    {
+                        PlayerId = GetObjectUUID(worker), SourceContractId = contracts[0].Id, SourceContractTitle = "Old reward",
+                        IsRewardPayment = true, Credits = 75, Items = new() { new() { Data = ObjectPlugin.Serialize(item) } }
+                    };
+                    DB.Set(pending);
+                    var emptyReceipt = new QuestContractDelivery { IsRewardPayment = true, SourceContractId = contracts[0].Id };
+                    DB.Set(emptyReceipt);
+                    DB.Set(new QuestContractDelivery { HeldForCompletion = true, SourceContractId = preserved[4].Id });
+                    typeof(QuestContractBoard).GetMethod("PruneHistory", BindingFlags.NonPublic | BindingFlags.Static)
+                        .Invoke(null, new object[] { now });
+                    foreach (var contract in contracts)
+                        ctx.Assert(DB.Get<QuestContract>(contract.Id) == null, "All old settled history rows are deleted, including rows beyond fifty");
+                    foreach (var contract in preserved)
+                        ctx.Assert(DB.Get<QuestContract>(contract.Id) != null, "Open, recent, unsettled, held, and undated history are preserved");
+                    ctx.Assert(DB.Get<QuestContract>(preserved[5].Id).DateClosed != null, "Undated legacy history starts its retention window");
+                    ctx.Assert(DB.Get<QuestContractDelivery>(emptyReceipt.Id) == null, "Empty receipts are deleted");
+                    ctx.AssertEqual("Old reward", DB.Get<QuestContractDelivery>(pending.Id).SourceContractTitle, "Pending deliveries retain their source title");
+                    var gold = GetGold(worker);
+                    ClaimWithSnapshot(ctx, worker);
+                    ctx.AssertEqual(gold + 75, GetGold(worker), "Pending items and credits can still be claimed after history deletion");
+                    ctx.Assert(DB.Get<QuestContractDelivery>(pending.Id) == null, "Claimed reward receipts no longer accumulate after their source is deleted");
+                }
+                finally
+                {
+                    foreach (var contract in contracts.Concat(preserved)) Cleanup(contract);
+                }
+            });
+        }
+
+        /// <summary>
+        /// Removes more than fifty empty orphaned receipts with no closed history present while
+        /// retaining existing-source receipts, held submissions, items, and credits.
+        /// </summary>
+        [EngineTest("Contract orphaned empty deliveries are swept without closed history and retain unclaimed value", Category = "QuestContractEscrow")]
+        public static async Task OrphanedDeliveryCleanup(EngineTestContext ctx)
+        {
+            await ctx.WaitFrameAsync();
+            var source = new QuestContract { Status = QuestContractStatus.Published };
+            var missingSourceId = Guid.NewGuid().ToString();
+            var empty = Enumerable.Range(0, 55).Select(index => new QuestContractDelivery
+            {
+                SourceContractId = missingSourceId, IsRewardPayment = index % 2 == 0
+            }).ToList();
+            var protectedDeliveries = new[]
+            {
+                new QuestContractDelivery { SourceContractId = source.Id, IsRewardPayment = true },
+                new QuestContractDelivery { SourceContractId = missingSourceId, Credits = 75, IsRewardPayment = true },
+                new QuestContractDelivery { SourceContractId = missingSourceId, Items = new() { new() { Data = "unclaimed item" } } },
+                new QuestContractDelivery { SourceContractId = missingSourceId, HeldForCompletion = true }
+            };
+            try
+            {
+                DB.Set(source);
+                foreach (var delivery in empty.Concat(protectedDeliveries)) DB.Set(delivery);
+                ctx.AssertEqual(0L, DB.SearchCount(new DBQuery<QuestContract>().AddFieldSearch(nameof(QuestContract.Status),
+                    new[] { (int)QuestContractStatus.Fulfilled, (int)QuestContractStatus.Expired, (int)QuestContractStatus.Cancelled, (int)QuestContractStatus.TakenDown })),
+                    "The sweep must work when no closed history exists");
+                typeof(QuestContractBoard).GetMethod("PruneHistory", BindingFlags.NonPublic | BindingFlags.Static)
+                    .Invoke(null, new object[] { DateTime.UtcNow });
+                foreach (var delivery in empty)
+                    ctx.Assert(DB.Get<QuestContractDelivery>(delivery.Id) == null, "Empty orphaned deliveries are removed beyond fifty rows");
+                foreach (var delivery in protectedDeliveries)
+                    ctx.Assert(DB.Get<QuestContractDelivery>(delivery.Id) != null, "Existing-source receipts, unclaimed value, and held submissions are retained");
+                ctx.AssertEqual(75, DB.Get<QuestContractDelivery>(protectedDeliveries[1].Id).Credits, "Unclaimed credits remain intact");
+                ctx.AssertEqual("unclaimed item", DB.Get<QuestContractDelivery>(protectedDeliveries[2].Id).Items.Single().Data, "Unclaimed items remain intact");
+            }
+            finally
+            {
+                foreach (var delivery in empty.Concat(protectedDeliveries)) DB.Delete<QuestContractDelivery>(delivery.Id);
+                DB.Delete<QuestContract>(source.Id);
+            }
+        }
+
         private static List<QuestContractDelivery> Deliveries(string contractId)
         {
             var query = new DBQuery<QuestContractDelivery>().AddFieldSearch(nameof(QuestContractDelivery.SourceContractId), contractId, false);

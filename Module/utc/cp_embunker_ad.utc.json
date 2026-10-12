@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Emergency Bunker in Viscara Republic Engineering Bunker."
+    "value": "Emergency Bunker adept in Viscara - Republic Engineering Bunker."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Emergency Bunker in Viscara Republic Engineering Bunker."
+      "0": "A human laborer in black work coveralls with a blaster pistol and a belt of structural shims. He is one of the crew that sealed off the bunker's sublevel, and he holds his post as though the walls themselves were his cover."
     }
   },
   "Dex": {

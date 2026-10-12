@@ -36,26 +36,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                             .SetText("Description")
                                             .SetHeight(26f));
 
-                                    body.AddRow(row =>
-                                        row.AddText()
-                                            .BindText(model => model.Description)
-                                            .SetHeight(230f));
+                                    body.AddRow(row => row.AddPartialView(ExamineItemViewModel.DescriptionElement).SetHeight(230f));
 
                                     body.AddRow(row =>
                                         row.AddLabel()
                                             .SetText("Item Properties")
                                             .SetHeight(26f));
 
-                                    body.AddRow(row =>
-                                        row.AddText()
-                                            .BindText(model => model.ItemProperties)
-                                            .SetHeight(160f));
+                                    body.AddRow(row => row.AddPartialView(ExamineItemViewModel.PropertiesElement).SetHeight(160f));
                                 });
                             })
                                 .SetWidth(390f))));
             window.AddStandardLayout(layout =>
                 layout.SetContentPartialElement(ExamineItemViewModel.ContentElement));
-            return _builder.Build();
+            var result = _builder.Build();
+            if (!GuiLayoutValidator.IsValidationOnlyBuild)
+                result.Window = Nui.StyleForegroundColor(result.Window, Nui.Bind(nameof(ExamineItemViewModel.TitleColor)));
+            return result;
         }
     }
 }

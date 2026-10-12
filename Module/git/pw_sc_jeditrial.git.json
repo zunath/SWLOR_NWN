@@ -8698,7 +8698,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 128
+          "value": 8
         }
       },
       {
@@ -8920,7 +8920,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls - Tempest Training Engine Spawn"
+            "0": "Hutlar Jedi Trial Halls - Tempest Training Engine Spawn"
           }
         },
         "MapNote": {
@@ -8991,7 +8991,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls - Bastion Training Engine Spawn"
+            "0": "Hutlar Jedi Trial Halls - Bastion Training Engine Spawn"
           }
         },
         "MapNote": {
@@ -9062,7 +9062,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls - Vortex Training Engine Spawn"
+            "0": "Hutlar Jedi Trial Halls - Vortex Training Engine Spawn"
           }
         },
         "MapNote": {

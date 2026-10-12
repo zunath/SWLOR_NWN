@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You want to be fed before you can hold the spoon. Your command of the Force is not ready for what waits on Korriban. Go and sharpen it. When the Force comes to you without begging, find me at this table again.",
+          "Text": "You want to be fed before you can hold the spoon. Your command of the Force is not ready for what waits on Mon Cala. Go and sharpen it. When the Force comes to you without begging, find me at this table again.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Vitae Reavers have found a buyer for relics they barely understand. To fuel their dig in the Korriban Sith Crypt Depths, they drain the survey crews they caught down there, life and all. Crude. Wasteful. That makes them my business, and perhaps yours. Put down six Vitae Reaver Initiates and bring me the Hunger of the Dark Crypt Trial Tablet they took from the tombs.",
+          "Text": "The Vitae Reavers have found a buyer for relics they barely understand. An old Sith tomb was broken open under the Sharptooth caves on Mon Cala, and the Reavers took it from the survey crews cataloguing it. Now they drain those crews, life and all, to fuel their dig in the Sith Crypt Depths. Crude. Wasteful. That makes them my business, and perhaps yours. Put down six Vitae Reaver Initiates and bring me the Hunger of the Dark Crypt Trial Tablet they took from the tombs.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take this key. It opens the sealed passage at the north end of the Sith Crypt on Korriban, the way into the Depths. Six initiates, and the tablet. Take only what you need from them.",
+          "Text": "Take this key. It opens the sealed door in the old tomb wall, the purple stonework on the north side of the first cavern inside the Sharptooth Jungle Caves on Mon Cala. Six initiates, and the tablet. Take only what you need from them.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Korriban. From the starport, go east into the Wastelands North and cross to the elevator on the north-east side of the wastes. It takes you down into the Sith Crypt; the sealed passage at the crypt's north end opens into the Depths. I stay because their buyers drink here in Anchorhead. While you cut the supply, I will starve the market.",
+          "Text": "Mon Cala. From the landing in Dac City, take the surface streets east through the inner and outer Coral Isles, then north-east into the Sharptooth Jungle. Keep north; a cave mouth on the north-east side of the northern jungle opens into the Sharptooth Jungle Caves. In the first cavern, look for a sealed door in the purple stone on the north side. I stay because their buyers drink here in Anchorhead. While you cut the supply, I will starve the market.",
           "Style": 0,
           "Color": null
         }
@@ -379,7 +379,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "An independent band of Force-trained relic thieves, with no academy commission and no master worth the name. Their initiates use stolen draining techniques on anyone who comes close. Most are human acolytes in cast-off Sith gear, and two Zabrak lead them: the enforcer and the chief.",
+          "Text": "An independent band of Force-trained relic thieves, with no Sith commission and no master worth the name. Their initiates use stolen draining techniques on anyone who comes close. Most are human acolytes in cast-off Sith gear, and two Zabrak lead them: the enforcer and the chief.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six Vitae Reaver Initiates and the tablet. The passage is at the north end of the Sith Crypt on Korriban. They will not starve themselves.",
+          "Text": "Six Vitae Reaver Initiates and the tablet. The sealed door is on the north side of the first cavern in the Sharptooth Jungle Caves on Mon Cala. They will not starve themselves.",
           "Style": 0,
           "Color": null
         }
@@ -614,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five Vitae Reaver Adepts and the shard, somewhere in the Korriban Sith Crypt Depths. They are still feeding.",
+          "Text": "Five Vitae Reaver Adepts and the shard, somewhere in the Sith Crypt Depths. They are still feeding.",
           "Style": 0,
           "Color": null
         }
@@ -724,7 +724,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good. The altar is on the east side of the Korriban Sith Crypt Depths. Make him come to you, let your allies wear him down, and take the sigil when he falls.",
+          "Text": "Good. The altar is on the east side of the Sith Crypt Depths. Make him come to you, let your allies wear him down, and take the sigil when he falls.",
           "Style": 0,
           "Color": null
         }
@@ -1032,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four Vitae Reaver Binders and the token, somewhere in the Korriban Sith Crypt Depths.",
+          "Text": "Four Vitae Reaver Binders and the token, somewhere in the Sith Crypt Depths.",
           "Style": 0,
           "Color": null
         }
@@ -1142,7 +1142,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Go together. The Final Ritual Chamber is through the north door of the Korriban Sith Crypt Depths. Take what you need from the fight, and nothing more.",
+          "Text": "Go together. The Final Ritual Chamber is through the north door of the Sith Crypt Depths. Take what you need from the fight, and nothing more.",
           "Style": 0,
           "Color": null
         }
@@ -1309,7 +1309,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Junix's Joint in Anchorhead has customers who know better than to ask who taught a stranger. My lessons are no academy commission, and I don't care whose banner you carry. I care whether you can control what you take. The Vitae Reavers are in the Korriban Sith Crypt Depths on Korriban. Bring their records back to this table on Tatooine.",
+          "Text": "Junix's Joint in Anchorhead has customers who know better than to ask who taught a stranger. My lessons answer to no academy, and I don't care whose banner you carry. I care whether you can control what you take. The Vitae Reavers are in the Sith Crypt Depths on Mon Cala, beneath the Sharptooth Jungle Caves. Bring their records back to this table on Tatooine.",
           "Style": 0,
           "Color": null
         }

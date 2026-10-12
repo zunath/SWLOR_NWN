@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Untouchable Instinct in Dathomir Grotto Apex Den."
+    "value": "Untouchable Instinct warden in Dathomir - Grotto Apex Den."
   },
   "Con": {
     "type": "byte",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Untouchable Instinct in Dathomir Grotto Apex Den."
+      "0": "A giant brown lizard, lean and quick, his head snapping toward every sound, with a cracked totem strapped to his harness. He was fast even as a hatchling; the handlers made him faster and took his patience in trade, and now he never stops moving."
     }
   },
   "Dex": {

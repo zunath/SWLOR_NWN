@@ -132,6 +132,18 @@ namespace SWLOR.Game.Server.Service.CraftService
         MiscellaneousFurniture = 63,
         [RecipeCategory("Poison", true)]
         Poison = 64,
+        [RecipeCategory("Music Players", true)]
+        MusicPlayers = 65,
+        [RecipeCategory("Cantina Music Discs", true)]
+        CantinaMusicDiscs = 66,
+        [RecipeCategory("Battle Music Discs", true)]
+        BattleMusicDiscs = 67,
+        [RecipeCategory("Theme Music Discs", true)]
+        ThemeMusicDiscs = 68,
+        [RecipeCategory("Location Music Discs", true)]
+        LocationMusicDiscs = 69,
+        [RecipeCategory("Ambient Music Discs", true)]
+        AmbientMusicDiscs = 70,
     }
 
     public class RecipeCategoryAttribute : Attribute

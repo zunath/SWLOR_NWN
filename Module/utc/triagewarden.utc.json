@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Hold the Line in Dantooine Medical Sublevel."
+    "value": "Named rare melee elite in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A named rare elite of the Dantooine Medical Sublevel. Melee."
+      "0": "Kessa once sorted the wounded at the sublevel's intake, and still does, after a fashion: anyone who reaches him is sorted with a vibroblade. Implants hum beneath his skin, and he walks the wards as if he still had a shift to finish."
     }
   },
   "Dex": {
@@ -649,6 +649,21 @@
         "Value": {
           "type": "cexostring",
           "value": "DANMED_TRIAGE_COMP,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MUSIC_DISCS,1,1"
         }
       }
     ]

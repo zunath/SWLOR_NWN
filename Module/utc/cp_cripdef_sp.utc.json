@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Crippling Defense in Smuggler's Moon Fight Club Backrooms."
+    "value": "Crippling Defense specialist in Smuggler's Moon - Fight Club Backrooms."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Crippling Defense in Smuggler's Moon Fight Club Backrooms."
+      "0": "A human ring engineer who fought before he started rigging fights, keeping the shock plates under the backroom canvases live. He uses his spear to pull opponents onto the plates and dance them around the dial."
     }
   },
   "Dex": {

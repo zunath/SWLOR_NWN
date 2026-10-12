@@ -38,19 +38,19 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteSkill(SkillType.FirstAid, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneDantooineMedicalSublevelKey);
+                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneMonCalaMedicalSublevelKey);
                 })
                 .OnAbandonAction(player =>
                 {
-                    RemoveDantooineMedicalSublevelAccessIfNoLongerNeeded(player);
+                    RemoveMonCalaMedicalSublevelAccessIfNoLongerNeeded(player);
                 })
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneEmergencyCocktailTriageWardLedger)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneEmergencyCocktailTriageWardLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kavi Dorn gave you the Dantooine Medical Sublevel Key. On Dantooine, travel from Colony Central to the Jungle Mountain and enter the Abandoned Warehouse on its north-west side; the way down into the Dantooine Medical Sublevel is on the warehouse's far west wall. Defeat six Emergency Cocktail Adepts and recover the Emergency Cocktail Triage Ward Ledger.")
-                .AddKillObjective(NPCGroupType.Dantooine_EmergencyCocktail_Adept, 6)
+                    "Kavi Dorn gave you the Mon Cala Medical Sublevel Key. On Mon Cala, travel east from Dac City through the Coral Isles and enter the Coral Isles Facility on the south-west side of the outer isles, held by eco-terrorists. Inside, go through the sliding door off the entry hall; the service lift down to the Medical Sublevel stands in the red-walled bay just east of the office block. Defeat six Emergency Cocktail Adepts and recover the Emergency Cocktail Triage Ward Ledger.")
+                .AddKillObjective(NPCGroupType.MonCala_EmergencyCocktail_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailTriageWardLedger)
 
                 .AddState()
@@ -70,8 +70,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Emergency Cocktail Specialists in the Dantooine Medical Sublevel on Dantooine and recover the Emergency Cocktail Kolto Conduit Coupler.")
-                .AddKillObjective(NPCGroupType.Dantooine_EmergencyCocktail_Specialist, 5)
+                    "Defeat five Emergency Cocktail Specialists in the Medical Sublevel on Mon Cala and recover the Emergency Cocktail Kolto Conduit Coupler.")
+                .AddKillObjective(NPCGroupType.MonCala_EmergencyCocktail_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailKoltoConduitCoupler)
 
                 .AddState()
@@ -91,8 +91,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With two trusted companions, defeat the Emergency Cocktail Warden in the south-west wing of the Dantooine Medical Sublevel on Dantooine. Recover the Emergency Cocktail Fractured Ward Sigil.")
-                .AddKillObjective(NPCGroupType.Dantooine_EmergencyCocktail_Warden, 1)
+                    "With two trusted companions, defeat the Emergency Cocktail Warden in the south-west wing of the Medical Sublevel on Mon Cala. Recover the Emergency Cocktail Fractured Ward Sigil.")
+                .AddKillObjective(NPCGroupType.MonCala_EmergencyCocktail_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailFracturedWardSigil)
 
                 .AddState()
@@ -112,8 +112,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Emergency Cocktail Inner Circle in the Dantooine Medical Sublevel on Dantooine and recover the Emergency Cocktail Matron's Ward Token.")
-                .AddKillObjective(NPCGroupType.Dantooine_EmergencyCocktail_InnerCircle, 4)
+                    "Defeat the four members of the Emergency Cocktail Inner Circle in the Medical Sublevel on Mon Cala and recover the Emergency Cocktail Matron's Ward Token.")
+                .AddKillObjective(NPCGroupType.MonCala_EmergencyCocktail_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyCocktailMatronsWardToken)
 
                 .AddState()
@@ -131,8 +131,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With companions at your side, defeat the Emergency Cocktail Master in the Protected Ward, reached from the north-east corner of the Dantooine Medical Sublevel. His death is the only proof Kavi Dorn needs.")
-                .AddKillObjective(NPCGroupType.Dantooine_EmergencyCocktail_Master, 1)
+                    "With companions at your side, defeat the Emergency Cocktail Master in the Protected Ward, reached from the north-east corner of the Medical Sublevel on Mon Cala. His death is the only proof Kavi Dorn needs.")
+                .AddKillObjective(NPCGroupType.MonCala_EmergencyCocktail_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        private static void RemoveDantooineMedicalSublevelAccessIfNoLongerNeeded(uint player)
+        private static void RemoveMonCalaMedicalSublevelAccessIfNoLongerNeeded(uint player)
         {
             var questIds = new[]
             {
@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 SaberstaffCapstoneQuestDefinition.InfiniteConduitMasteryQuestId,
             };
 
-            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneDantooineMedicalSublevelKey, questIds);
+            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneMonCalaMedicalSublevelKey, questIds);
         }
 
         private static void RemoveAreaAccessIfNoLongerNeeded(

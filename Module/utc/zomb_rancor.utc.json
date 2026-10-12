@@ -579,6 +579,21 @@
           "type": "cexostring",
           "value": "ABANDONED_STATION_ZOMBIE_RANCOR,30,2"
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MUSIC_DISCS_BOSS,5,1"
+        }
       }
     ]
   },

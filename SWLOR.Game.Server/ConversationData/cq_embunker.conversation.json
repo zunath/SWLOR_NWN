@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Nobody respects a shelter drill until the roof's actually coming down. Here's why I run them: a crew sealed off part of my own sublevel in the Republic Engineering Bunker on Viscara and re-rigged it without my sign-off. Six of their adepts are holding it. The bunker opens off the Combat Deck inside Outpost Hope, right beside the elevator. Clear them out, bring me back the Republic Bunker Docket, and let's see exactly what they changed.",
+          "Text": "Nobody respects a shelter drill until the roof's actually coming down. Here's why I run them: the Republic walked away from its Engineering Bunker in the Viscara swamps, and a crew moved in, sealed off my own sublevel, and re-rigged it without my sign-off. Six of their adepts are holding it. Clear them out, bring me back the Republic Bunker Docket, and let's see exactly what they changed.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take the bunker key. Ships leave from the spaceport right outside; land at the Veles starport, take the south gate into the Wildlands, and head west through the Crossroads West to Outpost Hope. And don't go in without knowing your exit. That's the first rule of any bunker I've ever built.",
+          "Text": "Take the bunker key. Ships for Viscara leave from the Anchorhead spaceport; land at the Veles starport, take the south gate into the Wildlands, go south to the Lake, then west through the Eastern Swamplands into the Western. Look for weathered concrete half-sunk in the swamp, a short walk west, door facing south. And don't go in without knowing your exit. That's the first rule of any bunker I've ever built.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Because it's the sturdiest thing I ever built, and sturdy things get stolen for whatever someone's building next, sign-off or not. I take that personally. You would too, if you'd poured the concrete yourself.",
+          "Text": "Because it's the sturdiest thing I ever built, and an empty bunker in a swamp is an open invitation. Sturdy things get taken for whatever someone's building next, sign-off or not. I take that personally. You would too, if you'd poured the concrete yourself.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That docket's still sitting in my sublevel on Viscara with six adepts standing on it. Combat Deck of Outpost Hope, beside the elevator. Go get it back.",
+          "Text": "That docket's still sitting in my sublevel with six adepts standing on it. Western Swamplands, a short walk west of where you come in from the Eastern, door facing south. Go get it back.",
           "Style": 0,
           "Color": null
         }
@@ -1309,7 +1309,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Go-Corp Station in Anchorhead moves people for a living, and people in transit need shelter drills as much as soldiers do. Nobody needs a Republic uniform to ask me about one. The sealed sublevel is in the Republic Engineering Bunker inside Outpost Hope on Viscara, and the spaceport is just outside that door. Bring their docket back to me here on Tatooine.",
+          "Text": "Go-Corp Station in Anchorhead moves people for a living, and people in transit need shelter drills as much as soldiers do. Nobody needs a Republic uniform to ask me about one. The sealed sublevel is in the Republic Engineering Bunker, abandoned out in the Viscara swamps where no flag flies anymore. Ships for Viscara leave from the Anchorhead spaceport. Bring their docket back to me here on Tatooine.",
           "Style": 0,
           "Color": null
         }

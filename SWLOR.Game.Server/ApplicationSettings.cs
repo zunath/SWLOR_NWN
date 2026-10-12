@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Globalization;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.RoleplayXPService;
 
 namespace SWLOR.Game.Server
 {
@@ -28,6 +30,16 @@ namespace SWLOR.Game.Server
         public bool EngineTestShutdownOnCompletion { get; }
         public string EngineTestArenaResref { get; }
 
+        public int RoleplayXPDailyOOCAllowance { get; }
+        public int RoleplayXPDMPresentOOCAllowance { get; }
+
+        /// <summary>
+        /// Daily OOC allowance in event areas. Null means unlimited.
+        /// </summary>
+        public int? RoleplayXPEventAreaOOCAllowance { get; }
+        public int RoleplayXPOOCPenaltyPercent { get; }
+        public string RoleplayXPOOCDetectionFile { get; }
+
         private static ApplicationSettings _settings;
         public static ApplicationSettings Get()
         {
@@ -54,6 +66,19 @@ namespace SWLOR.Game.Server
             EngineTestStartupDelaySeconds = ParseFloat(Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_STARTUP_DELAY_SECONDS"), 15f);
             EngineTestShutdownOnCompletion = ParseBool(Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_SHUTDOWN"), true);
             EngineTestArenaResref = Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_ARENA_RESREF");
+
+            RoleplayXPDailyOOCAllowance = ParseNonNegativeInt(
+                Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_DAILY_ALLOWANCE"), OOCAllowance.DefaultDailyAllowance);
+            RoleplayXPDMPresentOOCAllowance = ParseNonNegativeInt(
+                Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_DM_ALLOWANCE"), OOCAllowance.DefaultDMPresentAllowance);
+            RoleplayXPEventAreaOOCAllowance = ParseAllowanceOrUnlimited(
+                Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_EVENT_ALLOWANCE"), OOCAllowance.DefaultEventAreaAllowance);
+            RoleplayXPOOCPenaltyPercent = Math.Min(100, ParseNonNegativeInt(
+                Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_PENALTY_PERCENT"), OOCAllowance.DefaultPenaltyPercentPerMessage));
+            var oocDetectionFile = Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_DETECTION_FILE");
+            RoleplayXPOOCDetectionFile = string.IsNullOrWhiteSpace(oocDetectionFile)
+                ? OOCDetectionLoader.DefaultFilePath
+                : oocDetectionFile.Trim();
 
             var environment = Environment.GetEnvironmentVariable("SWLOR_ENVIRONMENT")?.Trim().ToLower() ?? string.Empty;
             if (environment == "prod" || environment == "production")
@@ -91,6 +116,28 @@ namespace SWLOR.Game.Server
             // than silently flipping it - a mistyped SWLOR_ENGINE_TEST_SHUTDOWN must not leave
             // a headless test server running forever.
             return defaultValue;
+        }
+
+        private static int ParseNonNegativeInt(string value, int defaultValue)
+        {
+            return int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) && parsed >= 0
+                ? parsed
+                : defaultValue;
+        }
+
+        /// <summary>
+        /// Parses a non-negative allowance, or "unlimited" / "-1" for no limit (returned as null).
+        /// Blank or unrecognized values keep the default.
+        /// </summary>
+        private static int? ParseAllowanceOrUnlimited(string value, int? defaultValue)
+        {
+            var normalized = value?.Trim() ?? string.Empty;
+            if (normalized.Equals("unlimited", StringComparison.OrdinalIgnoreCase) || normalized == "-1")
+                return null;
+
+            return int.TryParse(normalized, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) && parsed >= 0
+                ? parsed
+                : defaultValue;
         }
 
         private static float ParseFloat(string value, float defaultValue)

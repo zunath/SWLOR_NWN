@@ -10,7 +10,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class MusicPickerViewModel : GuiViewModelBase<MusicPickerViewModel, GuiPayloadBase>
     {
         public const string ContentElement = "music_picker_content";
-        public const string MainContentPartial = "MUSIC_PICKER_MAIN";
+        public const string PersonalContentPartial = "MUSIC_PICKER_PERSONAL";
+        public const string AreaContentPartial = "MUSIC_PICKER_AREA";
         public const int PageSize = 10;
         private const string OtherCategoryName = "Other";
 
@@ -30,7 +31,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string BattleThemeText { get => Get<string>(); set => Set(value); }
         public bool HasPrevious { get => Get<bool>(); set => Set(value); }
         public bool HasNext { get => Get<bool>(); set => Set(value); }
-        public bool IsPersonalMode { get => Get<bool>(); set => Set(value); }
         public bool IsCollectionMode { get => Get<bool>(); set => Set(value); }
 
         public string SearchText
@@ -60,7 +60,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<string> SongNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<string> SongCategories { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<bool> PlayEnabled { get => Get<GuiBindingList<bool>>(); set => Set(value); }
-        public GuiBindingList<bool> BattleVisible { get => Get<GuiBindingList<bool>>(); set => Set(value); }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
@@ -72,7 +71,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (GetIsDM(Player) || GetIsDMPossessed(Player))
                 _mode = MusicPickerMode.DungeonMaster;
 
-            IsPersonalMode = _mode == MusicPickerMode.Personal;
             IsCollectionMode = _mode != MusicPickerMode.DungeonMaster;
             _entries = BuildEntries(out var headerText);
             HeaderText = headerText;
@@ -98,7 +96,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SongNames = new GuiBindingList<string>();
             SongCategories = new GuiBindingList<string>();
             PlayEnabled = new GuiBindingList<bool>();
-            BattleVisible = new GuiBindingList<bool>();
             ResultText = string.Empty;
             PageText = string.Empty;
             ShowUncollected = false;
@@ -108,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.ShowUncollected);
-            ChangePartialView(ContentElement, MainContentPartial);
+            ChangePartialView(ContentElement, _mode == MusicPickerMode.Personal ? PersonalContentPartial : AreaContentPartial);
         }
 
         private MusicPickerEntry[] BuildEntries(out string headerText)
@@ -195,19 +192,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var names = new GuiBindingList<string>();
             var categories = new GuiBindingList<string>();
             var playEnabled = new GuiBindingList<bool>();
-            var battleVisible = new GuiBindingList<bool>();
             foreach (var entry in _visible)
             {
                 names.Add(entry.IsAvailable ? entry.Name : $"{entry.Name} (not collected)");
                 categories.Add(entry.Category);
                 playEnabled.Add(entry.IsAvailable);
-                battleVisible.Add(_mode == MusicPickerMode.Personal);
             }
 
             SongNames = names;
             SongCategories = categories;
             PlayEnabled = playEnabled;
-            BattleVisible = battleVisible;
             ResultText = matches.Length == 1 ? "1 song" : $"{matches.Length} songs";
             PageText = $"Page {_page + 1} / {pages}";
             HasPrevious = _page > 0;

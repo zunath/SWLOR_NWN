@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .BindTitle(model => model.WindowTitle)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .DefinePartialView(MusicPickerViewModel.MainContentPartial, AddContent);
+                .DefinePartialView(MusicPickerViewModel.PersonalContentPartial, host => AddContent(host, true))
+                .DefinePartialView(MusicPickerViewModel.AreaContentPartial, host => AddContent(host, false));
 
             window.AddStandardLayout(layout => layout
                 .AddLeadingColumn(AddCategories, CategoryRailWidth)
@@ -46,7 +47,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetHeight(240f));
         }
 
-        private static void AddContent(GuiGroup<MusicPickerViewModel> host)
+        // List templates own each cell's visibility, so personal-only controls get their own partial.
+        private static void AddContent(GuiGroup<MusicPickerViewModel> host, bool isPersonal)
         {
             host.AddColumn(col => col.AddRow(row => row.AddGroup(panel =>
             {
@@ -79,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         r.AddCheckBox()
                             .SetText("Show songs not yet collected")
                             .BindIsChecked(model => model.ShowUncollected)
-                            .BindIsVisible(model => model.IsCollectionMode);
+                            .BindIsEnabled(model => model.IsCollectionMode);
 
                         r.AddLabel()
                             .BindText(model => model.ResultText)
@@ -114,18 +116,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindOnClicked(model => model.OnPlaySong());
                         });
 
-                        template.AddCell(cell =>
+                        if (isPersonal)
                         {
-                            cell.SetIsVariable(false);
-                            cell.SetWidth(74f);
-                            cell.AddButton()
-                                .SetText("Battle")
-                                .SetTooltip("Use this song as your combat music.")
-                                .SetWidth(70f)
-                                .BindIsEnabled(model => model.PlayEnabled)
-                                .BindIsVisible(model => model.BattleVisible)
-                                .BindOnClicked(model => model.OnSetBattleTheme());
-                        });
+                            template.AddCell(cell =>
+                            {
+                                cell.SetIsVariable(false);
+                                cell.SetWidth(74f);
+                                cell.AddButton()
+                                    .SetText("Battle")
+                                    .SetTooltip("Use this song as your combat music.")
+                                    .SetWidth(70f)
+                                    .BindIsEnabled(model => model.PlayEnabled)
+                                    .BindOnClicked(model => model.OnSetBattleTheme());
+                            });
+                        }
                     })
                         .BindRowCount(model => model.SongNames)
                         .SetRowHeight(RowHeight)
@@ -166,11 +170,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindOnClicked(model => model.OnStop());
                     });
 
+                    if (!isPersonal)
+                        return;
+
                     content.AddRow(r =>
                     {
                         r.AddLabel()
                             .BindText(model => model.BattleThemeText)
-                            .BindIsVisible(model => model.IsPersonalMode)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
                             .SetHeight(RowHeight);
 
@@ -178,7 +184,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Clear Battle Theme")
                             .SetWidth(150f)
                             .SetHeight(RowHeight)
-                            .BindIsVisible(model => model.IsPersonalMode)
                             .BindOnClicked(model => model.OnClearBattleTheme());
                     });
                 });

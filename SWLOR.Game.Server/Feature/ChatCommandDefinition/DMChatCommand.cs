@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -14,6 +15,7 @@ using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.MusicService;
 using Faction = SWLOR.Game.Server.Service.Faction;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using SWLOR.NWN.API.Engine;
@@ -1116,12 +1118,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void MusicWindow()
         {
             _builder.Create("music")
-                .Description("Toggles the Area Music Picker window.")
+                .Description("Toggles the area music window, which can play any track.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.MusicPicker);
+                    Gui.TogglePlayerWindow(user, GuiWindowType.MusicPicker, new MusicPickerPayload(MusicPickerMode.DungeonMaster));
                 });
         }
 

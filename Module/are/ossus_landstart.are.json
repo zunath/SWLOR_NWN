@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Ossus - Landing Pads"
+      "0": "[Prefab] Ossus - Landing Pads"
     }
   },
   "NoRest": {

@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                     typeof(WatchfulPresence2StatusEffect),
                     typeof(WatchfulPresence3StatusEffect)))
             {
-                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
+                CombatPoint.AddSupportCombatPoint(activator, Ability.GetSelfAndPartyAuraRecipients(activator), SkillType.Leadership);
             }
         }
     }

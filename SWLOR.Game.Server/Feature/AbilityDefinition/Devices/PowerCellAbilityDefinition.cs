@@ -102,6 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void PowerCell1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            var powered = new List<uint>();
             var isInitialTarget = true;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
@@ -110,14 +111,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyPowerCellRiders(activator, friendly, isInitialTarget);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
+                powered.Add(friendly);
                 isInitialTarget = false;
             }
 
-            GrantDevicesCombatPointIfApplied(activator, !isInitialTarget);
+            GrantDevicesCombatPoint(activator, powered);
         }
 
         private static void PowerCell2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            var powered = new List<uint>();
             var isInitialTarget = true;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
@@ -126,14 +129,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyPowerCellRiders(activator, friendly, isInitialTarget);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
+                powered.Add(friendly);
                 isInitialTarget = false;
             }
 
-            GrantDevicesCombatPointIfApplied(activator, !isInitialTarget);
+            GrantDevicesCombatPoint(activator, powered);
         }
 
         private static void PowerCell3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            var powered = new List<uint>();
             var isInitialTarget = true;
             foreach (var friendly in GetPowerCell3Targets(activator, target, targetLocation))
             {
@@ -142,10 +147,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyPowerCellRiders(activator, friendly, isInitialTarget);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
+                powered.Add(friendly);
                 isInitialTarget = false;
             }
 
-            GrantDevicesCombatPointIfApplied(activator, !isInitialTarget);
+            GrantDevicesCombatPoint(activator, powered);
         }
 
         private static IEnumerable<uint> GetPowerCell3Targets(uint activator, uint target, Location targetLocation)
@@ -170,10 +176,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             }
         }
 
-        private static void GrantDevicesCombatPointIfApplied(uint activator, bool applied)
+        private static void GrantDevicesCombatPoint(uint activator, IReadOnlyCollection<uint> powered)
         {
-            if (applied)
-                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices);
+            if (powered.Count > 0)
+                CombatPoint.AddSupportCombatPoint(activator, powered, SkillType.Devices);
         }
 
         private static void ApplyPowerCellRiders(uint activator, uint target, bool isInitialTarget)

@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Hold still. Feet, grip, elbow, eyes. Huh. Passable. First time this month I've said that. So hear the assignment: my old command, the Veles Militia Annex, got sealed with my trainees still drilling inside, and they've kept my program running without me. Six adepts hold the drill floor. Put them down and bring me the Invincible Veles Drill Ledger they log every rotation in. Then I'll know what they've become, and I'll know what you are.",
+          "Text": "Hold still. Feet, grip, elbow, eyes. Huh. Passable. First time this month I've said that. So hear the assignment: my old command, the Veles Militia Annex, sits sealed at the back of this very building with my trainees still drilling inside, running my program without me. Six adepts hold the drill floor. Put them down and bring me the Invincible Veles Drill Ledger they log every rotation in. Then I'll know what they've become, and I'll know what you are.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Signed and logged. This key opens the side entry, west gate off the Veles post. Six adepts, one ledger, no detours. I grade what comes back, not what you meant to bring.",
+          "Text": "Signed and logged. This key opens the annex door, deeper in this building, north-east of where I stand. Six adepts, one ledger, no detours. I grade what comes back, not what you meant to bring.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "West of the Veles command post, behind a gate the militia welded shut. Only sealed drill hall on Viscara, and I wrote the program that earned it the honor. My trainees refused the stand-down order when command cut us, so command locked the door on them. The key I sign over opens the side entry. Quietly.",
+          "Text": "Command cut the program and ordered a stand-down. My trainees refused it, so command ordered the annex sealed with them inside, and I sealed it myself. Only sealed drill hall on Viscara, and I wrote the program that earned it the honor. The door is in this building, north-east of this post. The key I sign over opens it. Quietly.",
           "Style": 0,
           "Color": null
         }
@@ -532,7 +532,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Specialists earned rank under me before the shutdown. The pass bar was holding a guard through a full rotation without one scored hit, and all five cleared it. You'll be the first live drill they've had in a year. They have been bored. Bored and good is a bad combination for you.",
+          "Text": "Specialists earned rank under me before the shutdown. The pass bar was holding a guard through a full rotation without one scored hit, and all five cleared it. You'll be the first live drill they've had since I sealed the door. They have been bored. Bored and good is a bad combination for you.",
           "Style": 0,
           "Color": null
         }
@@ -741,7 +741,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Sarn. Six years my second. When command pulled the program he stayed inside the gate and I obeyed the order out of it, and neither of us has forgiven the other. He runs that gate exactly the way I taught him: nothing passes that hasn't earned it. He won't pull the blow. Don't pull yours.",
+          "Text": "Sarn. Six years my second. When command pulled the program he stayed inside, and I followed the order out and sealed the door behind me. Neither of us has forgiven the other. He runs that gate exactly the way I taught him: nothing passes that hasn't earned it. He won't pull the blow. Don't pull yours.",
           "Style": 0,
           "Color": null
         }
@@ -950,7 +950,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Toma, Verik, Onn, and Pale. Ten years of my mornings went into those four, and they earned every stripe I gave them before they chose the annex over the stand-down order. I'm not neutral about this line and I won't pretend otherwise. Grade them honestly. Beat what I built without insulting it.",
+          "Text": "Ssovak, Gorrsk, Tessk, and Vorl. Ten years of my mornings went into those four, and they earned every stripe I gave them before they chose the annex over the stand-down order. I'm not neutral about this line and I won't pretend otherwise. Grade them honestly. Beat what I built without insulting it.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +976,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A captain's challenge chit. Whoever holds it can demand a graded bout with the captain, any hour, any floor. I surrendered mine the day they sealed the gate, and the circle keeps it as proof the annex still answers to a captain. It does. The wrong one.",
+          "Text": "A captain's challenge chit. Whoever holds it can demand a graded bout with the captain, any hour, any floor. I surrendered mine the day I sealed the door, and the circle keeps it as proof the annex still answers to a captain. It does. The wrong one.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Last line. The center floor belongs to the annex master. Serra Kel. I trained her, promoted her past my own grade, and her guard is the finished form: Invincible, whole, the thing you've been earning in pieces. I challenged it once and failed. Nobody walks off her floor alone, so take the partners who carried you through the gate and the circle, and I mean that as an order. No token to recover this time. Her guard breaks, or the ledger stays open forever.",
+          "Text": "Last line. The annex command room belongs to the annex master. Haro Kel. I trained him, promoted him past my own grade, and his guard is the finished form: Invincible, whole, the thing you've been earning in pieces. I challenged it once and failed. Nobody walks off his floor alone, so take the partners who carried you through the gate and the circle, and I mean that as an order. No token to recover this time. His guard breaks, or the ledger stays open forever.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Logged, final line. Center floor, past where the circle stood. Partners on your flanks, patience in the first minute, no heroics. And whatever she says to you in there, she's earned the right to say it.",
+          "Text": "Logged, final line. Center floor, past where the circle stood. Partners on your flanks, patience in the opening exchanges, no heroics. And whatever he says to you in there, he's earned the right to say it.",
           "Style": 0,
           "Color": null
         }
@@ -1159,7 +1159,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Finished means no seams. The circle overlapped four guards; Serra is one guard with no gap in it. Blade, shot, flank, feint, she has already turned it before you commit. You will land nothing in your first minute, so spend it learning her tempo while your partners keep her turning. Even a perfect guard faces one direction at a time. That's the entire lesson, if you live to use it.",
+          "Text": "Finished means no seams. The circle overlapped four guards; Haro is one guard with no gap in it. Blade, shot, flank, feint, he has already turned it before you commit. You will land nothing in the opening exchanges, so spend them learning his tempo while your partners keep him turning. Even a perfect guard faces one direction at a time. That's the entire lesson, if you live to use it.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "She stayed because she believed the program was right and command was wrong, and I sealed the gate on her because an order is an order. We've both had years to chew on that. When her guard breaks, the annex stops being a wound and can be a school again. Maybe with her teaching in it. That page isn't written yet. Yours is first.",
+          "Text": "He stayed because he believed the program was right and command was wrong, and I sealed the door on him because an order is an order. We've both had years to chew on that. When his guard breaks, the annex stops being a wound and can be a school again. Maybe with him teaching in it. That page isn't written yet. Yours is first.",
           "Style": 0,
           "Color": null
         }
@@ -1211,7 +1211,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I took my challenge rotation against her the spring before the shutdown. Best day I ever had with a blade in my hand, and she graded it a fail and helped me off the floor. A captain gets one more failure than his pride can afford, then he stops spending his trainees' respect and sends someone better. Today, better is you.",
+          "Text": "I took my challenge rotation against him the spring before the shutdown. Best day I ever had with a blade in my hand, and he graded it a fail and helped me off the floor. A captain gets one more failure than her pride can afford, then she stops spending her trainees' respect and sends someone better. Today, better is you.",
           "Style": 0,
           "Color": null
         }
@@ -1237,7 +1237,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The center floor is still hers and the final line is still blank. Partners, tempo, patience. I'll be here. The ledger stays open until you close it.",
+          "Text": "The command room is still his and the final line is still blank. Partners, tempo, patience. I'll be here. The ledger stays open until you close it.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The annex went quiet an hour ago. I've stood posts outside that gate half my life and never once heard it quiet. Report, plainly: did her guard break?",
+          "Text": "The annex went quiet an hour ago. I've stood post in this building half my life and never once heard that door go quiet. Report, plainly: did his guard break?",
           "Style": 0,
           "Color": null
         }
@@ -1284,7 +1284,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then it's done. Final grading: pass. The highest mark I've ever entered, and the first one I've written with my hand shaking. Her guard is yours now. That's how the form has always passed, one unbroken line to the next. Hold it for the people behind you, not for the score. And stop standing at attention. Peers don't.",
+          "Text": "Then it's done. Final grading: pass. The highest mark I've ever entered, and the first one I've written with my hand shaking. His guard is yours now. That's how the form has always passed, one unbroken line to the next. Hold it for the people behind you, not for the score. And stop standing at attention. Peers don't.",
           "Style": 0,
           "Color": null
         }
@@ -1350,7 +1350,7 @@
     "reply-00002": {
       "Id": "reply-00002",
       "Text": {
-        "Text": "What exactly is Invincible?",
+        "Text": "What does the Invincible form teach?",
         "Style": 4,
         "Color": null
       },
@@ -1977,7 +1977,7 @@
     "reply-00028": {
       "Id": "reply-00028",
       "Text": {
-        "Text": "About Serra Kel.",
+        "Text": "About Haro Kel.",
         "Style": 4,
         "Color": null
       },
@@ -2030,7 +2030,7 @@
     "reply-00030": {
       "Id": "reply-00030",
       "Text": {
-        "Text": "What am I facing in her guard?",
+        "Text": "What am I facing in his guard?",
         "Style": 4,
         "Color": null
       },
@@ -2053,7 +2053,7 @@
     "reply-00031": {
       "Id": "reply-00031",
       "Text": {
-        "Text": "Why did she stay behind the gate?",
+        "Text": "Why did he stay behind the door?",
         "Style": 4,
         "Color": null
       },

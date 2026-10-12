@@ -210,7 +210,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Eshka Korr is a Force-bond beast seer tied to the Force-Bonded Beast capstone trials in Dathomir Grotto Apex Den."
+            "0": "A quiet man in layered robes keeps to the ruins by the falls, eyes half closed as though listening to something no one else can hear. Knotted cords of braided hide and beads wind around his wrists, each tied in a different pattern. Beasts that wander near the ruins tend to settle when he is close."
           }
         },
         "Dex": {
@@ -1237,7 +1237,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mira Syth is a pack rhythm caller tied to the Alpha Rhythm capstone trials in Dathomir Tarn Jungle Preserve."
+            "0": "A slender man with a hand drum slung at his hip, his fingers tapping a quiet beat against it without seeming to notice. He keeps to the waterfall ruins, head tilted toward the jungle as if counting something in its noise. A string of carved beast teeth, each notched with tally marks, hangs around his neck."
           }
         },
         "Dex": {

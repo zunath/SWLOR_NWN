@@ -104,49 +104,49 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private static void Shielding1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 180f);
-            var applied = false;
+            var treated = new List<uint>();
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Shielding1StatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
-                applied = true;
+                treated.Add(friendly);
             }
 
-            FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated);
         }
 
         private static void Shielding2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 180f);
-            var applied = false;
+            var treated = new List<uint>();
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Shielding2StatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
-                applied = true;
+                treated.Add(friendly);
             }
 
-            FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated);
         }
 
         private static void Shielding3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 180f);
-            var applied = false;
+            var treated = new List<uint>();
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Shielding3StatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
-                applied = true;
+                treated.Add(friendly);
             }
 
-            FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated);
         }
 
 

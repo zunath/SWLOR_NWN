@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatService;
@@ -76,11 +77,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         /// recipient; the damage-reduction status effect participates in the Leadership
         /// take-the-max damage-reduction family via <see cref="ILeadershipDamageReductionStatusEffect"/>.
         /// </summary>
-        public static void ApplyBolsterResolve(uint activator, float durationSeconds)
+        /// <returns>The allies Bolster Resolve was applied to.</returns>
+        public static List<uint> ApplyBolsterResolve(uint activator, float durationSeconds)
         {
+            var bolstered = new List<uint>();
             var rank = Stat.GetStatAdjustment(activator, StatType.LeadershipFieldStewardBolsterResolveRank);
             if (rank <= 0)
-                return;
+                return bolstered;
 
             var radius = GetLeadershipCommandRadius(activator);
             var temporaryHPPercent = rank >= 2
@@ -99,7 +102,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 {
                     StatusEffect.ApplyStatusEffect(activator, friendly, typeof(BolsterResolve2StatusEffect), durationSeconds);
                 }
+
+                bolstered.Add(friendly);
             }
+
+            return bolstered;
         }
 
         private static bool ToggleLeadershipAura(uint activator, StatType auraLevelStatType, Type[] statusEffectTypes)

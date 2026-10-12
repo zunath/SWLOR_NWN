@@ -111142,7 +111142,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The master fire-control array towers over the range, every kill-lane lit and waiting for a final demonstration."
+            "0": "The Blast-Safe Cell's master fire-control array towers over the room, every kill lane lit and waiting for a final demonstration."
           }
         },
         "DisarmDC": {
@@ -111509,7 +111509,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The perfect-shot rig stands at the range's end, one lethal round loaded for the ultimate trial."
+            "0": "A perfect-shot rig stands at the far end of the Blast-Safe Cell, one round loaded and the scope already zeroed."
           }
         },
         "DisarmDC": {
@@ -111876,7 +111876,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The full ordnance battery stands armed, ready to unleash a storm of steel on command."
+            "0": "The Blast-Safe Cell's full ordnance battery stands armed, racks of blades and charges ready to be thrown on command."
           }
         },
         "DisarmDC": {

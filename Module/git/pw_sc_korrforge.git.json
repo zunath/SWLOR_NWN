@@ -98,7 +98,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "The Champion Forge's great anvil, its face scarred by a thousand blows. The forge's champion waits beside it for anyone who dares to strike it."
+          }
         },
         "DisarmDC": {
           "type": "byte",
@@ -463,7 +465,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A sacrificial forge-pit glows at the heart of the chamber, its coals never quite dying. The master of this congregation answers anyone who approaches it."
+          }
         },
         "DisarmDC": {
           "type": "byte",
@@ -828,7 +832,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A plain iron spear is driven upright into the Champion Forge floor. The air around it feels hollow and quiet, as if nothing of the Force can reach it."
+          }
         },
         "DisarmDC": {
           "type": "byte",

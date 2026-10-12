@@ -62,13 +62,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Mikka Varn gave you the Veles Militia Annex Key. Defeat six Vital Rupture adepts in the Veles Militia Annex on Viscara and secure the Vital Rupture Veles Drill Ledger.")
+                    "Mikka Varn gave you the Veles Militia Annex Key. Enter the Veles Militia Annex on Viscara through the sealed door inside the Sheriff's Office on the west side of Veles. Defeat six Vital Rupture adepts and secure the Vital Rupture Veles Drill Ledger.")
                 .AddKillObjective(NPCGroupType.Viscara_VitalRupture_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureVelesDrillLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture Veles Drill Ledger is in hand. Return to Mikka Varn at Racin' Jims in Veles on Viscara.")
+                    "The Vital Rupture Veles Drill Ledger is in hand. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture Militia Range Relay is in hand. Return to Mikka Varn at Racin' Jims in Veles on Viscara.")
+                    "The Vital Rupture Militia Range Relay is in hand. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture warden is defeated and the Vital Rupture Scored Challenge Badge is in hand. Return to Mikka Varn at Racin' Jims in Veles on Viscara.")
+                    "The Vital Rupture warden is defeated and the Vital Rupture Scored Challenge Badge is in hand. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -125,13 +125,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat four members of the Vital Rupture inner circle in the Veles Militia Annex on Viscara and secure the Vital Rupture Captain's Challenge Chit.")
+                    "Defeat the four members of the Vital Rupture inner circle in the Veles Militia Annex on Viscara and secure the Vital Rupture Captain's Challenge Chit.")
                 .AddKillObjective(NPCGroupType.Viscara_VitalRupture_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneVitalRuptureCaptainsChallengeChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture Captain's Challenge Chit is in hand. Return to Mikka Varn at Racin' Jims in Veles on Viscara.")
+                    "The Vital Rupture Captain's Challenge Chit is in hand. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Vital Rupture master is defeated. Return to Mikka Varn at Racin' Jims in Veles on Viscara.")
+                    "The Vital Rupture master is defeated. Return to Mikka Varn in Racin' Jims in Veles on Viscara.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -175,13 +175,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Dalen Orso gave you the Veles Militia Annex Key. Bring down six Systemic Shutdown adepts in the Veles Militia Annex on Viscara and recover the Systemic Shutdown Veles Drill Ledger.")
+                    "Dalen Orso gave you the Veles Militia Annex Key. Enter the Veles Militia Annex on Viscara through the sealed door inside the Sheriff's Office on the west side of Veles. Bring down six Systemic Shutdown adepts and recover the Systemic Shutdown Veles Drill Ledger.")
                 .AddKillObjective(NPCGroupType.Viscara_SystemicShutdown_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSystemicShutdownVelesDrillLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Systemic Shutdown Veles Drill Ledger has been recovered. Deliver it to Dalen Orso at the Czerka tower in Veles on Viscara.")
+                    "The Systemic Shutdown Veles Drill Ledger has been recovered. Deliver it to Dalen Orso in the Czerka Tower in Veles on Viscara.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Systemic Shutdown Militia Range Relay has been recovered. Deliver it to Dalen Orso at the Czerka tower in Veles on Viscara.")
+                    "The Systemic Shutdown Militia Range Relay has been recovered. Deliver it to Dalen Orso in the Czerka Tower in Veles on Viscara.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Systemic Shutdown warden is down and the Systemic Shutdown Scored Challenge Badge has been recovered. Deliver it to Dalen Orso at the Czerka tower in Veles on Viscara.")
+                    "The Systemic Shutdown warden is down and the Systemic Shutdown Scored Challenge Badge has been recovered. Deliver it to Dalen Orso in the Czerka Tower in Veles on Viscara.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -238,13 +238,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Bring down four members of the Systemic Shutdown inner circle in the Veles Militia Annex on Viscara and recover the Systemic Shutdown Captain's Challenge Chit.")
+                    "Bring down the four members of the Systemic Shutdown inner circle in the Veles Militia Annex on Viscara and recover the Systemic Shutdown Captain's Challenge Chit.")
                 .AddKillObjective(NPCGroupType.Viscara_SystemicShutdown_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSystemicShutdownCaptainsChallengeChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Systemic Shutdown Captain's Challenge Chit has been recovered. Deliver it to Dalen Orso at the Czerka tower in Veles on Viscara.")
+                    "The Systemic Shutdown Captain's Challenge Chit has been recovered. Deliver it to Dalen Orso in the Czerka Tower in Veles on Viscara.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Systemic Shutdown master is down. Report back to Dalen Orso.")
+                    "The Systemic Shutdown master is down. Report back to Dalen Orso in the Czerka Tower in Veles on Viscara.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

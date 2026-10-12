@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Not yet. I don't badge civilians into a live range on reputation. Come back when Devices work is reflex for you, not something you're still counting through on your fingers.",
+          "Text": "Not yet. I don't badge anyone into a live range on reputation. Come back when setting and handling charges is reflex for you, not something you're still counting through on your fingers.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That marker you just walked past means live ordnance, and you strolled by it like it was a fence post. Second one today. First one's the reason Hutlar Qion Test Site is locked to everyone but me: there's a crew in there cooking oversized charges with no containment plan, and I am done finding their mistakes after the fact. Put down six of their adepts in the test site on Hutlar, and bring me back a Thermal Detonator Qion Test Log so I know exactly what they were building before it built itself into a crater.",
+          "Text": "That marker you just walked past means live ordnance, and you strolled by it like a fence post. People like that are why I sealed the Hutlar Qion Test Site. There's a crew in there cooking oversized charges with no containment plan. Head out onto the Qion Tundra, then east through the Qion Foothills into the Qion Box Canyon; the entrance sits just south of the road up to Fort Ka'ra. Put down six of their adepts and bring me their Thermal Detonator Qion Test Log, so I know what they were building before it built itself into a crater.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good. Here's the test-site key. Don't touch anything marked, don't skip a step because it looks finished, and don't come back until you can hand me the log instead of an excuse.",
+          "Text": "Good. Here's the test-site key. Don't touch anything marked, don't skip a step because it looks finished, and don't come back until you can hand me that log instead of an excuse.",
           "Style": 0,
           "Color": null
         }
@@ -323,7 +323,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Because the last crew that got sloppy here took out two range walls and a supply shed with them. I sealed Hutlar Qion Test Site the same week and haven't unsealed it since. Whoever's in there now, I want their names before I want their heads.",
+          "Text": "Because the last crew that got sloppy out there took two range walls and a supply shed with them. I sealed the site the same week and haven't unsealed it since. Whoever's in there now, I want their names before I want their heads.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Hutlar Qion Test Site still owes me that Test Log. Six adepts down, log in hand, then we talk.",
+          "Text": "The test site still owes me that log. Out to the Qion Box Canyon, six adepts down, log in hand, then we talk.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The log you brought me raised more questions than it answered. Their specialists are running a cryo-range regulator hot enough to crack, and if that thing lets go near the test wells it won't be a training accident, it'll be a funeral. Go back to Hutlar Qion Test Site, drop five of their specialists, and bring me the regulator before it decides for itself when it's done.",
+          "Text": "The log you brought me raised more questions than it answered. Their specialists are running a cryo-range regulator hot enough to crack, and if that thing lets go near the test wells it won't be a training accident, it'll be a funeral. Go back to the test site, drop five of their specialists, and bring me the regulator before it decides for itself when it's done.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A day I don't have, but fine. Go when you're ready, and go careful. That regulator doesn't warn you before it lets go.",
+          "Text": "Good. Go careful. That regulator doesn't warn you before it lets go.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That regulator is still ticking down in Hutlar Qion Test Site. Five specialists, one regulator, then back here.",
+          "Text": "That regulator is still ticking down in the Qion test site. Five specialists, one regulator, then back here.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their warden's been running that site like a private range, and frostburn scarring on the last crest we recovered says the tests are getting bigger, not smaller. I am not sending you at that alone. Bring two people you'd trust to carry a live charge, go to Hutlar Qion Test Site, put the warden down, and bring me back the Frostburned Test Crest.",
+          "Text": "Their warden's been running that site like a private range, and that regulator says the tests are getting bigger, not smaller. I am not sending you at that alone. Bring two people you'd trust to carry a live charge, go back to the test site, put the warden down, and bring me the Frostburned Test Crest he wears.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden and that crest are still waiting in Hutlar Qion Test Site. Don't go back in without the company I told you to bring.",
+          "Text": "The warden and that crest are still waiting in the Qion test site. Don't go back in without the company I told you to bring.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden was muscle. The inner circle is the ones who signed off on using him that way. I want their Site Chief's Override Chip; it'll tell me who authorized what, and there's no version of that list I like the look of. Four of them, Hutlar Qion Test Site, bring the chip back whole.",
+          "Text": "The warden was muscle. The inner circle are the ones who signed off on using him that way. I want their Site Chief's Override Chip; it'll tell me who authorized what, and there's no version of that list I like the look of. Four of them, same test site. Bring the chip back whole.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That override chip is still sitting in Hutlar Qion Test Site with four people standing on top of it. Go get it.",
+          "Text": "That override chip is still sitting in the Qion test site with four people standing on top of it. Go get it.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That chip led exactly where I didn't want it to: the site's master, and he doesn't run tests anymore, he runs Thermal Detonator the way I taught it before I knew better. He'll drop more ordinance in thirty seconds than the whole crew combined, aimed at whoever's still standing closest together. Don't go in with fewer than three. This is the last lesson, and there's no partial credit on it.",
+          "Text": "That chip led exactly where I didn't want it to: the site's master. He doesn't run tests anymore; he runs Thermal Detonator the way I taught it before I knew better. He'll put more ordnance in the air than the whole crew combined, aimed at whoever's standing closest together. Don't go in with fewer than three. This is the last lesson, and there's no partial credit on it.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take it. Come back with two people who trust you and a plan you actually believe in, not just the one that sounded good standing here.",
+          "Text": "Good. Go with two people who trust you and a plan you actually believe in, not just the one that sounded good standing here.",
           "Style": 0,
           "Color": null
         }
@@ -1159,7 +1159,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden staged charges. The master reads a room and places them where the room will actually be standing, which is worse. He's not testing ordinance anymore, he's testing people.",
+          "Text": "The warden staged charges. The master reads a room and places them where the room will actually be standing, which is worse. He's not testing ordnance anymore, he's testing people.",
           "Style": 0,
           "Color": null
         }
@@ -1258,7 +1258,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You're standing, he's not, and Hutlar Qion Test Site just got a lot quieter. That's all the proof I needed.",
+          "Text": "You're standing, he's not, and the Qion test site just got a lot quieter. That's all the proof I needed.",
           "Style": 0,
           "Color": null
         }

@@ -62,13 +62,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Tressa Kade gave you the CZ-220 Breaker Yard Key. A wreck crew is drilling katar guard-work in the CZ-220 Breaker Yard on CZ-220. Defeat six Adamantine Guard adepts and secure the Adamantine Guard Breaker Yard Work Order.")
+                    "Tressa Kade gave you the CZ-220 Breaker Yard Key. A wreck crew is drilling katar guard-work in the CZ-220 Breaker Yard on CZ-220; enter through the Breaker Bay force-field wall in the far north-east corner of the Maintenance Level, below the Offices & Labs. Defeat six Adamantine Guard adepts and recover the Adamantine Guard Breaker Yard Work Order.")
                 .AddKillObjective(NPCGroupType.CZ220_AdamantineGuard_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAdamantineGuardBreakerYardWorkOrder)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Adamantine Guard Breaker Yard Work Order. Deliver it to Tressa Kade at the CZ-220 offices.")
+                    "You recovered the Adamantine Guard Breaker Yard Work Order. Deliver it to Tressa Kade in the Offices & Labs on CZ-220.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -83,13 +83,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The wreck crew rerouted the breaker yard's junkline. Defeat five Adamantine Guard specialists in the CZ-220 Breaker Yard on CZ-220 and secure the Adamantine Guard Junkline Control Relay.")
+                    "The wreck crew rerouted the junkline in the CZ-220 Breaker Yard on CZ-220. Defeat five Adamantine Guard specialists and recover the Adamantine Guard Junkline Control Relay.")
                 .AddKillObjective(NPCGroupType.CZ220_AdamantineGuard_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAdamantineGuardJunklineControlRelay)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Adamantine Guard Junkline Control Relay. Deliver it to Tressa Kade at the CZ-220 offices.")
+                    "You recovered the Adamantine Guard Junkline Control Relay. Deliver it to Tressa Kade in the Offices & Labs on CZ-220.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -104,13 +104,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The wreck crew's warden has fortified the sheared bay in the CZ-220 Breaker Yard on CZ-220. Defeat the Adamantine Guard warden and secure the Adamantine Guard Sheared Bay Sigil.")
+                    "The wreck crew's warden holds the sheared bay in the CZ-220 Breaker Yard on CZ-220. Bring at least two fighters you trust, defeat the Adamantine Guard warden, and recover the Adamantine Guard Sheared Bay Sigil.")
                 .AddKillObjective(NPCGroupType.CZ220_AdamantineGuard_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAdamantineGuardShearedBaySigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Adamantine Guard Sheared Bay Sigil. Deliver it to Tressa Kade at the CZ-220 offices.")
+                    "You recovered the Adamantine Guard Sheared Bay Sigil. Deliver it to Tressa Kade in the Offices & Labs on CZ-220.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -125,13 +125,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The wreck crew's inner circle holds the crane deck above the drill pit in the CZ-220 Breaker Yard on CZ-220. Defeat the four Adamantine Guard inner circle members and secure the Adamantine Guard Foreman's Override Chip.")
+                    "The wreck crew's inner circle holds the crane deck above the drill pit in the CZ-220 Breaker Yard on CZ-220. Defeat the four Adamantine Guard inner circle members and recover the Adamantine Guard Foreman's Override Chip.")
                 .AddKillObjective(NPCGroupType.CZ220_AdamantineGuard_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAdamantineGuardForemansOverrideChip)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Adamantine Guard Foreman's Override Chip. Deliver it to Tressa Kade at the CZ-220 offices.")
+                    "You recovered the Adamantine Guard Foreman's Override Chip. Deliver it to Tressa Kade in the Offices & Labs on CZ-220.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -144,12 +144,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The wreck crew's foreman has barricaded himself in Bay One in the CZ-220 Breaker Yard on CZ-220. Defeat the Adamantine Guard master and prove the yard is clear.")
+                    "The wreck crew's foreman holds Bay One, deep in the CZ-220 Breaker Yard on CZ-220. Bring fighters you trust and defeat the Adamantine Guard master.")
                 .AddKillObjective(NPCGroupType.CZ220_AdamantineGuard_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You defeated the Adamantine Guard master. Return to Tressa Kade at the CZ-220 offices to close out the trial.")
+                    "You defeated the Adamantine Guard master. Return to Tressa Kade in the Offices & Labs on CZ-220 to close out the last work order.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -175,13 +175,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Borrik Sen gave you the CZ-220 Breaker Yard Key. A crew has sealed the lower level of the CZ-220 Breaker Yard on CZ-220 and is running unauthorized katar drills behind the containment doors. Defeat six Scrapheap Lockdown adepts and secure the Scrapheap Lockdown Breaker Yard Work Order.")
+                    "Borrik Sen gave you the CZ-220 Breaker Yard Key. A crew has sealed off the CZ-220 Breaker Yard on CZ-220 for unauthorized katar drills; enter through the Breaker Bay force-field wall in the far north-east corner of the Maintenance Level, below the Offices & Labs. Defeat six Scrapheap Lockdown adepts and recover the Scrapheap Lockdown Breaker Yard Work Order.")
                 .AddKillObjective(NPCGroupType.CZ220_ScrapheapLockdown_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneScrapheapLockdownBreakerYardWorkOrder)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Scrapheap Lockdown Breaker Yard Work Order. Deliver it to Borrik Sen at the CZ-220 hangar.")
+                    "You recovered the Scrapheap Lockdown Breaker Yard Work Order. Deliver it to Borrik Sen in the Hangar on CZ-220.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -196,13 +196,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The crew rerouted the breaker yard's junkline into a stand-off grid in the CZ-220 Breaker Yard on CZ-220. Defeat five Scrapheap Lockdown specialists and secure the Scrapheap Lockdown Junkline Control Relay.")
+                    "The crew rerouted the junkline into a stand-off grid in the CZ-220 Breaker Yard on CZ-220. Defeat five Scrapheap Lockdown specialists and recover the Scrapheap Lockdown Junkline Control Relay.")
                 .AddKillObjective(NPCGroupType.CZ220_ScrapheapLockdown_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneScrapheapLockdownJunklineControlRelay)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Scrapheap Lockdown Junkline Control Relay. Deliver it to Borrik Sen at the CZ-220 hangar.")
+                    "You recovered the Scrapheap Lockdown Junkline Control Relay. Deliver it to Borrik Sen in the Hangar on CZ-220.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -217,13 +217,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The crew's warden has fortified the sheared bay in the CZ-220 Breaker Yard on CZ-220. Defeat the Scrapheap Lockdown warden and secure the Scrapheap Lockdown Sheared Bay Sigil.")
+                    "The crew's warden has fortified the sheared bay in the CZ-220 Breaker Yard on CZ-220. Go three-strong, defeat the Scrapheap Lockdown warden, and recover the Scrapheap Lockdown Sheared Bay Sigil.")
                 .AddKillObjective(NPCGroupType.CZ220_ScrapheapLockdown_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneScrapheapLockdownShearedBaySigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Scrapheap Lockdown Sheared Bay Sigil. Deliver it to Borrik Sen at the CZ-220 hangar.")
+                    "You recovered the Scrapheap Lockdown Sheared Bay Sigil. Deliver it to Borrik Sen in the Hangar on CZ-220.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -238,13 +238,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The crew's inner circle holds the crane deck above the drill pit in the CZ-220 Breaker Yard on CZ-220. Defeat the four Scrapheap Lockdown inner circle members and secure the Scrapheap Lockdown Foreman's Override Chip.")
+                    "The crew's inner circle holds the crane deck above the drill pit in the CZ-220 Breaker Yard on CZ-220. Defeat the four Scrapheap Lockdown inner circle members and recover the Scrapheap Lockdown Foreman's Override Chip.")
                 .AddKillObjective(NPCGroupType.CZ220_ScrapheapLockdown_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneScrapheapLockdownForemansOverrideChip)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Scrapheap Lockdown Foreman's Override Chip. Deliver it to Borrik Sen at the CZ-220 hangar.")
+                    "You recovered the Scrapheap Lockdown Foreman's Override Chip. Deliver it to Borrik Sen in the Hangar on CZ-220.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -257,12 +257,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The man who wrote the lockdown protocol has barricaded himself in the deepest sealed bay of the CZ-220 Breaker Yard on CZ-220. Defeat the Scrapheap Lockdown master and end the lockdown.")
+                    "The man who wrote the lockdown protocol holds the deepest bay of the CZ-220 Breaker Yard on CZ-220. Go three-strong, defeat the Scrapheap Lockdown master, and end the lockdown.")
                 .AddKillObjective(NPCGroupType.CZ220_ScrapheapLockdown_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You defeated the Scrapheap Lockdown master. Return to Borrik Sen at the CZ-220 hangar to close the case.")
+                    "You defeated the Scrapheap Lockdown master. Return to Borrik Sen in the Hangar on CZ-220 to close the case.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

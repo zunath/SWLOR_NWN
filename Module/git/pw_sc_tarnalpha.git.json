@@ -98,7 +98,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A den mouth littered with cracked bones, the musk of an old tukata heavy in the air. The sire of the preserve's pack lairs here."
+          }
         },
         "DisarmDC": {
           "type": "byte",
@@ -463,7 +465,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A cliff hollow streaked with guano and claw scars, the roost of the oldest shyrack in the preserve."
+          }
         },
         "DisarmDC": {
           "type": "byte",
@@ -828,7 +832,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A wallow at the heart of the preserve, churned by heavy hooves. The old iriaz bull who taught the herd its rhythm keeps it."
+          }
         },
         "DisarmDC": {
           "type": "byte",

@@ -7130,7 +7130,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dalen Orso is a containment saboteur tied to the Systemic Shutdown capstone trials in Veles Militia Annex."
+            "0": "Dalen Orso is a forgettable-looking man in plain, well-cut clothes, and the forgettable part seems deliberate. He keeps to a quiet corner of the Czerka Tower, speaks softly, and watches the exits more than the people. The slim vibroknife at his side looks less like a weapon than a tool he would rather nobody ever saw used."
           }
         },
         "Dex": {
@@ -7581,7 +7581,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 302
+          "value": 4186
         },
         "Race": {
           "type": "byte",
@@ -71702,7 +71702,7 @@
         },
         "X": {
           "type": "float",
-          "value": 88.07095336914063
+          "value": 87.92095184326172
         },
         "Y": {
           "type": "float",

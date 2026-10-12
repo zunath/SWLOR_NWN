@@ -47,6 +47,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                     const float Distance = 20f;
                     var count = 1;
+                    var repaired = new List<uint>();
 
                     foreach (var nearby in ObjectSnapshot.InShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature))
                     {
@@ -68,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, 4), nearby, 10.0f);
 
                             Space.RestoreShield(nearby, nearbyStatus, recovery);
+                            repaired.Add(nearby);
 
                             if (GetIsPC(nearby) && !GetIsDM(nearby) && !GetIsDMPossessed(nearby))
                             {
@@ -94,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     Messaging.SendMessageNearbyToPlayers(
                         activator,
                         receiver => $"{PlayerName.GetDisplayName(receiver, activator)} begins restoring {recovery} shield HP to nearby ships reinforcing their shield integrity.");
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
+                    CombatPoint.AddSupportCombatPoint(activator, repaired, SkillType.Piloting);
                 });
         }
     }

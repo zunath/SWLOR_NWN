@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Something took over my Tarn Jungle Preserve. Adepts, six of them. Toughen young beasts with beatings instead of trust, call it training. Go in, on Dathomir. Take the six down. Bring back the Unbreakable Beast Tarn Hunt Tally they're keeping score with.",
+          "Text": "The Tarn Jungle Preserve's gone bad. Pit-breeders bought in, toughened young plated burrowers with beatings instead of trust, called it training, then ran when the beasts broke loose. The beasts stayed. I warded those pens once. Go in, on Dathomir. Put down six of the young ones. Bring back the Unbreakable Beast Tarn Hunt Tally the breeders kept score on. It's in their pen.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Key's yours. North fence, same gap I've been meaning to weld shut for a year. Go in. Take what's coming. Come back standing.",
+          "Text": "Key's yours. Out the east side of this base to the Jungle Landing, then the trail off the landing's north-west side into the Tarnished Jungles. Gate's in the north-east part, by a sealed passage. Go in. Take what's coming. Come back standing.",
           "Style": 0,
           "Color": null
         }
@@ -375,7 +375,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Every hit those adepts land gets scratched onto that tally. Proof, plain as anything, of exactly how they've been running my preserve. Bring it back whole and it stops being their scoreboard.",
+          "Text": "Every beating the breeders handed out got scratched onto that tally. Proof, plain as anything, of how they ran those pens. Bring it back whole and it stops being their scoreboard.",
           "Style": 0,
           "Color": null
         }
@@ -401,7 +401,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six adepts still swinging. Tally's still with them.",
+          "Text": "Six young burrowers still out there. Tally's still in their pen.",
           "Style": 0,
           "Color": null
         }
@@ -469,7 +469,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists past the adepts. They've moved on from beatings to something with a needle in it, scent vial, dosed wrong on purpose to keep the beasts in constant pain. That's not toughening. That's just cruelty with a schedule. Take the five down. Bring me the Unbreakable Beast Beast-Pen Scent Vial.",
+          "Text": "Five old burrowers past the young ones. The breeders moved on from beatings to something quieter, a scent dosed into the pens on purpose to keep them in constant pain. That's not toughening. That's cruelty with a schedule. Put the five down. Bring me the Unbreakable Beast Beast-Pen Scent Vial from their pen.",
           "Style": 0,
           "Color": null
         }
@@ -511,7 +511,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same gap in the fence. Deeper pens this time. Watch your footing near the troughs; they've let the ground rot.",
+          "Text": "Same gate. Deeper pens this time. Watch your footing.",
           "Style": 0,
           "Color": null
         }
@@ -558,7 +558,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Beatings leave marks people ask questions about. A needle's quieter. Same cruelty, harder to prove, which is exactly why they switched. Doesn't make it toughening. Makes it worse, honestly, because at least a beating ends.",
+          "Text": "Beatings leave marks people ask questions about. A scent in the pens leaves none. Same cruelty, harder to prove, which is exactly why the breeders switched. Doesn't make it toughening. Makes it worse, honestly, because at least a beating ends.",
           "Style": 0,
           "Color": null
         }
@@ -610,7 +610,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists, still dosing my pens. Bring that vial back.",
+          "Text": "Five old burrowers, still guarding that vial. Bring it back.",
           "Style": 0,
           "Color": null
         }
@@ -631,7 +631,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You look like you took a few doses yourself. Hand it over.",
+          "Text": "You look like you breathed some of it yourself. Hand it over.",
           "Style": 0,
           "Color": null
         }
@@ -657,7 +657,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That vial's proof enough on its own. Whoever's running this operation just made my case for me. Good work. Rest up.",
+          "Text": "That vial's proof enough on its own. Those breeders just made my case for me, wherever they ran to. Good work. Rest up.",
           "Style": 0,
           "Color": null
         }
@@ -678,7 +678,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden holds the deep pens. His hide's the reason blades bounce off him instead of biting, years of taking hits on purpose until nothing gets through clean anymore. One blade against that just wears its edge down for nothing. Bring friends who can take a hit themselves, not just deal one. Take him down. Bring me the Unbreakable Beast Clawed Alpha Totem.",
+          "Text": "Warden holds the deep pens. A shyrack the breeders raised in the dark and beat for years until nothing got through his hide clean. Blades skid off him instead of biting. One blade against that just wears its edge down for nothing. Bring two friends who can take a hit themselves, not just deal one. Take him down. Bring me the Unbreakable Beast Clawed Alpha Totem off his harness.",
           "Style": 0,
           "Color": null
         }
@@ -720,7 +720,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same gap. Deep pens past the rotted troughs. Bring people who can stand there and keep standing, not just people who hit hard once.",
+          "Text": "Same gate. Bring people who can stand there and keep standing, not just people who hit hard once.",
           "Style": 0,
           "Color": null
         }
@@ -741,7 +741,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Took hits on purpose, for years, past any sense of it. Somewhere in there he stopped choosing to endure and started just being unable to feel it anymore. That's the difference between him and me, and it's the whole reason he's dangerous now.",
+          "Text": "Took beatings for years, past any sense of it. Somewhere in there he stopped choosing to endure and started just being unable to feel it anymore. That's the difference between him and me, and it's the whole reason he's dangerous now.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Alpha totem marks the toughest bloodline in the pens, the one every other animal learns to hold from. He's got it clawed to pieces because he clawed the real bloodline apart himself, replaced it with whatever survives beating instead of whatever endures honestly. Bring it back whole and the real line's proven again.",
+          "Text": "Alpha totem marks the toughest bloodline in the pens, the one every other animal learns to hold from. The breeders clawed it apart and hung it on him, a beast that survives beatings instead of one that endures honestly. Bring it back whole and the real line's proven again.",
           "Style": 0,
           "Color": null
         }
@@ -866,7 +866,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Whole. That's the real bloodline proven again, finally. Not bad, for people who could take a hit. Rest up. The ones who taught him that trick are next.",
+          "Text": "Whole. That's the real bloodline proven again, finally. Not bad, for people who could take a hit. Rest up. The ones he was beaten beside are next.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of them run the deep floor now, inner circle, the ones who taught the warden that his hide should stop feeling anything at all. Bring your people back. Four of them hitting at once is its own kind of endurance test. Take them down. Bring me the Unbreakable Beast Preserve Keeper's Token.",
+          "Text": "Four of them hold the deepest pens now, the inner circle. Oldest burrowers in the preserve, beaten longest, the ones that stopped feeling anything at all. Bring your people back. Four of them hitting at once is its own kind of endurance test. Take them down. Bring me the Unbreakable Beast Preserve Keeper's Token from their den.",
           "Style": 0,
           "Color": null
         }
@@ -929,7 +929,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same gap. Deepest part of the preserve. Stand together. Four of them hitting from four sides tests whether your people can hold a line as much as it tests you.",
+          "Text": "Same gate. Deepest part of the preserve. Stand together. Four of them hitting from four sides tests whether your people can hold a line as much as it tests you.",
           "Style": 0,
           "Color": null
         }
@@ -950,7 +950,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Taught him to stop feeling it. That's their whole doctrine down there: pain isn't something you endure, it's something you stop noticing. Difference between that and real endurance is everything. One's a choice you keep making. The other's just numbness with good posture.",
+          "Text": "Taught them to stop feeling it. That was the breeders' whole doctrine: pain isn't something you endure, it's something you stop noticing. Difference between that and real endurance is everything. One's a choice you keep making. The other's just numbness with good posture.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +976,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That token's proof of who's allowed to run the deep floor, sign off on the pens, all of it. They minted fakes to cover for each other. One real token, and every fake signature they've made gets thrown out with it.",
+          "Text": "That token's proof of who's allowed to run the pens, sign off on transfers, all of it. The breeders took it when they ran and lost it down there when the burrowers turned. One real token, and every signature they made gets thrown out with it.",
           "Style": 0,
           "Color": null
         }
@@ -1028,7 +1028,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of them still running the deep floor. Bring the token back.",
+          "Text": "Four of them still holding the deep pens. Bring the token back.",
           "Style": 0,
           "Color": null
         }
@@ -1075,7 +1075,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Whole. Deep floor's mine to sign again. One name left down there, and he's the one who taught all four of them to stop feeling anything. You're ready for that.",
+          "Text": "Whole. Deep pens can be run honest again. One left down there, the old shyrack the warden was bred from. You're ready for that.",
           "Style": 0,
           "Color": null
         }
@@ -1096,7 +1096,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Last one. The master's hide doesn't just stop feeling it. It doesn't break, period, not the way the warden's doesn't break, not the way anything in this preserve doesn't break. He built that out of the same endurance I've spent my life teaching, and pointed it at anyone who questioned him. Bring your people. All of them. His hide answers to a lot of hits landing together or it doesn't answer to anything. No token this time. Him going down, and staying down, is the whole proof.",
+          "Text": "Last one. The master's the warden's sire, the oldest shyrack in the preserve. His hide doesn't just stop feeling it. It doesn't break, period. The breeders built that out of the same endurance I've spent my life teaching, and pointed it at anything that comes near. Bring your people. All of them. His hide answers to a lot of hits landing together or it doesn't answer at all. No token this time. Him going down, and staying down, is the whole proof.",
           "Style": 0,
           "Color": null
         }
@@ -1138,7 +1138,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then go. All your people, together, same gap in the fence. His hide's felt one hit at a time for years and shrugged it off. Give it a lot of hits, all at once, for once.",
+          "Text": "Then go. All your people, together. His hide's felt one hit at a time for years and shrugged it off. Give it a lot of hits, all at once, for once.",
           "Style": 0,
           "Color": null
         }
@@ -1159,7 +1159,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Warden stopped feeling it. He stopped needing to feel it in the first place. That's further along the same road, and it's exactly what I've spent my whole life teaching, done right, for the wrong reasons. You've been building the true version this whole trial. He's the corrupted end of the same road.",
+          "Text": "Warden stopped feeling it. He stopped needing to feel it in the first place. That's further along the same road, and it's exactly what I've spent my whole life teaching, done right, for the wrong reasons. You've been building the true version this whole time. He's the corrupted end of the same road.",
           "Style": 0,
           "Color": null
         }
@@ -1543,7 +1543,7 @@
     "reply-00010": {
       "Id": "reply-00010",
       "Text": {
-        "Text": "Why move from beatings to needles?",
+        "Text": "Why move from beatings to a scent?",
         "Style": 4,
         "Color": null
       },
@@ -1860,7 +1860,7 @@
     "reply-00023": {
       "Id": "reply-00023",
       "Text": {
-        "Text": "What did they teach the warden, exactly?",
+        "Text": "What did the breeders do to those four?",
         "Style": 4,
         "Color": null
       },

@@ -534,6 +534,48 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetResultDetail("Native editor and Set/Refresh paths changed registered helmet, cloak, and left-hand simple-shield models; helmet/cloak dyes also changed. All three equipped objects and the chest retained their identity, IPs/locals, AC/weight, resource and queued-state snapshots, with zero lifecycle callbacks. Genuine controls: " + string.Join("; ", genuineEvents) + ". NPC fixture excludes PC-only module delivery and client rendering.");
         }
 
+        [EngineTest("Helmet and cloak models outside the wearer's options are not editable", Category = "AppearanceEditor", TimeoutSeconds = 60f)]
+        public static async Task UnsupportedSimpleModelsAreNotEditable(EngineTestContext ctx)
+        {
+            const int SupportedModel = 106;
+            var creature = await SpawnCivilianAsync(ctx);
+            var definition = new GeneralArmorAppearanceDefinition();
+            var cases = new[]
+            {
+                (Slot: InventorySlot.Head, Page: 1, Resref: "advent_helmet", Options: definition.Helmet, Unsupported: 13),
+                (Slot: InventorySlot.Cloak, Page: 2, Resref: "advent_cloak", Options: definition.Cloak, Unsupported: 43)
+            };
+            foreach (var test in cases)
+            {
+                ctx.Assert(!test.Options.Contains(test.Unsupported) && test.Options.Contains(SupportedModel),
+                    $"{test.Slot}: fixture models match the human option list");
+                var item = await ctx.EquipItemAsync(creature, test.Resref, test.Slot);
+                await AssignedAsync(ctx, creature, () =>
+                {
+                    SetItemCursedFlag(item, false);
+                    SetPlotFlag(item, false);
+                    EquippedItemAppearance.Set(item, ItemAppearanceType.SimpleModel, -1, test.Unsupported);
+
+                    var editor = BindEditor(creature);
+                    editor.SelectedItemTypeIndex = test.Page;
+                    ctx.Assert(editor.DoesNotHaveItemEquipped, $"{test.Slot}: an unsupported model is not editable");
+                    editor.OnSelectAppearance()();
+                    editor.OnSelectEquipment()();
+                    ctx.Assert(editor.DoesNotHaveItemEquipped, $"{test.Slot}: returning to the equipment tab keeps it locked");
+                    ctx.AssertEqual(test.Unsupported, GetItemAppearance(item, ItemAppearanceType.SimpleModel, -1),
+                        $"{test.Slot}: the unsupported model is left unchanged");
+
+                    EquippedItemAppearance.Set(item, ItemAppearanceType.SimpleModel, -1, SupportedModel);
+                    editor = BindEditor(creature);
+                    editor.SelectedItemTypeIndex = test.Page;
+                    ctx.Assert(editor.HasItemEquipped, $"{test.Slot}: a supported model is editable");
+                    ctx.AssertEqual($"Part #{SupportedModel}", editor.PartOptions.ElementAt(editor.SelectedPartIndex),
+                        $"{test.Slot}: the editor selects the equipped model");
+                });
+            }
+            ctx.SetResultDetail("Helmet model 13 and cloak model 43 are outside the human option lists; selecting either page and re-entering the equipment tab leaves the item locked without throwing. Model 106 on both slots stays editable and selected.");
+        }
+
         private static async Task<string> VerifyGenuineEquipmentEventsAsync(EngineTestContext ctx, uint creature, uint item,
             InventorySlot slot, EventObservation observation)
         {

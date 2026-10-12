@@ -87,8 +87,8 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Anchorhead - Sandy Dune Desert - North East",
-      "2": "Anchorhead - Northeast Sandy Dunes"
+      "0": "[Prefab] Tatooine - Anchorhead - Sandy Dune Desert - North East",
+      "2": "[Prefab] Anchorhead - Northeast Sandy Dunes"
     }
   },
   "NoRest": {

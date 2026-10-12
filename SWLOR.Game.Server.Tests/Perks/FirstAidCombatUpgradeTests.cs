@@ -154,17 +154,14 @@ public class FirstAidCombatUpgradeTests
     {
         var root = FindRepositoryRoot();
         var medKit = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "MedKitAbilityDefinition.cs").FullName);
-        medKit.Should().Contain("CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);");
+        medKit.Should().Contain("FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated);");
 
         var treatmentKit = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "TreatmentKitAbilityDefinition.cs").FullName)
             .Replace("\r\n", "\n");
         treatmentKit.Should().Contain("StatusEffectCleanseType.TreatmentKit2");
         treatmentKit.Should().Contain("RemoveCleanseableStatusEffects(friendly, StatusEffectCleanseType.TreatmentKit2, false)");
-        treatmentKit.Split("GrantFirstAidCombatPointIfApplied(activator, affectedCount);").Length.Should().Be(4);
-        treatmentKit.Should().Contain(
-            "if (affectedCount > 0)\n" +
-            "                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);");
-        treatmentKit.Split("CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);").Length.Should().Be(2);
+        treatmentKit.Split("FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated);").Length.Should().Be(4);
+        treatmentKit.Should().NotContain("AddCombatPointToAllTagged");
 
         var resuscitation = File.ReadAllText(
                 (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "ResuscitationAbilityDefinition.cs").FullName)
@@ -192,8 +189,8 @@ public class FirstAidCombatUpgradeTests
         koltoMist.Should().Contain("GetIsObjectValid(activator)");
         koltoMist.Should().Contain("GetCurrentHitPoints(activator) <= 0");
         koltoMist.Should().Contain("GetIsObjectValid(GetAreaFromLocation(location))");
-        koltoMist.Should().Contain("var applied = ApplyKoltoMistPulse(activator, location, percentPerTick, playPulseVisual);");
-        koltoMist.Should().Contain("if (applied && !combatPointAwarded)");
+        koltoMist.Should().Contain("var treated = ApplyKoltoMistPulse(activator, location, percentPerTick, playPulseVisual);");
+        koltoMist.Should().Contain("FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated, credited);");
         koltoMist.Should().Contain("visualEffect: VisualEffect.Vfx_Imp_Head_Heal");
         koltoMist.Should().Contain("StatusEffect.ApplyStatusEffect(");
         koltoMist.Should().Contain("typeof(KoltoMistHealingStatusEffect)");
@@ -208,8 +205,8 @@ public class FirstAidCombatUpgradeTests
         koltoMistStatus.Should().NotContain("protected override void Tick");
 
         var treatmentAdjustments = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "FirstAidTreatmentAdjustments.cs").FullName);
-        treatmentAdjustments.Should().Contain("CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);");
-        treatmentAdjustments.Should().Contain("GrantCombatPointIfApplied(uint activator, bool applied)");
+        treatmentAdjustments.Should().Contain("CombatPoint.AddSupportCombatPoint(activator, treated, SkillType.FirstAid");
+        treatmentAdjustments.Should().Contain("GrantCombatPoint(uint activator, IReadOnlyCollection<uint> treated");
         treatmentAdjustments.Should().Contain("if (!removedAilment)");
         treatmentAdjustments.Should().Contain("StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 30f);");
         treatmentAdjustments.IndexOf("if (!removedAilment)", StringComparison.Ordinal)
@@ -225,7 +222,6 @@ public class FirstAidCombatUpgradeTests
             "FocusStimAbilityDefinition.cs",
             "InfusionAbilityDefinition.cs",
             "PainSuppressantAbilityDefinition.cs",
-            "ResuscitationAbilityDefinition.cs",
             "ShieldingAbilityDefinition.cs"
         };
 
@@ -236,6 +232,9 @@ public class FirstAidCombatUpgradeTests
                 "FirstAidTreatmentAdjustments.GrantCombatPoint",
                 $"{file} should award First Aid combat points after a successful support application");
         }
+
+        resuscitation.Split("CombatPoint.AddReviveSupportCombatPoint(activator, target, SkillType.FirstAid);").Length.Should().Be(3,
+            "a revived ally has no enmity, so both ranks must credit the enemies fighting its nearby party");
 
         var emergencySealantStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "EmergencySealant1StatusEffect.cs").FullName);
         emergencySealantStatus.Should().Contain("AbilityEffectScaling.ApplyScaledHeal(Source, creature, 1);");

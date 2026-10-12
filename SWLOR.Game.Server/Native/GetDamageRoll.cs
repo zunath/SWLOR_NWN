@@ -29,6 +29,8 @@ namespace SWLOR.Game.Server.Native
         private const int ImprovedPowerAttackMode = 3;
         private const int AttributeNegativeThreshold = 128;
         private const int AttributeNegativeOffset = 256;
+        private const string ForceConversionAttackIndex = "FORCE_CONVERSION_ATTACK_INDEX";
+        private const string ForceConversionAttackTarget = "FORCE_CONVERSION_ATTACK_TARGET";
 
         internal delegate int GetDamageRollHook(void* thisPtr, void* pTarget, int bOffHand, int bCritical, int bSneakAttack, int bDeathAttack, int bForceMax);
         // ReSharper disable once NotAccessedField.Local
@@ -105,7 +107,7 @@ namespace SWLOR.Game.Server.Native
                     : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
 
                 // Imbuement Stance converts the wearer's hostile weapon auto-attacks to Force damage for an FP cost.
-                damageProfile = ApplyForceConversionStance(attacker, defender, damageProfile, weaponSkillType);
+                damageProfile = ApplyForceConversionStance(attacker, defender, damageProfile);
 
                 var attackerStatType = GetWeaponDamageAbilityType(attacker.m_idSelf, weapon);
                 var weaponDeltaCap = GetWeaponDeltaCap(weapon);
@@ -278,35 +280,50 @@ namespace SWLOR.Game.Server.Native
             attackData.AddDamage((ushort)damageType.GetNativeDamageType(), damage);
         }
 
-        // While Imbuement Stance is active, the wearer's hostile weapon auto-attacks deal Force damage instead of
-        // their normal type and cost FP per swing. This only affects real auto-attacks against creatures; queued
-        // weapon abilities apply their own damage and are excluded so they are neither converted nor charged.
-        private static WeaponDamageProfile ApplyForceConversionStance(
+        // Pay at the attack-roll boundary, including misses. Damage can be queried speculatively
+        // or repeatedly for one swing, so it must only read the conversion decision made here.
+        internal static void PrepareForceConversionStanceAttack(
             CNWSCreature attacker,
             CNWSObject defender,
-            WeaponDamageProfile damageProfile,
             SkillType weaponSkillType)
         {
+            DeleteLocalInt(attacker.m_idSelf, ForceConversionAttackIndex);
+            DeleteLocalObject(attacker.m_idSelf, ForceConversionAttackTarget);
+
             if (defender.m_nObjectType != (int)ObjectType.Creature)
-                return damageProfile;
+                return;
 
             var conversion = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.StanceHostileAutoAttackForceConversion);
             if (conversion <= 0)
-                return damageProfile;
+                return;
 
             // Weapon abilities apply their own combat impact and suppress the auto-attack; do not convert/charge them.
             if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack))
-                return damageProfile;
+                return;
 
             var fpCost = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.StanceHostileAutoAttackFPCost);
             if (fpCost > 0)
             {
                 // Not enough FP to pay the upkeep: the swing stays its normal type and no FP is spent.
                 if (Stat.GetCurrentFP(attacker.m_idSelf) < fpCost)
-                    return damageProfile;
+                    return;
 
                 Stat.ReduceFP(attacker.m_idSelf, fpCost);
             }
+
+            // Offset the index so an absent local (zero) cannot match the first attack.
+            SetLocalInt(attacker.m_idSelf, ForceConversionAttackIndex, attacker.m_pcCombatRound.m_nCurrentAttack + 1);
+            SetLocalObject(attacker.m_idSelf, ForceConversionAttackTarget, defender.m_idSelf);
+        }
+
+        private static WeaponDamageProfile ApplyForceConversionStance(
+            CNWSCreature attacker,
+            CNWSObject defender,
+            WeaponDamageProfile damageProfile)
+        {
+            if (GetLocalInt(attacker.m_idSelf, ForceConversionAttackIndex) != attacker.m_pcCombatRound.m_nCurrentAttack + 1 ||
+                GetLocalObject(attacker.m_idSelf, ForceConversionAttackTarget) != defender.m_idSelf)
+                return damageProfile;
 
             return new WeaponDamageProfile(CombatDamageType.Force, damageProfile.Damage, damageProfile.HasItemDamage);
         }

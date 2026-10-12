@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBR-001
             _builder.Create(RecipeType.DLBR001, SkillType.Engineering)
-                .Category(RecipeCategoryType.Bracer)
+                .Category(RecipeCategoryType.Glove)
                 .Resref("dlbr001")
                 .Level(3)
                 .Quantity(1)
@@ -682,7 +682,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBR-002
             _builder.Create(RecipeType.DLBR002, SkillType.Engineering)
-                .Category(RecipeCategoryType.Bracer)
+                .Category(RecipeCategoryType.Glove)
                 .Resref("dlbr002")
                 .Level(13)
                 .Quantity(1)
@@ -1197,7 +1197,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBR-003
             _builder.Create(RecipeType.DLBR003, SkillType.Engineering)
-                .Category(RecipeCategoryType.Bracer)
+                .Category(RecipeCategoryType.Glove)
                 .Resref("dlbr003")
                 .Level(23)
                 .Quantity(1)
@@ -1712,7 +1712,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBR-004
             _builder.Create(RecipeType.DLBR004, SkillType.Engineering)
-                .Category(RecipeCategoryType.Bracer)
+                .Category(RecipeCategoryType.Glove)
                 .Resref("dlbr004")
                 .Level(33)
                 .Quantity(1)
@@ -2227,7 +2227,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBR-005
             _builder.Create(RecipeType.DLBR005, SkillType.Engineering)
-                .Category(RecipeCategoryType.Bracer)
+                .Category(RecipeCategoryType.Glove)
                 .Resref("dlbr005")
                 .Level(43)
                 .Quantity(1)
@@ -2756,7 +2756,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBR-001 A
             _builder.Create(RecipeType.DLBR001A, SkillType.Engineering)
-                .Category(RecipeCategoryType.Bracer)
+                .Category(RecipeCategoryType.Glove)
                 .Resref("dlbr001a")
                 .Level(8)
                 .Quantity(1)
@@ -2935,7 +2935,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBR-002 A
             _builder.Create(RecipeType.DLBR002A, SkillType.Engineering)
-                .Category(RecipeCategoryType.Bracer)
+                .Category(RecipeCategoryType.Glove)
                 .Resref("dlbr002a")
                 .Level(18)
                 .Quantity(1)
@@ -3114,7 +3114,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBR-003 A
             _builder.Create(RecipeType.DLBR003A, SkillType.Engineering)
-                .Category(RecipeCategoryType.Bracer)
+                .Category(RecipeCategoryType.Glove)
                 .Resref("dlbr003a")
                 .Level(28)
                 .Quantity(1)
@@ -3293,7 +3293,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // DLBR-004 A
             _builder.Create(RecipeType.DLBR004A, SkillType.Engineering)
-                .Category(RecipeCategoryType.Bracer)
+                .Category(RecipeCategoryType.Glove)
                 .Resref("dlbr004a")
                 .Level(38)
                 .Quantity(1)

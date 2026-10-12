@@ -74,6 +74,9 @@ public class HutlarDroidFoundryPlacementTests
             .EnumerateArray().SelectMany(Folders)
             .Single(f => f.GetProperty("name").GetString() == "Droid Foundry");
 
+        var map = Load("uti", $"map_{(int)KeyItemType.HutlarDroidFoundryMap}");
+        Value(map, "DescIdentified").GetProperty("0").GetString().Should().NotBeNullOrWhiteSpace("players examining the dropped map need a description");
+
         foreach (var (resref, name, _, _) in Floors)
         {
             var area = Load("are", resref);

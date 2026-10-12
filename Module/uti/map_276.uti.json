@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Map of the droid foundry beneath the Abandoned Outpost on Hutlar."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Map of the droid foundry beneath the Abandoned Outpost on Hutlar."
+    }
   },
   "Identified": {
     "type": "byte",

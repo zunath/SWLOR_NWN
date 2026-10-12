@@ -589,7 +589,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "ABANDONED_STATION_ZOMBIE_RANCOR,100,1"
+          "value": "STATION_RANCOR,100,1"
         }
       },
       {

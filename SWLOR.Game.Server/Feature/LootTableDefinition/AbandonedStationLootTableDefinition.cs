@@ -18,8 +18,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
         private void ZombieRancor()
         {
-            _builder.Create("ABANDONED_STATION_ZOMBIE_RANCOR")
-                .AddItem("lockbox_t3", 1);
+            _builder.Create("ABANDONED_STATION_ZOMBIE_RANCOR");
         }
 
         private void StationHorrors()
@@ -46,6 +45,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("lockbox_t3", 30, 1, true);
 
             _builder.Create("STATION_DIRECTOR")
+                .AddItem("lockbox_t3", 1);
+
+            _builder.Create("STATION_RANCOR")
                 .AddItem("lockbox_t3", 1);
         }
 

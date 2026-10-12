@@ -13852,6 +13852,25 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Foreman RX-12"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_foreman"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Forge Warden"
                     },
                     "RESREF": {
@@ -13914,6 +13933,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "fdy_hunter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Inspector Q-0"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_inspector"
                     }
                   },
                   {
@@ -14066,6 +14104,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "fdy_smelter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sorter Prime"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_sorter"
                     }
                   },
                   {

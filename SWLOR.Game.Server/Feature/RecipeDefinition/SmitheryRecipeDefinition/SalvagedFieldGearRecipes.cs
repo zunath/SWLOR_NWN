@@ -246,6 +246,42 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Category(RecipeCategoryType.Tunic).Resref("rhydelalphacr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("rhydelalphacm", 1).Component("lth_good", 4).Component("fiberp_good", 2);
+
+            // Sorting-Arm Harness (belt) - Hutlar Droid Foundry
+            _builder.Create(RecipeType.SalvagedSortingHarness, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("sorting_harness")
+                .Level(45)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("sorting_actuator", 1)
+                .Component("elec_good", 3)
+                .Component("fiberp_good", 2);
+
+            // Assembly-Line Gauntlets (gloves) - Hutlar Droid Foundry
+            _builder.Create(RecipeType.SalvagedAssemblyGauntlet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("assembly_gaunt")
+                .Level(48)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("torque_regulator", 1)
+                .Component("elec_high", 3)
+                .Component("fiberp_good", 2);
+
+            // Null-Field Collar (necklace) - Hutlar Droid Foundry
+            _builder.Create(RecipeType.SalvagedNullFieldCollar, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("nullfield_collar")
+                .Level(50)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("faultscan_optic", 1)
+                .Component("elec_high", 3)
+                .Component("fiberp_high", 2);
         }
     }
 }

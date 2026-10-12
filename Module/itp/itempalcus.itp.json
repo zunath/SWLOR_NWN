@@ -3007,6 +3007,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Fault-Lattice Plating"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lattice_plate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Fenbloom Harness"
                     },
                     "RESREF": {
@@ -5294,6 +5305,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "killbox_l7"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Line-Calibration Visor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "line_visor"
                     }
                   },
                   {
@@ -10782,6 +10804,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Foreman RX-12 Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_foreman_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Forge Warden Armament"
                     },
                     "RESREF": {
@@ -10886,6 +10919,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "impwarform2_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Inspector Q-0 Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_inspector_wp"
                     }
                   },
                   {
@@ -13455,6 +13499,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sorter Prime Armament"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_sorter_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Temple Council Guardian Lightsaber"
                     },
                     "RESREF": {
@@ -14109,6 +14164,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Foreman RX-12 Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_foreman_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Forge Warden Stat Skin"
                     },
                     "RESREF": {
@@ -14455,6 +14521,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "inkveil_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Inspector Q-0 Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_inspector_sk"
                     }
                   },
                   {
@@ -18426,6 +18503,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "soot_rusk_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sorter Prime Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_sorter_sk"
                     }
                   },
                   {
@@ -26588,6 +26676,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Sorting-Arm Harness"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sorting_harness"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Spiritbeast Sash"
                           },
                           "RESREF": {
@@ -27071,6 +27170,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "infconduit_l8"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Conveyor-Tread Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "conveyor_treads"
                           }
                         },
                         {
@@ -29194,6 +29304,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Grapple-Arm Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "grapple_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Guardian Bracer"
                           },
                           "RESREF": {
@@ -30904,6 +31025,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Riveted Shoulder Mantle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "riveted_mantle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Sacred Cape"
                           },
                           "RESREF": {
@@ -31420,6 +31552,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "soulasc_l3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Assembly-Line Gauntlets"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "assembly_gaunt"
                           }
                         },
                         {
@@ -42746,6 +42889,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Fault-Scan Optic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "faultscan_optic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Feevina"
                     },
                     "RESREF": {
@@ -51689,6 +51843,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sorting Actuator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sorting_actuator"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Spear Boost I"
                     },
                     "RESREF": {
@@ -53003,6 +53168,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "torporand_juice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Torque Regulator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "torque_regulator"
                     }
                   },
                   {
@@ -56412,6 +56588,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Null-Field Collar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "nullfield_collar"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Onslaught Necklace"
                           },
                           "RESREF": {
@@ -58149,6 +58336,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "se_band"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Quality-Seal Signet"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "quality_signet"
                           }
                         },
                         {
@@ -61900,6 +62098,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Assembly-Line Gauntlets"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_assemgaunt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Aurek"
                     },
                     "RESREF": {
@@ -63891,6 +64100,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Null-Field Collar"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_nullcollar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Ocular Filter I"
                     },
                     "RESREF": {
@@ -64809,6 +65029,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_social2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Sorting-Arm Harness"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bp_sortharness"
                     }
                   },
                   {

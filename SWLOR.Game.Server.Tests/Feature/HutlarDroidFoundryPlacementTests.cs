@@ -157,7 +157,7 @@ public class HutlarDroidFoundryPlacementTests
 
         void AssertTable(string tableId, string[] roster)
         {
-            var spawns = tables[tableId].Spawns;
+            var spawns = tables[tableId].Spawns.Where(s => !s.IsRare).ToList();
             spawns.Select(s => s.Resref).Should().BeEquivalentTo(roster);
             spawns.Should().OnlyContain(s => s.Type == ObjectType.Creature && s.AIFlags.HasFlag(AIFlag.ReturnHome),
                 $"{tableId} droids must leash home");

@@ -42,6 +42,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "fdy_smelter")
                 .WithFrequency(15)
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "fdy_sorter")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
                 .ReturnsHome();
 
             _builder.Create("HUTLAR_FOUNDRY_ASSEMBLY", "Hutlar Droid Foundry - Assembly Line")
@@ -61,6 +67,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "fdy_forgewd")
                 .WithFrequency(15)
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "fdy_foreman")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
                 .ReturnsHome();
 
             _builder.Create("HUTLAR_FOUNDRY_CORE", "Hutlar Droid Foundry - Core")
@@ -80,6 +92,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "fdy_juggernt")
                 .WithFrequency(15)
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "fdy_inspector")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
                 .ReturnsHome();
 
             _builder.Create("HUTLAR_FOUNDRY_OVERSEER", "Hutlar Droid Foundry - Overseer")

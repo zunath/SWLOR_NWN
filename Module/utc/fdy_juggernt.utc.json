@@ -615,6 +615,21 @@
           "type": "cexostring",
           "value": "HUTLAR_FOUNDRY_RARES,10,1"
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_5"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "HUTLAR_FOUNDRY_GEAR,20,1"
+        }
       }
     ]
   },

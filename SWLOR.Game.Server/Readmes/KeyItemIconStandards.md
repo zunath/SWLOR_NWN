@@ -11,7 +11,7 @@ Key Item icons use the `iki_` prefix, are stored in `SWLOR_Haks/sw_item`, and ar
 - No readable text, letters, numbers, logos, watermarks, UI labels, character portraits, or tiny peripheral clutter.
 - The composition must remain readable when reduced to 40 x 40 pixels.
 
-Category accents are amber-gold for Maps, violet-magenta for Quest Items, ivory-gold for Documents, red-orange for Keys, and emerald-green for Field Notes.
+Category accents are amber-gold for Maps, violet-magenta for Quest Items, ivory-gold for Documents, red-orange for Keys, emerald-green for Field Notes, and a teal-violet frame for Music.
 
 The empty Key Items view uses the neutral archive placeholder `iki_default` instead of an empty resref, which NWN renders as its error icon.
 
@@ -38,5 +38,13 @@ Field Notes reuse six document icons:
 - Holographic observation log: `iki_fn_holo`
 - Sealed boss dossier: `iki_fn_dossier`
 - Encrypted restricted report: `iki_fn_restrict`
+
+Music reuses five icons, one per song category in `MusicSongCatalog`:
+
+- Cantina: `iki_mus_cant`
+- Battle: `iki_mus_batl`
+- Themes: `iki_mus_theme`
+- Locations: `iki_mus_place`
+- Ambient: `iki_mus_ambi`
 
 Field Note icons must depict documents or data records only. Do not depict a beast, creature silhouette, anatomy, tracks, eggs, specimens, DNA, enzymes, reagents, or laboratory apparatus. Beast names, `AppearanceType` identifiers, 2DA labels, and assigned portraits are not reliable visual references.

@@ -105,6 +105,32 @@ public class DBIndexDefinitionTests
         Describe(LiveFields(), customStopWords).Should().NotBe(Fingerprint(PlayerFields));
     }
 
+    [Test]
+    public void LiveFieldsBuiltByThisCodeAreRead()
+    {
+        // Token layouts taken from FT.INFO on redislabs/redismod.
+        SearchIndexDefinition.TryReadLiveField(
+                new[] { "identifier", "Name", "attribute", "Name", "type", "TEXT", "WEIGHT", "1" }, out var text)
+            .Should().BeTrue();
+        text.Should().Be(("Name", "TEXT"));
+
+        SearchIndexDefinition.TryReadLiveField(
+                new[] { "identifier", "Version", "attribute", "Version", "type", "NUMERIC" }, out var numeric)
+            .Should().BeTrue();
+        numeric.Should().Be(("Version", "NUMERIC"));
+    }
+
+    [TestCase("identifier", "Name", "attribute", "Other", "type", "TEXT", "WEIGHT", "1")]
+    [TestCase("identifier", "Name", "attribute", "Name", "type", "TEXT", "WEIGHT", "1", "SORTABLE")]
+    [TestCase("identifier", "Name", "attribute", "Name", "type", "TEXT", "WEIGHT", "2")]
+    [TestCase("identifier", "Name", "attribute", "Name", "type", "TEXT", "WEIGHT", "1", "NOSTEM")]
+    [TestCase("identifier", "Version", "attribute", "Version", "type", "NUMERIC", "SORTABLE")]
+    public void LiveFieldsWithAnAliasOrExtraOptionsAreRejected(params string[] tokens)
+    {
+        // "Name AS Other" makes queries target @Other; flags like SORTABLE change how the field is stored.
+        SearchIndexDefinition.TryReadLiveField(tokens, out _).Should().BeFalse();
+    }
+
     private static IEnumerable<(string Name, string Type)> LiveFields()
     {
         return PlayerFields.Select(field => (field.Name, field.IsNumeric ? "NUMERIC" : "TEXT"));

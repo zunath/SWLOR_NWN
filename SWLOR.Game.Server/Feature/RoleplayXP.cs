@@ -2,6 +2,7 @@ using System.Globalization;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.RoleplayXPService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using Player = SWLOR.Game.Server.Entity.Player;
@@ -14,8 +15,6 @@ namespace SWLOR.Game.Server.Feature
         private const string RPTickVariable = "RP_SYSTEM_TICKS";
         private const string RPTimestampVariable = "RP_SYSTEM_LAST_MESSAGE_TIMESTAMP";
         private const int RPRequiredTicks = 300;
-        private const int OOCPenaltyTicks = 50;
-        private const int MaxOOCPenaltyTicks = 300;
 
         /// <summary>
         /// Once every 30 minutes, the RP system will check all players and distribute RP XP if applicable.
@@ -67,13 +66,18 @@ namespace SWLOR.Game.Server.Feature
                 var xp = BaseXP + bonusXP + socialModifier * (BaseXP / 4);
                 var cantinaBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.CantinaLevel);
                 xp += (int)(BaseXP * (cantinaBonus * 0.05f));
+                xp = OOCAllowance.ApplyPenalty(xp, dbPlayer.RoleplayProgress.PendingOOCPenaltySteps);
 
                 dbPlayer.RoleplayProgress.RPPoints = 0;
+                dbPlayer.RoleplayProgress.PendingOOCPenaltySteps = 0;
                 dbPlayer.RoleplayProgress.TotalRPExpGained += (ulong)xp;
                 dbPlayer.UnallocatedXP += xp;
                 DB.Set(dbPlayer);
 
-                SendMessageToPC(player, $"You gained {xp} roleplay XP.");
+                if (xp > 0)
+                {
+                    SendMessageToPC(player, $"You gained {xp} roleplay XP.");
+                }
             }
         }
 
@@ -107,13 +111,16 @@ namespace SWLOR.Game.Server.Feature
             var playerID = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerID) ?? new Player(playerID);
 
-            // Is this an OOC message?
-            if (IsOOCMessage(message))
+            var messageType = RoleplayMessageClassifier.Classify(message);
+            if (messageType == RoleplayMessageType.OutOfCharacter)
             {
                 RefreshRPMessageTimestamp(player, now);
-                ApplyOOCMessagePenalty(player, dbPlayer);
+                OOCAllowance.RecordOOCMessage(dbPlayer.RoleplayProgress, now, IsDMEventInProgress(player));
+                DB.Set(dbPlayer);
                 return;
             }
+
+            if (messageType == RoleplayMessageType.TypoCorrection) return;
 
             // Is the message too short?
             if (message.Length <= 3) return;
@@ -148,40 +155,33 @@ namespace SWLOR.Game.Server.Feature
             return timestampString;
         }
 
-        private static bool IsOOCMessage(string message)
+        /// <summary>
+        /// A DM event is in progress when the player is in a staff event area, or a DM or
+        /// DM-possessed creature is in the same area as the player.
+        /// </summary>
+        private static bool IsDMEventInProgress(uint player)
         {
-            var trimmedMessage = message.TrimStart();
-            if (trimmedMessage.Length <= 0)
+            var area = GetArea(player);
+            if (!GetIsObjectValid(area))
                 return false;
 
-            return
-                trimmedMessage.StartsWith("//", StringComparison.Ordinal) ||
-                trimmedMessage.StartsWith("((", StringComparison.Ordinal) ||
-                trimmedMessage.StartsWith("[[", StringComparison.Ordinal) ||
-                trimmedMessage.StartsWith("{{", StringComparison.Ordinal) ||
-                trimmedMessage.StartsWith("OOC:", StringComparison.OrdinalIgnoreCase) ||
-                trimmedMessage.StartsWith("[OOC]", StringComparison.OrdinalIgnoreCase) ||
-                trimmedMessage.StartsWith("(OOC)", StringComparison.OrdinalIgnoreCase);
-        }
+            if (GetLocalBool(area, Communication.EventCommsAreaVariable))
+                return true;
 
-        private static void ApplyOOCMessagePenalty(uint player, Player dbPlayer)
-        {
-            dbPlayer.RoleplayProgress.OOCMessageCount++;
-            dbPlayer.RoleplayProgress.RPPoints = 0;
-            DB.Set(dbPlayer);
+            for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
+            {
+                if (!GetIsDM(pc) && !GetIsDMPossessed(pc))
+                    continue;
 
-            var penaltyTicks = GetOOCMessagePenaltyTicks(dbPlayer.RoleplayProgress.OOCMessageCount);
-            SetLocalInt(player, RPTickVariable, -penaltyTicks);
-        }
+                if (GetArea(pc) == area)
+                    return true;
 
-        private static int GetOOCMessagePenaltyTicks(ulong oocMessageCount)
-        {
-            if (oocMessageCount <= 1)
-                return 0;
+                var possessed = Communication.GetDMPossessedCreature(pc);
+                if (GetIsObjectValid(possessed) && GetArea(possessed) == area)
+                    return true;
+            }
 
-            var penaltySteps = oocMessageCount - 1;
-            var penaltyTicks = penaltySteps * OOCPenaltyTicks;
-            return (int)Math.Min((ulong)MaxOOCPenaltyTicks, penaltyTicks);
+            return false;
         }
 
         /// <summary>

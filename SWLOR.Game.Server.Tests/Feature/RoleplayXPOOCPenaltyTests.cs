@@ -1,82 +1,209 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.RoleplayXPService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class RoleplayXPOOCPenaltyTests
 {
-    [Test]
-    public void RoleplayProgress_PersistsOOCMessageCount()
+    private static readonly DateTime Morning = new(2026, 10, 12, 12, 0, 0, DateTimeKind.Utc);
+
+    [TestCase("//brb, getting food")]
+    [TestCase("((gotta run, night all))")]
+    [TestCase("[[back]]")]
+    [TestCase("{{one sec}}")]
+    [TestCase(@"\\sure let me finish this first")]
+    [TestCase("OOC: is the event still on?")]
+    [TestCase("[OOC] heading out")]
+    [TestCase("(OOC) heading out")]
+    [TestCase("   //leading whitespace")]
+    public void Classify_ExplicitOOCPrefix_IsOutOfCharacter(string message)
     {
-        var dbPlayer = new Player();
+        RoleplayMessageClassifier.Classify(message).Should().Be(RoleplayMessageType.OutOfCharacter);
+    }
 
-        dbPlayer.RoleplayProgress.OOCMessageCount.Should().Be(0);
+    [TestCase("\"I'll catch you all later.\" //gotta bounce, work in the morning")]
+    [TestCase("She nods slowly. ((sorry, didn't see you there))")]
+    [TestCase("stranger*))")]
+    [TestCase("Make him sit in it))")]
+    [TestCase("pretend we're normal//")]
+    public void Classify_OOCMarkerAfterInCharacterText_IsOutOfCharacter(string message)
+    {
+        RoleplayMessageClassifier.Classify(message).Should().Be(RoleplayMessageType.OutOfCharacter);
+    }
 
-        dbPlayer.RoleplayProgress.OOCMessageCount++;
+    [TestCase("brb")]
+    [TestCase("afk rq, food is ready")]
+    [TestCase("gonna relog to fix my combat log")]
+    [TestCase("idk what im giving you")]
+    [TestCase("does it now lmao")]
+    [TestCase("LMAOOO")]
+    [TestCase("lolol")]
+    [TestCase("Tryin to find where they are xD")]
+    [TestCase("can my pet get the xp?")]
+    [TestCase("Also yes, I can see DM chat")]
+    [TestCase("Ohp, nvm! Misread the chart")]
+    [TestCase("\"Sounds good.\" ty for the rp!")]
+    [TestCase("\"Fair enough.\" She grins. tbh I think that was the best roll all night")]
+    public void Classify_ChatSpeakTypedAsNarration_IsOutOfCharacter(string message)
+    {
+        RoleplayMessageClassifier.Classify(message).Should().Be(RoleplayMessageType.OutOfCharacter);
+    }
 
-        dbPlayer.RoleplayProgress.OOCMessageCount.Should().Be(1);
+    [TestCase("no problem buddy :)")]
+    [TestCase("*:D*")]
+    [TestCase("\"Ogay.\" :P")]
+    [TestCase("You all take care! <3")]
+    [TestCase("o7")]
+    [TestCase("not the evil >:3c")]
+    public void Classify_EmoticonInNarration_IsOutOfCharacter(string message)
+    {
+        RoleplayMessageClassifier.Classify(message).Should().Be(RoleplayMessageType.OutOfCharacter);
+    }
+
+    [TestCase("\"Hello there.\" He waves.")]
+    [TestCase("She nods, his own definition aligning well.")]
+    [TestCase("*waves* Good to see you.")]
+    [TestCase("[waves] Good to see you.")]
+    [TestCase("\"Lol, you think the council will buy that?\" She snorts.")]
+    [TestCase("\"brb, they said. Whatever that means.\"")]
+    [TestCase("\"Thir-ty...\" she counts. \"Twen-ty...\"")]
+    [TestCase("She counts it out under her breath: thir-ty, for-ty.")]
+    [TestCase("He wanders over to the RP(o)G rack.")]
+    [TestCase("Check https://example.com for the schedule.")]
+    [TestCase("The ship lurched as the hyperdrive cut out.")]
+    [TestCase("Plan D: we run.")]
+    [TestCase("\"Ugh.\"")]
+    [TestCase("")]
+    public void Classify_InCharacterText_IsInCharacter(string message)
+    {
+        RoleplayMessageClassifier.Classify(message).Should().Be(RoleplayMessageType.InCharacter);
+    }
+
+    [TestCase("/emote")]
+    [TestCase("/emotes")]
+    [TestCase("/emote sit")]
+    [TestCase("/ brb, afk")]
+    public void Classify_ChatCommand_IsNotTreatedAsOOCChatter(string message)
+    {
+        RoleplayMessageClassifier.Classify(message).Should().Be(RoleplayMessageType.ChatCommand);
+    }
+
+    [TestCase("their*")]
+    [TestCase("on his face*")]
+    [TestCase("Sergeant* ")]
+    public void Classify_TypoCorrection_IsTypoCorrection(string message)
+    {
+        RoleplayMessageClassifier.Classify(message).Should().Be(RoleplayMessageType.TypoCorrection);
+    }
+
+    [TestCase("*waves*")]
+    [TestCase("She glances over at the others and smiles*")]
+    [TestCase("\"their\"*")]
+    public void Classify_EmoteOrLongerTextEndingInAsterisk_IsNotATypoCorrection(string message)
+    {
+        RoleplayMessageClassifier.Classify(message).Should().NotBe(RoleplayMessageType.TypoCorrection);
     }
 
     [Test]
-    public void OOCDetection_RunsBeforeShortMessageFilterAndRecognizesWholeMessagePrefixes()
+    public void RecordOOCMessage_WithinDailyAllowance_AddsNoPenalty()
+    {
+        var progress = new RoleplayProgress();
+
+        RecordMessages(progress, OOCAllowance.DailyAllowance, Morning, isDuringDMEvent: false);
+
+        progress.DailyOOCMessageCount.Should().Be(OOCAllowance.DailyAllowance);
+        progress.PendingOOCPenaltySteps.Should().Be(0);
+        progress.OOCMessageCount.Should().Be((ulong)OOCAllowance.DailyAllowance);
+    }
+
+    [Test]
+    public void RecordOOCMessage_PastDailyAllowance_AddsOnePenaltyStepPerMessage()
+    {
+        var progress = new RoleplayProgress();
+
+        RecordMessages(progress, OOCAllowance.DailyAllowance + 3, Morning, isDuringDMEvent: false);
+
+        progress.PendingOOCPenaltySteps.Should().Be(3);
+    }
+
+    [Test]
+    public void RecordOOCMessage_PenaltySteps_AreCappedAtFullAward()
+    {
+        var progress = new RoleplayProgress();
+
+        RecordMessages(progress, OOCAllowance.DailyAllowance + 50, Morning, isDuringDMEvent: false);
+
+        progress.PendingOOCPenaltySteps.Should().Be(OOCAllowance.MaxPenaltySteps);
+        OOCAllowance.ApplyPenalty(1500, progress.PendingOOCPenaltySteps).Should().Be(0);
+    }
+
+    [Test]
+    public void RecordOOCMessage_DuringDMEvent_UsesEventAllowanceBeforeDailyAllowance()
+    {
+        var progress = new RoleplayProgress();
+
+        RecordMessages(progress, OOCAllowance.DMEventAllowance, Morning, isDuringDMEvent: true);
+
+        progress.DailyDMEventOOCMessageCount.Should().Be(OOCAllowance.DMEventAllowance);
+        progress.DailyOOCMessageCount.Should().Be(0);
+        progress.PendingOOCPenaltySteps.Should().Be(0);
+
+        RecordMessages(progress, OOCAllowance.DailyAllowance + 1, Morning, isDuringDMEvent: true);
+
+        progress.DailyOOCMessageCount.Should().Be(OOCAllowance.DailyAllowance + 1);
+        progress.PendingOOCPenaltySteps.Should().Be(1);
+    }
+
+    [Test]
+    public void RecordOOCMessage_ResetsDailyCountsAtTheDailyServerRestart()
+    {
+        var progress = new RoleplayProgress();
+        var beforeRestart = new DateTime(2026, 10, 13, 9, 59, 0, DateTimeKind.Utc);
+        var afterRestart = new DateTime(2026, 10, 13, 10, 0, 0, DateTimeKind.Utc);
+
+        RecordMessages(progress, OOCAllowance.DailyAllowance, Morning, isDuringDMEvent: false);
+        RecordMessages(progress, 5, Morning, isDuringDMEvent: true);
+        OOCAllowance.RecordOOCMessage(progress, beforeRestart, isDuringDMEvent: false);
+
+        progress.PendingOOCPenaltySteps.Should().Be(1);
+
+        OOCAllowance.RecordOOCMessage(progress, afterRestart, isDuringDMEvent: false);
+
+        progress.DailyOOCMessageCount.Should().Be(1);
+        progress.DailyDMEventOOCMessageCount.Should().Be(0);
+        progress.PendingOOCPenaltySteps.Should().Be(1, "unspent penalties apply to the next award, not the next day");
+    }
+
+    [TestCase(0, 1500)]
+    [TestCase(1, 1350)]
+    [TestCase(5, 750)]
+    [TestCase(10, 0)]
+    [TestCase(25, 0)]
+    [TestCase(-3, 1500)]
+    public void ApplyPenalty_ReducesAwardByTenPercentPerStep(int steps, int expectedXP)
+    {
+        OOCAllowance.ApplyPenalty(1500, steps).Should().Be(expectedXP);
+    }
+
+    [Test]
+    public void RoleplayXP_ClearsPendingPenaltyWhenAwardIsGranted()
     {
         var roleplayXpSource = ReadServerSource("Feature", "RoleplayXP.cs");
-        var processMessage = ExtractMethod(roleplayXpSource, "public static void ProcessRPMessage()");
-        var oocDetection = ExtractMethod(roleplayXpSource, "private static bool IsOOCMessage(string message)");
-        var normalizedProcessMessage = processMessage.Replace("\r\n", "\n");
+        var awardMethod = ExtractMethod(roleplayXpSource, "private static void ProcessPlayerRoleplayXP(uint player)");
 
-        processMessage.IndexOf("if (IsOOCMessage(message))", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(processMessage.IndexOf("if (message.Length <= 3)", StringComparison.Ordinal));
-        processMessage.IndexOf("if (message.Length <= 3)", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(processMessage.IndexOf("var timestampString = RefreshRPMessageTimestamp(player, now);", StringComparison.Ordinal));
-        normalizedProcessMessage.Should().Contain(
-            "if (IsOOCMessage(message))\n            {\n                RefreshRPMessageTimestamp(player, now);\n                ApplyOOCMessagePenalty(player, dbPlayer);\n                return;\n            }");
-
-        oocDetection.Should().Contain("var trimmedMessage = message.TrimStart();");
-        oocDetection.Should().Contain("trimmedMessage.StartsWith(\"//\", StringComparison.Ordinal)");
-        oocDetection.Should().Contain("trimmedMessage.StartsWith(\"((\", StringComparison.Ordinal)");
-        oocDetection.Should().Contain("trimmedMessage.StartsWith(\"[[\", StringComparison.Ordinal)");
-        oocDetection.Should().Contain("trimmedMessage.StartsWith(\"{{\", StringComparison.Ordinal)");
-        oocDetection.Should().Contain("trimmedMessage.StartsWith(\"OOC:\", StringComparison.OrdinalIgnoreCase)");
-        oocDetection.Should().Contain("trimmedMessage.StartsWith(\"[OOC]\", StringComparison.OrdinalIgnoreCase)");
-        oocDetection.Should().Contain("trimmedMessage.StartsWith(\"(OOC)\", StringComparison.OrdinalIgnoreCase)");
-        oocDetection.Should().NotContain("Contains(");
+        awardMethod.Should().Contain("xp = OOCAllowance.ApplyPenalty(xp, dbPlayer.RoleplayProgress.PendingOOCPenaltySteps);");
+        awardMethod.Should().Contain("dbPlayer.RoleplayProgress.PendingOOCPenaltySteps = 0;");
+        roleplayXpSource.Should().NotContain("SetLocalInt(player, RPTickVariable, -");
     }
 
     [Test]
-    public void OOCPenalty_ResetsSenderOnlyProgressAndAppliesCappedEscalatingDelay()
-    {
-        var roleplayXpSource = ReadServerSource("Feature", "RoleplayXP.cs");
-        var penaltyMethod = ExtractMethod(roleplayXpSource, "private static void ApplyOOCMessagePenalty(uint player, Player dbPlayer)");
-        var penaltyTicksMethod = ExtractMethod(roleplayXpSource, "private static int GetOOCMessagePenaltyTicks(ulong oocMessageCount)");
-
-        roleplayXpSource.Should().Contain("private const string RPTickVariable = \"RP_SYSTEM_TICKS\";");
-        roleplayXpSource.Should().Contain("private const int OOCPenaltyTicks = 50;");
-        roleplayXpSource.Should().Contain("private const int MaxOOCPenaltyTicks = 300;");
-        roleplayXpSource.Should().Contain("var ticks = GetLocalInt(player, RPTickVariable) + 1;");
-
-        penaltyMethod.Should().Contain("dbPlayer.RoleplayProgress.OOCMessageCount++;");
-        penaltyMethod.Should().Contain("dbPlayer.RoleplayProgress.RPPoints = 0;");
-        penaltyMethod.Should().Contain("DB.Set(dbPlayer);");
-        penaltyMethod.Should().Contain("SetLocalInt(player, RPTickVariable, -penaltyTicks);");
-        penaltyMethod.Should().NotContain("for (var currentPlayer = GetFirstPC()");
-
-        penaltyTicksMethod.Should().Contain("if (oocMessageCount <= 1)");
-        penaltyTicksMethod.Should().Contain("return 0;");
-        penaltyTicksMethod.Should().Contain("var penaltySteps = oocMessageCount - 1;");
-        penaltyTicksMethod.Should().Contain("var penaltyTicks = penaltySteps * OOCPenaltyTicks;");
-        penaltyTicksMethod.Should().Contain("Math.Min((ulong)MaxOOCPenaltyTicks, penaltyTicks)");
-    }
-
-    [Test]
-    public void OOCMessageCount_RemainsInvisibleToPlayersAndAdminViews()
+    public void OOCTracking_RemainsInvisibleToPlayersAndAdminViews()
     {
         var root = FindRepositoryRoot();
         var roleplayXpSource = ReadServerSource("Feature", "RoleplayXP.cs");
-        var penaltyMethod = ExtractMethod(roleplayXpSource, "private static void ApplyOOCMessagePenalty(uint player, Player dbPlayer)");
+        var allowanceSource = ReadServerSource("Service", "RoleplayXPService", "OOCAllowance.cs");
         var adminPlayerAdvanced = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Admin",
@@ -91,10 +218,20 @@ public class RoleplayXPOOCPenaltyTests
             "PlayerOverview.razor"));
 
         roleplayXpSource.Should().NotContain("OOC message detected");
-        roleplayXpSource.Should().NotContain("Your RP XP timer");
-        penaltyMethod.Should().NotContain("SendMessageToPC(");
-        adminPlayerAdvanced.Should().NotContain("OOCMessageCount");
-        adminPlayerOverview.Should().NotContain("OOCMessageCount");
+        allowanceSource.Should().NotContain("SendMessageToPC(");
+        foreach (var adminView in new[] { adminPlayerAdvanced, adminPlayerOverview })
+        {
+            adminView.Should().NotContain("OOCMessageCount");
+            adminView.Should().NotContain("PendingOOCPenaltySteps");
+        }
+    }
+
+    private static void RecordMessages(RoleplayProgress progress, int count, DateTime utcNow, bool isDuringDMEvent)
+    {
+        for (var index = 0; index < count; index++)
+        {
+            OOCAllowance.RecordOOCMessage(progress, utcNow, isDuringDMEvent);
+        }
     }
 
     private static string ReadServerSource(params string[] pathSegments)

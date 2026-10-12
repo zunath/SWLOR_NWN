@@ -51,6 +51,14 @@ public class PartialMatchSearchTextTests
         PartialMatchSearchText.Build(search).Should().Be(expected);
     }
 
+    [TestCase("Brawler’s Wraps", "(Brawler’s* Wraps*)")]
+    [TestCase("Café Noir", "(Café* Noir*)")]
+    public void NonAsciiCharactersStayInsideAWord(string search, string expected)
+    {
+        // RediSearch only splits on ASCII punctuation, so "Brawler’s" is one indexed word.
+        PartialMatchSearchText.Build(search).Should().Be(expected);
+    }
+
     [TestCase(",", "(\\,)")]
     [TestCase(", .", "(\\,\\.)")]
     public void PunctuationOnlySearchesStayValid(string search, string expected)

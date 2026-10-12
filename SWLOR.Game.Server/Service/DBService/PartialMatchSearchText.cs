@@ -14,9 +14,10 @@ namespace SWLOR.Game.Server.Service.DBService
         // RediSearch rejects prefixes shorter than its default MINPREFIX.
         private const int MinimumPrefixLength = 2;
 
-        // DB.EscapeTokens escapes these, so they stay part of a word. Any other punctuation separates
-        // words, as it does in the index, and is a syntax error when it ends a "word*" term.
-        private const string EscapedCharacters = "@!{}()|-=>'\"";
+        // RediSearch splits words only on ASCII punctuation and whitespace. DB.EscapeTokens escapes @!{}()|-=>'"
+        // so those stay inside a word; the rest below separates words, as it does in the index, and is a syntax
+        // error when it ends a "word*" term. Non-ASCII characters such as a curly apostrophe are part of a word.
+        private const string Separators = ",./[]:;~#$%^&*+`<?\\";
 
         /// <summary>
         /// Returns the escaped query text for a partial match on the given search.
@@ -47,7 +48,7 @@ namespace SWLOR.Game.Server.Service.DBService
 
             foreach (var character in search)
             {
-                if (char.IsLetterOrDigit(character) || character == '_' || EscapedCharacters.IndexOf(character) >= 0)
+                if (!char.IsWhiteSpace(character) && Separators.IndexOf(character) < 0)
                 {
                     current.Append(character);
                     continue;

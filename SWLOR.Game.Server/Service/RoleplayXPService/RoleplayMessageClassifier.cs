@@ -110,7 +110,8 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
             foreach (var token in narration.Split((char[])null, StringSplitOptions.RemoveEmptyEntries))
             {
                 // Emoticons keep their own punctuation, so they are matched before words are trimmed.
-                if (oocTerms.Contains(token.Trim(EmoticonPunctuation)))
+                var emoticonToken = token.Trim(EmoticonPunctuation);
+                if (oocTerms.Contains(emoticonToken) || EndsWithAttachedEmoticon(emoticonToken, oocTerms))
                     return true;
 
                 var word = token.Trim(WordPunctuation);
@@ -118,6 +119,35 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
                     continue;
 
                 if (oocTerms.Contains(word) || StretchedLaughter.IsMatch(word))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Catches an emoticon typed directly after a word, such as "thanks:)". The word must be at
+        /// least two letters so ratios and scores like "K:D" or "5:3" are not mistaken for emoticons.
+        /// </summary>
+        private static bool EndsWithAttachedEmoticon(string token, IReadOnlySet<string> oocTerms)
+        {
+            foreach (var term in oocTerms)
+            {
+                // Only punctuation-led terms are emoticons; word terms must stand alone.
+                if (term.Length == 0 || char.IsLetterOrDigit(term[0]))
+                    continue;
+
+                var wordLength = token.Length - term.Length;
+                if (wordLength < 2 || !token.EndsWith(term, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var isWord = true;
+                for (var index = 0; index < wordLength && isWord; index++)
+                {
+                    isWord = char.IsLetter(token[index]);
+                }
+
+                if (isWord)
                     return true;
             }
 

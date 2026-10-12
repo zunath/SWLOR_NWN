@@ -58,6 +58,10 @@ public class RoleplayXPOOCPenaltyTests
     [TestCase("You all take care! <3")]
     [TestCase("o7")]
     [TestCase("not the evil >:3c")]
+    [TestCase("thanks:)")]
+    [TestCase("okay:D see you")]
+    [TestCase("\"Fine.\" love you<3")]
+    [TestCase("Her fingergun misses, krpew:(")]
     public void Classify_EmoticonInNarration_IsOutOfCharacter(string message)
     {
         Classify(message).Should().Be(RoleplayMessageType.OutOfCharacter);
@@ -75,6 +79,8 @@ public class RoleplayXPOOCPenaltyTests
     [TestCase("Check https://example.com for the schedule.")]
     [TestCase("The ship lurched as the hyperdrive cut out.")]
     [TestCase("Plan D: we run.")]
+    [TestCase("We finished at 5:3 K:D, not bad.")]
+    [TestCase("The ratio was 1:3 at best.")]
     [TestCase("\"Ugh.\"")]
     [TestCase("")]
     public void Classify_InCharacterText_IsInCharacter(string message)

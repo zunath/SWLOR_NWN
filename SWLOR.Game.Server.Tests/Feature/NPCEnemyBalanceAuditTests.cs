@@ -145,7 +145,7 @@ public class NPCEnemyBalanceAuditTests
     // Dathomir world boss: shares DATHOMIR_GROTTOS_BOSS with the Rancor and Dark Side Adept, so it uses
     // the level 50 Boss Melee preset with the premium Loot Boss modifier.
     private static readonly ExpectedEnemy ChirodactylExpectedEnemy =
-        new("vdathchirodac", "chirodactyl_sk", "chirodactyl_wp", 50, 16275, 43, 35, 25, 35, 35, 506, 88, 40, 18, 2, 92, 62, 77, 24);
+        new("vdathchirodac", "chirodactyl_sk", "chirodactyl_wp", 50, 16275, 43, 35, 25, 35, 35, 506, 88, 50, 28, 2, 92, 62, 102, 24);
 
     private static readonly ExpectedEnemy StormplumeExpectedEnemy =
         new("stormplume", "stormplume_sk", "stormplume_wp", 4, 164, 10, 14, 16, 10, 14, 15, 19, 4, 6, 3, 2, 6, 10, 24);
@@ -887,7 +887,7 @@ public class NPCEnemyBalanceAuditTests
         (GetItemPropertyCost(leftClaw.RootElement, ItemPropertyDMG).GetValueOrDefault() +
          GetItemPropertyCost(rightClaw.RootElement, ItemPropertyDMG).GetValueOrDefault())
             .Should()
-            .Be(153, "the two Chirodactyl claws should split the premium Loot Boss DMG budget");
+            .Be(204, "the two Chirodactyl claws should split the premium Loot Boss DMG budget");
         GetItemPropertyCost(leftClaw.RootElement, ItemPropertyDelay).Should().Be(expected.WeaponDelay);
         GetItemPropertyCost(rightClaw.RootElement, ItemPropertyDelay).Should().Be(expected.WeaponDelay);
 

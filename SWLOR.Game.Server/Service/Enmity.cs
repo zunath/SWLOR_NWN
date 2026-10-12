@@ -173,9 +173,9 @@ namespace SWLOR.Game.Server.Service
 
             for (var x = 1; x <= count; x++)
             {
-                var targetData = EventsPlugin.GetEventData($"TARGET_{x}");
+                var target = StringToObject(EventsPlugin.GetEventData($"TARGET_{x}"));
 
-                if (uint.TryParse(targetData, out var target))
+                if (GetIsObjectValid(target))
                 {
                     ClearEnmityTables(target);
                     RemoveCreatureEnmity(target);

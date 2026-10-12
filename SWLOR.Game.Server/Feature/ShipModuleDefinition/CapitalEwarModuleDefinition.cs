@@ -72,7 +72,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                     }
 
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
+                    // The taunt puts each affected enemy on the E-War ship's enmity table, so supporting it credits them.
+                    CombatPoint.AddSupportCombatPoint(activator, activator, SkillType.Piloting);
                     Messaging.SendMessageNearbyToPlayers(
                         activator,
                         receiver => $"{PlayerName.GetDisplayName(receiver, activator)} activates their E-War device and begins to draw fire.");

@@ -326,8 +326,7 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(targetId))
                 return "Unable to identify that player.";
 
-            var dbKnownNames = GetKnownNames(observer, false);
-            return ValidateKnownNameIsUnique(dbKnownNames, targetId, sanitizedName);
+            return ValidateKnownNameIsUnique(observer, target, sanitizedName);
         }
 
         public static void SetKnownName(uint observer, uint target, string name)
@@ -367,17 +366,25 @@ namespace SWLOR.Game.Server.Service
             return !string.Equals(name, UtilPlugin.StripColors(name), StringComparison.Ordinal);
         }
 
-        private static string ValidateKnownNameIsUnique(PlayerKnownName dbKnownNames, string targetId, string sanitizedName)
+        // Online identities only: stored labels include absent disguises, and any key-type rule would reveal them.
+        private static string ValidateKnownNameIsUnique(uint observer, uint target, string sanitizedName)
         {
-            if (dbKnownNames?.KnownNames == null)
-                return string.Empty;
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (!GetIsPC(player) ||
+                    GetIsDM(player) ||
+                    player == observer ||
+                    player == target)
+                {
+                    continue;
+                }
 
-            var isDuplicate = dbKnownNames.KnownNames.Any(entry =>
-                entry.Key != targetId &&
-                string.Equals(SanitizeKnownName(entry.Value), sanitizedName, StringComparison.OrdinalIgnoreCase));
-
-            if (isDuplicate)
-                return "You already use that name for another character.";
+                if (TryGetKnownName(observer, player, out var knownName) &&
+                    string.Equals(SanitizeKnownName(knownName), sanitizedName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return "You already use that name for another character who is online.";
+                }
+            }
 
             return string.Empty;
         }

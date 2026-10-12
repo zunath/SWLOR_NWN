@@ -201,13 +201,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Miri Koss gave you the Hutlar Qion Test Site Key. Leave the bridge at Fort Ka'ra's sealed gate and head down into the Qion Box Canyon; the test site entrance is just south of the fort approach. Defeat six Overload Barrage adepts inside and recover the Overload Barrage Qion Test Log.")
+                    "Miri Koss gave you the Hutlar Qion Test Site Key. Leave the Hutlar Outpost onto the Qion Tundra and head east through the Qion Foothills into the Qion Box Canyon; the test site entrance is just south of the road up to Fort Ka'ra. Defeat six Overload Barrage adepts inside and recover the Overload Barrage Qion Test Log.")
                 .AddKillObjective(NPCGroupType.Hutlar_OverloadBarrage_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOverloadBarrageQionTestLog)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You have the Overload Barrage Qion Test Log. Return it to Miri Koss at the gate of Fort Ka'ra on Hutlar.")
+                    "You have the Overload Barrage Qion Test Log. Return it to Miri Koss at the Hutlar Outpost on Hutlar.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You have the Overload Barrage Cryo-Range Regulator. Return it to Miri Koss at the gate of Fort Ka'ra on Hutlar.")
+                    "You have the Overload Barrage Cryo-Range Regulator. Return it to Miri Koss at the Hutlar Outpost on Hutlar.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -249,7 +249,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You have the Overload Barrage Frostburned Test Crest. Return it to Miri Koss at the gate of Fort Ka'ra on Hutlar.")
+                    "You have the Overload Barrage Frostburned Test Crest. Return it to Miri Koss at the Hutlar Outpost on Hutlar.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -270,7 +270,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You have the Overload Barrage Site Chief's Override Chip. Return it to Miri Koss at the gate of Fort Ka'ra on Hutlar.")
+                    "You have the Overload Barrage Site Chief's Override Chip. Return it to Miri Koss at the Hutlar Outpost on Hutlar.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -288,7 +288,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Overload Barrage master is dead. Return to Miri Koss at the gate of Fort Ka'ra on Hutlar.")
+                    "The Overload Barrage master is dead. Return to Miri Koss at the Hutlar Outpost on Hutlar.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

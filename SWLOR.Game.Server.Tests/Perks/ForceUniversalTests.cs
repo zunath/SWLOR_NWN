@@ -1,6 +1,8 @@
 using System.Reflection;
 using System.Numerics;
 using FluentAssertions;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
@@ -164,6 +166,38 @@ public class ForceUniversalTests
         source.Should().NotContain("ActionJumpToObject(target)");
         source.Should().NotContain("UsesImpactAnimation(Animation.ForceLeap)");
         source.Should().NotContain("VisualEffect.Vfx_Fnf_Summon_Monster_1");
+    }
+
+    [Test]
+    public void ForceLeap_LandsBeforeDamageAndLandsEvenWhenTheDamageKills()
+    {
+        var abilities = new ForceLeapAbilityDefinition().BuildAbilities();
+        foreach (var feat in new[] { FeatType.ForceLeap1, FeatType.ForceLeap2 })
+        {
+            abilities[feat].ActivationAction.Should().NotBeNull("the leap animation starts at activation");
+            abilities[feat].ImpactDelay.Should().Be(1f, "damage resolves when the leap animation lands");
+        }
+
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceLeapAbilityDefinition.cs").FullName);
+        var calls = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
+            .OfType<InvocationExpressionSyntax>().ToArray();
+        var jump = calls.Single(call => call.Expression.ToString() == "JumpToLocation");
+        var interrupt = calls.Single(call => call.ToString() == "AssignCommand(target, () => ClearAllActions())");
+
+        interrupt.Ancestors().OfType<MethodDeclarationSyntax>().Single().Identifier.Text.Should().Be("CompleteLeap",
+            "a leap cancelled during its animation must not interrupt the target");
+
+        jump.Ancestors().OfType<IfStatementSyntax>().Should().BeEmpty(
+            "the jump must not be skipped when the impact damage kills the target");
+        source.IndexOf("GetIsDead(target)", StringComparison.Ordinal).Should().BeGreaterThan(jump.SpanStart,
+            "only the stun may depend on the target surviving");
+        foreach (var impactAction in new[] { "ForceLeap1ImpactAction", "ForceLeap2ImpactAction" })
+        {
+            var body = source[source.IndexOf($"private static void {impactAction}", StringComparison.Ordinal)..];
+            body.IndexOf("CompleteLeap(activator, target)", StringComparison.Ordinal).Should()
+                .BeLessThan(body.IndexOf("Ability.ApplyCombatImpact", StringComparison.Ordinal));
+        }
     }
 
     [Test]

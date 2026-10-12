@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         Ability.PlaySuccessfulImpactVisualEffect(activator, summonedBeast);
 
                     Enmity.ModifyEnmityOnAll(activator, 230);
-                    CombatPoint.AddSupportCombatPoint(activator, summonedBeast, SkillType.BeastMastery);
+                    CombatPoint.AddReviveSupportCombatPoint(activator, activator, SkillType.BeastMastery);
                 });
         }
     }

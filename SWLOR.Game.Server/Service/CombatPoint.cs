@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Service
 {
     public static class CombatPoint
     {
+        private const float ReviveSupportRangeMeters = 20f;
+
         /// <summary>
         /// Tracks the combat points earned by players during combat.
         /// </summary>
@@ -388,6 +390,20 @@ namespace SWLOR.Game.Server.Service
         public static void AddSupportCombatPoint(uint player, uint supportedCreature, SkillType skill, int amount = 1)
         {
             AddSupportCombatPoint(player, new[] { supportedCreature }, skill, amount);
+        }
+
+        /// <summary>
+        /// Adds support combat points for bringing a creature back into a fight. A revived or newly
+        /// summoned creature has no enmity of its own (death clears it), so the enemies fighting its
+        /// nearby party members are credited instead.
+        /// </summary>
+        /// <param name="player">The player receiving the point.</param>
+        /// <param name="anchor">The revived creature, or the owner a summoned creature joins.</param>
+        /// <param name="skill">The skill to associate with the point.</param>
+        /// <param name="amount">The number of points to add.</param>
+        public static void AddReviveSupportCombatPoint(uint player, uint anchor, SkillType skill, int amount = 1)
+        {
+            AddSupportCombatPoint(player, Party.GetAllPartyMembersWithinRange(anchor, ReviveSupportRangeMeters), skill, amount);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -94,9 +95,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 affected.Add(friendly);
             }
 
-            LeadershipAbilityEffects.ApplyBolsterResolve(activator, duration);
+            var bolstered = LeadershipAbilityEffects.ApplyBolsterResolve(activator, duration);
 
-            if (affected.Count > 0) CombatPoint.AddSupportCombatPoint(activator, affected, SkillType.Leadership, 2);
+            if (affected.Count > 0) CombatPoint.AddSupportCombatPoint(activator, affected.Concat(bolstered), SkillType.Leadership, 2);
         }
 
         private static void CleanseOrder2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -119,9 +120,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 affected.Add(friendly);
             }
 
-            LeadershipAbilityEffects.ApplyBolsterResolve(activator, duration);
+            var bolstered = LeadershipAbilityEffects.ApplyBolsterResolve(activator, duration);
 
-            if (affected.Count > 0) CombatPoint.AddSupportCombatPoint(activator, affected, SkillType.Leadership, 2);
+            if (affected.Count > 0) CombatPoint.AddSupportCombatPoint(activator, affected.Concat(bolstered), SkillType.Leadership, 2);
         }
 
         private static void ApplyCommandAndTemporaryHP(

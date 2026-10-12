@@ -122,8 +122,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             AbilityEffectScaling.ApplyActivatedScaledHeal(activator, friendly, percent, multiplier: multiplier);
             if (GetCurrentHitPoints(friendly) > hitPointsBeforeHealing)
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
-            ForceControlHealingEffects.ApplyRestorativeControlPower(activator, friendly, targetWasBelowHalfHP);
-            CombatPoint.AddSupportCombatPoint(activator, friendly, SkillType.Force);
+            var healed = new List<uint>(ForceControlHealingEffects.ApplyRestorativeControlPower(activator, friendly, targetWasBelowHalfHP)) { friendly };
+            CombatPoint.AddSupportCombatPoint(activator, healed, SkillType.Force);
         }
     }
 }

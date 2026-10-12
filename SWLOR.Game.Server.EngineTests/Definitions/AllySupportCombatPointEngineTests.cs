@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ("Rousing Shout", FeatType.RousingShout1, SkillType.Leadership, 2, false, 0f),
             ("Benevolence", FeatType.Benevolence1, SkillType.Force, 1, false, 0f),
             ("Renewal", FeatType.Renewal1, SkillType.Force, 1, false, 0f),
+            ("Force Sanctuary", FeatType.ForceSanctuary1, SkillType.Force, 1, false, 7f),
             ("Innervate", FeatType.Innervate1, SkillType.BeastMastery, 1, true, 0f),
         };
 
@@ -63,7 +64,78 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(!CombatPoint.HasCombatPoints(supporter.Creature, idle),
                     $"{name} does not credit an enemy outside the fight");
 
+                // Heals over time keep crediting the patient's enemies; end them before the next case.
+                StatusEffect.RemoveStatusEffect(ally, typeof(RegenerativeHealingStatusEffect), false);
                 await DespawnAsync(ctx, fighting, aggroOnly, idle);
+                ClearCombatPoints(supporter.Creature);
+            }
+        }
+
+        /// <summary>
+        /// Heals over time keep healing after the cast, so an enemy that engages the patient
+        /// later is credited on a tick, and only once per cast.
+        /// </summary>
+        [EngineTest("Heals over time credit enemies that engage the patient after the cast", Category = "SupportXP", TimeoutSeconds = 60f)]
+        public static async Task HealOverTimeCreditsLaterEnemies(EngineTestContext ctx)
+        {
+            using var healer = await PlayerAbilityFixture.CreateAsync(ctx);
+            var ally = await SpawnPartyAllyAsync(ctx, healer.Creature);
+
+            foreach (var (name, feat, skill) in new[]
+                     {
+                         ("Renewal", FeatType.Renewal1, SkillType.Force),
+                         ("Infusion", FeatType.Infusion1, SkillType.FirstAid),
+                     })
+            {
+                await UseAbilityAsync(ctx, healer.Creature, feat, ally);
+                var lateEnemy = await SpawnHeldCreatureAsync(ctx, 6f, 0f);
+                ctx.AssertEqual(0, Points(healer.Creature, lateEnemy, skill), $"{name} cannot credit an enemy before it engages");
+
+                Enmity.ModifyEnmity(ally, lateEnemy, 100);
+                await ctx.WaitUntilAsync(() => Points(healer.Creature, lateEnemy, skill) > 0, 5f,
+                    $"a {name} tick to credit the enemy that engaged after the cast");
+                await ctx.DelaySecondsAsync(3.5f);
+                ctx.AssertEqual(1, Points(healer.Creature, lateEnemy, skill), $"{name} credits the late enemy once per cast");
+
+                StatusEffect.RemoveStatusEffect(ally, typeof(RegenerativeHealingStatusEffect), false);
+                await DespawnAsync(ctx, lateEnemy);
+                ClearCombatPoints(healer.Creature);
+            }
+        }
+
+        /// <summary>
+        /// Revives and rider effects reach allies other than the targeted one. A revived ally has no
+        /// enmity of its own, so the enemies fighting its nearby party are credited, and rider
+        /// heals or buffs credit the enemies fighting each ally they reach. The supporter stands in
+        /// as that other party member here.
+        /// </summary>
+        [EngineTest("Revives and support riders credit the enemies fighting the other allies they reach", Category = "SupportXP", TimeoutSeconds = 60f)]
+        public static async Task RevivesAndRidersCreditReachedAllies(EngineTestContext ctx)
+        {
+            using var supporter = await PlayerAbilityFixture.CreateAsync(ctx);
+            var ally = await SpawnPartyAllyAsync(ctx, supporter.Creature);
+            TemporaryStatModifier.Add(supporter.Creature, StatType.HarmonicRestoration, 1, 60f);
+            TemporaryStatModifier.Add(supporter.Creature, StatType.LeadershipFieldStewardBolsterResolveRank, 1, 60f);
+
+            foreach (var (name, feat, skill, amount) in new[]
+                     {
+                         ("Resuscitation", FeatType.Resuscitation1, SkillType.FirstAid, 1),
+                         ("Benevolence with Harmonic Restoration", FeatType.Benevolence1, SkillType.Force, 1),
+                         ("Rousing Shout with Bolster Resolve", FeatType.RousingShout1, SkillType.Leadership, 2),
+                     })
+            {
+                // Harmonic Restoration only splashes when the targeted ally starts below half HP.
+                await ctx.ExecuteInCreatureContextAsync(ally, () =>
+                    ApplyEffectToObject(DurationType.Instant, EffectDamage(Math.Max(1, GetCurrentHitPoints(ally) - 300)), ally));
+                var fightingSupporter = await SpawnHeldCreatureAsync(ctx, 6f, 0f);
+                Enmity.ModifyEnmity(supporter.Creature, fightingSupporter, 100);
+
+                await UseAbilityAsync(ctx, supporter.Creature, feat, ally);
+
+                ctx.AssertEqual(amount, Points(supporter.Creature, fightingSupporter, skill),
+                    $"{name} credits the enemy fighting another party member it reached");
+
+                await DespawnAsync(ctx, fightingSupporter);
                 ClearCombatPoints(supporter.Creature);
             }
         }

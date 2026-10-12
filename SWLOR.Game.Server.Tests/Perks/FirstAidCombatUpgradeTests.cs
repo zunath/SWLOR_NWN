@@ -222,7 +222,6 @@ public class FirstAidCombatUpgradeTests
             "FocusStimAbilityDefinition.cs",
             "InfusionAbilityDefinition.cs",
             "PainSuppressantAbilityDefinition.cs",
-            "ResuscitationAbilityDefinition.cs",
             "ShieldingAbilityDefinition.cs"
         };
 
@@ -233,6 +232,9 @@ public class FirstAidCombatUpgradeTests
                 "FirstAidTreatmentAdjustments.GrantCombatPoint",
                 $"{file} should award First Aid combat points after a successful support application");
         }
+
+        resuscitation.Split("CombatPoint.AddReviveSupportCombatPoint(activator, target, SkillType.FirstAid);").Length.Should().Be(3,
+            "a revived ally has no enmity, so both ranks must credit the enemies fighting its nearby party");
 
         var emergencySealantStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "EmergencySealant1StatusEffect.cs").FullName);
         emergencySealantStatus.Should().Contain("AbilityEffectScaling.ApplyScaledHeal(Source, creature, 1);");

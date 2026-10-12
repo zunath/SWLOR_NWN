@@ -92,28 +92,32 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void Innervate1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                HealPercent(activator, friendly, 6);
-            }
+            ApplyInnervate(activator, target, 6);
         }
 
         private static void Innervate2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                HealPercent(activator, friendly, 10);
-            }
+            ApplyInnervate(activator, target, 10);
         }
 
         private static void Innervate3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                HealPercent(activator, friendly, 14);
-            }
+            ApplyInnervate(activator, target, 14);
         }
 
+        private static void ApplyInnervate(uint activator, uint target, int percent)
+        {
+            var healed = new List<uint>();
+            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            {
+                HealPercent(activator, friendly, percent);
+                healed.Add(friendly);
+            }
+
+            // Innervate is cast by a beast, so its owner earns the Beast Mastery credit.
+            if (healed.Count > 0)
+                CombatPoint.AddSupportCombatPoint(GetMaster(activator), healed, SkillType.BeastMastery);
+        }
 
         private static void HealPercent(uint activator, uint target, int percent)
         {

@@ -7297,7 +7297,7 @@
         },
         "CurrentHitPoints": {
           "type": "short",
-          "value": 12899
+          "value": 10964
         },
         "DecayTime": {
           "type": "dword",
@@ -7772,7 +7772,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 178
+                      "value": 223
                     },
                     "Param1": {
                       "type": "byte",
@@ -7969,7 +7969,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 12899
+                      "value": 10964
                     },
                     "Param1": {
                       "type": "byte",
@@ -8062,7 +8062,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 38
+                      "value": 42
                     },
                     "Param1": {
                       "type": "byte",
@@ -8093,7 +8093,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 44
+                      "value": 48
                     },
                     "Param1": {
                       "type": "byte",
@@ -8155,7 +8155,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 87
+                      "value": 86
                     },
                     "Param1": {
                       "type": "byte",
@@ -8186,7 +8186,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 65
+                      "value": 64
                     },
                     "Param1": {
                       "type": "byte",
@@ -8758,7 +8758,7 @@
         },
         "HitPoints": {
           "type": "short",
-          "value": 12599
+          "value": 10664
         },
         "Int": {
           "type": "byte",
@@ -8792,7 +8792,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 12899
+          "value": 10964
         },
         "NaturalAC": {
           "type": "byte",
@@ -96132,7 +96132,7 @@
         },
         "X": {
           "type": "float",
-          "value": 14.70180034637451
+          "value": 14.85179996490479
         },
         "Y": {
           "type": "float",

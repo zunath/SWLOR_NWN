@@ -28,7 +28,7 @@ public class PlaceableWalkmeshUseNodeTests
                 number++;
                 var line = raw.TrimStart(' ', '\t');
                 var parts = line.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length >= 3 && parts[0] == "node" && parts[1] == "dummy" && UseNodeName.IsMatch(parts[2]) && !IsEngineUseNode(line, out _))
+                if (parts.Length >= 3 && parts[0] == "node" && parts[1] == "dummy" && UseNodeName.IsMatch(parts[2]) && !IsEngineUseNode(line))
                     ignored.Add($"{Path.GetFileName(Path.GetDirectoryName(path))}/{Path.GetFileName(path)}:{number} {parts[2]}");
             }
         }
@@ -56,13 +56,13 @@ public class PlaceableWalkmeshUseNodeTests
         useNode.Y.Should().BeGreaterThan(0.25f, "the control panel faces model +Y, past the terminal's footprint");
     }
 
-    // The engine matches these tokens at fixed offsets, so the name needs exactly a four-character prefix.
-    private static bool IsEngineUseNode(string line, out string slot)
+    // The engine matches these tokens at fixed offsets, so the name needs exactly a four-character prefix,
+    // and it only turns slots 01 and 02 into action points.
+    private static bool IsEngineUseNode(string line)
     {
-        slot = string.Empty;
         return line.StartsWith("node dummy ", StringComparison.Ordinal)
-            && (HasToken(line, 15, "pwk_use", out slot) || HasToken(line, 15, "pwk_dp_use_", out slot))
-            && slot.All(char.IsAsciiDigit);
+            && (HasToken(line, 15, "pwk_use", out var slot) || HasToken(line, 15, "pwk_dp_use_", out slot))
+            && slot is "01" or "02";
     }
 
     private static bool HasToken(string line, int offset, string token, out string slot)
@@ -72,7 +72,7 @@ public class PlaceableWalkmeshUseNodeTests
         return slot.Length == 2 && string.CompareOrdinal(line, offset, token, 0, token.Length) == 0;
     }
 
-    // Only slots 01 and 02 become action points, and the engine skips a node left at the model origin.
+    // The engine skips a node left at the model origin.
     private static List<(float X, float Y)> ReadEngineUseNodes(string path)
     {
         var nodes = new List<(float X, float Y)>();
@@ -81,7 +81,7 @@ public class PlaceableWalkmeshUseNodeTests
         {
             var line = raw.TrimStart(' ', '\t');
             if (line.StartsWith("node", StringComparison.Ordinal))
-                inUseNode = IsEngineUseNode(line, out var slot) && slot is "01" or "02";
+                inUseNode = IsEngineUseNode(line);
             else if (inUseNode && line.StartsWith("position", StringComparison.Ordinal))
             {
                 var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);

@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             GuiWindowType.DMCreator,
             GuiWindowType.DMPlayerSearch,
             GuiWindowType.DMPlayerExamine,
-            GuiWindowType.DMToolbarMore,
+            GuiWindowType.DMAdminTools,
             GuiWindowType.CreatureManager,
             GuiWindowType.DMTools,
             GuiWindowType.AreaNotes,
@@ -92,15 +92,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await InContext(ctx, player.Creature, toolbar.OnClickPlaceableTools());
                 await InContext(ctx, player.Creature, toolbar.OnClickAreaNotes());
                 await InContext(ctx, player.Creature, toolbar.OnClickMusic());
-                await InContext(ctx, player.Creature, toolbar.OnClickMore());
                 ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.CreatureManager), "Creature Manager opens from the toolbar");
                 ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.DMTools), "Placeable Tools open from the toolbar");
                 ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.AreaNotes), "Area Notes open from the toolbar");
                 ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.MusicPicker), "Music opens from the toolbar");
-                ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.DMToolbarMore), "More DM Tools opens from the toolbar");
-                var more = (DMToolbarMoreViewModel)windows.ViewModel(GuiWindowType.DMToolbarMore);
-                ctx.Assert(!more.IsAdmin, "admin tools stay disabled for a non-admin");
-                Capture(player.Creature, GuiWindowType.DMToolbarMore, "toolbar-more");
+
+                // The fixture has no CD key, so it is not an admin: the Admin button is hidden and does nothing.
+                ctx.Assert(!toolbar.IsAdmin, "non-admins do not see the Admin button");
+                ctx.AssertEqual(DMToolbarViewModel.ToolbarWidth, toolbar.Geometry.Width, "the toolbar ends before the hidden Admin button");
+                await InContext(ctx, player.Creature, toolbar.OnClickAdmin());
+                ctx.Assert(!Gui.IsWindowOpen(player.Creature, GuiWindowType.DMAdminTools), "non-admins cannot open the admin tools");
+
+                // The admin layout, exported for the client check.
+                await InContext(ctx, player.Creature, () => toolbar.ShowAdminButton(true));
+                ctx.AssertEqual(DMToolbarViewModel.AdminToolbarWidth, toolbar.Geometry.Width, "the toolbar grows to fit the Admin button");
+                Capture(player.Creature, GuiWindowType.DMToolbar, "toolbar-admin");
+                await InContext(ctx, player.Creature, () => Gui.TogglePlayerWindow(player.Creature, GuiWindowType.DMAdminTools));
+                Capture(player.Creature, GuiWindowType.DMAdminTools, "admin-tools");
             }
             finally
             {

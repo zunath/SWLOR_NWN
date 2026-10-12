@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         DMChooser = 71,
         DMCreator = 72,
         DMPlayerSearch = 73,
-        DMToolbarMore = 74,
+        DMAdminTools = 74,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

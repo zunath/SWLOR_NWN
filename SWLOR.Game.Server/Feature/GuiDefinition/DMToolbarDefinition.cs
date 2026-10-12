@@ -45,20 +45,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHeight(ButtonHeight)
                             .BindOnClicked(model => model.OnClickToggleAppear());
 
-                        AddButton(row, "More", "Animations and admin tools", model => model.OnClickMore());
+                        // Must stay last: the toolbar is sized to end before it when it is hidden.
+                        AddButton(row, "Admin", "Staff, bans and property diagnostics", model => model.OnClickAdmin())
+                            .BindIsVisible(model => model.IsAdmin);
                     });
                 });
 
             return _builder.Build();
         }
 
-        private static void AddButton(
+        private static GuiButton<DMToolbarViewModel> AddButton(
             GuiRow<DMToolbarViewModel> row,
             string text,
             string tooltip,
             Expression<Func<DMToolbarViewModel, Action>> onClick)
         {
-            row.AddButton()
+            return row.AddButton()
                 .SetText(text)
                 .SetTooltip(tooltip)
                 .SetWidth(ButtonWidth)

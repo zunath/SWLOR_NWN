@@ -15,10 +15,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const float ToolbarX = 1f;
         public const float ToolbarY = 1f;
         public const float ButtonWidth = 96f;
-        public const int ButtonCount = 9;
         // Each button carries about 8 pixels of margin; the window adds about 16 of padding.
-        public const float ToolbarWidth = ButtonCount * (ButtonWidth + 8f) + 16f;
+        public const float ButtonSlotWidth = ButtonWidth + 8f;
+        // Every DM sees these buttons; admins also get the Admin button at the end.
+        public const int PublicButtonCount = 8;
+        public const float ToolbarWidth = PublicButtonCount * ButtonSlotWidth + 16f;
+        public const float AdminToolbarWidth = ToolbarWidth + ButtonSlotWidth;
         public const float ToolbarHeight = 52f;
+
+        public bool IsAdmin
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
         public string AppearText
         {
@@ -34,9 +43,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
-            // The toolbar replaces the native DM taskbar, so it always sits in the top-left corner.
-            Geometry = new GuiRectangle(ToolbarX, ToolbarY, ToolbarWidth, ToolbarHeight);
+            ShowAdminButton(DMAdminToolsViewModel.CanUse(Player));
             RefreshAppearText();
+        }
+
+        /// <summary>
+        /// Shows or hides the Admin button and sizes the toolbar to fit.
+        /// Hiding the button only affects the layout; the admin windows check permissions themselves.
+        /// </summary>
+        /// <param name="isAdmin">Whether to show the Admin button.</param>
+        public void ShowAdminButton(bool isAdmin)
+        {
+            IsAdmin = isAdmin;
+            // The toolbar replaces the native DM taskbar, so it always sits in the top-left corner.
+            // A hidden button still takes up its space, so the toolbar is cut short before it.
+            Geometry = new GuiRectangle(ToolbarX, ToolbarY, isAdmin ? AdminToolbarWidth : ToolbarWidth, ToolbarHeight);
         }
 
         /// <summary>
@@ -102,9 +123,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.MusicPicker, new MusicPickerPayload(MusicPickerMode.DungeonMaster));
         };
 
-        public Action OnClickMore() => () =>
+        public Action OnClickAdmin() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.DMToolbarMore);
+            if (DMAdminToolsViewModel.CanUse(Player))
+                Gui.TogglePlayerWindow(Player, GuiWindowType.DMAdminTools);
         };
 
         public Action OnClickToggleAppear() => () =>

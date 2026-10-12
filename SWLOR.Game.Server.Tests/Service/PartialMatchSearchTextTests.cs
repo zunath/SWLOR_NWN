@@ -40,6 +40,24 @@ public class PartialMatchSearchTextTests
         PartialMatchSearchText.Build("Dark-Side O'Neil").Should().Be("(Dark\\-Side* O\\'Neil*)");
     }
 
+    [TestCase("Bookshelf, Pedestal", "(Bookshelf* Pedestal*)")]
+    [TestCase("Mk.II", "(Mk* II*)")]
+    [TestCase("*DRUMS* Lamp", "(DRUMS* Lamp*)")]
+    [TestCase("50% off", "(50* off*)")]
+    [TestCase("Rifle [Ion]; Mk:2", "(Rifle* Ion* Mk* 2)")]
+    public void UnescapedPunctuationSeparatesWords(string search, string expected)
+    {
+        // "Bookshelf,*" is a RediSearch syntax error; the index splits words on these characters too.
+        PartialMatchSearchText.Build(search).Should().Be(expected);
+    }
+
+    [TestCase(",", "(\\,)")]
+    [TestCase(", .", "(\\,\\.)")]
+    public void PunctuationOnlySearchesStayValid(string search, string expected)
+    {
+        PartialMatchSearchText.Build(search).Should().Be(expected);
+    }
+
     [Test]
     public void PartialMatchesScopeEveryWordToTheField()
     {

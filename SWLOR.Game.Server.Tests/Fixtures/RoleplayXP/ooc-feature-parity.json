@@ -986,5 +986,39 @@
    "r:xd",
    "w:xd"
   ]
+ },
+ {
+  "message": "Squared² and cubed³",
+  "style": "n",
+  "features": [
+   "b:and_cubed",
+   "b:squared_and",
+   "bias",
+   "len:2-3",
+   "n:and",
+   "n:cubed",
+   "n:squared",
+   "no_end_punct",
+   "w:and",
+   "w:cubed",
+   "w:squared"
+  ]
+ },
+ {
+  "message": "Squared² and cubed³",
+  "style": "r",
+  "features": [
+   "b:and_cubed",
+   "b:squared_and",
+   "bias",
+   "len:2-3",
+   "no_end_punct",
+   "r:and",
+   "r:cubed",
+   "r:squared",
+   "w:and",
+   "w:cubed",
+   "w:squared"
+  ]
  }
 ]

@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
     public static class RoleplayMessageClassifier
     {
         private static readonly string[] OOCMarkers = { "((", "))", "[[", "]]", "{{", "}}", @"\\" };
+        private static readonly string[] OOCLabels = { "OOC:", "[OOC]", "(OOC)" };
 
         /// <summary>
         /// Words and emoticons treated as OOC outside quoted speech when the detection file does not
@@ -50,6 +51,10 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
         private static readonly char[] WordPunctuation = "*.,!?;:()[]{}<>~_-/\\'@#".ToCharArray();
         private static readonly char[] EmoticonPunctuation = "*.,!?".ToCharArray();
 
+        // Words joined by these, such as "brb/afk" or "lol,brb", are checked separately. Hyphens, apostrophes,
+        // and brackets stay inside a word so "thir-ty" and "RP(o)G" are not split into shorthand.
+        private static readonly char[] WordSeparators = "/\\,;:.!?&+|".ToCharArray();
+
         public static RoleplayMessageType Classify(string message, OOCDetectionModel detection, EmoteStyle emoteStyle)
         {
             var trimmed = message?.Trim() ?? string.Empty;
@@ -59,6 +64,9 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
             // Commands such as "/emote" are never shown as chat, so their wording is not OOC chatter.
             if (trimmed.Length >= 2 && trimmed[0] == '/' && trimmed[1] != '/')
                 return RoleplayMessageType.ChatCommand;
+
+            if (StartsWithOOCLabel(trimmed))
+                return RoleplayMessageType.OutOfCharacter;
 
             var narration = RemoveQuotedSpeech(trimmed);
             if (ContainsOOCMarker(narration) || ContainsOOCTerm(narration, detection.Terms))
@@ -131,11 +139,29 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
                 if (oocTerms.Contains(emoticonToken) || EndsWithAttachedEmoticon(emoticonToken, oocTerms))
                     return true;
 
-                var word = token.Trim(WordPunctuation);
-                if (word.Length == 0)
-                    continue;
+                foreach (var part in token.Split(WordSeparators, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    var word = part.Trim(WordPunctuation);
+                    if (word.Length == 0)
+                        continue;
 
-                if (oocTerms.Contains(word) || oocTerms.Contains(ReduceStretchedLaughter(word)))
+                    if (oocTerms.Contains(word) || oocTerms.Contains(ReduceStretchedLaughter(word)))
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// An explicit "OOC:", "[OOC]", or "(OOC)" label at the start, with or without a following space.
+        /// This does not depend on the configured term list.
+        /// </summary>
+        private static bool StartsWithOOCLabel(string message)
+        {
+            foreach (var label in OOCLabels)
+            {
+                if (message.StartsWith(label, StringComparison.OrdinalIgnoreCase))
                     return true;
             }
 

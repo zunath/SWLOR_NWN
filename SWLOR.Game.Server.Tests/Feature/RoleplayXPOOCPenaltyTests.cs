@@ -20,6 +20,10 @@ public class RoleplayXPOOCPenaltyTests
     [TestCase("[OOC] heading out")]
     [TestCase("(OOC) heading out")]
     [TestCase("   //leading whitespace")]
+    [TestCase("OOC:heading out")]
+    [TestCase("[OOC]back soon")]
+    [TestCase("(OOC)brb")]
+    [TestCase("ooc:lowercase label")]
     public void Classify_ExplicitOOCPrefix_IsOutOfCharacter(string message)
     {
         Classify(message).Should().Be(RoleplayMessageType.OutOfCharacter);
@@ -46,6 +50,9 @@ public class RoleplayXPOOCPenaltyTests
     [TestCase("can my pet get the xp?")]
     [TestCase("Also yes, I can see DM chat")]
     [TestCase("Ohp, nvm! Misread the chart")]
+    [TestCase("brb/afk")]
+    [TestCase("lol,brb")]
+    [TestCase("ok. afk.brb")]
     [TestCase("\"Sounds good.\" ty for the rp!")]
     [TestCase("\"Fair enough.\" She grins. tbh I think that was the best roll all night")]
     public void Classify_ChatSpeakTypedAsNarration_IsOutOfCharacter(string message)
@@ -558,6 +565,10 @@ public class RoleplayXPOOCPenaltyTests
         var detection = OOCDetectionLoader.FromFile(new OOCDetectionFile { Terms = new List<string>() });
         RoleplayMessageClassifier.Classify("brb, food", detection, EmoteStyle.Novel)
             .Should().Be(RoleplayMessageType.InCharacter);
+        RoleplayMessageClassifier.Classify("OOC: brb, food", detection, EmoteStyle.Novel)
+            .Should().Be(RoleplayMessageType.OutOfCharacter, "explicit OOC labels do not depend on the term list");
+        RoleplayMessageClassifier.Classify("[OOC]back soon", detection, EmoteStyle.Novel)
+            .Should().Be(RoleplayMessageType.OutOfCharacter);
         RoleplayMessageClassifier.Classify("//brb, food", detection, EmoteStyle.Novel)
             .Should().Be(RoleplayMessageType.OutOfCharacter, "OOC markers do not depend on the term list");
     }

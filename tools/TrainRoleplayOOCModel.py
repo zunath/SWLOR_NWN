@@ -63,6 +63,7 @@ PARITY_MESSAGES = [
     '\\\\sure let me finish this first',
     'Quiet. Too quiet.',
     'xD',
+    'Squared² and cubed³',
 ]
 
 
@@ -147,7 +148,8 @@ def extract_features(message, style):
         features.add('question')
     if '*' in text:
         features.add('asterisk')
-    if any(c.isdigit() for c in text):
+    # isdecimal matches C# char.IsDigit; isdigit would also accept superscripts such as '²'.
+    if any(c.isdecimal() for c in text):
         features.add('digits')
     if ELONGATED.search(text):
         features.add('elongated')
@@ -161,7 +163,9 @@ def extract_features(message, style):
         features.add('lc:' + pronoun)
     for word in set(words):
         features.add('w:' + word)
-        features.add(style + ':' + word)
+        # The server only knows Novel and Regular, so unknown-style examples get no style features.
+        if style != 'u':
+            features.add(style + ':' + word)
     for first, second in zip(words, words[1:]):
         features.add('b:' + first + '_' + second)
     return features
@@ -232,7 +236,10 @@ def build_model(args):
     feature_counts = collections.Counter()
     feature_senders = collections.defaultdict(set)
     for sender, message in lines:
-        if is_chat_command(message) or is_typo_correction(message) or len(message.strip()) <= 3:
+        if is_chat_command(message) or len(message.strip()) <= 3:
+            continue
+        # The server checks OOC markers before typo corrections, so a marked line such as "// brb*" stays.
+        if is_typo_correction(message) and not is_explicit_ooc(message):
             continue
         features = extract_features(message, styles.get(sender, 'u'))
         feature_counts.update(features)

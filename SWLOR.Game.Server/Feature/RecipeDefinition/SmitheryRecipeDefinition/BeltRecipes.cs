@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             // Cloth Belt
             _builder.Create(RecipeType.ClothBelt, SkillType.Smithery)
                 .Category(RecipeCategoryType.Belt)
-                .Resref("fabr_cloak_1")
+                .Resref("fabr_belt_1")
                 .Level(10)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)

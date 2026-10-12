@@ -556,6 +556,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
             LoadMyContracts();
+            Gui.ClosePlayerWindow(Player, GuiWindowType.QuestContractEditor);
             Gui.TogglePlayerWindow(Player, GuiWindowType.QuestContractEditor, null, TetherObject);
         };
 

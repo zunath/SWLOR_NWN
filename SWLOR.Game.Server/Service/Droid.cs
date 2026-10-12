@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using NWNXLib = NWN.Native.API.NWNXLib;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
@@ -32,6 +33,8 @@ namespace SWLOR.Game.Server.Service
         private const string ConstructedDroidVariable = "CONSTRUCTED_DROID";
         private const string DroidIsSpawning = "DROID_IS_SPAWNING";
         private const string DroidItemId = "DROID_ITEM_ID";
+        // Keep undeliverable returns in the existing inventory payloads so item migrations still visit them.
+        private const string PendingItemReturnPrefix = "DROID_RETURN_ITEM:";
         private const float RecastDelaySeconds = 1800f;
 
         public static string GetInstructionDiscValidationError(uint user, uint item)
@@ -682,17 +685,39 @@ namespace SWLOR.Game.Server.Service
                 AssignCommand(droid, () => ActionEquipItem(deserialized, slot));
             }
 
-            foreach (var (id, serialized) in constructedDroid.Inventory)
+            foreach (var (id, serialized) in constructedDroid.Inventory.ToArray())
             {
                 var deserialized = ObjectPlugin.Deserialize(serialized);
                 if(!GetIsObjectValid(deserialized))
                     continue;
+
+                if (id.StartsWith(PendingItemReturnPrefix, StringComparison.Ordinal) ||
+                    !string.IsNullOrWhiteSpace(CanGiveItemToDroid(deserialized)))
+                {
+                    constructedDroid.Inventory.Remove(id);
+                    if (ItemPlugin.MoveTo(deserialized, player, true) &&
+                        (!GetIsObjectValid(deserialized) || GetItemPossessor(deserialized) == player))
+                    {
+                        SetDroppableFlag(deserialized, true);
+                    }
+                    else
+                    {
+                        var returnId = id.StartsWith(PendingItemReturnPrefix, StringComparison.Ordinal)
+                            ? id
+                            : PendingItemReturnPrefix + Guid.NewGuid();
+                        constructedDroid.Inventory[returnId] = serialized;
+                        DestroyObject(deserialized);
+                        SendMessageToPC(player, "Make room in your inventory and summon your droid again to recover its returned items.");
+                    }
+                    continue;
+                }
 
                 // The controller's key is authoritative for older serialized items.
                 SetLocalString(deserialized, DroidItemId, id);
                 ObjectPlugin.AcquireItem(droid, deserialized);
                 SetDroppableFlag(deserialized, false);
             }
+            SaveConstructedDroid(controller, constructedDroid);
 
             // Appearance
             var defaultDroid = Race.GetDefaultAppearance(RacialType.Droid, Gender.Male);
@@ -847,6 +872,7 @@ namespace SWLOR.Game.Server.Service
             });
 
             CompanionControl.Clear(droid);
+            ReturnRejectedItems(droid, player);
             SaveItemSnapshot(droid);
             DestroyObject(droid, 0.1f);
             ClearTemporaryData(player, droid);
@@ -937,6 +963,55 @@ namespace SWLOR.Game.Server.Service
                    itemType != BaseItem.CreatureItem;
         }
 
+        private static void ReturnRejectedItems(uint droid, uint player)
+        {
+            var controller = GetControllerItem(droid);
+            if (!GetIsObjectValid(controller))
+                return;
+
+            var rejectedItems = new List<uint>();
+            for (var item = GetFirstItemInInventory(droid); GetIsObjectValid(item); item = GetNextItemInInventory(droid))
+            {
+                if (GetItemPossessor(item, true) == droid && !string.IsNullOrWhiteSpace(CanGiveItemToDroid(item)))
+                    rejectedItems.Add(item);
+            }
+
+            foreach (var item in rejectedItems)
+            {
+                if (GetIsObjectValid(player) && ItemPlugin.MoveTo(item, player, true) &&
+                    (!GetIsObjectValid(item) || GetItemPossessor(item) == player))
+                {
+                    SetDroppableFlag(item, true);
+                    continue;
+                }
+
+                var constructedDroid = LoadConstructedDroid(controller);
+                constructedDroid.Inventory[PendingItemReturnPrefix + Guid.NewGuid()] = ObjectPlugin.Serialize(item);
+                SaveConstructedDroid(controller, constructedDroid);
+                DestroyObject(item);
+            }
+        }
+
+        private static HashSet<uint> GetGeneratedAmmunition(uint droid)
+        {
+            var generatedItems = new HashSet<uint>();
+            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(droid)?.AsNWSCreature();
+            if (native == null)
+                return generatedItems;
+
+            foreach (var (slot, generated) in new[]
+                     {
+                         (InventorySlot.Arrows, native.m_bMagicalArrowsEquipped != 0),
+                         (InventorySlot.Bullets, native.m_bMagicalBulletsEquipped != 0),
+                         (InventorySlot.Bolts, native.m_bMagicalBoltsEquipped != 0)
+                     })
+            {
+                if (generated)
+                    generatedItems.Add(GetItemInSlot(slot, droid));
+            }
+            return generatedItems;
+        }
+
         private static void SaveItemSnapshot(uint droid)
         {
             if (!IsDroid(droid) || GetLocalBool(droid, DroidIsSpawning))
@@ -947,14 +1022,17 @@ namespace SWLOR.Game.Server.Service
 
             var constructedDroid = LoadConstructedDroid(controller);
             var equippedItems = new Dictionary<InventorySlot, string>();
-            var inventory = new Dictionary<string, string>();
+            var inventory = constructedDroid.Inventory
+                .Where(pair => pair.Key.StartsWith(PendingItemReturnPrefix, StringComparison.Ordinal))
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
             var equippedObjects = new HashSet<uint>();
             var itemIds = new HashSet<string>();
+            var generatedAmmunition = GetGeneratedAmmunition(droid);
 
             for (var slot = InventorySlot.Head; slot <= InventorySlot.Bolts; slot++)
             {
                 var item = GetItemInSlot(slot, droid);
-                if (!GetIsObjectValid(item) || !IsStoredItem(item) || !string.IsNullOrWhiteSpace(CanGiveItemToDroid(item)))
+                if (!GetIsObjectValid(item) || generatedAmmunition.Contains(item) || !IsStoredItem(item) || !string.IsNullOrWhiteSpace(CanGiveItemToDroid(item)))
                     continue;
 
                 GetDroidItemId(item, itemIds);
@@ -964,7 +1042,7 @@ namespace SWLOR.Game.Server.Service
 
             for (var item = GetFirstItemInInventory(droid); GetIsObjectValid(item); item = GetNextItemInInventory(droid))
             {
-                if (equippedObjects.Contains(item) || !IsStoredItem(item) || !string.IsNullOrWhiteSpace(CanGiveItemToDroid(item)))
+                if (GetItemPossessor(item, true) != droid || equippedObjects.Contains(item) || generatedAmmunition.Contains(item) || !IsStoredItem(item) || !string.IsNullOrWhiteSpace(CanGiveItemToDroid(item)))
                     continue;
 
                 var itemId = GetDroidItemId(item, itemIds);
@@ -1057,6 +1135,7 @@ namespace SWLOR.Game.Server.Service
         {
             var droid = OBJECT_SELF;
             var player = GetMaster(droid);
+            ReturnRejectedItems(droid, player);
             SaveItemSnapshot(droid);
             CompanionControl.Clear(droid);
             ExecuteScript("x2_hen_death", droid);

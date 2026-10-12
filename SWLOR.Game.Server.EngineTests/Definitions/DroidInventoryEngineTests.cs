@@ -189,8 +189,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await Dismiss(ctx, owner, droid);
         }
 
-        [EngineTest("Droid dismissal excludes containers awaiting their queued return", Category = "DroidInventory")]
-        public static async Task PendingContainerReturn(EngineTestContext ctx)
+        [EngineTest("Droid dismissal returns rejected containers and their contents", Category = "DroidInventory")]
+        public static Task PendingContainerReturn(EngineTestContext ctx) => VerifyContainerReturn(ctx, false, false);
+
+        [EngineTest("Droid dismissal preserves rejected containers when the owner inventory is full", Category = "DroidInventory")]
+        public static Task PendingContainerReturnFullInventory(EngineTestContext ctx) => VerifyContainerReturn(ctx, true, false);
+
+        [EngineTest("Droid death returns rejected containers and their contents", Category = "DroidInventory")]
+        public static Task PendingContainerReturnOnDeath(EngineTestContext ctx) => VerifyContainerReturn(ctx, false, true);
+
+        private static async Task VerifyContainerReturn(EngineTestContext ctx, bool fullInventory, bool death)
         {
             var owner = ctx.SpawnCreature("civilian");
             await ctx.WaitFrameAsync();
@@ -203,22 +211,147 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 bag = CreateItemOnObject("bag_ex", droid);
                 ctx.Assert(GetIsObjectValid(bag) && GetHasInventory(bag), "The rejected container fixture exists");
                 ctx.Track(bag);
+                ctx.Assert(GetIsObjectValid(CreateItemOnObject("sardine_ball", bag, 7)), "The rejected bag contains a stack to preserve");
             });
             await ctx.WaitFrameAsync();
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            var repository = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(owner).AsNWSCreature().m_pcItemRepository;
+            var height = repository.m_nHeight;
+            var scalable = repository.m_bScalable;
+            try
             {
-                DeleteLocalBool(droid, "DROID_IS_SPAWNING");
-                Item.ReturnItem(owner, bag);
-                ctx.AssertEqual(droid, GetItemPossessor(bag), "The container remains carried until the queued return executes");
-                Droid.RemoveAssociate();
-                ctx.AssertEqual(0, Droid.LoadConstructedDroid(controller).Inventory.Count, "The dismissal checkpoint excludes the rejected container");
-                ctx.Assert(ItemPlugin.MoveTo(bag, owner), "Recover the fixture before the dismissed droid is destroyed");
-            });
-            await ctx.WaitUntilAsync(() => !GetIsObjectValid(droid), 5f, "the droid to be dismissed");
-            droid = await Spawn(ctx, owner, controller);
-            ctx.AssertEqual(0, Items(droid).Count(item => GetResRef(item) == "bag_ex"), "The rejected container cannot return on resummon");
-            ctx.AssertEqual(owner, GetItemPossessor(bag), "The returned fixture remains with its owner");
+                if (fullInventory)
+                {
+                    repository.m_nHeight = 0;
+                    repository.m_bScalable = 0;
+                }
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                {
+                    DeleteLocalBool(droid, "DROID_IS_SPAWNING");
+                    Item.ReturnItem(owner, bag);
+                    ctx.AssertEqual(droid, GetItemPossessor(bag), "The container remains carried until the queued return executes");
+                    if (fullInventory)
+                        ctx.Assert(!ItemPlugin.MoveTo(bag, owner, true), "The full inventory fixture cannot accept the bag");
+                    if (death)
+                        ApplyEffectToObject(DurationType.Instant, EffectDeath(), droid);
+                    else
+                        Droid.RemoveAssociate();
+                });
+                await ctx.WaitUntilAsync(() => !GetIsObjectValid(Droid.GetDroid(owner)), 5f, "the droid to finish dismissal or death");
+                await ctx.DelaySecondsAsync(0.3f);
+                if (fullInventory)
+                {
+                    var saved = Droid.LoadConstructedDroid(controller);
+                    ctx.AssertEqual(1, saved.Inventory.Count, $"An undeliverable bag has one durable recovery entry ({string.Join(", ", saved.Inventory.Keys)})");
+                    ctx.Assert(!GetIsObjectValid(bag), "Only the saved recovery copy remains after teardown");
+                    droid = await Spawn(ctx, owner, controller);
+                    ctx.AssertEqual(0, Items(droid).Count(item => GetResRef(item) == "bag_ex"), "Recovery entries never become droid storage");
+                    ctx.AssertEqual(1, Droid.LoadConstructedDroid(controller).Inventory.Count, "The recovery copy survives another summon with no inventory room");
+                    await Dismiss(ctx, owner, droid);
+                }
+                else
+                {
+                    ctx.AssertEqual(owner, GetItemPossessor(bag), "Production returns the original bag before teardown");
+                    ctx.AssertEqual(0, Droid.LoadConstructedDroid(controller).Inventory.Count, "A delivered bag has no saved duplicate");
+                }
+            }
+            finally
+            {
+                repository.m_nHeight = height;
+                repository.m_bScalable = scalable;
+            }
+            for (var pass = 0; pass < 2; pass++)
+            {
+                droid = await Spawn(ctx, owner, controller);
+                ctx.AssertEqual(0, Items(droid).Count(item => GetResRef(item) == "bag_ex"), "The rejected bag never returns to the droid");
+                var returned = Items(owner).Where(item => GetResRef(item) == "bag_ex").ToArray();
+                ctx.AssertEqual(1, returned.Length, "Exactly one returned bag remains with its owner");
+                var contents = Items(returned.Single()).Where(item => GetResRef(item) == "sardine_ball").ToArray();
+                ctx.AssertEqual(1, contents.Length, "The returned bag retains its contained stack");
+                ctx.AssertEqual(7, GetItemStackSize(contents.Single()), "The complete contained quantity survives");
+                ctx.AssertEqual(0, Droid.LoadConstructedDroid(controller).Inventory.Count, "Delivery clears the recovery entry");
+                await Dismiss(ctx, owner, droid);
+            }
+        }
+
+        [EngineTest("Droid summons regenerate ammunition without saving engine-owned stacks", Category = "DroidInventory", TimeoutSeconds = 90f)]
+        public static async Task GeneratedAmmunition(EngineTestContext ctx)
+        {
+            var owner = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            foreach (var (weaponBase, ammoSlot) in new[]
+                     {
+                         (BaseItem.Sling, InventorySlot.Bullets),
+                         (BaseItem.Longbow, InventorySlot.Arrows),
+                         (BaseItem.Rifle, InventorySlot.Bolts)
+                     })
+            {
+                var controller = await CreateController(ctx, owner);
+                var droid = await Spawn(ctx, owner, controller);
+                var weapon = await CreateEquipment(ctx, owner, "b_longsword");
+                var realAmmo = await CreateEquipment(ctx, owner, "blaster_bullets");
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                {
+                    ItemPlugin.SetBaseItemType(weapon, weaponBase);
+                    AddItemProperty(DurationType.Permanent, ItemPropertyUnlimitedAmmo(), weapon);
+                    SetLocalString(realAmmo, "DROID_TEST_REAL_AMMO", "real");
+                    SetItemStackSize(realAmmo, 37);
+                });
+                await Transfer(ctx, owner, realAmmo, droid);
+                await Transfer(ctx, owner, weapon, droid);
+                await Equip(ctx, droid, weapon, InventorySlot.RightHand);
+                for (var pass = 0; pass < 2; pass++)
+                {
+                    ctx.Assert(HasGeneratedAmmunition(droid, ammoSlot), "The equipped weapon supplies native magical ammunition");
+                    await Dismiss(ctx, owner, droid);
+                    var saved = Droid.LoadConstructedDroid(controller);
+                    ctx.AssertEqual(1, saved.EquippedItems.Count, "Only the real weapon is saved as equipment");
+                    ctx.Assert(!saved.EquippedItems.ContainsKey(ammoSlot), "Engine-owned ammunition is never serialized");
+                    ctx.AssertEqual(1, saved.Inventory.Count, "Only the real carried ammunition is saved");
+                    droid = await Spawn(ctx, owner, controller);
+                    await ctx.WaitUntilAsync(() => HasGeneratedAmmunition(droid, ammoSlot), 5f, "native ammunition to regenerate after resummoning");
+                    var realStacks = Items(droid).Where(item => GetLocalString(item, "DROID_TEST_REAL_AMMO") == "real").ToArray();
+                    ctx.AssertEqual(1, realStacks.Length, "One real carried stack survives alongside regenerated ammunition");
+                    ctx.AssertEqual(37, GetItemStackSize(realStacks.Single()), "Carried ammunition retains its full quantity");
+                    ctx.AssertEqual(2, Items(droid).Count(item => GetBaseItemType(item) is BaseItem.Arrow or BaseItem.Bullet or BaseItem.Bolt), "There is one real stack and one generated stack");
+                }
+                await Dismiss(ctx, owner, droid);
+            }
+        }
+
+        [EngineTest("Droid summons retain real equipped ammunition and its quantity", Category = "DroidInventory")]
+        public static async Task RealEquippedAmmunition(EngineTestContext ctx)
+        {
+            var owner = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            var controller = await CreateController(ctx, owner);
+            var droid = await Spawn(ctx, owner, controller);
+            var ammo = await CreateEquipment(ctx, owner, "blaster_bullets");
+            await ctx.ExecuteInCreatureContextAsync(owner, () => SetItemStackSize(ammo, 37));
+            await Transfer(ctx, owner, ammo, droid);
+            await Equip(ctx, droid, ammo, InventorySlot.Bullets);
+            for (var pass = 0; pass < 2; pass++)
+            {
+                await Dismiss(ctx, owner, droid);
+                ctx.Assert(Droid.LoadConstructedDroid(controller).EquippedItems.ContainsKey(InventorySlot.Bullets), "Real equipped ammunition is saved");
+                droid = await Spawn(ctx, owner, controller);
+                await ctx.WaitUntilAsync(() => GetIsObjectValid(GetItemInSlot(InventorySlot.Bullets, droid)), 5f, "real ammunition to be restored");
+                ctx.Assert(!HasGeneratedAmmunition(droid, InventorySlot.Bullets), "The restored stack is real ammunition");
+                ctx.AssertEqual(37, GetItemStackSize(GetItemInSlot(InventorySlot.Bullets, droid)), "The full real equipped quantity survives");
+                ctx.AssertEqual(1, Items(droid).Count(item => GetBaseItemType(item) == BaseItem.Bullet), "No extra real ammunition appears");
+            }
             await Dismiss(ctx, owner, droid);
+        }
+
+        private static bool HasGeneratedAmmunition(uint droid, InventorySlot slot)
+        {
+            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(droid)?.AsNWSCreature();
+            return native != null && GetIsObjectValid(GetItemInSlot(slot, droid)) && slot switch
+            {
+                InventorySlot.Arrows => native.m_bMagicalArrowsEquipped != 0,
+                InventorySlot.Bullets => native.m_bMagicalBulletsEquipped != 0,
+                InventorySlot.Bolts => native.m_bMagicalBoltsEquipped != 0,
+                _ => false
+            };
         }
 
         private static unsafe void SplitStack(uint droid, uint item, int amount)
@@ -266,12 +399,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return controller;
         }
 
-        private static async Task<uint> CreateRing(EngineTestContext ctx, uint owner, bool usableByDroid = true)
+        private static Task<uint> CreateRing(EngineTestContext ctx, uint owner, bool usableByDroid = true) =>
+            CreateEquipment(ctx, owner, "advent_ring", usableByDroid);
+
+        private static async Task<uint> CreateEquipment(EngineTestContext ctx, uint owner, string resref, bool usableByDroid = true)
         {
             var ring = OBJECT_INVALID;
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                ring = CreateItemOnObject("advent_ring", owner);
+                ring = CreateItemOnObject(resref, owner);
                 ctx.Assert(GetIsObjectValid(ring), "The equipment fixture exists");
                 var properties = new List<SWLOR.NWN.API.Engine.ItemProperty>();
                 for (var property = GetFirstItemProperty(ring); GetIsItemPropertyValid(property); property = GetNextItemProperty(ring))

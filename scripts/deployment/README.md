@@ -55,6 +55,15 @@ The deployment:
    them and starts the prior image. A successful cutover records the new image,
    removes the rollback set, and prunes only dangling Docker images.
 
+Optional host-owned configuration files in `SERVER_ROOT` (`nwn.ini`,
+`nwnplayer.ini`, `settings.tml`, `cryptographic_secret`, and the RP XP OOC
+detection file `rpxp-ooc-detection.json`) are never overwritten by a deployment.
+Before each start the deployer makes them root-owned and read-only to the game
+process. Edit them in place; the game reads `rpxp-ooc-detection.json` at server
+start, so a restart or the next deployment applies a change. Keep the detection
+file out of the repository: `tools/TrainRoleplayOOCModel.py` builds it from chat
+logs.
+
 The NWSync and server HAK/TLK/module paths must be separate ordinary
 directories, not symlinks or bind mounts. The deployer refuses to proceed
 while a server artifact path is still mounted or resolves to the same object

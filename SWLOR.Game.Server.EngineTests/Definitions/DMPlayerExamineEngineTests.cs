@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -36,6 +37,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var coloredName = PlayerName.GetDisplayName(observer.Creature, target.Creature);
             var plainName = UtilPlugin.StripColors(coloredName);
             ctx.Assert(coloredName != plainName, "fixture must exercise an inline-colored descriptor");
+            SetDescription(target.Creature,
+                ColorToken.Custom("Age: ", 194, 128, 32) + "29 (looks about 40)\n" +
+                ColorToken.Custom("Species: ", 194, 128, 32) + "Vahla (near-human)\n" +
+                ColorToken.Custom("Height: ", 194, 128, 32) + "207 cm\n" +
+                ColorToken.Custom("Weight: ", 194, 128, 32) + "55 kg\n\n" +
+                ColorToken.Custom("Additional notes: ", 194, 128, 32) +
+                "A longer biography wraps across the full DM description panel while retaining its authored colors.");
 
             var template = Gui.GetWindowTemplate(GuiWindowType.DMPlayerExamine);
             var playerWindow = template.CreatePlayerWindowAction();
@@ -65,6 +73,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual("Force Sensitive", model.CharacterType, "native Force Sensitive class");
                 ctx.Assert(model.FP != "0 / 0", "Force Sensitive FP must be displayed");
                 Capture("details", 0);
+                AssertDescriptionColors();
 
                 await InPlayerContext(() => model.TopTabId = 2);
                 AssertPerkInputs(0, 2, 1, "");
@@ -78,6 +87,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(model.PerkNames.Count > 0, "search must find real target perk definitions");
                 var filteredPerks = model.PerkNames.ToArray();
                 await InPlayerContext(() => model.TopTabId = 0);
+                AssertDescriptionColors();
                 await InPlayerContext(() => model.TopTabId = 2);
                 AssertPerkInputs(0, 1, 0, "analyzer");
                 ctx.Assert(filteredPerks.SequenceEqual(model.PerkNames), "tab return must retain filtered rows");
@@ -182,13 +192,24 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         binds[bind] = json.RootElement.Clone();
                     }
                 }
-                using var partial = JsonDocument.Parse(AppliedPartial());
+                using var partial = JsonDocument.Parse(GuiLayoutComposer.Compose(AppliedPartial(), GroupLayouts()));
                 snapshots.Add(new { name, tab, binds, partial = partial.RootElement.Clone() });
             }
 
-            string AppliedPartial() => ((Dictionary<string, string>)typeof(DMPlayerExamineViewModel).BaseType!
-                .GetField("_groupLayouts", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(model)!)
-                [DMPlayerExamineViewModel.PartialView];
+            Dictionary<string, string> GroupLayouts() => (Dictionary<string, string>)typeof(DMPlayerExamineViewModel).BaseType!
+                .GetField("_groupLayouts", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(model)!;
+
+            string AppliedPartial() => GroupLayouts()[DMPlayerExamineViewModel.PartialView];
+
+            void AssertDescriptionColors()
+            {
+                var partial = JObject.Parse(GuiLayoutComposer.Compose(AppliedPartial(), GroupLayouts()));
+                var drawItems = partial.SelectTokens("$..draw_list[*]").ToArray();
+                ctx.Assert(drawItems.Length > 0, "Details must include the rendered description after tab swaps");
+                ctx.Assert(drawItems.All(item => !item["text"]!.Value<string>()!.Contains("<c")), "description draw text must hide color tokens");
+                ctx.Assert(drawItems.Any(item => item["color"]!["r"]!.Value<int>() == 194), "authored biography colors must reach the native layout");
+                ctx.Assert(drawItems.Any(item => item["color"]!["r"]!.Value<int>() == 255), "uncolored biography text must remain white");
+            }
 
             float AppliedNotesWidth()
             {

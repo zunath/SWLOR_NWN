@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<QuestContractBoardViewModel> _builder = new();
 
+        /// <summary>Builds Browse and My Contracts with selection details, delivery claims, and Post Again.</summary>
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.QuestContractBoard)
@@ -263,6 +264,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindText(model => model.CancelButtonText)
                                     .BindIsEnabled(model => model.IsCancelEnabled)
                                     .BindOnClicked(model => model.OnClickCancelContract())
+                                    .SetHeight(32f)
+                                    .SetWidth(110f);
+
+                            });
+
+                            right.AddRow(r =>
+                            {
+                                r.BindIsVisible(model => model.IsMyActionsVisible);
+                                r.AddButton()
+                                    .SetText("Post Again")
+                                    .BindIsEnabled(model => model.IsPostAgainEnabled)
+                                    .SetDisabledTooltip("Select a completed, expired, or cancelled contract. Finish any existing draft first.")
+                                    .BindOnClicked(model => model.OnClickPostAgain())
                                     .SetHeight(32f)
                                     .SetWidth(110f);
 

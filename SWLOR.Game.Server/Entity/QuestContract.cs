@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Entity
         public int SettlementPending { get; set; }
         public DateTime DatePublished { get; set; }
         public DateTime DateExpires { get; set; }
+        public DateTime? DateClosed { get; set; }
         public string TakedownPlayerId { get; set; }
         public string TakedownReason { get; set; }
     }

@@ -148,10 +148,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var selections = TintMapModelResolver.GetCurrentSelections(creature);
             var rendersRobeRgb = RobeModelRenderer.Apply(creature, selections);
             HelmetModelRenderer.Apply(creature, selections);
+            NeckModelRenderer.Apply(creature);
             ProjectNativeRobeColors(creature, selections, rendersRobeRgb);
             ApplyEquippedHelmetColors(creature, selections, resetShaderOverrides);
             if (resetShaderOverrides)
                 ResetMaterialShaderUniforms(creature);
+            CloakTintRenderer.Apply(creature, selections);
             var creatureLayers = new HashSet<TintMapLayerType>();
             foreach (var selection in selections)
             {
@@ -1398,9 +1400,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 var armor = GetItemInSlot(InventorySlot.Chest, creature);
                 var recoveredRobe = GetIsObjectValid(armor) &&
                     RobeAppearance.RemoveUnavailableRobe(creature, armor);
+                var recoveredNeck = GetIsObjectValid(armor) &&
+                    NeckAppearance.RemoveUnavailableNeck(creature, armor);
                 CarryStoredEquipmentCustomColors(creature);
                 CarryStoredCreatureCustomColors(creature);
-                if (recoveredRobe)
+                if (recoveredRobe || recoveredNeck)
                     EquippedItemAppearance.Refresh(creature, armor, resetShaderOverrides);
                 else
                     ApplyCurrentColors(creature, resetShaderOverrides);

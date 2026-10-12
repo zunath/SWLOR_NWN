@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Service
                 var objectType = GetObjectType(category);
                 var areas = scope == DMObjectSearchScope.AllAreas
                     ? GetAllAreas()
-                    : new List<uint> { GetArea(dm) };
+                    : new List<uint> { GetArea(DMPresence.GetControlledCreature(dm)) };
 
                 foreach (var area in areas)
                 {

@@ -70,6 +70,8 @@ namespace SWLOR.Game.Server.Service
                 DMBlueprintCategory.Items => DescribeItemBlueprint(blueprint),
                 DMBlueprintCategory.Placeables => DescribePlaceableTemplate(template),
                 DMBlueprintCategory.Stores => DescribeStoreTemplate(template),
+                DMBlueprintCategory.Triggers => DescribeTriggerTemplate(template),
+                DMBlueprintCategory.Encounters => DescribeEncounterTemplate(template),
                 _ => DescribeWaypointTemplate(template)
             };
 
@@ -159,7 +161,8 @@ namespace SWLOR.Game.Server.Service
                 return (Cache.GetItemIconByResref(blueprint.Resref), baseItem >= 0 ? GetBaseItemName(baseItem) : leafCategory);
             }
 
-            if (blueprint.Category is DMBlueprintCategory.Stores or DMBlueprintCategory.Waypoints)
+            if (blueprint.Category is DMBlueprintCategory.Stores or DMBlueprintCategory.Waypoints
+                or DMBlueprintCategory.Triggers or DMBlueprintCategory.Encounters)
                 return (string.Empty, leafCategory);
 
             var template = DMBlueprintCatalog.ReadTemplate(blueprint);
@@ -391,6 +394,63 @@ namespace SWLOR.Game.Server.Service
                 $"Sells {itemCount} item{(itemCount == 1 ? string.Empty : "s")}",
                 $"Gold: {(gold < 0 ? "unlimited" : gold.ToString(CultureInfo.InvariantCulture))}   Max buy price: {GetStoreMaxBuyPrice(store)}"
             };
+        }
+
+        private static List<string> DescribeTriggerTemplate(Json template)
+        {
+            var lines = new List<string>
+            {
+                DMTemplateFields.ReadInt(template, "Type") switch
+                {
+                    1 => "Area transition",
+                    2 => "Trap",
+                    _ => "Generic trigger"
+                }
+            };
+
+            if (DMTemplateFields.ReadInt(template, "TrapFlag") != 0)
+            {
+                lines.Add($"Detect DC {DMTemplateFields.ReadInt(template, "TrapDetectDC")}   Disarm DC {DMTemplateFields.ReadInt(template, "DisarmDC")}");
+                lines.Add(DMTemplateFields.ReadInt(template, "TrapOneShot") != 0 ? "Fires once" : "Fires every time");
+            }
+
+            var linkedTo = DMTemplateFields.ReadString(template, "LinkedTo");
+            if (!string.IsNullOrWhiteSpace(linkedTo))
+                lines.Add($"Leads to: {linkedTo}");
+
+            var onEnter = DMTemplateFields.ReadString(template, "ScriptOnEnter");
+            if (!string.IsNullOrWhiteSpace(onEnter))
+                lines.Add($"On enter: {onEnter}");
+
+            lines.Add($"Created as a {DMBlueprintCatalog.GetSquareSize(DMBlueprintCategory.Triggers):0} m square.");
+            return lines;
+        }
+
+        private static List<string> DescribeEncounterTemplate(Json template)
+        {
+            var lines = new List<string>
+            {
+                $"Up to {DMTemplateFields.ReadInt(template, "MaxCreatures")} creatures, {DMTemplateFields.ReadInt(template, "RecCreatures")} recommended",
+                DMTemplateFields.ReadInt(template, "SpawnOption") == 1 ? "Spawns once" : "Spawns continuously"
+            };
+            AddFlags(lines,
+                (DMTemplateFields.ReadInt(template, "Active") == 0, "Inactive"),
+                (DMTemplateFields.ReadInt(template, "PlayerOnly") != 0, "Players only"));
+
+            var creatures = DMTemplateFields.ReadList(template, "CreatureList");
+            var resrefs = new List<string>();
+            for (var index = 0; index < JsonGetLength(creatures); index++)
+            {
+                var resref = DMTemplateFields.ReadString(JsonArrayGet(creatures, index), "ResRef");
+                if (!string.IsNullOrWhiteSpace(resref))
+                    resrefs.Add(resref);
+            }
+
+            if (resrefs.Count > 0)
+                lines.Add($"Creatures: {string.Join(", ", resrefs)}");
+
+            lines.Add($"Created as a {DMBlueprintCatalog.GetSquareSize(DMBlueprintCategory.Encounters):0} m square.");
+            return lines;
         }
 
         private static List<string> DescribeWaypointTemplate(Json template)

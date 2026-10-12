@@ -85,5 +85,21 @@ namespace SWLOR.Game.Server.Service
         {
             return $"{GetName(dm)} ({GetPCPlayerName(dm)}) [{GetPCPublicCDKey(dm)}]";
         }
+
+        /// <summary>
+        /// Returns the creature a DM is possessing, or the DM avatar when they are not possessing one.
+        /// </summary>
+        /// <param name="dm">The DM avatar.</param>
+        public static uint GetControlledCreature(uint dm)
+        {
+            // A possessed creature is listed among the PCs, with the DM avatar as its master.
+            for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
+            {
+                if (GetIsDMPossessed(pc) && GetMaster(pc) == dm)
+                    return pc;
+            }
+
+            return dm;
+        }
     }
 }

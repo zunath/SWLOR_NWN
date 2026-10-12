@@ -15,6 +15,9 @@ namespace SWLOR.Game.Server.Service
     public static class DMPlayerDirectory
     {
         public const int MaxResults = 200;
+        private const int CandidatePageSize = 200;
+        // Keeps a search whose words are all common from loading most of the character records.
+        private const int MaxOfflineCandidates = 1000;
 
         private static readonly string[] OfflineSearchFields =
         {
@@ -52,17 +55,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (scope != DMPlayerSearchScope.Online && terms.Count > 0)
-            {
-                foreach (var dbPlayer in SearchOfflineRecords(search.Trim(), terms, out offlineTruncated))
-                {
-                    if (onlineIds.Contains(dbPlayer.Id))
-                        continue;
-
-                    var result = BuildOfflineResult(dbPlayer);
-                    if (Matches(search, terms, result, dbPlayer.UnknownDisplayName))
-                        results.Add(result);
-                }
-            }
+                results.AddRange(SearchOffline(search.Trim(), terms, onlineIds, out offlineTruncated));
 
             isTruncated = results.Count > MaxResults || offlineTruncated;
             return results
@@ -137,59 +130,97 @@ namespace SWLOR.Game.Server.Service
                 result.CDKey);
         }
 
-        // Returns candidates for Search to filter. The index only matches when every word of a query is in one
-        // field, so the longest word is also searched alone to find characters whose words span several fields.
-        private static List<Player> SearchOfflineRecords(string search, IReadOnlyList<string> terms, out bool isTruncated)
+        // A matching character has every search word in some field, so the word with the fewest index hits finds
+        // them all. Its candidates are paged in until enough characters match or the candidate limit is reached.
+        private static List<DMPlayerSearchResult> SearchOffline(
+            string search,
+            IReadOnlyList<string> terms,
+            HashSet<string> onlineIds,
+            out bool isTruncated)
         {
-            var players = new Dictionary<string, Player>();
+            var results = new List<DMPlayerSearchResult>();
+            var seen = new HashSet<string>(onlineIds);
+            var loaded = 0;
             isTruncated = false;
 
-            if (terms.Count == 1 && Guid.TryParse(terms[0], out _))
+            void Consider(Player dbPlayer)
             {
-                var dbPlayer = DB.Get<Player>(terms[0]);
-                if (dbPlayer != null && !dbPlayer.IsDeleted)
-                    players[dbPlayer.Id] = dbPlayer;
+                if (dbPlayer == null || dbPlayer.IsDeleted || !seen.Add(dbPlayer.Id))
+                    return;
+
+                var result = BuildOfflineResult(dbPlayer);
+                if (Matches(search, terms, result, dbPlayer.UnknownDisplayName))
+                    results.Add(result);
             }
 
-            var words = PartialMatchSearchText.GetWords(search);
-            var queryTexts = words.Count > 1
-                ? new[] { search, words.OrderByDescending(word => word.Length).First() }
-                : new[] { search };
-
-            foreach (var queryText in queryTexts)
+            // Returns true when every candidate was read, false when it stopped at a limit.
+            bool ReadAll<T>(Func<DBQuery<T>> buildQuery, Func<T, Player> toPlayer)
+                where T : EntityBase
             {
-                foreach (var field in OfflineSearchFields)
+                for (var offset = 0; ; offset += CandidatePageSize)
                 {
-                    var query = new DBQuery<Player>()
-                        .AddFieldSearch(nameof(Player.IsDeleted), false)
-                        .AddFieldSearch(field, queryText, true)
-                        .AddPaging(MaxResults + 1, 0);
+                    if (results.Count > MaxResults || loaded >= MaxOfflineCandidates)
+                        return false;
 
-                    var matches = DB.Search(query).ToList();
-                    isTruncated |= matches.Count > MaxResults;
-                    foreach (var dbPlayer in matches)
+                    var page = DB.Search(buildQuery().AddPaging(CandidatePageSize, offset)).ToList();
+                    loaded += page.Count;
+                    foreach (var row in page)
                     {
-                        players[dbPlayer.Id] = dbPlayer;
+                        Consider(toPlayer(row));
                     }
-                }
 
-                // An active disguise shows its own descriptor, which is stored with the disguise.
-                var disguiseQuery = new DBQuery<PlayerDisguise>()
-                    .AddFieldSearch(nameof(PlayerDisguise.IsRetired), false)
-                    .AddFieldSearch(nameof(PlayerDisguise.Descriptor), queryText, true)
-                    .AddPaging(MaxResults + 1, 0);
-
-                var disguises = DB.Search(disguiseQuery).ToList();
-                isTruncated |= disguises.Count > MaxResults;
-                foreach (var disguise in disguises)
-                {
-                    var dbPlayer = DB.Get<Player>(disguise.PlayerId);
-                    if (dbPlayer != null && !dbPlayer.IsDeleted && dbPlayer.ActiveDisguiseId == disguise.Id)
-                        players[dbPlayer.Id] = dbPlayer;
+                    if (page.Count < CandidatePageSize)
+                        return true;
                 }
             }
 
-            return players.Values.ToList();
+            if (terms.Count == 1 && Guid.TryParse(terms[0], out _))
+                Consider(DB.Get<Player>(terms[0]));
+
+            var seed = PartialMatchSearchText.GetWords(search)
+                .OrderBy(CountOfflineHits)
+                .FirstOrDefault();
+            if (seed == null)
+                return results;
+
+            foreach (var field in OfflineSearchFields)
+            {
+                if (!ReadAll(() => PlayerQuery(field, seed), dbPlayer => dbPlayer))
+                {
+                    isTruncated = true;
+                    return results;
+                }
+            }
+
+            isTruncated = !ReadAll(() => DisguiseQuery(seed), GetDisguisedPlayer);
+            return results;
+        }
+
+        private static long CountOfflineHits(string word)
+        {
+            return OfflineSearchFields.Sum(field => DB.SearchCount(PlayerQuery(field, word))) +
+                   DB.SearchCount(DisguiseQuery(word));
+        }
+
+        private static DBQuery<Player> PlayerQuery(string field, string text)
+        {
+            return new DBQuery<Player>()
+                .AddFieldSearch(nameof(Player.IsDeleted), false)
+                .AddFieldSearch(field, text, true);
+        }
+
+        // An active disguise shows its own descriptor, which is stored with the disguise.
+        private static DBQuery<PlayerDisguise> DisguiseQuery(string text)
+        {
+            return new DBQuery<PlayerDisguise>()
+                .AddFieldSearch(nameof(PlayerDisguise.IsRetired), false)
+                .AddFieldSearch(nameof(PlayerDisguise.Descriptor), text, true);
+        }
+
+        private static Player GetDisguisedPlayer(PlayerDisguise disguise)
+        {
+            var dbPlayer = DB.Get<Player>(disguise.PlayerId);
+            return dbPlayer?.ActiveDisguiseId == disguise.Id ? dbPlayer : null;
         }
 
         private static DMPlayerSearchResult BuildOnlineResult(uint player)

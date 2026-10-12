@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 using NWN.Native.API;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 
@@ -109,6 +111,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Capture(player.Creature, GuiWindowType.DMToolbar, "toolbar-admin");
                 await InContext(ctx, player.Creature, () => Gui.TogglePlayerWindow(player.Creature, GuiWindowType.DMAdminTools));
                 Capture(player.Creature, GuiWindowType.DMAdminTools, "admin-tools");
+
+                // /resetwindows closes other windows but keeps the toolbar, which stands in for the hidden native taskbar.
+                var resetWindows = new CharacterChatCommand().BuildChatCommands()["resetwindows"];
+                await InContext(ctx, player.Creature, () =>
+                    resetWindows.DoAction(player.Creature, OBJECT_INVALID, GetLocation(player.Creature)));
+                ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.DMToolbar), "/resetwindows keeps the DM toolbar open");
+                ctx.Assert(!Gui.IsWindowOpen(player.Creature, GuiWindowType.CreatureManager), "/resetwindows still closes other windows");
             }
             finally
             {
@@ -293,6 +302,105 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             WriteSnapshots();
         }
 
+        [EngineTest("DM creator creates triggers and encounters as squares players can enter", Category = "DMToolbar", TimeoutSeconds = 90f)]
+        public static async Task CreatorCreatesTriggersAndEncounters(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+            SetPlotFlag(player.Creature, true);
+            var area = GetArea(player.Creature);
+            var existingCreatures = new HashSet<uint>();
+            for (var obj = GetFirstObjectInArea(area, ObjectType.Creature); GetIsObjectValid(obj); obj = GetNextObjectInArea(area, ObjectType.Creature))
+            {
+                existingCreatures.Add(obj);
+            }
+
+            try
+            {
+                var trigger = DMBlueprintCatalog.GetPalette(DMBlueprintCategory.Triggers, DMBlueprintSource.Custom)
+                    .Blueprints.Single(blueprint => blueprint.Resref == "anti_spawn_trigg");
+                ctx.Assert(DMObjectDetails.DescribeBlueprint(trigger).Body.Contains("Created as a 4 m square"),
+                    "trigger details say what shape is created");
+
+                var triggerLocation = ctx.GetArenaLocation(6f, 0f);
+                var createdTrigger = DMBlueprintCatalog.CreateAtLocation(player.Creature, trigger, triggerLocation);
+                ctx.Track(createdTrigger);
+                ctx.AssertEqual(ObjectType.Trigger, GetObjectType(createdTrigger), "a trigger is created");
+                var centre = GetPositionFromLocation(triggerLocation);
+                var corners = ReadGeometry(ObjectPlugin.GetTriggerGeometry(createdTrigger));
+                ctx.Log($"Trigger corners around ({centre.X:0.##}, {centre.Y:0.##}): {string.Join(" ", corners.Select(corner => $"({corner.X:0.##}, {corner.Y:0.##})"))}");
+                ctx.Assert(corners.Count == 4 &&
+                           Math.Abs(corners.Min(corner => corner.X) - (centre.X - 2f)) < 0.01f &&
+                           Math.Abs(corners.Max(corner => corner.X) - (centre.X + 2f)) < 0.01f &&
+                           Math.Abs(corners.Min(corner => corner.Y) - (centre.Y - 2f)) < 0.01f &&
+                           Math.Abs(corners.Max(corner => corner.Y) - (centre.Y + 2f)) < 0.01f,
+                    "the trigger is a 4 m square around the location");
+
+                AssignCommand(player.Creature, () => JumpToLocation(triggerLocation));
+                await ctx.WaitUntilAsync(() => IsInside(createdTrigger, player.Creature), 5f, "the player to register inside the trigger");
+
+                // A weak encounter, so it spawns for a level 1 player.
+                var encounter = DMBlueprintCatalog.GetPalette(DMBlueprintCategory.Encounters, DMBlueprintSource.Standard)
+                    .Blueprints.First(blueprint => blueprint.CategoryPath.EndsWith("Very Easy"));
+                ctx.Log($"Encounter {encounter.Resref}: {DMObjectDetails.DescribeBlueprint(encounter).Body.Replace("\n", " | ")}");
+                var encounterLocation = ctx.GetArenaLocation(-6f, 0f);
+                var createdEncounter = DMBlueprintCatalog.CreateAtLocation(player.Creature, encounter, encounterLocation);
+                ctx.Track(createdEncounter);
+                ctx.AssertEqual(ObjectType.Encounter, GetObjectType(createdEncounter), "an encounter is created");
+
+                AssignCommand(player.Creature, () => JumpToLocation(encounterLocation));
+                // GetEncounterSpawnsCurrent stays 0 here, so look for the spawned creature inside the square instead.
+                await ctx.WaitUntilAsync(() => HasSpawnInside(createdEncounter, player.Creature, existingCreatures), 20f,
+                    "the encounter to spawn a creature inside its square when the player enters it");
+            }
+            finally
+            {
+                for (var obj = GetFirstObjectInArea(area, ObjectType.Creature); GetIsObjectValid(obj); obj = GetNextObjectInArea(area, ObjectType.Creature))
+                {
+                    if (!existingCreatures.Contains(obj) && !GetIsPC(obj))
+                        DestroyObject(obj);
+                }
+            }
+        }
+
+        // NWNX reports trigger corners as "{x, y, z}{x, y, z}...".
+        private static List<(float X, float Y)> ReadGeometry(string geometry)
+        {
+            return geometry
+                .Split('}', StringSplitOptions.RemoveEmptyEntries)
+                .Select(vertex => vertex.TrimStart('{').Split(','))
+                .Where(parts => parts.Length >= 2)
+                .Select(parts => (
+                    float.Parse(parts[0], System.Globalization.CultureInfo.InvariantCulture),
+                    float.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture)))
+                .ToList();
+        }
+
+        private static bool HasSpawnInside(uint encounter, uint player, HashSet<uint> existingCreatures)
+        {
+            for (var obj = GetFirstInPersistentObject(encounter, ObjectType.Creature);
+                 GetIsObjectValid(obj);
+                 obj = GetNextInPersistentObject(encounter, ObjectType.Creature))
+            {
+                if (obj != player && !existingCreatures.Contains(obj))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsInside(uint persistentObject, uint creature)
+        {
+            for (var obj = GetFirstInPersistentObject(persistentObject, ObjectType.Creature);
+                 GetIsObjectValid(obj);
+                 obj = GetNextInPersistentObject(persistentObject, ObjectType.Creature))
+            {
+                if (obj == creature)
+                    return true;
+            }
+
+            return false;
+        }
+
         private static List<DMBlueprint> GetResults(DMCreatorViewModel model)
         {
             return (List<DMBlueprint>)typeof(DMCreatorViewModel)
@@ -354,6 +462,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 DB.Set(new Player(bulkId) { Name = "Bulkprobe Character" });
             }
 
+            // Shares the common name word, but its account name is unique.
+            var bulkTargetId = Guid.NewGuid().ToString();
+            DB.Set(new Player(bulkTargetId) { Name = "Bulkprobe Target", AccountName = "uniqbulkaccount" });
+
             using var windows = RegisterWindows(ctx, dm);
             try
             {
@@ -414,6 +526,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(DMPlayerDirectory.MaxResults, bulk.Count, "offline search returns up to the result limit");
                 ctx.Assert(bulkTruncated, "offline search reports matches beyond the result limit");
 
+                var crossField = DMPlayerDirectory.Search("Bulkprobe uniqbulk", DMPlayerSearchScope.Offline, out var crossFieldTruncated);
+                ctx.Assert(crossField.Any(result => result.Name == "Bulkprobe Target") && !crossFieldTruncated,
+                    "a common word plus a rare word in another field finds the character");
+
                 // Online and offline characters both match the start of a word, as the index does.
                 await InContext(ctx, dm.Creature, () => model.SelectedScope = (int)DMPlayerSearchScope.All);
                 await InContext(ctx, dm.Creature, () => model.SearchText = "ynd");
@@ -448,6 +564,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     DB.Delete<Player>(bulkId);
                 }
+
+                DB.Delete<Player>(bulkTargetId);
 
                 WriteSnapshots();
             }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Feature;
@@ -18,6 +19,11 @@ namespace SWLOR.Game.Server.Service
     public static class DMBlueprintCatalog
     {
         public const string NotInPaletteCategory = "Not in palette";
+
+        private const float TriggerSize = 4f;
+        private const float EncounterSize = 10f;
+        // Matches the toolset's default trigger height above the ground.
+        private const float SquareHeight = 0.025f;
 
         private static readonly Dictionary<(DMBlueprintCategory, DMBlueprintSource), DMPalette> _palettes = new();
 
@@ -56,7 +62,9 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The created object, or OBJECT_INVALID if it could not be created.</returns>
         public static uint CreateAtLocation(uint dm, DMBlueprint blueprint, Location location)
         {
-            var created = CreateObject(GetObjectType(blueprint.Category), blueprint.Resref, location);
+            var created = blueprint.Category is DMBlueprintCategory.Triggers or DMBlueprintCategory.Encounters
+                ? CreateSquareObject(blueprint, location)
+                : CreateObject(GetObjectType(blueprint.Category), blueprint.Resref, location);
             if (!GetIsObjectValid(created))
                 return OBJECT_INVALID;
 
@@ -94,6 +102,50 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.DM,
                 $"{DMPresence.DescribeDM(dm)} created item '{blueprint.Resref}' in the inventory of {GetName(container)} ({GetObjectUUID(container)}).");
             return created;
+        }
+
+        /// <summary>
+        /// Returns the width of the square a trigger or encounter blueprint is created as, in meters.
+        /// </summary>
+        public static float GetSquareSize(DMBlueprintCategory category)
+        {
+            return category == DMBlueprintCategory.Encounters ? EncounterSize : TriggerSize;
+        }
+
+        // CreateObject cannot create triggers or encounters, and their blueprints have no shape, so they are
+        // created from the template with a square around the location. Points are offsets from the object's position.
+        private static uint CreateSquareObject(DMBlueprint blueprint, Location location)
+        {
+            var template = ReadTemplate(blueprint);
+            if (JsonGetType(template) != JsonType.Object)
+                return OBJECT_INVALID;
+
+            var half = GetSquareSize(blueprint.Category) / 2f;
+            var isTrigger = blueprint.Category == DMBlueprintCategory.Triggers;
+            var corners = new[] { (-half, -half), (half, -half), (half, half), (-half, half) };
+            var points = corners.Select(corner => isTrigger
+                ? $"{{\"__struct_id\":3,\"PointX\":{Float(corner.Item1)},\"PointY\":{Float(corner.Item2)},\"PointZ\":{Float(SquareHeight)}}}"
+                : $"{{\"__struct_id\":1,\"X\":{Float(corner.Item1)},\"Y\":{Float(corner.Item2)},\"Z\":{Float(SquareHeight)}}}");
+            var geometry = JsonParse($"{{\"type\":\"list\",\"value\":[{string.Join(",", points)}]}}");
+
+            // The engine adds these to the points when it loads the object; the location alone does not move them.
+            var position = GetPositionFromLocation(location);
+            template = JsonObjectSet(template, "Geometry", geometry);
+            template = JsonObjectSet(template, "XPosition", JsonParse(Float(position.X)));
+            template = JsonObjectSet(template, "YPosition", JsonParse(Float(position.Y)));
+            template = JsonObjectSet(template, "ZPosition", JsonParse(Float(position.Z)));
+
+            // An encounter without a spawn point spawns nothing. Spawn points are area positions, not offsets.
+            if (!isTrigger)
+            {
+                template = JsonObjectSet(template, "SpawnPointList", JsonParse(
+                    $"{{\"type\":\"list\",\"value\":[{{\"__struct_id\":0,\"X\":{Float(position.X)},\"Y\":{Float(position.Y)},\"Z\":{Float(position.Z)},\"Orientation\":{Float(0f)}}}]}}"));
+            }
+
+            return JsonToObject(template, location);
+
+            static string Float(float value) =>
+                $"{{\"type\":\"float\",\"value\":{value.ToString("0.0###", CultureInfo.InvariantCulture)}}}";
         }
 
         private static DMPalette ReadPalette(DMBlueprintCategory category, DMBlueprintSource source)
@@ -144,7 +196,8 @@ namespace SWLOR.Game.Server.Service
                 DMBlueprintCategory.Creatures =>
                     $"{DMTemplateFields.ReadLocString(template, "FirstName")} {DMTemplateFields.ReadLocString(template, "LastName")}".Trim(),
                 DMBlueprintCategory.Items => DMTemplateFields.ReadLocString(template, "LocalizedName"),
-                DMBlueprintCategory.Waypoints => DMTemplateFields.ReadLocString(template, "LocalizedName"),
+                DMBlueprintCategory.Waypoints or DMBlueprintCategory.Triggers or DMBlueprintCategory.Encounters =>
+                    DMTemplateFields.ReadLocString(template, "LocalizedName"),
                 _ => DMTemplateFields.ReadLocString(template, "LocName")
             };
 
@@ -161,6 +214,8 @@ namespace SWLOR.Game.Server.Service
                 DMBlueprintCategory.Items => "item",
                 DMBlueprintCategory.Stores => "store",
                 DMBlueprintCategory.Waypoints => "waypoint",
+                DMBlueprintCategory.Triggers => "trigger",
+                DMBlueprintCategory.Encounters => "encounter",
                 _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
             };
 
@@ -177,6 +232,8 @@ namespace SWLOR.Game.Server.Service
                 DMBlueprintCategory.Items => ResRefType.Item,
                 DMBlueprintCategory.Stores => ResRefType.Store,
                 DMBlueprintCategory.Waypoints => ResRefType.Waypoint,
+                DMBlueprintCategory.Triggers => ResRefType.Trigger,
+                DMBlueprintCategory.Encounters => ResRefType.Encounter,
                 _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
             };
         }
@@ -190,6 +247,8 @@ namespace SWLOR.Game.Server.Service
                 DMBlueprintCategory.Items => ResType.UTI,
                 DMBlueprintCategory.Stores => ResType.UTM,
                 DMBlueprintCategory.Waypoints => ResType.UTW,
+                DMBlueprintCategory.Triggers => ResType.UTT,
+                DMBlueprintCategory.Encounters => ResType.UTE,
                 _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
             };
         }
@@ -206,6 +265,8 @@ namespace SWLOR.Game.Server.Service
                 DMBlueprintCategory.Items => ObjectType.Item,
                 DMBlueprintCategory.Stores => ObjectType.Store,
                 DMBlueprintCategory.Waypoints => ObjectType.Waypoint,
+                DMBlueprintCategory.Triggers => ObjectType.Trigger,
+                DMBlueprintCategory.Encounters => ObjectType.Encounter,
                 _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
             };
         }

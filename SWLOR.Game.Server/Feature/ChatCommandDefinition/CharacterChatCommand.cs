@@ -740,7 +740,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     // Close all open windows for the player
                     foreach (GuiWindowType type in Enum.GetValues(typeof(GuiWindowType)))
                     {
-                        if (type == GuiWindowType.Invalid) continue;
+                        // The DM toolbar stands in for the hidden native taskbar and has a fixed position, so it stays as it is.
+                        if (type == GuiWindowType.Invalid || type == GuiWindowType.DMToolbar) continue;
                         if (Gui.IsWindowOpen(user, type))
                         {
                             Gui.TogglePlayerWindow(user, type);
@@ -760,7 +761,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     // This ensures that when windows are reopened, they use default positions
                     foreach (GuiWindowType type in Enum.GetValues(typeof(GuiWindowType)))
                     {
-                        if (type == GuiWindowType.Invalid) continue;
+                        // The DM toolbar stands in for the hidden native taskbar and has a fixed position, so it stays as it is.
+                        if (type == GuiWindowType.Invalid || type == GuiWindowType.DMToolbar) continue;
 
                         try
                         {

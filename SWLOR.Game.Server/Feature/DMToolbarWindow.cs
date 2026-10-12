@@ -25,11 +25,15 @@ namespace SWLOR.Game.Server.Feature
 
         /// <summary>
         /// DM windows stay open across area changes, so ones that list the current area's objects refresh here.
+        /// A DM possessing a creature changes areas through that creature.
         /// </summary>
         [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void RefreshCurrentAreaWindows()
         {
             var dm = GetEnteringObject();
+            if (GetIsDMPossessed(dm))
+                dm = GetMaster(dm);
+
             if (GetIsDM(dm))
                 Gui.PublishRefreshEvent(dm, new DMAreaChangedRefreshEvent());
         }

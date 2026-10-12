@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Service.DMToolService
         Placeables = 1,
         Items = 2,
         Stores = 3,
-        Waypoints = 4
+        Waypoints = 4,
+        Triggers = 5,
+        Encounters = 6
     }
 }

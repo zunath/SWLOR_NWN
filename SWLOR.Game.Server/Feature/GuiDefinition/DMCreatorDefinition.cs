@@ -60,6 +60,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .AddOption("Items", (int)DMBlueprintCategory.Items)
                                     .AddOption("Stores", (int)DMBlueprintCategory.Stores)
                                     .AddOption("Waypoints", (int)DMBlueprintCategory.Waypoints)
+                                    .AddOption("Triggers", (int)DMBlueprintCategory.Triggers)
+                                    .AddOption("Encounters", (int)DMBlueprintCategory.Encounters)
                                     .BindSelectedIndex(model => model.SelectedType)
                                     .SetTooltip("What to create")
                                     .SetWidth(140f)

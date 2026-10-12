@@ -62,13 +62,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Ressa Vale gave you the Czerka Arms Test Range Key. Kill six Kill Box adepts in the Czerka Arms Test Range on Nar Shaddaa and secure the Kill Box Czerka Test Docket.")
+                    "Ressa Vale gave you the Czerka Arms Test Range Key. Kill six Kill Box adepts in the Czerka Arms Test Range, whose gate stands near the GSI Tower in the Corporate District on Smuggler's Moon, and secure the Kill Box Czerka Test Docket.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_KillBox_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillBoxCzerkaTestDocket)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Kill Box Czerka Test Docket is secured. Deliver it to Ressa Vale at the Czerka Arms store on Nar Shaddaa.")
+                    "The Kill Box Czerka Test Docket is secured. Deliver it to Ressa Vale at the Czerka Arms store off the Hub on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -83,13 +83,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill five Kill Box specialists in the Czerka Arms Test Range on Nar Shaddaa and recover the Kill Box Blast-Cell Regulator.")
+                    "Kill five Kill Box specialists in the Czerka Arms Test Range on Smuggler's Moon and recover the Kill Box Blast-Cell Regulator.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_KillBox_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillBoxBlastCellRegulator)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Kill Box Blast-Cell Regulator is recovered. Deliver it to Ressa Vale at the Czerka Arms store on Nar Shaddaa.")
+                    "The Kill Box Blast-Cell Regulator is recovered. Deliver it to Ressa Vale at the Czerka Arms store off the Hub on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -104,13 +104,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Kill Box warden in the deep lanes of the Czerka Arms Test Range on Nar Shaddaa and take the Kill Box Scored Range Crest. The warden is too strong to face alone; bring allies.")
+                    "With at least two allies, defeat the Kill Box warden in the deep range of the Czerka Arms Test Range on Smuggler's Moon and take the Kill Box Scored Range Crest.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_KillBox_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillBoxScoredRangeCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Kill Box Scored Range Crest is taken from the warden. Return it to Ressa Vale at the Czerka Arms store on Nar Shaddaa.")
+                    "The Kill Box Scored Range Crest is taken from the warden. Return it to Ressa Vale at the Czerka Arms store off the Hub on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -125,13 +125,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill the four members of the Kill Box inner circle in the Czerka Arms Test Range on Nar Shaddaa and secure the Kill Box Czerka Clearance Chit.")
+                    "Kill the four members of the Kill Box inner circle in the Czerka Arms Test Range on Smuggler's Moon and secure the Kill Box Czerka Clearance Chit.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_KillBox_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillBoxCzerkaClearanceChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Kill Box Czerka Clearance Chit is secured. Deliver it to Ressa Vale at the Czerka Arms store on Nar Shaddaa.")
+                    "The Kill Box Czerka Clearance Chit is secured. Deliver it to Ressa Vale at the Czerka Arms store off the Hub on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -144,12 +144,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Kill Box master in the last lane of the Czerka Arms Test Range on Nar Shaddaa. He is too strong to face alone; bring allies.")
+                    "With at least two allies, defeat the Kill Box master in the Blast-Safe Cell at the far end of the Czerka Arms Test Range on Smuggler's Moon.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_KillBox_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Kill Box master is defeated. Return to Ressa Vale at the Czerka Arms store on Nar Shaddaa.")
+                    "The Kill Box master is defeated. Return to Ressa Vale at the Czerka Arms store off the Hub on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -175,13 +175,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Orin Tal gave you the Czerka Arms Test Range Key. Kill six One Shot adepts in the Czerka Arms Test Range on Nar Shaddaa and secure the One Shot Czerka Test Docket.")
+                    "Orin Tal gave you the Czerka Arms Test Range Key. Kill six One Shot adepts in the Czerka Arms Test Range, whose gate stands near the GSI Tower in the Corporate District on Smuggler's Moon, and secure the One Shot Czerka Test Docket.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_OneShot_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOneShotCzerkaTestDocket)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot Czerka Test Docket is secured. Return it to Orin Tal at the Czerka shipyard office on Nar Shaddaa.")
+                    "The One Shot Czerka Test Docket is secured. Return it to Orin Tal at the Czerka Shipyard Office by the Landing Pads on Smuggler's Moon.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -196,13 +196,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill five One Shot specialists in the Czerka Arms Test Range on Nar Shaddaa and recover the One Shot Blast-Cell Regulator.")
+                    "Kill five One Shot specialists in the Czerka Arms Test Range on Smuggler's Moon and recover the One Shot Blast-Cell Regulator.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_OneShot_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOneShotBlastCellRegulator)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot Blast-Cell Regulator is recovered. Return it to Orin Tal at the Czerka shipyard office on Nar Shaddaa.")
+                    "The One Shot Blast-Cell Regulator is recovered. Return it to Orin Tal at the Czerka Shipyard Office by the Landing Pads on Smuggler's Moon.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -217,13 +217,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the One Shot warden on the long lane of the Czerka Arms Test Range on Nar Shaddaa and take the One Shot Scored Range Crest. The warden is too strong to face alone; bring allies.")
+                    "With at least two allies, defeat the One Shot warden on the long lane of the Czerka Arms Test Range on Smuggler's Moon and take the One Shot Scored Range Crest.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_OneShot_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOneShotScoredRangeCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot Scored Range Crest is taken from the warden. Return it to Orin Tal at the Czerka shipyard office on Nar Shaddaa.")
+                    "The One Shot Scored Range Crest is taken from the warden. Return it to Orin Tal at the Czerka Shipyard Office by the Landing Pads on Smuggler's Moon.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -238,13 +238,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill the four members of the One Shot inner circle in the Czerka Arms Test Range on Nar Shaddaa and secure the One Shot Czerka Clearance Chit.")
+                    "Kill the four members of the One Shot inner circle in the Czerka Arms Test Range on Smuggler's Moon and secure the One Shot Czerka Clearance Chit.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_OneShot_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOneShotCzerkaClearanceChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot Czerka Clearance Chit is secured. Return it to Orin Tal at the Czerka shipyard office on Nar Shaddaa.")
+                    "The One Shot Czerka Clearance Chit is secured. Return it to Orin Tal at the Czerka Shipyard Office by the Landing Pads on Smuggler's Moon.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -257,12 +257,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the One Shot master on the far lane of the Czerka Arms Test Range on Nar Shaddaa. He is too strong to face alone; bring allies.")
+                    "With at least two allies, defeat the One Shot master in the Blast-Safe Cell at the far end of the Czerka Arms Test Range on Smuggler's Moon.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_OneShot_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot master is defeated. Return to Orin Tal at the Czerka shipyard office on Nar Shaddaa.")
+                    "The One Shot master is defeated. Return to Orin Tal at the Czerka Shipyard Office by the Landing Pads on Smuggler's Moon.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

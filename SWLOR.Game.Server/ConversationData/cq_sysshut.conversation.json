@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He doesn't answer at first. When he does: you're not ready for this conversation, and pushing won't change that. Come back once the vibroknife has nothing left to teach you.",
+          "Text": "You're not ready for this conversation, and pushing won't change that. Come back once the vibroknife has nothing left to teach you.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "What have you heard about me? Nothing worth repeating, I'd guess - that's the correct answer, and the only one I want spreading. There's shutdown work happening in the Veles Militia Annex on Viscara that nobody authorized. Six adepts, running it into the ground. Put them down quietly, and bring me their drill ledger.",
+          "Text": "What have you heard about me? Nothing worth repeating, I'd guess - that's the correct answer, and the only one I want spreading. Militia command hired me to finish something quietly. When Captain Renn sealed the Veles Militia Annex on their order, a knife cadre inside kept drilling a disabling technique nobody cleared them to learn. Six adepts, running it into the ground. Put them down quietly, and bring me their drill ledger.",
           "Style": 0,
           "Color": null
         }
@@ -302,7 +302,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then you're in. The annex key already reads to you; it opens the gate, nothing else. What happens past it stays past it.",
+          "Text": "Then you're in. Take this key. It opens the sealed annex door inside the Sheriff's Office on the west side of Veles, deeper in the building past the captain's post. It opens that door and nothing else. What happens past it stays past it.",
           "Style": 0,
           "Color": null
         }
@@ -349,7 +349,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Veles Militia Annex, off the garrison road on Viscara. The gate's sealed; your key opens it without announcing you to anyone watching the road. Go in, do the work, come back the same way.",
+          "Text": "The Sheriff's Office, on the west side of Veles. Walk in like you have business there and keep going; the annex door is deeper in the building, north-east of the entrance. Your key opens it without announcing you to anyone. Go in, do the work, come back the same way.",
           "Style": 0,
           "Color": null
         }
@@ -532,7 +532,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The militia doesn't want a scandal, and a scandal is exactly what an unauthorized disabling technique becomes the moment it's loud. Contained quietly, it's a training irregularity. Reported loudly, it's a hearing, a suspension, careers ending over paperwork. I prefer the quiet version. So does everyone above me, whether they admit it or not.",
+          "Text": "Command sealed that door to make a problem quiet, not to solve it. An unauthorized disabling technique becomes a scandal the moment it's loud. Contained quietly, it's a training irregularity. Reported loudly, it's a hearing, a suspension, careers ending over paperwork. I prefer the quiet version. So does everyone above me, whether they admit it or not.",
           "Style": 0,
           "Color": null
         }
@@ -558,7 +558,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same annex, same gate, further in, past where the adepts were working. Your key still clears it. Nobody's added a second lock yet, which tells you how confident they are that nobody's watching.",
+          "Text": "Same annex, same door, further in, past where the adepts were working. Your key still clears it. Nobody's added a second lock yet, which tells you how confident they are that nobody's watching.",
           "Style": 0,
           "Color": null
         }
@@ -767,7 +767,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Behind a locked partition past the specialists' floor, the annex calls it the arena, which tells you they stopped pretending this was training. Your key opens the outer gate. The rest, you make happen yourself.",
+          "Text": "Deeper in, past the specialists' floor, at the inner gate. Whatever happens on his ground stopped being training a long time ago. Your key opens the annex door. The rest, you make happen yourself.",
           "Style": 0,
           "Color": null
         }
@@ -819,7 +819,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden is still holding the arena. Bring your two and go finish it.",
+          "Text": "The warden is still holding the inner gate. Bring your two and go finish it.",
           "Style": 0,
           "Color": null
         }
@@ -887,7 +887,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Housecleaning. Four instructors left running what the warden built, and every one of them knew exactly what they were teaching. Bring me whichever of them is holding the captain's challenge chit when the other three are settled.",
+          "Text": "Housecleaning. Four instructors left running what the warden built, and every one of them knew exactly what they were teaching. Settle all four and bring me the captain's challenge chit they hold.",
           "Style": 0,
           "Color": null
         }
@@ -976,7 +976,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "They've sealed the floor above the arena, command space by the look of it. Same key opens that lock too. Whoever set this up never planned on someone getting this far in.",
+          "Text": "Deeper in, past the warden's ground. They kept their own quarters apart from the students. Whoever set this up never planned on someone getting this far in.",
           "Style": 0,
           "Color": null
         }
@@ -1185,7 +1185,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The deepest floor of the annex, the one even the inner circle kept sealed from their own people. Your key still works. It was never really about the lock. It was about who had the nerve to use it.",
+          "Text": "The deepest part of the annex, past everything you've cleared, the ground even the inner circle kept from their own people. Your key got you in. It was never really about the lock. It was about who had the nerve to use it.",
           "Style": 0,
           "Color": null
         }

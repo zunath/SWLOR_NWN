@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Bastion Training Engine has stopped transmitting. The wards can be repaired without risking another evacuation. You protected your companions and opened a way through; that is the work of a Guardian Master.",
+          "Text": "The Bastion Training Engine is silent, and the engineers can walk those halls without an escort. You kept your companions standing and opened the way for the ones behind you. That is what a Guardian Master is. I have nothing left to correct in you.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I can only take someone who has mastered the lightsaber discipline. Reach rank 50 before we discuss the work on Dantooine.",
+          "Text": "I can only take someone who has mastered the lightsaber. When the blade stops being something you have to think about, come back, and we will talk about the work on Dantooine.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The evacuation is finished. Every student is accounted for. The guardian constructs still hold the training wing, and their protection routines now identify their own instructors as intruders. Disable 6 Guardian Patrol Droid units in the outer ward of the Dantooine Jedi Enclave Trial Halls. Recover the Guardian Master Enclave Trial Slate.",
+          "Text": "The students we brought out of Dantooine are safe here, every one of them. The halls they fled are not. The training droids in the Jedi Enclave Trial Halls stopped recognizing their own instructors and now treat anyone inside as an intruder. Start near the entrance. Disable six Guardian Patrol Droids and recover the Guardian Master Enclave Trial Slate. It recorded every shutdown that failed.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take the Dantooine Jedi Enclave Trial Halls Key. Disable 6 Guardian Patrol Droid units in the outer ward of the Dantooine Jedi Enclave Trial Halls. Recover the Guardian Master Enclave Trial Slate.",
+          "Text": "Take this key. It opens the sealed passage a few steps inside the Jedi Enclave Library on Dantooine. Six patrol droids, and the trial slate. Bring it back to me here in Anchorhead.",
           "Style": 0,
           "Color": null
         }
@@ -327,7 +327,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "A guardian protects people. Holding an empty doorway while those people suffer is a failure, however perfect the guard.",
+          "Text": "A guardian stands between harm and the people behind him. The form is built on that: hold your ground, cover the one beside you, and never mistake a perfect guard over an empty doorway for duty. The droids only remember the first part.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The key opens the sealed entrance to the Dantooine Jedi Enclave Trial Halls. Start in the outer ward. I am guarding the occupied side of the seal. These machines must stay contained until someone can shut down the separate ward controllers.",
+          "Text": "Land at Colony Central on Dantooine and go north through the Wild Plains to the Medical Safehouse. Take the Hidden Trail to the Enclosed Mountain and enter the Jedi Enclave. The sealed passage is a few steps inside the Library. I stay because the students sheltering here in the South District are still mine to keep, and Malak's agents watch those ruins for any instructor who returns.",
           "Style": 0,
           "Color": null
         }
@@ -379,7 +379,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Automated guardians. They were built to test a student under pressure, but their threat recognition has failed. There are no Jedi stationed in the sealed wards.",
+          "Text": "Training droids. They were built to press a student hard and stop short of harm. Their threat recognition has failed, and the stopping no longer happens. No students remain inside. You are fighting machines, not people.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Disable 6 Guardian Patrol Droid units in the outer ward of the Dantooine Jedi Enclave Trial Halls. Recover the Guardian Master Enclave Trial Slate.",
+          "Text": "Six Guardian Patrol Droids, and the trial slate. The passage is a few steps inside the Jedi Enclave Library on Dantooine.",
           "Style": 0,
           "Color": null
         }
@@ -426,7 +426,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You have the Guardian Master Enclave Trial Slate. Let me see it.",
+          "Text": "You have the trial slate. Let me see it.",
           "Style": 0,
           "Color": null
         }
@@ -473,7 +473,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The outer units are down. Their timing controller still drives the next set of machines. Disable 5 Guardian Bulwark Droid units in the shrine chambers of the Dantooine Jedi Enclave Trial Halls. Recover the Guardian Master Kyber Focus Shard.",
+          "Text": "The first droids are down, but their timing controller still drives the next set. Disable five Guardian Bulwark Droids deeper in the Trial Halls and recover the Guardian Master Kyber Focus Shard.",
           "Style": 0,
           "Color": null
         }
@@ -515,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Disable 5 Guardian Bulwark Droid units in the shrine chambers of the Dantooine Jedi Enclave Trial Halls. Recover the Guardian Master Kyber Focus Shard.",
+          "Text": "Five Guardian Bulwark Droids, deeper in the Trial Halls. Bring back the focus shard.",
           "Style": 0,
           "Color": null
         }
@@ -562,7 +562,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Guardian Master Kyber Focus Shard belongs to the training array. It helps coordinate the practice emitters; return it so the technicians can trace the fault.",
+          "Text": "The focus shard belongs to the training array. It coordinates the practice emitters; bring it back so the technicians can trace the fault.",
           "Style": 0,
           "Color": null
         }
@@ -588,7 +588,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Continue beyond the outer ward into the shrine chambers. Keep a way back to the stairs.",
+          "Text": "Past the halls you already cleared, deeper in. Keep your way back to the Library passage open. A guardian always knows where the door is.",
           "Style": 0,
           "Color": null
         }
@@ -614,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Disable 5 Guardian Bulwark Droid units in the shrine chambers of the Dantooine Jedi Enclave Trial Halls. Recover the Guardian Master Kyber Focus Shard.",
+          "Text": "Five Guardian Bulwark Droids, deeper in the Trial Halls. Bring back the focus shard.",
           "Style": 0,
           "Color": null
         }
@@ -635,7 +635,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You brought the Guardian Master Kyber Focus Shard. Hand it over and we can finish this part.",
+          "Text": "You brought the focus shard. Hand it over and we can finish this part.",
           "Style": 0,
           "Color": null
         }
@@ -682,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The next gate has an independent controller. The remote shutdown still cannot reach it. Disable 1 Guardian Gatekeeper Droid in the third ward of the Dantooine Jedi Enclave Trial Halls. Recover the Guardian Master Fractured Trial Sigil. Bring at least two allies.",
+          "Text": "One gate runs on its own controller, and the remote shutdown cannot reach it. A Guardian Gatekeeper Droid holds the eastern halls, north of the passage you enter by. Disable it and recover the Guardian Master Fractured Trial Sigil. Bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -724,7 +724,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Disable 1 Guardian Gatekeeper Droid in the third ward of the Dantooine Jedi Enclave Trial Halls. Recover the Guardian Master Fractured Trial Sigil. Bring at least two allies.",
+          "Text": "The Guardian Gatekeeper Droid holds the eastern halls, north of the passage. Disable it and bring back the broken sigil. Do not go without two allies.",
           "Style": 0,
           "Color": null
         }
@@ -745,7 +745,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Guardian Gatekeeper Droid is a reinforced gate-control construct. Its shutdown channel is broken, so the chassis must be disabled directly.",
+          "Text": "The Guardian Gatekeeper Droid is a reinforced gate-control construct. Its shutdown channel is broken, so the chassis has to be disabled by hand.",
           "Style": 0,
           "Color": null
         }
@@ -771,7 +771,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Guardian Master Fractured Trial Sigil is the damaged authorization plate from that gate. Recover it so we can restore the lock without reactivating its defender.",
+          "Text": "The sigil is the damaged authorization plate from that gate. With it, we can restore the lock without waking its defender again.",
           "Style": 0,
           "Color": null
         }
@@ -823,7 +823,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Disable 1 Guardian Gatekeeper Droid in the third ward of the Dantooine Jedi Enclave Trial Halls. Recover the Guardian Master Fractured Trial Sigil. Bring at least two allies.",
+          "Text": "The Guardian Gatekeeper Droid still holds the eastern halls. Disable it and bring back the broken sigil. Do not go without two allies.",
           "Style": 0,
           "Color": null
         }
@@ -844,7 +844,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You brought the Guardian Master Fractured Trial Sigil. Hand it over and we can finish this part.",
+          "Text": "You brought the sigil. Hand it over and we can finish this part.",
           "Style": 0,
           "Color": null
         }
@@ -891,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The gate is open, but four linked constructs still protect the control chamber. Disable 4 Guardian Shield Droid units in the deep ward of the Dantooine Jedi Enclave Trial Halls. Recover the Guardian Master Council Trial Chit.",
+          "Text": "The gate is open, but four linked Guardian Shield Droids still guard the network's control systems. Disable all four and recover the Guardian Master Council Trial Chit.",
           "Style": 0,
           "Color": null
         }
@@ -933,7 +933,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Disable 4 Guardian Shield Droid units in the deep ward of the Dantooine Jedi Enclave Trial Halls. Recover the Guardian Master Council Trial Chit.",
+          "Text": "Four Guardian Shield Droids guard the control systems in the Trial Halls. Disable them and bring back the trial chit.",
           "Style": 0,
           "Color": null
         }
@@ -954,7 +954,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Guardian Master Council Trial Chit authorizes service access to the training network. Recover it so the instructors can restore service access.",
+          "Text": "The chit authorizes service access to the training network. With it, the instructors can get back into their own halls.",
           "Style": 0,
           "Color": null
         }
@@ -1032,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Disable 4 Guardian Shield Droid units in the deep ward of the Dantooine Jedi Enclave Trial Halls. Recover the Guardian Master Council Trial Chit.",
+          "Text": "Four Guardian Shield Droids still guard the control systems in the Trial Halls. Disable them and bring back the trial chit.",
           "Style": 0,
           "Color": null
         }
@@ -1053,7 +1053,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You brought the Guardian Master Council Trial Chit. Hand it over and we can finish this part.",
+          "Text": "You brought the trial chit. Hand it over and we can finish this part.",
           "Style": 0,
           "Color": null
         }
@@ -1079,7 +1079,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The token is secure. There is one final chamber to clear.",
+          "Text": "The chit is secure. One chamber remains.",
           "Style": 0,
           "Color": null
         }
@@ -1100,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Only the central training engine remains. Until it is disabled, it can restart the damaged routines. Disable 1 Bastion Training Engine in the final ward of the Dantooine Jedi Enclave Trial Halls. Bring at least two allies.",
+          "Text": "Only the central training engine remains, and while it runs it can restart every damaged routine. The Bastion Training Engine waits in the Saber Trial Chamber, through the door at the north end of the halls. Disable it. Bring at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -1142,7 +1142,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Disable 1 Bastion Training Engine in the final ward of the Dantooine Jedi Enclave Trial Halls. Bring at least two allies.",
+          "Text": "The Bastion Training Engine waits in the Saber Trial Chamber at the north end of the Trial Halls. Go in together, and come out together.",
           "Style": 0,
           "Color": null
         }
@@ -1215,7 +1215,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The hall will stay sealed until the engineers replace the faulty controllers and test every shutdown. Nobody will be sent back into ordinary lessons while these faults remain.",
+          "Text": "The halls stay sealed until the engineers replace the faulty controllers and test every shutdown. Only then do the students go back. Not before.",
           "Style": 0,
           "Color": null
         }
@@ -1241,7 +1241,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Disable 1 Bastion Training Engine in the final ward of the Dantooine Jedi Enclave Trial Halls. Bring at least two allies.",
+          "Text": "The Bastion Training Engine still waits in the Saber Trial Chamber at the north end of the Trial Halls. Take at least two allies.",
           "Style": 0,
           "Color": null
         }
@@ -1288,7 +1288,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Bastion Training Engine has stopped transmitting. The wards can be repaired without risking another evacuation. You protected your companions and opened a way through; that is the work of a Guardian Master.",
+          "Text": "The Bastion Training Engine has stopped transmitting. The halls can be repaired without another evacuation, and the students can go home. You protected your companions and opened a way through. That is the whole of what I teach.",
           "Style": 0,
           "Color": null
         }
@@ -1309,7 +1309,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Anchorhead's South District is full of traders and travelers who owe the enclave nothing. It lets me speak with students the enclave would turn away. I will assess your discipline myself. The constructs remain in the Jedi Enclave Trial Halls on Dantooine. Return to me here on Tatooine with the slate.",
+          "Text": "The students we evacuated from Dantooine are sheltering here in Anchorhead's South District, on Tatooine, and I will not leave them to strangers. So the training comes to me. The droids are still in the Jedi Enclave Trial Halls on Dantooine. Go there, and bring the slate back to me here.",
           "Style": 0,
           "Color": null
         }
@@ -1350,7 +1350,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I will clear the outer chambers.",
+        "Text": "I will clear the first halls.",
         "Style": 4,
         "Color": null
       },
@@ -1860,7 +1860,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I will clear the control chamber.",
+        "Text": "I will disable the shield droids.",
         "Style": 4,
         "Color": null
       },
@@ -1890,7 +1890,7 @@
     "reply-00023": {
       "Id": "reply-00023",
       "Text": {
-        "Text": "What does the access token do?",
+        "Text": "What does the trial chit do?",
         "Style": 4,
         "Color": null
       },
@@ -1977,7 +1977,7 @@
     "reply-00027": {
       "Id": "reply-00027",
       "Text": {
-        "Text": "Here is the recovered token.",
+        "Text": "Here is the trial chit.",
         "Style": 4,
         "Color": null
       },
@@ -2147,7 +2147,7 @@
     "reply-00034": {
       "Id": "reply-00034",
       "Text": {
-        "Text": "The final target is down. We made it out.",
+        "Text": "The training engine is down. We all made it out.",
         "Style": 4,
         "Color": null
       },

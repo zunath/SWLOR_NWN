@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You know the rule of my counter by now: if you're standing there, you're holding something. Here - keep that level while I titrate. The sublevel drains clean these days, the Dantooine wards got their kolto pressure back, and the only person building an emergency cocktail below Dantooine is you, when someone's dying and the minutes run short. That's how it should be. I even slept last week. Don't spread that around.",
+          "Text": "You know the rule of my counter by now: if you're standing there, you're holding something. Here - keep that level while I titrate. The sublevel drains clean these days, the colony clinics on Dantooine got their kolto back, and the only person building an emergency cocktail below Dantooine is you, when someone's dying and the minutes run short. That's how it should be. I even slept last week. Don't spread that around.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take the key off that hook - the one with the red tag. It opens the sealed hatch down past the supply lifts, into the Dantooine Medical Sublevel. Six adepts, one ledger, and don't drink anything you find in an unmarked flask. Minutes matter more the longer you stand here.",
+          "Text": "Take the key off that hook - the one with the red tag. It opens the sealed way down on the far west wall of the abandoned warehouse by the Jungle Mountain on Dantooine. Six adepts, one ledger, and don't drink anything you find in an unmarked flask. Minutes matter more the longer you stand here.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "On Dantooine, beneath the medical facility. The sublevel dates from the old enclave days - kolto conduits, triage rooms, storage nobody audited in a decade. That's the Dantooine Medical Sublevel. The entry hatch is sealed; the key I keep on that hook opens it. Past the supply lifts, down the service stairs, follow the pipe markings. Everything below the hatch is theirs, not ours. For now.",
+          "Text": "Dantooine. From the landing pad at Colony Central, go north through the Wild Plains to the Medical Safehouse, west across the Iriaz Fields to the Ruined Farmlands, then north through the Forsaken Jungles to the Jungle Mountain. There's an abandoned warehouse on the mountain's north-west side. The way down is on its far west wall. Below it is the colony's old medical station, sealed off from the people it was built for. That's the Dantooine Medical Sublevel.",
           "Style": 0,
           "Color": null
         }
@@ -515,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same hatch, same key. Cut the specialists away from the conduit junctions before they can vent anything at you, and bring the coupler back intact. A cracked one tells me nothing except that you were careless.",
+          "Text": "Same warehouse, same key. The specialists work the kolto lines all over the sublevel. Cut them away before they can vent anything at you, and bring the coupler back intact. A cracked one tells me nothing except that you were careless.",
           "Style": 0,
           "Color": null
         }
@@ -562,7 +562,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Because a splice fitting is a signature. The coupler will show the machining, the batch residue, the draw rate - enough for me to prove to the Dantooine facility's board that its own kolto lines fed the operation. The ledger told me what they did. The coupler tells me what it cost the wards upstairs.",
+          "Text": "Because a splice fitting is a signature. The coupler will show the machining, the batch residue, the draw rate - enough for me to prove to the colony council on Dantooine that their own kolto feed ran the operation. The ledger told me what they did. The coupler tells me what it cost the clinics upstairs.",
           "Style": 0,
           "Color": null
         }
@@ -588,7 +588,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Rougher than last time. The specialists work in pairs and they don't panic - panic is for people who haven't already decided you're a test subject. Watch the conduit valves; they'll vent kolto steam to blind you, and what comes through the cloud isn't medicine. Go in rested. That's a prescription, not a suggestion.",
+          "Text": "Rougher than last time. The specialists work in pairs and they don't panic - panic is for people who haven't already decided you're a test subject. They like to fight near the kolto lines, and whatever they throw at you isn't medicine. Go in rested. That's a prescription, not a suggestion.",
           "Style": 0,
           "Color": null
         }
@@ -661,7 +661,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Look at this draw gauge - they were pulling triple what a ward pulls in a full emergency, around the clock. This goes to the board with my compliments and your fingerprints wiped off. Credits in the drawer. You're becoming a line item in my budget, which is the closest thing to affection I keep in stock.",
+          "Text": "Look at this draw gauge - they were pulling triple what a clinic pulls in a full emergency, around the clock. This goes to the colony council with my compliments and your fingerprints wiped off. Credits in the drawer. You're becoming a line item in my budget, which is the closest thing to affection I keep in stock.",
           "Style": 0,
           "Color": null
         }
@@ -682,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Put the tray down and listen, because this one changes the dosage. Past the conduit junctions there's a sealed ward - the crew's clean room, where the real batches get made. The door answers to one person: their warden. Ward-trained, dosed to the eyes, and big enough that the specialists knock. I want the warden gone and their mark pried off that door - the Emergency Cocktail Fractured Ward Sigil comes back to me. And you don't go down alone. That's triage math, not sentiment: one of you bleeds out in that room. Three of you walk out. Bring two people you'd trust with your airway.",
+          "Text": "Put the tray down and listen, because this one changes the dosage. In the sublevel's south-west wing, the crew keeps its clean room, where the real batches get made. Their warden holds it. Ward-trained, dosed to the eyes, and big enough that the specialists knock. I want him gone and the Emergency Cocktail Fractured Ward Sigil back in my hands. And you don't go alone. That's triage math: one of you bleeds out in that room, three of you walk out. Bring two you'd trust with your airway.",
           "Style": 0,
           "Color": null
         }
@@ -724,7 +724,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good answer - the plural was the part I was checking. The clean room is past the junction rooms, behind the door wearing the cracked sigil. Hit the warden fast, keep someone breathing between injectors, and pry the sigil loose when it's done. I'll have three stims and a strong opinion waiting.",
+          "Text": "Good answer - the plural was the part I was checking. The clean room is in the south-west wing of the sublevel. Hit the warden fast, keep someone breathing between injectors, and take the sigil off him when it's done. I'll have three stims and a strong opinion waiting.",
           "Style": 0,
           "Color": null
         }
@@ -745,7 +745,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "She ran a trauma ward on Dantooine for six years. Best hands I ever watched work - and then she decided consent was a bottleneck. Now she guards their mixing room and doses herself from the stock. Whatever speed and strength you're imagining, add more, and remember she knows exactly where you keep your arteries. Professionally.",
+          "Text": "He ran a trauma ward in the Dantooine colony for six years. Best hands I ever watched work - and then he decided consent was a bottleneck. Now he guards their clean room and doses himself from the stock. Whatever speed and strength you're imagining, add more, and remember he knows exactly where you keep your arteries. Professionally.",
           "Style": 0,
           "Color": null
         }
@@ -771,7 +771,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Simple sums. One fighter in that room means the warden picks when you rest, when you bleed, and when it ends. Two means someone can drag the other clear. Three means she has to choose, and choosing is where fights get lost. I've run this arithmetic on cot after cot for twenty years. Bring two companions, or don't bring yourself.",
+          "Text": "Simple sums. One fighter in that room means the warden picks when you rest, when you bleed, and when it ends. Two means someone can drag the other clear. Three means he has to choose, and choosing is where fights get lost. I've run this arithmetic on cot after cot for twenty years. Bring two companions, or don't bring yourself.",
           "Style": 0,
           "Color": null
         }
@@ -797,7 +797,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "It marked that room as a protected ward - my predecessor's mark, from when the sublevel still healed people. The crew cracked it when they took the room, then left it hanging on the door like a joke. Bring me the fractured half. I'd rather it sit broken in my drawer than whole on their door.",
+          "Text": "It marked that clean room as a sanctioned ward - the matron's mark, from when the sublevel still healed people. The crew cracked it when they took the room, and the warden kept the broken half like a joke. Bring it to me. I'd rather it sit broken in my drawer than in his pocket.",
           "Style": 0,
           "Color": null
         }
@@ -823,7 +823,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden's still holding that door, and if you're standing here alone, you're still two people short of a survivable entry. Gather your trusted pair, then go take that sigil off her door.",
+          "Text": "The warden's still holding the clean room, and if you're standing here alone, you're still two people short of a survivable entry. Gather your trusted pair, then go take that sigil off him.",
           "Style": 0,
           "Color": null
         }
@@ -870,7 +870,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "There's the crack, right through the ward mark. They wanted the joke on record; now it's evidence. The clean room's dark, the warden's off the board, and the Dantooine facility owes you more than what's in my drawer - but the drawer is what I control, so take it. And tell your two they have standing credit at my counter. That's not nothing.",
+          "Text": "There's the crack, right through the ward mark. They wanted the joke on record; now it's evidence. The clean room's dark, the warden's off the board, and the colony owes you more than what's in my drawer - but the drawer is what I control, so take it. And tell your two they have standing credit at my counter. That's not nothing.",
           "Style": 0,
           "Color": null
         }
@@ -891,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Sit. I already poured you a stimulant - that's how you know it's serious. With the warden gone, the crew's core came up from the deep rooms. Four of them. The inner circle, the ones who wrote the hot-batch doctrine in the first place. They've taken the old matron's ward - the last part of the sublevel that was still sacred - and they're holding the Emergency Cocktail Matron's Ward Token, her own mark of care, pocketed like a trophy. Four names, one token. Bring it back and the sublevel's history stops being theirs to spend.",
+          "Text": "Sit. I already poured you a stimulant - that's how you know it's serious. With the warden gone, the crew's core came up from hiding. Four of them, the inner circle, the ones who wrote the hot-batch doctrine. More implant than patient now. They're walking the sublevel like they own it, and they carry the Emergency Cocktail Matron's Ward Token, the old matron's own mark of care, pocketed like a trophy. Four names, one token. Bring it back.",
           "Style": 0,
           "Color": null
         }
@@ -933,7 +933,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The matron's ward is the deepest room before the master's own. They'll be together - the circle doesn't split. That's their strength and their vanity, so break the vanity. Keep your companions close; four trained sets of hands against one of yours is arithmetic I've already given you my opinion on.",
+          "Text": "They don't keep to one room anymore - they walk the sublevel checking on what's left of their operation. Find them one at a time if you can. Keep your companions close; four trained sets of hands against one of yours is arithmetic I've already given you my opinion on.",
           "Style": 0,
           "Color": null
         }
@@ -954,7 +954,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The founders. Two washed out of the Dantooine facility's certification board, one mixed for a mercenary column, and the fourth - the fourth trained me, years ago, which is a sentence I'd rather you forgot. They built the doctrine the adepts died practicing. Every dose in that ledger traces uphill to those four signatures.",
+          "Text": "The founders. Two washed out of the colony's medical certification, one mixed for a mercenary column, and the fourth - the fourth trained me, years ago, which is a sentence I'd rather you forgot. They've each replaced so much of themselves you'd need a mechanic to find the original patient. Every dose in that ledger traces uphill to those four signatures.",
           "Style": 0,
           "Color": null
         }
@@ -980,7 +980,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Before this was a facility, it was one ward run by one matron, back when the enclave conduits still hummed. Her token passed hand to hand; whoever held it answered for every patient below. The circle took it because holding it says the sublevel answers to them. I don't run on sentiment, but I make an exception for that piece of brass.",
+          "Text": "Before the warehouse above went dark, the sublevel's wards answered to a matron, healing colonists nobody else would take. Whoever held her token answered for every patient below. The circle took it because holding it says the sublevel answers to them. I don't run on sentiment, but I make an exception for that piece of brass.",
           "Style": 0,
           "Color": null
         }
@@ -1006,7 +1006,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four practitioners who've each survived their own doctrine, in a room with one door. They'll stagger their injectors so one is always fresh while three circle you. If your two from the warden's door are still upright, this is where you spend that trust again. Overlap your minutes. Don't trade one-for-one with people who keep spares.",
+          "Text": "Four practitioners who've each survived their own doctrine, wired with enough hardware to shrug off what would drop you. If they find you together, they'll stagger their injectors so one is always fresh. If your two from the warden fight are still upright, this is where you spend that trust again. Don't trade one-for-one with people who keep spares.",
           "Style": 0,
           "Color": null
         }
@@ -1032,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The circle is still holding the matron's ward, and the token is still in the wrong pocket. Four names. I've crossed out none of them yet.",
+          "Text": "The circle is still walking the sublevel, and the token is still in the wrong pocket. Four names. I've crossed out none of them yet.",
           "Style": 0,
           "Color": null
         }
@@ -1079,7 +1079,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Brass, and lighter than its job description. Four signatures closed out, and the ward they were squatting in goes back to being a ward. I'd call that a good shift, and I haven't called anything a good shift in two years. Credits in the drawer. Rest and restock - the deep room is still lit, and we both know who's in it.",
+          "Text": "Brass, and lighter than its job description. Four signatures closed out, and the matron's mark comes home. I'd call that a good shift, and I haven't called anything a good shift in two years. Credits in the drawer. Rest and restock - the Protected Ward is still lit, and we both know who's in it.",
           "Style": 0,
           "Color": null
         }
@@ -1100,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "No tray this time. Both hands free, because you should hear this straight. The one left below is the master - the chemist the circle answered to. He finished what I never dared: the emergency cocktail, perfected. He can stand in a collapsing ward, build a stabilizer from pocket vials, and pull himself back from the edge mid-fight, over and over. It cost a wing full of patients to refine, and he'd tell you it was worth it. Kill him, and the recipe stops being his - then it's yours, built clean, the way I'll teach it. And hear the dosage on this part: taken alone, the master's room is a lethal dose. Every time. Nobody. Take your two, or take more.",
+          "Text": "No tray this time. Both hands free, because you should hear this straight. The one left is the master - the chemist the circle answered to. He perfected the emergency cocktail: he can build a stabilizer from pocket vials mid-fight and pull himself back from the edge, over and over. It cost a wing full of patients to refine. He's holed up in the Protected Ward, reached from the north-east corner of the sublevel. Kill him, and I'll teach you the recipe built clean. Taken alone, his room is a lethal dose. Take your two, or take more.",
           "Style": 0,
           "Color": null
         }
@@ -1142,7 +1142,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then this is the last thing I hand you: every stim I've mixed this month. Split them among your companions. The deep room is past the matron's ward, and he'll know you're coming - he's been reading the same ledger entries backwards. When he goes down, don't collect anything. Walk back up breathing. That's the only proof I need.",
+          "Text": "Then go, and keep each other breathing. The way into the Protected Ward is in the north-east corner of the sublevel, and he'll know you're coming - he's been reading the same ledger entries backwards. When he goes down, don't collect anything. Walk back up breathing. That's the only proof I need.",
           "Style": 0,
           "Color": null
         }
@@ -1241,7 +1241,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The deep room is still lit. Take your people, take the stims, and go put the recipe out of his hands. I'll be awake. I'm always awake.",
+          "Text": "The Protected Ward is still lit. Take your people, go through the north-east corner of the sublevel, and put the recipe out of his hands. I'll be awake. I'm always awake.",
           "Style": 0,
           "Color": null
         }
@@ -1262,7 +1262,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You came up those stairs slow, and you're not carrying anything - which, this one time, is exactly right. Tell me it's done.",
+          "Text": "You walked in slow, and you're not carrying anything - which, this one time, is exactly right. Tell me it's done.",
           "Style": 0,
           "Color": null
         }
@@ -1288,7 +1288,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then sit down, because class starts now. The emergency cocktail, built clean - no strapped-down subjects, no forced doses, no ledger. Just your kit, your minutes, and hands I've watched earn this one stage at a time. He perfected it on other people's blood; you'll carry it on your own. That distinction is the entire discipline. The drawer's open - take the credits, then take a stool. First lesson: nothing you build under fire is ever for you.",
+          "Text": "Then sit down, because class starts now. The emergency cocktail, built clean - no strapped-down subjects, no forced doses, no ledger. Just your kit, your minutes, and hands I've watched earn this one stage at a time. He perfected it on other people's blood; you'll carry it on your own. That distinction is the entire discipline. Take a stool. First lesson: nothing you build under fire is ever for you.",
           "Style": 0,
           "Color": null
         }
@@ -1807,7 +1807,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "The Fractured Ward Sigil, off the clean room door.",
+        "Text": "The Fractured Ward Sigil. The warden won't miss it.",
         "Style": 4,
         "Color": null
       },

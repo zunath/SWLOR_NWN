@@ -18539,7 +18539,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Ruk Halven is a blast-safety veteran tied to the Thermal Detonator capstone trials in Hutlar Qion Test Site."
+            "0": "Ruk Halven is a weathered human man in a scorched blast apron, with old burn scars running up both forearms. He counts his fingers out of habit and eyes anyone who walks too casually past a hazard marker. A demolitions veteran of more ranges than he cares to name, he keeps watch over the road out of the Hutlar Outpost toward the Qion Box Canyon."
           }
         },
         "Dex": {
@@ -18990,7 +18990,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 322
+          "value": 4180
         },
         "Race": {
           "type": "byte",

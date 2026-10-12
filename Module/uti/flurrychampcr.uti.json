@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 78
+    "value": 36
   },
   "Charges": {
     "type": "byte",
@@ -54,7 +54,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 17
+    "value": 19
   },
   "Plot": {
     "type": "byte",

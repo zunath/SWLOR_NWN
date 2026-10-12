@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             // Cloth Cloak
             _builder.Create(RecipeType.ClothCloak, SkillType.Smithery)
                 .Category(RecipeCategoryType.Cloak)
-                .Resref("fabr_belt_1")
+                .Resref("fabr_cloak_1")
                 .Level(10)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)

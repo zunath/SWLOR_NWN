@@ -51,8 +51,8 @@ namespace SWLOR.Toolset.Tests
             var byName = schema.AllFields.ToDictionary(field => field.FieldName);
 
             SchemaFieldAccessor.GetText(document, byName["Tag"]).Should().Be("zomb_guard");
-            SchemaFieldAccessor.GetInteger(document, byName["Dex"]).Should().Be(22);
-            SchemaFieldAccessor.GetText(document, byName["FirstName"]).Should().Be("Zombie, Guard");
+            SchemaFieldAccessor.GetInteger(document, byName["Dex"]).Should().Be(21);
+            SchemaFieldAccessor.GetText(document, byName["FirstName"]).Should().Be("Reanimated Security Guard");
         }
 
         [Test]

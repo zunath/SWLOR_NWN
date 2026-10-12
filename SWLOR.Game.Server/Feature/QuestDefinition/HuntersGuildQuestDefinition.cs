@@ -83,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BuildKillTask("hun_tsk_223", NPCGroupType.MonCala_Octotench, 10, 1);
             BuildKillTask("hun_tsk_224", NPCGroupType.MonCala_Microtench, 10, 1);
             BuildKillTask("hun_tsk_225", NPCGroupType.MonCala_Scorchellus, 10, 1);
+            BuildKillTask("hun_tsk_226", NPCGroupType.AbandonedStation_Horror, 10, 1);
 
             // Tier 3 (Rank 2)
             BuildItemTask("hun_tsk_400", "amphi_brain", 6, 2);

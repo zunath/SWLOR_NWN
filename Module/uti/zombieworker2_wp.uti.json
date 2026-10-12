@@ -39,7 +39,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Zombie, Worker Bite"
+      "0": "Reanimated Technician Attack"
     }
   },
   "ModelPart1": {
@@ -69,7 +69,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 31
+          "value": 23
         },
         "Param1": {
           "type": "byte",

@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Zombie, Rancor Stat Skin"
+      "0": "Reanimated Rancor Stat Skin"
     }
   },
   "ModelPart1": {
@@ -71,7 +71,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 38
+          "value": 30
         },
         "Param1": {
           "type": "byte",
@@ -102,7 +102,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 3191
+          "value": 2785
         },
         "Param1": {
           "type": "byte",
@@ -133,7 +133,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 77
+          "value": 161
         },
         "Param1": {
           "type": "byte",
@@ -164,7 +164,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 215
+          "value": 28
         },
         "Param1": {
           "type": "byte",
@@ -195,7 +195,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 16
+          "value": 18
         },
         "Param1": {
           "type": "byte",
@@ -226,7 +226,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 22
+          "value": 3
         },
         "Param1": {
           "type": "byte",
@@ -257,7 +257,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 9
+          "value": 7
         },
         "Param1": {
           "type": "byte",
@@ -319,7 +319,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 21
+          "value": 13
         },
         "Param1": {
           "type": "byte",
@@ -381,7 +381,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 13
+          "value": 12
         },
         "Param1": {
           "type": "byte",
@@ -412,7 +412,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 9
+          "value": 8
         },
         "Param1": {
           "type": "byte",
@@ -474,7 +474,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 15
+          "value": 14
         },
         "Param1": {
           "type": "byte",
@@ -505,7 +505,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 11
+          "value": 10
         },
         "Param1": {
           "type": "byte",
@@ -536,7 +536,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 13
+          "value": 12
         },
         "Param1": {
           "type": "byte",
@@ -567,7 +567,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 11
+          "value": 10
         },
         "Param1": {
           "type": "byte",

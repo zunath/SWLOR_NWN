@@ -40,19 +40,19 @@ namespace SWLOR.Toolset.Tests
 
         private static readonly Dictionary<string, int> ExpectedPlacementCounts = new()
         {
-            [WaypointBehaviorCatalog.CreatureSpawnPointId] = 2262,
+            [WaypointBehaviorCatalog.CreatureSpawnPointId] = 2314,
             [WaypointBehaviorCatalog.FishingPointId] = 431,
             [WaypointBehaviorCatalog.MapNoteId] = 375,
             [WaypointBehaviorCatalog.StuckRescuePointId] = 335,
-            [WaypointBehaviorCatalog.TransitionDestinationId] = 249,
+            [WaypointBehaviorCatalog.TransitionDestinationId] = 257,
             [WaypointBehaviorCatalog.PropertyEntranceId] = 43,
-            [WaypointBehaviorCatalog.StarshipDockId] = 11,
+            [WaypointBehaviorCatalog.StarshipDockId] = 12,
             [WaypointBehaviorCatalog.PlanetLandingId] = 10,
             [WaypointBehaviorCatalog.OrbitPointId] = 10,
             [WaypointBehaviorCatalog.TaxiStopId] = 4,
             [WaypointBehaviorCatalog.DeathRespawnId] = 1,
             [WaypointBehaviorCatalog.RebuildId] = 2,
-            [WaypointBehaviorCatalog.CustomId] = 629
+            [WaypointBehaviorCatalog.CustomId] = 623
         };
 
         private static string GameServerSourceRoot =>
@@ -102,7 +102,7 @@ namespace SWLOR.Toolset.Tests
                 .ToDictionary(group => group.Key, group => group.Count());
 
             counts.Should().BeEquivalentTo(ExpectedPlacementCounts);
-            counts.Values.Sum().Should().Be(4362);
+            counts.Values.Sum().Should().Be(4417);
         }
 
         [Test]

@@ -21,7 +21,7 @@ namespace SWLOR.Toolset.Tests
 
             document.TemplateResRef.Should().Be("zomb_guard");
             document.Tag.Should().Be("zomb_guard");
-            document.FirstName.Text.Should().Be("Zombie, Guard");
+            document.FirstName.Text.Should().Be("Reanimated Security Guard");
             document.FactionID.Should().Be(1);
             document.AppearanceType.Should().Be(2095);
             document.PortraitId.Should().Be(3832);
@@ -129,7 +129,7 @@ namespace SWLOR.Toolset.Tests
 
             var reparsed = UtcDocument.Parse(written);
             reparsed.Tag.Should().Be("zomb_guard_renamed");
-            reparsed.FirstName.Text.Should().Be("Zombie, Guard");
+            reparsed.FirstName.Text.Should().Be("Reanimated Security Guard");
         }
     }
 }

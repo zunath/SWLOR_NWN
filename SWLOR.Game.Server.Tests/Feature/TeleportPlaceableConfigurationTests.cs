@@ -85,7 +85,6 @@ public class TeleportPlaceableConfigurationTests
     private static readonly string[] KnownUnbuiltTeleporters =
     {
         "Module/git/druz_shalim.git.json|Invisible Object (Large)|Druzer_Starport_Inside",
-        "Module/git/zomb_abanstation.git.json|Take Shuttle Back to Viscara|",
     };
 
     [Test]

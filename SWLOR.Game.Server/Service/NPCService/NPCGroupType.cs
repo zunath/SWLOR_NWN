@@ -604,6 +604,8 @@ namespace SWLOR.Game.Server.Service.NPCService
         Korriban_UmbralRaiderCommander = 296,
         [NPCGroup("Foundry Droid")]
         Hutlar_FoundryDroid = 297,
+        [NPCGroup("Station Horror")]
+        AbandonedStation_Horror = 298,
 
     }
 

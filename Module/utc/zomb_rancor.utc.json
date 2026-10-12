@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 3
+    "value": 10
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 101.0
+    "value": 30.0
   },
   "ClassList": {
     "type": "list",
@@ -23,11 +23,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 19
+          "value": 13
         },
         "ClassLevel": {
           "type": "short",
-          "value": 10
+          "value": 4
         }
       }
     ]
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 21
+    "value": 26
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 3191
+    "value": 2785
   },
   "DecayTime": {
     "type": "dword",
@@ -63,12 +63,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Rotting, greyish-green coloured flesh covers what appears to have once been a rancor. A sickly orange-yellow liquid seems to drip from it's major orifices, giving off a sickly smell like a city of the dead. Bits of rotting meat hangs off of deep wounds across its body, even exposing bone in some places. Its eyes lack all colour, appearing as a pale-grey, seemingly focused nowhere in particular. It lets out a gurgled roar as it notices you, before lumbering forth with an opened maw."
+      "0": "The station's prize specimen: a rancor that died in its containment unit and did not stay dead. It slams against the bulkhead until something comes through the door."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 29
+    "value": 26
   },
   "Disarmable": {
     "type": "byte",
@@ -104,7 +104,56 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 2
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 3
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 4
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 44
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 45
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 46
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 289
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1820
         }
       },
       {
@@ -118,7 +167,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1853
+          "value": 1824
         }
       },
       {
@@ -132,21 +181,14 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1864
+          "value": 1844
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1843
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1754
+          "value": 1767
         }
       }
     ]
@@ -154,7 +196,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Zombie, Rancor"
+      "0": "Reanimated Rancor"
     }
   },
   "fortbonus": {
@@ -171,11 +213,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 3141
+    "value": 2753
   },
   "Int": {
     "type": "byte",
-    "value": 29
+    "value": 26
   },
   "Interruptable": {
     "type": "byte",
@@ -205,7 +247,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 3191
+    "value": 2785
   },
   "NaturalAC": {
     "type": "byte",
@@ -510,7 +552,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 21
+    "value": 32
   },
   "Subrace": {
     "type": "cexostring",
@@ -539,21 +581,6 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "QUEST_NPC_GROUP_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 22
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
           "value": "LOOT_TABLE_1"
         },
         "Type": {
@@ -562,7 +589,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "ABANDONED_STATION_ZOMBIE_RANCOR,95,1"
+          "value": "ABANDONED_STATION_ZOMBIE_RANCOR,100,1"
         }
       },
       {
@@ -577,7 +604,37 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "ABANDONED_STATION_ZOMBIE_RANCOR,30,2"
+          "value": "STATION_RESTRICTED,100,3"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "STATION_RARES,30,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "QUEST_NPC_GROUP_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 298
         }
       }
     ]
@@ -596,6 +653,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 36
+    "value": 19
   }
 }

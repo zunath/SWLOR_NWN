@@ -8985,6 +8985,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Rakghoul Alpha Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_rakalpha_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rakghoul Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_rakghoul_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rakghoul Brute Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_rakbrute_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rakghoul Stalker Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_rakstalk_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Rancor Bite"
                     },
                     "RESREF": {
@@ -9001,6 +9045,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "rancor_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Geneticist Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zgenetic_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Station Director Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zdirector_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Test Subject Attack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zsubject_wp"
                     }
                   },
                   {
@@ -9282,7 +9359,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Zombie, Guard Bite"
+                      "value": "Reanimated Security Guard Attack"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -9293,7 +9370,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Zombie, Rancor Bite"
+                      "value": "Reanimated Rancor Attack"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -9304,7 +9381,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Zombie, Scientist Bite"
+                      "value": "Reanimated Researcher Attack"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -9315,7 +9392,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Zombie, Worker Bite"
+                      "value": "Reanimated Technician Attack"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -9326,7 +9403,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Zombie, Worker Bite"
+                      "value": "Reanimated Dockhand Attack"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -17552,6 +17629,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Rakghoul Alpha Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_rakalpha_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rakghoul Brute Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_rakbrute_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rakghoul Stalker Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_rakstalk_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rakghoul Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_rakghoul_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Rancor Stat Skin"
                     },
                     "RESREF": {
@@ -17568,6 +17689,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "rancor_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Geneticist Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zgenetic_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Station Director Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zdirector_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reanimated Test Subject Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "abs_zsubject_sk"
                     }
                   },
                   {
@@ -19290,7 +19444,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Zombie, Guard Stat Skin"
+                      "value": "Reanimated Security Guard Stat Skin"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19301,7 +19455,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Zombie, Rancor Stat Skin"
+                      "value": "Reanimated Rancor Stat Skin"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19312,7 +19466,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Zombie, Scientist Stat Skin"
+                      "value": "Reanimated Researcher Stat Skin"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19323,7 +19477,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Zombie, Worker Stat Skin"
+                      "value": "Reanimated Technician Stat Skin"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -19334,7 +19488,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Zombie, Worker Stat Skin"
+                      "value": "Reanimated Dockhand Stat Skin"
                     },
                     "RESREF": {
                       "type": "resref",

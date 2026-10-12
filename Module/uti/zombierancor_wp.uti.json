@@ -39,7 +39,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Zombie, Rancor Bite"
+      "0": "Reanimated Rancor Attack"
     }
   },
   "ModelPart1": {
@@ -69,7 +69,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 71
+          "value": 64
         },
         "Param1": {
           "type": "byte",

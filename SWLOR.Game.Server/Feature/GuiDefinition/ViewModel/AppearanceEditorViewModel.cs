@@ -2041,6 +2041,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
             {
                 SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, scale - Increment);
+                PlayerCameraHeight.Apply(_target);
                 SendMessageToPC(_target, $"Height: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale)}");
             }
         };
@@ -2063,6 +2064,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
             {
                 SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, scale + Increment);
+                PlayerCameraHeight.Apply(_target);
                 SendMessageToPC(_target, $"Height: {GetObjectVisualTransform(_target, ObjectVisualTransform.Scale)}");
             }
         };
@@ -2613,6 +2615,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var headScale = dbPlayer.HeadAppearanceScale <= 0f ? 1.0f : dbPlayer.HeadAppearanceScale;
 
             SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
+            PlayerCameraHeight.Apply(_target);
             HelmetModelRenderer.SetHeadScale(_target, headScale);
         };
 

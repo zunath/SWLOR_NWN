@@ -467,8 +467,10 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
-                ApplyNameOverride(observer, player);
+                ApplyNameOverride(observer, player, refreshAttitudes: false);
             }
+
+            RefreshPlayerListAttitudes(observer);
         }
 
         public static void RefreshNameOverridesForPlayer(uint player)

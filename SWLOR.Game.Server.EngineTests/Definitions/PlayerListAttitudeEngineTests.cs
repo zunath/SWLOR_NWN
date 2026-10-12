@@ -102,6 +102,25 @@ public static class PlayerListAttitudeEngineTests
                     ctx.AssertEqual(0, other.GetGameObject().AsNWSCreature().GetPVPPlayerLikesMe(source.m_oidNWSObject),
                         "Bulk refresh leaves server hostility unchanged");
                 }
+
+                Updates.Clear();
+                _listsSent = 0;
+                PlayerName.RefreshNameOverridesForObserver(target.Creature);
+                ctx.Assert(_listsSent > 0, "Observer-wide overrides exercise an actual full-list refresh");
+                ctx.AssertEqual(2 * (clients.Length - 1), Updates.Count,
+                    "Observer-wide refresh sends each of the observer's hostile directions once");
+                foreach (var other in clients)
+                {
+                    if (other.m_nPlayerID == targetClient.m_nPlayerID) continue;
+                    ctx.Assert(Updates.Contains((_listsSent, other.m_nPlayerID, targetClient.m_nPlayerID, 0)),
+                        "Observer-wide outgoing hostility follows the final list refresh");
+                    ctx.Assert(Updates.Contains((_listsSent, targetClient.m_nPlayerID, other.m_nPlayerID, 0)),
+                        "Observer-wide incoming hostility follows the final list refresh");
+                    ctx.AssertEqual(0, other.GetGameObject().AsNWSCreature().GetPVPPlayerLikesMe(target.Creature),
+                        "Observer-wide refresh leaves outgoing server hostility unchanged");
+                    ctx.AssertEqual(0, targetCreature.GetPVPPlayerLikesMe(other.m_oidNWSObject),
+                        "Observer-wide refresh leaves incoming server hostility unchanged");
+                }
             }
             finally
             {

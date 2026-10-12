@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Jek Talin gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed door in the south cliff of the Rocky Pass, beside the trail to the Southern Pass. Defeat six Last Word adepts and claim the Last Word Canyon Range Tally.")
+                    "Jek Talin gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed cliff door in the Rocky Pass, right beside the trail in from Anchorhead's Southern Entrance. Defeat six Last Word adepts and claim the Last Word Canyon Range Tally.")
                 .AddKillObjective(NPCGroupType.Tatooine_LastWord_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastWordCanyonRangeTally)
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Pavo Orrel gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed door in the south cliff of the Rocky Pass, beside the trail to the Southern Pass. Defeat six Dead Man's Hand adepts and claim the Dead Man's Hand Canyon Range Tally.")
+                    "Pavo Orrel gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed cliff door in the Rocky Pass, right beside the trail in from Anchorhead's Southern Entrance. Defeat six Dead Man's Hand adepts and claim the Dead Man's Hand Canyon Range Tally.")
                 .AddKillObjective(NPCGroupType.Tatooine_DeadMansHand_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDeadMansHandCanyonRangeTally)
 

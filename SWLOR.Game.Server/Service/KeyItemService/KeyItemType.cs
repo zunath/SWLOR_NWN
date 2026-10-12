@@ -234,7 +234,7 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         CapstoneSmugglersMoonFightClubBackroomsKey = 110,
         [KeyItem(KeyItemCategoryType.Keys, "CZ-220 Breaker Yard Key", true, "A Czerka maintenance override card with a cracked holo-stripe. It drops the force-field wall into the Breaker Bay in the far north-east corner of the CZ-220 Maintenance Level.")]
         CapstoneCZ220BreakerYardKey = 111,
-        [KeyItem(KeyItemCategoryType.Keys, "Anchorhead Canyon Range Key", true, "A sand-scoured range pass on a leather cord. It opens the sealed cliff door to the Anchorhead Canyon Range, on the south edge of the Rocky Pass by the trail to the Southern Pass on Tatooine.")]
+        [KeyItem(KeyItemCategoryType.Keys, "Anchorhead Canyon Range Key", true, "A sand-scoured range pass on a leather cord. It opens the sealed cliff door to the Anchorhead Canyon Range, in the Rocky Pass, right beside the trail in from Anchorhead's Southern Entrance on Tatooine.")]
         CapstoneAnchorheadCanyonRangeKey = 112,
         [KeyItem(KeyItemCategoryType.Keys, "Czerka Arms Test Range Key", true, "A Czerka range clearance card bearing a test-division stamp. It opens the Czerka Weapons Testing Facility door in the Corporate District on Smuggler's Moon, a short walk south of the GSI Tower doors.")]
         CapstoneCzerkaArmsTestRangeKey = 113,

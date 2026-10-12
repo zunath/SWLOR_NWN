@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -46,12 +47,47 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(damaged, "target takes ship damage once the attacker is in range");
         }
 
-        private static async Task<(uint Attacker, uint Target)> SpawnShipsAsync(EngineTestContext ctx, float separation, bool immobilizeAttacker)
+        [EngineTest("NPC ship closes past weapons that cannot target the current ship", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
+        public static async Task ClosesPastIneligibleWeapons(EngineTestContext ctx)
+        {
+            // mandocap2's 50m Assault Concussion Missile only targets capital ships; its batteries reach 20m.
+            var (attacker, target) = await SpawnShipsAsync(ctx, "mandocap2", TargetResref, 35f, immobilizeAttacker: false);
+            ctx.Assert(!Space.GetShipStatus(target).CapitalShip, "target is not a capital ship");
+
+            await ctx.WaitUntilAsync(() => GetDistanceBetween(attacker, target) <= 20f, 20f,
+                $"the attacker to move within battery range (now {GetDistanceBetween(attacker, target):0.0}m)");
+            var damaged = await WaitForDamageAsync(ctx, target, 20f);
+            ctx.Assert(damaged, "target takes ship damage once the batteries are in range");
+        }
+
+        [EngineTest("NPC bomber fires its proton bomb at a capital ship in bomb range", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
+        public static async Task BomberFiresProtonBomb(EngineTestContext ctx)
+        {
+            // The 10m proton bomb must fire before the bomber repositions; its recast starts only on activation.
+            var (attacker, target) = await SpawnShipsAsync(ctx, "t5bomber", "mandocap2", 8f, immobilizeAttacker: false);
+            ctx.Assert(Space.GetShipStatus(target).CapitalShip, "target is a capital ship");
+            var bomb = Space.GetShipStatus(attacker).HighPowerModules.Values.Single(x => x.ItemTag == "protbomblnch");
+            var initialRecast = bomb.RecastTime;
+            var startDistance = GetDistanceBetween(attacker, target);
+
+            await ctx.WaitUntilAsync(() => bomb.RecastTime != initialRecast, 10f,
+                $"the proton bomb to activate (start {startDistance:0.0}m, now {GetDistanceBetween(attacker, target):0.0}m)");
+        }
+
+        private static Task<(uint Attacker, uint Target)> SpawnShipsAsync(EngineTestContext ctx, float separation, bool immobilizeAttacker)
+            => SpawnShipsAsync(ctx, AttackerResref, TargetResref, separation, immobilizeAttacker);
+
+        private static async Task<(uint Attacker, uint Target)> SpawnShipsAsync(
+            EngineTestContext ctx,
+            string attackerResref,
+            string targetResref,
+            float separation,
+            bool immobilizeAttacker)
         {
             // An empty 16x16 space area gives an unobstructed straight path between the ships.
             var area = ctx.CreateInstancedArea(SpaceAreaResref);
-            var attacker = SpawnShip(ctx, area, AttackerResref, 60f);
-            var target = SpawnShip(ctx, area, TargetResref, 60f + separation);
+            var attacker = SpawnShip(ctx, area, attackerResref, 60f);
+            var target = SpawnShip(ctx, area, targetResref, 60f + separation);
             await ctx.WaitUntilAsync(() => Space.GetShipStatus(attacker) != null && Space.GetShipStatus(target) != null, 5f,
                 $"both ships to register as NPC ships (attacker valid={GetIsObjectValid(attacker)}, target valid={GetIsObjectValid(target)})");
 

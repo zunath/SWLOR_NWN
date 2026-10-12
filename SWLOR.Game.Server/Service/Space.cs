@@ -2039,25 +2039,21 @@ namespace SWLOR.Game.Server.Service
                 var availableModules = highModules.Concat(lowModules).ToList();
                 var targetShipStatus = GetShipStatus(target);
                 var distance = GetDistanceBetween(creature, target);
-                var maxWeaponDistance = shipStatus.HighPowerModules.Values
+
+                // Engage at the range of the shortest weapon that can hit this target so every such weapon gets used.
+                var engagementDistance = shipStatus.HighPowerModules.Values
                     .Concat(shipStatus.LowPowerModules.Values)
-                    .Where(x => IsOffensiveShipModule(_shipModules[x.ItemTag].Type))
+                    .Where(x => CanNPCFireShipModule(creature, shipStatus, target, targetShipStatus, x))
                     .Select(x => GetShipModuleMaxDistance(creature, shipStatus, target, targetShipStatus, x))
                     .DefaultIfEmpty(0f)
-                    .Max();
-
-                // Close in when the target is beyond weapon range, otherwise keep distance from it.
-                AssignCommand(creature, () =>
-                {
-                    ClearAllActions();
-                    if (maxWeaponDistance > 0f && distance > maxWeaponDistance)
-                        ActionMoveToObject(target, true, NPCShipKeepDistance);
-                    else
-                        ActionMoveAwayFromObject(target, true, NPCShipKeepDistance);
-                });
+                    .Min();
+                var holdDistance = engagementDistance > 0f
+                    ? Math.Min(NPCShipKeepDistance, engagementDistance * 0.75f)
+                    : NPCShipKeepDistance;
 
                 // Determine which module(s) to activate
                 SetCurrentTarget(creature, target);
+                var featsToUse = new List<FeatType>();
                 foreach (var (feat, shipModule) in availableModules)
                 {
                     var shipModuleDetail = _shipModules[shipModule.ItemTag];
@@ -2082,18 +2078,48 @@ namespace SWLOR.Game.Server.Service
                     }
                     else if (IsOffensiveShipModule(shipModuleDetail.Type))
                     {
-                        useModule = distance <= GetShipModuleMaxDistance(creature, shipStatus, target, targetShipStatus, shipModule);
+                        useModule = CanNPCFireShipModule(creature, shipStatus, target, targetShipStatus, shipModule) &&
+                                    distance <= GetShipModuleMaxDistance(creature, shipStatus, target, targetShipStatus, shipModule);
                     }
 
                     if (useModule)
                     {
-                        AssignCommand(creature, () =>
-                        {
-                            ActionUseFeat(feat, target);
-                        });
+                        featsToUse.Add(feat);
                     }
                 }
+
+                // Fire from the current position first, then close in when beyond weapon range or keep distance.
+                AssignCommand(creature, () =>
+                {
+                    ClearAllActions();
+                    foreach (var feat in featsToUse)
+                    {
+                        ActionUseFeat(feat, target);
+                    }
+
+                    if (engagementDistance > 0f && distance > engagementDistance)
+                        ActionMoveToObject(target, true, holdDistance);
+                    else
+                        ActionMoveAwayFromObject(target, true, holdDistance);
+                });
             }
+        }
+
+        /// <summary>
+        /// Whether an NPC ship's offensive module passes its target validation against the given target.
+        /// </summary>
+        private static bool CanNPCFireShipModule(
+            uint creature,
+            ShipStatus shipStatus,
+            uint target,
+            ShipStatus targetShipStatus,
+            ShipStatus.ShipStatusModule shipModule)
+        {
+            var shipModuleDetail = _shipModules[shipModule.ItemTag];
+            if (!IsOffensiveShipModule(shipModuleDetail.Type) || targetShipStatus == null)
+                return false;
+
+            return string.IsNullOrWhiteSpace(shipModuleDetail.ModuleValidationAction?.Invoke(creature, shipStatus, target, targetShipStatus, shipModule.ModuleBonus));
         }
 
         /// <summary>

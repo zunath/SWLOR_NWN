@@ -1,19 +1,21 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.RoleplayXPService
 {
     /// <summary>
     /// Classifies chat for RP XP. Quoted speech is always treated as in-character; everything outside
     /// quotes is checked for OOC markers, so OOC chatter typed as novel-style emote text is still caught.
+    /// Messages the rules pass are then scored with the detection file's weights, when it has any.
     /// </summary>
     public static class RoleplayMessageClassifier
     {
         private static readonly string[] OOCMarkers = { "((", "))", "[[", "]]", "{{", "}}", @"\\" };
 
         /// <summary>
-        /// Words and emoticons treated as OOC outside quoted speech when swlor.env does not
-        /// configure its own list.
+        /// Words and emoticons treated as OOC outside quoted speech when the detection file does not
+        /// provide its own list.
         /// </summary>
         public static readonly IReadOnlySet<string> DefaultOOCTerms = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -48,7 +50,7 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
         private static readonly char[] WordPunctuation = "*.,!?;:()[]{}<>~_-/\\'@#".ToCharArray();
         private static readonly char[] EmoticonPunctuation = "*.,!?".ToCharArray();
 
-        public static RoleplayMessageType Classify(string message, IReadOnlySet<string> oocTerms)
+        public static RoleplayMessageType Classify(string message, OOCDetectionModel detection, EmoteStyle emoteStyle)
         {
             var trimmed = message?.Trim() ?? string.Empty;
             if (trimmed.Length == 0)
@@ -59,11 +61,17 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
                 return RoleplayMessageType.ChatCommand;
 
             var narration = RemoveQuotedSpeech(trimmed);
-            if (ContainsOOCMarker(narration) || ContainsOOCTerm(narration, oocTerms))
+            if (ContainsOOCMarker(narration) || ContainsOOCTerm(narration, detection.Terms))
                 return RoleplayMessageType.OutOfCharacter;
 
             if (IsTypoCorrection(trimmed))
                 return RoleplayMessageType.TypoCorrection;
+
+            // Messages of three characters or fewer never earn RP points, so they are not scored.
+            if (detection.HasScoring &&
+                trimmed.Length > 3 &&
+                OOCMessageScorer.Score(trimmed, emoteStyle, detection.Weights) >= detection.Threshold)
+                return RoleplayMessageType.OutOfCharacter;
 
             return RoleplayMessageType.InCharacter;
         }

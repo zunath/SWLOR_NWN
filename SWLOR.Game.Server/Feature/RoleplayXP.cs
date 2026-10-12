@@ -1,6 +1,7 @@
 using System.Globalization;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.RoleplayXPService;
 using SWLOR.NWN.API.NWNX;
@@ -15,6 +16,27 @@ namespace SWLOR.Game.Server.Feature
         private const string RPTickVariable = "RP_SYSTEM_TICKS";
         private const string RPTimestampVariable = "RP_SYSTEM_LAST_MESSAGE_TIMESTAMP";
         private const int RPRequiredTicks = 300;
+
+        private static OOCDetectionModel _oocDetection;
+
+        /// <summary>
+        /// Loads the external OOC detection file at server start so a bad file is reported at boot.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public static void LoadOOCDetection()
+        {
+            var path = ApplicationSettings.Get().RoleplayXPOOCDetectionFile;
+            if (OOCDetectionLoader.TryLoad(path, out var detection, out var error))
+            {
+                Log.Write(LogGroup.Server, $"Loaded RP XP OOC detection file '{path}'.", true);
+            }
+            else
+            {
+                Log.Write(LogGroup.Server, $"RP XP OOC detection file not loaded ({error}). Using the built-in word list.", true);
+            }
+
+            _oocDetection = detection;
+        }
 
         /// <summary>
         /// Once every 30 minutes, the RP system will check all players and distribute RP XP if applicable.
@@ -115,7 +137,10 @@ namespace SWLOR.Game.Server.Feature
             var dbPlayer = DB.Get<Player>(playerID) ?? new Player(playerID);
 
             var settings = ApplicationSettings.Get();
-            var messageType = RoleplayMessageClassifier.Classify(message, settings.RoleplayXPOOCTerms);
+            var messageType = RoleplayMessageClassifier.Classify(
+                message,
+                _oocDetection ?? OOCDetectionModel.Default,
+                dbPlayer.EmoteStyle);
             if (messageType == RoleplayMessageType.OutOfCharacter)
             {
                 RefreshRPMessageTimestamp(player, now);

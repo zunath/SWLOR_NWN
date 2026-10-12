@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.RoleplayXPService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -301,12 +302,12 @@ public class RoleplayXPOOCPenaltyTests
     {
         var terms = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "holoskip", ":]" };
 
-        RoleplayMessageClassifier.Classify("She glances away. HOLOSKIP", terms).Should().Be(RoleplayMessageType.OutOfCharacter);
-        RoleplayMessageClassifier.Classify("Nice one :]", terms).Should().Be(RoleplayMessageType.OutOfCharacter);
-        RoleplayMessageClassifier.Classify("brb, food", terms).Should().Be(RoleplayMessageType.InCharacter);
-        RoleplayMessageClassifier.Classify("lolol", terms).Should().Be(RoleplayMessageType.InCharacter);
-        RoleplayMessageClassifier.Classify("lmaooo", terms).Should().Be(RoleplayMessageType.InCharacter);
-        RoleplayMessageClassifier.Classify("xDD", terms).Should().Be(RoleplayMessageType.InCharacter);
+        ClassifyWithTerms("She glances away. HOLOSKIP", terms).Should().Be(RoleplayMessageType.OutOfCharacter);
+        ClassifyWithTerms("Nice one :]", terms).Should().Be(RoleplayMessageType.OutOfCharacter);
+        ClassifyWithTerms("brb, food", terms).Should().Be(RoleplayMessageType.InCharacter);
+        ClassifyWithTerms("lolol", terms).Should().Be(RoleplayMessageType.InCharacter);
+        ClassifyWithTerms("lmaooo", terms).Should().Be(RoleplayMessageType.InCharacter);
+        ClassifyWithTerms("xDD", terms).Should().Be(RoleplayMessageType.InCharacter);
     }
 
     [TestCase("lololol", "lol")]
@@ -317,7 +318,7 @@ public class RoleplayXPOOCPenaltyTests
     {
         var terms = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { baseTerm };
 
-        RoleplayMessageClassifier.Classify(message, terms).Should().Be(RoleplayMessageType.OutOfCharacter);
+        ClassifyWithTerms(message, terms).Should().Be(RoleplayMessageType.OutOfCharacter);
     }
 
     [TestCase("brb*")]
@@ -339,7 +340,7 @@ public class RoleplayXPOOCPenaltyTests
             ["SWLOR_RPXP_OOC_DM_ALLOWANCE"] = "0",
             ["SWLOR_RPXP_OOC_EVENT_ALLOWANCE"] = "15",
             ["SWLOR_RPXP_OOC_PENALTY_PERCENT"] = "250",
-            ["SWLOR_RPXP_OOC_TERMS"] = " Holoskip , ,:] "
+            ["SWLOR_RPXP_OOC_DETECTION_FILE"] = " /srv/custom-ooc.json "
         };
 
         var settings = CreateSettings(variables);
@@ -348,8 +349,7 @@ public class RoleplayXPOOCPenaltyTests
         settings.RoleplayXPDMPresentOOCAllowance.Should().Be(0);
         settings.RoleplayXPEventAreaOOCAllowance.Should().Be(15);
         settings.RoleplayXPOOCPenaltyPercent.Should().Be(100);
-        settings.RoleplayXPOOCTerms.Should().BeEquivalentTo(new[] { "Holoskip", ":]" });
-        settings.RoleplayXPOOCTerms.Should().Contain("HOLOSKIP");
+        settings.RoleplayXPOOCDetectionFile.Should().Be("/srv/custom-ooc.json");
     }
 
     [Test]
@@ -362,7 +362,7 @@ public class RoleplayXPOOCPenaltyTests
             ["SWLOR_RPXP_OOC_DM_ALLOWANCE"] = "-5",
             ["SWLOR_RPXP_OOC_EVENT_ALLOWANCE"] = "lots",
             ["SWLOR_RPXP_OOC_PENALTY_PERCENT"] = "ten",
-            ["SWLOR_RPXP_OOC_TERMS"] = " , "
+            ["SWLOR_RPXP_OOC_DETECTION_FILE"] = "  "
         };
 
         var settings = CreateSettings(variables);
@@ -371,7 +371,7 @@ public class RoleplayXPOOCPenaltyTests
         settings.RoleplayXPDMPresentOOCAllowance.Should().Be(OOCAllowance.DefaultDMPresentAllowance);
         settings.RoleplayXPEventAreaOOCAllowance.Should().BeNull("event areas default to unlimited OOC");
         settings.RoleplayXPOOCPenaltyPercent.Should().Be(OOCAllowance.DefaultPenaltyPercentPerMessage);
-        settings.RoleplayXPOOCTerms.Should().BeSameAs(RoleplayMessageClassifier.DefaultOOCTerms);
+        settings.RoleplayXPOOCDetectionFile.Should().Be(OOCDetectionLoader.DefaultFilePath);
     }
 
     [Test]
@@ -450,9 +450,144 @@ public class RoleplayXPOOCPenaltyTests
         settings.RoleplayXPEventAreaOOCAllowance.Should().BeNull();
     }
 
+    [Test]
+    public void OOCMessageScorer_FeaturesMatchTheTrainingTool()
+    {
+        var fixturePath = Path.Combine(
+            FindRepositoryRoot().FullName, "SWLOR.Game.Server.Tests", "Fixtures", "RoleplayXP", "ooc-feature-parity.json");
+        var cases = Newtonsoft.Json.JsonConvert.DeserializeObject<List<FeatureParityCase>>(File.ReadAllText(fixturePath));
+
+        cases.Should().NotBeEmpty();
+        foreach (var parityCase in cases)
+        {
+            var emoteStyle = parityCase.Style == "n" ? EmoteStyle.Novel : EmoteStyle.Regular;
+
+            OOCMessageScorer.ExtractFeatures(parityCase.Message, emoteStyle)
+                .OrderBy(feature => feature, StringComparer.Ordinal)
+                .Should()
+                .Equal(parityCase.Features, $"features for \"{parityCase.Message}\" ({parityCase.Style}) must match tools/TrainRoleplayOOCModel.py");
+        }
+    }
+
+    [Test]
+    public void Classify_ScoredMessageAtOrAboveThreshold_IsOutOfCharacter()
+    {
+        var detection = ScoringModel(new Dictionary<string, double> { ["bias"] = -5, ["w:holoskip"] = 10 }, threshold: 0.5);
+
+        RoleplayMessageClassifier.Classify("the holoskip is here", detection, EmoteStyle.Novel)
+            .Should().Be(RoleplayMessageType.OutOfCharacter);
+        RoleplayMessageClassifier.Classify("the holonet is here", detection, EmoteStyle.Novel)
+            .Should().Be(RoleplayMessageType.InCharacter);
+        RoleplayMessageClassifier.Classify("\"The holoskip is here,\" she says.", detection, EmoteStyle.Novel)
+            .Should().Be(RoleplayMessageType.InCharacter, "quoted speech is not scored");
+    }
+
+    [Test]
+    public void Classify_Scoring_UsesThePlayersEmoteStyle()
+    {
+        var detection = ScoringModel(new Dictionary<string, double> { ["bias"] = -5, ["n:holoskip"] = 10 }, threshold: 0.5);
+
+        RoleplayMessageClassifier.Classify("the holoskip is here", detection, EmoteStyle.Novel)
+            .Should().Be(RoleplayMessageType.OutOfCharacter);
+        RoleplayMessageClassifier.Classify("the holoskip is here", detection, EmoteStyle.Regular)
+            .Should().Be(RoleplayMessageType.InCharacter);
+    }
+
+    [Test]
+    public void Classify_Scoring_DoesNotOverrideCommandsTypoCorrectionsOrShortMessages()
+    {
+        var detection = ScoringModel(new Dictionary<string, double> { ["bias"] = 10 }, threshold: 0.5);
+
+        RoleplayMessageClassifier.Classify("/emote sit", detection, EmoteStyle.Novel).Should().Be(RoleplayMessageType.ChatCommand);
+        RoleplayMessageClassifier.Classify("their*", detection, EmoteStyle.Novel).Should().Be(RoleplayMessageType.TypoCorrection);
+        RoleplayMessageClassifier.Classify("Hm.", detection, EmoteStyle.Novel).Should().Be(RoleplayMessageType.InCharacter);
+        RoleplayMessageClassifier.Classify("Hmm.", detection, EmoteStyle.Novel).Should().Be(RoleplayMessageType.OutOfCharacter);
+    }
+
+    [Test]
+    public void OOCMessageScorer_Score_IsTheLogisticOfTheMatchedWeights()
+    {
+        var weights = new Dictionary<string, double> { ["bias"] = -1.0, ["w:holoskip"] = 1.0, ["all_lower"] = 0.5 };
+
+        OOCMessageScorer.Score("holoskip", EmoteStyle.Novel, weights)
+            .Should().BeApproximately(1.0 / (1.0 + Math.Exp(-0.5)), 1e-9);
+    }
+
+    [Test]
+    public void OOCDetectionLoader_FromFile_UsesDefaultsForMissingFields()
+    {
+        var empty = OOCDetectionLoader.FromFile(new OOCDetectionFile());
+
+        empty.Terms.Should().BeSameAs(RoleplayMessageClassifier.DefaultOOCTerms);
+        empty.HasScoring.Should().BeFalse();
+        empty.Threshold.Should().Be(OOCDetectionModel.DefaultThreshold);
+        OOCDetectionLoader.FromFile(null).Should().BeSameAs(OOCDetectionModel.Default);
+
+        var custom = OOCDetectionLoader.FromFile(new OOCDetectionFile
+        {
+            Terms = new List<string> { " Holoskip ", "", ":]" },
+            Weights = new Dictionary<string, double> { ["bias"] = -2 },
+            Threshold = 3
+        });
+
+        custom.Terms.Should().BeEquivalentTo(new[] { "Holoskip", ":]" });
+        custom.Terms.Should().Contain("HOLOSKIP");
+        custom.HasScoring.Should().BeTrue();
+        custom.Threshold.Should().Be(1.0);
+    }
+
+    [Test]
+    public void OOCDetectionLoader_TryLoad_ReadsTheFileAndFallsBackWhenMissingOrInvalid()
+    {
+        var directory = Directory.CreateTempSubdirectory("rpxp-ooc-");
+        try
+        {
+            var valid = Path.Combine(directory.FullName, "valid.json");
+            File.WriteAllText(valid, "{\"threshold\":0.4,\"terms\":[\"holoskip\"],\"weights\":{\"bias\":-1.5}}");
+            var invalid = Path.Combine(directory.FullName, "invalid.json");
+            File.WriteAllText(invalid, "{ not json");
+
+            OOCDetectionLoader.TryLoad(valid, out var loaded, out var loadError).Should().BeTrue(loadError);
+            loaded.Threshold.Should().Be(0.4);
+            loaded.Terms.Should().BeEquivalentTo(new[] { "holoskip" });
+            loaded.Weights.Should().ContainKey("bias");
+
+            OOCDetectionLoader.TryLoad(Path.Combine(directory.FullName, "missing.json"), out var missing, out _).Should().BeFalse();
+            missing.Should().BeSameAs(OOCDetectionModel.Default);
+
+            OOCDetectionLoader.TryLoad(invalid, out var broken, out var brokenError).Should().BeFalse();
+            broken.Should().BeSameAs(OOCDetectionModel.Default);
+            brokenError.Should().Contain("could not be read");
+        }
+        finally
+        {
+            directory.Delete(recursive: true);
+        }
+    }
+
+    private sealed class FeatureParityCase
+    {
+        public string Message { get; set; }
+        public string Style { get; set; }
+        public List<string> Features { get; set; }
+    }
+
+    private static OOCDetectionModel ScoringModel(Dictionary<string, double> weights, double threshold)
+    {
+        return new OOCDetectionModel(RoleplayMessageClassifier.DefaultOOCTerms, weights, threshold);
+    }
+
     private static RoleplayMessageType Classify(string message)
     {
-        return RoleplayMessageClassifier.Classify(message, RoleplayMessageClassifier.DefaultOOCTerms);
+        return RoleplayMessageClassifier.Classify(message, OOCDetectionModel.Default, EmoteStyle.Novel);
+    }
+
+    private static RoleplayMessageType ClassifyWithTerms(string message, IReadOnlySet<string> terms)
+    {
+        return RoleplayMessageClassifier.Classify(
+            message,
+            new OOCDetectionModel(terms, new Dictionary<string, double>(), OOCDetectionModel.DefaultThreshold),
+            EmoteStyle.Novel);
     }
 
     private static void Record(RoleplayProgress progress, DateTime utcNow, OOCMessageContext context)

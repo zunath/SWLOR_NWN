@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server
         /// </summary>
         public int? RoleplayXPEventAreaOOCAllowance { get; }
         public int RoleplayXPOOCPenaltyPercent { get; }
-        public IReadOnlySet<string> RoleplayXPOOCTerms { get; }
+        public string RoleplayXPOOCDetectionFile { get; }
 
         private static ApplicationSettings _settings;
         public static ApplicationSettings Get()
@@ -75,8 +75,10 @@ namespace SWLOR.Game.Server
                 Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_EVENT_ALLOWANCE"), OOCAllowance.DefaultEventAreaAllowance);
             RoleplayXPOOCPenaltyPercent = Math.Min(100, ParseNonNegativeInt(
                 Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_PENALTY_PERCENT"), OOCAllowance.DefaultPenaltyPercentPerMessage));
-            RoleplayXPOOCTerms = ParseTermSet(Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_TERMS"))
-                                 ?? RoleplayMessageClassifier.DefaultOOCTerms;
+            var oocDetectionFile = Environment.GetEnvironmentVariable("SWLOR_RPXP_OOC_DETECTION_FILE");
+            RoleplayXPOOCDetectionFile = string.IsNullOrWhiteSpace(oocDetectionFile)
+                ? OOCDetectionLoader.DefaultFilePath
+                : oocDetectionFile.Trim();
 
             var environment = Environment.GetEnvironmentVariable("SWLOR_ENVIRONMENT")?.Trim().ToLower() ?? string.Empty;
             if (environment == "prod" || environment == "production")
@@ -136,21 +138,6 @@ namespace SWLOR.Game.Server
             return int.TryParse(normalized, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) && parsed >= 0
                 ? parsed
                 : defaultValue;
-        }
-
-        /// <summary>
-        /// Parses a comma-separated list into a case-insensitive set. Returns null when the
-        /// value is blank so the caller's default applies.
-        /// </summary>
-        private static IReadOnlySet<string> ParseTermSet(string value)
-        {
-            var terms = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var term in (value ?? string.Empty).Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-            {
-                terms.Add(term);
-            }
-
-            return terms.Count > 0 ? terms : null;
         }
 
         private static float ParseFloat(string value, float defaultValue)

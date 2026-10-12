@@ -29,8 +29,6 @@ namespace SWLOR.Game.Server.Native
         private const int ImprovedPowerAttackMode = 3;
         private const int AttributeNegativeThreshold = 128;
         private const int AttributeNegativeOffset = 256;
-        private const int MaxValidDamageType = (int)CombatDamageType.Sonic;
-        private const int MinValidDamageType = 1;
 
         internal delegate int GetDamageRollHook(void* thisPtr, void* pTarget, int bOffHand, int bCritical, int bSneakAttack, int bDeathAttack, int bForceMax);
         // ReSharper disable once NotAccessedField.Local
@@ -355,15 +353,7 @@ namespace SWLOR.Game.Server.Native
 
         private static CombatDamageType ResolveWeaponDamageType(CombatDamageType current, int damageTypeId)
         {
-            if (damageTypeId > MaxValidDamageType || damageTypeId < MinValidDamageType)
-                return current;
-
-            // Only elements retype weapon damage; Force conversion belongs to Imbuement Stance.
-            var candidate = (CombatDamageType)damageTypeId;
-            if (!candidate.IsElementalDamageType() || current.IsElementalDamageType())
-                return current;
-
-            return candidate;
+            return WeaponDamage.ResolveDamageType(current, damageTypeId);
         }
 
         private static AbilityType GetWeaponDamageAbilityType(uint attacker, CNWSItem weapon)

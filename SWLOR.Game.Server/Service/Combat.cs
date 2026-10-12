@@ -11489,6 +11489,11 @@ namespace SWLOR.Game.Server.Service
                 : 0;
         }
 
+        public static CombatDamageType GetCombatImpactWeaponDamageType(uint activator, SkillType skillType)
+        {
+            return WeaponDamage.GetDamageType(GetCombatImpactWeapon(activator, skillType));
+        }
+
         private static uint GetCombatImpactWeapon(
             uint activator,
             SkillType skillType,

@@ -121,6 +121,8 @@ namespace SWLOR.Game.Server.Service
             trackedImpact.TriggeringWeaponDamage = GetIsObjectValid(triggeringWeapon)
                 ? WeaponDamage.GetEffectiveDMG(activator, triggeringWeapon)
                 : trackedImpact.TriggeringWeaponDamage;
+            if (GetIsObjectValid(triggeringWeapon))
+                trackedImpact.TriggeringWeaponDamageType = WeaponDamage.GetDamageType(triggeringWeapon);
             trackedImpact.ResolveDamageBonuses = () =>
             {
                 var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
@@ -174,7 +176,8 @@ namespace SWLOR.Game.Server.Service
             AbilityImpactSequence sequence = null,
             TrackedAbilityImpact sequenceOwner = null,
             bool resolveDamageBonusesFromOwner = false,
-            int? triggeringWeaponDamage = null)
+            int? triggeringWeaponDamage = null,
+            CombatDamageType? triggeringWeaponDamageType = null)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -194,7 +197,8 @@ namespace SWLOR.Game.Server.Service
                 SequenceOwner = sequenceOwner?.SequenceOwner ?? sequenceOwner,
                 TriggeringWeaponDamage = triggeringWeaponDamage ?? sequenceOwner?.TriggeringWeaponDamage ?? Combat.GetCombatImpactWeaponDamage(
                     activator, Combat.GetAbilitySkillType(activator, ability),
-                    ability.ActivationType == AbilityActivationType.Weapon && ability.SkillType == SkillType.BeastMastery)
+                    ability.ActivationType == AbilityActivationType.Weapon && ability.SkillType == SkillType.BeastMastery),
+                TriggeringWeaponDamageType = triggeringWeaponDamageType ?? sequenceOwner?.TriggeringWeaponDamageType
             };
             if (resolveDamageBonusesFromOwner && sequenceOwner != null)
             {
@@ -281,7 +285,8 @@ namespace SWLOR.Game.Server.Service
 
                 var previousImpact = GetTrackedAbilityImpact(activator);
                 BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence,
-                    triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage);
+                    triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage,
+                    triggeringWeaponDamageType: originatingImpact.TriggeringWeaponDamageType);
                 GetTrackedAbilityImpact(activator).CopyRepeatedDamageBonusesFrom(originatingImpact);
                 var completed = false;
                 try
@@ -330,7 +335,8 @@ namespace SWLOR.Game.Server.Service
                         {
                             BeginAbilityImpact(activator, originatingImpact.Ability, 0, 0,
                                 countsAsAttackAttempt: false, sequence: originatingImpact.Sequence,
-                                triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage);
+                                triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage,
+                                triggeringWeaponDamageType: originatingImpact.TriggeringWeaponDamageType);
                             batchImpact = GetTrackedAbilityImpact(activator);
                             batchImpact.CopyRepeatedDamageBonusesFrom(originatingImpact);
                         }
@@ -2496,6 +2502,27 @@ namespace SWLOR.Game.Server.Service
             return damage;
         }
 
+        /// <summary>
+        /// Weapon abilities authored as Physical deal the delivering weapon's damage type, matching auto-attacks.
+        /// </summary>
+        public static CombatDamageType GetWeaponAbilityDamageType(uint activator, SkillType skillType, CombatDamageType damageType)
+        {
+            return ResolveWeaponAbilityDamageType(activator, skillType, damageType, GetTrackedAbilityImpact(activator));
+        }
+
+        private static CombatDamageType ResolveWeaponAbilityDamageType(
+            uint activator,
+            SkillType skillType,
+            CombatDamageType damageType,
+            TrackedAbilityImpact trackedImpact)
+        {
+            if (damageType != CombatDamageType.Physical || !Combat.IsWeaponSkillType(skillType))
+                return damageType;
+
+            return trackedImpact?.TriggeringWeaponDamageType ??
+                   Combat.GetCombatImpactWeaponDamageType(activator, skillType);
+        }
+
         private static int ApplyHostileCombatImpact(
             uint activator,
             uint target,
@@ -2525,6 +2552,7 @@ namespace SWLOR.Game.Server.Service
         {
             using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
             var trackedImpact = GetTrackedAbilityImpact(activator);
+            damageType = ResolveWeaponAbilityDamageType(activator, skillType, damageType, trackedImpact);
             Combat.TrackHostileAbilityActivity(activator);
             Combat.TrackHostileDefensiveCombatEntryActivity(target, activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
@@ -3548,6 +3576,7 @@ namespace SWLOR.Game.Server.Service
             public AbilityDetail Ability { get; }
             public AbilityImpactVisualEffects VisualEffects { get; }
             public int? TriggeringWeaponDamage { get; set; }
+            public CombatDamageType? TriggeringWeaponDamageType { get; set; }
             // Delayed shapes share the original tracker until a rider actually needs cast state.
             public TrackedAbilityImpact SequenceOwner { get; set; }
             public AbilityImpactSequence Sequence => _sequence ??= SequenceOwner?.Sequence ?? new AbilityImpactSequence();

@@ -263,6 +263,38 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void WeaponAbilityDamage_UsesTheDeliveringWeaponDamageType()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+
+        var resolve = ExtractMethod(abilitySource, "private static CombatDamageType ResolveWeaponAbilityDamageType");
+        resolve.Should().Contain("damageType != CombatDamageType.Physical || !Combat.IsWeaponSkillType(skillType)",
+            "only Physical weapon-skill impacts take the weapon's type; authored Force and elemental types stay");
+        resolve.Should().Contain("trackedImpact?.TriggeringWeaponDamageType");
+        resolve.Should().Contain("Combat.GetCombatImpactWeaponDamageType(activator, skillType)");
+        abilitySource.Should().Contain("damageType = ResolveWeaponAbilityDamageType(activator, skillType, damageType, trackedImpact);");
+        abilitySource.Should().Contain("trackedImpact.TriggeringWeaponDamageType = WeaponDamage.GetDamageType(triggeringWeapon);");
+        abilitySource.Should().Contain("TriggeringWeaponDamageType = triggeringWeaponDamageType ?? sequenceOwner?.TriggeringWeaponDamageType");
+        ExtractMethod(combatSource, "public static CombatDamageType GetCombatImpactWeaponDamageType")
+            .Should().Contain("WeaponDamage.GetDamageType(GetCombatImpactWeapon(activator, skillType))",
+                "abilities read their type from the same weapon that supplies their DMG");
+    }
+
+    [TestCase(CombatDamageType.Physical, (int)CombatDamageType.Fire, CombatDamageType.Fire)]
+    [TestCase(CombatDamageType.Physical, (int)CombatDamageType.Force, CombatDamageType.Physical)]
+    [TestCase(CombatDamageType.Physical, (int)CombatDamageType.Thermal, CombatDamageType.Physical)]
+    [TestCase(CombatDamageType.Ice, (int)CombatDamageType.Fire, CombatDamageType.Ice)]
+    public void WeaponDamageResolveDamageType_MatchesNativeWeaponResolution(
+        CombatDamageType current,
+        int subtype,
+        CombatDamageType expected)
+    {
+        WeaponDamage.ResolveDamageType(current, subtype).Should().Be(expected);
+    }
+
+    [Test]
     public void QueuedWeaponDamage_UsesTheTriggeringItemAndPreservesReflectionWeaponSelection()
     {
         var root = FindRepositoryRoot();

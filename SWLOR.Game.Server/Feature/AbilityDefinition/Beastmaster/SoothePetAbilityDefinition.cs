@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         Enmity.ModifyEnmityOnAll(activator, 500);
                     }
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), beast);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+                    CombatPoint.AddSupportCombatPoint(activator, beast, SkillType.BeastMastery);
                 });
         }
         private static int CountNativeEffects(uint creature)

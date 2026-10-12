@@ -62,13 +62,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Jek Talin gave you the Anchorhead Canyon Range Key. Defeat six Last Word adepts in the Anchorhead Canyon Range on Tatooine and claim the Last Word Canyon Range Tally.")
+                    "Jek Talin gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed door in the Rocky Pass, a short walk south of where the trail from Anchorhead's Southern Entrance comes in. Defeat six Last Word adepts and claim the Last Word Canyon Range Tally.")
                 .AddKillObjective(NPCGroupType.Tatooine_LastWord_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastWordCanyonRangeTally)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You claimed the Last Word Canyon Range Tally. Deliver it to Jek Talin at the Anchorhead smuggler's den on Tatooine.")
+                    "You claimed the Last Word Canyon Range Tally. Deliver it to Jek Talin, by the west trail at Anchorhead - Southern Entrance on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -83,13 +83,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Last Word specialists in the Anchorhead Canyon Range on Tatooine and recover the Last Word Sightline Calibrator.")
+                    "Defeat five Last Word specialists deeper in the Anchorhead Canyon Range on Tatooine and recover the Last Word Sightline Calibrator.")
                 .AddKillObjective(NPCGroupType.Tatooine_LastWord_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastWordSightlineCalibrator)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Last Word Sightline Calibrator. Return it to Jek Talin at the Anchorhead smuggler's den on Tatooine.")
+                    "You recovered the Last Word Sightline Calibrator. Return it to Jek Talin, by the west trail at Anchorhead - Southern Entrance on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -104,13 +104,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Last Word warden in the Anchorhead Canyon Range on Tatooine and take the Last Word Shattered Range Crest.")
+                    "With at least two allies, defeat the Last Word warden at the trial altar in the middle of the Anchorhead Canyon Range on Tatooine and take the Last Word Shattered Range Crest.")
                 .AddKillObjective(NPCGroupType.Tatooine_LastWord_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastWordShatteredRangeCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You took the Last Word Shattered Range Crest from the warden. Bring it to Jek Talin at the Anchorhead smuggler's den on Tatooine.")
+                    "You took the Last Word Shattered Range Crest from the warden. Bring it to Jek Talin, by the west trail at Anchorhead - Southern Entrance on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Last Word Marshal's Challenge Chit. Return it to Jek Talin at the Anchorhead smuggler's den on Tatooine.")
+                    "You secured the Last Word Marshal's Challenge Chit. Return it to Jek Talin, by the west trail at Anchorhead - Southern Entrance on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -144,12 +144,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Last Word master at the marshal's overlook in the Anchorhead Canyon Range on Tatooine.")
+                    "With at least two allies, defeat the Last Word master in the Canyon Dueling Pit, through the door at the north end of the Anchorhead Canyon Range on Tatooine.")
                 .AddKillObjective(NPCGroupType.Tatooine_LastWord_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Word master is defeated. Report to Jek Talin at the Anchorhead smuggler's den on Tatooine.")
+                    "The Last Word master is defeated. Report to Jek Talin, by the west trail at Anchorhead - Southern Entrance on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -175,13 +175,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Pavo Orrel gave you the Anchorhead Canyon Range Key. Defeat six Dead Man's Hand adepts in the Anchorhead Canyon Range on Tatooine and claim the Dead Man's Hand Canyon Range Tally.")
+                    "Pavo Orrel gave you the Anchorhead Canyon Range Key. On Tatooine, enter the Anchorhead Canyon Range through the sealed door in the Rocky Pass, a short walk south of where the trail from Anchorhead's Southern Entrance comes in. Defeat six Dead Man's Hand adepts and claim the Dead Man's Hand Canyon Range Tally.")
                 .AddKillObjective(NPCGroupType.Tatooine_DeadMansHand_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDeadMansHandCanyonRangeTally)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You claimed the Dead Man's Hand Canyon Range Tally. Deliver it to Pavo Orrel at Club d'Ash in Anchorhead on Tatooine.")
+                    "You claimed the Dead Man's Hand Canyon Range Tally. Deliver it to Pavo Orrel in the cantina at Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
@@ -196,13 +196,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Dead Man's Hand specialists in the Anchorhead Canyon Range on Tatooine and recover the Dead Man's Hand Sightline Calibrator.")
+                    "Defeat five Dead Man's Hand specialists deeper in the Anchorhead Canyon Range on Tatooine and recover the Dead Man's Hand Sightline Calibrator.")
                 .AddKillObjective(NPCGroupType.Tatooine_DeadMansHand_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDeadMansHandSightlineCalibrator)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You recovered the Dead Man's Hand Sightline Calibrator. Return it to Pavo Orrel at Club d'Ash in Anchorhead on Tatooine.")
+                    "You recovered the Dead Man's Hand Sightline Calibrator. Return it to Pavo Orrel in the cantina at Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
@@ -217,13 +217,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Dead Man's Hand warden in the Anchorhead Canyon Range on Tatooine and take the Dead Man's Hand Shattered Range Crest.")
+                    "With at least two allies, defeat the Dead Man's Hand warden at the trial altar on the east side of the Anchorhead Canyon Range on Tatooine and take the Dead Man's Hand Shattered Range Crest.")
                 .AddKillObjective(NPCGroupType.Tatooine_DeadMansHand_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDeadMansHandShatteredRangeCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    "You took the Dead Man's Hand Shattered Range Crest from the warden. Bring it to Pavo Orrel at Club d'Ash in Anchorhead on Tatooine.")
+                    "You took the Dead Man's Hand Shattered Range Crest from the warden. Bring it to Pavo Orrel in the cantina at Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "You secured the Dead Man's Hand Marshal's Challenge Chit. Return it to Pavo Orrel at Club d'Ash in Anchorhead on Tatooine.")
+                    "You secured the Dead Man's Hand Marshal's Challenge Chit. Return it to Pavo Orrel in the cantina at Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
@@ -257,12 +257,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Dead Man's Hand master at the marshal's overlook in the Anchorhead Canyon Range on Tatooine.")
+                    "With at least two allies, defeat the Dead Man's Hand master in the Canyon Dueling Pit, through the door at the north end of the Anchorhead Canyon Range on Tatooine.")
                 .AddKillObjective(NPCGroupType.Tatooine_DeadMansHand_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Dead Man's Hand master is defeated. Report to Pavo Orrel at Club d'Ash in Anchorhead on Tatooine.")
+                    "The Dead Man's Hand master is defeated. Report to Pavo Orrel in the cantina at Anchorhead - Junix's Joint on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(shortName)
-                .Texture("iit_ess_040")
+                .Texture("iit_smshldrepair")
                 .Type(ShipModuleType.ShieldRepairer)
                 .CanTargetSelf()
                 .MaxDistance(20f)
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     Messaging.SendMessageNearbyToPlayers(
                         activator,
                         receiver => $"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} shield HP to {PlayerName.GetDisplayName(receiver, target)}'s ship.");
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
+                    CombatPoint.AddSupportCombatPoint(activator, target, SkillType.Piloting);
                 });
         }
     }

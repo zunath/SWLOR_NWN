@@ -35107,37 +35107,6 @@
                       "type": "word",
                       "value": 0
                     }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 134
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 1
-                    }
                   }
                 ]
               },
@@ -36532,37 +36501,6 @@
                     "Subtype": {
                       "type": "word",
                       "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 134
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 1
                     }
                   }
                 ]
@@ -55042,7 +54980,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Aric Jorr is a Republic engineering lieutenant tied to the Killzone Beacon capstone trials in Viscara Republic Engineering Bunker."
+            "0": "Aric Jorr is a human woman with close-cropped hair and the clipped, upright bearing of a Republic officer, oddly out of place on a Smuggler's Moon bench. A datapad of grid references rarely leaves her hand, and she studies the Corporate District crowd the way an engineer studies a fire plan. She is quietly looking for capable hands for work far from this moon."
           }
         },
         "Dex": {

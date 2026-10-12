@@ -14322,16 +14322,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A compact bracer threaded with tiny, faintly humming circuits."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A compact bracer threaded with tiny, faintly humming circuits."
                       }
                     },
                     "Identified": {
@@ -14343,7 +14342,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Quark Bracer"
@@ -14558,16 +14556,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A finely made bracer issued to elite sentinels."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A finely made bracer issued to elite sentinels."
                       }
                     },
                     "Identified": {
@@ -14579,7 +14576,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Sentinel Bracer"
@@ -22802,16 +22798,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -22823,7 +22818,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-001"
@@ -23038,16 +23032,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -23059,7 +23052,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-002"
@@ -27657,16 +27649,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -27678,7 +27669,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-003"
@@ -31617,16 +31607,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A reinforced forearm plate engineered to bolt onto a droid chassis, upgraded with improved shielding."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A reinforced forearm plate engineered to bolt onto a droid chassis, upgraded with improved shielding."
                       }
                     },
                     "Identified": {
@@ -31638,7 +31627,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-003 A"
@@ -56264,7 +56252,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -56352,7 +56340,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -56677,7 +56665,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -56765,7 +56753,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -57724,7 +57712,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -57812,7 +57800,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",

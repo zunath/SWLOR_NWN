@@ -122,6 +122,24 @@ public class CharacterSheetCombatUpgradeTests
     }
 
     [Test]
+    public void BeastWeaponAccuracy_ReadsTheClawSoSkinAccuracyCountsOnce()
+    {
+        var viewModel = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "CharacterSheetViewModel.cs"));
+        var refresh = ExtractMethod(viewModel, "private void RefreshEquipmentStats()");
+        var beastBranch = ExtractMethod(refresh, "if (BeastMastery.IsPlayerBeast(_target))");
+
+        beastBranch.Should().Contain("mainHand = GetItemInSlot(InventorySlot.CreatureLeft, _target);");
+        beastBranch.Should().NotContain("InventorySlot.CreatureArmor",
+            "Stat.GetAccuracy already adds the skin's Accuracy through the NPC stats");
+    }
+
+    [Test]
     public void ForceAccuracy_IgnoresWeaponStatOverrideButRetainsWeaponAccuracyBonus()
     {
         var applyItemProperty = typeof(Stat).GetMethod(

@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A vambrace built around a compact pulse generator that hums when braced for impact."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A vambrace built around a compact pulse generator that hums when braced for impact."
     }
   },
   "Identified": {
@@ -42,7 +41,6 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 48320,
     "type": "cexolocstring",
     "value": {
       "0": "Pulse Generator Vambrace"

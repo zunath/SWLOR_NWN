@@ -166,7 +166,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Pavo Orrel is a old gambler marksman tied to the Dead Man's Hand capstone trials in Anchorhead Canyon Range."
+      "0": "An old human man in a gambler's long coat lounges in the east booth of Junix's Joint, beside a green sofa, shuffling a worn deck one-handed over a round table. A heavy pistol sits loose at his hip, and his easy smile never quite reaches his eyes. He looks like a man who has dealt a great many hands and buried a few of the people who lost them."
     }
   },
   "Dex": {
@@ -364,7 +364,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 317
+    "value": 4183
   },
   "Race": {
     "type": "byte",

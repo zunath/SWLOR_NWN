@@ -63,7 +63,7 @@ public class NPCAbilityDefinitionTests
     public void NPCAbilities_AreDocumentedInBibleNpcAbilitiesTab()
     {
         var root = FindRepositoryRoot();
-        using var archive = ZipFile.OpenRead((root / "design" / "bible" / "SWLOR Design Bible - Combat Upgrade.xlsx").FullName);
+        using var archive = ZipFile.OpenRead((root / "design" / "bible" / "SWLOR Design Bible.xlsx").FullName);
         var worksheet = ReadWorksheetByName(archive, "NPC Abilities");
         var sharedStrings = ReadSharedStrings(archive);
         var documentedRows = ReadNpcAbilityBibleRows(worksheet, sharedStrings);
@@ -101,7 +101,8 @@ public class NPCAbilityDefinitionTests
             row.DamageResistance.Should().NotBeNullOrWhiteSpace();
             row.StatusEffect.Should().NotBeNullOrWhiteSpace();
             row.Duration.Should().NotBeNullOrWhiteSpace();
-            row.Notes.Should().NotBeNullOrWhiteSpace();
+            if (!row.DamageResistance.StartsWith("None /", StringComparison.Ordinal))
+                row.Notes.Should().StartWith("Base damage", "damaging abilities document their base damage");
 
             var detail = expectedAbility.Ability;
             row.Hostile.Should().Be(detail.IsHostileAbility ? "Yes" : "No");
@@ -295,6 +296,8 @@ public class NPCAbilityDefinitionTests
             [FeatType.StimCanister] = new("Stim Canister", RecastGroup.StimCanister, 24f, 6),
             [FeatType.BloodFrenzyFlurry] = new("Blood Frenzy Flurry", RecastGroup.BloodFrenzyFlurry, 20f, 6),
             [FeatType.ConcussiveChallenge] = new("Concussive Challenge", RecastGroup.ConcussiveChallenge, 24f, 5),
+            [FeatType.ChainLightning] = new("Chain Lightning", RecastGroup.ChainLightning, 22f, 6),
+            [FeatType.BloodSiphon] = new("Blood Siphon", RecastGroup.BloodSiphon, 16f, 4),
         };
     }
 
@@ -314,7 +317,9 @@ public class NPCAbilityDefinitionTests
             FeatType.RendingCarve,
             FeatType.StimCanister,
             FeatType.BloodFrenzyFlurry,
-            FeatType.ConcussiveChallenge
+            FeatType.ConcussiveChallenge,
+            FeatType.ChainLightning,
+            FeatType.BloodSiphon
         };
     }
 

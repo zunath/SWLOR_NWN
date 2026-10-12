@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -97,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
             var location = GetLocation(activator);
             const float Duration = 30f;
-            var affectedCount = 0;
+            var affected = new List<uint>();
 
             foreach (var hostile in AbilityTargeting.GetHostileTargetsNearLocation(activator, location, radius, 0))
             {
@@ -123,15 +124,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), hostile);
                 Ability.PlaySuccessfulImpactVisualEffect(activator, hostile);
-                affectedCount++;
+                affected.Add(hostile);
             }
 
-            if (affectedCount <= 0)
+            if (affected.Count <= 0)
                 return;
 
             Combat.ApplyHostileAbilityPartyBuff(activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability, 0, true);
             ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst), location);
+            var untagged = affected.Where(hostile => !CombatPoint.HasCombatPoints(activator, hostile)).ToList();
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
+            foreach (var hostile in untagged)
+                CombatPoint.AddCombatPoint(activator, hostile, SkillType.Leadership, 2);
         }
 
         private static int ScaleSocialPenalty(uint activator, int baseValue, int maximumValue)

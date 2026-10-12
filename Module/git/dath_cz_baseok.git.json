@@ -3226,7 +3226,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Voro Thane is a evasion beast tracker tied to the Untouchable Instinct capstone trials in Dathomir Grotto Apex Den."
+            "0": "A wiry, weathered man who stands so still among the Czerka crates that people walk past without noticing him. His boots are wrapped in soft hide to deaden his steps, and his eyes find every sound in the camp before anyone else turns a head. An empty beast collar hangs from his belt, worn smooth from handling."
           }
         },
         "Dex": {
@@ -4442,7 +4442,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Oren Krast is a scarred beast warden tied to the Unbreakable Beast capstone trials in Dathomir Tarn Jungle Preserve."
+            "0": "A broad, heavily scarred man with a rancor's bite mark running from shoulder to elbow, the arm somehow still whole. He stands among the Czerka barriers with his weight set, like a man braced for a charge that has not come yet. His leathers are patched over and over, and he does not seem to care how they look."
           }
         },
         "Dex": {

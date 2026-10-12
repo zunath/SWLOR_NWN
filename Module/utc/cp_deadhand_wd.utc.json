@@ -2,15 +2,15 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 103
+    "value": 110
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10002
+    "value": 6
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 248
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -18,71 +18,71 @@
   },
   "BodyPart_Belt": {
     "type": "byte",
-    "value": 106
+    "value": 0
   },
   "BodyPart_LBicep": {
     "type": "byte",
-    "value": 246
+    "value": 1
   },
   "BodyPart_LFArm": {
     "type": "byte",
-    "value": 19
+    "value": 1
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 248
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 198
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
-    "value": 7
+    "value": 0
   },
   "BodyPart_LThigh": {
     "type": "byte",
-    "value": 246
+    "value": 1
   },
   "BodyPart_Neck": {
     "type": "byte",
-    "value": 109
+    "value": 1
   },
   "BodyPart_Pelvis": {
     "type": "byte",
-    "value": 237
+    "value": 1
   },
   "BodyPart_RBicep": {
     "type": "byte",
-    "value": 246
+    "value": 1
   },
   "BodyPart_RFArm": {
     "type": "byte",
-    "value": 19
+    "value": 1
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 198
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 241
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
-    "value": 7
+    "value": 0
   },
   "BodyPart_RThigh": {
     "type": "byte",
-    "value": 246
+    "value": 1
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 249
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 63
+    "value": 7
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 117
+    "value": 0
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 4151
+    "value": 4883
   },
   "DecayTime": {
     "type": "dword",
@@ -169,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "shipcaptaingrm"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -389,7 +396,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 4043
+    "value": 4775
   },
   "Int": {
     "type": "byte",
@@ -423,7 +430,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 4151
+    "value": 4883
   },
   "NaturalAC": {
     "type": "byte",
@@ -451,11 +458,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 129
+    "value": 4148
   },
   "Race": {
     "type": "byte",
-    "value": 15
+    "value": 6
   },
   "refbonus": {
     "type": "short",
@@ -716,7 +723,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 448
+    "value": 413
   },
   "SpecAbilityList": {
     "type": "list",

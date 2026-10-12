@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Thirty seconds. That is how long the inner doors held while we carried the burn cases out. Jorra counted them aloud so the orderlies would not run. I still hear her at eleven... forgive me. You carry yourself like someone people follow, but this ward needs more than promise. When there is nothing left anyone can teach you about holding people steady, come and find me.",
+          "Text": "Thirty seconds. That is how long the inner doors held while we carried the burn cases out. Jorra counted them aloud so the orderlies would not run. I still hear her at the eleventh count... forgive me. You carry yourself like someone people follow, but my old ward needs more than promise. When there is nothing left anyone can teach you about holding people steady, come and find me.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then take the sublevel key. It opens the sealed service door beneath the medical facility on Dantooine - the one they think I forgot. Start in the triage hall; the adepts will find you before you find them. And walk in like you belong to the ward. You do, now.",
+          "Text": "Then take the sublevel key. Land at Colony Central on Dantooine, go north through the Wild Plains to the Medical Safehouse, then west through the Iriaz Fields and the Ruined Farmlands, and north through the Forsaken Jungles to the Jungle Mountain. The Abandoned Warehouse door is on the mountain's north-west side; the sealed way down is on its far west wall. Start in the triage hall. And walk in like you belong to the ward. You do, now.",
           "Style": 0,
           "Color": null
         }
@@ -515,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good. The junction rooms are past the triage hall, deeper in - follow the pipes and the cold. The specialists will not chase you. They will wait where the conduits meet and make you come to them. That patience is the lesson, if you live through it.",
+          "Text": "Good. The junctions are deeper in, past where the adepts stood - follow the pipes and the cold. The specialists will not chase you. They will wait where the conduits meet and make you come to them. That patience is the lesson, if you live through it.",
           "Style": 0,
           "Color": null
         }
@@ -562,7 +562,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That coupler is the heart valve of the Dantooine facility. Every drop of kolto that reaches my wards passes through it. They pulled it so no one could undo their rationing without coming to them on their knees. I do not kneel well anymore. Bring me the valve instead.",
+          "Text": "That coupler is the heart valve of the sublevel. Every drop of kolto that reaches my wards passes through it. They pulled it so no one could undo their rationing without coming to them on their knees. I do not kneel well anymore. Bring me the valve instead.",
           "Style": 0,
           "Color": null
         }
@@ -588,7 +588,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Cold, first - they shut the heat to the junction level. Then quiet. The specialists do not drill and do not shout. You will walk into a room that looks empty, and it will not be. If you bring anyone, keep them talking, and if you hear nothing back, you have found the enemy.",
+          "Text": "Cold, first - they shut the heat off around the junctions. Then quiet. The specialists do not drill and do not shout. You will walk into a room that looks empty, and it will not be. If you bring anyone, keep them talking, and if you hear nothing back, you have found the enemy.",
           "Style": 0,
           "Color": null
         }
@@ -635,7 +635,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The pressure gauges climbed an hour ago - I felt the pipes hum through the floor. That is the coupler in your pack, or I am no judge of plumbing. Give it here.",
+          "Text": "Word came from the colony an hour ago: the sublevel's pressure gauges are climbing. That is the coupler in your pack, or I am no judge of plumbing. Give it here.",
           "Style": 0,
           "Color": null
         }
@@ -661,7 +661,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Listen. That hiss in the walls is kolto moving where it should. Recovery gets full flow tonight for the first time in a season. You are not a stranger to this ward anymore - the night staff know your name, and I use it carefully. Be ready for what I ask next. It is the door I have been dreading.",
+          "Text": "Full pressure, the colony says - kolto moving where it should. Recovery gets full flow tonight for the first time in a season. You are not a stranger to this ward anymore - the night staff know your name, and I use it carefully. Be ready for what I ask next. It is the door I have been dreading.",
           "Style": 0,
           "Color": null
         }
@@ -682,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Now the part I have put off. The recovery ward below is sealed behind its own doors, and the one who holds them is their warden - the charge nurse I gave the night shift to, once. She has stood post so long the others believe the door cannot open while she lives. Perhaps they are right. So you will not go alone. Bring shoulders on both sides of yours, two at least, people you would trust with a stretcher in a corridor fire. Put the warden down and bring me the Fractured Ward Sigil she wears. It was the ward's seal of care before they made it a lock.",
+          "Text": "Now the part I have put off. The recovery ward at the heart of the sublevel is barred, and the one who holds it is their warden - Tavik, the Bothan charge nurse I gave the night shift to, once. He has stood post so long the others believe that ward cannot open while he lives. Perhaps they are right. So you will not go alone. Bring shoulders on both sides of yours, two at least, people you would trust with a stretcher in a corridor fire. Put the warden down and bring me the Fractured Ward Sigil he wears. It was the ward's seal of care before they made it a lock.",
           "Style": 0,
           "Color": null
         }
@@ -724,7 +724,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take whoever you bring past the junction level and down the recovery stair. She will meet you at the door - she will not hide, hiding is not in her. When it is done, do not linger over her. Take the sigil and come home.",
+          "Text": "Take whoever you bring to the heart of the sublevel, where the recovery beds were. He will meet you there - he will not hide, hiding is not in him. When it is done, do not linger over him. Take the sigil and come home.",
           "Style": 0,
           "Color": null
         }
@@ -745,7 +745,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Isa. I taught her that a door held is a life saved, and she learned it too well. When the doctrine curdled she was the first to stand post and the last who will ever leave it. If I went down there she would open the door for me - and then close it behind me forever. That is why it must be you.",
+          "Text": "Tavik. I taught him that a door held is a life saved, and he learned it too well. When the doctrine curdled he was the first to stand post and the last who will ever leave it. If I went down there he would open the door for me - and then close it behind me forever. That is why it must be you.",
           "Style": 0,
           "Color": null
         }
@@ -771,7 +771,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Because I have carried too many people out of stairwells who went in alone. A breach is not a duel. Someone holds her attention, someone watches the flank, someone is free to act when the moment turns. That is the arithmetic of a doorway, and it does not work with one. I never sent a lone orderly into a collapsing ward, and I will not start with you.",
+          "Text": "Because I have carried too many people out of stairwells who went in alone. A breach is not a duel. Someone holds his attention, someone watches the flank, someone is free to act when the moment turns. That is the arithmetic of a doorway, and it does not work with one. I never sent a lone orderly into a collapsing ward, and I will not start with you.",
           "Style": 0,
           "Color": null
         }
@@ -797,7 +797,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The sigil was cast when the Dantooine facility opened - the mark of the matron's ward, carried by whoever answered for every bed on the floor. It cracked the night everything went wrong down there, and Isa wears it fractured, like a wound she is proud of. Bring it to me. Broken things can be answered for. Worn like that, they only keep the wound open.",
+          "Text": "The sigil was cast when the sublevel opened - the mark of the matron's ward, carried by whoever answered for every bed on the floor. It cracked the night everything went wrong down there, and Tavik wears it fractured, like a wound he is proud of. Bring it to me. Broken things can be answered for. Worn like that, they only keep the wound open.",
           "Style": 0,
           "Color": null
         }
@@ -823,7 +823,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Isa still holds the recovery door, and I still want the sigil she wears. Do not go back down until there are shoulders on both sides of yours.",
+          "Text": "Tavik still holds the recovery ward, and I still want the sigil he wears. Do not go back down until there are shoulders on both sides of yours.",
           "Style": 0,
           "Color": null
         }
@@ -844,7 +844,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You came back up the stairs slower than you went down. I know what that weight is. Show me the sigil.",
+          "Text": "You walk slower than you did before you went down. I know what that weight is. Show me the sigil.",
           "Style": 0,
           "Color": null
         }
@@ -870,7 +870,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Fractured, but whole enough. I will have it recast when this is over - the crack can stay, as a record. You did what I could not, and you did it without making it cruel. The night staff lit a lamp for Isa. So did I. What is left below is the circle that taught her, and then the one who taught them all.",
+          "Text": "Fractured, but whole enough. I will have it cast again when this is over - the crack can stay, as a record. You did what I could not, and you did it without making it cruel. The night staff lit a lamp for Tavik. So did I. What is left below is the circle he answered to, and then the one who taught them all.",
           "Style": 0,
           "Color": null
         }
@@ -891,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four of them left, before the last door. They were my senior staff - the ones who sat with me when the ward charter was read, who knew every name I knew. They call themselves the inner circle now, and they hold the sublevel's deep wards as if patients were a siege. One of them carries the Matron's Ward Token. It was mine. You put it in the hand of whoever speaks for the ward when the matron cannot, and they took it to make their mutiny look like succession. Defeat all four and bring my token home.",
+          "Text": "Four of them left, before the last door. Two were my senior staff, who sat with me when the ward charter was read and knew every name I knew; the other two came up after my time. They call themselves the inner circle now. They have had implants fitted so they never sleep a shift away from their posts, and they hold what is left of the ward as if patients were a siege. One of them carries the Matron's Ward Token. It was mine, and they took it to make their mutiny look like succession. Defeat all four and bring my token home.",
           "Style": 0,
           "Color": null
         }
@@ -933,7 +933,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "They will not stand together - that was always their flaw. Each holds a deep ward and each believes theirs is the one that matters. Take your time, take your people, and take each room as its own night shift. The token will be with whichever of them still believes they are me.",
+          "Text": "They will not stand together - that was always their flaw. Each holds a corner of the ward and each believes theirs is the one that matters. Take your time, take your people, and take each of them as its own night shift. The token will be with whichever of them still believes they are me.",
           "Style": 0,
           "Color": null
         }
@@ -954,7 +954,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Veth ran supply and never once lost a crate. Amara kept the isolation ward gentle, which is the hardest gentleness there is. The other two came after my time, trained on the curdled doctrine from their first shift - I do not know their names, and that is its own grief. They will not fight like guards. They will fight like people defending the only thing they think they have left.",
+          "Text": "Veth ran supply and never once lost a crate. Orrin kept the isolation ward gentle, which is the hardest gentleness there is. The other two came after my time, trained on the curdled doctrine from their first shift - I do not know their names, and that is its own grief. All four carry more metal than skin now. They will not fight like guards. They will fight like men defending the only thing they think they have left.",
           "Style": 0,
           "Color": null
         }
@@ -1006,7 +1006,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The deep wards are a maze of privacy screens and dead lifts - sight lines of three beds at most. They will use that. Bring the same people who stood with you at Isa's door; rooms like those punish anyone who clears them alone, and I would rather you inherit my token than my regrets.",
+          "Text": "What is left of the ward is a maze of privacy screens and overturned beds - sight lines of three beds at most. They will use that. Bring the same people who stood with you at Tavik's door; a floor like that punishes anyone who clears it alone, and I would rather you inherit my token than my regrets.",
           "Style": 0,
           "Color": null
         }
@@ -1032,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four senior staff, four deep wards, and my token in one of their pockets. Finish it, and then we will talk about the last door.",
+          "Text": "Four of them still standing, and my token in one of their pockets. Finish it, and then we will talk about the last door.",
           "Style": 0,
           "Color": null
         }
@@ -1100,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The last door. Behind it is the one who wrote their doctrine - the master, though the staff only ever called him the Anchor. He held this sublevel through the outbreak year, longer than anyone believed a person could stand, and it saved every soul on the floor. Then the crisis ended and he refused to stop holding. Everything you have fought down there grew in his shadow, and what you have been learning, he perfected - the stand that does not break lives in him the way it will live in you. There is no relic to bring me this time. His stand ending is the proof. And hear me: his ward has yet to discharge anyone who went in without help. Do not walk in alone.",
+          "Text": "The last door, in the north-east corner, opens into the Protected Ward. Behind it is the one who wrote their doctrine - the master, an old Bothan the staff only ever called the Anchor. He held this sublevel through the outbreak year, longer than anyone believed a person could stand, and it saved every soul on the floor. Then the crisis ended and he refused to stop holding. Everything you have fought down there grew in his shadow. There is no relic to bring back. His stand ending is the proof. And hear me: his ward has yet to discharge anyone who went in without help. Do not walk in alone.",
           "Style": 0,
           "Color": null
         }
@@ -1163,7 +1163,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He held the line for the wrong reason, in the end. Not for the patients - for the holding itself. Somewhere in the outbreak year the stand stopped being a means and became the man. That is the failure I have been vaccinating you against with every errand. The ledger, the kolto, Isa's door, my token: you hold for the names behind you. The moment you hold for your own legend, you are him.",
+          "Text": "He held the line for the wrong reason, in the end. Not for the patients - for the holding itself. Somewhere in the outbreak year the stand stopped being a means and became the man. That is the failure I have been vaccinating you against with every errand. The ledger, the kolto, Tavik's door, my token: you hold for the names behind you. The moment you hold for your own legend, you are him.",
           "Style": 0,
           "Color": null
         }
@@ -1189,7 +1189,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "When it is done, we open the sublevel. Sera's mother goes back to a real recovery bed. The deep wards get sunlight lamps, and the triage hall gets its desk back. And the doctrine gets taught again - properly, by someone who has carried it up and down those stairs. I had planned to say by me. We both know I mean by you.",
+          "Text": "When it is done, we open the sublevel. Sera's mother goes back to a real recovery bed. The far beds get sunlight lamps, and the triage hall gets its desk back. And the doctrine gets taught again - properly, by someone who has carried it up and down those stairs. I had planned to say by me. We both know I mean by you.",
           "Style": 0,
           "Color": null
         }
@@ -1241,7 +1241,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Anchor still holds the last ward, and every night he holds it is a night the sublevel stays a fortress. Gather your people. Finish his stand.",
+          "Text": "The Anchor still holds the Protected Ward, and every night he holds it is a night the sublevel stays a fortress. Gather your people. Finish his stand.",
           "Style": 0,
           "Color": null
         }
@@ -1288,7 +1288,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then it is over, and you were the one holding when it ended. Take the lesson with my witness: Hold the Line is yours now, the true stand, the one that keeps its feet because of the names behind it. The credits are for your people - spend them on whoever stood beside you. And when someone one day asks you how long a line can hold, tell them the truth. Thirty seconds. Then thirty more. For as long as someone you love is behind it.",
+          "Text": "Then it is over, and you were the one holding when it ended. Take the lesson with my witness: Hold the Line is yours now, the true stand, the one that keeps its feet because of the names behind it. The pay is for your people - spend it on whoever stood beside you. And when someone one day asks you how long a line can hold, tell them the truth. Thirty seconds. Then thirty more. For as long as someone you love is behind it.",
           "Style": 0,
           "Color": null
         }
@@ -1309,7 +1309,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The foreman's office in Smuggler's Moon's Shipping District gives me a desk and a steady stream of crews needing someone to keep them alive. I won't make a helper pass a garrison inspection. My old ward remains in the Dantooine Medical Sublevel on Dantooine. The key opens it; the ledger comes back to this office.",
+          "Text": "The foreman's shack in the Shipping District on Smuggler's Moon is sealed, so I work the street outside it. The dock crews come to me with their injuries and their quarrels, and I keep them alive and keep them working, the way I ran my ward. My old ward is the Dantooine Medical Sublevel, on Dantooine. The key opens it; what you recover comes back to me here.",
           "Style": 0,
           "Color": null
         }
@@ -1807,7 +1807,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "The sigil. She held until the very end.",
+        "Text": "The sigil. He held until the very end.",
         "Style": 4,
         "Color": null
       },
@@ -1837,7 +1837,7 @@
     "reply-00021": {
       "Id": "reply-00021",
       "Text": {
-        "Text": "Go over the deep wards again.",
+        "Text": "Tell me about the circle again.",
         "Style": 4,
         "Color": null
       },
@@ -1936,7 +1936,7 @@
     "reply-00025": {
       "Id": "reply-00025",
       "Text": {
-        "Text": "How will they defend the deep wards?",
+        "Text": "How will they defend the ward?",
         "Style": 4,
         "Color": null
       },

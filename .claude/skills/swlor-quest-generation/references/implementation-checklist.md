@@ -44,7 +44,7 @@ NPC group:
 - Use the next integer value.
 - For generated capstone groups, prefix the enum identifier with the planet from the line's `AreaGroup.PlanetType`, not `Capstone_`.
 - Set enemy `VarTable` `QUEST_NPC_GROUP_ID` to that integer in `Module/utc/<enemy>.utc.json` or the relevant placed creature.
-- For capstone or high-level signature enemies, update `Module/utc`, `Module/uti` stat skins/weapons, reusable NPC ability definition files under `SWLOR.Game.Server/Feature/AbilityDefinition/NPC`, feat/spell rows, TLK, gameplay icons, cooldown icon variants, and `design/bible/SWLOR Design Bible - Combat Upgrade.xlsx` together so reusable signature abilities, support packages, role/difficulty/type/modifier inputs, resistance adjustments, and runtime item properties stay aligned.
+- For capstone or high-level signature enemies, update `Module/utc`, `Module/uti` stat skins/weapons, reusable NPC ability definition files under `SWLOR.Game.Server/Feature/AbilityDefinition/NPC`, feat/spell rows, TLK, gameplay icons, cooldown icon variants, and `design/bible/SWLOR Design Bible.xlsx` together so reusable signature abilities, support packages, role/difficulty/type/modifier inputs, resistance adjustments, and runtime item properties stay aligned.
 - Keep capstone-tier NPC signature abilities on `RecastGroup.Capstone`; do not create or regenerate `CapstoneSignature`/`NPCSignature` recast groups for them.
 
 Dialogue:

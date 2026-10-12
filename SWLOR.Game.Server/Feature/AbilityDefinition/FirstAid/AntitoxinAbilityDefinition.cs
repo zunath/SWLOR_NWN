@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private static void Antitoxin1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 120f);
-            var applied = false;
+            var treated = new List<uint>();
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 StatusEffect.RemoveFirstStatusEffect(friendly, new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }, false);
@@ -62,10 +62,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
-                applied = true;
+                treated.Add(friendly);
             }
 
-            FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated);
         }
 
 

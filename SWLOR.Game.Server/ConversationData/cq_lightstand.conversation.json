@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The expedition leader is defeated and the withdrawal route is open. The survivors can leave with their records. You gave them that chance. We can now finish your instruction in Last Stand of the Light.",
+          "Text": "The expedition leader is dead, and the last of the crews walked out of the Depths with their records. You gave them that chance, and you left no one behind to do it. That is the whole of Last Stand of the Light. Sit with me. We can finish your instruction now.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I can only take someone who has mastered the Force discipline. Reach rank 50 before we discuss the work on Korriban.",
+          "Text": "You have courage, but your command of the Force is not yet where it must be. The Depths would take you, and the people I am trying to save would be left with one more body to step over. Keep training. Come back when the Force answers you without hesitation.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Keep your voice down. A looting expedition has occupied the crypt depths and attacked the survey crews. Their rear guard is cutting off the withdrawal route. Defeat 6 Crypt Raider enemies in the outer rite chambers of the Korriban Sith Crypt Depths. Recover the Last Stand of the Light Crypt Trial Tablet.",
+          "Text": "Keep your voice down. Raiders have taken the Korriban Sith Crypt Depths, the sealed tombs below the Sith Crypt, and they fell on the survey crews working there. I brought the first of the wounded out, but others are still trapped below, and the raiders' rear guard holds the way out. Put down six Crypt Raiders and bring me the Last Stand of the Light Crypt Trial Tablet they took from the tombs. It will tell me what they are after.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take the Korriban Sith Crypt Depths Key. Defeat 6 Crypt Raider enemies in the outer rite chambers of the Korriban Sith Crypt Depths. Recover the Last Stand of the Light Crypt Trial Tablet.",
+          "Text": "Then take this key. It opens the sealed passage at the north end of the Sith Crypt on Korriban. Six Crypt Raiders, and the tablet. If you find survivors, point them toward the way out before you go deeper.",
           "Style": 0,
           "Color": null
         }
@@ -327,7 +327,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Last Stand of the Light means keeping others alive when retreat becomes difficult. Clearing an escape route is worth more than dying impressively in it.",
+          "Text": "Last Stand of the Light is what the Jedi taught those who stayed behind so others could leave. You hold the line where retreat is hardest, and you measure victory by who walks out, not by who you strike down. An escape route kept open is worth more than any death, however brave.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The key opens the sealed entrance to the Korriban Sith Crypt Depths. Start in the outer rite chambers. I am arranging onward passage for the wounded from the Promenade on Smuggler's Moon. The raiders move their stolen relics between several chambers; their records will tell us which routes remain open.",
+          "Text": "Korriban. From the starport, go east into the Wastelands North and cross to the elevator on the north-east side of the wastes. It takes you down into the Sith Crypt; the sealed passage at the crypt's north end opens into the Depths. I stay because the wounded I brought out still need passage off Smuggler's Moon, and someone has to find pilots who will not sell them to the first Sith patrol that asks.",
           "Style": 0,
           "Color": null
         }
@@ -379,7 +379,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Armed relic thieves, led by a Force-trained expedition leader. They answer to their buyers, not the academy. They attacked the survey crews for refusing to hand over the tomb records.",
+          "Text": "Relic thieves. They answer to whoever pays for Sith artifacts, not to the academy and not to Malak. Most are hired muscle, Wookiee Crypt Raiders and Crypt Marauders who fight with staffs. Their captain is a Cathar, their hardest fighters are Wookiees too, and their leader has some training in the Force. They attacked the survey crews for refusing to hand over the tomb records.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 6 Crypt Raider enemies in the outer rite chambers of the Korriban Sith Crypt Depths. Recover the Last Stand of the Light Crypt Trial Tablet.",
+          "Text": "Six Crypt Raiders and the trial tablet. The passage is at the north end of the Sith Crypt on Korriban. The people below are still waiting.",
           "Style": 0,
           "Color": null
         }
@@ -452,7 +452,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The tablet identifies the stolen relics. Their handlers have moved deeper into the galleries.",
+          "Text": "These markings list the tombs they have already opened. They stripped what they could carry and moved their handlers deeper into the Depths. Rest. When you are ready, I will need you again.",
           "Style": 0,
           "Color": null
         }
@@ -473,7 +473,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The outer guards were only the beginning. The raiders are concentrating stolen relics farther down. Defeat 5 Crypt Marauder enemies in the narrow galleries of the Korriban Sith Crypt Depths. Recover the Last Stand of the Light Ritual Focus Shard.",
+          "Text": "The raiders are pulling deeper and taking the relics with them. Their Crypt Marauders carry the Last Stand of the Light Ritual Focus Shard, a relic they use to draw on the Force without understanding it. Put down five Crypt Marauders and bring the shard back to me before they learn what it can really do.",
           "Style": 0,
           "Color": null
         }
@@ -515,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 5 Crypt Marauder enemies in the narrow galleries of the Korriban Sith Crypt Depths. Recover the Last Stand of the Light Ritual Focus Shard.",
+          "Text": "Five Crypt Marauders, and the focus shard. They move through the Depths in small bands. Find them before they find the crews.",
           "Style": 0,
           "Color": null
         }
@@ -536,7 +536,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Last Stand of the Light Ritual Focus Shard was taken from a sealed relic chamber. Recovering it denies the raiders a focus for their stolen techniques.",
+          "Text": "It was taken from a sealed relic chamber. In the wrong hands it lends strength to whoever holds it, and the raiders have been using it to break tomb seals. Without it, they are thieves with staffs and nothing more.",
           "Style": 0,
           "Color": null
         }
@@ -562,7 +562,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Continue from the outer chambers into the narrow galleries. They keep the shard near their supplies so they can defend both.",
+          "Text": "They keep no single camp. The Marauders roam the Depths in small bands, and one of them always carries the shard. Search the passages and it will turn up.",
           "Style": 0,
           "Color": null
         }
@@ -588,7 +588,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "These fighters support each other. Interrupt the one using the relic while your companions keep the others occupied.",
+          "Text": "They fight in pairs and cover each other. Do not let them draw you away from your own way out. Break one, then the next, and never fight with your back to an open passage.",
           "Style": 0,
           "Color": null
         }
@@ -614,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 5 Crypt Marauder enemies in the narrow galleries of the Korriban Sith Crypt Depths. Recover the Last Stand of the Light Ritual Focus Shard.",
+          "Text": "Five Crypt Marauders and the focus shard, somewhere in the Korriban Sith Crypt Depths. Every hour they hold it, another seal breaks.",
           "Style": 0,
           "Color": null
         }
@@ -635,7 +635,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You brought the Last Stand of the Light Ritual Focus Shard. Hand it over and we can finish this part.",
+          "Text": "You brought the Last Stand of the Light Ritual Focus Shard. Hand it to me, carefully.",
           "Style": 0,
           "Color": null
         }
@@ -661,7 +661,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The focus shard is secure. We can now work on the sealed gate.",
+          "Text": "It has gone quiet in my hand. Good. Without it, the raiders will have to break the next seal the hard way, and that means their captain.",
           "Style": 0,
           "Color": null
         }
@@ -682,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The raiders have fortified the breach to protect their excavation. Defeat 1 Crypt Breach Captain in the deep tomb breach of the Korriban Sith Crypt Depths. Recover the Last Stand of the Light Splintered Tomb Sigil. Bring at least two allies.",
+          "Text": "Their captain, a Cathar they call the Crypt Breach Captain, holds the trial altar on the west side of the Depths. He broke the Last Stand of the Light Splintered Tomb Sigil off a sealed tomb and wears it like a trophy. Stand at that altar and he will come to you. Do not go alone. Bring at least two allies you trust, and bring me the sigil.",
           "Style": 0,
           "Color": null
         }
@@ -724,7 +724,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 1 Crypt Breach Captain in the deep tomb breach of the Korriban Sith Crypt Depths. Recover the Last Stand of the Light Splintered Tomb Sigil. Bring at least two allies.",
+          "Text": "Then find your two. The altar is on the west side of the Korriban Sith Crypt Depths. When the captain falls, take the sigil, and see that all three of you come back.",
           "Style": 0,
           "Color": null
         }
@@ -745,7 +745,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Crypt Breach Captain is the expedition's enforcer at the breach. The raiders put their strongest fighter there to hold off the survey crews.",
+          "Text": "A Cathar mercenary, the best fighter they have. They put him at the altar to hold off the survey crews, and it worked; three of them did not come back. He will not give ground, and he does not stop when he is hurt.",
           "Style": 0,
           "Color": null
         }
@@ -771,7 +771,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The sigil was broken off a sealed tomb entrance. It will identify which chamber they forced and what still needs to be secured.",
+          "Text": "It was broken off a sealed tomb entrance. The markings will tell me which tomb they forced and what they took from it. The crews need that before they can seal the rest.",
           "Style": 0,
           "Color": null
         }
@@ -797,7 +797,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Bring two allies. One opponent is easy to pin against that doorway; a coordinated group can split the pressure and carry an injured companion out.",
+          "Text": "Because one fighter alone at that altar is easy to pin and easy to finish. Three can split his attention, cover each other, and carry out anyone who falls. That is the heart of this discipline: no one is left behind.",
           "Style": 0,
           "Color": null
         }
@@ -823,7 +823,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 1 Crypt Breach Captain in the deep tomb breach of the Korriban Sith Crypt Depths. Recover the Last Stand of the Light Splintered Tomb Sigil. Bring at least two allies.",
+          "Text": "The captain still holds the altar on the west side of the Depths. Bring two allies, and bring back the sigil.",
           "Style": 0,
           "Color": null
         }
@@ -844,7 +844,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You brought the Last Stand of the Light Splintered Tomb Sigil. Hand it over and we can finish this part.",
+          "Text": "You brought the Last Stand of the Light Splintered Tomb Sigil, and you came back on your own feet. Let me see it.",
           "Style": 0,
           "Color": null
         }
@@ -870,7 +870,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The gate is clear. The sigil will let us identify the remaining control seals.",
+          "Text": "Here is the tomb they forced, and here are the ones they have not reached yet. With the captain gone, the crews can start sealing them again.",
           "Style": 0,
           "Color": null
         }
@@ -891,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The breach is clear. Four senior raiders still control access to the sealed relic chambers. Defeat 4 Crypt Reaver enemies in the keeper chambers of the Korriban Sith Crypt Depths. Recover the Last Stand of the Light Keeper's Rite Token.",
+          "Text": "With their captain dead, the raiders' strongest have stepped up. Four Wookiees they call Crypt Reavers now guard the way to the last sealed vaults, and between them they carry the Last Stand of the Light Keeper's Rite Token, an old keeper's mark that opens those vaults. Put down four Crypt Reavers and bring me the token.",
           "Style": 0,
           "Color": null
         }
@@ -933,7 +933,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 4 Crypt Reaver enemies in the keeper chambers of the Korriban Sith Crypt Depths. Recover the Last Stand of the Light Keeper's Rite Token.",
+          "Text": "Four Crypt Reavers and the token. They range through the Depths on their own. Take them one at a time, and do not let them gather.",
           "Style": 0,
           "Color": null
         }
@@ -954,7 +954,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The four senior raiders control the expedition's access to the remaining relics. They are guarding stolen property and their own escape route.",
+          "Text": "Wookiees, bought by the expedition for their strength or held to it by debt. Whatever brought them here, they will tear apart anyone who stands between their leader and his relics. Do not hesitate with them. They will not hesitate with you.",
           "Style": 0,
           "Color": null
         }
@@ -980,7 +980,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Last Stand of the Light Keeper's Rite Token was stolen from the tomb custodians. Recovering it will let the custodians secure the next seal.",
+          "Text": "The old keepers of these tombs carried it. It opens the deepest vaults. While the raiders hold it, nothing below is safe; once we have it, the crews can seal those vaults for good.",
           "Style": 0,
           "Color": null
         }
@@ -1006,7 +1006,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Do not let all four focus on one fighter. Separate their positions and keep watch on the gallery behind you.",
+          "Text": "Never let more than one of them reach you at a time. Pick your ground, keep your allies close, and watch the passage behind you. A Wookiee in a narrow tunnel is a wall that hits back.",
           "Style": 0,
           "Color": null
         }
@@ -1032,7 +1032,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 4 Crypt Reaver enemies in the keeper chambers of the Korriban Sith Crypt Depths. Recover the Last Stand of the Light Keeper's Rite Token.",
+          "Text": "Four Crypt Reavers and the Keeper's Rite Token. They are still somewhere in the Korriban Sith Crypt Depths.",
           "Style": 0,
           "Color": null
         }
@@ -1053,7 +1053,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You brought the Last Stand of the Light Keeper's Rite Token. Hand it over and we can finish this part.",
+          "Text": "You brought the Last Stand of the Light Keeper's Rite Token. Let me see it.",
           "Style": 0,
           "Color": null
         }
@@ -1079,7 +1079,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The token is secure. There is one final chamber to clear.",
+          "Text": "The token is safe, and the vaults will stay closed. Only their leader is left, and he knows it.",
           "Style": 0,
           "Color": null
         }
@@ -1100,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their leader is preparing the last shipment from the lowest chamber. Stop the expedition before it can regroup. Defeat 1 Crypt Expedition Leader in the lowest burial chamber of the Korriban Sith Crypt Depths. Bring at least two allies.",
+          "Text": "Their leader, the Crypt Expedition Leader, has pulled back into the Final Ritual Chamber, through the door at the north end of the Depths. He is a Cathar with some training in the Force, and he is gathering the last of the stolen relics to leave. Stop him before he does. Bring at least two allies. This is the last chamber.",
           "Style": 0,
           "Color": null
         }
@@ -1142,7 +1142,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 1 Crypt Expedition Leader in the lowest burial chamber of the Korriban Sith Crypt Depths. Bring at least two allies.",
+          "Text": "Then go together, and come back together. The Final Ritual Chamber is through the north door of the Korriban Sith Crypt Depths. I will be here when you return.",
           "Style": 0,
           "Color": null
         }
@@ -1163,7 +1163,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Crypt Expedition Leader is a living Force-trained relic thief. He controls the expedition from the deepest chamber. Break his hold there and the surviving crews can withdraw.",
+          "Text": "The expedition leader himself, with the best of what they stole gathered around him. Break his hold there, and the surviving crews can finally walk out.",
           "Style": 0,
           "Color": null
         }
@@ -1189,7 +1189,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The stolen relics support the leader's technique. Watch the timing, cover one another, and interrupt the attacks that would cut off your retreat.",
+          "Text": "He draws on the stolen relics and on the darkness of that place. He will try to cut you off from one another and finish whoever stands alone. Stay close, cover each other, and keep a way out open behind you.",
           "Style": 0,
           "Color": null
         }
@@ -1215,7 +1215,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I am arranging onward passage for the wounded from the Promenade on Smuggler's Moon. The raiders move their stolen relics between several chambers; their records will tell us which routes remain open. When you return, the recovered records will let us account for what they stole.",
+          "Text": "The crews finish their withdrawal, and I see the last of the wounded off Smuggler's Moon. The records you recovered will tell us what was stolen and who bought it. After that, we finish your instruction.",
           "Style": 0,
           "Color": null
         }
@@ -1241,7 +1241,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Defeat 1 Crypt Expedition Leader in the lowest burial chamber of the Korriban Sith Crypt Depths. Bring at least two allies.",
+          "Text": "The Crypt Expedition Leader is in the Final Ritual Chamber, at the north end of the Depths. Take your allies.",
           "Style": 0,
           "Color": null
         }
@@ -1288,7 +1288,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The expedition leader is defeated and the withdrawal route is open. The survivors can leave with their records. You gave them that chance. We can now finish your instruction in Last Stand of the Light.",
+          "Text": "The expedition leader is dead, and the last of the crews walked out of the Depths with their records. You gave them that chance, and you left no one behind to do it. That is the whole of Last Stand of the Light. Sit with me. We can finish your instruction now.",
           "Style": 0,
           "Color": null
         }
@@ -1309,7 +1309,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Promenade on Smuggler's Moon lets me meet rescuers without sending them through an academy checkpoint. I judge what you do for the crews, not whose colors you wear. The work is still in the Korriban Sith Crypt Depths on Korriban; take the key there, then bring your findings back to me here.",
+          "Text": "The Promenade on Smuggler's Moon lets me meet rescuers without sending them through an academy checkpoint, and the wounded can find ships here that ask no questions. I judge what you do for the crews, not whose colors you wear. The work is in the Korriban Sith Crypt Depths on Korriban. Take the key there, then bring your findings back to me here.",
           "Style": 0,
           "Color": null
         }
@@ -1350,7 +1350,7 @@
     "reply-00001": {
       "Id": "reply-00001",
       "Text": {
-        "Text": "I will clear the outer chambers.",
+        "Text": "I'll go down and bring back the tablet.",
         "Style": 4,
         "Color": null
       },
@@ -1667,7 +1667,7 @@
     "reply-00014": {
       "Id": "reply-00014",
       "Text": {
-        "Text": "Explain the gate assignment again.",
+        "Text": "Go over the captain again.",
         "Style": 4,
         "Color": null
       },
@@ -1690,7 +1690,7 @@
     "reply-00015": {
       "Id": "reply-00015",
       "Text": {
-        "Text": "I will bring two allies and clear the breach.",
+        "Text": "I'll bring two allies and take the sigil.",
         "Style": 4,
         "Color": null
       },
@@ -1720,7 +1720,7 @@
     "reply-00016": {
       "Id": "reply-00016",
       "Text": {
-        "Text": "What guards the gate?",
+        "Text": "Who is the captain?",
         "Style": 4,
         "Color": null
       },
@@ -1807,7 +1807,7 @@
     "reply-00020": {
       "Id": "reply-00020",
       "Text": {
-        "Text": "The gate is clear. Here is the sigil.",
+        "Text": "The captain is dead. Here is the sigil.",
         "Style": 4,
         "Color": null
       },
@@ -1837,7 +1837,7 @@
     "reply-00021": {
       "Id": "reply-00021",
       "Text": {
-        "Text": "Go over the four targets again.",
+        "Text": "Go over the four Reavers again.",
         "Style": 4,
         "Color": null
       },
@@ -1860,7 +1860,7 @@
     "reply-00022": {
       "Id": "reply-00022",
       "Text": {
-        "Text": "I will stop the four senior raiders.",
+        "Text": "I'll stop the four Crypt Reavers.",
         "Style": 4,
         "Color": null
       },
@@ -1890,7 +1890,7 @@
     "reply-00023": {
       "Id": "reply-00023",
       "Text": {
-        "Text": "Who are the four targets?",
+        "Text": "Who are these Reavers?",
         "Style": 4,
         "Color": null
       },

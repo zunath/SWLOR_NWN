@@ -89006,7 +89006,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A medication cart stands in the south-west wing, its drawers forced open and its vials mixed into something that should never be injected. Its keeper is close by."
           }
         },
         "DisarmDC": {
@@ -89373,7 +89373,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A triage barricade of gurneys and supply crates holds the heart of the sublevel. The warden who built it has not given up an inch."
           }
         },
         "DisarmDC": {
@@ -89740,7 +89740,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A bloodstained altar has been built from medical equipment in the north of the sublevel, wired with conduit cable. Something here still hums with stolen strength."
           }
         },
         "DisarmDC": {

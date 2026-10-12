@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(shortName)
                 .Type(ShipModuleType.BeamLaser)
-                .Texture("iit_ess_017")
+                .Texture("iit_smbeamcann")
                 .Description(description)
                 .MaxDistance(20f)
                 .ValidTargetType(ObjectType.Creature)
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                 defense,
                                 defenderStat,
                                 0);
-                            if (!GetIsDead(activator))
+                            if (Space.CanShipFire(activator))
                             {
                                 if (isHit)
                                 {

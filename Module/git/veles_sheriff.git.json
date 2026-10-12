@@ -50643,37 +50643,6 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 134
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 1
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
                       "value": 34
                     },
                     "CostValue": {
@@ -54288,7 +54257,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Captain Tov Renn is a hardened militia captain tied to the Invincible capstone trials in Veles Militia Annex."
+            "0": "Captain Tov Renn is a hard-faced militia officer who stands as if she is still on parade, a vibroblade at her hip and a battered drill ledger tucked under one arm. Her eyes go to a stranger's feet and grip before they reach the face. She keeps her post in the Veles Sheriff's Office, a short walk from the sealed door of the annex she once commanded."
           }
         },
         "Dex": {
@@ -54736,7 +54705,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 300
+          "value": 4098
         },
         "Race": {
           "type": "byte",
@@ -101032,7 +101001,7 @@
         },
         "X": {
           "type": "float",
-          "value": 30.0
+          "value": 30.299999237060547
         },
         "Y": {
           "type": "float",

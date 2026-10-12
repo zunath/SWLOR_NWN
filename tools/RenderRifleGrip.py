@@ -112,11 +112,11 @@ def main():
     from mathutils import Matrix, Quaternion, Vector
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source',type=Path,required=True)
-    parser.add_argument('--animation',type=Path,required=True,help='ASCII a_ba_med_weap rifle animation reference')
+    parser.add_argument('--animation',type=Path,required=True,help='ASCII model holding the pose: a_ba_non_combat for xbowr, a_ba for xbowrdy/xbowshot')
     parser.add_argument('--hand',type=Path,required=True)
     parser.add_argument('--skeleton',type=Path,help='ASCII pmh0 skeleton for both-hand review')
     parser.add_argument('--left-hand',type=Path,help='ASCII pmh0_handl001; requires --skeleton')
-    parser.add_argument('--pose',default='xbowrdy',choices=('xbowrdy','xbowshot'))
+    parser.add_argument('--pose',default='xbowr',choices=('xbowr','xbowrdy','xbowshot'))
     parser.add_argument('--fit',type=Path)
     parser.add_argument('--output',type=Path,required=True)
     args=parser.parse_args(sys.argv[sys.argv.index('--')+1:])

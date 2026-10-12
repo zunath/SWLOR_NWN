@@ -87,8 +87,8 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Dune Desert",
-      "2": "Tatooine - Dune Desert"
+      "0": "[Prefab] Tatooine - Dune Desert",
+      "2": "[Prefab] Tatooine - Dune Desert"
     }
   },
   "NoRest": {

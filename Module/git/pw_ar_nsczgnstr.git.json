@@ -178,7 +178,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "nima_poy"
+          "value": "talia_brenn"
         },
         "CRAdjust": {
           "type": "int",
@@ -563,7 +563,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Nima"
+            "0": "Talia"
           }
         },
         "fortbonus": {
@@ -601,7 +601,7 @@
         "LastName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Poy"
+            "0": "Brenn"
           }
         },
         "LawfulChaotic": {
@@ -923,7 +923,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "nima_poy"
+          "value": "talia_brenn"
         },
         "Tail_New": {
           "type": "dword",
@@ -939,23 +939,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "STORE_TAG"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VELES_GENERAL_STORE_MERCHANT"
-              }
-            }
-          ]
+          "value": []
         },
         "WalkRate": {
           "type": "int",
@@ -6254,7 +6238,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Ressa Vale is a Czerka range controller tied to the Kill Box capstone trials in Czerka Arms Test Range."
+            "0": "A sharp-featured human woman in a pressed Czerka jacket, a datapad tucked under one arm and a slim rifle slung across her back. She stands among the store's locked cases as if she owns each one, and on paper she nearly does. Her eyes measure every customer like a line item on an invoice."
           }
         },
         "Dex": {
@@ -6706,7 +6690,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 318
+          "value": 4099
         },
         "Race": {
           "type": "byte",
@@ -71217,7 +71201,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine General Store"
+            "0": "Smuggler's Moon General Store"
           }
         },
         "MarkDown": {
@@ -75383,16 +75367,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A dark bracer etched with the image of a sun swallowed by shadow."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A dark bracer etched with the image of a sun swallowed by shadow."
                       }
                     },
                     "Identified": {
@@ -75404,7 +75387,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Eclipse Bracer"
@@ -90458,16 +90440,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -90479,7 +90460,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-001"
@@ -90694,16 +90674,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -90715,7 +90694,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-002"
@@ -90961,16 +90939,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -90982,7 +90959,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-003"
@@ -91228,16 +91204,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -91249,7 +91224,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-004"
@@ -91495,16 +91469,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -91516,7 +91489,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-005"
@@ -127403,7 +127375,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -127471,7 +127443,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -127816,7 +127788,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -127884,7 +127856,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -127977,7 +127949,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -128045,7 +128017,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -128138,7 +128110,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -128206,7 +128178,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -129344,7 +129316,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -129412,7 +129384,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -130309,7 +130281,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "TATOOINE_GENERAL_STORE_MERCHANT"
+          "value": "SMUGGLERS_MOON_GENERAL_STORE"
         },
         "WillNotBuy": {
           "type": "list",

@@ -15005,7 +15005,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A barricade of welded hull plate seals off the sheared bay, its seams scored by katar blades. Someone inside still answers a knock."
           }
         },
         "DisarmDC": {
@@ -15372,7 +15372,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "Lockdown placards are bolted across the sheared bay's entry, each one signed with the same override code. The warden behind them keeps the bay shut against all comers."
           }
         },
         "DisarmDC": {
@@ -15739,7 +15739,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A cracked apex totem stands wedged in the den floor. Fresh claw gouges circle the stone in a slow spiral."
+            "0": "A bent loading arm hangs over the sheared bay, its cable snapped. Staff-scarred dents in the deck plating show where its keeper meets challengers."
           }
         },
         "DisarmDC": {

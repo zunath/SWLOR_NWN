@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
@@ -52,15 +53,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visualEffect), target);
         }
 
-        public static void GrantCombatPoint(uint activator)
+        public static void GrantCombatPoint(uint activator, uint treated)
         {
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);
+            CombatPoint.AddSupportCombatPoint(activator, treated, SkillType.FirstAid);
         }
 
-        public static void GrantCombatPointIfApplied(uint activator, bool applied)
+        public static void GrantCombatPoint(uint activator, IReadOnlyCollection<uint> treated, ISet<uint> alreadyCredited = null)
         {
-            if (applied)
-                GrantCombatPoint(activator);
+            if (treated.Count > 0)
+                CombatPoint.AddSupportCombatPoint(activator, treated, SkillType.FirstAid, alreadyCredited: alreadyCredited);
         }
 
         public static float ApplyStimDurationBonus(uint source, float durationSeconds)

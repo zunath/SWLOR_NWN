@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then it's signed. Take the cavern key. Outer gate, six adepts, the Forcebane Forge Heat Ledger by the crucibles. Don't read it, don't sell it, bring it. And if a robe offers you a better arrangement down there, remember they're the reason this trade exists.",
+          "Text": "Then it's signed. Take the cavern key; it opens the sealed passage in the far corner of the Forgeworks. Six adepts, and the Forcebane Forge Heat Ledger by the crucibles. Don't read it, don't sell it, bring it. And if a robe offers you a better arrangement down there, remember they're the reason this trade exists.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Under the quarry ridge on Korriban, past the old Sith excavations. The Forge Caverns were sealed after the last dig went wrong; the smiths cut their own way back in. The key I'll hand you when you sign on opens the outer gate. Past that gate, every hammer you hear belongs to somebody who'd rather you didn't leave.",
+          "Text": "Korriban. From the starport, east into the Wastelands North, south through the Wastelands South, east into the Ravine and the Caverns, then up the Sith Fortress Approach to the Courtyard. The Forgeworks door is locked; the Sith Inquisitor who walks the Courtyard carries its key. The sealed passage is in the far north-east corner of the forge floor, near the transmat towers. The key I'll hand you opens it. Past that, every hammer you hear belongs to somebody who'd rather you didn't leave.",
           "Style": 0,
           "Color": null
         }
@@ -452,7 +452,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Look at these rosters. They're not training a class, they're training a market. Every name in here paid in Sith script. Clean work; the credits are yours. Rest the arm, you'll want it. This goes deeper.",
+          "Text": "Look at these rosters. They're not training a class, they're training a market. Every name in here paid in Sith scrip. Clean work; you've earned your pay. Rest the arm, you'll want it. This goes deeper.",
           "Style": 0,
           "Color": null
         }
@@ -515,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Good. The matrix will be racked at the tempering line, deep side of the forges. Pull it before the coals cool or the imprint fades and it's just an ugly box. Five specialists stand between. Make them a schedule, then keep it.",
+          "Text": "Good. The matrix sits at the tempering line, deeper in. Pull it while it's still seated and warm; cold, the imprint is harder to read. Five specialists stand between. Make them a schedule, then keep it.",
           "Style": 0,
           "Color": null
         }
@@ -562,7 +562,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "That's the question with a knife in it. Somebody who drilled under me is standing down there in better robes, drawing my forms on their chalkboards. The ledger's rosters were student handwriting. I trained maybe a dozen people who could teach this. The matrix will tell me which one turned.",
+          "Text": "That's the question with a knife in it. Somebody who hunted beside me is standing down there in Sith armor, drawing my forms on their chalkboards. Only a handful of people alive could teach this. The matrix will tell me which one turned.",
           "Style": 0,
           "Color": null
         }
@@ -614,7 +614,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Five specialists and a racked matrix, deep side of the tempering line. It doesn't walk to you.",
+          "Text": "Five specialists and the matrix, deep side of the tempering line. It doesn't walk to you.",
           "Style": 0,
           "Color": null
         }
@@ -661,7 +661,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "There it is. My angles, scored into a Sith quench-frame like scripture. I'll burn the imprint out tonight. You're not a stranger anymore, so hear this plain: what's past the tempering line doesn't fight fair, and I'm going to ask you to go there anyway.",
+          "Text": "There it is. My angles, scored into a Sith quench-frame like scripture, and I know the hand that scored them now. I'll burn the imprint out tonight. You're not a stranger anymore, so hear this plain: what's deeper in doesn't fight fair, and I'm going to ask you to go there anyway.",
           "Style": 0,
           "Color": null
         }
@@ -682,7 +682,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The deep forge has a warden. Big smith, wears a sigil struck from the first anvil, cracked the day the old dig went wrong. Every counter I ever taught, he's tempered into himself, plus whatever they pray to down there. Rule three: never duel a warden fairly. I hunted sorcerers for twenty years and never once alone. Bait, blade, and net. Three roles, three people. Bring two you'd trust with your spine, kill the warden, and bring me the Forcebane Cracked Anvil Sigil off his neck.",
+          "Text": "The caverns have a warden. Big smith, wears a sigil struck from the first anvil, cracked the day the old dig went wrong. He keeps the trial altar on the east side of the caverns. Rule three: never duel a warden fairly. I hunted sorcerers for thirty years and never once alone. Bait, blade, and net. Bring two you'd trust with your spine, kill the warden, and bring me the Forcebane Cracked Anvil Sigil off his neck.",
           "Style": 0,
           "Color": null
         }
@@ -724,7 +724,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then go recruit before you go hunting. I mean it. The last one who took the deep forge alone came back in a crate with his spear folded in half, and he was better than you are today. Warden dies, sigil comes home, all three of you walk out.",
+          "Text": "Then go recruit before you go hunting. I mean it. The last one who took that altar alone came back in a crate with his spear folded in half, and he was better than you are today. Warden dies, sigil comes home, all three of you walk out.",
           "Style": 0,
           "Color": null
         }
@@ -745,7 +745,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He was the first one the turncoat trained, and the best. The sigil says the deep forge answers to him: quench lines, apprentices, all of it. He's felt every form I teach coming since before you learned to hold a spear level. That's what different means. Nothing you do will surprise him. Do it anyway, in numbers.",
+          "Text": "He was the first one the turncoat trained, and the best. The sigil says the caverns answer to him: quench lines, apprentices, all of it. He's felt every form I teach coming since before you knew which end of a spear goes forward. Nothing you do will surprise him. Do it anyway, in numbers.",
           "Style": 0,
           "Color": null
         }
@@ -797,7 +797,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Past the tempering line the floor is slag channels and the light is whatever's burning. The warden likes it there because crowds don't follow. Be the crowd anyway. And if he offers to let your friends leave so long as you face him alone, that's not honor, that's him doing arithmetic too.",
+          "Text": "East side of the caverns, at the trial altar, with the forge light behind him. He likes it there because crowds don't follow. Be the crowd anyway. And if he offers to let your friends leave so long as you face him alone, that's not honor, that's him doing arithmetic too.",
           "Style": 0,
           "Color": null
         }
@@ -823,7 +823,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The warden still holds the deep forge, and that sigil still hangs on his neck. If you're waiting for him to age out of it, sit down, it'll be a while.",
+          "Text": "The warden still holds his altar on the east side, and that sigil still hangs on his neck. If you're waiting for him to age out of it, sit down, it'll be a while.",
           "Style": 0,
           "Color": null
         }
@@ -844,7 +844,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The hammering stopped two nights ago. The whole ridge noticed. That was you.",
+          "Text": "My watchers say the caverns went quiet. The whole Forgeworks noticed. That was you.",
           "Style": 0,
           "Color": null
         }
@@ -870,7 +870,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Ha. Look at it. Cracked, same as their whole enterprise should have been from the start. The deep forge is headless and the apprentices are already leaving, my watchers say. You and your two did what a company of Republic regulars wouldn't price. The circle that's left knows your name now. Good. Fear makes people sloppy.",
+          "Text": "Ha. Look at it. Cracked, same as their whole enterprise should have been from the start. The caverns are headless and the apprentices are already leaving, my watchers say. You and your two did what a company of Republic regulars wouldn't price. The circle that's left knows your name now. Good. Fear makes people sloppy.",
           "Style": 0,
           "Color": null
         }
@@ -954,7 +954,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Two smiths, a quartermaster, and a duelist who thinks she's my equal. All four drilled under the turncoat, which means all four drilled under me, once removed. They know my forms the way you know your own signature. So don't write your signature down there. Write something new.",
+          "Text": "Two smiths, a quartermaster, and a duelist who thinks he's my equal. All four drilled under the turncoat, which means all four drilled under me, once removed. They know my forms the way you know your own signature. So don't write your signature down there. Write something new.",
           "Style": 0,
           "Color": null
         }
@@ -1100,7 +1100,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "His name doesn't matter anymore. He traded it for a title. The master of that forge is the man I built this doctrine with. Thirty years of hunts, half my rules are his. Then he decided the counters were worth more sold than kept and turned the whole discipline inside out. He carries Forcebane the way you're trying to. The full weight of it, the guard that unmakes whatever touches it. And he knows the rule I'm about to give you, because he wrote it with me. Rule five: finish what you teach. Take your two, go to the heart of the forge, and put him down. No trophy this time. Him ended is the proof.",
+          "Text": "His name doesn't matter anymore; he traded it for a title. The master of that forge is the man I built this doctrine with. Thirty years of hunts, and half my rules are his. Then he decided the counters were worth more sold than kept. He knows the rule I'm about to give you, because he wrote it with me. Rule five: finish what you teach. He waits in the Champion Forge, through the door at the north end of the caverns. Take your two and put him down. Him ended is the proof.",
           "Style": 0,
           "Color": null
         }
@@ -1142,7 +1142,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then that's the last order I have in me. Heart of the forge, three of you, no duels. When it's done, come stand where you're standing now. I want to hear it plain, not through watchers.",
+          "Text": "Then that's the last order I have in me. The Champion Forge, three of you, no duels. When it's done, come back here to the Southern Entrance. I want to hear it plain, not through watchers.",
           "Style": 0,
           "Color": null
         }
@@ -1215,7 +1215,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The forge heart is his temple now. Heat that bends your sight, one bridge over the crucible, and him at the middle of it, patient as an anvil. Nobody walks off that bridge alone, so don't walk onto it alone. And he will talk. He talks better than I do. If your feet stop moving while he does, your friends are carrying you home.",
+          "Text": "His temple now. Furnaces along both walls, the great crucible at the far end, and him in the middle of it, patient as an anvil. Nobody walks out of there alone, so don't walk in alone. And he will talk. He talks better than I do. If your feet stop moving while he does, your friends are carrying you home.",
           "Style": 0,
           "Color": null
         }
@@ -1241,7 +1241,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He's still at the heart of the forge, and he knows the circle's gone. Men like him don't run. They set their feet and wait for the lesson to arrive. Go be the lesson.",
+          "Text": "He's still in the Champion Forge, and he knows the circle's gone. Men like him don't run. They set their feet and wait for the lesson to arrive. Go be the lesson.",
           "Style": 0,
           "Color": null
         }
@@ -1262,7 +1262,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The watchers went quiet, then came the smoke, then you, walking like a man with nothing left to prove. Say it anyway. I've earned hearing it.",
+          "Text": "The watchers went quiet, then came the smoke, then you, walking like someone with nothing left to prove. Say it anyway. I've earned hearing it.",
           "Style": 0,
           "Color": null
         }
@@ -1309,7 +1309,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Anchorhead's North District on Tatooine has room for a spear and no academy deciding who may learn its reach. Bring a willingness to practice; leave the uniform out of it. The people misusing my counters are in the Korriban Forge Caverns on Korriban. Their ledger comes back to me here.",
+          "Text": "Anchorhead's Southern Entrance on Tatooine has room for a spear and no academy deciding who may learn its reach. Bring a willingness to practice; leave the uniform out of it. The people misusing my counters are in the Korriban Forge Caverns on Korriban. Their ledger comes back to me here.",
           "Style": 0,
           "Color": null
         }
@@ -1766,7 +1766,7 @@
     "reply-00018": {
       "Id": "reply-00018",
       "Text": {
-        "Text": "What's it like past the tempering line?",
+        "Text": "What's it like where he waits?",
         "Style": 4,
         "Color": null
       },
@@ -2106,7 +2106,7 @@
     "reply-00032": {
       "Id": "reply-00032",
       "Text": {
-        "Text": "What happens at the heart of the forge?",
+        "Text": "What's waiting in the Champion Forge?",
         "Style": 4,
         "Color": null
       },

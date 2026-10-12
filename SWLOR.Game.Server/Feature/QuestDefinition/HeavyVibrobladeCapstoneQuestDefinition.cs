@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Valis Korr gave you the Korriban Forge Caverns Key. Enter the Korriban Forge Caverns on Korriban and defeat 6 Absolute Defense adepts. Secure the Absolute Defense Forge Heat Ledger they keep near the crucibles.")
+                    "Valis Korr gave you the Korriban Forge Caverns Key. On Korriban, take the Forgeworks key from the Sith Inquisitor in the Sith Fortress Courtyard, then cross the Forgeworks to the sealed passage in its far north-east corner and enter the Korriban Forge Caverns. Defeat 6 Absolute Defense adepts and secure the Absolute Defense Forge Heat Ledger they keep near the crucibles.")
                 .AddKillObjective(NPCGroupType.Korriban_AbsoluteDefense_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAbsoluteDefenseForgeHeatLedger)
 
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Absolute Defense warden in the Korriban Forge Caverns on Korriban and take the Absolute Defense Cracked Anvil Sigil he wears. The warden is a deadly opponent; bring allies.")
+                    "With at least two allies, defeat the Absolute Defense warden at the trial altar on the west side of the Korriban Forge Caverns on Korriban and take the Absolute Defense Cracked Anvil Sigil he wears.")
                 .AddKillObjective(NPCGroupType.Korriban_AbsoluteDefense_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneAbsoluteDefenseCrackedAnvilSigil)
 
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Absolute Defense master in the innermost ring of the Korriban Forge Caverns on Korriban. He is far too strong to face alone; bring trusted allies.")
+                    "With at least two trusted allies, defeat the Absolute Defense master in the Champion Forge, through the door at the north end of the Korriban Forge Caverns on Korriban.")
                 .AddKillObjective(NPCGroupType.Korriban_AbsoluteDefense_Master, 1)
 
                 .AddState()
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Senn Dralok gave you the Korriban Forge Caverns Key. Enter the Korriban Forge Caverns on Korriban and defeat 6 Soul Ascension adepts. Secure the Soul Ascension Forge Heat Ledger kept near the crucibles.")
+                    "Senn Dralok gave you the Korriban Forge Caverns Key. On Korriban, take the Forgeworks key from the Sith Inquisitor in the Sith Fortress Courtyard, then cross the Forgeworks to the sealed passage in its far north-east corner and enter the Korriban Forge Caverns. Defeat 6 Soul Ascension adepts and secure the Soul Ascension Forge Heat Ledger kept near the crucibles.")
                 .AddKillObjective(NPCGroupType.Korriban_SoulAscension_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSoulAscensionForgeHeatLedger)
 
@@ -217,7 +217,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Soul Ascension warden in the Korriban Forge Caverns on Korriban and take the Soul Ascension Cracked Anvil Sigil he wears. The warden is a deadly opponent; bring allies.")
+                    "With at least two allies, defeat the Soul Ascension warden at the trial altar in the north-west of the Korriban Forge Caverns on Korriban and take the Soul Ascension Cracked Anvil Sigil he wears.")
                 .AddKillObjective(NPCGroupType.Korriban_SoulAscension_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSoulAscensionCrackedAnvilSigil)
 
@@ -257,7 +257,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the Soul Ascension master in his sanctum in the Korriban Forge Caverns on Korriban. He is far too strong to face alone; bring trusted allies.")
+                    "With at least two trusted allies, defeat the Soul Ascension master in the Champion Forge, through the door at the north end of the Korriban Forge Caverns on Korriban.")
                 .AddKillObjective(NPCGroupType.Korriban_SoulAscension_Master, 1)
 
                 .AddState()

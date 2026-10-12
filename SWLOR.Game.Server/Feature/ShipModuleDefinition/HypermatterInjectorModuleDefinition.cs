@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .CanTargetSelf()
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)
-                .Texture("iit_ess_032")
+                .Texture("iit_smhminject")
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
                 .Recast(60f)
                 .ValidationAction((activator, _, _, _, _) =>
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     Messaging.SendMessageNearbyToPlayers(
                         activator,
                         receiver => $"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} capacitor charge to {PlayerName.GetDisplayName(receiver, target)}'s ship.");
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
+                    CombatPoint.AddSupportCombatPoint(activator, target, SkillType.Piloting);
                 });
         }
     }

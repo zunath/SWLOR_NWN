@@ -337039,16 +337039,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A massive bracer built for those with the strength to wear it."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A massive bracer built for those with the strength to wear it."
                       }
                     },
                     "Identified": {
@@ -337060,7 +337059,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Titan Bracer"
@@ -337275,16 +337273,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A heavy bracer worn by veterans who have stood guard through many assaults."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A heavy bracer worn by veterans who have stood guard through many assaults."
                       }
                     },
                     "Identified": {
@@ -337296,7 +337293,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "Bastion Bracer"
@@ -345457,16 +345453,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -345478,7 +345473,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-001"
@@ -345693,16 +345687,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "An armored forearm plate engineered to bolt onto a droid chassis."
                       }
                     },
                     "Identified": {
@@ -345714,7 +345707,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-002"
@@ -350312,16 +350304,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48321,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A reinforced forearm plate engineered to bolt onto a droid chassis, upgraded with improved shielding."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A reinforced forearm plate engineered to bolt onto a droid chassis, upgraded with improved shielding."
                       }
                     },
                     "Identified": {
@@ -350333,7 +350324,6 @@
                       "value": 1
                     },
                     "LocalizedName": {
-                      "id": 48320,
                       "type": "cexolocstring",
                       "value": {
                         "0": "DHBR-002 A"
@@ -368351,7 +368341,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -368439,7 +368429,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -369809,7 +369799,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 20
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -369897,7 +369887,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 20
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",

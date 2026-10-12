@@ -6840,7 +6840,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Valis Korr is a forge-shield veteran tied to the Absolute Defense capstone trials in Korriban Forge Caverns."
+            "0": "Valis Korr sits among her tools at a corner table of the Fight Club, a woman with forge-scarred forearms and the unhurried stillness of someone who has spent a lifetime watching metal cool. She studies every guard that steps into the ring the way a smith checks steel for flaws in the grain. She once ran the smithy in the forge caverns beneath Korriban's Sith Fortress, until the smith-guards she trained swore themselves to a darker oath and drove her out."
           }
         },
         "Dex": {
@@ -7291,7 +7291,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 306
+          "value": 4070
         },
         "Race": {
           "type": "byte",
@@ -61344,15 +61344,15 @@
         },
         "X": {
           "type": "float",
-          "value": 2.042429208755493
+          "value": 6.400000095367432
         },
         "Y": {
           "type": "float",
-          "value": 25.77753639221191
+          "value": 25.799999237060547
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": 0.0
         }
       },
       {
@@ -62332,7 +62332,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 2.808770418167114
+          "value": 7.800000190734863
         },
         "YOrientation": {
           "type": "float",
@@ -62340,11 +62340,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 25.88027763366699
+          "value": 25.899999618530273
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": 0.0
         }
       }
     ]

@@ -637,6 +637,7 @@ namespace SWLOR.Game.Server.Service
             Enmity.ClearEnmityTable(creature);
             NPCAI.ClearState(creature);
             ApplyLeashEvadeMovementRate(creature);
+            ExecuteScript(ScriptName.OnCreatureLeashStarted, creature);
             DelayCommand(0.2f, () =>
             {
                 if (IsLeashEvading(creature))
@@ -710,6 +711,7 @@ namespace SWLOR.Game.Server.Service
             DeleteLocalBool(creature, LeashEvadeActiveVariable);
             DeleteLocalBool(creature, LeashEvadeReturnQueuedVariable);
             RestoreLeashEvadeMovementRate(creature);
+            ExecuteScript(ScriptName.OnCreatureLeashEnded, creature);
         }
 
         public static bool TryStartCombatLeashEvade(uint creature, uint target)

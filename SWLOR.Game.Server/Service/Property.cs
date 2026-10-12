@@ -1367,7 +1367,16 @@ namespace SWLOR.Game.Server.Service
             foreach (var property in properties)
             {
                 Log.Write(LogGroup.Property, $"Property '{property.CustomName}' scheduled for deletion. Peforming delete now.");
-                DeleteProperty(property);
+
+                // A failed delete stays queued for the next boot and must not stop the remaining properties from loading.
+                try
+                {
+                    DeleteProperty(property);
+                }
+                catch (Exception ex)
+                {
+                    Log.Write(LogGroup.Error, $"Failed to delete property '{property.CustomName}' ({property.Id}): {ex}");
+                }
             }
 
             // Starship properties should have their current location wiped on every boot.
@@ -1918,25 +1927,33 @@ namespace SWLOR.Game.Server.Service
         /// <param name="property">The property to delete.</param>
         public static void DeleteProperty(WorldProperty property)
         {
+            if (property.PropertyType == PropertyType.Starship)
+                UnregisterStarshipFromStarports(property);
+
             // Recursively clear any children properties tied to this property.
+            // Children are also found by their parent Id because loading spawns structures that way,
+            // so a stale child list can't leave orphaned buildings or interiors behind.
+            var childIds = new HashSet<string>();
             foreach (var (childType, propertyIds) in property.ChildPropertyIds)
             {
                 if (childType == PropertyChildType.RegisteredStarport ||
                     childType == PropertyChildType.Starship)
                     continue;
 
-                if (propertyIds.Count > 0)
-                {
-                    var query = new DBQuery<WorldProperty>()
-                        .AddFieldSearch(nameof(WorldProperty.Id), propertyIds);
-                    var queryCount = (int)DB.SearchCount(query);
-                    var children = DB.Search(query.AddPaging(queryCount, 0));
+                childIds.UnionWith(propertyIds);
+            }
 
-                    foreach (var child in children)
-                    {
-                        DeleteProperty(child);
-                    }
-                }
+            var childQuery = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), property.Id, false);
+            var childCount = (int)DB.SearchCount(childQuery);
+            childIds.UnionWith(DB.Search(childQuery.AddPaging(childCount, 0)).Select(s => s.Id));
+            childIds.Remove(property.Id);
+
+            foreach (var childId in childIds)
+            {
+                var child = DB.Get<WorldProperty>(childId);
+                if (child != null)
+                    DeleteProperty(child);
             }
 
             // Clear permissions for the property.
@@ -2011,6 +2028,28 @@ namespace SWLOR.Game.Server.Service
 
             EventsPlugin.PushEventData("PROPERTY_ID", property.Id);
             EventsPlugin.SignalEvent("SWLOR_DELETE_PROPERTY", GetModule());
+        }
+
+        /// <summary>
+        /// Removes a starship from the docked ship lists of the player starports it is registered to.
+        /// </summary>
+        /// <param name="starship">The starship being deleted.</param>
+        private static void UnregisterStarshipFromStarports(WorldProperty starship)
+        {
+            if (!starship.ChildPropertyIds.TryGetValue(PropertyChildType.RegisteredStarport, out var starportIds))
+                return;
+
+            foreach (var starportId in starportIds)
+            {
+                var starport = DB.Get<WorldProperty>(starportId);
+                if (starport == null ||
+                    !starport.ChildPropertyIds.TryGetValue(PropertyChildType.Starship, out var starshipIds) ||
+                    !starshipIds.Remove(starship.Id))
+                    continue;
+
+                DB.Set(starport);
+                Log.Write(LogGroup.Property, $"Unregistered deleted starship '{starship.CustomName}' ({starship.Id}) from starport '{starport.CustomName}' ({starport.Id}).");
+            }
         }
 
         /// <summary>

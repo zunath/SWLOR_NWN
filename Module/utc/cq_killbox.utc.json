@@ -166,7 +166,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Ressa Vale is a Czerka range controller tied to the Kill Box capstone trials in Czerka Arms Test Range."
+      "0": "A sharp-featured human woman in a pressed Czerka jacket, a datapad tucked under one arm and a slim rifle slung across her back. She stands among the store's locked cases as if she owns each one, and on paper she nearly does. Her eyes measure every customer like a line item on an invoice."
     }
   },
   "Dex": {
@@ -364,7 +364,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 318
+    "value": 4099
   },
   "Race": {
     "type": "byte",

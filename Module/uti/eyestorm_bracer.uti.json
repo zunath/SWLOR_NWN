@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 48321,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A bracer prized by fighters who stay calm at the center of a brawl."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A bracer prized by fighters who stay calm at the center of a brawl."
     }
   },
   "Identified": {
@@ -42,7 +41,6 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 48320,
     "type": "cexolocstring",
     "value": {
       "0": "Eye-of-Storm Bracer"

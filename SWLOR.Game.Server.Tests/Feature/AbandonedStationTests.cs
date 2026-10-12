@@ -151,6 +151,13 @@ public class AbandonedStationTests
         Text(elevator, "LinkedTo").Should().Be("ABANDONED_STATION_LANDING");
         Number(elevator, "Locked").Should().Be(0, "the open zone has no key-card gate");
 
+        // Placed characters players talk to (Telford's logs, the reference database) must not be hostile, or a click attacks.
+        foreach (var area in StationAreas)
+        {
+            foreach (var creature in List(Load("git", area), "Creature List").Where(c => !string.IsNullOrEmpty(Text(c, "Conversation"))))
+                Number(creature, "FactionID").Should().NotBe(1, $"{area} {Text(creature, "Tag")} has a conversation");
+        }
+
         var turbolift = List(Load("git", Restricted), "Placeable List").Single(p => Text(p, "Tag") == "aban_ele_to_office");
         Number(turbolift, "Useable").Should().Be(1);
         Local(turbolift, "DESTINATION")!.Value.GetString().Should().Be("DIRECTORS_QUARTERS_LANDING");

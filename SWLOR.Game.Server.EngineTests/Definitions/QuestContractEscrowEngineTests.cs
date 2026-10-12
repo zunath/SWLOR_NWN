@@ -263,6 +263,46 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
+        [EngineTest("Contract orphaned empty deliveries are swept without closed history and retain unclaimed value", Category = "QuestContractEscrow")]
+        public static async Task OrphanedDeliveryCleanup(EngineTestContext ctx)
+        {
+            await ctx.WaitFrameAsync();
+            var source = new QuestContract { Status = QuestContractStatus.Published };
+            var missingSourceId = Guid.NewGuid().ToString();
+            var empty = Enumerable.Range(0, 55).Select(index => new QuestContractDelivery
+            {
+                SourceContractId = missingSourceId, IsRewardPayment = index % 2 == 0
+            }).ToList();
+            var protectedDeliveries = new[]
+            {
+                new QuestContractDelivery { SourceContractId = source.Id, IsRewardPayment = true },
+                new QuestContractDelivery { SourceContractId = missingSourceId, Credits = 75, IsRewardPayment = true },
+                new QuestContractDelivery { SourceContractId = missingSourceId, Items = new() { new() { Data = "unclaimed item" } } },
+                new QuestContractDelivery { SourceContractId = missingSourceId, HeldForCompletion = true }
+            };
+            try
+            {
+                DB.Set(source);
+                foreach (var delivery in empty.Concat(protectedDeliveries)) DB.Set(delivery);
+                ctx.AssertEqual(0L, DB.SearchCount(new DBQuery<QuestContract>().AddFieldSearch(nameof(QuestContract.Status),
+                    new[] { (int)QuestContractStatus.Fulfilled, (int)QuestContractStatus.Expired, (int)QuestContractStatus.Cancelled, (int)QuestContractStatus.TakenDown })),
+                    "The sweep must work when no closed history exists");
+                typeof(QuestContractBoard).GetMethod("PruneHistory", BindingFlags.NonPublic | BindingFlags.Static)
+                    .Invoke(null, new object[] { DateTime.UtcNow });
+                foreach (var delivery in empty)
+                    ctx.Assert(DB.Get<QuestContractDelivery>(delivery.Id) == null, "Empty orphaned deliveries are removed beyond fifty rows");
+                foreach (var delivery in protectedDeliveries)
+                    ctx.Assert(DB.Get<QuestContractDelivery>(delivery.Id) != null, "Existing-source receipts, unclaimed value, and held submissions are retained");
+                ctx.AssertEqual(75, DB.Get<QuestContractDelivery>(protectedDeliveries[1].Id).Credits, "Unclaimed credits remain intact");
+                ctx.AssertEqual("unclaimed item", DB.Get<QuestContractDelivery>(protectedDeliveries[2].Id).Items.Single().Data, "Unclaimed items remain intact");
+            }
+            finally
+            {
+                foreach (var delivery in empty.Concat(protectedDeliveries)) DB.Delete<QuestContractDelivery>(delivery.Id);
+                DB.Delete<QuestContract>(source.Id);
+            }
+        }
+
         private static List<QuestContractDelivery> Deliveries(string contractId)
         {
             var query = new DBQuery<QuestContractDelivery>().AddFieldSearch(nameof(QuestContractDelivery.SourceContractId), contractId, false);

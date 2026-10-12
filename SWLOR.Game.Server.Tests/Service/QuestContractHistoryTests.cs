@@ -129,6 +129,41 @@ public class QuestContractHistoryTests
         pending.Credits.Should().Be(75);
     }
 
+    [TestCase(true, true)]
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    [TestCase(false, false)]
+    public void EmptyDeliveryIsPrunedOnlyAfterItsSourceHasGone(bool sourceExists, bool isRewardPayment)
+    {
+        var receipt = new QuestContractDelivery { SourceContractId = "source", IsRewardPayment = isRewardPayment };
+        var deletedIds = new List<string>();
+        QuestContractHistory.PruneOrphanedDelivery(receipt, sourceId =>
+        {
+            sourceId.Should().Be("source");
+            return sourceExists;
+        }, deletedIds.Add).Should().Be(!sourceExists);
+        if (sourceExists)
+            deletedIds.Should().BeEmpty("receipts must remain while their source can recover settlement");
+        else
+            deletedIds.Should().Equal(receipt.Id);
+    }
+
+    [TestCase(75, false, false)]
+    [TestCase(0, true, false)]
+    [TestCase(0, false, true)]
+    public void UnclaimedOrHeldDeliveriesAreNeverPrunedAsOrphans(int credits, bool hasItem, bool isHeld)
+    {
+        var delivery = new QuestContractDelivery { Credits = credits, HeldForCompletion = isHeld };
+        if (hasItem) delivery.Items.Add(new QuestContractItem { Data = "unclaimed item" });
+        QuestContractHistory.PruneOrphanedDelivery(delivery,
+            _ => throw new InvalidOperationException("A delivery with value or held ownership must not check its source"),
+            _ => throw new InvalidOperationException("A delivery with value or held ownership must not be deleted"))
+            .Should().BeFalse();
+        delivery.Credits.Should().Be(credits);
+        delivery.Items.Count.Should().Be(hasItem ? 1 : 0);
+        delivery.HeldForCompletion.Should().Be(isHeld);
+    }
+
     private bool Prune() => QuestContractHistory.Prune(_contract, _now, () => _deliveries.ToList(), Save,
         DeleteContract, DeleteDelivery);
 

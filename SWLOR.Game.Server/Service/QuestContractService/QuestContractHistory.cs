@@ -8,6 +8,17 @@ namespace SWLOR.Game.Server.Service.QuestContractService
     {
         public const int RetentionDays = 30;
 
+        public static bool PruneOrphanedDelivery(QuestContractDelivery delivery, Func<string, bool> sourceExists,
+            Action<string> deleteDelivery)
+        {
+            if (delivery.HeldForCompletion || delivery.Credits != 0 || delivery.Items.Count > 0 ||
+                sourceExists(delivery.SourceContractId))
+                return false;
+
+            deleteDelivery(delivery.Id);
+            return true;
+        }
+
         public static bool Prune(QuestContract contract, DateTime now,
             Func<List<QuestContractDelivery>> readDeliveries, Action<QuestContract> saveContract,
             Action<string> deleteContract, Action<string> deleteDelivery)

@@ -76,19 +76,27 @@ namespace SWLOR.Game.Server.Service
                     (int)QuestContractStatus.Cancelled, (int)QuestContractStatus.TakenDown
                 });
             var count = (int)DB.SearchCount(query);
-            if (count == 0)
-                return;
+            var contracts = count > 0 ? DB.Search(query.AddPaging(count, 0)).ToList() : new List<QuestContract>();
 
             var prunedCount = 0;
-            foreach (var contract in DB.Search(query.AddPaging(count, 0)).ToList())
+            foreach (var contract in contracts)
             {
                 if (QuestContractHistory.Prune(contract, now, () => ReadDeliveries(new DBQuery<QuestContractDelivery>()
                     .AddFieldSearch(nameof(QuestContractDelivery.SourceContractId), contract.Id, false)),
                     DB.Set, DB.Delete<QuestContract>, DB.Delete<QuestContractDelivery>))
                     prunedCount++;
             }
-            if (prunedCount > 0)
-                Log.Write(LogGroup.QuestContract, $"Pruned {prunedCount} quest contract history record(s).", true);
+            // A claim can persist its empty delivery and stop before deleting it. Its source history
+            // may already be gone, so sweep these independently even when no closed contracts remain.
+            var orphanedCount = 0;
+            foreach (var delivery in ReadDeliveries(new DBQuery<QuestContractDelivery>()
+                .AddFieldSearch(nameof(QuestContractDelivery.HeldSubmissionIndex), "[0 0]", false)))
+            {
+                if (QuestContractHistory.PruneOrphanedDelivery(delivery, DB.Exists<QuestContract>, DB.Delete<QuestContractDelivery>))
+                    orphanedCount++;
+            }
+            if (prunedCount > 0 || orphanedCount > 0)
+                Log.Write(LogGroup.QuestContract, $"Pruned {prunedCount} quest contract history record(s) and {orphanedCount} orphaned empty delivery record(s).", true);
         }
 
         private static List<QuestContract> GetPublishedContracts()

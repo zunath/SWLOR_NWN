@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -17,6 +18,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         public const string ContentElement = "examine_item_content";
         public const string ContentPartial = "EXAMINE_ITEM_BODY";
+        public const string DescriptionElement = "examine_item_description";
+        public const string PropertiesElement = "examine_item_properties";
         private ExamineItemPayload _payload;
 
         public string WindowTitle
@@ -28,6 +31,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string Description
         {
             get => Get<string>();
+            set => Set(value);
+        }
+
+        public GuiColor TitleColor
+        {
+            get => Get<GuiColor>();
             set => Set(value);
         }
 
@@ -63,7 +72,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(ExamineItemPayload initialPayload)
         {
             _payload = initialPayload;
-            WindowTitle = initialPayload.ItemName;
+            WindowTitle = ExamineItemText.PlainText(initialPayload.ItemName);
+            TitleColor = ExamineItemText.TitleColor(initialPayload.ItemName);
             ItemProperties = initialPayload.ItemProperties;
             Weight = $"Weight: {initialPayload.Weight / 10.0m:0.0} lbs";
             RefreshDescription();
@@ -85,7 +95,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             Description = _payload.Description;
             if (!_payload.IsIdentified || !WeaponDamage.IsSingleWeaponType(_payload.ItemType))
+            {
+                RefreshTextLayouts();
                 return;
+            }
 
             var preview = WeaponDamage.BuildSingleWeaponDescription(itemDMG,
                 WeaponDamage.GetNaturalSingleWeaponPercent(Player),
@@ -95,6 +108,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Description += EquipmentPredicates.HasSingleWeapon(Player)
                     ? "\nSingle Weapon is active."
                     : "\nSingle Weapon is inactive: your off hand must be empty.";
+            RefreshTextLayouts();
+        }
+
+        private void RefreshTextLayouts()
+        {
+            SetGroupLayout(DescriptionElement, ExamineItemText.BuildLayout(Description, 230f));
+            SetGroupLayout(PropertiesElement, ExamineItemText.BuildLayout(ItemProperties, 160f));
         }
 
         public void Refresh(EquipItemRefreshEvent payload) => RefreshDescription();

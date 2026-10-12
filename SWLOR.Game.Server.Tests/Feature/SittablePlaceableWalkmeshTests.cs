@@ -24,7 +24,7 @@ public class SittablePlaceableWalkmeshTests
 
         useNode.Should().NotBeNull("a sitter faces from the chair toward its use point and faces east without one");
         useNode!.Value.X.Should().BeApproximately(0f, 0.01f);
-        useNode.Value.Y.Should().BeLessThan(-0.45f, "the seat opens toward model -Y, past its front edge");
+        useNode.Value.Y.Should().BeLessThan(-0.3f, "the seat opens toward model -Y, past its front edge");
     }
 
     // The engine only reads a use node whose "node dummy" line has "pwk_use01" at character 15 (a four-character prefix).

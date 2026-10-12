@@ -64,7 +64,8 @@ public sealed class SwlorAreaViewportMaterialProvider :
             return new AreaViewportMaterial();
 
         var tintSurface = surface.IsTint
-            ? ResolveTintSurface(surfaceName, surface.Material!, metadata, request.Mesh, request.Instance, request.Purpose)
+            ? ResolveTintSurface(surfaceName, surface.Material!, metadata, request.Mesh, request.Instance, request.Purpose,
+                request.TextureName)
             : null;
 
         return new AreaViewportMaterial
@@ -184,11 +185,15 @@ public sealed class SwlorAreaViewportMaterialProvider :
         AreaViewportMeshMetadata? metadata,
         RenderMesh? mesh,
         Nwn.Preview.Areas.InstanceMarker? instance,
-        AreaViewportDrawPurpose purpose)
+        AreaViewportDrawPurpose purpose,
+        string? textureName)
     {
         var maskName = MaterialResolver.GetTexture(material, 7);
         var paletteName = MaterialResolver.GetTexture(material, 10);
-        var mask = LoadSurface(maskName);
+        // The shared cloak material samples one atlas tile selected by the composed cloak bitmap.
+        var mask = string.Equals(materialName, CloakTintRenderer.MaterialResref, StringComparison.OrdinalIgnoreCase)
+            ? LoadCloakTile(material, textureName)
+            : LoadSurface(maskName);
         var palette = LoadSurface(paletteName);
         if (mask is null || palette is null)
             return null;
@@ -294,6 +299,32 @@ public sealed class SwlorAreaViewportMaterialProvider :
             try
             {
                 var image = TextureLoader.Load(_resources, textureName, layerColors);
+                surface = image is null ? null : new CachedTextureSurface(
+                    image,
+                    new RgbaImage(image.Width, image.Height, image.Pixels));
+            }
+            catch (Exception)
+            {
+                surface = null;
+            }
+
+            _textureCache.Add(key, surface);
+            return surface;
+        }
+    }
+
+    private CachedTextureSurface? LoadCloakTile(MtrDocument material, string? textureName)
+    {
+        var key = new TextureSurfaceKey("cloak-tile|" + (textureName ?? string.Empty).Trim().ToLowerInvariant(), string.Empty);
+        lock (_cacheLock)
+        {
+            if (_textureCache.TryGetValue(key, out var cached))
+                return cached;
+
+            CachedTextureSurface? surface;
+            try
+            {
+                var image = TintMapTextureRenderer.LoadTintMap(_resources, material, textureName);
                 surface = image is null ? null : new CachedTextureSurface(
                     image,
                     new RgbaImage(image.Width, image.Height, image.Pixels));

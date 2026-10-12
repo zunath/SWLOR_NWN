@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Recipes)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 545f, 600f)
+                .SetInitialGeometry(0, 0, 620f, 600f)
                 .BindTitle(model => model.Title)
 
                 .AddColumn(col =>
@@ -34,6 +34,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Search")
                             .SetHeight(35f)
                             .BindOnClicked(model => model.OnClickSearch());
+
+                        row.AddCheckBox()
+                            .SetText("Include Components")
+                            .BindIsChecked(model => model.IncludeComponents)
+                            .SetWidth(190f);
                     });
 
                     col.AddRow(row =>

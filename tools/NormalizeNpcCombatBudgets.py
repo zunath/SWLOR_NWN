@@ -30,13 +30,23 @@ GROUP_BOSS_LOOT = {
     "NARSHADDAA_GREAT_ARKANIAN_DRAGON_GEMS", "NARSHADDAA_GREAT_ARKANIAN_DRAGON_RARES",
 }
 GROUP_MODIFIER = {
-    "A": "Loot Boss", "B": 3, "C": 1.5, "D": 2, "E": 2,
-    "F": 15, "G": 15, "H": -9, "I": 20, "J": 0, "K": 1,
+    "A": "Loot Boss", "B": 3, "C": 2, "D": 2, "E": 2,
+    "F": 25, "G": 25, "H": -9, "I": 20, "J": 0, "K": 1,
     "L": "Final bosses with premium recipe, gem and resource reward tables.",
-    "M": "Target: 3-4 geared players. Triple Boss HP, 50% more DMG, +15 offense, "
-         "+20 Defense and doubled resources. Lower Evasion preserves reliable hits; "
-         "difficulty comes from sustained pressure and durability, not misses.",
+    "M": "Target: 3-4 geared players. Double DMG and +25 offense make the boss a real threat "
+         "to the tank and party; lower Evasion preserves reliable hits.",
 }
+# Premium bosses whose live fight was reviewed as right on the earlier group budget.
+MEASURED_GROUP_BOSSES = {"vdatthrancor"}
+MEASURED_MODIFIER = {
+    "A": "Measured Loot Boss", "B": 3, "C": 1.5, "D": 2, "E": 2,
+    "F": 15, "G": 15, "H": -9, "I": 20, "J": 0, "K": 1,
+    "L": "Premium bosses whose live fight already lands at the intended pressure.",
+    "M": "The earlier Loot Boss budget: triple Boss HP, 50% more DMG, +15 offense, +20 Defense and "
+         "doubled resources. Kept for the Rancor after players rated that fight just right; use Loot "
+         "Boss for new premium bosses.",
+}
+GROUP_MODIFIER_NAMES = (GROUP_MODIFIER["A"], MEASURED_MODIFIER["A"])
 
 
 def value(obj, field, default=0):
@@ -157,19 +167,21 @@ def set_cell_text(text, address, content):
 
 
 def set_group_modifier(text):
-    cells = []
-    for column, content in GROUP_MODIFIER.items():
-        style_match = re.search(rf'<c\b[^>]*\br="{column}8"[^>]*\bs="(\d+)"', text)
-        style = f' s="{style_match[1]}"' if style_match else ''
-        body = f'<v>{content}</v>' if isinstance(content, (int, float)) else f'<is><t>{escape(content)}</t></is>'
-        cell_type = '' if isinstance(content, (int, float)) else ' t="inlineStr"'
-        cells.append(f'<c r="{column}9"{style}{cell_type}>{body}</c>')
-    row = '<row r="9">' + ''.join(cells) + '</row>'
-    if re.search(r'<row\b[^>]*\br="9"', text):
-        result = re.sub(r'<row\b[^>]*\br="9"[^>]*(?:/>|>.*?</row>)', row, text, flags=re.S)
-    else:
-        result = re.sub(r'(?=<row\b[^>]*\br="21")', lambda _: row, text, count=1)
-    return result.replace('ref="$A$1:$M$8"', 'ref="$A$1:$M$9"')
+    result = text
+    for number, modifier in ((9, GROUP_MODIFIER), (10, MEASURED_MODIFIER)):
+        cells = []
+        for column, content in modifier.items():
+            style_match = re.search(rf'<c\b[^>]*\br="{column}8"[^>]*\bs="(\d+)"', result)
+            style = f' s="{style_match[1]}"' if style_match else ''
+            body = f'<v>{content}</v>' if isinstance(content, (int, float)) else f'<is><t>{escape(content)}</t></is>'
+            cell_type = '' if isinstance(content, (int, float)) else ' t="inlineStr"'
+            cells.append(f'<c r="{column}{number}"{style}{cell_type}>{body}</c>')
+        row = f'<row r="{number}">' + ''.join(cells) + '</row>'
+        if re.search(rf'<row\b[^>]*\br="{number}"', result):
+            result = re.sub(rf'<row\b[^>]*\br="{number}"[^>]*(?:/>|>.*?</row>)', lambda _: row, result, flags=re.S)
+        else:
+            result = re.sub(r'(?=<row\b[^>]*\br="21")', lambda _: row, result, count=1)
+    return re.sub(r'ref="\$A\$1:\$M\$(?:8|9)"', 'ref="$A$1:$M$10"', result)
 
 
 def append_delay_row(text, row, cells, style_row):
@@ -300,26 +312,27 @@ def main():
         if ref not in creatures or not is_group_boss(creatures[ref], cells):
             continue
         preset = presets[f"{int(float(cells['D']))}|Boss|{cells['F']}"]
-        if cells.get('H') != GROUP_MODIFIER['A']:
-            world_text = set_cell_text(world_text, f'H{row}', GROUP_MODIFIER['A'])
+        group = MEASURED_MODIFIER if ref in MEASURED_GROUP_BOSSES else GROUP_MODIFIER
+        if cells.get('H') != group['A']:
+            world_text = set_cell_text(world_text, f'H{row}', group['A'])
         for dest, src, modifier, multiply in (
             ('N', 'K', 'B', True), ('O', 'L', 'D', True), ('P', 'M', 'E', True),
             ('Q', 'N', 'C', True), ('R', 'O', 'F', False), ('S', 'P', 'G', False),
             ('T', 'Q', 'H', False), ('U', 'R', 'I', False), ('V', 'S', 'I', False),
         ):
             source = float(preset[src])
-            target = max(0, rounded(source * GROUP_MODIFIER[modifier] if multiply
-                                    else source + GROUP_MODIFIER[modifier]))
+            target = max(0, rounded(source * group[modifier] if multiply
+                                    else source + group[modifier]))
             world_text = set_cell_number(world_text, f'{dest}{row}', target)
             cells[dest] = str(target)
-        cells['H'] = GROUP_MODIFIER['A']
+        cells['H'] = group['A']
         bosses += 1
     # Apply the reviewed group budgets to NPC-only skins and weapon sources.
     skin_columns = {'N': (96, None), 'O': (92, None), 'P': (91, None),
                     'R': (111, None), 'S': (112, None), 'T': (117, None),
                     'U': (94, 1), 'V': (94, 2)}
     for ref, cells in world.items():
-        if cells.get('H') != GROUP_MODIFIER['A']:
+        if cells.get('H') not in GROUP_MODIFIER_NAMES:
             continue
         creature = creatures[ref]
         skin = items[skin_ref(creature)]
@@ -501,14 +514,15 @@ def main():
                     modifier_path: set_group_modifier(modifier_text).encode(), delay_path: delay_text.encode()}
     for info, data in entries:
         if info.filename == 'xl/workbook.xml':
-            text = data.decode().replace("'Enemy Modifiers'!$A$1:$M$8", "'Enemy Modifiers'!$A$1:$M$9")
+            text = re.sub(r"'Enemy Modifiers'!\$A\$1:\$M\$(?:8|9)\b", "'Enemy Modifiers'!$A$1:$M$10", data.decode())
             text = re.sub(r"('World NPC Weapon Delays'!\$A\$1:\$E\$)\d+",
                           lambda m: m[1] + str(last_delay_row), text)
             replacements[info.filename] = text.encode()
         elif info.filename.startswith('xl/worksheets/') and info.filename.endswith('.xml'):
             text = replacements.get(info.filename, data).decode()
-            text = text.replace('Low Resource,Glass Cannon"</formula1>',
-                                'Low Resource,Glass Cannon,Loot Boss"</formula1>')
+            for previous in ('Glass Cannon"</formula1>', 'Glass Cannon,Loot Boss"</formula1>'):
+                text = text.replace('Low Resource,' + previous,
+                                    'Low Resource,Glass Cannon,Loot Boss,Measured Loot Boss"</formula1>')
             if text.encode() != data:
                 replacements[info.filename] = text.encode()
     if any(data != replacements.get(info.filename, data) for info, data in entries):

@@ -2,15 +2,15 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 45
+    "value": 3
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 10000
+    "value": 10006
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 242
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
@@ -22,23 +22,23 @@
   },
   "BodyPart_LBicep": {
     "type": "byte",
-    "value": 249
+    "value": 1
   },
   "BodyPart_LFArm": {
     "type": "byte",
-    "value": 246
+    "value": 1
   },
   "BodyPart_LFoot": {
     "type": "byte",
-    "value": 242
+    "value": 1
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 246
+    "value": 1
   },
   "BodyPart_LShin": {
     "type": "byte",
-    "value": 222
+    "value": 1
   },
   "BodyPart_LShoul": {
     "type": "byte",
@@ -46,7 +46,7 @@
   },
   "BodyPart_LThigh": {
     "type": "byte",
-    "value": 235
+    "value": 1
   },
   "BodyPart_Neck": {
     "type": "byte",
@@ -54,23 +54,23 @@
   },
   "BodyPart_Pelvis": {
     "type": "byte",
-    "value": 234
+    "value": 1
   },
   "BodyPart_RBicep": {
     "type": "byte",
-    "value": 249
+    "value": 1
   },
   "BodyPart_RFArm": {
     "type": "byte",
-    "value": 246
+    "value": 1
   },
   "BodyPart_RHand": {
     "type": "byte",
-    "value": 246
+    "value": 1
   },
   "BodyPart_RShin": {
     "type": "byte",
-    "value": 222
+    "value": 1
   },
   "BodyPart_RShoul": {
     "type": "byte",
@@ -78,11 +78,11 @@
   },
   "BodyPart_RThigh": {
     "type": "byte",
-    "value": 235
+    "value": 1
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 249
+    "value": 1
   },
   "Cha": {
     "type": "byte",
@@ -110,11 +110,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 3
+    "value": 9
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 174
+    "value": 5
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -169,6 +169,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "spy"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -374,11 +381,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 3568
+    "value": 4228
   },
   "Race": {
     "type": "byte",
-    "value": 167
+    "value": 158
   },
   "refbonus": {
     "type": "short",

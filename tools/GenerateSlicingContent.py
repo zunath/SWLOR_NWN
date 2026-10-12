@@ -144,6 +144,16 @@ GEAR = [
 ]
 
 
+# Each helmet gets its own appearance instead of the agent_cap template's balaclava.
+HELMET_MODELS = {
+    "stg_contwatch": 31,
+    "stg_diploghost": 47,
+    "stg_sabotvisor": 52,
+    "stg_nightroot": 278,
+    "slc_falsevisor": 113,
+}
+
+
 SMITH_OUTPUTS = [
     ("slc_stitchglv", "Stitchplate Lock Gloves", 1, "agent_gloves", "slicer"),
     ("slc_falsevisor", "False-Face Field Visor", 2, "agent_cap", "tradecraft"),
@@ -324,6 +334,9 @@ def build_gear(resref: str, name: str, tier: int, template_resref: str, identity
                exceptional: bool, description: str) -> None:
     template = load(UTI / f"{template_resref}.uti.json")
     item = configure_item(template, resref, name, description)
+    if resref in HELMET_MODELS:
+        item["ModelPart1"]["value"] = HELMET_MODELS[resref]
+        item["xModelPart1"]["value"] = HELMET_MODELS[resref]
     level = level_for_tier(tier, exceptional)
     primary = tier + (1 if exceptional else 0)
     secondary = max(1, tier - 1)

@@ -76,6 +76,57 @@ public sealed class NativeModelPreviewAdapterTests
     }
 
     [Test]
+    public void CloakTexture_UsesTheFirstAppearanceOfTheGeometryInsteadOfAMeshBitmap()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "swlor-cloak-texture-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        try
+        {
+            File.WriteAllText(Path.Combine(directory, "cloakmodel.2da"),
+                "2DA V2.0\n\n   LABEL MODEL TEXTURE\n0 **** 0 0\n1 Plain 1 1\n2 Jeweled 7 14\n3 Oriental 7 21\n");
+            var resources = new ResourceIndex(null, [new ResourceIndex.HakLayer("fixture", directory)]);
+            resources.InitializationTask.GetAwaiter().GetResult();
+            Assert.That(NativeModelPreviewAdapter.CloakTexture(resources, "pfo0_cloak_007"), Is.EqualTo("cloak_014"));
+            Assert.That(NativeModelPreviewAdapter.CloakTexture(resources, "pfh171_cloak_001"), Is.EqualTo("cloak_001"));
+            Assert.That(NativeModelPreviewAdapter.CloakTexture(resources, "pfh0_cloak_150"), Is.EqualTo("cloak_150"),
+                "geometry without an appearance row keeps its own texture number");
+            Assert.That(NativeModelPreviewAdapter.CloakTexture(resources, "pfh0_chest001"), Is.Null);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    [Test]
+    public void Load_RendersTheHatCloakThroughItsAppearanceTileDespiteItsMeshBitmap()
+    {
+        var root = Environment.GetEnvironmentVariable("SWLOR_HAKS_ROOT") ?? SWLOR.Toolset.Tests.Support.ToolsetCorpusPaths.HaksRoot;
+        Assert.That(root, Is.Not.Null.And.Not.Empty, "Select the read-only corpus with SWLOR_HAKS_ROOT.");
+        // Like model 150's hat meshes, the bitmap names no cloak texture; the client draws TEXTURE 150.
+        using var fixture = new NativePreviewWorkspaceFixture(directory =>
+            File.WriteAllText(Path.Combine(directory, "pfz9_cloak_150.mdl"),
+                File.ReadAllText(Path.Combine(directory, "preview_fixture.mdl"))
+                    .Replace("preview_fixture", "pfz9_cloak_150", StringComparison.Ordinal)
+                    .Replace("bitmap fixture_map", "bitmap cloak__cl_c8ad14", StringComparison.Ordinal)
+                    .Replace("materialname fixture_material", "materialname cloaktint", StringComparison.Ordinal)));
+        var resources = new ResourceIndex(null, [new("fixture", fixture.DirectoryPath),
+            new("cloaks", Path.Combine(root!, "sw_pt_cloak")), new("tables", Path.Combine(root!, "sw_2da")),
+            new("palettes", Path.Combine(root!, "sw_item"))]);
+        resources.InitializationTask.GetAwaiter().GetResult();
+        var result = new NativeModelPreviewAdapter(resources).Load("pfz9_cloak_150");
+        var material = MaterialResolver.TryParseMaterial(resources, "cloaktint");
+        Assert.That(material, Is.Not.Null);
+        Assert.That(TintMapTextureRenderer.Render(resources, "cloaktint", material!, null, null,
+            textureName: "cloak__cl_c8ad14"), Is.Null, "the mesh bitmap alone cannot select a tile");
+        var expected = TintMapTextureRenderer.Render(resources, "cloaktint", material!, null, null,
+            textureName: "cloak_150");
+        Assert.That(expected, Is.Not.Null);
+        Assert.That(result.Textures["cloaktint"].CopyRgbaBytes(), Is.EqualTo(expected!.Pixels));
+        Assert.That(result.UnsupportedMaterials, Is.Empty);
+    }
+
+    [Test]
     public void Load_UsesSharedRigidReaderForNativeChestFixture()
     {
         var haksRoot = Environment.GetEnvironmentVariable("SWLOR_HAKS_ROOT") ?? SWLOR.Toolset.Tests.Support.ToolsetCorpusPaths.HaksRoot;

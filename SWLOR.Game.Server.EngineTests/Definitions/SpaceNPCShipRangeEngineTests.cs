@@ -74,6 +74,25 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 $"the proton bomb to activate (start {startDistance:0.0}m, now {GetDistanceBetween(attacker, target):0.0}m)");
         }
 
+        [EngineTest("NPC laser battery fires at a nearby enemy while its target is out of range", Category = "SpaceNPCAI", TimeoutSeconds = 45f)]
+        public static async Task BatteryFiresAtNearbyEnemy(EngineTestContext ctx)
+        {
+            // The battery hits enemies within 20m of the firing ship, independent of the selected target.
+            var (attacker, target) = await SpawnShipsAsync(ctx, "mandocap2", TargetResref, 45f, immobilizeAttacker: true);
+            var nearbyEnemy = SpawnShip(ctx, GetArea(attacker), "t1fighter", 50f);
+            await ctx.WaitUntilAsync(() => Space.GetShipStatus(nearbyEnemy) != null, 5f,
+                $"the nearby enemy to register as an NPC ship (valid={GetIsObjectValid(nearbyEnemy)}, dead={GetIsDead(nearbyEnemy)}, tag={GetTag(nearbyEnemy)})");
+            ApplyEffectToObject(DurationType.Permanent, EffectCutsceneImmobilize(), nearbyEnemy);
+            ctx.MakeHostile(nearbyEnemy);
+            ctx.Assert(GetIsEnemy(nearbyEnemy, attacker), "nearby ship is an enemy of the attacker");
+
+            var battery = Space.GetShipStatus(attacker).HighPowerModules.Values.First(x => x.ItemTag == "npcautolas11");
+            var initialRecast = battery.RecastTime;
+
+            await ctx.WaitUntilAsync(() => battery.RecastTime != initialRecast, 10f,
+                $"the laser battery to activate (target {GetDistanceBetween(attacker, target):0.0}m, nearby enemy {GetDistanceBetween(attacker, nearbyEnemy):0.0}m)");
+        }
+
         private static Task<(uint Attacker, uint Target)> SpawnShipsAsync(EngineTestContext ctx, float separation, bool immobilizeAttacker)
             => SpawnShipsAsync(ctx, AttackerResref, TargetResref, separation, immobilizeAttacker);
 

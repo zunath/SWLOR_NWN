@@ -1244,6 +1244,7 @@ namespace SWLOR.Game.Server.Service
 
             if (!GetIsPC(activator) &&
                 IsOffensiveShipModule(shipModuleDetails.Type) &&
+                !shipModuleDetails.CanTargetSelf &&
                 GetDistanceBetween(activator, target) > maxDistance)
             {
                 return;
@@ -2078,8 +2079,12 @@ namespace SWLOR.Game.Server.Service
                     }
                     else if (IsOffensiveShipModule(shipModuleDetail.Type))
                     {
+                        var maxDistance = GetShipModuleMaxDistance(creature, shipStatus, target, targetShipStatus, shipModule);
+                        // Self-centered weapons hit enemies around the firing ship rather than the selected target.
                         useModule = CanNPCFireShipModule(creature, shipStatus, target, targetShipStatus, shipModule) &&
-                                    distance <= GetShipModuleMaxDistance(creature, shipStatus, target, targetShipStatus, shipModule);
+                                    (shipModuleDetail.CanTargetSelf
+                                        ? HasEnemyShipWithin(creature, maxDistance)
+                                        : distance <= maxDistance);
                     }
 
                     if (useModule)
@@ -2103,6 +2108,15 @@ namespace SWLOR.Game.Server.Service
                         ActionMoveAwayFromObject(target, true, holdDistance);
                 });
             }
+        }
+
+        private static bool HasEnemyShipWithin(uint creature, float distance)
+        {
+            return ObjectSnapshot.InShape(Shape.Sphere, distance, GetLocation(creature), true, ObjectType.Creature)
+                .Any(nearby => nearby != creature &&
+                               GetIsObjectValid(nearby) &&
+                               GetIsEnemy(nearby, creature) &&
+                               GetShipStatus(nearby) != null);
         }
 
         /// <summary>

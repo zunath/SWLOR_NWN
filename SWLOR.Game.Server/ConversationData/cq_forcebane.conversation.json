@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "It's done, then. The forge answers to iron again, and every robe on Korriban has to wonder if the spear behind them learned from you. Rule the last: a doctrine is only clean while someone keeps it clean. That's you now. Go be inconvenient to sorcerers.",
+          "Text": "It's done, then. The forge answers to iron again, and every robe in the galaxy has to wonder if the spear behind them learned from you. Rule the last: a doctrine is only clean while someone keeps it clean. That's you now. Go be inconvenient to sorcerers.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Come to learn magic? Then keep walking, I don't sell it. I sell the answer to it. Somebody in the Korriban Forge Caverns is teaching my counters to the exact robed filth they were built against. Their adepts drill at the outer forges right now, getting comfortable. Rule one: reach ends ritual. Go remind them. Put down six of their adepts and bring me the Forcebane Forge Heat Ledger they keep by the crucibles. I want to know how big this rot is.",
+          "Text": "Come to learn magic? Then keep walking, I don't sell it. I sell the answer to it. Somebody in the Forge Caverns, up in the North Mine Cliffs, is teaching my counters to the exact robed filth they were built against. Their adepts drill at the outer forges right now, getting comfortable. Rule one: reach ends ritual. Go remind them. Put down six of their adepts and bring me the Forcebane Forge Heat Ledger they keep by the crucibles. I want to know how big this rot is.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Then it's signed. Take the cavern key; it opens the sealed passage in the far corner of the Forgeworks. Six adepts, and the Forcebane Forge Heat Ledger by the crucibles. Don't read it, don't sell it, bring it. And if a robe offers you a better arrangement down there, remember they're the reason this trade exists.",
+          "Text": "Then it's signed. Take the cavern key. Out the east side of the Southern Entrance here, into the Rocky Desert, then north into the North Mine Cliffs. Ten paces in, there's a sealed blast door in the rock mesa dead ahead; the key opens it. Six adepts, and the Forcebane Forge Heat Ledger by the crucibles. Don't read it, don't sell it, bring it. And if a robe offers you a better arrangement down there, remember they're the reason this trade exists.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Korriban. From the starport, east into the Wastelands North, south through the Wastelands South, east into the Ravine and the Caverns, then up the Sith Fortress Approach to the Courtyard. The Forgeworks door is locked; the Sith Inquisitor who walks the Courtyard carries its key. The sealed passage is in the far north-east corner of the forge floor, near the transmat towers. The key I'll hand you opens it. Past that, every hammer you hear belongs to somebody who'd rather you didn't leave.",
+          "Text": "Close by. Out the east side of the Southern Entrance here, into the Rocky Desert, then north into the North Mine Cliffs. Old mine workings, left to the Tusken Raiders. The smiths cut their forge into the mesa you'll see straight ahead as you come in and sealed it behind a blast door. The key I'll hand you when you sign on opens it. Past that, every hammer you hear belongs to somebody who'd rather you didn't leave.",
           "Style": 0,
           "Color": null
         }
@@ -844,7 +844,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "My watchers say the caverns went quiet. The whole Forgeworks noticed. That was you.",
+          "Text": "My watchers say the caverns went quiet. Even the Tuskens on the cliffs noticed. That was you.",
           "Style": 0,
           "Color": null
         }
@@ -891,7 +891,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Four overseers left. The turncoat's inner circle. They sign the schedules, clear the shipments, decide which robes get trained next season. Rule four: leave no circle standing, because a circle regrows from any arc of it. Kill all four. One of them carries the Forcebane Overseer's Clearance Token, the stamp that moves their blades off Korriban. Bring it to me and the whole export dies with the hand that signs it.",
+          "Text": "Four overseers left. The turncoat's inner circle. They sign the schedules, clear the shipments, decide which robes get trained next season. Rule four: leave no circle standing, because a circle regrows from any arc of it. Kill all four. One of them carries the Forcebane Overseer's Clearance Token, the stamp that moves their blades off Tatooine. Bring it to me and the whole export dies with the hand that signs it.",
           "Style": 0,
           "Color": null
         }
@@ -1309,7 +1309,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Anchorhead's Southern Entrance on Tatooine has room for a spear and no academy deciding who may learn its reach. Bring a willingness to practice; leave the uniform out of it. The people misusing my counters are in the Korriban Forge Caverns on Korriban. Their ledger comes back to me here.",
+          "Text": "Anchorhead's Southern Entrance on Tatooine has room for a spear and no academy deciding who may learn its reach. Bring a willingness to practice; leave the uniform out of it. The people misusing my counters are holed up close by, behind a blast door in the rock mesa at the mouth of the North Mine Cliffs, renegades far from any Sith academy. Their ledger comes back to me here.",
           "Style": 0,
           "Color": null
         }
@@ -1573,7 +1573,7 @@
     "reply-00010": {
       "Id": "reply-00010",
       "Text": {
-        "Text": "How did your counters end up on Korriban?",
+        "Text": "How did your counters end up in those caverns?",
         "Style": 4,
         "Color": null
       },

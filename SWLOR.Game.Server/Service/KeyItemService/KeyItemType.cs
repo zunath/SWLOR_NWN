@@ -226,10 +226,10 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         BloodFrenzyCharmFragments = 85,
         [KeyItem(KeyItemCategoryType.Keys, "Veles Militia Annex Key", true, "A militia keycard stamped with the Veles garrison seal. It opens the sealed door to the Veles Militia Annex, deep inside the Sheriff's Office in Veles on Viscara.")]
         CapstoneVelesMilitiaAnnexKey = 107,
-        [KeyItem(KeyItemCategoryType.Keys, "Dantooine Jedi Enclave Trial Halls Key", true, "A worn Enclave access chit etched with a training sigil. It opens the sealed passage to the Jedi Enclave Trial Halls, a few steps inside the Jedi Enclave Library on Dantooine.")]
-        CapstoneDantooineJediEnclaveTrialHallsKey = 108,
-        [KeyItem(KeyItemCategoryType.Keys, "Korriban Forge Caverns Key", true, "A heavy iron key, its bit shaped like a forge glyph. It opens the sealed passage to the Forge Caverns in the far north-east corner of the Sith Fortress Forgeworks on Korriban.")]
-        CapstoneKorribanForgeCavernsKey = 109,
+        [KeyItem(KeyItemCategoryType.Keys, "Hutlar Jedi Trial Halls Key", true, "A worn training chit etched with a Jedi sigil. It opens the sealed blast door in the east wall of the concrete ruin at the north end of the Cloning Test Site on Hutlar, the way down to the hidden Jedi Trial Halls.")]
+        CapstoneHutlarJediTrialHallsKey = 108,
+        [KeyItem(KeyItemCategoryType.Keys, "Tatooine Forge Caverns Key", true, "A heavy iron key, its bit shaped like a forge glyph. It opens the sealed door in the rock mesa just inside the North Mine Cliffs on Tatooine, as you come in from the Rocky Desert.")]
+        CapstoneTatooineForgeCavernsKey = 109,
         [KeyItem(KeyItemCategoryType.Keys, "Smuggler's Moon Fight Club Backrooms Key", true, "A greasy door code scratched onto a betting chit. It opens the Back Rooms door on the far west wall of the Fight Club, below the Slums on Smuggler's Moon.")]
         CapstoneSmugglersMoonFightClubBackroomsKey = 110,
         [KeyItem(KeyItemCategoryType.Keys, "CZ-220 Breaker Yard Key", true, "A Czerka maintenance override card with a cracked holo-stripe. It drops the force-field wall into the Breaker Bay in the far north-east corner of the CZ-220 Maintenance Level.")]
@@ -240,12 +240,12 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         CapstoneCzerkaArmsTestRangeKey = 113,
         [KeyItem(KeyItemCategoryType.Keys, "Hutlar Qion Test Site Key", true, "A frost-scarred site key with a blast-safety tag still wired to it. It opens the sealed Qion Test Site entrance in the Qion Box Canyon on Hutlar, south of the road up to Fort Ka'ra.")]
         CapstoneHutlarQionTestSiteKey = 114,
-        [KeyItem(KeyItemCategoryType.Keys, "Korriban Sith Crypt Depths Key", true, "A cold, rune-cut key of dark stone. It opens the sealed passage to the Sith Crypt Depths at the north end of the Sith Crypt on Korriban.")]
-        CapstoneKorribanSithCryptDepthsKey = 115,
-        [KeyItem(KeyItemCategoryType.Keys, "Viscara Republic Engineering Bunker Key", true, "A Republic engineering access card with a cracked corps insignia. It opens the bunker door beside the elevator on the Combat Deck of Outpost Hope on Viscara.")]
+        [KeyItem(KeyItemCategoryType.Keys, "Mon Cala Sith Crypt Depths Key", true, "A cold, rune-cut key of dark stone. It opens the sealed door in the old tomb wall on the north side of the first cavern in the Sharptooth Jungle Caves on Mon Cala.")]
+        CapstoneMonCalaSithCryptDepthsKey = 115,
+        [KeyItem(KeyItemCategoryType.Keys, "Viscara Republic Engineering Bunker Key", true, "A Republic engineering access card with a cracked corps insignia. It opens the sealed door of a weathered concrete bunker half-sunk in the Western Swamplands on Viscara, a short walk west of where you come in from the Eastern Swamplands.")]
         CapstoneViscaraRepublicEngineeringBunkerKey = 116,
-        [KeyItem(KeyItemCategoryType.Keys, "Dantooine Medical Sublevel Key", true, "A colony medical keycard, its clip stained with old kolto. It opens the way down to the Medical Sublevel on the far west wall of the Abandoned Warehouse on Dantooine's Jungle Mountain.")]
-        CapstoneDantooineMedicalSublevelKey = 117,
+        [KeyItem(KeyItemCategoryType.Keys, "Mon Cala Medical Sublevel Key", true, "A medical keycard, its clip stained with old kolto. It opens the sealed door beside the entry tube inside the Coral Isles Facility on Mon Cala, the way down to the Medical Sublevel.")]
+        CapstoneMonCalaMedicalSublevelKey = 117,
         [KeyItem(KeyItemCategoryType.Keys, "Dathomir Tarn Jungle Preserve Key", true, "A carved hide tag strung with a preserve warden's knot. It opens the sealed gate to the Tarn Jungle Preserve in the north-east part of the Tarnished Jungles on Dathomir.")]
         CapstoneDathomirTarnJunglePreserveKey = 118,
         [KeyItem(KeyItemCategoryType.Keys, "Dathomir Grotto Apex Den Key", true, "A bone key wrapped in grotto moss and old rancor hide. It opens the gate to the Grotto Apex Den on the west side of the Grotto Caverns on Dathomir, beside the cave water.")]
@@ -274,53 +274,53 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         CapstoneSystemicShutdownScoredChallengeBadge = 130,
         [KeyItem(KeyItemCategoryType.QuestItems, "Systemic Shutdown Captain's Challenge Chit", true, "A captain's encrypted challenge chit recovered in the Veles Militia Annex during the Systemic Shutdown trial.")]
         CapstoneSystemicShutdownCaptainsChallengeChit = 131,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Storm Enclave Trial Slate", true, "An enclave training slate recovered in the Dantooine Jedi Enclave Trial Halls during the Saber Storm trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Storm Enclave Trial Slate", true, "An enclave training slate recovered in the Hutlar Jedi Trial Halls during the Saber Storm trial.")]
         CapstoneSaberStormEnclaveTrialSlate = 132,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Storm Kyber Focus Shard", true, "A humming kyber focus shard recovered in the Dantooine Jedi Enclave Trial Halls during the Saber Storm trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Storm Kyber Focus Shard", true, "A humming kyber focus shard recovered in the Hutlar Jedi Trial Halls during the Saber Storm trial.")]
         CapstoneSaberStormKyberFocusShard = 133,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Storm Fractured Trial Sigil", true, "A fractured Jedi trial sigil recovered in the Dantooine Jedi Enclave Trial Halls during the Saber Storm trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Storm Fractured Trial Sigil", true, "A fractured Jedi trial sigil recovered in the Hutlar Jedi Trial Halls during the Saber Storm trial.")]
         CapstoneSaberStormFracturedTrialSigil = 134,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Storm Council Trial Chit", true, "A sealed council trial chit recovered in the Dantooine Jedi Enclave Trial Halls during the Saber Storm trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Storm Council Trial Chit", true, "A sealed council trial chit recovered in the Hutlar Jedi Trial Halls during the Saber Storm trial.")]
         CapstoneSaberStormCouncilTrialChit = 135,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Guardian Master Enclave Trial Slate", true, "An enclave training slate recovered in the Dantooine Jedi Enclave Trial Halls during the Guardian Master trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Guardian Master Enclave Trial Slate", true, "An enclave training slate recovered in the Hutlar Jedi Trial Halls during the Guardian Master trial.")]
         CapstoneGuardianMasterEnclaveTrialSlate = 136,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Guardian Master Kyber Focus Shard", true, "A humming kyber focus shard recovered in the Dantooine Jedi Enclave Trial Halls during the Guardian Master trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Guardian Master Kyber Focus Shard", true, "A humming kyber focus shard recovered in the Hutlar Jedi Trial Halls during the Guardian Master trial.")]
         CapstoneGuardianMasterKyberFocusShard = 137,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Guardian Master Fractured Trial Sigil", true, "A fractured Jedi trial sigil recovered in the Dantooine Jedi Enclave Trial Halls during the Guardian Master trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Guardian Master Fractured Trial Sigil", true, "A fractured Jedi trial sigil recovered in the Hutlar Jedi Trial Halls during the Guardian Master trial.")]
         CapstoneGuardianMasterFracturedTrialSigil = 138,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Guardian Master Council Trial Chit", true, "A sealed council trial chit recovered in the Dantooine Jedi Enclave Trial Halls during the Guardian Master trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Guardian Master Council Trial Chit", true, "A sealed council trial chit recovered in the Hutlar Jedi Trial Halls during the Guardian Master trial.")]
         CapstoneGuardianMasterCouncilTrialChit = 139,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Cyclone Enclave Trial Slate", true, "An enclave training slate recovered in the Dantooine Jedi Enclave Trial Halls during the Saber Cyclone trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Cyclone Enclave Trial Slate", true, "An enclave training slate recovered in the Hutlar Jedi Trial Halls during the Saber Cyclone trial.")]
         CapstoneSaberCycloneEnclaveTrialSlate = 140,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Cyclone Kyber Focus Shard", true, "A humming kyber focus shard recovered in the Dantooine Jedi Enclave Trial Halls during the Saber Cyclone trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Cyclone Kyber Focus Shard", true, "A humming kyber focus shard recovered in the Hutlar Jedi Trial Halls during the Saber Cyclone trial.")]
         CapstoneSaberCycloneKyberFocusShard = 141,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Cyclone Fractured Trial Sigil", true, "A fractured Jedi trial sigil recovered in the Dantooine Jedi Enclave Trial Halls during the Saber Cyclone trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Cyclone Fractured Trial Sigil", true, "A fractured Jedi trial sigil recovered in the Hutlar Jedi Trial Halls during the Saber Cyclone trial.")]
         CapstoneSaberCycloneFracturedTrialSigil = 142,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Cyclone Council Trial Chit", true, "A sealed council trial chit recovered in the Dantooine Jedi Enclave Trial Halls during the Saber Cyclone trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Cyclone Council Trial Chit", true, "A sealed council trial chit recovered in the Hutlar Jedi Trial Halls during the Saber Cyclone trial.")]
         CapstoneSaberCycloneCouncilTrialChit = 143,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Absolute Defense Forge Heat Ledger", true, "A heat-scarred forge ledger recovered in the Korriban Forge Caverns during the Absolute Defense trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Absolute Defense Forge Heat Ledger", true, "A heat-scarred forge ledger recovered in the Tatooine Forge Caverns during the Absolute Defense trial.")]
         CapstoneAbsoluteDefenseForgeHeatLedger = 144,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Absolute Defense Sith Tempering Matrix", true, "A volatile Sith tempering matrix recovered in the Korriban Forge Caverns during the Absolute Defense trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Absolute Defense Sith Tempering Matrix", true, "A volatile Sith tempering matrix recovered in the Tatooine Forge Caverns during the Absolute Defense trial.")]
         CapstoneAbsoluteDefenseSithTemperingMatrix = 145,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Absolute Defense Cracked Anvil Sigil", true, "A cracked forge-anvil sigil recovered in the Korriban Forge Caverns during the Absolute Defense trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Absolute Defense Cracked Anvil Sigil", true, "A cracked forge-anvil sigil recovered in the Tatooine Forge Caverns during the Absolute Defense trial.")]
         CapstoneAbsoluteDefenseCrackedAnvilSigil = 146,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Absolute Defense Overseer's Clearance Token", true, "An overseer's clearance token recovered in the Korriban Forge Caverns during the Absolute Defense trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Absolute Defense Overseer's Clearance Token", true, "An overseer's clearance token recovered in the Tatooine Forge Caverns during the Absolute Defense trial.")]
         CapstoneAbsoluteDefenseOverseersClearanceToken = 147,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Soul Ascension Forge Heat Ledger", true, "A heat-scarred forge ledger recovered in the Korriban Forge Caverns during the Soul Ascension trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Soul Ascension Forge Heat Ledger", true, "A heat-scarred forge ledger recovered in the Tatooine Forge Caverns during the Soul Ascension trial.")]
         CapstoneSoulAscensionForgeHeatLedger = 148,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Soul Ascension Sith Tempering Matrix", true, "A volatile Sith tempering matrix recovered in the Korriban Forge Caverns during the Soul Ascension trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Soul Ascension Sith Tempering Matrix", true, "A volatile Sith tempering matrix recovered in the Tatooine Forge Caverns during the Soul Ascension trial.")]
         CapstoneSoulAscensionSithTemperingMatrix = 149,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Soul Ascension Cracked Anvil Sigil", true, "A cracked forge-anvil sigil recovered in the Korriban Forge Caverns during the Soul Ascension trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Soul Ascension Cracked Anvil Sigil", true, "A cracked forge-anvil sigil recovered in the Tatooine Forge Caverns during the Soul Ascension trial.")]
         CapstoneSoulAscensionCrackedAnvilSigil = 150,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Soul Ascension Overseer's Clearance Token", true, "An overseer's clearance token recovered in the Korriban Forge Caverns during the Soul Ascension trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Soul Ascension Overseer's Clearance Token", true, "An overseer's clearance token recovered in the Tatooine Forge Caverns during the Soul Ascension trial.")]
         CapstoneSoulAscensionOverseersClearanceToken = 151,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Forcebane Forge Heat Ledger", true, "A heat-scarred forge ledger recovered in the Korriban Forge Caverns during the Forcebane trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Forcebane Forge Heat Ledger", true, "A heat-scarred forge ledger recovered in the Tatooine Forge Caverns during the Forcebane trial.")]
         CapstoneForcebaneForgeHeatLedger = 152,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Forcebane Sith Tempering Matrix", true, "A volatile Sith tempering matrix recovered in the Korriban Forge Caverns during the Forcebane trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Forcebane Sith Tempering Matrix", true, "A volatile Sith tempering matrix recovered in the Tatooine Forge Caverns during the Forcebane trial.")]
         CapstoneForcebaneSithTemperingMatrix = 153,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Forcebane Cracked Anvil Sigil", true, "A cracked forge-anvil sigil recovered in the Korriban Forge Caverns during the Forcebane trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Forcebane Cracked Anvil Sigil", true, "A cracked forge-anvil sigil recovered in the Tatooine Forge Caverns during the Forcebane trial.")]
         CapstoneForcebaneCrackedAnvilSigil = 154,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Forcebane Overseer's Clearance Token", true, "An overseer's clearance token recovered in the Korriban Forge Caverns during the Forcebane trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Forcebane Overseer's Clearance Token", true, "An overseer's clearance token recovered in the Tatooine Forge Caverns during the Forcebane trial.")]
         CapstoneForcebaneOverseersClearanceToken = 155,
         [KeyItem(KeyItemCategoryType.QuestItems, "Crippling Defense Backroom Bout Ledger", true, "A coded backroom bout ledger recovered in the Smuggler's Moon Fight Club Backrooms during the Crippling Defense trial.")]
         CapstoneCripplingDefenseBackroomBoutLedger = 156,
@@ -442,29 +442,29 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         CapstoneOverloadBarrageFrostburnedTestCrest = 214,
         [KeyItem(KeyItemCategoryType.QuestItems, "Overload Barrage Site Chief's Override Chip", true, "A site chief's override chip recovered in the Hutlar Qion Test Site during the Overload Barrage trial.")]
         CapstoneOverloadBarrageSiteChiefsOverrideChip = 215,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Last Stand of the Light Crypt Trial Tablet", true, "An etched crypt trial tablet recovered in the Korriban Sith Crypt Depths during the Last Stand of the Light trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Last Stand of the Light Crypt Trial Tablet", true, "An etched crypt trial tablet recovered in the Mon Cala Sith Crypt Depths during the Last Stand of the Light trial.")]
         CapstoneLastStandOfTheLightCryptTrialTablet = 216,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Last Stand of the Light Ritual Focus Shard", true, "A pulsing ritual focus shard recovered in the Korriban Sith Crypt Depths during the Last Stand of the Light trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Last Stand of the Light Ritual Focus Shard", true, "A pulsing ritual focus shard recovered in the Mon Cala Sith Crypt Depths during the Last Stand of the Light trial.")]
         CapstoneLastStandOfTheLightRitualFocusShard = 217,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Last Stand of the Light Splintered Tomb Sigil", true, "A splintered Sith tomb sigil recovered in the Korriban Sith Crypt Depths during the Last Stand of the Light trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Last Stand of the Light Splintered Tomb Sigil", true, "A splintered Sith tomb sigil recovered in the Mon Cala Sith Crypt Depths during the Last Stand of the Light trial.")]
         CapstoneLastStandOfTheLightSplinteredTombSigil = 218,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Last Stand of the Light Keeper's Rite Token", true, "A crypt keeper's rite token recovered in the Korriban Sith Crypt Depths during the Last Stand of the Light trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Last Stand of the Light Keeper's Rite Token", true, "A crypt keeper's rite token recovered in the Mon Cala Sith Crypt Depths during the Last Stand of the Light trial.")]
         CapstoneLastStandOfTheLightKeepersRiteToken = 219,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Hunger of the Dark Crypt Trial Tablet", true, "An etched crypt trial tablet recovered in the Korriban Sith Crypt Depths during the Hunger of the Dark trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Hunger of the Dark Crypt Trial Tablet", true, "An etched crypt trial tablet recovered in the Mon Cala Sith Crypt Depths during the Hunger of the Dark trial.")]
         CapstoneHungerOfTheDarkCryptTrialTablet = 220,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Hunger of the Dark Ritual Focus Shard", true, "A pulsing ritual focus shard recovered in the Korriban Sith Crypt Depths during the Hunger of the Dark trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Hunger of the Dark Ritual Focus Shard", true, "A pulsing ritual focus shard recovered in the Mon Cala Sith Crypt Depths during the Hunger of the Dark trial.")]
         CapstoneHungerOfTheDarkRitualFocusShard = 221,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Hunger of the Dark Splintered Tomb Sigil", true, "A splintered Sith tomb sigil recovered in the Korriban Sith Crypt Depths during the Hunger of the Dark trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Hunger of the Dark Splintered Tomb Sigil", true, "A splintered Sith tomb sigil recovered in the Mon Cala Sith Crypt Depths during the Hunger of the Dark trial.")]
         CapstoneHungerOfTheDarkSplinteredTombSigil = 222,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Hunger of the Dark Keeper's Rite Token", true, "A crypt keeper's rite token recovered in the Korriban Sith Crypt Depths during the Hunger of the Dark trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Hunger of the Dark Keeper's Rite Token", true, "A crypt keeper's rite token recovered in the Mon Cala Sith Crypt Depths during the Hunger of the Dark trial.")]
         CapstoneHungerOfTheDarkKeepersRiteToken = 223,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Eclipse of Resolve Crypt Trial Tablet", true, "An etched crypt trial tablet recovered in the Korriban Sith Crypt Depths during the Eclipse of Resolve trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Eclipse of Resolve Crypt Trial Tablet", true, "An etched crypt trial tablet recovered in the Mon Cala Sith Crypt Depths during the Eclipse of Resolve trial.")]
         CapstoneEclipseOfResolveCryptTrialTablet = 224,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Eclipse of Resolve Ritual Focus Shard", true, "A pulsing ritual focus shard recovered in the Korriban Sith Crypt Depths during the Eclipse of Resolve trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Eclipse of Resolve Ritual Focus Shard", true, "A pulsing ritual focus shard recovered in the Mon Cala Sith Crypt Depths during the Eclipse of Resolve trial.")]
         CapstoneEclipseOfResolveRitualFocusShard = 225,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Eclipse of Resolve Splintered Tomb Sigil", true, "A splintered Sith tomb sigil recovered in the Korriban Sith Crypt Depths during the Eclipse of Resolve trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Eclipse of Resolve Splintered Tomb Sigil", true, "A splintered Sith tomb sigil recovered in the Mon Cala Sith Crypt Depths during the Eclipse of Resolve trial.")]
         CapstoneEclipseOfResolveSplinteredTombSigil = 226,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Eclipse of Resolve Keeper's Rite Token", true, "A crypt keeper's rite token recovered in the Korriban Sith Crypt Depths during the Eclipse of Resolve trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Eclipse of Resolve Keeper's Rite Token", true, "A crypt keeper's rite token recovered in the Mon Cala Sith Crypt Depths during the Eclipse of Resolve trial.")]
         CapstoneEclipseOfResolveKeepersRiteToken = 227,
         [KeyItem(KeyItemCategoryType.QuestItems, "Killzone Beacon Republic Bunker Docket", true, "A Republic bunker operations docket recovered in the Viscara Republic Engineering Bunker during the Killzone Beacon trial.")]
         CapstoneKillzoneBeaconRepublicBunkerDocket = 228,
@@ -490,29 +490,29 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         CapstoneDecisiveCommandCrackedCommandCrest = 238,
         [KeyItem(KeyItemCategoryType.QuestItems, "Decisive Command Quartermaster Override Chip", true, "A quartermaster override chip recovered in the Viscara Republic Engineering Bunker during the Decisive Command trial.")]
         CapstoneDecisiveCommandQuartermasterOverrideChip = 239,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Hold the Line Triage Ward Ledger", true, "A triage ward ledger recovered in the Dantooine Medical Sublevel during the Hold the Line trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Hold the Line Triage Ward Ledger", true, "A triage ward ledger recovered in the Mon Cala Medical Sublevel during the Hold the Line trial.")]
         CapstoneHoldTheLineTriageWardLedger = 240,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Hold the Line Kolto Conduit Coupler", true, "A pressurized kolto conduit coupler recovered in the Dantooine Medical Sublevel during the Hold the Line trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Hold the Line Kolto Conduit Coupler", true, "A pressurized kolto conduit coupler recovered in the Mon Cala Medical Sublevel during the Hold the Line trial.")]
         CapstoneHoldTheLineKoltoConduitCoupler = 241,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Hold the Line Fractured Ward Sigil", true, "A fractured medical ward sigil recovered in the Dantooine Medical Sublevel during the Hold the Line trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Hold the Line Fractured Ward Sigil", true, "A fractured medical ward sigil recovered in the Mon Cala Medical Sublevel during the Hold the Line trial.")]
         CapstoneHoldTheLineFracturedWardSigil = 242,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Hold the Line Matron's Ward Token", true, "A matron's ward token recovered in the Dantooine Medical Sublevel during the Hold the Line trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Hold the Line Matron's Ward Token", true, "A matron's ward token recovered in the Mon Cala Medical Sublevel during the Hold the Line trial.")]
         CapstoneHoldTheLineMatronsWardToken = 243,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Emergency Cocktail Triage Ward Ledger", true, "A triage ward ledger recovered in the Dantooine Medical Sublevel during the Emergency Cocktail trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Emergency Cocktail Triage Ward Ledger", true, "A triage ward ledger recovered in the Mon Cala Medical Sublevel during the Emergency Cocktail trial.")]
         CapstoneEmergencyCocktailTriageWardLedger = 244,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Emergency Cocktail Kolto Conduit Coupler", true, "A pressurized kolto conduit coupler recovered in the Dantooine Medical Sublevel during the Emergency Cocktail trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Emergency Cocktail Kolto Conduit Coupler", true, "A pressurized kolto conduit coupler recovered in the Mon Cala Medical Sublevel during the Emergency Cocktail trial.")]
         CapstoneEmergencyCocktailKoltoConduitCoupler = 245,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Emergency Cocktail Fractured Ward Sigil", true, "A fractured medical ward sigil recovered in the Dantooine Medical Sublevel during the Emergency Cocktail trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Emergency Cocktail Fractured Ward Sigil", true, "A fractured medical ward sigil recovered in the Mon Cala Medical Sublevel during the Emergency Cocktail trial.")]
         CapstoneEmergencyCocktailFracturedWardSigil = 246,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Emergency Cocktail Matron's Ward Token", true, "A matron's ward token recovered in the Dantooine Medical Sublevel during the Emergency Cocktail trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Emergency Cocktail Matron's Ward Token", true, "A matron's ward token recovered in the Mon Cala Medical Sublevel during the Emergency Cocktail trial.")]
         CapstoneEmergencyCocktailMatronsWardToken = 247,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Infinite Conduit Triage Ward Ledger", true, "A triage ward ledger recovered in the Dantooine Medical Sublevel during the Infinite Conduit trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Infinite Conduit Triage Ward Ledger", true, "A triage ward ledger recovered in the Mon Cala Medical Sublevel during the Infinite Conduit trial.")]
         CapstoneInfiniteConduitTriageWardLedger = 248,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Infinite Conduit Kolto Conduit Coupler", true, "A pressurized kolto conduit coupler recovered in the Dantooine Medical Sublevel during the Infinite Conduit trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Infinite Conduit Kolto Conduit Coupler", true, "A pressurized kolto conduit coupler recovered in the Mon Cala Medical Sublevel during the Infinite Conduit trial.")]
         CapstoneInfiniteConduitKoltoConduitCoupler = 249,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Infinite Conduit Fractured Ward Sigil", true, "A fractured medical ward sigil recovered in the Dantooine Medical Sublevel during the Infinite Conduit trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Infinite Conduit Fractured Ward Sigil", true, "A fractured medical ward sigil recovered in the Mon Cala Medical Sublevel during the Infinite Conduit trial.")]
         CapstoneInfiniteConduitFracturedWardSigil = 250,
-        [KeyItem(KeyItemCategoryType.QuestItems, "Infinite Conduit Matron's Ward Token", true, "A matron's ward token recovered in the Dantooine Medical Sublevel during the Infinite Conduit trial.")]
+        [KeyItem(KeyItemCategoryType.QuestItems, "Infinite Conduit Matron's Ward Token", true, "A matron's ward token recovered in the Mon Cala Medical Sublevel during the Infinite Conduit trial.")]
         CapstoneInfiniteConduitMatronsWardToken = 251,
         [KeyItem(KeyItemCategoryType.QuestItems, "Apex Bite Tarn Hunt Tally", true, "A scratched tarn hunt tally recovered in the Dathomir Tarn Jungle Preserve during the Apex Bite trial.")]
         CapstoneApexBiteTarnHuntTally = 252,

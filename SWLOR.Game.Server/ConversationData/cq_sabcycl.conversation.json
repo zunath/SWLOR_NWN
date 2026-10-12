@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Vortex Training Engine is offline. Now the engineers can reach the drive assemblies. You found your center under pressure; come here and I will show you how to carry that control into Saber Cyclone.",
+          "Text": "The Vortex Training Engine is offline. Now I can reach the drive assemblies. You found your center under pressure; come here and I will show you how to carry that control into Saber Cyclone.",
           "Style": 0,
           "Color": null
         }
@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I only take someone who has mastered the saberstaff. When both ends of the staff answer you without thought, come back and we will talk about the work on Dantooine.",
+          "Text": "I only take someone who has mastered the saberstaff. When both ends of the staff answer you without thought, come back and we will talk about the work on Hutlar.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Jedi Enclave Trial Halls on Dantooine are sealed. A cyclone droid cut through a stair railing before we closed them. Everyone got out; the machines stayed, repeating the last drill at full power. Disable six Cyclone Drill Droids and recover the Saber Cyclone Enclave Trial Slate.",
+          "Text": "Beneath the concrete ruin at the north end of the Cloning Test Site on Hutlar lie the Jedi Trial Halls, a training refuge built before the Mandalorians came. I took a few saberstaff students there. A cyclone droid cut through a stair railing before we sealed the halls. Everyone got out; the machines stayed, repeating the last drill at full power. Disable six Cyclone Drill Droids and recover the Saber Cyclone Enclave Trial Slate.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take this key. It opens the sealed passage a few steps inside the Jedi Enclave Library on Dantooine. Disable six Cyclone Drill Droids and bring me the Saber Cyclone Enclave Trial Slate.",
+          "Text": "Take this key. It opens the sealed blast door in the east wall of the concrete ruin at the north end of the Cloning Test Site on Hutlar, just south of the big pipe. The Trial Halls lie below. Disable six Cyclone Drill Droids and bring me the Saber Cyclone Enclave Trial Slate.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "From the Colony Central landing on Dantooine, go north through the Wild Plains to the Medical Safehouse, follow the Hidden Trail to the Enclosed Mountain, and enter the Jedi Enclave. The sealed passage is a few steps inside the Library. I stay in Tochee because the war has eyes on those ruins, and an Enclave examiner walking into them would bring that trouble down on you.",
+          "Text": "Land at the Hutlar Outpost and take the north exit onto the Qion Tundra. Go north-west into the Qion Valley, then west into the Cloning Test Site. A concrete ruin stands at its north end. The sealed blast door is in the ruin's east wall, just south of the big pipe that runs out of it. I stay in Tochee because Mandalorian scouts have seen my face near that ruin. A stranger draws less notice.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six Cyclone Drill Droids, and the Saber Cyclone Enclave Trial Slate. The passage is inside the Enclave Library on Dantooine.",
+          "Text": "Six Cyclone Drill Droids, and the Saber Cyclone Enclave Trial Slate. The blast door is in the east wall of the concrete ruin at the north end of the Cloning Test Site on Hutlar, just south of the big pipe.",
           "Style": 0,
           "Color": null
         }
@@ -562,7 +562,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Saber Cyclone Kyber Focus Shard belongs to the training array. It helps coordinate the practice emitters; return it so the technicians can trace the fault.",
+          "Text": "The Saber Cyclone Kyber Focus Shard belongs to the training array. It helps coordinate the practice emitters; return it so I can trace the fault.",
           "Style": 0,
           "Color": null
         }
@@ -588,7 +588,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Past the halls you already cleared, deeper in. Keep a way back to the Library passage.",
+          "Text": "Past the halls you already cleared, deeper in. Keep a way back to the passage you came in by.",
           "Style": 0,
           "Color": null
         }
@@ -954,7 +954,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Saber Cyclone Council Trial Chit authorizes service access to the training network. With it, the instructors can get back into their own halls.",
+          "Text": "The Saber Cyclone Council Trial Chit authorizes service access to the training network. With it, I can reach the drive assemblies myself.",
           "Style": 0,
           "Color": null
         }
@@ -1006,7 +1006,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their routines were built from recorded exercises. The engineers can rebuild the machinery once you have made the wing safe.",
+          "Text": "Their routines were built from recorded exercises. I can rebuild the machinery once you have made the wing safe.",
           "Style": 0,
           "Color": null
         }
@@ -1215,7 +1215,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The hall will stay sealed until the engineers replace the faulty controllers and test every shutdown. Nobody will be sent back into ordinary lessons while these faults remain.",
+          "Text": "The halls stay sealed until I replace the faulty controllers and test every shutdown. No student steps into a drill there while these faults remain.",
           "Style": 0,
           "Color": null
         }
@@ -1288,7 +1288,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Vortex Training Engine is offline. Now the engineers can reach the drive assemblies. You found your center under pressure; come here and I will show you how to carry that control into Saber Cyclone.",
+          "Text": "The Vortex Training Engine is offline. Now I can reach the drive assemblies. You found your center under pressure; come here and I will show you how to carry that control into Saber Cyclone.",
           "Style": 0,
           "Color": null
         }
@@ -1309,7 +1309,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Tochee on Tatooine is far enough from the Enclave for visitors to speak freely. I teach control of a saberstaff, not obedience to a gate guard. The damaged halls are the Jedi Enclave Trial Halls on Dantooine. Take the key there, and return to me in Tochee after the drill.",
+          "Text": "Tochee on Tatooine answers to no faction, so visitors here can speak freely. I teach control of a saberstaff, not loyalty to a banner. The damaged halls are the Jedi Trial Halls, hidden beneath a ruin in the Cloning Test Site on Hutlar. Take the key there, and return to me in Tochee after the drill.",
           "Style": 0,
           "Color": null
         }

@@ -51,19 +51,19 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteSkill(SkillType.Saberstaff, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneDantooineJediEnclaveTrialHallsKey);
+                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneHutlarJediTrialHallsKey);
                 })
                 .OnAbandonAction(player =>
                 {
-                    RemoveDantooineJediEnclaveTrialHallsAccessIfNoLongerNeeded(player);
+                    RemoveHutlarJediTrialHallsAccessIfNoLongerNeeded(player);
                 })
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneSaberCycloneEnclaveTrialSlate)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneSaberCycloneEnclaveTrialSlate)
 
                 .AddState()
                 .SetStateJournalText(
-                    "Jora Sel gave you the Dantooine Jedi Enclave Trial Halls Key. Disable six Cyclone Drill Droids in the Dantooine Jedi Enclave Trial Halls, through the sealed passage just inside the Jedi Enclave Library on Dantooine, and recover the Saber Cyclone Enclave Trial Slate.")
-                .AddKillObjective(NPCGroupType.Dantooine_CycloneDrillDroid, 6)
+                    "Jora Sel gave you the Hutlar Jedi Trial Halls Key. From the Hutlar Outpost, take the north exit onto the Qion Tundra, go north-west into the Qion Valley, then west into the Cloning Test Site. Through the sealed blast door in the east wall of the concrete ruin at the site's north end, just south of the big pipe, disable six Cyclone Drill Droids in the Jedi Trial Halls and recover the Saber Cyclone Enclave Trial Slate.")
+                .AddKillObjective(NPCGroupType.Hutlar_CycloneDrillDroid, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneEnclaveTrialSlate)
 
                 .AddState()
@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable five Cyclone Duelist Droids deeper in the Dantooine Jedi Enclave Trial Halls on Dantooine and recover the Saber Cyclone Kyber Focus Shard.")
-                .AddKillObjective(NPCGroupType.Dantooine_CycloneDuelistDroid, 5)
+                    "Disable five Cyclone Duelist Droids deeper in the Jedi Trial Halls on Hutlar and recover the Saber Cyclone Kyber Focus Shard.")
+                .AddKillObjective(NPCGroupType.Hutlar_CycloneDuelistDroid, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneKyberFocusShard)
 
                 .AddState()
@@ -104,8 +104,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, disable the Cyclone Gatekeeper Droid guarding the approach to the Saber Trial Chamber in the Dantooine Jedi Enclave Trial Halls on Dantooine and recover the Saber Cyclone Fractured Trial Sigil.")
-                .AddKillObjective(NPCGroupType.Dantooine_CycloneGatekeeperDroid, 1)
+                    "With at least two allies, disable the Cyclone Gatekeeper Droid guarding the approach to the Saber Trial Chamber in the Jedi Trial Halls on Hutlar and recover the Saber Cyclone Fractured Trial Sigil.")
+                .AddKillObjective(NPCGroupType.Hutlar_CycloneGatekeeperDroid, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneFracturedTrialSigil)
 
                 .AddState()
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Disable four Cyclone Examiner Droids guarding the control systems of the Dantooine Jedi Enclave Trial Halls on Dantooine and recover the Saber Cyclone Council Trial Chit.")
-                .AddKillObjective(NPCGroupType.Dantooine_CycloneExaminerDroid, 4)
+                    "Disable four Cyclone Examiner Droids guarding the control systems of the Jedi Trial Halls on Hutlar and recover the Saber Cyclone Council Trial Chit.")
+                .AddKillObjective(NPCGroupType.Hutlar_CycloneExaminerDroid, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneSaberCycloneCouncilTrialChit)
 
                 .AddState()
@@ -144,8 +144,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, disable the Vortex Training Engine in the Saber Trial Chamber at the north end of the Dantooine Jedi Enclave Trial Halls on Dantooine.")
-                .AddKillObjective(NPCGroupType.Dantooine_VortexTrainingEngine, 1)
+                    "With at least two allies, disable the Vortex Training Engine in the Saber Trial Chamber at the north end of the Jedi Trial Halls on Hutlar.")
+                .AddKillObjective(NPCGroupType.Hutlar_VortexTrainingEngine, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -164,19 +164,19 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteSkill(SkillType.Saberstaff, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneDantooineMedicalSublevelKey);
+                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneMonCalaMedicalSublevelKey);
                 })
                 .OnAbandonAction(player =>
                 {
-                    RemoveDantooineMedicalSublevelAccessIfNoLongerNeeded(player);
+                    RemoveMonCalaMedicalSublevelAccessIfNoLongerNeeded(player);
                 })
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneInfiniteConduitTriageWardLedger)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneInfiniteConduitTriageWardLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "Tessa Quell gave you the Dantooine Medical Sublevel Key. Defeat six Infinite Conduit adepts in the Dantooine Medical Sublevel, behind the sealed door on the far west wall of the Abandoned Warehouse on Dantooine's Jungle Mountain, and recover the Infinite Conduit Triage Ward Ledger.")
-                .AddKillObjective(NPCGroupType.Dantooine_InfiniteConduit_Adept, 6)
+                    "Tessa Quell gave you the Mon Cala Medical Sublevel Key. On Mon Cala, travel east from Dac City through the Coral Isles and enter the Coral Isles Facility on the south-west side of the outer isles, held by eco-terrorists. The sealed door into the Medical Sublevel is on the north wall, just east of where the entry tube opens in. Defeat six Infinite Conduit adepts there and recover the Infinite Conduit Triage Ward Ledger.")
+                .AddKillObjective(NPCGroupType.MonCala_InfiniteConduit_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInfiniteConduitTriageWardLedger)
 
                 .AddState()
@@ -196,8 +196,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat five Infinite Conduit specialists deeper in the Dantooine Medical Sublevel on Dantooine and recover the Infinite Conduit Kolto Conduit Coupler.")
-                .AddKillObjective(NPCGroupType.Dantooine_InfiniteConduit_Specialist, 5)
+                    "Defeat five Infinite Conduit specialists deeper in the Medical Sublevel on Mon Cala and recover the Infinite Conduit Kolto Conduit Coupler.")
+                .AddKillObjective(NPCGroupType.MonCala_InfiniteConduit_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInfiniteConduitKoltoConduitCoupler)
 
                 .AddState()
@@ -217,8 +217,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Infinite Conduit warden by the bloodstained altar in the north of the Dantooine Medical Sublevel on Dantooine and recover the Infinite Conduit Fractured Ward Sigil.")
-                .AddKillObjective(NPCGroupType.Dantooine_InfiniteConduit_Warden, 1)
+                    "With at least two allies, defeat the Infinite Conduit warden by the bloodstained altar in the north of the Medical Sublevel on Mon Cala and recover the Infinite Conduit Fractured Ward Sigil.")
+                .AddKillObjective(NPCGroupType.MonCala_InfiniteConduit_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInfiniteConduitFracturedWardSigil)
 
                 .AddState()
@@ -238,8 +238,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Defeat the four members of the Infinite Conduit inner circle in the Dantooine Medical Sublevel on Dantooine and recover the Infinite Conduit Matron's Ward Token.")
-                .AddKillObjective(NPCGroupType.Dantooine_InfiniteConduit_InnerCircle, 4)
+                    "Defeat the four members of the Infinite Conduit inner circle in the Medical Sublevel on Mon Cala and recover the Infinite Conduit Matron's Ward Token.")
+                .AddKillObjective(NPCGroupType.MonCala_InfiniteConduit_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInfiniteConduitMatronsWardToken)
 
                 .AddState()
@@ -257,8 +257,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Infinite Conduit master in the Protected Ward, through the door in the north-east corner of the Dantooine Medical Sublevel on Dantooine. His defeat is all the proof Tessa Quell needs.")
-                .AddKillObjective(NPCGroupType.Dantooine_InfiniteConduit_Master, 1)
+                    "With at least two allies, defeat the Infinite Conduit master in the Protected Ward, through the door in the north-east corner of the Medical Sublevel on Mon Cala. His defeat is all the proof Tessa Quell needs.")
+                .AddKillObjective(NPCGroupType.MonCala_InfiniteConduit_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        private static void RemoveDantooineJediEnclaveTrialHallsAccessIfNoLongerNeeded(uint player)
+        private static void RemoveHutlarJediTrialHallsAccessIfNoLongerNeeded(uint player)
         {
             var questIds = new[]
             {
@@ -292,10 +292,10 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 SaberstaffCapstoneQuestDefinition.SaberCycloneMasteryQuestId,
             };
 
-            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneDantooineJediEnclaveTrialHallsKey, questIds);
+            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneHutlarJediTrialHallsKey, questIds);
         }
 
-        private static void RemoveDantooineMedicalSublevelAccessIfNoLongerNeeded(uint player)
+        private static void RemoveMonCalaMedicalSublevelAccessIfNoLongerNeeded(uint player)
         {
             var questIds = new[]
             {
@@ -316,7 +316,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 SaberstaffCapstoneQuestDefinition.InfiniteConduitMasteryQuestId,
             };
 
-            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneDantooineMedicalSublevelKey, questIds);
+            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneMonCalaMedicalSublevelKey, questIds);
         }
 
         private static void RemoveAreaAccessIfNoLongerNeeded(

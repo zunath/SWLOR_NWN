@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Infinite Conduit in Dantooine Medical Sublevel."
+    "value": "Infinite Conduit specialist in Mon Cala - Medical Sublevel."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Infinite Conduit in Dantooine Medical Sublevel."
+      "0": "A cyborg in kolto-stained work clothes who rides long stillness into sudden, violent bursts. Between surges he is slow, almost gentle, his twin electroblade resting low; then everything comes at once."
     }
   },
   "Dex": {

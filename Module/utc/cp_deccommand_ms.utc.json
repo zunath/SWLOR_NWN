@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Decisive Command in Viscara Republic Engineering Bunker."
+    "value": "Decisive Command master, Halden Rhee, in Viscara - Engineering Command Room."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Decisive Command in Viscara Republic Engineering Bunker."
+      "0": "Halden Rhee, a human man in a Republic commander's uniform, was once a trusted adjutant and is now master of the bunker he refused to decommission. He carries a blaster pistol, but the garrison moves the instant he speaks, and that voice is the weapon to fear."
     }
   },
   "Dex": {

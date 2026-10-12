@@ -218,7 +218,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You know the rule of my counter by now: if you're standing there, you're holding something. Here - keep that level while I titrate. The sublevel drains clean these days, the colony clinics on Dantooine got their kolto back, and the only person building an emergency cocktail below Dantooine is you, when someone's dying and the minutes run short. That's how it should be. I even slept last week. Don't spread that around.",
+          "Text": "You know the rule of my counter by now: if you're standing there, you're holding something. Here - keep that level while I titrate. The sublevel under the Coral Isles drains clean these days, the clinics in Dac City got their kolto back, and the only one building an emergency cocktail now is you, when someone's dying and the minutes run short. That's how it should be. I even slept last week. Don't spread that around.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Hold this vial - level, don't tilt it, it's mid-titration and I don't own a spare. Good. You have working hands, so listen. There's a crew in the Dantooine Medical Sublevel running my discipline backwards: hot stabilizer batches, mixed fast, tested on patients who can't crawl off the cot. Their adepts hold the arms down. Put six of them down instead, and bring me the book they log the doses in - the Emergency Cocktail Triage Ward Ledger. My format, their handwriting. I want it off their counter and onto mine.",
+          "Text": "Hold this vial - level, don't tilt it, it's mid-titration and I don't own a spare. Good. You have working hands, so listen. There's a crew in the Medical Sublevel on Mon Cala running my discipline backwards: hot stabilizer batches, mixed fast, tested on patients who can't crawl off the cot. Their adepts hold the arms down. Put six of them down instead, and bring me the book they log the doses in - the Emergency Cocktail Triage Ward Ledger. My format, their handwriting. I want it off their counter and onto mine.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take the key off that hook - the one with the red tag. It opens the sealed way down on the far west wall of the abandoned warehouse by the Jungle Mountain on Dantooine. Six adepts, one ledger, and don't drink anything you find in an unmarked flask. Minutes matter more the longer you stand here.",
+          "Text": "Take the key off that hook - the one with the red tag. On Mon Cala, go east from Dac City through the Coral Isles to the facility on the south-west side of the outer isles. Eco-terrorists hold it, but you won't have to go far: the sealed door is on the north wall, just east of where the entry tube opens in. Six adepts, one ledger, and don't drink anything you find in an unmarked flask. Minutes matter more the longer you stand here.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Dantooine. From the landing pad at Colony Central, go north through the Wild Plains to the Medical Safehouse, west across the Iriaz Fields to the Ruined Farmlands, then north through the Forsaken Jungles to the Jungle Mountain. There's an abandoned warehouse on the mountain's north-west side. The way down is on its far west wall. Below it is the colony's old medical station, sealed off from the people it was built for. That's the Dantooine Medical Sublevel.",
+          "Text": "Mon Cala. From the landing at the \"Elite\" Hotel in Dac City, go out through the surface streets and east into the Coral Isles - the inner isles, then the outer. On the south-west side of the outer isles is the Coral Isles Facility. Eco-terrorists hold it, so keep your head down. The sealed door is on the north wall, right beside where the entry tube opens in - you'll see it the moment you step inside. Below it is the facility's old medical station. That's the Medical Sublevel.",
           "Style": 0,
           "Color": null
         }
@@ -515,7 +515,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Same warehouse, same key. The specialists work the kolto lines all over the sublevel. Cut them away before they can vent anything at you, and bring the coupler back intact. A cracked one tells me nothing except that you were careless.",
+          "Text": "Same facility, same key. The specialists work the kolto lines all over the sublevel. Cut them away before they can vent anything at you, and bring the coupler back intact. A cracked one tells me nothing except that you were careless.",
           "Style": 0,
           "Color": null
         }
@@ -562,7 +562,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Because a splice fitting is a signature. The coupler will show the machining, the batch residue, the draw rate - enough for me to prove to the colony council on Dantooine that their own kolto feed ran the operation. The ledger told me what they did. The coupler tells me what it cost the clinics upstairs.",
+          "Text": "Because a splice fitting is a signature. The coupler will show the machining, the batch residue, the draw rate - enough for me to prove to the healers in Dac City that the kolto meant for their clinics ran the operation. The ledger told me what they did. The coupler tells me what it cost the clinics in the city.",
           "Style": 0,
           "Color": null
         }
@@ -661,7 +661,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Look at this draw gauge - they were pulling triple what a clinic pulls in a full emergency, around the clock. This goes to the colony council with my compliments and your fingerprints wiped off. Credits in the drawer. You're becoming a line item in my budget, which is the closest thing to affection I keep in stock.",
+          "Text": "Look at this draw gauge - they were pulling triple what a clinic pulls in a full emergency, around the clock. This goes to the healers in Dac City with my compliments and your fingerprints wiped off. Credits in the drawer. You're becoming a line item in my budget, which is the closest thing to affection I keep in stock.",
           "Style": 0,
           "Color": null
         }
@@ -745,7 +745,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "He ran a trauma ward in the Dantooine colony for six years. Best hands I ever watched work - and then he decided consent was a bottleneck. Now he guards their clean room and doses himself from the stock. Whatever speed and strength you're imagining, add more, and remember he knows exactly where you keep your arteries. Professionally.",
+          "Text": "He ran a trauma ward in Dac City for six years. Best hands I ever watched work - and then he decided consent was a bottleneck. Now he guards their clean room and doses himself from the stock. Whatever speed and strength you're imagining, add more, and remember he knows exactly where you keep your arteries. Professionally.",
           "Style": 0,
           "Color": null
         }
@@ -870,7 +870,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "There's the crack, right through the ward mark. They wanted the joke on record; now it's evidence. The clean room's dark, the warden's off the board, and the colony owes you more than what's in my drawer - but the drawer is what I control, so take it. And tell your two they have standing credit at my counter. That's not nothing.",
+          "Text": "There's the crack, right through the ward mark. They wanted the joke on record; now it's evidence. The clean room's dark, the warden's off the board, and Dac City owes you more than what's in my drawer - but the drawer is what I control, so take it. And tell your two they have standing credit at my counter. That's not nothing.",
           "Style": 0,
           "Color": null
         }
@@ -954,7 +954,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The founders. Two washed out of the colony's medical certification, one mixed for a mercenary column, and the fourth - the fourth trained me, years ago, which is a sentence I'd rather you forgot. They've each replaced so much of themselves you'd need a mechanic to find the original patient. Every dose in that ledger traces uphill to those four signatures.",
+          "Text": "The founders. Two washed out of medical certification in Dac City, one mixed for a mercenary column, and the fourth - the fourth trained me, years ago, which is a sentence I'd rather you forgot. They've each replaced so much of themselves you'd need a mechanic to find the original patient. Every dose in that ledger traces uphill to those four signatures.",
           "Style": 0,
           "Color": null
         }
@@ -980,7 +980,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Before the warehouse above went dark, the sublevel's wards answered to a matron, healing colonists nobody else would take. Whoever held her token answered for every patient below. The circle took it because holding it says the sublevel answers to them. I don't run on sentiment, but I make an exception for that piece of brass.",
+          "Text": "Before the eco-terrorists took the facility above, the sublevel's wards answered to a matron, healing divers and isle crews nobody else would take. Whoever held her token answered for every patient below. The circle took it because holding it says the sublevel answers to them. I don't run on sentiment, but I make an exception for that piece of brass.",
           "Style": 0,
           "Color": null
         }
@@ -1309,7 +1309,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Medshed on Smuggler's Moon needed working hands. I needed a counter where the next patient could reach me without a Republic escort. I don't check allegiance before I stop bleeding. The crew is still in the Dantooine Medical Sublevel on Dantooine. Bring their dose records back to this counter.",
+          "Text": "The Medshed on Smuggler's Moon needed working hands. I needed a counter where the next patient could reach me without a Republic escort. I don't check allegiance before I stop bleeding. The crew is in the Medical Sublevel under the Coral Isles Facility on Mon Cala - nobody's army holds it, just eco-terrorists squatting on top. Bring their dose records back to this counter.",
           "Style": 0,
           "Color": null
         }

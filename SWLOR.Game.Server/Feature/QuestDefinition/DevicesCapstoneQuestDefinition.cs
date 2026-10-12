@@ -314,7 +314,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Aric Jorr gave you the Viscara Republic Engineering Bunker Key. Travel to Viscara, leave Veles by the south gate into the Wildlands, and head west through the Crossroads West to Outpost Hope; the bunker door is beside the elevator on the Combat Deck. Defeat six Killzone Beacon adepts inside and recover the Killzone Beacon Republic Bunker Docket.")
+                    "Aric Jorr gave you the Viscara Republic Engineering Bunker Key. Travel to Viscara, leave Veles by the south gate into the Wildlands, go south to the Lake, and head west through the Eastern Swamplands into the Western Swamplands, where a weathered concrete bunker sits half-sunk in the swamp a short walk west of where you arrive, its sealed door facing south. Defeat six Killzone Beacon adepts inside and recover the Killzone Beacon Republic Bunker Docket.")
                 .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillzoneBeaconRepublicBunkerDocket)
 
@@ -335,7 +335,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Return to the Viscara Republic Engineering Bunker, beside the Combat Deck elevator in Outpost Hope on Viscara, defeat five Killzone Beacon specialists, and recover the Killzone Beacon Shield Grid Relay.")
+                    "Return to the Viscara Republic Engineering Bunker in the Swamplands of Viscara, defeat five Killzone Beacon specialists, and recover the Killzone Beacon Shield Grid Relay.")
                 .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillzoneBeaconShieldGridRelay)
 
@@ -356,7 +356,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Bring two trusted fighters to the Viscara Republic Engineering Bunker, beside the Combat Deck elevator in Outpost Hope on Viscara, defeat the Killzone Beacon warden, and recover the Killzone Beacon Cracked Command Crest.")
+                    "Bring two trusted fighters to the Viscara Republic Engineering Bunker in the Swamplands of Viscara, defeat the Killzone Beacon warden, and recover the Killzone Beacon Cracked Command Crest.")
                 .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillzoneBeaconCrackedCommandCrest)
 
@@ -377,7 +377,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Return to the Viscara Republic Engineering Bunker, beside the Combat Deck elevator in Outpost Hope on Viscara, defeat the four members of the Killzone Beacon inner circle, and recover the Killzone Beacon Quartermaster Override Chip.")
+                    "Return to the Viscara Republic Engineering Bunker in the Swamplands of Viscara, defeat the four members of the Killzone Beacon inner circle, and recover the Killzone Beacon Quartermaster Override Chip.")
                 .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillzoneBeaconQuartermasterOverrideChip)
 
@@ -396,7 +396,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Bring two trusted fighters to the Viscara Republic Engineering Bunker, beside the Combat Deck elevator in Outpost Hope on Viscara, and defeat the Killzone Beacon master.")
+                    "Bring two trusted fighters to the Viscara Republic Engineering Bunker in the Swamplands of Viscara and defeat the Killzone Beacon master.")
                 .AddKillObjective(NPCGroupType.Viscara_KillzoneBeacon_Master, 1)
 
                 .AddState()
@@ -427,7 +427,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Nella Voss gave you the Viscara Republic Engineering Bunker Key. Travel to Viscara, leave Veles by the south gate into the Wildlands, and head west through the Crossroads West to Outpost Hope; the bunker door is beside the elevator on the Combat Deck. Defeat six Emergency Bunker adepts inside and recover the Emergency Bunker Republic Bunker Docket.")
+                    "Nella Voss gave you the Viscara Republic Engineering Bunker Key. Travel to Viscara, leave Veles by the south gate into the Wildlands, go south to the Lake, and head west through the Eastern Swamplands into the Western Swamplands, where a weathered concrete bunker sits half-sunk in the swamp a short walk west of where you arrive, its sealed door facing south. Defeat six Emergency Bunker adepts inside and recover the Emergency Bunker Republic Bunker Docket.")
                 .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyBunkerRepublicBunkerDocket)
 
@@ -448,7 +448,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Return to the Viscara Republic Engineering Bunker, beside the Combat Deck elevator in Outpost Hope on Viscara, defeat five Emergency Bunker specialists, and recover the Emergency Bunker Shield Grid Relay.")
+                    "Return to the Viscara Republic Engineering Bunker in the Swamplands of Viscara, defeat five Emergency Bunker specialists, and recover the Emergency Bunker Shield Grid Relay.")
                 .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyBunkerShieldGridRelay)
 
@@ -469,7 +469,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Bring two trusted fighters to the Viscara Republic Engineering Bunker, beside the Combat Deck elevator in Outpost Hope on Viscara, defeat the Emergency Bunker warden, and recover the Emergency Bunker Cracked Command Crest.")
+                    "Bring two trusted fighters to the Viscara Republic Engineering Bunker in the Swamplands of Viscara, defeat the Emergency Bunker warden, and recover the Emergency Bunker Cracked Command Crest.")
                 .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyBunkerCrackedCommandCrest)
 
@@ -490,7 +490,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Return to the Viscara Republic Engineering Bunker, beside the Combat Deck elevator in Outpost Hope on Viscara, defeat the four members of the Emergency Bunker inner circle, and recover the Emergency Bunker Quartermaster Override Chip.")
+                    "Return to the Viscara Republic Engineering Bunker in the Swamplands of Viscara, defeat the four members of the Emergency Bunker inner circle, and recover the Emergency Bunker Quartermaster Override Chip.")
                 .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEmergencyBunkerQuartermasterOverrideChip)
 
@@ -509,7 +509,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Bring two trusted fighters to the Viscara Republic Engineering Bunker, beside the Combat Deck elevator in Outpost Hope on Viscara, and defeat the Emergency Bunker master.")
+                    "Bring two trusted fighters to the Viscara Republic Engineering Bunker in the Swamplands of Viscara and defeat the Emergency Bunker master.")
                 .AddKillObjective(NPCGroupType.Viscara_EmergencyBunker_Master, 1)
 
                 .AddState()

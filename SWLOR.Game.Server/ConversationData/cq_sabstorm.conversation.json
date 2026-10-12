@@ -239,7 +239,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I only take students who have mastered the lightsaber. Come back when the blade answers you without thought, and we will talk about the work on Dantooine.",
+          "Text": "I only take students who have mastered the lightsaber. Come back when the blade answers you without thought, and we will talk about the work on Hutlar.",
           "Style": 0,
           "Color": null
         }
@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Drop the rear shoulder. There. Now listen. The training network in the Jedi Enclave Trial Halls on Dantooine has locked out its keepers and raised its drill droids to lethal output. I wrote the recordings those droids fight from, so this is mine to answer for. Disable six Storm Drill Droids and recover the Saber Storm Enclave Trial Slate. It logged every shutdown that failed.",
+          "Text": "Drop the rear shoulder. There. Now listen. Beneath the concrete ruin at the north end of the Cloning Test Site on Hutlar lie the Jedi Trial Halls, a training refuge built in secret before the Mandalorians came. Its drill droids still run, and their safeties have failed. I gave them the recordings they fight from, so this is mine to answer for. Disable six Storm Drill Droids and recover the Saber Storm Enclave Trial Slate. It logged every shutdown that failed.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Take this key. It opens the sealed passage a few steps inside the Jedi Enclave Library on Dantooine. Disable six Storm Drill Droids and bring me the Saber Storm Enclave Trial Slate.",
+          "Text": "Take this key. It opens the sealed blast door in the east wall of the concrete ruin at the north end of the Cloning Test Site on Hutlar, just south of the big pipe. The Trial Halls lie below. Disable six Storm Drill Droids and bring me the Saber Storm Enclave Trial Slate.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "From the Colony Central landing on Dantooine, go north through the Wild Plains to the Medical Safehouse, take the Hidden Trail to the Enclosed Mountain, and enter the Jedi Enclave. The sealed passage is a few steps inside the Library. I stay here because Malak's agents watch those ruins for any instructor who comes back. I will not lead them to you.",
+          "Text": "Land at the Hutlar Outpost and take the north exit onto the Qion Tundra. Go north-west into the Qion Valley, then west into the Cloning Test Site. A concrete ruin stands at its north end. The sealed blast door is in the ruin's east wall, just south of the big pipe that runs out of it. I stay here because those droids learned every cut from me. They would read my attack before I made it.",
           "Style": 0,
           "Color": null
         }
@@ -405,7 +405,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Six Storm Drill Droids, and the Saber Storm Enclave Trial Slate. The passage is inside the Enclave Library on Dantooine.",
+          "Text": "Six Storm Drill Droids, and the Saber Storm Enclave Trial Slate. The blast door is in the east wall of the concrete ruin at the north end of the Cloning Test Site on Hutlar, just south of the big pipe.",
           "Style": 0,
           "Color": null
         }
@@ -562,7 +562,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Saber Storm Kyber Focus Shard belongs to the training array. It helps coordinate the practice emitters; return it so the technicians can trace the fault.",
+          "Text": "The Saber Storm Kyber Focus Shard belongs to the training array. It helps coordinate the practice emitters; return it so I can trace the fault.",
           "Style": 0,
           "Color": null
         }
@@ -588,7 +588,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Past the halls you already cleared, deeper in. Keep a way back to the Library passage.",
+          "Text": "Past the halls you already cleared, deeper in. Keep a way back to the passage you came in by.",
           "Style": 0,
           "Color": null
         }
@@ -954,7 +954,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The Saber Storm Council Trial Chit authorizes service access to the training network. With it, the instructors can get back into their own halls.",
+          "Text": "The Saber Storm Council Trial Chit authorizes service access to the training network. With it, I can reach the control systems myself.",
           "Style": 0,
           "Color": null
         }
@@ -1006,7 +1006,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Their routines were built from recorded exercises. The engineers can rebuild the machinery once you have made the wing safe.",
+          "Text": "Their routines were built from my recorded exercises. I can rebuild the machinery once you have made the wing safe.",
           "Style": 0,
           "Color": null
         }
@@ -1215,7 +1215,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The hall will stay sealed until the engineers replace the faulty controllers and test every shutdown. Nobody will be sent back into ordinary lessons while these faults remain.",
+          "Text": "The halls stay sealed until I replace the faulty controllers and test every shutdown myself. No student trains there again while these faults remain.",
           "Style": 0,
           "Color": null
         }
@@ -1309,7 +1309,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "I meet students at the Anchorhead spaceport on Tatooine now. A lethal training network is everyone's problem; an Enclave gate shouldn't decide who helps shut it down. Travel to the Jedi Enclave Trial Halls on Dantooine with the key, and bring the training records back to me at this spaceport.",
+          "Text": "I meet students here at the Anchorhead spaceport on Tatooine, where anyone can land without answering to a banner. The trial is far from here, in the hidden Jedi Trial Halls beneath a ruin in the Cloning Test Site on Hutlar. Take the key there, and bring the training records back to me at this spaceport.",
           "Style": 0,
           "Color": null
         }

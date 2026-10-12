@@ -260,7 +260,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "You moved on the first word. That buys you the briefing. The Republic Engineering Bunker at Outpost Hope on Viscara was my last command. My old adjutant sealed it from the inside, kept the garrison, and drills them in a command style with no oath in it - orders as fear, obedience as reflex. His junior officers hold the outer galleries; the garrison calls them adepts. Put six of them down and bring me the Republic Bunker Docket from the gallery duty desk. I intend to read exactly what my command has become.",
+          "Text": "You moved on the first word. That buys you the briefing. The Republic Engineering Bunker in the Viscara swamps was my last command. The Republic abandoned it; my old adjutant did not. He sealed it from the inside, kept the garrison, and drills them in a command style with no oath in it - orders as fear, obedience as reflex. His junior officers hold the outer galleries; the garrison calls them adepts. Put six of them down and bring me the Republic Bunker Docket from the gallery duty desk.",
           "Style": 0,
           "Color": null
         }
@@ -306,7 +306,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "This key answers the bunker's door - command privilege they never thought to revoke. Land at the Veles starport on Viscara, go south through the gate into the Wildlands, west to the Crossroads West, and west again to the Republic Base. Inside Outpost Hope, take the elevator up to the Combat Deck; the bunker door is right beside it. Go in through the outer galleries and do not stop to argue with anyone. You are there to take their paperwork and their confidence in the same hour.",
+          "Text": "This key answers the bunker's outer door - command privilege they never thought to revoke. Land at the Veles starport, go south through the gate into the Wildlands, south again to the Lake, then west through the Eastern Swamplands into the Western. The bunker is weathered concrete half-sunk in the swamp, a short walk west, its door facing south. Go in through the outer galleries and do not stop to argue with anyone. You are there to take their paperwork and their confidence in the same hour.",
           "Style": 0,
           "Color": null
         }
@@ -353,7 +353,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Halden Rhee. Twelve years my adjutant, and the finest executor of orders I ever signed for. When I retired, the Republic gave him the bunker to decommission. Instead he sealed it and built a chain of command that answers to him alone. Outpost Hope keeps the door shut and the scandal quiet; it will not storm its own soldiers. They are not evil. They are obedient - which is worse, because it is almost the virtue I taught them.",
+          "Text": "Halden Rhee. Twelve years my adjutant, and the finest executor of orders I ever signed for. When I retired, the Republic gave him the bunker to decommission and meant to leave it to the swamp. Instead he sealed it and built a chain of command that answers to him alone. The Republic wrote the place off and kept the scandal quiet; it will not storm its own soldiers. They are not evil. They are obedient - which is worse, because it is almost the virtue I taught them.",
           "Style": 0,
           "Color": null
         }
@@ -473,7 +473,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "The docket says Rhee moved his veterans to the shield grid. The bunker generates its own defensive screen, and his specialists keep it humming so no Republic column can force the door. Five of them hold the grid chambers. Kill the five and pull the Shield Grid Relay from the master junction. Without the relay his wall of light dies, and a garrison that cannot hide behind a shield has to start answering questions.",
+          "Text": "The docket says Rhee moved his veterans to the shield grid. The bunker generates its own defensive screen, and his specialists keep it humming so no one can force the door. Five of them hold the grid chambers. Kill the five and pull the Shield Grid Relay from the master junction. Without the relay his wall of light dies, and a garrison that cannot hide behind a shield has to start answering questions.",
           "Style": 0,
           "Color": null
         }
@@ -635,7 +635,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Outpost Hope logged the bunker's shield going dark last night. If the relay is in your pack, the fortress problem is over and the criminal problem is all that is left. Let me see it.",
+          "Text": "Swamp hunters out of Veles say the glow over the bunker died last night. If the relay is in your pack, the fortress problem is over and the criminal problem is all that is left. Let me see it.",
           "Style": 0,
           "Color": null
         }
@@ -1309,7 +1309,7 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "Landing Pads, Smuggler's Moon. Crews arrive, crews leave, and every one of them needs someone to give the first order when a deal goes wrong. I test the order you give, not the flag over your berth. Rhee holds the Republic Engineering Bunker beside the Combat Deck elevator in Outpost Hope, on Viscara. Your reports come back to me here at the pads.",
+          "Text": "Landing Pads, Smuggler's Moon. Crews arrive, crews leave, and every one of them needs someone to give the first order when a deal goes wrong. I test the order you give, not the flag over your berth. Rhee holds the Republic Engineering Bunker out in the Viscara swamps. The Republic abandoned it, and no flag flies over it now but his. Your reports come back to me here at the pads.",
           "Style": 0,
           "Color": null
         }

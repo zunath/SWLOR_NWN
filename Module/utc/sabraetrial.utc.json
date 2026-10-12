@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "A malfunctioning training construct in the sealed Dantooine Jedi Enclave Trial Halls. Its combat routines no longer obey the safety shutdown. Disable its chassis so the enclave can repair the training network."
+    "value": "Sabrae Training Engine rare elite in Hutlar - Jedi Trial Halls."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A malfunctioning training construct in the sealed Dantooine Jedi Enclave Trial Halls. Its combat routines no longer obey the safety shutdown. Disable its chassis so the enclave can repair the training network."
+      "0": "A tall training engine with a long blade, built to run the hardest trials in the Jedi halls hidden beneath a ruin in the Cloning Test Site. It wanders the corridors looking for students that left long ago, and its safeties no longer hold it back."
     }
   },
   "Dex": {

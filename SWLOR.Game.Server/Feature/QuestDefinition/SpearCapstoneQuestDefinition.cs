@@ -51,19 +51,19 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteSkill(SkillType.Spear, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneKorribanForgeCavernsKey);
+                    KeyItem.GiveKeyItem(player, KeyItemType.CapstoneTatooineForgeCavernsKey);
                 })
                 .OnAbandonAction(player =>
                 {
-                    RemoveKorribanForgeCavernsAccessIfNoLongerNeeded(player);
+                    RemoveTatooineForgeCavernsAccessIfNoLongerNeeded(player);
                 })
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneForcebaneForgeHeatLedger)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneForcebaneForgeHeatLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    "Maar Veth gave you the Korriban Forge Caverns Key. On Korriban, take the Forgeworks key from the Sith Inquisitor in the Sith Fortress Courtyard, then cross the Forgeworks to the sealed passage in its far north-east corner and enter the Korriban Forge Caverns. Kill six Forcebane adepts and secure the Forcebane Forge Heat Ledger they keep by the crucibles.")
-                .AddKillObjective(NPCGroupType.Korriban_Forcebane_Adept, 6)
+                    "Maar Veth gave you the Tatooine Forge Caverns Key. On Tatooine, leave the Southern Entrance of Anchorhead by its east side into the Rocky Desert, then head north into the North Mine Cliffs and enter the Forge Caverns through the sealed blast door in the rock mesa straight ahead. Kill six Forcebane adepts and secure the Forcebane Forge Heat Ledger they keep by the crucibles.")
+                .AddKillObjective(NPCGroupType.Tatooine_Forcebane_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneForgeHeatLedger)
 
                 .AddState()
@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill five Forcebane specialists along the tempering line of the Korriban Forge Caverns on Korriban and secure the Forcebane Sith Tempering Matrix.")
-                .AddKillObjective(NPCGroupType.Korriban_Forcebane_Specialist, 5)
+                    "Kill five Forcebane specialists along the tempering line of the Forge Caverns on Tatooine and secure the Forcebane Sith Tempering Matrix.")
+                .AddKillObjective(NPCGroupType.Tatooine_Forcebane_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneSithTemperingMatrix)
 
                 .AddState()
@@ -104,8 +104,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, kill the Forcebane warden at the trial altar on the east side of the Korriban Forge Caverns on Korriban and secure the Forcebane Cracked Anvil Sigil.")
-                .AddKillObjective(NPCGroupType.Korriban_Forcebane_Warden, 1)
+                    "With at least two allies, kill the Forcebane warden at the trial altar on the east side of the Forge Caverns on Tatooine and secure the Forcebane Cracked Anvil Sigil.")
+                .AddKillObjective(NPCGroupType.Tatooine_Forcebane_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneCrackedAnvilSigil)
 
                 .AddState()
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "Kill the four Forcebane inner circle overseers in the Korriban Forge Caverns on Korriban and secure the Forcebane Overseer's Clearance Token.")
-                .AddKillObjective(NPCGroupType.Korriban_Forcebane_InnerCircle, 4)
+                    "Kill the four Forcebane inner circle overseers in the Forge Caverns on Tatooine and secure the Forcebane Overseer's Clearance Token.")
+                .AddKillObjective(NPCGroupType.Tatooine_Forcebane_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneForcebaneOverseersClearanceToken)
 
                 .AddState()
@@ -144,8 +144,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "With at least two allies, defeat the Forcebane master in the Champion Forge, through the door at the north end of the Korriban Forge Caverns on Korriban. His defeat is the only proof required.")
-                .AddKillObjective(NPCGroupType.Korriban_Forcebane_Master, 1)
+                    "With at least two allies, defeat the Forcebane master in the Champion Forge, through the door at the north end of the Forge Caverns on Tatooine. His defeat is the only proof required.")
+                .AddKillObjective(NPCGroupType.Tatooine_Forcebane_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        private static void RemoveKorribanForgeCavernsAccessIfNoLongerNeeded(uint player)
+        private static void RemoveTatooineForgeCavernsAccessIfNoLongerNeeded(uint player)
         {
             var questIds = new[]
             {
@@ -292,7 +292,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 SpearCapstoneQuestDefinition.ForcebaneMasteryQuestId,
             };
 
-            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneKorribanForgeCavernsKey, questIds);
+            RemoveAreaAccessIfNoLongerNeeded(player, KeyItemType.CapstoneTatooineForgeCavernsKey, questIds);
         }
 
         private static void RemoveSmugglersMoonFightClubBackroomsAccessIfNoLongerNeeded(uint player)

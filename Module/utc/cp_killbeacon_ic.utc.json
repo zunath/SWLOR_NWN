@@ -126,7 +126,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "Capstone quest creature for Killzone Beacon in Viscara Republic Engineering Bunker."
+    "value": "Killzone Beacon inner circle member in Viscara - Republic Engineering Bunker."
   },
   "Con": {
     "type": "byte",
@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A level 50 capstone quest enemy for Killzone Beacon in Viscara Republic Engineering Bunker."
+      "0": "A Bothan in Republic elite armor with a blaster pistol and the guarded look of a quartermaster with something to hide. He is one of the four who signed for every piece of hardware that armed the cell, and they keep the override chip that proves it."
     }
   },
   "Dex": {

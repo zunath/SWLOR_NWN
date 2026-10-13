@@ -21,6 +21,28 @@ namespace SWLOR.CombatSim.Tests.Engine
             _catalog = AbilityCatalog.Load();
         }
 
+        // The Wave 2 preset has no flat cut; these tests exercise the multiplier itself.
+        private static RuleSet Wave2WithFlatCut()
+        {
+            var rules = RuleSets.Wave2();
+            rules.PvpHealingMultiplier = 0.7f;
+            rules.PvpTemporaryHpMultiplier = 0.7f;
+            return rules;
+        }
+
+        [TestCase(0, 1000)]
+        [TestCase(119, 1000)]
+        [TestCase(120, 900)]
+        [TestCase(240, 100)]
+        public void Wave2Preset_HasNoFlatCut_OnlyTheRamp(int secondsOfCombat, double expected)
+        {
+            var fight = new PvpFight(_catalog, RuleSets.Wave2());
+
+            fight.FightUntil(secondsOfCombat);
+
+            fight.HealAt(secondsOfCombat).Should().BeApproximately(expected, Tolerance);
+        }
+
         [TestCase(0, 700)]
         [TestCase(110, 700)]
         [TestCase(120, 630)]
@@ -32,7 +54,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [TestCase(1200, 70)]
         public void Wave2_HealingReceivedInContinuousPvpCombat_IsSeventyPercentThenRampsDown(int secondsOfCombat, double expected)
         {
-            var fight = new PvpFight(_catalog, RuleSets.Wave2());
+            var fight = new PvpFight(_catalog, Wave2WithFlatCut());
 
             fight.FightUntil(secondsOfCombat);
 
@@ -42,7 +64,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void Wave2_HealingReceivedPercentIsAppliedBeforeThePvpReduction()
         {
-            var fight = new PvpFight(_catalog, RuleSets.Wave2()) { TargetHealingReceivedPercent = 10f };
+            var fight = new PvpFight(_catalog, Wave2WithFlatCut()) { TargetHealingReceivedPercent = 10f };
             fight.FightUntil(0);
 
             fight.HealAt(0).Should().BeApproximately(RawHeal * 1.1 * 0.7, Tolerance);
@@ -51,7 +73,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void Wave2_RegenerationAndOverTimeHealsAreReducedToo()
         {
-            var fight = new PvpFight(_catalog, RuleSets.Wave2());
+            var fight = new PvpFight(_catalog, Wave2WithFlatCut());
             fight.FightUntil(120);
 
             fight.HealAt(120, HealKind.OverTime).Should().BeApproximately(630, Tolerance);
@@ -61,7 +83,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void Wave2_NoReductionWhenTheScenarioIsNotPvp()
         {
-            var fight = new PvpFight(_catalog, RuleSets.Wave2()) { IsPvp = false };
+            var fight = new PvpFight(_catalog, Wave2WithFlatCut()) { IsPvp = false };
             fight.HealAt(0).Should().BeApproximately(RawHeal, Tolerance);
 
             fight.FightUntil(300);
@@ -72,7 +94,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void Wave2_NoReductionWhenTheAttackerIsAnNpc()
         {
-            var fight = new PvpFight(_catalog, RuleSets.Wave2()) { AttackerIsNpc = true };
+            var fight = new PvpFight(_catalog, Wave2WithFlatCut()) { AttackerIsNpc = true };
 
             fight.FightUntil(300);
 
@@ -82,7 +104,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void Wave2_NoReductionWhenTheHealedCombatantIsAnNpc()
         {
-            var fight = new PvpFight(_catalog, RuleSets.Wave2()) { TargetIsNpc = true };
+            var fight = new PvpFight(_catalog, Wave2WithFlatCut()) { TargetIsNpc = true };
 
             fight.FightUntil(300);
 
@@ -103,7 +125,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void Wave2_ThirtyOneQuietSecondsEndTheCombat_AndTheNextOneStartsOverAtSeventyPercent()
         {
-            var fight = new PvpFight(_catalog, RuleSets.Wave2());
+            var fight = new PvpFight(_catalog, Wave2WithFlatCut());
             fight.FightUntil(240);
             fight.HealAt(240).Should().BeApproximately(70, Tolerance);
 
@@ -116,7 +138,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [Test]
         public void Wave2_ActivityWithinThirtySeconds_KeepsTheSameCombatGoing()
         {
-            var fight = new PvpFight(_catalog, RuleSets.Wave2());
+            var fight = new PvpFight(_catalog, Wave2WithFlatCut());
             fight.FightUntil(240);
 
             fight.Hit(240 + 29);

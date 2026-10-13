@@ -198,7 +198,7 @@ namespace SWLOR.CombatSim.Engine
                 return;
             }
 
-            RestoreFp(combatant, Math.Floor(combatant.Spec.MaxFp * ConvergencePercentPerTick / 100f), true);
+            RestoreFp(combatant, Math.Max(1, Math.Ceiling(combatant.Spec.MaxFp * ConvergencePercentPerTick / 100f)), true);
             combatant.ConvergenceNextTickAt += ConvergenceTickSeconds;
         }
 
@@ -718,7 +718,7 @@ namespace SWLOR.CombatSim.Engine
             target.PartyPulses.Clear();
             target.ConvergenceUntil = -1;
             target.Stats.Deaths++;
-            _deaths.Add(new DeathRecord { Name = target.Name, TeamIndex = target.TeamIndex, At = _now, KilledBy = killer?.Name });
+            _deaths.Add(new DeathRecord { Name = target.Name, TeamIndex = target.TeamIndex, IsNpc = target.Spec.IsNpc, At = _now, KilledBy = killer?.Name });
 
             foreach (var combatant in _combatants.Where(c => c.AttackTarget == target))
                 combatant.AttackTarget = null;

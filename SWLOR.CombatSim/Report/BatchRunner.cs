@@ -33,7 +33,7 @@ namespace SWLOR.CombatSim.Report
                     summary.WinsByTeam[result.WinningTeam.Value] = summary.WinsByTeam.GetValueOrDefault(result.WinningTeam.Value) + 1;
                 }
 
-                summary.AverageDeaths += result.Deaths.Count / (double)runs;
+                summary.AverageDeaths += result.PlayerDeaths.Count() / (double)runs;
                 summary.AverageRevives += result.Revives / (double)runs;
 
                 foreach (var combatant in result.Combatants)

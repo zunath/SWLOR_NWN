@@ -19,7 +19,7 @@ namespace SWLOR.CombatSim.Report
             text.AppendLine()
                 .AppendLine($"Time limit {Seconds(scenario.DurationSeconds)}, {(scenario.IsPvp ? "PvP" : "PvE")}, {summaries.FirstOrDefault()?.Runs ?? 0} runs per rule set.")
                 .AppendLine()
-                .AppendLine("| Rules | Runs with a death | First death: median (p10-p90) | Fight decided | Fight length: median | Deaths per run | Revives per run | (Healing + absorbed) / HP damage |")
+                .AppendLine("| Rules | Runs with a player death | First player death: median (p10-p90) | Fight decided | Fight length: median | Player deaths per run | Revives per run | (Healing + absorbed) / HP damage |")
                 .AppendLine("| --- | --- | --- | --- | --- | --- | --- | --- |");
 
             foreach (var s in summaries)

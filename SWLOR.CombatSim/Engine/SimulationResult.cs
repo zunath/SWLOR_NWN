@@ -11,6 +11,9 @@ namespace SWLOR.CombatSim.Engine
         public int Revives { get; init; }
         public IReadOnlyList<Combatant> Combatants { get; init; }
 
-        public double? FirstDeathAt => Deaths.Count == 0 ? null : Deaths.Min(d => d.At);
+        public IEnumerable<DeathRecord> PlayerDeaths => Deaths.Where(d => !d.IsNpc);
+
+        /// <summary>First death of a player combatant; NPC deaths (a PvE boss) are not counted.</summary>
+        public double? FirstDeathAt => PlayerDeaths.Any() ? PlayerDeaths.Min(d => d.At) : null;
     }
 }

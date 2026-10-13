@@ -97,8 +97,8 @@ namespace SWLOR.CombatSim.Tests.Rules
             wave2.FpCostMultiplier.Should().Be(wave1.FpCostMultiplier);
             wave2.Revives.Should().Be(wave1.Revives);
 
-            wave2.PvpHealingMultiplier.Should().Be(0.7f);
-            wave2.PvpTemporaryHpMultiplier.Should().Be(0.7f);
+            wave2.PvpHealingMultiplier.Should().Be(1f);
+            wave2.PvpTemporaryHpMultiplier.Should().Be(1f);
             wave2.PvpHealingRamp.Select(s => (s.AtSeconds, s.Percent))
                 .Should().Equal((120f, 10f), (150f, 30f), (180f, 50f), (210f, 70f), (240f, 90f));
             wave2.PvpDamageBackstop.Select(s => (s.AtSeconds, s.Percent))

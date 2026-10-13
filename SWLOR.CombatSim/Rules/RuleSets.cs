@@ -47,8 +47,6 @@ namespace SWLOR.CombatSim.Rules
         {
             var rules = Wave1();
             rules.Name = Wave2Name;
-            rules.PvpHealingMultiplier = 0.7f;
-            rules.PvpTemporaryHpMultiplier = 0.7f;
             rules.PvpHealingRamp = new List<RampStep>
             {
                 new(120f, 10f), new(150f, 30f), new(180f, 50f), new(210f, 70f), new(240f, 90f)

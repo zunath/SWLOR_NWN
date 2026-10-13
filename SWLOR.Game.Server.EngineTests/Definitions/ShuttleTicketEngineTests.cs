@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.ShuttleService;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -132,6 +133,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 for (var trip = 0; trip < 2; trip++)
                 {
+                    var rebuildComplete = trip == 0;
+                    var currentPlayer = DB.Get<Player>(playerId);
+                    currentPlayer.RebuildComplete = rebuildComplete;
+                    DB.Set(currentPlayer);
                     var departure = DateTime.UtcNow.AddMinutes(-2);
                     ride = new ShuttleRide(playerId)
                     {
@@ -162,9 +167,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         ctx.AssertEqual(landingPosition.Y, savedPlayer.LocationY, "Offline delivery saves landing Y");
                     }
 
-                    Invoke("CompleteRideOnLogin", passenger, Shuttle.GetRide(playerId));
+                    var redirectArguments = new object[] { passenger, Shuttle.GetRide(playerId), null };
+                    var redirect = (bool)typeof(Shuttle).GetMethod("TryGetRideLoginRedirect", BindingFlags.NonPublic | BindingFlags.Static)
+                        .Invoke(null, redirectArguments);
+                    ctx.AssertEqual(rebuildComplete, redirect, "Only rebuild-complete passengers receive a shuttle redirect");
+                    if (rebuildComplete)
+                        ctx.AssertEqual(GetArea(waypoint), GetAreaFromLocation((Location)redirectArguments[2]), "Completed passengers return to the landing area");
+                    else
+                        ctx.Assert(redirectArguments[2] == null, "A pending rebuild never receives a destination jump");
                     await ctx.WaitFrameAsync();
                     ctx.Assert(Shuttle.GetRide(playerId) == null, "Login consumes the completed ride after announcing arrival");
+                    ctx.AssertEqual(rebuildComplete, DB.Get<Player>(playerId).RebuildComplete, "Shuttle recovery preserves the rebuild requirement");
                     ctx.AssertEqual(gold, GetGold(passenger), "Arrival cannot refund a used fare");
                     ctx.AssertEqual("untouched_area", DB.Get<Player>(other.Id).LocationAreaResref,
                         "Another player's saved location is unchanged");

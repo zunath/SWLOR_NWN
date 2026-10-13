@@ -709,7 +709,24 @@ namespace SWLOR.Game.Server.Service
             if (ride == null || ride.Status != ShuttleRideStatus.InTransit)
                 return false;
 
-            if (ride.ArrivalUtc <= DateTime.UtcNow)
+            return TryGetRideLoginRedirect(player, ride, out location);
+        }
+
+        private static bool TryGetRideLoginRedirect(uint player, ShuttleRide ride, out Location location)
+        {
+            location = default;
+            var arrived = ride.ArrivalUtc <= DateTime.UtcNow;
+            var dbPlayer = DB.Get<Player>(ride.PlayerId);
+            if (dbPlayer == null || !dbPlayer.RebuildComplete)
+            {
+                // PersistentLocation owns mandatory rebuild routing. A completed flight
+                // can report arrival and clear its record without moving the player out.
+                if (arrived)
+                    CompleteRideOnLogin(player, ride);
+                return false;
+            }
+
+            if (arrived)
             {
                 location = CompleteRideOnLogin(player, ride);
                 return true;

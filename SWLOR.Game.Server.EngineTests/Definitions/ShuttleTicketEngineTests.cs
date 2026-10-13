@@ -78,6 +78,107 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        [EngineTest("A shuttle purchase during login delay keeps its confirmed boarding time", Category = "ShuttleTicket")]
+        public static async Task PurchaseDuringLoginDelay(EngineTestContext ctx)
+        {
+            var passenger = ctx.SpawnCreature("civilian");
+            await ctx.DelaySecondsAsync(1f);
+            var playerId = GetObjectUUID(passenger);
+            var ride = new ShuttleRide(playerId)
+            {
+                Status = ShuttleRideStatus.Ticketed,
+                Origin = PlanetType.CZ220,
+                Destination = PlanetType.Viscara,
+                FarePaid = 25
+            };
+            DB.Set(ride);
+            try
+            {
+                // Mirror the session eligibility recorded by TryPurchaseTicket while
+                // the login reminder is still pending. No connected client is required.
+                var purchasedUtc = DateTime.UtcNow;
+                BoardingTimes[playerId] = purchasedUtc;
+                await ctx.WaitFrameAsync();
+                Invoke("RestoreTicketedSession", passenger, purchasedUtc.AddSeconds(2));
+                ctx.AssertEqual(purchasedUtc, BoardingTimes[playerId],
+                    "The delayed login reminder preserves the explicit purchase's boarding time");
+                var confirmed = ShuttleSchedule.GetNextDepartureUtc(ride.Origin, ride.Destination, purchasedUtc);
+                ctx.AssertEqual(confirmed, ShuttleSchedule.GetNextDepartureUtc(ride.Origin, ride.Destination, purchasedUtc, BoardingTimes[playerId]),
+                    "The confirmed departure is not moved to a later flight");
+                ctx.AssertEqual(ride.Id, Shuttle.GetRide(playerId).Id, "The paid ticket remains unchanged");
+            }
+            finally
+            {
+                Cleanup(ride);
+            }
+        }
+
+        [EngineTest("Offline shuttle arrivals retain their destination until login resolution", Category = "ShuttleTicket")]
+        public static async Task OfflineArrivalUntilLogin(EngineTestContext ctx)
+        {
+            var passenger = ctx.SpawnCreature("civilian");
+            await ctx.DelaySecondsAsync(1f);
+            var playerId = GetObjectUUID(passenger);
+            var player = new Player(playerId) { LocationAreaResref = GetResRef(ctx.Arena), RebuildComplete = true };
+            var other = new Player(Guid.NewGuid().ToString()) { LocationAreaResref = "untouched_area" };
+            DB.Set(player);
+            DB.Set(other);
+            var waypoint = GetWaypointByTag(Planet.GetPlanetByType(PlanetType.Viscara).LandingWaypointTag);
+            ctx.Assert(GetIsObjectValid(waypoint), "The destination landing waypoint is available");
+            var landingPosition = GetPosition(waypoint);
+            var gold = GetGold(passenger);
+            ShuttleRide ride = null;
+            try
+            {
+                for (var trip = 0; trip < 2; trip++)
+                {
+                    var departure = DateTime.UtcNow.AddMinutes(-2);
+                    ride = new ShuttleRide(playerId)
+                    {
+                        Status = ShuttleRideStatus.InTransit,
+                        Origin = PlanetType.CZ220,
+                        Destination = PlanetType.Viscara,
+                        DepartureUtc = departure,
+                        ArrivalUtc = departure.AddMinutes(1),
+                        FlightId = ShuttleSchedule.BuildFlightId(PlanetType.CZ220, PlanetType.Viscara, departure),
+                        FarePaid = 25
+                    };
+                    DB.Set(ride);
+                    // Arrival and a subsequent server recovery use the same offline delivery
+                    // path. Neither may consume the notice before this passenger logs in.
+                    for (var recovery = 0; recovery < 2; recovery++)
+                    {
+                        Invoke("DeliverOfflinePassenger", Shuttle.GetRide(playerId));
+                        await ctx.WaitFrameAsync();
+                        var savedRide = Shuttle.GetRide(playerId);
+                        ctx.AssertEqual(ride.Id, savedRide.Id, "Offline delivery preserves the pending arrival");
+                        ctx.AssertEqual(playerId, savedRide.PlayerId, "The arrival remains owned by its passenger");
+                        ctx.AssertEqual(ride.Destination, savedRide.Destination, "The destination survives reload");
+                        ctx.AssertEqual(1L, DB.SearchCount(new DBQuery<ShuttleRide>().AddFieldSearch(nameof(ShuttleRide.PlayerId), playerId, false)),
+                            "Repeated recovery retains exactly one arrival record");
+                        var savedPlayer = DB.Get<Player>(playerId);
+                        ctx.AssertEqual(GetResRef(GetArea(waypoint)), savedPlayer.LocationAreaResref, "Offline delivery saves the landing area");
+                        ctx.AssertEqual(landingPosition.X, savedPlayer.LocationX, "Offline delivery saves landing X");
+                        ctx.AssertEqual(landingPosition.Y, savedPlayer.LocationY, "Offline delivery saves landing Y");
+                    }
+
+                    Invoke("CompleteRideOnLogin", passenger, Shuttle.GetRide(playerId));
+                    await ctx.WaitFrameAsync();
+                    ctx.Assert(Shuttle.GetRide(playerId) == null, "Login consumes the completed ride after announcing arrival");
+                    ctx.AssertEqual(gold, GetGold(passenger), "Arrival cannot refund a used fare");
+                    ctx.AssertEqual("untouched_area", DB.Get<Player>(other.Id).LocationAreaResref,
+                        "Another player's saved location is unchanged");
+                }
+                ctx.SetResultDetail("NPC actor exercises offline delivery and login completion through the real service and Redis; connected-client notices are not visually verified.");
+            }
+            finally
+            {
+                if (ride != null) Cleanup(ride);
+                DB.Delete<Player>(playerId);
+                DB.Delete<Player>(other.Id);
+            }
+        }
+
         private static Dictionary<string, DateTime> BoardingTimes =>
             (Dictionary<string, DateTime>)typeof(Shuttle).GetField("_boardingNotBeforeUtc", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
 

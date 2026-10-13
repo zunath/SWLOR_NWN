@@ -193,6 +193,15 @@ namespace SWLOR.Game.Server.Native
         }
 
         /// <summary>
+        /// A creature's temporary-HP pools, read the same way as the damage hook.
+        /// </summary>
+        internal static CombatRecordTemporaryHitPointPool[] CaptureTemporaryHitPointPools(uint creature)
+        {
+            var gameObject = NWNXUtils.GetGameObject(creature);
+            return gameObject == IntPtr.Zero ? null : CaptureTemporaryHitPointPools(CNWSObject.FromPointer(gameObject));
+        }
+
+        /// <summary>
         /// Reads each temporary-HP effect's remaining pool straight from the native effect list.
         /// Script effect iteration is avoided because it would reset an iterator a running script
         /// may be using on the same creature.

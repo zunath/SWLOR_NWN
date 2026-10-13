@@ -90,6 +90,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private static void ApplyFlatInternal(uint target, string effectKey, int amount, float durationSeconds, uint source = OBJECT_INVALID)
         {
             var effectTag = EffectTagPrefix + effectKey;
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordTemporaryHitPointPoolRemoving(target);
             RemoveEffectByTag(target, effectTag);
 
             if (amount <= 0)
@@ -145,6 +147,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             DeleteLocalObject(target, GetSourceVariable(effectKey));
 
             var effectTag = EffectTagPrefix + effectKey;
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordTemporaryHitPointPoolRemoving(target);
             RemoveEffectByTag(target, effectTag);
             RemoveEffectByTag(target, effectTag + BarrierVisualEffectTagSuffix);
         }

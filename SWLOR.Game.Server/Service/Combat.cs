@@ -7821,10 +7821,6 @@ namespace SWLOR.Game.Server.Service
                         EffectDamage(damage, effectDamageType),
                         target));
             }
-            else if (CombatRecorder.IsRecording)
-            {
-                CombatRecorder.CancelDeferredDamage(activator, target, damage);
-            }
 
             ApplyDamageDealtEffects(activator, target, damage, skillType, damageType, CombatDamageDeliveryType.Triggered);
             StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered);

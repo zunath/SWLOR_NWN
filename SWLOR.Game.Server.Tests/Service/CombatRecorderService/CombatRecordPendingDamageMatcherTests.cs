@@ -108,33 +108,6 @@ public class CombatRecordPendingDamageMatcherTests
         pending[match].Attribution.Name.Should().Be("Fresh");
     }
 
-    [Test]
-    public void NewestDeferred_IsTheRegistrationJustMadeForThatHit()
-    {
-        var pending = new List<CombatRecordPendingDamage>
-        {
-            Deferred(amount: 5, name: "Force Lightning I"),
-            Weapon(amount: 5),
-            Deferred(amount: 5, name: "Force Lightning I"),
-            Deferred(amount: 7, name: "Force Lightning I")
-        };
-
-        CombatRecordPendingDamageMatcher.FindNewestDeferred(pending, Attacker, Defender, 5).Should().Be(2);
-    }
-
-    [Test]
-    public void NewestDeferred_IgnoresWeaponHitsOtherAmountsAndOtherPairs()
-    {
-        var pending = new List<CombatRecordPendingDamage>
-        {
-            Weapon(amount: 5),
-            Deferred(amount: 6, name: "Burn"),
-            Deferred(amount: 5, name: "Burn") with { Target = 98 }
-        };
-
-        CombatRecordPendingDamageMatcher.FindNewestDeferred(pending, Attacker, Defender, 5).Should().Be(-1);
-    }
-
     private static int Find(List<CombatRecordPendingDamage> pending, int amount, bool isEngineApplied)
     {
         return CombatRecordPendingDamageMatcher.FindMatch(

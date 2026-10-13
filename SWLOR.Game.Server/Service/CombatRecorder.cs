@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly List<CombatRecordDamageApplication> _damageApplications = new();
         private static readonly List<CombatRecordEvent> _heldEvents = new();
         private static readonly List<CombatRecordWriter> _unfinishedWriters = new();
+        private static readonly Dictionary<uint, ulong> _deathFrames = new();
         private static int _heldInsertIndex = -1;
         private static long _heldTimestampMs;
         private static Dictionary<AbilityDetail, FeatType> _abilityFeats;
@@ -112,6 +113,7 @@ namespace SWLOR.Game.Server.Service
             _damageApplications.Clear();
             _heldEvents.Clear();
             _heldInsertIndex = -1;
+            _deathFrames.Clear();
 
             var directory = CombatRecordFileNames.GetDirectory(ApplicationSettings.Get().LogDirectory);
             var baseName = CombatRecordFileNames.BuildBaseName(_startedUtc, _label);
@@ -169,6 +171,7 @@ namespace SWLOR.Game.Server.Service
             _temporaryHitPointGrants.Clear();
             _lastDamageSources.Clear();
             _damageApplications.Clear();
+            _deathFrames.Clear();
             return true;
         }
 
@@ -742,6 +745,14 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // Triggered and damage-over-time hits computed during the source's own ability impact
+            // are queued with that impact's hits and land under the scope they were queued in.
+            if ((deliveryType == CombatDamageDeliveryType.Triggered || deliveryType == CombatDamageDeliveryType.DamageOverTime) &&
+                Ability.GetActiveAbilityImpactSummary(source) != null)
+            {
+                return;
+            }
+
             // A reflection or reaction the defender deals during the attacker's ability must not
             // inherit that ability.
             var attribution = ResolveOwnAttribution(source);
@@ -755,15 +766,12 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Withdraws the registration <see cref="ExpectDeferredDamage"/> just made for triggered
-        /// damage that was queued with an ability's own hits: it lands inside that ability's flush,
-        /// under the scope it was queued in, and must not be left for a later hit to match.
+        /// Whether a registration is waiting for damage from <paramref name="source"/> to
+        /// <paramref name="target"/>. Observability seam for the engine tests.
         /// </summary>
-        public static void CancelDeferredDamage(uint source, uint target, int amount)
+        public static bool HasPendingDamage(uint source, uint target)
         {
-            var registered = CombatRecordPendingDamageMatcher.FindNewestDeferred(_pendingDamage, source, target, amount);
-            if (registered >= 0)
-                _pendingDamage.RemoveAt(registered);
+            return _pendingDamage.Exists(pending => pending.Source == source && pending.Target == target);
         }
 
         /// <summary>
@@ -905,7 +913,9 @@ namespace SWLOR.Game.Server.Service
                     // The damage event goes ahead of everything the hit triggered.
                     _heldInsertIndex = application.HeldEventStart;
                     _heldTimestampMs = application.StartedMs;
-                    RecordDamageEvents(isEngineApplied, source, target, damage, hitPointsBefore, hitPointsAfter, maxHitPoints, poolsBefore, poolsAfter);
+                    var poolsLeftByHit = CombatRecordTemporaryHitPointPools.MergeKeepingFirst(poolsAfter, application.PoolsAtRemoval);
+                    RecordDamageEvents(isEngineApplied, source, target, damage, hitPointsBefore, hitPointsAfter, maxHitPoints,
+                        poolsBefore, poolsAfter, poolsLeftByHit);
                 }
             }
             finally
@@ -924,14 +934,14 @@ namespace SWLOR.Game.Server.Service
             int hitPointsAfter,
             int maxHitPoints,
             CombatRecordTemporaryHitPointPool[] poolsBefore,
-            CombatRecordTemporaryHitPointPool[] poolsAfter)
+            CombatRecordTemporaryHitPointPool[] poolsAfter,
+            CombatRecordTemporaryHitPointPool[] poolsLeftByHit)
         {
+            var absorbedTotal = CombatRecordTemporaryHitPointPools.SumAbsorbed(poolsBefore, poolsLeftByHit);
+
             // A swing whose damage was carved away entirely applies an empty damage effect.
-            if (damage.Total <= 0 && hitPointsAfter == hitPointsBefore &&
-                CombatRecordTemporaryHitPointPools.SumAbsorbed(poolsBefore, poolsAfter) == 0)
-            {
+            if (damage.Total <= 0 && hitPointsAfter == hitPointsBefore && absorbedTotal == 0)
                 return;
-            }
 
             var attribution = ResolveDamageAttribution(source, target, damage.Total, isEngineApplied);
             var sourceId = GetParticipantId(source);
@@ -950,7 +960,7 @@ namespace SWLOR.Game.Server.Service
                 hitPointsAfter,
                 temporaryBefore,
                 temporaryAfter,
-                CombatRecordTemporaryHitPointPools.SumAbsorbed(poolsBefore, poolsAfter),
+                absorbedTotal,
                 maxHitPoints,
                 isEngineApplied));
 
@@ -958,7 +968,7 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var pool in poolsBefore)
                 {
-                    var absorbed = CombatRecordTemporaryHitPointPools.GetAbsorbed(pool, poolsAfter);
+                    var absorbed = CombatRecordTemporaryHitPointPools.GetAbsorbed(pool, poolsLeftByHit);
                     if (absorbed <= 0)
                         continue;
 
@@ -999,6 +1009,24 @@ namespace SWLOR.Game.Server.Service
                 hitPointsBefore,
                 hitPointsAfter,
                 maxHitPoints));
+        }
+
+        /// <summary>
+        /// Called before a keyed temporary-HP pool is removed or replaced. During a hit on that
+        /// creature, what each pool had left is kept, so the hit's absorption is measured against
+        /// that remainder instead of treating the removed pool as fully absorbed.
+        /// </summary>
+        public static void RecordTemporaryHitPointPoolRemoving(uint creature)
+        {
+            var index = FindDamageApplication(creature);
+            if (index < 0)
+                return;
+
+            var application = _damageApplications[index];
+            application.PoolsAtRemoval = CombatRecordTemporaryHitPointPools.MergeKeepingFirst(
+                application.PoolsAtRemoval,
+                CombatRecorderEffectHooks.CaptureTemporaryHitPointPools(creature));
+            _damageApplications[index] = application;
         }
 
         public static void RecordTemporaryHitPointsGranted(uint source, uint target, string effectKey, int amount, float durationSeconds)
@@ -1103,9 +1131,25 @@ namespace SWLOR.Game.Server.Service
                 GetParticipantId(creature),
                 statusEffect.Name,
                 statusEffect.GetType().Name,
-                statusEffect.OriginatingAbility?.Name,
+                statusEffect.OriginatingAbility?.Name ?? FindAbilityScopeName(source),
                 isPermanent ? CombatRecordEvent.PermanentDuration : (int)Math.Round(durationSeconds * 1000f),
                 isRefresh));
+        }
+
+        /// <summary>
+        /// The ability whose scope is applying something for <paramref name="actor"/>, such as a
+        /// delayed pulse that runs after its impact ended.
+        /// </summary>
+        private static string FindAbilityScopeName(uint actor)
+        {
+            for (var depth = _attributionDepth - 1; depth >= 0; depth--)
+            {
+                var scope = _attributions[depth];
+                if (scope.Kind == CombatRecordSourceKind.Ability && scope.Actor == actor)
+                    return scope.Name;
+            }
+
+            return null;
         }
 
         public static void RecordStatusRemoved(uint creature, IStatusEffect statusEffect, bool isReplacement)
@@ -1171,6 +1215,11 @@ namespace SWLOR.Game.Server.Service
                 _lastDamageSources.Remove(creature);
                 return;
             }
+
+            // A subdual handler that ran first already recorded this death.
+            if (_deathFrames.TryGetValue(creature, out var deathFrame) && deathFrame == ServerFrame.Current)
+                return;
+            _deathFrames[creature] = ServerFrame.Current;
 
             // Dying inside an engine damage call: keep the HP the hit left for its damage event.
             // The death event itself is held behind that damage event.
@@ -1250,6 +1299,10 @@ namespace SWLOR.Game.Server.Service
         {
             if (!IsInRecordedArea(subdued))
                 return;
+
+            // The death handlers run in no fixed order, so the death is recorded first either way.
+            if (!_deathFrames.TryGetValue(subdued, out var deathFrame) || deathFrame != ServerFrame.Current)
+                RecordDeath(subdued, GetLastHostileActor(subdued));
 
             var index = FindDamageApplication(subdued);
             if (index >= 0)

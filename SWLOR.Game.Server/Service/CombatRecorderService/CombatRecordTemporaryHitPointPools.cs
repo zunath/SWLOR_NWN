@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace SWLOR.Game.Server.Service.CombatRecorderService
 {
     /// <summary>
@@ -43,6 +45,40 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
             }
 
             return total;
+        }
+
+        /// <summary>
+        /// The pools of <paramref name="first"/>, plus each pool of <paramref name="second"/> it
+        /// does not already hold. Merges the pools left after a hit with what removed or replaced
+        /// pools had left when they went.
+        /// </summary>
+        public static CombatRecordTemporaryHitPointPool[] MergeKeepingFirst(
+            CombatRecordTemporaryHitPointPool[] first, CombatRecordTemporaryHitPointPool[] second)
+        {
+            if (second == null || second.Length == 0)
+                return first;
+            if (first == null || first.Length == 0)
+                return second;
+
+            var merged = new List<CombatRecordTemporaryHitPointPool>(first);
+            foreach (var pool in second)
+            {
+                if (!Contains(first, pool.EffectId))
+                    merged.Add(pool);
+            }
+
+            return merged.ToArray();
+        }
+
+        private static bool Contains(CombatRecordTemporaryHitPointPool[] pools, ulong effectId)
+        {
+            foreach (var pool in pools)
+            {
+                if (pool.EffectId == effectId)
+                    return true;
+            }
+
+            return false;
         }
 
         private static int FindAmount(CombatRecordTemporaryHitPointPool[] pools, ulong effectId)

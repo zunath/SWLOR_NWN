@@ -269,6 +269,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Combat.SetAutoAttackHitResolutionOverride(true);
             CombatRecordWriter writer;
             int dummyMaxHitPoints;
+            var registeredInsideImpact = true;
+            var registeredOutsideImpact = false;
             try
             {
                 ctx.Assert(CombatRecorder.Start(arena.Area, "engine test weapon", out var startMessage), startMessage);
@@ -296,6 +298,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(brawler, pulse);
                 await ctx.DelaySecondsAsync(1f);
                 dummyMaxHitPoints = GetMaxHitPoints(dummy);
+
+                // Damage-over-time computed during the source's own ability impact is queued with
+                // that impact, so it registers nothing; outside an impact it is registered.
+                await ctx.ExecuteInCreatureContextAsync(pyro, () =>
+                {
+                    Ability.BeginAbilityImpact(pyro, Ability.GetAbilityDetail(FeatType.CreepingTerror1));
+                    Combat.ApplyDamageTakenModifiers(dummy, 7, pyro, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime);
+                    registeredInsideImpact = CombatRecorder.HasPendingDamage(pyro, dummy);
+                    Ability.EndAbilityImpact(pyro);
+                    Combat.ApplyDamageTakenModifiers(dummy, 7, pyro, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime);
+                    registeredOutsideImpact = CombatRecorder.HasPendingDamage(pyro, dummy);
+                });
             }
             finally
             {
@@ -308,6 +322,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitUntilAsync(() => writer.Completion.IsCompleted, 10f, "the recording writer to finish its files");
             ctx.Assert(writer.Error == null, $"the recording writer failed: {writer.Error}");
             var events = File.ReadAllLines(writer.EventsPath).Select(ParseLine).ToList();
+
+            ctx.Assert(!registeredInsideImpact, "damage queued into the source's own impact must not leave a registration");
+            ctx.Assert(registeredOutsideImpact, "damage dispatched later must be registered");
 
             var dummyId = ParticipantId(ctx, events, "Recorder Dummy");
             var brawlerId = ParticipantId(ctx, events, "Recorder Brawler");
@@ -402,6 +419,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Combat.SetAbilityHitResolutionOverride(true);
             Combat.SetAutoAttackHitResolutionOverride(false);
             CombatRecordWriter writer;
+            var partialHit = 0;
             try
             {
                 // The mist's pulses are scheduled before the recording exists.
@@ -428,6 +446,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(5), defender));
                 // Kolto Mist pulses every 3 seconds.
                 await ctx.DelaySecondsAsync(4f);
+
+                // A hit that only partly drains the shield but crosses 60% again replaces the
+                // shield during the hit; only what the hit took counts as absorbed.
+                ObjectPlugin.SetCurrentHitPoints(defender, 590);
+                var shieldLeft = TemporaryHitPointEffects.GetRemaining(defender);
+                partialHit = GetCurrentHitPoints(defender) - 599;
+                ctx.Assert(partialHit > 0 && partialHit < shieldLeft,
+                    $"setup: a {partialHit} HP hit must cross 60% while only partly draining the {shieldLeft} HP shield");
+                var hit = partialHit;
+                AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(hit), defender));
+                await ctx.DelaySecondsAsync(1f);
             }
             finally
             {
@@ -487,6 +516,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                                        e.GetProperty("source_kind").GetString() == "stat_trigger" &&
                                        e.GetProperty("source_name").GetString() == nameof(StatType.ForceDamageReflectionPercentAdjustment)),
                 "reflected damage must belong to the defender's reflection stat, not the attacker's ability");
+
+            var partialHitEvent = events.Last(e => Type(e) == "damage" &&
+                                                   e.GetProperty("source").GetInt32() == attackerId &&
+                                                   e.GetProperty("target").GetInt32() == defenderId &&
+                                                   e.GetProperty("total").GetInt32() == partialHit);
+            ctx.AssertEqual(partialHit, partialHitEvent.GetProperty("temp_hp_absorbed").GetInt32(),
+                "a shield replaced during the hit is measured against what it had left");
+            ctx.AssertEqual(2, events.Count(e => Type(e) == "temp_hp_grant" &&
+                                                 e.GetProperty("target").GetInt32() == defenderId &&
+                                                 e.GetProperty("effect_key").GetString() == "LOW_HP_SHIELD"),
+                "the second threshold crossing grants a new shield");
+
+            var mistStatuses = events.Where(e => (Type(e) == "status_apply" || Type(e) == "status_refresh") &&
+                                                 e.GetProperty("source").GetInt32() == medicId).ToList();
+            ctx.Assert(mistStatuses.Count > 0, "Kolto Mist's pulses must apply their healing status during the recording");
+            ctx.Assert(mistStatuses.All(e => e.GetProperty("ability").GetString() == "Kolto Mist I"),
+                "statuses applied by a delayed pulse must name its ability");
 
             var mistHeals = events.Where(e => Type(e) == "heal" && e.GetProperty("source").GetInt32() == medicId).ToList();
             ctx.Assert(mistHeals.Count > 0, "Kolto Mist must pulse during the recording");

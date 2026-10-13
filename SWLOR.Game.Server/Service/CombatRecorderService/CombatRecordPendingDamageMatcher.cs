@@ -38,20 +38,6 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
             return match;
         }
 
-        /// <summary>
-        /// Returns the index of the newest deferred registration for this source, target and
-        /// amount, or -1: the one just made for damage that is now queued with an ability's own
-        /// hits instead of being dispatched later.
-        /// </summary>
-        public static int FindNewestDeferred(List<CombatRecordPendingDamage> pending, uint source, uint target, int amount)
-        {
-            return pending.FindLastIndex(registration =>
-                !registration.IsWeaponHit &&
-                registration.Source == source &&
-                registration.Target == target &&
-                registration.Amount == amount);
-        }
-
         private static int Find(
             List<CombatRecordPendingDamage> pending, uint source, uint target, int amount, bool weaponHit, bool exactAmount)
         {

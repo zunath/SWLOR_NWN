@@ -9,12 +9,19 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class DantooineRuinFarmBoundaryTests
 {
     [Test]
-    public void Wildlife_StaysAtHomeWhenIdleButCanReturnAfterCombat()
+    public void Wildlife_RoamsWithinSafeBoundsAndCanReturnAfterCombat()
     {
         var spawns = new DantooineSpawnDefinition().BuildSpawnTables()["DANTOOINE_RUIN_FARM"].Spawns;
         spawns.Select(spawn => spawn.Resref).Should().BeEquivalentTo("pthune", "gizka", "thune");
-        spawns.Should().OnlyContain(spawn => spawn.AIFlags == AIFlag.ReturnHome,
-            "only idle random wandering is disabled; returning after combat remains enabled");
+        spawns.Should().OnlyContain(spawn => spawn.AIFlags == (AIFlag.ReturnHome | AIFlag.RandomWalk));
+        spawns.Should().OnlyContain(spawn => spawn.WanderBounds != null &&
+            spawn.WanderBounds.MinX == 0f && spawn.WanderBounds.MinY == 0f &&
+            spawn.WanderBounds.MaxX == 124f && spawn.WanderBounds.MaxY == 150f,
+            "idle roaming must stay on the interior side of the spawn-exclusion strip");
+        new DantooineSpawnDefinition().BuildSpawnTables()
+            .Where(table => table.Key != "DANTOOINE_RUIN_FARM")
+            .SelectMany(table => table.Value.Spawns).Should().OnlyContain(spawn => spawn.WanderBounds == null,
+                "the opt-in limit must not change wildlife elsewhere");
     }
 
     [Test]

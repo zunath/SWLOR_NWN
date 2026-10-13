@@ -437,8 +437,13 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (IsInConversation(self) ||
-                GetIsInCombat(self) ||
-                GetCurrentAction(self) == ActionType.RandomWalk ||
+                GetIsInCombat(self))
+                return;
+
+            if (BoundedWandering.ReturnIfOutside(self, homeLocation))
+                return;
+
+            if (GetCurrentAction(self) == ActionType.RandomWalk ||
                 GetCurrentAction(self) == ActionType.MoveToPoint)
                 return;
 
@@ -451,7 +456,8 @@ namespace SWLOR.Game.Server.Service
             else if(aiFlags.HasFlag(AIFlag.RandomWalk) &&
                 Random.D100(1) <= 40)
             {
-                AssignCommand(self, ActionRandomWalk);
+                if (!BoundedWandering.TryWander(self, homeLocation, ReturnHomeRadius))
+                    AssignCommand(self, ActionRandomWalk);
             }
         }
 

@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.ManageStaff);
+                    DMPresence.ToggleWindow(user, GuiWindowType.ManageStaff);
                 });
         }
 
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.ManageBans);
+                    DMPresence.ToggleWindow(user, GuiWindowType.ManageBans);
                 });
         }
 

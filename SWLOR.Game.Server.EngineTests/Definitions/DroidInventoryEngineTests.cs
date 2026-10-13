@@ -521,8 +521,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             for (var pass = 0; pass < 2; pass++)
             {
-                // An NPC owner keeps companion combat idle, isolating unsolicited stock AI
-                // from the inventory event. The nearby visible enemy triggers its melee swap.
+                // An NPC owner keeps companion combat idle, isolating inventory-event AI.
                 ObjectPlugin.SetPosition(enemy, GetPosition(droid) + new System.Numerics.Vector3(1f, 0f, 0f));
                 CreaturePlugin.DoPerceptionUpdateOnCreature(droid, enemy);
                 ctx.Assert(GetObjectSeen(enemy, droid), "The droid perceives the nearby hostile");
@@ -534,15 +533,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(GetIsObjectValid(carried), "Carried ammunition is created");
                     SetItemStackSize(carried, 3);
                 });
+                await DispatchHostileInventoryDisturbance(ctx, droid, enemy, carried, DisturbType.Added);
                 for (var tick = 0; tick < 12; tick++)
                 {
                     await ctx.DelaySecondsAsync(0.25f);
                     ctx.AssertEqual(rifle, GetItemInSlot(InventorySlot.RightHand, droid), "Inventory acquisition never switches the rifle to unarmed combat");
                 }
-                await ctx.ExecuteInCreatureContextAsync(droid, () => DestroyObject(carried));
+                await Transfer(ctx, droid, carried, owner);
+                await DispatchHostileInventoryDisturbance(ctx, droid, enemy, carried, DisturbType.Removed);
                 await ctx.DelaySecondsAsync(3f);
                 ctx.AssertEqual(rifle, GetItemInSlot(InventorySlot.RightHand, droid), "Inventory removal preserves the rifle");
                 ctx.AssertEqual(droid, GetItemPossessor(rifle), "The droid still owns the rifle");
+                ctx.AssertEqual(owner, GetItemPossessor(carried), "The owner receives the removed ammunition");
+                ctx.AssertEqual(3, GetItemStackSize(carried), "Removing ammunition preserves its quantity");
+                await ctx.ExecuteInCreatureContextAsync(owner, () => DestroyObject(carried));
                 await Dismiss(ctx, owner, droid);
                 var saved = Droid.LoadConstructedDroid(controller);
                 ctx.AssertEqual(1, saved.EquippedItems.Count, "Only the rifle is saved as equipment");
@@ -553,6 +557,28 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(1, Items(droid).Count(item => GetResRef(item) == "oph_rifle"), "Exactly one rifle survives resummoning");
             }
             await Dismiss(ctx, owner, droid);
+        }
+
+        private static Task DispatchHostileInventoryDisturbance(
+            EngineTestContext ctx, uint droid, uint enemy, uint item, DisturbType type)
+        {
+            return ctx.ExecuteInCreatureContextAsync(droid, () =>
+            {
+                ClearAllActions();
+                // Supply the native event state explicitly: item creation alone can leave
+                // GetLastDisturbed invalid or friendly, bypassing the stock combat branch.
+                var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(droid).AsNWSCreature();
+                native.m_oidLastDisturbed = enemy;
+                native.m_oidInventoryDisturbItem = item;
+                native.m_nInventoryDisturbType = (int)type;
+                native.m_oidAttemptedAttackTarget = OBJECT_INVALID;
+                native.m_oidAttemptedSpellTarget = OBJECT_INVALID;
+                ctx.AssertEqual(enemy, GetLastDisturbed(), "The inventory disturbance has a valid hostile actor");
+                ctx.Assert(GetIsEnemy(enemy), "The inventory disturber is hostile to the droid");
+                ctx.AssertEqual(type, GetInventoryDisturbType(), "The native disturbance type is installed");
+                ctx.AssertEqual(item, GetInventoryDisturbItem(), "The native disturbance item is installed");
+                ExecuteScript(ScriptName.OnDroidDisturbed, droid);
+            });
         }
 
         private static bool HasGeneratedAmmunition(uint droid, InventorySlot slot)

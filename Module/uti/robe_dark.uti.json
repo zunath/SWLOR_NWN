@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Dark cloth falls in substantial, uncomplicated folds from the shoulders of this robe. Its lining is carefully bound, allowing a quiet garment to keep its shape through considerably less quiet company."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Dark cloth falls in substantial, uncomplicated folds from the shoulders of this robe. Its lining is carefully bound, allowing a quiet garment to keep its shape through considerably less quiet company."
+    }
   },
   "Identified": {
     "type": "byte",

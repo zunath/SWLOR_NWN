@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Thurn Durvi's outfit has been fitted and refitted around a familiar set of fastenings. Its most substantial repairs lie where straps and equipment press against the cloth, keeping the daily inconveniences on the inside."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Thurn Durvi's outfit has been fitted and refitted around a familiar set of fastenings. Its most substantial repairs lie where straps and equipment press against the cloth, keeping the daily inconveniences on the inside."
+    }
   },
   "Identified": {
     "type": "byte",

@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Repairs have become so thoroughly worked into these gloves that it is difficult to identify the oldest leather. Their name has outlasted several pairs of palms and probably a number of owners."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Repairs have become so thoroughly worked into these gloves that it is difficult to identify the oldest leather. Their name has outlasted several pairs of palms and probably a number of owners."
     }
   },
   "Identified": {

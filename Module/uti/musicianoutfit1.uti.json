@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This musician's outfit catches the light without leaving much cloth free to interfere with the performance. Its pockets and fastening ties remain practical, familiar necessities concealed beneath the part an audience pays to see."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This musician's outfit catches the light without leaving much cloth free to interfere with the performance. Its pockets and fastening ties remain practical, familiar necessities concealed beneath the part an audience pays to see."
+    }
   },
   "Identified": {
     "type": "byte",

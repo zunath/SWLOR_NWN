@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Hohenfel's clothes are worn most heavily around a few familiar adjustments. The repairs follow those habits rather than restoring a tailor's original pattern, keeping the outfit comfortable to its particular owner."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Hohenfel's clothes are worn most heavily around a few familiar adjustments. The repairs follow those habits rather than restoring a tailor's original pattern, keeping the outfit comfortable to its particular owner."
     }
   },
   "Identified": {

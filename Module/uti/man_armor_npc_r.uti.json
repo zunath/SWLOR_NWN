@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Angular plates cover a workmanlike harness in the familiar Mandalorian style. Its fittings are made to be opened for maintenance, with the expectation that their owner will know how to close them again."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Angular plates cover a workmanlike harness in the familiar Mandalorian style. Its fittings are made to be opened for maintenance, with the expectation that their owner will know how to close them again."
     }
   },
   "Identified": {

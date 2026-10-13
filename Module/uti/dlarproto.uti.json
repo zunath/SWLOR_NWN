@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Handwritten fitting marks crowd the interior of this prototype droid shell. Several mounts have been relocated, leaving an honest record of a design still learning how to inhabit its chassis."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Handwritten fitting marks crowd the interior of this prototype droid shell. Several mounts have been relocated, leaving an honest record of a design still learning how to inhabit its chassis."
     }
   },
   "Identified": {

@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Grey cloth gives this captain's outfit an unshowy authority. Small repairs around its cuffs suggest a wearer who has had reason to help with the ship rather than merely issue orders from a comfortable chair."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Grey cloth gives this captain's outfit an unshowy authority. Small repairs around its cuffs suggest a wearer who has had reason to help with the ship rather than merely issue orders from a comfortable chair."
+    }
   },
   "Identified": {
     "type": "byte",

@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Plain Jedi layers and a quietly formal cut give these robes their association with Master Zhar. The useful fastenings remain within easy reach, keeping a teacher's dignity from depending on immaculate stillness."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Plain Jedi layers and a quietly formal cut give these robes their association with Master Zhar. The useful fastenings remain within easy reach, keeping a teacher's dignity from depending on immaculate stillness."
+    }
   },
   "Identified": {
     "type": "byte",

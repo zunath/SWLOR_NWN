@@ -321,12 +321,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Soil has a way of finding the seams of this practical farmer's outfit. The pockets are broad, the fastenings uncomplicated, and the sleeves prepared for a day that will outlast any sensible estimate of the work."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Soil has a way of finding the seams of this practical farmer's outfit. The pockets are broad, the fastenings uncomplicated, and the sleeves prepared for a day that will outlast any sensible estimate of the work."
                 }
               },
               "Identified": {
@@ -1350,12 +1352,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Deep red cloth gives this bounty hunter's outfit a memorable outline. Its pockets and closures are considerably less theatrical, fitted for the business that begins after the client has finished admiring the entrance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Deep red cloth gives this bounty hunter's outfit a memorable outline. Its pockets and closures are considerably less theatrical, fitted for the business that begins after the client has finished admiring the entrance."
                 }
               },
               "Identified": {
@@ -2603,12 +2607,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Narrow channels and severe lines divide the surface of this armor. The fittings are neatly recessed, giving it the unsettling tidiness of industrial equipment awaiting its next assignment."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Narrow channels and severe lines divide the surface of this armor. The fittings are neatly recessed, giving it the unsettling tidiness of industrial equipment awaiting its next assignment."
                 }
               },
               "Identified": {
@@ -3253,11 +3259,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -3522,11 +3532,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "The shoulder of this Republic marksman's outfit has been fitted more closely than its opposite. A small asymmetry records the practical demands of long watches spent behind a familiar weapon."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "The shoulder of this Republic marksman's outfit has been fitted more closely than its opposite. A small asymmetry records the practical demands of long watches spent behind a familiar weapon."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -3823,11 +3837,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Rough hide panels give this Byysk tunic a severe outline. Its fastenings are plain and readily repaired, a practical counterpoint to a garment that already makes a strong enough impression."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Rough hide panels give this Byysk tunic a severe outline. Its fastenings are plain and readily repaired, a practical counterpoint to a garment that already makes a strong enough impression."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -5896,11 +5914,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This musician's outfit catches the light without leaving much cloth free to interfere with the performance. Its pockets and fastening ties remain practical, familiar necessities concealed beneath the part an audience pays to see."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This musician's outfit catches the light without leaving much cloth free to interfere with the performance. Its pockets and fastening ties remain practical, familiar necessities concealed beneath the part an audience pays to see."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -9233,11 +9255,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This light travelling outfit folds into a modest space in a kit bag. Its easily reached fastenings suggest a garment designed for borrowed rooms, short stopovers, and departures that do not always happen on schedule."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This light travelling outfit folds into a modest space in a kit bag. Its easily reached fastenings suggest a garment designed for borrowed rooms, short stopovers, and departures that do not always happen on schedule."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -23438,11 +23464,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A traveller's outfit with space for a few necessities and no particular allegiance sewn into it. The cut is common in starports, where a practical wardrobe has to survive both a long passage and whatever waits at the other end."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A traveller's outfit with space for a few necessities and no particular allegiance sewn into it. The cut is common in starports, where a practical wardrobe has to survive both a long passage and whatever waits at the other end."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -23711,11 +23741,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Grey cloth keeps this travelling outfit inconspicuous beneath a starport's harsh lights. Reinforced pockets leave room for the things a prudent passenger would rather keep close than trust to checked cargo."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Grey cloth keeps this travelling outfit inconspicuous beneath a starport's harsh lights. Reinforced pockets leave room for the things a prudent passenger would rather keep close than trust to checked cargo."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -23984,11 +24018,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Grey cloth keeps this travelling outfit inconspicuous beneath a starport's harsh lights. Reinforced pockets leave room for the things a prudent passenger would rather keep close than trust to checked cargo."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Grey cloth keeps this travelling outfit inconspicuous beneath a starport's harsh lights. Reinforced pockets leave room for the things a prudent passenger would rather keep close than trust to checked cargo."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -24257,11 +24295,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This light travelling outfit folds into a modest space in a kit bag. Its easily reached fastenings suggest a garment designed for borrowed rooms, short stopovers, and departures that do not always happen on schedule."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This light travelling outfit folds into a modest space in a kit bag. Its easily reached fastenings suggest a garment designed for borrowed rooms, short stopovers, and departures that do not always happen on schedule."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -24530,11 +24572,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Light grey cloth and uncomplicated layers keep this outfit easy to wear through a long passage. The strongest stitching is inside the pockets, where a traveller tends to keep the things that cannot be replaced at the next port."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Light grey cloth and uncomplicated layers keep this outfit easy to wear through a long passage. The strongest stitching is inside the pockets, where a traveller tends to keep the things that cannot be replaced at the next port."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -24803,11 +24849,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Light grey cloth and uncomplicated layers keep this outfit easy to wear through a long passage. The strongest stitching is inside the pockets, where a traveller tends to keep the things that cannot be replaced at the next port."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Light grey cloth and uncomplicated layers keep this outfit easy to wear through a long passage. The strongest stitching is inside the pockets, where a traveller tends to keep the things that cannot be replaced at the next port."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -25076,11 +25126,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This light travelling outfit folds into a modest space in a kit bag. Its easily reached fastenings suggest a garment designed for borrowed rooms, short stopovers, and departures that do not always happen on schedule."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This light travelling outfit folds into a modest space in a kit bag. Its easily reached fastenings suggest a garment designed for borrowed rooms, short stopovers, and departures that do not always happen on schedule."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -25349,11 +25403,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A traveller's outfit with space for a few necessities and no particular allegiance sewn into it. The cut is common in starports, where a practical wardrobe has to survive both a long passage and whatever waits at the other end."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A traveller's outfit with space for a few necessities and no particular allegiance sewn into it. The cut is common in starports, where a practical wardrobe has to survive both a long passage and whatever waits at the other end."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -25622,12 +25680,14 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Deep red cloth gives this bounty hunter's outfit a memorable outline. Its pockets and closures are considerably less theatrical, fitted for the business that begins after the client has finished admiring the entrance."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Deep red cloth gives this bounty hunter's outfit a memorable outline. Its pockets and closures are considerably less theatrical, fitted for the business that begins after the client has finished admiring the entrance."
                       }
                     },
                     "Identified": {
@@ -25898,12 +25958,14 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Muted green panels break up the outline of this working outfit. A hunter could wear it among brush or in a crowded port without looking as though they had dressed exclusively for either place."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Muted green panels break up the outline of this working outfit. A hunter could wear it among brush or in a crowded port without looking as though they had dressed exclusively for either place."
                       }
                     },
                     "Identified": {
@@ -26174,12 +26236,14 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
                       }
                     },
                     "Identified": {
@@ -26449,12 +26513,14 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
                       }
                     },
                     "Identified": {
@@ -26724,11 +26790,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Light layers and securely worked seams make this dancer's outfit more practical than it first appears. Under performance lights, the careful construction disappears and leaves the audience to follow the movement."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Light layers and securely worked seams make this dancer's outfit more practical than it first appears. Under performance lights, the careful construction disappears and leaves the audience to follow the movement."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -26997,11 +27067,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The flowing panels of this stage outfit have been balanced around a close-fitting foundation. It is made to catch the light during a turn without asking the dancer to keep track of every loose fold."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The flowing panels of this stage outfit have been balanced around a close-fitting foundation. It is made to catch the light during a turn without asking the dancer to keep track of every loose fold."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -27270,11 +27344,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Light layers and securely worked seams make this dancer's outfit more practical than it first appears. Under performance lights, the careful construction disappears and leaves the audience to follow the movement."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Light layers and securely worked seams make this dancer's outfit more practical than it first appears. Under performance lights, the careful construction disappears and leaves the audience to follow the movement."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -27543,11 +27621,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The flowing panels of this stage outfit have been balanced around a close-fitting foundation. It is made to catch the light during a turn without asking the dancer to keep track of every loose fold."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "The flowing panels of this stage outfit have been balanced around a close-fitting foundation. It is made to catch the light during a turn without asking the dancer to keep track of every loose fold."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -27816,12 +27898,14 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Soil has a way of finding the seams of this practical farmer's outfit. The pockets are broad, the fastenings uncomplicated, and the sleeves prepared for a day that will outlast any sensible estimate of the work."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Soil has a way of finding the seams of this practical farmer's outfit. The pockets are broad, the fastenings uncomplicated, and the sleeves prepared for a day that will outlast any sensible estimate of the work."
                       }
                     },
                     "Identified": {
@@ -28092,11 +28176,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Blue fabric gives this gambler's outfit enough distinction to be remembered at the table. Its practical inner pockets suggest that the owner would prefer the exact contents of their purse to remain less memorable."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Blue fabric gives this gambler's outfit enough distinction to be remembered at the table. Its practical inner pockets suggest that the owner would prefer the exact contents of their purse to remain less memorable."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -28365,11 +28453,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Grey cloth and a sober cut make this outfit seem almost too respectable for a gaming room. At a sabacc table, looking like the least interesting person present can be its own small advantage."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Grey cloth and a sober cut make this outfit seem almost too respectable for a gaming room. At a sabacc table, looking like the least interesting person present can be its own small advantage."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -28638,11 +28730,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This musician's outfit catches the light without leaving much cloth free to interfere with the performance. Its pockets and fastening ties remain practical, familiar necessities concealed beneath the part an audience pays to see."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This musician's outfit catches the light without leaving much cloth free to interfere with the performance. Its pockets and fastening ties remain practical, familiar necessities concealed beneath the part an audience pays to see."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -28911,11 +29007,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Grey fabric and quiet tailoring give this formal outfit an expensive restraint. The seams are almost invisible, the sort of work a patron notices only after discovering how comfortably it sits through a long reception."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Grey fabric and quiet tailoring give this formal outfit an expensive restraint. The seams are almost invisible, the sort of work a patron notices only after discovering how comfortably it sits through a long reception."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -29184,11 +29284,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Deep purple folds give this noble outfit a deliberately commanding presence. Its interior is less theatrical: fine seams and discreet fastenings that spare an important guest the indignity of struggling with their own clothes."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Deep purple folds give this noble outfit a deliberately commanding presence. Its interior is less theatrical: fine seams and discreet fastenings that spare an important guest the indignity of struggling with their own clothes."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -29457,11 +29561,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This party outfit is cut to look effortless in company, concealing the rather less effortless work that holds its folds in place. Discreet pockets leave a guest room for a credit chip and a few private necessities."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This party outfit is cut to look effortless in company, concealing the rather less effortless work that holds its folds in place. Discreet pockets leave a guest room for a credit chip and a few private necessities."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -29730,11 +29838,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Light catches the overlapping layers of this evening outfit as its wearer moves. The tailor has hidden the fastenings neatly enough to let the guest take all the credit for looking composed."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Light catches the overlapping layers of this evening outfit as its wearer moves. The tailor has hidden the fastenings neatly enough to let the guest take all the credit for looking composed."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -30003,11 +30115,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This party outfit is cut to look effortless in company, concealing the rather less effortless work that holds its folds in place. Discreet pockets leave a guest room for a credit chip and a few private necessities."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "This party outfit is cut to look effortless in company, concealing the rather less effortless work that holds its folds in place. Discreet pockets leave a guest room for a credit chip and a few private necessities."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -30276,11 +30392,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Light catches the overlapping layers of this evening outfit as its wearer moves. The tailor has hidden the fastenings neatly enough to let the guest take all the credit for looking composed."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Light catches the overlapping layers of this evening outfit as its wearer moves. The tailor has hidden the fastenings neatly enough to let the guest take all the credit for looking composed."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -30549,12 +30669,14 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A refugee's travel outfit with repairs made from what was available at the time. Its inner ties remain carefully kept, preserving a little personal order through circumstances that offered very little elsewhere."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A refugee's travel outfit with repairs made from what was available at the time. Its inner ties remain carefully kept, preserving a little personal order through circumstances that offered very little elsewhere."
                       }
                     },
                     "Identified": {

@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Sun-faded cloth has been wrapped twice around the brow of this trail cowl. Fine Tatooine grit falls from the seams whenever it is shaken, with more always waiting underneath."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Sun-faded cloth has been wrapped twice around the brow of this trail cowl. Fine Tatooine grit falls from the seams whenever it is shaken, with more always waiting underneath."
     }
   },
   "Identified": {

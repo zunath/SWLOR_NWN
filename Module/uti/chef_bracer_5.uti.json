@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Deeply colored cloth and a restrained decorative seam distinguish this chef's bracer. The ornament stays above the wrist, leaving the busy end of the garment admirably free of distractions."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Deeply colored cloth and a restrained decorative seam distinguish this chef's bracer. The ornament stays above the wrist, leaving the busy end of the garment admirably free of distractions."
+    }
   },
   "Identified": {
     "type": "byte",

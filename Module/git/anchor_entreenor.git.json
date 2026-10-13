@@ -339,11 +339,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -2225,11 +2229,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -4338,11 +4346,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Dust collects around the simple plates of this militia armor. Its inexpensive fittings tell the familiar Tatooine story of people expected to stand a watch without the supply train of a proper army."
+                }
               },
               "Identified": {
                 "type": "byte",

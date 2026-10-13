@@ -131,6 +131,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     {
                         property.Positions[PropertyLocationType.CurrentPosition] = property.Positions[PropertyLocationType.SpacePosition];
                         property.Positions[PropertyLocationType.SpacePosition] = new PropertyLocation { AreaResref = "missing_launch" };
+                        var idleShip = CreateObject(ObjectType.Creature, "player_starship", Location(spaceArea, destination, 0f));
+                        ctx.Assert(GetIsObjectValid(idleShip), "resuming an unpiloted ship starts with a native NPC clone");
+                        ctx.Track(idleShip);
+                        ShipClones()["engine-launch-ship/" + actor.Id] = idleShip;
                     }
                     DB.Set(property);
                     await ctx.ExecuteInCreatureContextAsync(computer, () =>
@@ -145,6 +149,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(Vector3.Distance(GetPosition(actor.Creature), destination) < 1f, "the transformed pilot is at the launch destination");
                     ctx.Assert(Space.IsPlayerInSpaceMode(actor.Creature), "successful launch activates the ship");
                     ctx.AssertEqual(spaceArea, GetArea(actor.Creature), "the pilot crossed into a distinct space area");
+                    ctx.AssertEqual(OBJECT_INVALID, (uint)ShipClones()["engine-launch-ship/" + actor.Id], "completed launch marks controls occupied before the old NPC is destroyed");
                     var ship = Space.GetShipDetailByItemTag("ShipDeedLightFreighter");
                     ctx.AssertEqual(ship.Appearance, GetAppearanceType(actor.Creature), "successful launch applies the ship model");
                     var clone = GetLocalObject(actor.Creature, "SPACE_PILOT_CLONE");
@@ -221,13 +226,51 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 };
                 DB.Set(property);
                 await UseWithoutClientTransfer(ctx, actor, computer);
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => ActionWait(10f));
+                await ctx.WaitUntilAsync(() => GetCurrentAction(actor.Creature) == ActionType.Wait, 2f, "an unrelated activity starts after canceled launch");
                 ExpirePendingLaunch(actor);
                 await ctx.WaitUntilAsync(() => !PendingLaunches().Contains(actor.Creature), 3f, "canceled launch reservation expires");
                 ctx.Assert(!Space.IsPlayerInSpaceMode(actor.Creature), "expiration leaves the character on foot");
+                ctx.AssertEqual(ActionType.Wait, GetCurrentAction(actor.Creature), "expiration preserves the unrelated activity");
                 await UseWithoutClientTransfer(ctx, actor, computer);
                 ctx.Assert(PendingLaunches().Contains(actor.Creature), "a later launch obtains a fresh reservation");
                 Space.ApplyDeath(actor.Creature);
                 ctx.Assert(!PendingLaunches().Contains(actor.Creature), "death cleanup removes an uncompleted launch");
+            });
+        }
+
+        /// <summary>Protects a reserved in-space ship from emergency towing, then verifies normal towing after reservation release.</summary>
+        [EngineTest("Emergency exit preserves ships with a pending pilot", Category = "ShipLaunch", TimeoutSeconds = 15f)]
+        public static Task EmergencyExitDuringLaunch(EngineTestContext ctx)
+        {
+            return WithShipComputer(ctx, async (actor, computer, property) =>
+            {
+                var spaceArea = ctx.CreateInstancedArea(GetResRef(ctx.Arena));
+                var destination = GetPositionFromLocation(ctx.GetArenaLocation(6f));
+                Area.GetAreas()["engine_launch"] = spaceArea;
+                property.Positions[PropertyLocationType.CurrentPosition] = new PropertyLocation
+                {
+                    AreaResref = "engine_launch", X = destination.X, Y = destination.Y, Z = destination.Z
+                };
+                DB.Set(property);
+                var shipId = "engine-launch-ship/" + actor.Id;
+                var clone = CreateObject(ObjectType.Creature, "player_starship", Location(spaceArea, destination, 0f));
+                ctx.Assert(GetIsObjectValid(clone), "an unpiloted ship has a native NPC clone");
+                ctx.Track(clone);
+                ShipClones()[shipId] = clone;
+                await UseWithoutClientTransfer(ctx, actor, computer);
+                MarkDeparture(actor, ctx.Arena);
+
+                Space.PerformEmergencyExit(ctx.Arena);
+                ctx.Assert(DB.Get<WorldProperty>(property.Id).Positions.ContainsKey(PropertyLocationType.CurrentPosition), "a pending pilot prevents emergency towing");
+                ctx.AssertEqual(50, DB.Get<PlayerShip>(shipId).Status.Hull, "a pending pilot prevents tow damage");
+                ctx.Assert(GetIsObjectValid(clone), "the in-space clone remains during pilot loading");
+
+                Space.ApplyDeath(actor.Creature);
+                Space.PerformEmergencyExit(ctx.Arena);
+                ctx.Assert(!DB.Get<WorldProperty>(property.Id).Positions.ContainsKey(PropertyLocationType.CurrentPosition), "normal emergency towing resumes when the reservation is released");
+                ctx.AssertEqual(1, DB.Get<PlayerShip>(shipId).Status.Hull, "unpiloted emergency towing applies its normal hull penalty");
+                await ctx.WaitUntilAsync(() => !GetIsObjectValid(clone), 3f, "normal emergency towing removes the NPC ship clone");
             });
         }
 
@@ -291,6 +334,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static IDictionary PendingLaunches() => (IDictionary)typeof(Space)
             .GetField("_pendingShipLaunches", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
 
+        /// <summary>Reads the live ship clone registry to exercise emergency towing with a real NPC ship.</summary>
+        private static IDictionary ShipClones() => (IDictionary)typeof(Space)
+            .GetField("_shipClones", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+
         /// <summary>Advances only the request's timeout to test expiry without a thirty-second wall-clock delay.</summary>
         private static void ExpirePendingLaunch(PlayerAbilityFixture actor)
         {
@@ -343,6 +390,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 DB.Set(property);
                 if (Space.IsPlayerInSpaceMode(actor.Creature))
                     await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => Space.ExitSpaceMode(actor.Creature));
+                ShipClones().Remove(ship.Id);
                 foreach (var type in statusWindows)
                     if (Gui.IsWindowOpen(actor.Creature, type))
                         Gui.CloseWindow(actor.Creature, type, actor.Creature);

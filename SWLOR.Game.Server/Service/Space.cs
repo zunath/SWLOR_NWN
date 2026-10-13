@@ -657,7 +657,6 @@ namespace SWLOR.Game.Server.Service
             // the new area keeps their reservation until arrival, death, or disconnect.
             if (!launch.HasDeparted && area == interior && DateTime.UtcNow >= launch.ExpiresAt)
             {
-                ClearAllActions(false, player);
                 _pendingShipLaunches.Remove(player);
                 SendMessageToPC(player, ColorToken.Red("Unable to reach this starship's space destination. Please try again or notify an admin."));
                 Log.WriteStructured(LogGroup.Space, "Ship launch did not arrive: PlayerId={PlayerId} ShipId={ShipId} AreaResref={AreaResref}",
@@ -882,21 +881,13 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbPlayer);
             DB.Set(dbPlayerShip);
 
-            // If the ship is in the "actively piloted" list, it means it's in space.
-            // Destroy the NPC clone that's associated with this ship since the player is taking over the controls.
-            if (_shipClones.ContainsKey(dbPlayerShip.Id))
+            // Replace the unpiloted NPC with the player and mark the controls occupied
+            // immediately; DestroyObject may leave the NPC valid until the frame ends.
+            if (_shipClones.TryGetValue(dbPlayerShip.Id, out var clone) && GetIsObjectValid(clone))
             {
-                var clone = _shipClones[dbPlayerShip.Id];
-                if (GetIsObjectValid(clone))
-                {
-                    DestroyObject(clone);
-                }
+                DestroyObject(clone);
             }
-            // Otherwise add the ship to the list and associate an invalid object to its clone.
-            else
-            {
-                _shipClones[dbPlayerShip.Id] = OBJECT_INVALID;
-            }
+            _shipClones[dbPlayerShip.Id] = OBJECT_INVALID;
 
             if(!_playersInSpace.Contains(player))
                 _playersInSpace.Add(player);
@@ -2373,7 +2364,8 @@ namespace SWLOR.Game.Server.Service
             var shipClone = _shipClones.ContainsKey(dbShip.Id)
                 ? _shipClones[dbShip.Id]
                 : OBJECT_INVALID;
-            var isPiloted = !GetIsObjectValid(shipClone);
+            var isPiloted = !GetIsObjectValid(shipClone) ||
+                            _pendingShipLaunches.Values.Any(launch => launch.ShipId == dbShip.Id);
 
             // Other players are in the instance or someone is piloting the ship.
             // No need to send the ship back to the dock.

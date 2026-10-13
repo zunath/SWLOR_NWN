@@ -100,9 +100,9 @@ namespace SWLOR.CombatSim.Tests.Rules
             tunedPvp.PvpHealingMultiplier.Should().Be(1f);
             tunedPvp.PvpTemporaryHpMultiplier.Should().Be(1f);
             tunedPvp.PvpHealingRamp.Select(s => (s.AtSeconds, s.Percent))
-                .Should().Equal((120f, 10f), (150f, 30f), (180f, 50f), (210f, 70f), (240f, 90f));
+                .Should().Equal((120f, 10f), (150f, 20f), (180f, 30f), (210f, 45f), (240f, 60f));
             tunedPvp.PvpDamageBackstop.Select(s => (s.AtSeconds, s.Percent))
-                .Should().Equal((240f, 10f), (270f, 20f), (300f, 30f), (330f, 40f), (360f, 50f));
+                .Should().Equal((180f, 20f), (210f, 40f), (240f, 60f), (270f, 80f), (300f, 100f));
         }
     }
 }

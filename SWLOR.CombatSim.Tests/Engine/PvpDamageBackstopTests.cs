@@ -20,14 +20,14 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [TestCase(0, 100)]
-        [TestCase(230, 100)]
-        [TestCase(240, 110)]
-        [TestCase(270, 120)]
-        [TestCase(300, 130)]
-        [TestCase(330, 140)]
-        [TestCase(360, 150)]
-        [TestCase(900, 150)]
-        public void TunedPvp_DamageGainsTenPercentEveryThirtySecondsFromFourMinutes_CappedAtFiftyPercent(int secondsOfCombat, double expected)
+        [TestCase(170, 100)]
+        [TestCase(180, 120)]
+        [TestCase(210, 140)]
+        [TestCase(240, 160)]
+        [TestCase(270, 180)]
+        [TestCase(300, 200)]
+        [TestCase(900, 200)]
+        public void TunedPvp_DamageGainsTwentyPercentEveryThirtySecondsFromThreeMinutes_UpToDouble(int secondsOfCombat, double expected)
         {
             var fight = new PvpFight(_catalog, RuleSets.TunedPvp());
             fight.FightUntil(secondsOfCombat);
@@ -41,7 +41,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var fight = new PvpFight(_catalog, RuleSets.TunedPvp()) { TargetDamageReductionPercent = 10f };
             fight.FightUntil(360);
 
-            fight.DamageAt(360).Should().BeApproximately(100 * 1.5 * 0.9, Tolerance);
+            fight.DamageAt(360).Should().BeApproximately(100 * 2.0 * 0.9, Tolerance);
         }
 
         [Test]
@@ -90,7 +90,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             var fight = new PvpFight(_catalog, RuleSets.TunedPvp());
             fight.FightUntil(360);
-            fight.DamageAt(360).Should().BeApproximately(150, Tolerance);
+            fight.DamageAt(360).Should().BeApproximately(200, Tolerance);
 
             fight.Hit(360 + 40);
 

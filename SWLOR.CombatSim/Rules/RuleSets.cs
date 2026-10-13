@@ -2,7 +2,7 @@ namespace SWLOR.CombatSim.Rules
 {
     /// <summary>
     /// Rule presets: today's live rules, the proposed tuning (healing, costs, revives and fixes for PvE and PvP),
-    /// and that tuning plus the PvP attrition rules (healing ramp and damage backstop).
+    /// and that tuning plus the PvP attrition rules (a healing ramp that stops at -60% and a damage ramp up to double).
     /// </summary>
     public static class RuleSets
     {
@@ -49,11 +49,11 @@ namespace SWLOR.CombatSim.Rules
             rules.Name = TunedPvpName;
             rules.PvpHealingRamp = new List<RampStep>
             {
-                new(120f, 10f), new(150f, 30f), new(180f, 50f), new(210f, 70f), new(240f, 90f)
+                new(120f, 10f), new(150f, 20f), new(180f, 30f), new(210f, 45f), new(240f, 60f)
             };
             rules.PvpDamageBackstop = new List<RampStep>
             {
-                new(240f, 10f), new(270f, 20f), new(300f, 30f), new(330f, 40f), new(360f, 50f)
+                new(180f, 20f), new(210f, 40f), new(240f, 60f), new(270f, 80f), new(300f, 100f)
             };
             return rules;
         }

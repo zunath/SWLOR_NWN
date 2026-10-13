@@ -33,7 +33,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         [TestCase(0, 1000)]
         [TestCase(119, 1000)]
         [TestCase(120, 900)]
-        [TestCase(240, 100)]
+        [TestCase(240, 400)]
         public void TunedPvpPreset_HasNoFlatCut_OnlyTheRamp(int secondsOfCombat, double expected)
         {
             var fight = new PvpFight(_catalog, RuleSets.TunedPvp());
@@ -46,12 +46,12 @@ namespace SWLOR.CombatSim.Tests.Engine
         [TestCase(0, 700)]
         [TestCase(110, 700)]
         [TestCase(120, 630)]
-        [TestCase(150, 490)]
-        [TestCase(180, 350)]
-        [TestCase(210, 210)]
-        [TestCase(240, 70)]
-        [TestCase(300, 70)]
-        [TestCase(1200, 70)]
+        [TestCase(150, 560)]
+        [TestCase(180, 490)]
+        [TestCase(210, 385)]
+        [TestCase(240, 280)]
+        [TestCase(300, 280)]
+        [TestCase(1200, 280)]
         public void TunedPvp_HealingReceivedInContinuousPvpCombat_IsSeventyPercentThenRampsDown(int secondsOfCombat, double expected)
         {
             var fight = new PvpFight(_catalog, TunedPvpWithFlatCut());
@@ -127,7 +127,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         {
             var fight = new PvpFight(_catalog, TunedPvpWithFlatCut());
             fight.FightUntil(240);
-            fight.HealAt(240).Should().BeApproximately(70, Tolerance);
+            fight.HealAt(240).Should().BeApproximately(280, Tolerance);
 
             fight.HealAt(240 + 31).Should().BeApproximately(RawHeal, Tolerance, "31 quiet seconds ended the PvP combat");
 
@@ -143,7 +143,7 @@ namespace SWLOR.CombatSim.Tests.Engine
 
             fight.Hit(240 + 29);
 
-            fight.HealAt(240 + 29).Should().BeApproximately(70, Tolerance);
+            fight.HealAt(240 + 29).Should().BeApproximately(280, Tolerance);
         }
     }
 }

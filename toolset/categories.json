@@ -693,6 +693,14 @@
                 "pw_sc_qioncore",
                 "pw_sc_qiontest"
               ]
+            },
+            {
+              "name": "Droid Foundry",
+              "members": [
+                "hut_fdy_intake",
+                "hut_fdy_assembly",
+                "hut_fdy_core"
+              ]
             }
           ],
           "members": [

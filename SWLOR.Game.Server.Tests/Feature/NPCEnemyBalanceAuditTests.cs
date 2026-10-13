@@ -175,6 +175,11 @@ public class NPCEnemyBalanceAuditTests
         new("bulwark", "bulwark_sk", "bulwark_wp", 50, 3296, 34, 34, 34, 42, 24, 139, 46, 21, 2, 9, 75, 44, 76, 23),
         new("slagborn", "slagborn_sk", "slagborn_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
         new("demolisherzr9", "demolisherzr9_sk", "demolisherzr9_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
+        new("fdy_sorter", "fdy_sorter_sk", "fdy_sorter_wp", 45, 2114, 39, 32, 23, 32, 32, 138, 24, 22, 2, 10, 44, 28, 85, 23),
+        new("fdy_foreman", "fdy_foreman_sk", "fdy_foreman_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 25),
+        new("fdy_inspector", "fdy_inspector_sk", "fdy_inspector_wp", 55, 2371, 26, 37, 45, 26, 37, 101, 130, 22, 24, 14, 70, 46, 78, 25),
+        new("abs_zchief", "abs_zchief_sk", "abs_zchief_wp", 24, 960, 27, 22, 16, 22, 22, 80, 14, 15, 2, 5, 12, 10, 48, 24),
+        new("abs_subzero", "abs_subzero_sk", "abs_subzero_wp", 28, 979, 17, 24, 29, 17, 24, 55, 71, 12, 14, 8, 10, 14, 42, 24),
         new("overwatch", "overwatch_sk", "overwatch_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 69, 41, 89, 23),
         new("blastbreaker", "blastbreaker_sk", "blastbreaker_wp", 50, 2441, 42, 34, 24, 34, 34, 152, 26, 24, 2, 11, 71, 41, 94, 23),
         new("suppressor", "suppressor_sk", "suppressor_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 68, 44, 71, 23),
@@ -282,6 +287,11 @@ public class NPCEnemyBalanceAuditTests
             ["bulwark"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 100, [ResistanceType.Disruption] = -15 },
             ["slagborn"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 100, [ResistanceType.Disruption] = -15 },
             ["demolisherzr9"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 100, [ResistanceType.Disruption] = -15 },
+            ["fdy_sorter"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = 18, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = 18, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 100, [ResistanceType.Disruption] = -15 },
+            ["fdy_foreman"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 100, [ResistanceType.Disruption] = -15 },
+            ["fdy_inspector"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 100, [ResistanceType.Disruption] = -15 },
+            ["abs_zchief"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 10, [ResistanceType.Electrical] = 6, [ResistanceType.Ice] = -10, [ResistanceType.Mind] = 12, [ResistanceType.Mobility] = 8, [ResistanceType.Trauma] = 10, [ResistanceType.Disruption] = 8 },
+            ["abs_subzero"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 7, [ResistanceType.Ice] = -10, [ResistanceType.Mind] = 13, [ResistanceType.Mobility] = 9, [ResistanceType.Trauma] = 11, [ResistanceType.Disruption] = 9 },
             ["overwatch"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
             ["blastbreaker"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
             ["suppressor"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
@@ -357,6 +367,11 @@ public class NPCEnemyBalanceAuditTests
         ["bulwark"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
         ["slagborn"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
         ["demolisherzr9"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["fdy_sorter"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["fdy_foreman"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["fdy_inspector"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["abs_zchief"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["abs_subzero"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
         ["overwatch"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
         ["blastbreaker"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
         ["suppressor"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
@@ -401,6 +416,22 @@ public class NPCEnemyBalanceAuditTests
     private static readonly IReadOnlyDictionary<string, string> ExpectedDroidEnemySkins = new Dictionary<string, string>
     {
         ["bf_pulsedroid"] = "bf_pulse_skin",
+        ["fdy_forgewd"] = "fdy_forgewd_sk",
+        ["fdy_foreman"] = "fdy_foreman_sk",
+        ["fdy_hauler"] = "fdy_hauler_sk",
+        ["fdy_hunter"] = "fdy_hunter_sk",
+        ["fdy_inspector"] = "fdy_inspector_sk",
+        ["fdy_juggernt"] = "fdy_juggernt_sk",
+        ["fdy_linedef"] = "fdy_linedef_sk",
+        ["fdy_overseer"] = "fdy_overseer_sk",
+        ["fdy_reclaim"] = "fdy_reclaim_sk",
+        ["fdy_riveter"] = "fdy_riveter_sk",
+        ["fdy_sentry"] = "fdy_sentry_sk",
+        ["fdy_siege"] = "fdy_siege_sk",
+        ["fdy_smelter"] = "fdy_smelter_sk",
+        ["fdy_sorter"] = "fdy_sorter_sk",
+        ["fdy_wardroid"] = "fdy_wardroid_sk",
+        ["fdy_welder"] = "fdy_welder_sk",
         ["malfunctioningse"] = "malfsecdroid_sk",
         ["malfunctioningsp"] = "malfspiddroi_sk",
         ["malsecdroid"] = "patroldroid_sk",
@@ -1445,21 +1476,33 @@ public class NPCEnemyBalanceAuditTests
             }
         }
 
+        var lastWorldNpcRow = worksheet.Descendants(ns + "row")
+            .Where(row => row.Elements(ns + "c").Any(cell =>
+                cell.Attribute("r")?.Value == $"C{row.Attribute("r")!.Value}" &&
+                (cell.Element(ns + "v") != null || cell.Element(ns + "is") != null)))
+            .Max(row => int.Parse(row.Attribute("r")!.Value, CultureInfo.InvariantCulture));
         worksheet
             .Descendants(ns + "autoFilter")
             .Single()
             .Attribute("ref")?
             .Value
             .Should()
-            .Be("$A$1:$AR$444", "the reusable resistance override columns should be included in World NPCs filtering");
+            .Be($"$A$1:$AR${lastWorldNpcRow}", "every World NPCs row, including the resistance override columns, should be filterable");
 
         worksheet
             .Descendants(ns + "dataValidation")
-            .Single(validation => validation.Attribute("sqref")?.Value == "AE2:AL444")
+            .Single(validation => validation.Attribute("sqref")?.Value == $"AE2:AL{lastWorldNpcRow}")
             .Attribute("type")?
             .Value
             .Should()
             .Be("decimal", "resistance adjustments should be first-class numeric cells rather than text notes");
+        foreach (var column in new[] { "D", "E", "F", "G", "H" })
+        {
+            worksheet.Descendants(ns + "dataValidation")
+                .Should()
+                .Contain(validation => validation.Attribute("sqref")!.Value == $"{column}2:{column}{lastWorldNpcRow}",
+                    $"World NPCs column {column} should be validated on every row");
+        }
 
         var lastWeaponDelayRow = weaponDelays.Descendants(ns + "row")
             .Where(row => row.Elements(ns + "c").Any(cell =>

@@ -246,6 +246,66 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Category(RecipeCategoryType.Tunic).Resref("rhydelalphacr").Level(50).Quantity(1).RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("rhydelalphacm", 1).Component("lth_good", 4).Component("fiberp_good", 2);
+
+            // Sorting-Arm Harness (belt) - Hutlar Droid Foundry
+            _builder.Create(RecipeType.SalvagedSortingHarness, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("sorting_harness")
+                .Level(45)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("sorting_actuator", 1)
+                .Component("elec_good", 3)
+                .Component("fiberp_good", 2);
+
+            // Assembly-Line Gauntlets (gloves) - Hutlar Droid Foundry
+            _builder.Create(RecipeType.SalvagedAssemblyGauntlet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("assembly_gaunt")
+                .Level(48)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("torque_regulator", 1)
+                .Component("elec_high", 3)
+                .Component("fiberp_good", 2);
+
+            // Null-Field Collar (necklace) - Hutlar Droid Foundry
+            _builder.Create(RecipeType.SalvagedNullFieldCollar, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("nullfield_collar")
+                .Level(50)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("faultscan_optic", 1)
+                .Component("elec_high", 3)
+                .Component("fiberp_high", 2);
+
+            // Breach-Seal Belt (belt) - Abandoned Station
+            _builder.Create(RecipeType.SalvagedBreachSealBelt, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("breachseal_belt")
+                .Level(30)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("override_spike", 1)
+                .Component("lth_good", 3)
+                .Component("fiberp_good", 2);
+
+            // Serum-Cell Necklace (necklace) - Abandoned Station
+            _builder.Create(RecipeType.SalvagedSerumCellNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("serumcell_neck")
+                .Level(28)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("plague_culture", 1)
+                .Component("ref_plagionite", 2)
+                .Component("citrine", 1);
         }
     }
 }

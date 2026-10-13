@@ -106,6 +106,16 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
         private void SupplyCrates()
         {
+            _builder.Create("SUPPLY_CRATE_3")
+                .AddItem("ref_keromber", 1, 1, true)
+                .AddItem("ref_plagionite", 20)
+                .AddItem("ref_scordspar", 20)
+                .AddItem("elec_good", 20)
+                .AddItem("lth_good", 20)
+                .AddItem("citrine", 10)
+                .AddItem("fiberp_good", 20)
+                .AddItem("ancient_wood", 20);
+
             _builder.Create("SUPPLY_CRATE_5")
                 .AddItem("ref_arkoxit", 1, 1, true)
                 .AddItem("ref_jasioclase", 20)

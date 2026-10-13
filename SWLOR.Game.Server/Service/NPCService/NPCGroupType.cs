@@ -602,6 +602,10 @@ namespace SWLOR.Game.Server.Service.NPCService
         MonCala_UmbralRaiderSaboteur = 295,
         [NPCGroup("Umbral Raider Commander")]
         MonCala_UmbralRaiderCommander = 296,
+        [NPCGroup("Foundry Droid")]
+        Hutlar_FoundryDroid = 297,
+        [NPCGroup("Station Horror")]
+        AbandonedStation_Horror = 298,
 
     }
 

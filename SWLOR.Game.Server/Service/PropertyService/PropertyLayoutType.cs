@@ -52,6 +52,11 @@ namespace SWLOR.Game.Server.Service.PropertyService
         LargeHouseStyle4 = 109,
 
         LabStyle1 = 110,
+
+        ApartmentSmallStyleUnfurnished = 111,
+        ApartmentSmallStyleFurnished = 112,
+        ApartmentMediumStyleUnfurnished = 113,
+        ApartmentMediumStyleFurnished = 114,
     }
 
 }

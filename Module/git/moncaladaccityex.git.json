@@ -352931,7 +352931,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "jukebox_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -352995,7 +352995,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "VarTable": {
           "type": "list",

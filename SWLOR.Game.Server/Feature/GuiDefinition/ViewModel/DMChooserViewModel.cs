@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         public const string MainContentElement = "dmchooser_content";
         public const string MainContentPartial = "DMCHOOSER_MAIN";
+        public const string AreaContentPartial = "DMCHOOSER_AREAS";
 
         private const int ResultsPerPage = 20;
 
@@ -22,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _selectedIndex = -1;
         private bool _isTruncated;
         private bool _suppressSearch;
+        private string _contentPartial;
 
         public int SelectedCategory
         {
@@ -30,17 +32,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 Set(value);
                 IsScopeEnabled = value != (int)DMObjectCategory.Areas;
-                ThirdColumnHeader = value == (int)DMObjectCategory.Areas ? "Resref" : "Area";
                 InfoHeader = (DMObjectCategory)value switch
                 {
-                    DMObjectCategory.Areas => "Players",
                     DMObjectCategory.Creatures => "Level · HP",
                     DMObjectCategory.Items => "Type",
                     DMObjectCategory.Placeables or DMObjectCategory.Doors => "State",
                     _ => string.Empty
                 };
                 if (!_suppressSearch)
+                {
+                    ShowCategoryContent();
                     RunSearch();
+                }
             }
         }
 
@@ -53,12 +56,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (!_suppressSearch)
                     RunSearch();
             }
-        }
-
-        public string ThirdColumnHeader
-        {
-            get => Get<string>();
-            set => Set(value);
         }
 
         public bool IsScopeEnabled
@@ -203,8 +200,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.SelectedPageIndex);
 
-            ChangePartialView(MainContentElement, MainContentPartial);
+            _contentPartial = null;
+            ShowCategoryContent();
             RunSearch();
+        }
+
+        // Areas have their own list layout. The layout is only resent when switching to or from areas.
+        private void ShowCategoryContent()
+        {
+            var partial = SelectedCategory == (int)DMObjectCategory.Areas ? AreaContentPartial : MainContentPartial;
+            if (partial == _contentPartial)
+                return;
+
+            _contentPartial = partial;
+            ChangePartialView(MainContentElement, partial);
         }
 
         private void RunSearch()
@@ -249,7 +258,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 icons.Add(icon);
                 names.Add(string.IsNullOrWhiteSpace(result.Name) ? result.Resref : result.Name);
                 info.Add(summary);
-                areas.Add(result.Category == DMObjectCategory.Areas ? result.Resref : result.AreaName);
+                areas.Add(result.AreaName);
                 selections.Add(false);
             }
 
@@ -315,7 +324,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return DMObjectDetails.GetObjectRow(result.Object);
 
             var players = DMObjectDetails.CountPlayersInArea(result.Object);
-            return (DMObjectDetails.AreaIcon, players == 0 ? string.Empty : $"{players} player{(players == 1 ? string.Empty : "s")}");
+            return (DMObjectDetails.AreaIcon, players == 0 ? string.Empty : players.ToString());
         }
 
         private DMObjectSearchResult GetSelectedResult()

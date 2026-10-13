@@ -146,13 +146,26 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var arenaResref = GetResRef(ctx.Arena);
                 await InContext(ctx, dm.Creature, () => model.SearchText = arenaResref);
                 await InContext(ctx, dm.Creature, model.OnClickSearch());
-                ctx.Assert(model.ResultAreas.Contains(arenaResref), $"area search for '{arenaResref}' lists the arena");
-                ctx.Assert(model.ResultIcons.All(icon => icon == DMObjectDetails.AreaIcon), "areas show the area icon");
+                ctx.Assert(GetChooserResults(model).Any(result => result.Object == ctx.Arena), $"area search for '{arenaResref}' lists the arena");
+                ctx.Assert(ShowsPartial(model, GuiWindowType.DMChooser, DMChooserViewModel.MainContentElement, DMChooserViewModel.AreaContentPartial),
+                    "areas use the list without the object columns");
+                var chooserLayouts = Gui.GetWindowTemplate(GuiWindowType.DMChooser).PartialViewLayouts;
+                foreach (var objectColumn in new[] { nameof(DMChooserViewModel.ResultAreas), nameof(DMChooserViewModel.ResultIcons) })
+                {
+                    ctx.Assert(!chooserLayouts[DMChooserViewModel.AreaContentPartial].Contains(objectColumn) &&
+                               chooserLayouts[DMChooserViewModel.MainContentPartial].Contains(objectColumn),
+                        $"only the object list has the {objectColumn} column, so area names get its width");
+                }
+
+                var arenaRow = GetChooserResults(model).FindIndex(result => result.Object == ctx.Arena);
+                ctx.AssertEqual(string.Empty, model.ResultInfo[arenaRow], "an area with no players leaves the Players column empty");
                 ctx.AssertEqual(DMObjectDetails.NoSelectionIcon, model.DetailIcon, "icon with nothing selected");
                 ctx.AssertEqual(ctx.Arena, GetAreaFromLocation(DMObjectSearch.GetAreaJumpLocation(ctx.Arena)), "area jump location");
                 Capture(dm.Creature, GuiWindowType.DMChooser, "chooser-areas");
 
                 await InContext(ctx, dm.Creature, () => model.SelectedCategory = (int)DMObjectCategory.Creatures);
+                ctx.Assert(ShowsPartial(model, GuiWindowType.DMChooser, DMChooserViewModel.MainContentElement, DMChooserViewModel.MainContentPartial),
+                    "objects use the list with summary and area columns");
                 await InContext(ctx, dm.Creature, () => model.SearchText = "probe RANCOR");
                 await InContext(ctx, dm.Creature, model.OnClickSearch());
                 ctx.AssertEqual(1, model.ResultNames.Count, "creature search result count");
@@ -417,6 +430,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
 
             return false;
+        }
+
+        private static List<DMObjectSearchResult> GetChooserResults(DMChooserViewModel model)
+        {
+            return (List<DMObjectSearchResult>)typeof(DMChooserViewModel)
+                .GetField("_pageResults", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(model)!;
+        }
+
+        // Whether the window's group element currently holds the named partial view.
+        private static bool ShowsPartial(IGuiViewModel model, GuiWindowType type, string elementId, string partialName)
+        {
+            var groupLayouts = (Dictionary<string, string>)model.GetType().BaseType!
+                .GetField("_groupLayouts", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(model)!;
+            return groupLayouts.TryGetValue(elementId, out var layout) &&
+                   layout == Gui.GetWindowTemplate(type).PartialViewLayouts[partialName];
         }
 
         private static List<DMBlueprint> GetResults(DMCreatorViewModel model)

@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float IconCellWidth = 40f;
         private const float InfoCellWidth = 140f;
         private const float AreaCellWidth = 120f;
+        private const float PlayersCellWidth = 60f;
         private const float ButtonHeight = 32f;
         private const float RailButtonWidth = 250f;
 
@@ -29,7 +30,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .SetKeepsOpenOnAreaChange(true)
-                .DefinePartialView(DMChooserViewModel.MainContentPartial, AddMainContent);
+                .DefinePartialView(DMChooserViewModel.MainContentPartial, host => AddMainContent(host, false))
+                .DefinePartialView(DMChooserViewModel.AreaContentPartial, host => AddMainContent(host, true));
 
             window.AddStandardLayout(layout =>
             {
@@ -40,7 +42,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             return _builder.Build();
         }
 
-        private static void AddMainContent(GuiGroup<DMChooserViewModel> host)
+        // Areas list only their name and player count (every area has the same icon), so long names get the rest of the row.
+        private static void AddMainContent(GuiGroup<DMChooserViewModel> host, bool areas)
         {
             host.AddColumn(col =>
             {
@@ -105,13 +108,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             content.AddRow(header =>
                             {
-                                header.AddSpacer()
-                                    .SetWidth(IconCellWidth);
+                                if (!areas)
+                                {
+                                    header.AddSpacer()
+                                        .SetWidth(IconCellWidth);
+                                }
 
                                 header.AddLabel()
                                     .SetText("Name")
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
                                     .SetHeight(20f);
+
+                                if (areas)
+                                {
+                                    header.AddLabel()
+                                        .SetText("Players")
+                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetWidth(PlayersCellWidth)
+                                        .SetHeight(20f);
+                                    return;
+                                }
 
                                 header.AddLabel()
                                     .BindText(model => model.InfoHeader)
@@ -120,7 +136,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHeight(20f);
 
                                 header.AddLabel()
-                                    .BindText(model => model.ThirdColumnHeader)
+                                    .SetText("Area")
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
                                     .SetWidth(AreaCellWidth)
                                     .SetHeight(20f);
@@ -130,20 +146,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 listRow.AddList(template =>
                                 {
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.SetIsVariable(false);
-                                        cell.SetWidth(IconCellWidth);
-                                        cell.AddGroup(group =>
-                                        {
-                                            group.AddImage()
-                                                .BindResref(model => model.ResultIcons)
-                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                                .SetVerticalAlign(NuiVerticalAlign.Middle)
-                                                .SetAspect(NuiAspect.Fit);
-                                        })
-                                            .SetScrollbars(NuiScrollbars.None);
-                                    });
+                                    if (!areas)
+                                        AddIconCell(template);
 
                                     template.AddCell(cell =>
                                     {
@@ -156,11 +160,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     template.AddCell(cell =>
                                     {
                                         cell.SetIsVariable(false);
-                                        cell.SetWidth(InfoCellWidth);
+                                        cell.SetWidth(areas ? PlayersCellWidth : InfoCellWidth);
                                         cell.AddLabel()
                                             .BindText(model => model.ResultInfo)
                                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                     });
+
+                                    if (areas)
+                                        return;
 
                                     template.AddCell(cell =>
                                     {
@@ -192,6 +199,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     })
                         .SetWidth(ContentPanelWidth);
                 });
+            });
+        }
+
+        private static void AddIconCell(GuiListTemplate<DMChooserViewModel> template)
+        {
+            template.AddCell(cell =>
+            {
+                cell.SetIsVariable(false);
+                cell.SetWidth(IconCellWidth);
+                cell.AddGroup(group =>
+                {
+                    group.AddImage()
+                        .BindResref(model => model.ResultIcons)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                        .SetVerticalAlign(NuiVerticalAlign.Middle)
+                        .SetAspect(NuiAspect.Fit);
+                })
+                    .SetScrollbars(NuiScrollbars.None);
             });
         }
 

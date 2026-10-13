@@ -14,12 +14,17 @@ def parse_captures(values):
     captures = {}
     for value in values:
         marker, separator, label = value.partition('=')
-        if not separator or not marker or '\n' in marker or not re.fullmatch('[a-z][a-z0-9_-]{0,63}', label):
+        if not separator or not marker or any(char in marker for char in '\r\n') or marker != marker.strip() or not re.fullmatch('[a-z][a-z0-9_-]{0,63}', label):
             raise ValueError('Captures use MARKER=label; label must be a safe lowercase filename')
         if marker in captures or label in captures.values():
             raise ValueError('Capture markers and labels must be unique')
         captures[marker] = label
     return captures
+
+
+def log_records(log):
+    """Return complete NWN log payloads, removing only their timestamp prefix."""
+    return {re.sub(r'^\[[^\]\r\n]+\][ \t]*','',line,count=1) for line in log.splitlines()}
 
 
 def digest(path):
@@ -45,6 +50,8 @@ def main(argv=None):
     parser.add_argument('--timeout', type=float, default=120, help='Client wall-clock limit, at most 600 seconds')
     args = parser.parse_args(argv)
     captures = parse_captures(args.capture)
+    if args.complete_marker is not None:
+        parse_captures([args.complete_marker+'=completion'])
     if sys.platform != 'win32' or sys.version_info < (3,12) or sys.getwindowsversion().major < 10:
         raise RuntimeError('Native verification requires Windows 10+ and Python 3.12+')
     if not 0 < args.timeout <= 600:
@@ -91,8 +98,8 @@ def main(argv=None):
             manifest['pid'] = pid
 
         def finished():
-            log = profile.log_text(owned)
-            pending = [(marker,label) for marker,label in captures.items() if marker in log and label not in manifest['captures']]
+            records = log_records(profile.log_text(owned))
+            pending = [(marker,label) for marker,label in captures.items() if marker in records and label not in manifest['captures']]
             if len(pending) > 1:
                 raise RuntimeError('Multiple uncaptured markers: hold each view until its fresh capture completes')
             for marker,label in pending:
@@ -102,7 +109,7 @@ def main(argv=None):
                 state['frames'].save(target)
                 manifest['captures'][label] = {'marker':marker,'file':target.name,'sha256':digest(target)}
                 print('Captured '+label,flush=True)
-            return len(manifest['captures']) == len(captures) and (not args.complete_marker or args.complete_marker in log)
+            return len(manifest['captures']) == len(captures) and (not args.complete_marker or args.complete_marker in records)
 
         result = offline_client.run([str(client),'-userdirectory',str(owned),'+TestNewModule',fixture.stem],profile=owned,cwd=client.parent,timeout=args.timeout,on_start=started,until=finished)
         if not result.stopped or len(manifest['captures']) != len(captures):
@@ -137,7 +144,7 @@ def main(argv=None):
         finish('evidence_failure',lambda: (output/'client.log').write_text(profile.log_text(owned),encoding='utf8'))
         if (owned/'isolation.json').exists():
             finish('isolation_copy_failure',lambda: profile.copy_input(owned/'isolation.json',output/'isolation.json'))
-        finish('shutdown_retry_failure',offline_client.retry_retained_processes)
+        finish('shutdown_retry_failure',offline_client.retry_cleanup_before_exit)
         finish('cleanup_failure',remove_profile)
         finish('manifest_failure',lambda: (output/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf8'))
         if final_errors:

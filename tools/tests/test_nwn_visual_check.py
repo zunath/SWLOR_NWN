@@ -13,10 +13,85 @@ import unittest
 from unittest.mock import patch, Mock
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from nwn_visual_check import offline_client, private_desktop, profile, module, firewall
-from nwn_visual_check.__main__ import parse_captures, main
+from nwn_visual_check import offline_client, private_desktop, profile, module, firewall, cleanup_state
+from nwn_visual_check.__main__ import parse_captures, log_records, main
 from nwn_visual_check.result import ClientRun
 from nwn_visual_check.process_job import ProcessJob
+
+
+def setUpModule():
+    global cleanup_temporary, cleanup_patch
+    cleanup_temporary=tempfile.TemporaryDirectory(prefix='swlor-cleanup-tests-')
+    cleanup_patch=patch.object(cleanup_state,'state_root',return_value=Path(cleanup_temporary.name)/'records')
+    cleanup_patch.start()
+
+
+def tearDownModule():
+    try:
+        offline_client.retry_retained_processes()
+    finally:
+        cleanup_patch.stop()
+        cleanup_temporary.cleanup()
+
+
+def archive_resources(path):
+    data=path.read_bytes()
+    count=struct.unpack_from('<I',data,16)[0]
+    keys,resources=struct.unpack_from('<II',data,24)
+    found={}
+    for index in range(count):
+        name,resource,kind=struct.unpack_from('<16sIH',data,keys+index*24)
+        offset,size=struct.unpack_from('<II',data,resources+resource*8)
+        found[(name.rstrip(bytes([0])),kind)]=data[offset:offset+size]
+    return found
+
+
+class LogMarkerTests(unittest.TestCase):
+    def test_complete_timestamped_payloads_do_not_match_substrings(self):
+        log='[Tue Oct 13 18:51:14] VISUAL_READY_PENDING\r\n[Tue Oct 13 18:51:15] prefix VISUAL_READY\r\n'
+        self.assertNotIn('VISUAL_READY',log_records(log))
+        self.assertNotIn('VISUAL',log_records(log))
+        self.assertIn('VISUAL_READY',log_records(log+'[Tue Oct 13 18:51:16] VISUAL_READY\r\n'))
+        self.assertIn('COMPLETE',log_records('COMPLETE\n'))
+
+    def test_marker_line_breaks_and_surrounding_spaces_are_rejected(self):
+        for marker in ('READY\rhidden','READY\nhidden',' READY','READY '):
+            with self.subTest(marker=marker),self.assertRaises(ValueError):
+                parse_captures([marker+'=close'])
+
+
+class CleanupJournalTests(unittest.TestCase):
+    def test_exhausted_bounded_retry_recovers_after_memory_is_discarded(self):
+        name='swlor-review-'+'b'*32
+        userenv=Mock()
+        userenv.DeleteAppContainerProfile.side_effect=[-1]*4+[0]
+        try:
+            with self.assertRaises(OSError):
+                offline_client._release_appcontainer_profile(userenv,name)
+            with patch.object(offline_client.time,'sleep'):
+                with self.assertRaises(ExceptionGroup):
+                    offline_client.retry_cleanup_before_exit()
+            self.assertEqual(cleanup_state.pending_containers(),[name])
+            offline_client._retained_containers.clear()
+            with patch.object(offline_client,'_container_api',return_value=userenv):
+                offline_client.retry_retained_processes()
+            self.assertEqual(cleanup_state.pending_containers(),[])
+            self.assertNotIn(name,offline_client._retained_containers)
+        finally:
+            offline_client._retained_containers.pop(name,None)
+            cleanup_state.forget_container(name)
+
+    def test_nonowned_records_fail_before_calling_native_deletion(self):
+        root=cleanup_state.state_root();root.mkdir(parents=True,exist_ok=True)
+        record=root/'unrelated.json'
+        record.write_text(json.dumps({'name':'ordinary-user-profile'}))
+        try:
+            with patch.object(offline_client,'_container_api') as api:
+                with self.assertRaises(ExceptionGroup):
+                    offline_client.retry_retained_processes()
+                api.assert_not_called()
+        finally:
+            record.unlink()
 
 
 class ProfileBoundaryTests(unittest.TestCase):
@@ -203,7 +278,7 @@ class RetainedCleanupTests(unittest.TestCase):
             if owned.exists():profile.cleanup(owned)
 
     def test_failed_container_deletion_remains_retryable_until_success(self):
-        name='swlor-review-unit-cleanup'
+        name='swlor-review-'+'a'*32
         userenv=Mock()
         userenv.DeleteAppContainerProfile.side_effect=[-2147024891,-2147024891,0]
         try:
@@ -262,6 +337,20 @@ class NativeFixtureTests(unittest.TestCase):
             finally:
                 profile.cleanup(owned)
 
+    def test_module_lod_redirect_is_preserved_with_exact_payload(self):
+        owned=profile.create_profile()
+        with tempfile.TemporaryDirectory() as temporary:
+            source=Path(temporary)
+            payload=b'geometry\n'
+            (source/'module.ifo').write_bytes(b'fixture resource')
+            (source/'proxy.lod').write_bytes(payload)
+            (source/'geometry.mdl').write_bytes(b'model payload')
+            try:
+                output=module.build_module(source,owned,module.discover_client(),os.environ.get('SWLOR_NWN_TOOLS'))
+                self.assertEqual(archive_resources(output)[(b'proxy',2078)],payload)
+            finally:
+                profile.cleanup(owned)
+
     def test_lod_redirect_is_preserved_with_exact_payload(self):
         with tempfile.TemporaryDirectory() as temporary:
             root=Path(temporary);source=root/'source';source.mkdir()
@@ -270,20 +359,39 @@ class NativeFixtureTests(unittest.TestCase):
             (source/'geometry.mdl').write_bytes(b'model payload')
             output=root/'parts.hak'
             module.pack_hak(source,output,os.environ.get('SWLOR_NWN_TOOLS'))
-            data=output.read_bytes()
-            count=struct.unpack_from('<I',data,16)[0]
-            keys,resources=struct.unpack_from('<II',data,24)
-            found={}
-            for index in range(count):
-                name,resource,kind=struct.unpack_from('<16sIH',data,keys+index*24)
-                offset,size=struct.unpack_from('<II',data,resources+resource*8)
-                found[(name.rstrip(b'\0'),kind)]=data[offset:offset+size]
+            found=archive_resources(output)
             self.assertEqual(found[(b'proxy',2078)],payload)
             self.assertEqual(found[(b'geometry',2002)],b'model payload')
 
 
 @unittest.skipUnless(sys.platform=='win32','CLI requires Windows')
 class CliInputTests(unittest.TestCase):
+    def test_pending_marker_substrings_do_not_capture_or_complete(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);fixture=root/'fixture.mod';fixture.write_bytes(b'fixture')
+            current=['']
+            frame=Mock()
+            frame.save.side_effect=lambda path:path.write_bytes(b'capture')
+            def probe(*args,**kwargs):
+                kwargs['on_start'](777)
+                current[0]='[Tue Oct 13 18:51:14] VISUAL_READY_PENDING'
+                self.assertFalse(kwargs['until']())
+                frame.save.assert_not_called()
+                current[0]+='\n[Tue Oct 13 18:51:15] VISUAL_READY\n[Tue Oct 13 18:51:16] COMPLETE_PENDING'
+                self.assertFalse(kwargs['until']())
+                frame.save.assert_called_once()
+                current[0]+='\n[Tue Oct 13 18:51:17] COMPLETE'
+                self.assertTrue(kwargs['until']())
+                return ClientRun(0,'',True,True)
+            with patch('nwn_visual_check.module.discover_client',return_value=Path('C:/nwmain.exe')), \
+                    patch('nwn_visual_check.offline_client.run',side_effect=probe), \
+                    patch('nwn_visual_check.profile.log_text',side_effect=lambda _:current[0]), \
+                    patch('nwn_visual_check.native_frames.NativeFrames',return_value=frame):
+                main(['--module',str(fixture),'--output',str(root/'evidence'),'--capture','VISUAL_READY=close','--complete-marker','COMPLETE'])
+            manifest=json.loads((root/'evidence/manifest.json').read_text())
+            self.assertTrue(manifest['success'])
+            self.assertTrue(manifest['profile_removed'])
+
     def test_requested_missing_empty_or_file_hak_directory_fails_before_allocation(self):
         with tempfile.TemporaryDirectory() as temporary:
             root=Path(temporary)
@@ -475,6 +583,25 @@ class WindowsIsolationTests(unittest.TestCase):
                 offline_client.retry_retained_processes()
                 self.assertNotIn(evidence['profile_name'],offline_client._retained_containers)
                 self.assertEqual(calls,[evidence['profile_name']]*2)
+        finally:
+            offline_client.retry_retained_processes()
+
+    def test_failed_container_deletion_is_recovered_by_a_fresh_python_process(self):
+        try:
+            with patch.object(offline_client,'_delete_appcontainer_profile',side_effect=OSError('Repeated deletion refusal')):
+                with self.assertRaises(ExceptionGroup):
+                    offline_client.run(self.command("Write-Output 'finished'"),profile=self.owned,cwd=self.owned,timeout=10)
+                with patch.object(offline_client.time,'sleep'):
+                    with self.assertRaises(ExceptionGroup):
+                        offline_client.retry_cleanup_before_exit()
+            name=self.evidence()['profile_name']
+            self.assertIn(name,cleanup_state.pending_containers())
+            offline_client._retained_containers.clear()  # Simulate the original CLI exiting.
+            tools=Path(__file__).resolve().parents[1]
+            records=cleanup_state.state_root()
+            code="import sys;from pathlib import Path;sys.path.insert(0,"+repr(str(tools))+");from nwn_visual_check import cleanup_state,offline_client;cleanup_state.state_root=lambda:Path("+repr(str(records))+");offline_client.retry_retained_processes()"
+            subprocess.run([sys.executable,'-B','-c',code],check=True,capture_output=True,text=True,timeout=20,creationflags=subprocess.CREATE_NO_WINDOW)
+            self.assertEqual(cleanup_state.pending_containers(),[])
         finally:
             offline_client.retry_retained_processes()
 

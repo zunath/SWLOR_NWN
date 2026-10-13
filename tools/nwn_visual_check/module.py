@@ -64,7 +64,7 @@ def build_module(source, profile, client, tools=None):
     if not (staging / 'module.ifo').is_file():
         raise FileNotFoundError('Review sources must contain module.ifo or module.ifo.json')
     output = profile / 'modules/visual_review.mod'
-    checked([find_tool('nwn_erf.exe',tools),'-c','-e','MOD','-f',output,staging],timeout=240)
+    checked([find_tool('nwn_erf.exe',tools),'-c','--add-restypes','lod:2078','-e','MOD','-f',output,staging],timeout=240)
     return output
 
 

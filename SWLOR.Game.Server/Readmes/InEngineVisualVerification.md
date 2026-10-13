@@ -65,7 +65,10 @@ process termination. It never changes the installed client or the user's normal
 profile. Native capture requests address only the task-owned HWND. There is no
 visible launch fallback.
 
-Each marker requests a fresh 1280x720 native screenshot. Markers and output labels
+Each marker matches a complete log payload (the text passed to
+WriteTimestampedLogEntry) and requests a fresh 1280x720 native screenshot. Earlier
+messages containing that text as a substring do not trigger capture or completion.
+Markers and output labels
 must be unique, and views must be held long enough to capture them; multiple pending
 uncaptured markers are rejected instead of photographing the latest view under old
 labels. A blank frame, early exit, missing marker or timeout fails the run.
@@ -78,7 +81,10 @@ and copied archives are removed once process exit is confirmed. If Windows refus
 all shutdown methods, the launcher retains retryable control handles and the profile;
 `offline_client.retry_retained_processes()` retries those owned handles and removes
 the retained profile once exit is confirmed. The CLI makes a final retry during
-teardown, including failed AppContainer deletions. The failure is recorded, and cleanup
+teardown. Failed AppContainer deletions receive three bounded retry attempts and
+are saved under `%LOCALAPPDATA%/SWLOR/NwnVisualChecks/cleanup` for recovery on the
+next invocation, including from another repo copy. Only matching tool-owned
+container names are recovered. The failure is recorded, and cleanup
 never discards control of a live client. Evidence stays outside the repository for inspection.
 The manifest proves capture and isolation, not visual correctness: inspect every image,
 record observed transforms/approach results, and deliver the labelled report below.

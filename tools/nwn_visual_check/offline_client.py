@@ -16,6 +16,7 @@ from .firewall import require_firewall
 from .result import ClientRun
 from .private_desktop import PrivateDesktop
 from .process_job import ProcessJob
+from . import cleanup_state
 
 _retained_processes = {}
 _retained_containers = {}
@@ -47,12 +48,25 @@ def _delete_appcontainer_profile(userenv, name):
         raise OSError(f'DeleteAppContainerProfile: {result:#x}')
 
 
+def _container_api():
+    """Configure native deletion when recovering a previous invocation's records."""
+    userenv=ctypes.WinDLL('userenv',use_last_error=True)
+    userenv.DeleteAppContainerProfile.argtypes=[w.LPCWSTR]
+    userenv.DeleteAppContainerProfile.restype=w.LONG
+    return userenv
+
+
 def _release_appcontainer_profile(userenv, name):
-    """Keep the container name and API owner until deletion succeeds."""
+    """Retain failed deletions in memory and on disk until deletion succeeds."""
     try:
         _delete_appcontainer_profile(userenv,name)
-    except BaseException:
+        cleanup_state.forget_container(name)
+    except BaseException as error:
         _retained_containers[name]=userenv
+        try:
+            cleanup_state.retain_container(name)
+        except BaseException as journal_error:
+            raise BaseExceptionGroup('Container deletion and ownership recording failed',[error,journal_error])
         raise
     _retained_containers.pop(name,None)
 
@@ -100,6 +114,12 @@ def retry_retained_processes():
             del _retained_processes[pid]
         except BaseException as error:
             errors.append(error)
+    try:
+        for name in cleanup_state.pending_containers():
+            if name not in _retained_containers:
+                _retained_containers[name]=_container_api()
+    except BaseException as error:
+        errors.append(error)
     for name,userenv in list(_retained_containers.items()):
         try:
             _release_appcontainer_profile(userenv,name)
@@ -107,6 +127,18 @@ def retry_retained_processes():
             errors.append(error)
     if errors:
         raise BaseExceptionGroup('Retained native resources still need cleanup',errors)
+
+
+def retry_cleanup_before_exit(attempts=3):
+    """Retry transient releases; persistent container records survive exhaustion."""
+    for attempt in range(attempts):
+        try:
+            retry_retained_processes()
+            return
+        except BaseException:
+            if attempt==attempts-1:
+                raise
+            time.sleep(0.25)
 
 
 def run(command, *, profile, cwd, timeout, on_start=None, until=None):

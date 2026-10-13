@@ -28,13 +28,13 @@ namespace SWLOR.CombatSim.Tests.Rules
         }
 
         [Test]
-        public void Tuned_RaisesQuickDrawIVFromTwelveToFourteenStamina()
+        public void Tuned_LeavesStaminaCostsAlone_QuickDrawIVStaysAtTwelve()
         {
             var quickDraw4 = _catalog.Get(FeatType.QuickDraw4);
 
             quickDraw4.SkillRequirement.Should().Be(40);
             quickDraw4.STM.Should().Be(12);
-            RuleSets.Tuned().GetStmCost(quickDraw4).Should().Be(14);
+            RuleSets.Tuned().GetStmCost(quickDraw4).Should().Be(12);
         }
 
         [Test]

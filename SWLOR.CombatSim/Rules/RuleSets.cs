@@ -1,7 +1,7 @@
 namespace SWLOR.CombatSim.Rules
 {
     /// <summary>
-    /// Rule presets: today's live rules, the proposed tuning (healing, costs, revives and fixes for PvE and PvP),
+    /// Rule presets: today's live rules, the proposed tuning (healing, FP costs, revives and fixes for PvE and PvP),
     /// and that tuning plus the PvP attrition rules (a healing ramp that stops at -60% and a damage ramp up to double).
     /// </summary>
     public static class RuleSets
@@ -39,7 +39,6 @@ namespace SWLOR.CombatSim.Rules
             HarmonyInstantHealsOnly = true,
             HarmonyCooldownSeconds = 6f,
             FpCostMultiplier = 1.2f,
-            StmCostMultiplier = 1.2f,
             Revives = ReviveRule.BlockedInPvpLimitedInPve
         };
 

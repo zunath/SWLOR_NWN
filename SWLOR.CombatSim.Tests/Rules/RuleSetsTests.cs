@@ -69,7 +69,7 @@ namespace SWLOR.CombatSim.Tests.Rules
             rules.HarmonyInstantHealsOnly.Should().BeTrue();
             rules.HarmonyCooldownSeconds.Should().Be(6f);
             rules.FpCostMultiplier.Should().Be(1.2f);
-            rules.StmCostMultiplier.Should().Be(1.2f);
+            rules.StmCostMultiplier.Should().Be(1f);
             rules.CostSkillThreshold.Should().Be(28);
             rules.Revives.Should().Be(ReviveRule.BlockedInPvpLimitedInPve);
         }

@@ -7918,7 +7918,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var shieldAmount = GameMath.PercentOf(GetMaxHitPoints(activator), shieldPercent);
-            var grantedShield = TemporaryHitPointEffects.ApplyFlat(activator, "GUARDIANS_RESOLVE", shieldAmount, duration);
+            var grantedShield = TemporaryHitPointEffects.ApplyFlat(activator, TemporaryHitPointEffectKey.GuardiansResolve, shieldAmount, duration);
             if (grantedShield > 0)
                 StatusEffect.ApplyStatusEffect(activator, activator, new GuardiansResolveStatusEffect(grantedShield), duration);
         }

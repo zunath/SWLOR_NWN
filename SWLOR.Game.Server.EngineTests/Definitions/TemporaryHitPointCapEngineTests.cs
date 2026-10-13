@@ -50,5 +50,38 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(target) == 200,
                 3f, "the trimmed pool to keep absorbing damage");
         }
+
+        [EngineTest("A Vitality penalty trims temporary HP on any creature", Category = "StatusEffect", TimeoutSeconds = 20f)]
+        public static async Task VitalityPenaltyTrimsPools(EngineTestContext ctx)
+        {
+            var target = ctx.SpawnCreature("nw_bandit001");
+            await ctx.WaitFrameAsync();
+            Stat.SetNPCMaxHitPoints(target, 1000, true);
+            TemporaryHitPointEffects.ApplyFlat(target, "TRIM_VITALITY", 500, 60f);
+            ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(target), "the pool fills the cap");
+
+            StatusEffect.ApplyStatusEffect(target, target, typeof(DiseaseVitalityPenaltyStatusEffect), 30f);
+            ctx.Assert(GetMaxHitPoints(target) < 1000, $"the penalty lowers max HP (now {GetMaxHitPoints(target)})");
+            ctx.AssertEqual(TemporaryHitPointEffects.GetMaximumTotal(target), TemporaryHitPointEffects.GetRemaining(target),
+                "the pool is trimmed to the lowered cap as the penalty lands");
+        }
+
+        [EngineTest("A status effect tracking a trimmed pool is told about the trim", Category = "StatusEffect", TimeoutSeconds = 20f)]
+        public static async Task PoolTrackersFollowTrims(EngineTestContext ctx)
+        {
+            var target = ctx.SpawnCreature("nw_rat001");
+            await ctx.WaitFrameAsync();
+            Stat.SetNPCMaxHitPoints(target, 1000, true);
+            TemporaryHitPointEffects.ApplyFlat(target, "TRIM_OTHER", 200, 60f);
+            TemporaryHitPointEffects.ApplyFlat(target, TemporaryHitPointEffectKey.GuardiansResolve, 300, 20f);
+            StatusEffect.ApplyStatusEffect(target, target, new GuardiansResolveStatusEffect(300), 20f);
+            await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect<GuardiansResolveStatusEffect>(target),
+                5f, "Guardian's Resolve to apply");
+
+            Stat.SetNPCMaxHitPoints(target, 400);
+            ctx.AssertEqual(200, TemporaryHitPointEffects.GetRemaining(target), "the Guardian's Resolve pool ends soonest and is trimmed away");
+            ctx.Assert(!StatusEffect.HasStatusEffect<GuardiansResolveStatusEffect>(target),
+                "Guardian's Resolve ends with its pool instead of healing for shield it no longer has");
+        }
     }
 }

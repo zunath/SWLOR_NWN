@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -184,24 +185,33 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             pools = pools.OrderBy(pool => pool.SecondsLeft).ToList();
             var kept = CalculateTrimmedAmounts(pools.Select(pool => pool.Amount).ToList(), excess);
+            var trackers = StatusEffect.GetCreatureStatusEffects(target)
+                .GetAllEffects()
+                .OfType<ITemporaryHitPointPoolStatusEffect>()
+                .ToList();
             for (var index = 0; index < pools.Count; index++)
             {
                 var pool = pools[index];
                 if (kept[index] == pool.Amount)
                     continue;
 
+                var effectKey = pool.Tag.Substring(EffectTagPrefix.Length);
                 if (kept[index] <= 0)
                 {
-                    Remove(target, pool.Tag.Substring(EffectTagPrefix.Length));
-                    continue;
+                    Remove(target, effectKey);
+                }
+                else
+                {
+                    RemoveEffect(target, pool.Effect);
+                    ApplyEffectToObject(
+                        DurationType.Temporary,
+                        TagEffect(EffectTemporaryHitpoints(kept[index]), pool.Tag),
+                        target,
+                        Math.Max(1, pool.SecondsLeft));
                 }
 
-                RemoveEffect(target, pool.Effect);
-                ApplyEffectToObject(
-                    DurationType.Temporary,
-                    TagEffect(EffectTemporaryHitpoints(kept[index]), pool.Tag),
-                    target,
-                    Math.Max(1, pool.SecondsLeft));
+                foreach (var tracker in trackers.Where(tracker => tracker.TemporaryHitPointPoolKey == effectKey))
+                    tracker.OnTemporaryHitPointPoolTrimmed(target, kept[index]);
             }
         }
 

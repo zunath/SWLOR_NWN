@@ -10,12 +10,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task RestoresFortyPercentOverTwentySeconds(EngineTestContext ctx)
         {
             var caster = ctx.SpawnCreature("nw_bandit001");
-            await ctx.WaitFrameAsync();
+            // Spawn initialization refills the pools, so let it finish first.
+            await ctx.DelaySecondsAsync(1f);
             ctx.SetNPCResources(caster, 100, 100);
             ctx.SuppressNPCNaturalRegen(caster);
             var maxFP = Stat.GetMaxFP(caster);
             Stat.ReduceFP(caster, Stat.GetCurrentFP(caster));
-            ctx.AssertEqual(0, Stat.GetCurrentFP(caster), "FP starts empty");
+            await ctx.DelaySecondsAsync(1f);
+            ctx.AssertEqual(0, Stat.GetCurrentFP(caster), "FP starts empty and nothing else restores it");
 
             StatusEffect.ApplyStatusEffect(caster, caster, typeof(ForceConvergenceStatusEffect), 30f);
             var total = GameMath.PercentOf(maxFP, ForceConvergenceStatusEffect.FPRestorePercent);

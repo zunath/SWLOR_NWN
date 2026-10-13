@@ -1055,13 +1055,13 @@ namespace SWLOR.Game.Server.Service
             var effect = BuildNativeStatusEffect(statusEffect);
 
             if (isPermanent || durationTicks < 0)
-            {
                 ApplyEffectToObject(DurationType.Permanent, effect, creature);
-                return;
-            }
+            else
+                ApplyEffectToObject(DurationType.Temporary, effect, creature, GetStatusEffectDurationSeconds(statusEffect, durationTicks));
 
-            var durationSeconds = GetStatusEffectDurationSeconds(statusEffect, durationTicks);
-            ApplyEffectToObject(DurationType.Temporary, effect, creature, durationSeconds);
+            // A Vitality penalty lowers maximum HP, which can leave temporary HP above its cap.
+            if (statusEffect.StatGroup.Abilities.Any(ability => ability.Key == AbilityType.Vitality && ability.Value < 0))
+                Feature.AbilityDefinition.TemporaryHitPointEffects.EnforceMaximumTotal(creature);
         }
 
         private static Effect BuildNativeStatusEffect(IStatusEffect statusEffect)

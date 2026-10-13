@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 return "Your beast is not unconscious.";
             }
 
-            return ReviveRules.ValidateReviveBeast(activator);
+            return ReviveRules.ValidateReviveBeast(activator, dbBeast.Id);
         }
 
         private void ReviveBeast1()

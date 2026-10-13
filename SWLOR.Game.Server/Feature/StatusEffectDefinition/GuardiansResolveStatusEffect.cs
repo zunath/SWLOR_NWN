@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -5,7 +6,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class GuardiansResolveStatusEffect : StatusEffectBase
+    public sealed class GuardiansResolveStatusEffect : StatusEffectBase, ITemporaryHitPointPoolStatusEffect
     {
         private int _remainingShield;
 
@@ -19,6 +20,15 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public GuardiansResolveStatusEffect(int shieldAmount)
         {
             _remainingShield = Math.Max(0, shieldAmount);
+        }
+
+        public string TemporaryHitPointPoolKey => TemporaryHitPointEffectKey.GuardiansResolve;
+
+        public void OnTemporaryHitPointPoolTrimmed(uint creature, int remaining)
+        {
+            _remainingShield = Math.Min(_remainingShield, Math.Max(0, remaining));
+            if (_remainingShield <= 0)
+                StatusEffect.RemoveStatusEffect(creature, GetType(), Source);
         }
 
         protected override void OnDamageTaken(uint defender, uint attacker, int damage, CombatDamageType damageType)

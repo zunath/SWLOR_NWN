@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         public const string MidFightLockoutMessage = "That player was revived mid-fight less than 5 minutes ago.";
 
         private const string KilledByPlayerVariable = "REVIVE_KILLED_BY_PLAYER";
-        private const string BeastKilledByPlayerVariable = "REVIVE_BEAST_KILLED_BY_PLAYER";
+        private const string BeastKilledByPlayerVariable = "REVIVE_BEAST_KILLED_BY_PLAYER_";
 
         private static readonly Dictionary<string, DateTime> _lastMidFightReviveAt = new();
 
@@ -34,11 +34,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             SetLocalBool(deceased, KilledByPlayerVariable, IsPlayerControlled(killer));
         }
 
-        /// <summary>Records on the master whether their beast was killed by a player or a player's pet.</summary>
-        public static void RecordBeastDeath(uint master, uint killer)
+        /// <summary>Records on the master whether this beast was killed by a player or a player's pet.</summary>
+        public static void RecordBeastDeath(uint master, string beastId, uint killer)
         {
-            if (GetIsObjectValid(master))
-                SetLocalBool(master, BeastKilledByPlayerVariable, IsPlayerControlled(killer));
+            if (GetIsObjectValid(master) && !string.IsNullOrWhiteSpace(beastId))
+                SetLocalBool(master, BeastKilledByPlayerVariable + beastId, IsPlayerControlled(killer));
         }
 
         public static string ValidateResuscitation(uint caster, uint body)
@@ -58,9 +58,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         }
 
         /// <summary>The dead beast has no body, so every check measures from the caster.</summary>
-        public static string ValidateReviveBeast(uint caster)
+        public static string ValidateReviveBeast(uint caster, string beastId)
         {
-            return ValidatePvp(caster, caster, GetLocalBool(caster, BeastKilledByPlayerVariable));
+            return ValidatePvp(caster, caster, GetLocalBool(caster, BeastKilledByPlayerVariable + beastId));
         }
 
         /// <summary>Starts the 5-minute mid-fight lockout when a player is revived while a fight is still going.</summary>

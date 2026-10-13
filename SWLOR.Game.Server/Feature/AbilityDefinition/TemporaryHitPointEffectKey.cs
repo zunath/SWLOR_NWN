@@ -8,5 +8,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
     {
         public const string FatalDamageSave = "FATAL_DAMAGE_SAVE";
         public const string GuardianWard = "GUARDIAN_WARD";
+        public const string GuardiansResolve = "GUARDIANS_RESOLVE";
     }
 }

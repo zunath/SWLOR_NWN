@@ -1,0 +1,149 @@
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.CombatSim.Data;
+using SWLOR.CombatSim.Engine;
+using SWLOR.CombatSim.Rules;
+using SWLOR.CombatSim.Scenario;
+using SWLOR.CombatSim.Tests.Support;
+
+namespace SWLOR.CombatSim.Tests.Engine
+{
+    [TestFixture]
+    public class ForceConvergenceTests
+    {
+        private const int MaxFp = 200;
+        private const int FpPerTick = 8;
+        private const int StartingFp = 10;
+        private const int BenevolenceIFpCost = 3;
+        private const double TickSeconds = 2.0;
+
+        private AbilityCatalog _catalog;
+
+        [OneTimeSetUp]
+        public void LoadCatalog()
+        {
+            _catalog = AbilityCatalog.Load();
+        }
+
+        [Test]
+        public void CurrentRules_RestoreSixtyPercentOfMaxFpOverThirtySeconds()
+        {
+            var (simulation, caster) = SpawnCaster(RuleSets.Current(), withPerk: true);
+
+            var ticks = CastOnceAndCollectRefundTicks(simulation, caster, out var castAt);
+
+            ticks.Should().HaveCount(15);
+            caster.Stats.FpRefunded.Should().Be(0.6 * MaxFp);
+            caster.Fp.Should().Be(StartingFp - BenevolenceIFpCost + 0.6 * MaxFp);
+            (ticks[^1] - castAt).Should().BeInRange(29.9, 30.0 + TickSeconds);
+        }
+
+        [Test]
+        public void Wave1_RestoresFortyPercentOfMaxFpOverTwentySeconds()
+        {
+            var (simulation, caster) = SpawnCaster(RuleSets.Wave1(), withPerk: true);
+
+            var ticks = CastOnceAndCollectRefundTicks(simulation, caster, out var castAt);
+
+            ticks.Should().HaveCount(10);
+            caster.Stats.FpRefunded.Should().Be(0.4 * MaxFp);
+            caster.Fp.Should().Be(StartingFp - BenevolenceIFpCost + 0.4 * MaxFp);
+            (ticks[^1] - castAt).Should().BeInRange(19.9, 20.0 + TickSeconds);
+        }
+
+        [Test]
+        public void RefundsArrive_EveryTwoSeconds()
+        {
+            var (simulation, caster) = SpawnCaster(RuleSets.Current(), withPerk: true);
+
+            var ticks = CastOnceAndCollectRefundTicks(simulation, caster, out _);
+
+            for (var i = 1; i < ticks.Count; i++)
+                (ticks[i] - ticks[i - 1]).Should().BeInRange(TickSeconds - 0.15, TickSeconds + 0.15);
+        }
+
+        [TestCase("current")]
+        [TestCase("wave1")]
+        public void WithoutThePerk_NothingIsRestored(string ruleSetName)
+        {
+            var (simulation, caster) = SpawnCaster(RuleSets.Get(ruleSetName), withPerk: false);
+
+            var ticks = CastOnceAndCollectRefundTicks(simulation, caster, out _);
+
+            ticks.Should().BeEmpty();
+            caster.Stats.FpRefunded.Should().Be(0);
+            caster.Fp.Should().Be(StartingFp - BenevolenceIFpCost);
+        }
+
+        [Test]
+        public void AbilityThatCostsOnlyStamina_DoesNotTriggerConvergence()
+        {
+            var (simulation, caster) = SpawnCaster(RuleSets.Current(), withPerk: true, feat: "MedKit1");
+
+            var ticks = CastOnceAndCollectRefundTicks(simulation, caster, out _);
+
+            ticks.Should().BeEmpty();
+            caster.Stats.AbilitiesUsed.Should().Be(1);
+        }
+
+        [Test]
+        public void CastingAgainDuringTheWindow_DoesNotExtendOrRepeatIt()
+        {
+            var (simulation, caster) = SpawnCaster(RuleSets.Current(), withPerk: true);
+            SimulationClock.RunUntil(simulation, () => caster.Stats.AbilitiesUsed == 1, 10, "first cast resolved");
+
+            // Wounded again 14 seconds in, so the same Benevolence is cast a second time inside the 45 second cooldown.
+            SimulationClock.RunUntil(simulation, 14);
+            caster.Hp = 940;
+            SimulationClock.RunUntil(simulation, () => caster.Stats.AbilitiesUsed == 2, 30, "second cast resolved");
+            SimulationClock.RunUntil(simulation, 40);
+
+            caster.Stats.FpRefunded.Should().Be(0.6 * MaxFp, "the second cast did not start a second window or lengthen the first");
+        }
+
+        private (Simulation Simulation, Combatant Caster) SpawnCaster(RuleSet rules, bool withPerk, string feat = "Benevolence1")
+        {
+            var caster = new CombatantSpec
+            {
+                Name = "Caster",
+                MaxHp = 1000,
+                MaxFp = MaxFp,
+                FpRegenPer30Seconds = 0,
+                MaxStm = 100,
+                StmRegenPer30Seconds = 0,
+                Perks = withPerk ? new List<string> { Combatant.ForceConvergencePerk } : new List<string>(),
+                Abilities = new List<AbilityUseSpec> { TestCombatants.Use(feat, AbilityTarget.Self, belowHpPercent: 99) }
+            };
+            var scenario = TestScenarios.TwoTeams(false, new[] { caster }, new[] { TestCombatants.Dummy("Enemy", true) });
+            var simulation = TestScenarios.Spawn(scenario, rules, _catalog);
+
+            // Wounded just enough that one heal tops the caster up, so exactly one ability is cast, and low on FP so refunds have room.
+            var spawned = simulation.Get("Caster");
+            spawned.Hp = 985;
+            spawned.Fp = StartingFp;
+            spawned.Stm = 50;
+            return (simulation, spawned);
+        }
+
+        /// <summary>Runs for a minute after the first cast and returns the times at which FP was refunded.</summary>
+        private static List<double> CastOnceAndCollectRefundTicks(Simulation simulation, Combatant caster, out double castAt)
+        {
+            SimulationClock.RunUntil(simulation, () => caster.Stats.AbilitiesUsed == 1, 10, "first cast resolved");
+            castAt = simulation.Now;
+
+            var ticks = new List<double>();
+            var lastRefunded = caster.Stats.FpRefunded;
+            while (simulation.Now < castAt + 60)
+            {
+                SimulationClock.RunUntil(simulation, simulation.Now + 0.1);
+                if (caster.Stats.FpRefunded > lastRefunded)
+                {
+                    ticks.Add(simulation.Now);
+                    lastRefunded = caster.Stats.FpRefunded;
+                }
+            }
+
+            return ticks;
+        }
+    }
+}

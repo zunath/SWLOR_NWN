@@ -1,0 +1,955 @@
+{
+  "name": "Focus fire on a healer-support",
+  "description": "Sixteen attackers concentrate on one Light healer-support who has pre-cast her shields (Rousing Shout, Guardian Ward, Cleanse Order) and a Force Sanctuary zone. Values are synthetic and in the range seen in a playtest focus-fire test: she survived about 20 seconds, with roughly 1,100 damage absorbed by temporary HP. The attackers join over the first 13 seconds (joinAtSeconds), the way they arrived in the test.",
+  "durationSeconds": 60,
+  "isPvp": true,
+  "teams": [
+    {
+      "name": "Attackers",
+      "targetPolicy": "Focus",
+      "focusTarget": "Light healer-support",
+      "members": [
+        {
+          "name": "Light Force bruiser",
+          "maxHp": 1125,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 22,
+          "might": 26,
+          "social": 10,
+          "forceAffinity": 10,
+          "maxFp": 75,
+          "fpRegenPer30Seconds": 6,
+          "maxStm": 50,
+          "stmRegenPer30Seconds": 16,
+          "perks": [
+            "ForceConvergence",
+            "DefensiveHarmony"
+          ],
+          "joinAtSeconds": 2,
+          "reactionSeconds": 6.0,
+          "autoAttack": {
+            "attacksPerSecond": 0.17,
+            "damage": {
+              "min": 29,
+              "max": 76,
+              "hitChance": 0.28
+            }
+          },
+          "abilities": [
+            {
+              "feat": "Epicenter1",
+              "target": "Enemy",
+              "damage": {
+                "min": 21,
+                "max": 56,
+                "hitChance": 0.39
+              }
+            },
+            {
+              "feat": "ForceLeap2",
+              "target": "Enemy",
+              "damage": {
+                "min": 11,
+                "max": 29,
+                "hitChance": 0.39
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pistol sharpshooter",
+          "maxHp": 1525,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 15,
+          "might": 14,
+          "social": 10,
+          "combatReadinessPercent": 3,
+          "outgoingHealingPercent": 10,
+          "maxFp": 60,
+          "fpRegenPer30Seconds": 4,
+          "maxStm": 40,
+          "stmRegenPer30Seconds": 15,
+          "perks": [
+            "DefensiveHarmony"
+          ],
+          "joinAtSeconds": 7,
+          "reactionSeconds": 2.6,
+          "autoAttack": {
+            "attacksPerSecond": 0.28,
+            "damage": {
+              "min": 34,
+              "max": 89,
+              "hitChance": 0.32
+            }
+          },
+          "abilities": [
+            {
+              "feat": "CripplingSlice2",
+              "target": "Enemy",
+              "damage": {
+                "min": 36,
+                "max": 94,
+                "hitChance": 0.43
+              }
+            },
+            {
+              "feat": "DoubleShot3",
+              "target": "Enemy",
+              "damage": {
+                "min": 39,
+                "max": 103,
+                "hitChance": 0.43
+              }
+            },
+            {
+              "feat": "DisarmingShot4",
+              "target": "Enemy",
+              "damage": {
+                "min": 65,
+                "max": 172,
+                "hitChance": 0.43
+              }
+            },
+            {
+              "feat": "LaceratingTwinCut1",
+              "target": "Enemy",
+              "damage": {
+                "min": 15,
+                "max": 40,
+                "hitChance": 0.43
+              }
+            },
+            {
+              "feat": "SuppressingShot4",
+              "target": "Enemy",
+              "damage": {
+                "min": 52,
+                "max": 136,
+                "hitChance": 0.43
+              }
+            }
+          ]
+        },
+        {
+          "name": "Heavy blade fighter",
+          "maxHp": 1350,
+          "hpRegenPer30Seconds": 27,
+          "willpower": 17,
+          "might": 26,
+          "social": 10,
+          "outgoingHealingPercent": 10,
+          "maxFp": 60,
+          "fpRegenPer30Seconds": 5,
+          "maxStm": 50,
+          "stmRegenPer30Seconds": 18,
+          "perks": [
+            "DefensiveHarmony"
+          ],
+          "joinAtSeconds": 7,
+          "reactionSeconds": 1.6,
+          "autoAttack": {
+            "attacksPerSecond": 0.17,
+            "damage": {
+              "min": 29,
+              "max": 76,
+              "hitChance": 0.3
+            }
+          },
+          "abilities": [
+            {
+              "feat": "SoulBurst1",
+              "target": "Enemy",
+              "damage": {
+                "min": 60,
+                "max": 157,
+                "hitChance": 0.31
+              }
+            },
+            {
+              "feat": "RendingStrike2",
+              "target": "Enemy",
+              "damage": {
+                "min": 52,
+                "max": 138,
+                "hitChance": 0.31
+              }
+            },
+            {
+              "feat": "Earthshatter2",
+              "target": "Enemy",
+              "damage": {
+                "min": 87,
+                "max": 230,
+                "hitChance": 0.31
+              }
+            },
+            {
+              "feat": "CoveringStrike3",
+              "target": "Enemy",
+              "damage": {
+                "min": 66,
+                "max": 174,
+                "hitChance": 0.31
+              }
+            },
+            {
+              "feat": "SweepingGuard1",
+              "target": "Enemy",
+              "damage": {
+                "min": 24,
+                "max": 64,
+                "hitChance": 0.31
+              }
+            },
+            {
+              "feat": "SavageCleave3",
+              "target": "Enemy",
+              "damage": {
+                "min": 46,
+                "max": 122,
+                "hitChance": 0.31
+              }
+            },
+            {
+              "feat": "LineBreaker2",
+              "target": "Enemy",
+              "damage": {
+                "min": 22,
+                "max": 57,
+                "hitChance": 0.31
+              }
+            }
+          ]
+        },
+        {
+          "name": "Light support off-tank",
+          "maxHp": 1125,
+          "hpRegenPer30Seconds": 20,
+          "willpower": 20,
+          "might": 26,
+          "social": 20,
+          "forceAffinity": 10,
+          "combatReadinessPercent": 3,
+          "maxFp": 85,
+          "fpRegenPer30Seconds": 6,
+          "maxStm": 50,
+          "stmRegenPer30Seconds": 22,
+          "perks": [
+            "ForceConvergence",
+            "DefensiveHarmony"
+          ],
+          "joinAtSeconds": 1,
+          "reactionSeconds": 3.5,
+          "autoAttack": {
+            "attacksPerSecond": 0.39,
+            "damage": {
+              "min": 34,
+              "max": 89,
+              "hitChance": 0.33
+            }
+          },
+          "abilities": [
+            {
+              "feat": "SacrificialBlade1",
+              "target": "Enemy",
+              "damage": {
+                "min": 108,
+                "max": 285,
+                "hitChance": 0.45
+              }
+            },
+            {
+              "feat": "ForcePush3",
+              "target": "Enemy",
+              "damage": {
+                "min": 42,
+                "max": 111,
+                "hitChance": 0.45
+              }
+            },
+            {
+              "feat": "ShatteringStrike2",
+              "target": "Enemy",
+              "damage": {
+                "min": 131,
+                "max": 344,
+                "hitChance": 0.45
+              }
+            },
+            {
+              "feat": "ForceLeap2",
+              "target": "Enemy",
+              "damage": {
+                "min": 11,
+                "max": 28,
+                "hitChance": 0.45
+              }
+            }
+          ]
+        },
+        {
+          "name": "Light Force warden",
+          "maxHp": 600,
+          "hpRegenPer30Seconds": 25,
+          "willpower": 27,
+          "might": 24,
+          "social": 10,
+          "forceAffinity": 10,
+          "combatReadinessPercent": 15,
+          "maxFp": 100,
+          "fpRegenPer30Seconds": 11,
+          "maxStm": 60,
+          "stmRegenPer30Seconds": 20,
+          "perks": [
+            "ForceConvergence",
+            "DefensiveHarmony"
+          ],
+          "joinAtSeconds": 2,
+          "reactionSeconds": 1.2,
+          "abilities": [
+            {
+              "feat": "PurifyingWave1",
+              "target": "Enemy",
+              "damage": {
+                "min": 50,
+                "max": 132,
+                "hitChance": 0.52
+              }
+            },
+            {
+              "feat": "ForcePush3",
+              "target": "Enemy",
+              "damage": {
+                "min": 28,
+                "max": 74,
+                "hitChance": 0.52
+              }
+            },
+            {
+              "feat": "GuardedChannel3",
+              "target": "Enemy",
+              "damage": {
+                "min": 0,
+                "max": 0,
+                "hitChance": 0.52
+              }
+            },
+            {
+              "feat": "DarkShock",
+              "target": "Enemy",
+              "damage": {
+                "min": 0,
+                "max": 0,
+                "hitChance": 0.52
+              }
+            },
+            {
+              "feat": "RadiantLance3",
+              "target": "Enemy",
+              "damage": {
+                "min": 34,
+                "max": 89,
+                "hitChance": 0.52
+              }
+            },
+            {
+              "feat": "ForceBurst1",
+              "target": "Enemy",
+              "damage": {
+                "min": 51,
+                "max": 134,
+                "hitChance": 0.52
+              }
+            },
+            {
+              "feat": "ForceJudgment3",
+              "target": "Enemy",
+              "damage": {
+                "min": 39,
+                "max": 103,
+                "hitChance": 0.52
+              }
+            },
+            {
+              "feat": "ThrowRock3",
+              "target": "Enemy",
+              "damage": {
+                "min": 73,
+                "max": 193,
+                "hitChance": 0.52
+              }
+            }
+          ]
+        },
+        {
+          "name": "Shield tank",
+          "maxHp": 1100,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 16,
+          "might": 23,
+          "social": 10,
+          "forceAffinity": 8,
+          "outgoingHealingPercent": 5,
+          "maxFp": 90,
+          "fpRegenPer30Seconds": 13,
+          "maxStm": 55,
+          "stmRegenPer30Seconds": 15,
+          "perks": [
+            "ForceConvergence",
+            "DefensiveHarmony"
+          ],
+          "joinAtSeconds": 1,
+          "reactionSeconds": 5.0,
+          "autoAttack": {
+            "attacksPerSecond": 0.28,
+            "damage": {
+              "min": 24,
+              "max": 63,
+              "hitChance": 0.33
+            }
+          },
+          "abilities": [
+            {
+              "feat": "Earthshatter2",
+              "target": "Enemy",
+              "damage": {
+                "min": 14,
+                "max": 36,
+                "hitChance": 0.34
+              }
+            },
+            {
+              "feat": "ShatteringStrike2",
+              "target": "Enemy",
+              "damage": {
+                "min": 16,
+                "max": 42,
+                "hitChance": 0.34
+              }
+            },
+            {
+              "feat": "ForceLeap1",
+              "target": "Enemy",
+              "damage": {
+                "min": 15,
+                "max": 39,
+                "hitChance": 0.34
+              }
+            }
+          ]
+        },
+        {
+          "name": "Medic (field support)",
+          "maxHp": 575,
+          "hpRegenPer30Seconds": 12,
+          "willpower": 27,
+          "might": 10,
+          "social": 20,
+          "combatReadinessPercent": 15,
+          "outgoingHealingPercent": 10,
+          "maxFp": 90,
+          "fpRegenPer30Seconds": 7,
+          "maxStm": 70,
+          "stmRegenPer30Seconds": 12,
+          "joinAtSeconds": 3,
+          "reactionSeconds": 5.0,
+          "autoAttack": {
+            "attacksPerSecond": 0.22,
+            "damage": {
+              "min": 11,
+              "max": 28,
+              "hitChance": 0.29
+            }
+          },
+          "abilities": [
+            {
+              "feat": "Headshot2",
+              "target": "Enemy",
+              "damage": {
+                "min": 58,
+                "max": 154,
+                "hitChance": 0.42
+              }
+            },
+            {
+              "feat": "AimedShot4",
+              "target": "Enemy",
+              "damage": {
+                "min": 40,
+                "max": 105,
+                "hitChance": 0.42
+              }
+            },
+            {
+              "feat": "FragGrenade3",
+              "target": "Enemy",
+              "damage": {
+                "min": 18,
+                "max": 46,
+                "hitChance": 0.42
+              }
+            }
+          ]
+        },
+        {
+          "name": "Light Force support-damage hybrid",
+          "maxHp": 775,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 16,
+          "might": 27,
+          "social": 10,
+          "forceAffinity": 10,
+          "maxFp": 60,
+          "fpRegenPer30Seconds": 5,
+          "maxStm": 50,
+          "stmRegenPer30Seconds": 16,
+          "perks": [
+            "ForceConvergence"
+          ],
+          "reactionSeconds": 5.0,
+          "autoAttack": {
+            "attacksPerSecond": 0.61,
+            "damage": {
+              "min": 36,
+              "max": 94,
+              "hitChance": 0.33
+            }
+          },
+          "abilities": [
+            {
+              "feat": "ForcePush3",
+              "target": "Enemy",
+              "damage": {
+                "min": 18,
+                "max": 46,
+                "hitChance": 0.42
+              }
+            },
+            {
+              "feat": "ToxicCloud",
+              "target": "Enemy",
+              "damage": {
+                "min": 20,
+                "max": 52,
+                "hitChance": 0.42
+              }
+            },
+            {
+              "feat": "GrenadeBurst",
+              "target": "Enemy",
+              "damage": {
+                "min": 23,
+                "max": 60,
+                "hitChance": 0.42
+              }
+            }
+          ]
+        },
+        {
+          "name": "Dark Force controller",
+          "maxHp": 875,
+          "hpRegenPer30Seconds": 24,
+          "willpower": 26,
+          "might": 26,
+          "social": 10,
+          "forceAffinity": -10,
+          "combatReadinessPercent": 10,
+          "outgoingHealingPercent": 10,
+          "maxFp": 140,
+          "fpRegenPer30Seconds": 22,
+          "maxStm": 50,
+          "stmRegenPer30Seconds": 16,
+          "perks": [
+            "ForceConvergence",
+            "DefensiveHarmony"
+          ],
+          "joinAtSeconds": 5,
+          "reactionSeconds": 6.0,
+          "autoAttack": {
+            "attacksPerSecond": 0.72,
+            "damage": {
+              "min": 36,
+              "max": 94,
+              "hitChance": 0.32
+            }
+          },
+          "abilities": [
+            {
+              "feat": "SunderingSweep3",
+              "target": "Enemy",
+              "damage": {
+                "min": 37,
+                "max": 99,
+                "hitChance": 0.47
+              }
+            },
+            {
+              "feat": "ShatteringStrike2",
+              "target": "Enemy",
+              "damage": {
+                "min": 34,
+                "max": 91,
+                "hitChance": 0.47
+              }
+            }
+          ]
+        },
+        {
+          "name": "Grenadier (high HP)",
+          "maxHp": 1500,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 14,
+          "might": 20,
+          "social": 10,
+          "outgoingHealingPercent": 10,
+          "maxFp": 50,
+          "fpRegenPer30Seconds": 4,
+          "maxStm": 40,
+          "stmRegenPer30Seconds": 19,
+          "joinAtSeconds": 2,
+          "reactionSeconds": 6.0,
+          "autoAttack": {
+            "attacksPerSecond": 0.28,
+            "damage": {
+              "min": 13,
+              "max": 35,
+              "hitChance": 0.32
+            }
+          },
+          "abilities": []
+        },
+        {
+          "name": "Grenadier medic",
+          "maxHp": 800,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 10,
+          "might": 26,
+          "social": 10,
+          "outgoingHealingPercent": 10,
+          "maxFp": 55,
+          "fpRegenPer30Seconds": 8,
+          "maxStm": 75,
+          "stmRegenPer30Seconds": 23,
+          "joinAtSeconds": 13,
+          "reactionSeconds": 6.0,
+          "autoAttack": {
+            "attacksPerSecond": 0.11,
+            "damage": {
+              "min": 24,
+              "max": 64,
+              "hitChance": 0.33
+            }
+          },
+          "abilities": []
+        },
+        {
+          "name": "Heavy blade berserker",
+          "maxHp": 800,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 17,
+          "might": 27,
+          "social": 10,
+          "forceAffinity": 6,
+          "maxFp": 105,
+          "fpRegenPer30Seconds": 17,
+          "maxStm": 80,
+          "stmRegenPer30Seconds": 20,
+          "perks": [
+            "ForceConvergence",
+            "DefensiveHarmony"
+          ],
+          "joinAtSeconds": 7,
+          "reactionSeconds": 3.5,
+          "autoAttack": {
+            "attacksPerSecond": 0.44,
+            "damage": {
+              "min": 18,
+              "max": 49,
+              "hitChance": 0.32
+            }
+          },
+          "abilities": [
+            {
+              "feat": "RendingStrike1",
+              "target": "Enemy",
+              "damage": {
+                "min": 49,
+                "max": 128,
+                "hitChance": 0.33
+              }
+            },
+            {
+              "feat": "ShatteringStrike2",
+              "target": "Enemy",
+              "damage": {
+                "min": 51,
+                "max": 134,
+                "hitChance": 0.33
+              }
+            },
+            {
+              "feat": "FortressStrike3",
+              "target": "Enemy",
+              "damage": {
+                "min": 0,
+                "max": 0,
+                "hitChance": 0.33
+              }
+            },
+            {
+              "feat": "VigorThrust1",
+              "target": "Enemy",
+              "damage": {
+                "min": 27,
+                "max": 70,
+                "hitChance": 0.33
+              }
+            }
+          ]
+        },
+        {
+          "name": "Light Force damage dealer",
+          "maxHp": 1175,
+          "hpRegenPer30Seconds": 22,
+          "willpower": 25,
+          "might": 27,
+          "social": 10,
+          "forceAffinity": 10,
+          "maxFp": 125,
+          "fpRegenPer30Seconds": 17,
+          "maxStm": 50,
+          "stmRegenPer30Seconds": 16,
+          "perks": [
+            "ForceConvergence"
+          ],
+          "joinAtSeconds": 3,
+          "reactionSeconds": 2.6,
+          "autoAttack": {
+            "attacksPerSecond": 0.06,
+            "damage": {
+              "min": 11,
+              "max": 28,
+              "hitChance": 0.36
+            }
+          },
+          "abilities": [
+            {
+              "feat": "Epicenter1",
+              "target": "Enemy",
+              "damage": {
+                "min": 28,
+                "max": 75,
+                "hitChance": 0.39
+              }
+            },
+            {
+              "feat": "ShatteringStrike2",
+              "target": "Enemy",
+              "damage": {
+                "min": 13,
+                "max": 35,
+                "hitChance": 0.39
+              }
+            },
+            {
+              "feat": "SunderingSweep3",
+              "target": "Enemy",
+              "damage": {
+                "min": 16,
+                "max": 42,
+                "hitChance": 0.39
+              }
+            },
+            {
+              "feat": "ForceSheath4",
+              "target": "Enemy",
+              "damage": {
+                "min": 26,
+                "max": 67,
+                "hitChance": 0.39
+              }
+            },
+            {
+              "feat": "ForceJudgment3",
+              "target": "Enemy",
+              "damage": {
+                "min": 21,
+                "max": 56,
+                "hitChance": 0.39
+              }
+            }
+          ]
+        },
+        {
+          "name": "Field-support medic",
+          "maxHp": 975,
+          "hpRegenPer30Seconds": 27,
+          "willpower": 26,
+          "might": 17,
+          "social": 10,
+          "outgoingHealingPercent": 10,
+          "maxFp": 90,
+          "fpRegenPer30Seconds": 7,
+          "maxStm": 70,
+          "stmRegenPer30Seconds": 24,
+          "perks": [
+            "DefensiveHarmony"
+          ],
+          "joinAtSeconds": 2,
+          "reactionSeconds": 6.0,
+          "autoAttack": {
+            "attacksPerSecond": 0.28,
+            "damage": {
+              "min": 13,
+              "max": 34,
+              "hitChance": 0.27
+            }
+          },
+          "abilities": []
+        },
+        {
+          "name": "Light support hybrid",
+          "maxHp": 575,
+          "hpRegenPer30Seconds": 20,
+          "willpower": 27,
+          "might": 16,
+          "social": 25,
+          "forceAffinity": 10,
+          "outgoingHealingPercent": 10,
+          "maxFp": 130,
+          "fpRegenPer30Seconds": 17,
+          "maxStm": 35,
+          "stmRegenPer30Seconds": 14,
+          "perks": [
+            "ForceConvergence"
+          ],
+          "joinAtSeconds": 9,
+          "reactionSeconds": 5.0,
+          "abilities": [
+            {
+              "feat": "ForceJudgment3",
+              "target": "Enemy",
+              "damage": {
+                "min": 37,
+                "max": 99,
+                "hitChance": 0.41
+              }
+            },
+            {
+              "feat": "ForceBurst1",
+              "target": "Enemy",
+              "damage": {
+                "min": 23,
+                "max": 60,
+                "hitChance": 0.41
+              }
+            },
+            {
+              "feat": "ThrowRock3",
+              "target": "Enemy",
+              "damage": {
+                "min": 29,
+                "max": 77,
+                "hitChance": 0.41
+              }
+            }
+          ]
+        },
+        {
+          "name": "Light healer",
+          "maxHp": 425,
+          "hpRegenPer30Seconds": 20,
+          "willpower": 26,
+          "might": 20,
+          "social": 20,
+          "forceAffinity": 10,
+          "combatReadinessPercent": 12,
+          "outgoingHealingPercent": 10,
+          "maxFp": 140,
+          "fpRegenPer30Seconds": 16,
+          "maxStm": 50,
+          "stmRegenPer30Seconds": 17,
+          "perks": [
+            "ForceConvergence"
+          ],
+          "joinAtSeconds": 6,
+          "reactionSeconds": 5.0,
+          "abilities": [
+            {
+              "feat": "ForceJudgment3",
+              "target": "Enemy",
+              "damage": {
+                "min": 30,
+                "max": 80,
+                "hitChance": 0.44
+              }
+            },
+            {
+              "feat": "ForceBurst1",
+              "target": "Enemy",
+              "damage": {
+                "min": 23,
+                "max": 61,
+                "hitChance": 0.44
+              }
+            },
+            {
+              "feat": "ThrowRock3",
+              "target": "Enemy",
+              "damage": {
+                "min": 20,
+                "max": 52,
+                "hitChance": 0.44
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Healer-support",
+      "targetPolicy": "Random",
+      "members": [
+        {
+          "name": "Light healer-support",
+          "maxHp": 1325,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 27,
+          "might": 14,
+          "social": 26,
+          "forceAffinity": 10,
+          "maxFp": 165,
+          "fpRegenPer30Seconds": 23,
+          "maxStm": 30,
+          "stmRegenPer30Seconds": 13,
+          "perks": [
+            "ForceConvergence"
+          ],
+          "reactionSeconds": 2.0,
+          "abilities": [
+            {
+              "feat": "RousingShout3",
+              "target": "Self",
+              "keepUp": true
+            },
+            {
+              "feat": "GuardianWard4",
+              "target": "Self",
+              "keepUp": true
+            },
+            {
+              "feat": "CleanseOrder2",
+              "target": "Self",
+              "keepUp": true
+            },
+            {
+              "feat": "ForceSanctuary1",
+              "target": "Self",
+              "keepUp": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

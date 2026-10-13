@@ -70,13 +70,15 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
         }
 
         /// <param name="activationType">The AbilityActivationType value.</param>
+        /// <param name="isToggleOff">True when the activation turned a toggled stance off.</param>
         public static CombatRecordEvent AbilityCast(
             int casterId, int targetId, string ability, int feat, int rank,
-            int activationType, int activationDelayMs)
+            int activationType, int activationDelayMs, bool isToggleOff = false)
         {
             return new CombatRecordEvent
             {
                 Type = CombatRecordEventType.AbilityCast,
+                Flag = isToggleOff,
                 ActorId = casterId,
                 TargetId = targetId,
                 SourceKind = CombatRecordSourceKind.Ability,

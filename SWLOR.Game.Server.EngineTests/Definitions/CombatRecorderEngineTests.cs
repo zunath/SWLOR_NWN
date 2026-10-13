@@ -223,6 +223,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "Guardian's Resolve healing must belong to its status source");
             ctx.Assert(guardedHeals.All(e => e.GetProperty("source").GetInt32() != attackerId),
                 "the attacker must not be credited with the defender's reactive healing");
+            foreach (var heal in guardedHeals)
+            {
+                var healIndex = events.IndexOf(heal);
+                var hitBefore = events.Take(healIndex).LastOrDefault(e => Type(e) == "damage" && e.GetProperty("target").GetInt32() == guardedId);
+                if (hitBefore.ValueKind != JsonValueKind.Object)
+                    continue;
+                ctx.AssertEqual(hitBefore.GetProperty("hp_after").GetInt32(), heal.GetProperty("hp_before").GetInt32(),
+                    "a reactive heal starts from the HP the hit left");
+            }
 
             ctx.Assert(events.Any(e => Type(e) == "damage" &&
                                        e.GetProperty("target").GetInt32() == burnedId &&
@@ -471,6 +480,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // Kolto Mist pulses every 3 seconds.
                 await ctx.DelaySecondsAsync(4f);
 
+                // Activating the active stance turns it off.
+                CreaturePlugin.AddFeat(attacker, FeatType.SoulDevourerStance1);
+                await ctx.ExecuteInCreatureContextAsync(attacker, () =>
+                    UsePerkFeat.TryUseAbility(attacker, attacker, FeatType.SoulDevourerStance1, GetLocation(attacker)));
+                await ctx.WaitUntilAsync(
+                    () => !StatusEffect.HasStatusEffect<SoulDevourerStanceStatusEffect>(attacker),
+                    10f,
+                    "Soul Devourer Stance to be toggled off");
+
                 // A hit that only partly drains the shield but crosses 60% again replaces the
                 // shield during the hit; only what the hit took counts as absorbed.
                 ObjectPlugin.SetCurrentHitPoints(defender, 590);
@@ -551,6 +569,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                                                  e.GetProperty("target").GetInt32() == defenderId &&
                                                  e.GetProperty("effect_key").GetString() == "LOW_HP_SHIELD"),
                 "the second threshold crossing grants a new shield");
+
+            ctx.Assert(events.Any(e => Type(e) == "ability_cast" &&
+                                       e.GetProperty("caster").GetInt32() == attackerId &&
+                                       e.GetProperty("ability").GetString() == "Soul Devourer Stance" &&
+                                       e.GetProperty("toggled_off").GetBoolean()),
+                "turning the stance off must be recorded as a use of it");
 
             var mistStatuses = events.Where(e => (Type(e) == "status_apply" || Type(e) == "status_refresh") &&
                                                  e.GetProperty("source").GetInt32() == medicId).ToList();

@@ -92,8 +92,10 @@ namespace SWLOR.Game.Server.Native
                     // An engine-applied weapon hit has no script context, and the recorder calls NWScript.
                     var source = creator;
                     var targetId = target.m_idSelf;
+                    var amount = damage.Total;
+                    var hitPoints = hitPointsBefore;
                     applicationIndex = ServerManager.Executor.ExecuteInScriptContext(() =>
-                        CombatRecorder.BeginDamageApplication(source, targetId));
+                        CombatRecorder.BeginDamageApplication(source, targetId, amount, hitPoints));
                 }
                 else
                 {

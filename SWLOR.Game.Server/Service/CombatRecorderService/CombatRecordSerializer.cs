@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                     {
                         writer.WriteString("activation", CombatRecordNames.GetActivationTypeName(e.Value1));
                         writer.WriteNumber("delay_s", e.Value0 / 1000.0);
+                        writer.WriteBoolean("toggled_off", e.Flag);
                     }
                     break;
                 case CombatRecordEventType.AbilityImpact:

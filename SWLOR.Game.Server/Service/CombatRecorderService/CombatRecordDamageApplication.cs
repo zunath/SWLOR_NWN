@@ -11,9 +11,15 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
         public int HeldEventStart;
         public long StartedMs;
 
-        /// <summary>HP left by the hit, captured before a subdual resurrection can restore it.</summary>
-        public bool HasHitPointsAtDeath;
-        public int HitPointsAtDeath;
+        /// <summary>
+        /// HP left by the hit, captured before something inside the call changes it: a reactive
+        /// heal, another hit, a fatal-damage save or a subdual resurrection.
+        /// </summary>
+        public bool HasHitPointsLeftByHit;
+        public int HitPointsLeftByHit;
+
+        /// <summary>The target's death in this call is recorded, whichever death handler ran first.</summary>
+        public bool DeathRecorded;
 
         /// <summary>What temporary-HP pools had left when a reaction removed or replaced them.</summary>
         public CombatRecordTemporaryHitPointPool[] PoolsAtRemoval;

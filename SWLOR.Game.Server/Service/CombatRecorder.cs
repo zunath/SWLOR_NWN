@@ -43,6 +43,8 @@ namespace SWLOR.Game.Server.Service
         private static readonly List<CombatRecordEvent> _heldEvents = new();
         private static readonly List<CombatRecordWriter> _unfinishedWriters = new();
         private static readonly Dictionary<uint, ulong> _deathFrames = new();
+        private static uint _toggleDeactivatedBy = OBJECT_INVALID;
+        private static ulong _toggleDeactivatedFrame;
         private static int _heldInsertIndex = -1;
         private static long _heldTimestampMs;
         private static Dictionary<AbilityDetail, FeatType> _abilityFeats;
@@ -574,7 +576,8 @@ namespace SWLOR.Game.Server.Service
         #region Abilities
 
         public static void RecordAbilityCast(
-            uint activator, uint target, Location targetLocation, AbilityDetail ability, FeatType feat, float activationDelay)
+            uint activator, uint target, Location targetLocation, AbilityDetail ability, FeatType feat, float activationDelay,
+            bool isToggleOff = false)
         {
             if (ability == null || !IsRecorded(activator, target))
                 return;
@@ -586,7 +589,8 @@ namespace SWLOR.Game.Server.Service
                 (int)feat,
                 ability.AbilityLevel,
                 (int)ability.ActivationType,
-                (int)Math.Round(activationDelay * 1000f));
+                (int)Math.Round(activationDelay * 1000f),
+                isToggleOff);
             Enqueue(WithTargetLocation(recordEvent, target, targetLocation));
         }
 
@@ -619,6 +623,26 @@ namespace SWLOR.Game.Server.Service
                 summary?.CriticalHitCount ?? 0,
                 summary?.AttributedDamage ?? 0);
             Enqueue(WithTargetLocation(recordEvent, target, targetLocation));
+        }
+
+        /// <summary>
+        /// Notes that an activation turned a toggled stance off, which is a use of the ability
+        /// even though its activation action reports no impact.
+        /// </summary>
+        public static void NoteToggleDeactivated(uint activator)
+        {
+            _toggleDeactivatedBy = activator;
+            _toggleDeactivatedFrame = ServerFrame.Current;
+        }
+
+        /// <summary>
+        /// Whether the activation that just ran turned <paramref name="activator"/>'s stance off.
+        /// </summary>
+        public static bool TakeToggleDeactivation(uint activator)
+        {
+            var deactivated = _toggleDeactivatedBy == activator && _toggleDeactivatedFrame == ServerFrame.Current;
+            _toggleDeactivatedBy = OBJECT_INVALID;
+            return deactivated;
         }
 
         /// <summary>
@@ -861,11 +885,17 @@ namespace SWLOR.Game.Server.Service
         /// and their death event waits for this damage event. Returns the application's index
         /// for <see cref="RecordDamageApplied"/> and <see cref="EndDamageApplication"/>.
         /// </summary>
-        internal static int BeginDamageApplication(uint source, uint target)
+        internal static int BeginDamageApplication(uint source, uint target, int amount, int hitPointsBefore)
         {
-            // Only damage the recording keeps can name a death's last damage source.
-            if (source != target && source != 0 && source != OBJECT_INVALID && IsRecorded(target, source))
+            // Only damage the recording keeps (it deals damage and involves the area) can name a
+            // death's last damage source.
+            if (amount > 0 && source != target && source != 0 && source != OBJECT_INVALID && IsRecorded(target, source))
                 _lastDamageSources[target] = source;
+
+            // A reaction hitting the same creature again ends what the outer hit left.
+            var outer = FindDamageApplication(target);
+            if (outer >= 0 && !_damageApplications[outer].HasHitPointsLeftByHit)
+                KeepHitPointsLeftByHit(outer, hitPointsBefore);
 
             _damageApplications.Add(new CombatRecordDamageApplication
             {
@@ -913,8 +943,8 @@ namespace SWLOR.Game.Server.Service
                 // A subdued player is resurrected inside the lethal damage call; report the HP the
                 // hit left, captured when the death scripts ran.
                 var application = _damageApplications[applicationIndex];
-                if (application.HasHitPointsAtDeath)
-                    hitPointsAfter = application.HitPointsAtDeath;
+                if (application.HasHitPointsLeftByHit)
+                    hitPointsAfter = application.HitPointsLeftByHit;
 
                 if (IsRecorded(target, source))
                 {
@@ -1003,6 +1033,11 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         internal static void RecordHealingApplied(uint creator, uint target, int requested, int hitPointsBefore, int hitPointsAfter, int maxHitPoints)
         {
+            // A heal reacting to a hit still in progress ends what that hit left.
+            var application = FindDamageApplication(target);
+            if (application >= 0 && !_damageApplications[application].HasHitPointsLeftByHit)
+                KeepHitPointsLeftByHit(application, hitPointsBefore);
+
             if (!IsRecorded(target, creator))
                 return;
 
@@ -1210,6 +1245,7 @@ namespace SWLOR.Game.Server.Service
             if (!IsInRecordedArea(player))
                 return;
 
+            _deathFrames.Remove(player);
             Enqueue(CombatRecordEvent.Resurrection(
                 GetParticipantId(player), 0, CombatRecordSourceKind.Respawn, null, 0));
         }
@@ -1223,18 +1259,40 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // A subdual handler that ran first already recorded this death.
-            if (_deathFrames.TryGetValue(creature, out var deathFrame) && deathFrame == ServerFrame.Current)
+            // A subdual handler that ran first may already have recorded this death.
+            if (IsDeathRecorded(creature))
                 return;
-            _deathFrames[creature] = ServerFrame.Current;
 
             // Dying inside an engine damage call: keep the HP the hit left for its damage event.
             // The death event itself is held behind that damage event.
             var index = FindDamageApplication(creature);
-            if (index >= 0 && !_damageApplications[index].HasHitPointsAtDeath)
-                SnapshotHitPointsAtDeath(index, creature);
+            if (index >= 0)
+            {
+                var application = _damageApplications[index];
+                application.DeathRecorded = true;
+                _damageApplications[index] = application;
+                if (!application.HasHitPointsLeftByHit)
+                    KeepHitPointsLeftByHit(index, creature);
+            }
+            else
+            {
+                _deathFrames[creature] = ServerFrame.Current;
+            }
 
             EnqueueDeath(creature, killer);
+        }
+
+        /// <summary>
+        /// Whether this death was already recorded: by its lethal hit's damage application, or,
+        /// outside one, in this frame since the creature's last resurrection.
+        /// </summary>
+        private static bool IsDeathRecorded(uint creature)
+        {
+            var index = FindDamageApplication(creature);
+            if (index >= 0)
+                return _damageApplications[index].DeathRecorded;
+
+            return _deathFrames.TryGetValue(creature, out var deathFrame) && deathFrame == ServerFrame.Current;
         }
 
         /// <summary>
@@ -1244,15 +1302,20 @@ namespace SWLOR.Game.Server.Service
         public static void KeepLethalHitPoints(uint creature)
         {
             var index = FindDamageApplication(creature);
-            if (index >= 0 && !_damageApplications[index].HasHitPointsAtDeath)
-                SnapshotHitPointsAtDeath(index, creature);
+            if (index >= 0 && !_damageApplications[index].HasHitPointsLeftByHit)
+                KeepHitPointsLeftByHit(index, creature);
         }
 
-        private static void SnapshotHitPointsAtDeath(int applicationIndex, uint creature)
+        private static void KeepHitPointsLeftByHit(int applicationIndex, uint creature)
+        {
+            KeepHitPointsLeftByHit(applicationIndex, CombatRecorderEffectHooks.GetHitPointsExcludingTemporary(creature));
+        }
+
+        private static void KeepHitPointsLeftByHit(int applicationIndex, int hitPoints)
         {
             var application = _damageApplications[applicationIndex];
-            application.HasHitPointsAtDeath = true;
-            application.HitPointsAtDeath = CombatRecorderEffectHooks.GetHitPointsExcludingTemporary(creature);
+            application.HasHitPointsLeftByHit = true;
+            application.HitPointsLeftByHit = hitPoints;
             _damageApplications[applicationIndex] = application;
         }
 
@@ -1286,6 +1349,8 @@ namespace SWLOR.Game.Server.Service
             if (!IsInRecordedArea(target))
                 return;
 
+            // A new life: a later death in this frame is a real one.
+            _deathFrames.Remove(target);
             var attribution = _attributionDepth > 0
                 ? _attributions[_attributionDepth - 1]
                 : new CombatRecordAttribution(OBJECT_INVALID, kindWithoutScope, null, 0, 0);
@@ -1308,12 +1373,12 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             // The death handlers run in no fixed order, so the death is recorded first either way.
-            if (!_deathFrames.TryGetValue(subdued, out var deathFrame) || deathFrame != ServerFrame.Current)
+            if (!IsDeathRecorded(subdued))
                 RecordDeath(subdued, GetLastHostileActor(subdued));
 
             var index = FindDamageApplication(subdued);
             if (index >= 0)
-                SnapshotHitPointsAtDeath(index, subdued);
+                KeepHitPointsLeftByHit(index, subdued);
 
             EnqueueSubdual(subdued, subduedBy);
         }

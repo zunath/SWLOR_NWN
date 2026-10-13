@@ -121,6 +121,16 @@ public class CombatRecordSerializerTests
     }
 
     [Test]
+    public void AbilityCast_FlagsAToggleTurnedOff()
+    {
+        var on = Parse(CombatRecordEvent.AbilityCast(1, 1, "Soul Devourer Stance", (int)FeatType.SoulDevourerStance1, 1, 1, 2000));
+        var off = Parse(CombatRecordEvent.AbilityCast(1, 1, "Soul Devourer Stance", (int)FeatType.SoulDevourerStance1, 1, 1, 0, isToggleOff: true));
+
+        on.GetProperty("toggled_off").GetBoolean().Should().BeFalse();
+        off.GetProperty("toggled_off").GetBoolean().Should().BeTrue();
+    }
+
+    [Test]
     public void EngineAppliedDamage_IsFlagged()
     {
         var json = Parse(CombatRecordEvent.DamageApplied(

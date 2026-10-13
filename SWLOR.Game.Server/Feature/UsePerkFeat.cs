@@ -854,6 +854,9 @@ namespace SWLOR.Game.Server.Feature
 
             if (executeImpact != true)
             {
+                // Turning a toggled stance off ends the activation but is still a use.
+                if (CombatRecorder.IsRecording && CombatRecorder.TakeToggleDeactivation(activator))
+                    CombatRecorder.RecordAbilityCast(activator, target, targetLocation, ability, feat, 0f, isToggleOff: true);
                 ClearAbilityActivationIdleSnapshots(activator);
                 ClearActiveAbilityActivation(activator, activationId);
                 DeleteLocalInt(activator, activationId);

@@ -234,6 +234,40 @@ public class ShuttleScheduleTests
     }
 
     [Test]
+    public void GetNextDepartureUtc_SkipsDeparturesDuringLoginGracePeriod()
+    {
+        var now = new DateTime(2026, 10, 13, 12, 0, 0, DateTimeKind.Utc);
+        foreach (var (origin, destination) in OrderedPairs())
+        {
+            var imminent = ShuttleSchedule.GetNextDepartureUtc(origin, destination, now);
+            var login = imminent.AddSeconds(-1);
+            var notBefore = login.AddSeconds(60);
+            var actual = ShuttleSchedule.GetNextDepartureUtc(origin, destination, login, notBefore);
+
+            actual.Should().BeOnOrAfter(notBefore, $"{origin}->{destination}");
+            actual.Should().Be(ShuttleSchedule.GetNextDepartureUtc(origin, destination, imminent));
+        }
+    }
+
+    [Test]
+    public void GetNextDepartureUtc_IncludesDepartureExactlyAtEligibilityBoundary()
+    {
+        var now = new DateTime(2026, 10, 13, 12, 0, 0, DateTimeKind.Utc);
+        foreach (var (origin, destination) in OrderedPairs())
+        {
+            var departure = ShuttleSchedule.GetNextDepartureUtc(origin, destination, now);
+            ShuttleSchedule.GetNextDepartureUtc(origin, destination, departure.AddSeconds(-60), departure)
+                .Should().Be(departure);
+            ShuttleSchedule.GetNextDepartureUtc(origin, destination, departure, departure)
+                .Should().BeAfter(departure);
+            ShuttleSchedule.GetNextDepartureUtc(origin, destination, now, departure.AddTicks(1))
+                .Should().BeAfter(departure);
+            ShuttleSchedule.GetNextDepartureUtc(origin, destination, now, now.AddSeconds(-60))
+                .Should().Be(departure);
+        }
+    }
+
+    [Test]
     public void GetDeparturesBetween_EmptyWindowReturnsNoDepartures()
     {
         var origin = PlanetType.Viscara;

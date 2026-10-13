@@ -52,7 +52,7 @@ public sealed class PassengerShuttleInteriorTests
         var contents = ReadResource("git", resref!);
 
         area["Name"]!["value"]!["0"]!.Value<string>()
-            .Should().Be("Starship Shuttle - Interior");
+            .Should().Be("[Prefab] Starship Shuttle - Interior");
         var entrance = Objects(contents, "WaypointList")
             .Single(point => Value<string>(point, "Tag") == "PROPERTY_ENTRANCE");
         Value<float>(entrance, "XPosition").Should().BeInRange(40, 50);

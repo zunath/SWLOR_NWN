@@ -69,6 +69,29 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void AreaDamageCast_StillLands_WhenItsTargetDiesMidCast()
+        {
+            var burst = TestCombatants.Use("ForceBurst1", AbilityTarget.Enemy);
+            burst.Damage = new DamageSpec { Min = WaveDamage, Max = WaveDamage, HitChance = 1f, Area = true };
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(
+                    false,
+                    new[] { TestCombatants.Medic("Medic", burst) },
+                    new[] { TestCombatants.Dummy("First", true), TestCombatants.Dummy("Second", true) }),
+                RuleSets.Current(),
+                _catalog);
+            var medic = simulation.Get("Medic");
+
+            SimulationClock.RunUntil(simulation, () => medic.Casting != null, 10, "Force Burst started");
+            var targeted = medic.Casting.Target;
+            var other = simulation.Get(targeted.Name == "First" ? "Second" : "First");
+            simulation.ApplyDamage(medic, targeted, TestCombatants.EffectivelyUnlimited * 2.0);
+            CastOnce(simulation);
+
+            other.Stats.DamageTakenToHp.Should().Be(WaveDamage, "an area cast needs no particular enemy alive");
+        }
+
+        [Test]
         public void Spawn_RejectsADamageProfileOnASingleTargetHeal()
         {
             var use = TestCombatants.Use("Benevolence1", AbilityTarget.Enemy);

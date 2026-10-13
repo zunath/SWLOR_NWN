@@ -35,6 +35,20 @@ namespace SWLOR.CombatSim.Effects
         /// <summary>A party pulse whose zone keeps healing after its caster dies, as Force Sanctuary does in game.</summary>
         public bool ContinuesAfterCasterDeath { get; init; }
 
+        /// <summary>Percent cut to damage taken that comes with the effect; 0 for none.</summary>
+        public float DamageReductionPercent { get; init; }
+
+        /// <summary>Upper end of a Social-scaled reduction, reached at SOC 26; 0 when the reduction is fixed.</summary>
+        public float DamageReductionMaximumPercent { get; init; }
+
+        public DamageReductionScope DamageReductionScope { get; init; }
+
+        /// <summary>When above 0, the reduction only lands on a target at or below this HP percent.</summary>
+        public float DamageReductionBelowHpPercent { get; init; }
+
+        /// <summary>How long the reduction lasts; 0 means the effect's own duration.</summary>
+        public float DamageReductionSeconds { get; init; }
+
         public bool IsInstantHeal => Kind == EffectKind.DirectHeal;
     }
 }

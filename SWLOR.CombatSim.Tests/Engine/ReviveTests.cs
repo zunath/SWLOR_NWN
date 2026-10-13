@@ -13,6 +13,33 @@ namespace SWLOR.CombatSim.Tests.Engine
     public class ReviveTests
     {
         private const double ResuscitationCastSeconds = 4.0;
+
+        [Test]
+        public void PveRevive_SkipsALockedOutBodyForOneThatCanBeRevived()
+        {
+            var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Resuscitation1", AbilityTarget.DeadAlly));
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(
+                    false,
+                    new[] { medic, new CombatantSpec { Name = "Revived", MaxHp = 1000 }, new CombatantSpec { Name = "Fresh", MaxHp = 1000 } },
+                    new[] { TestCombatants.Dummy("Enemy", true) }),
+                RuleSets.Tuned(),
+                _catalog);
+            var enemy = simulation.Get("Enemy");
+            var revived = simulation.Get("Revived");
+            var fresh = simulation.Get("Fresh");
+
+            simulation.ApplyDamage(enemy, revived, TestCombatants.EffectivelyUnlimited);
+            SimulationClock.RunUntil(simulation, () => revived.Stats.RevivesReceived == 1, 10, "the first revive");
+
+            // Dies again inside its five-minute lockout, before the other ally, so it is the oldest body.
+            simulation.ApplyDamage(enemy, revived, TestCombatants.EffectivelyUnlimited);
+            SimulationClock.RunUntil(simulation, simulation.Now + 1);
+            simulation.ApplyDamage(enemy, fresh, TestCombatants.EffectivelyUnlimited);
+
+            SimulationClock.RunUntil(simulation, () => fresh.Stats.RevivesReceived == 1, ResuscitationRecastSeconds + 20, "the eligible body revived");
+            revived.IsDead.Should().BeTrue("its lockout still holds");
+        }
         private const double ResuscitationRecastSeconds = 60.0;
         private const double PveLockoutSeconds = 300.0;
         private const double PvpPartyDamageWindowSeconds = 15.0;

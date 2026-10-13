@@ -90,6 +90,42 @@ namespace SWLOR.CombatSim.Tests.Engine
             act.Should().Throw<InvalidDataException>().WithMessage("*NotARealPerk*");
         }
 
+        [TestCase("hitChance", 2f)]
+        [TestCase("critChance", -0.1f)]
+        [TestCase("critMultiplier", 0.5f)]
+        [TestCase("min", float.NaN)]
+        [TestCase("max", -1f)]
+        [TestCase("hits", 0f)]
+        public void Spawn_RejectsAnAbilityDamageProfileOutOfRange(string field, float value)
+        {
+            var strike = TestCombatants.Use("ShatteringStrike1", AbilityTarget.Enemy);
+            strike.Damage = new DamageSpec { Min = 1, Max = 2 };
+            switch (field)
+            {
+                case "hitChance": strike.Damage.HitChance = value; break;
+                case "critChance": strike.Damage.CritChance = value; break;
+                case "critMultiplier": strike.Damage.CritMultiplier = value; break;
+                case "min": strike.Damage.Min = value; break;
+                case "max": strike.Damage.Max = value; break;
+                case "hits": strike.Damage.Hits = (int)value; break;
+            }
+
+            var act = () => new Simulation(Scenario(TestCombatants.Medic("Medic", strike)), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*ShatteringStrike1*damage profile*");
+        }
+
+        [Test]
+        public void Spawn_RejectsAnAutoattackProfileOutOfRange()
+        {
+            var striker = TestCombatants.Striker("Striker");
+            striker.AutoAttack.Damage.HitChance = 1.5f;
+
+            var act = () => new Simulation(Scenario(striker), RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*Striker*autoattack*HitChance*");
+        }
+
         [Test]
         public void Spawn_RejectsATimeStepLongerThanAnAbilityUsersReactionTime()
         {

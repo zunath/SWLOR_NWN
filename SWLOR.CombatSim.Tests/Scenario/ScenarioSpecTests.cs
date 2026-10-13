@@ -34,6 +34,18 @@ namespace SWLOR.CombatSim.Tests.Scenario
         }
 
         [Test]
+        public void Load_RejectsAMisspelledSetting()
+        {
+            var path = WriteScenario("""
+                { "timeStepsSeconds": 1, "teams": [ { "name": "A", "members": [] }, { "name": "B", "members": [] } ] }
+                """);
+
+            var act = () => ScenarioSpec.Load(path);
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*timeStepsSeconds*");
+        }
+
+        [Test]
         public void Load_ReadsTeamsMembersAndAbilitiesFromJson()
         {
             var path = WriteScenario("""

@@ -18,8 +18,8 @@
           "abilities": [
             { "feat": "MedKit4", "target": "Self", "belowHpPercent": 75 },
             { "feat": "Infusion2", "target": "Self", "keepUp": true, "belowHpPercent": 90 },
-            { "feat": "WristRocket3", "target": "Enemy", "damage": { "min": 25, "max": 45, "hitChance": 0.45 } },
-            { "feat": "ArcProjector3", "target": "Enemy", "damage": { "min": 25, "max": 45, "hitChance": 0.45 } }
+            { "feat": "WristRocket3", "target": "Enemy", "damage": { "min": 25, "max": 45, "hitChance": 0.45, "type": "Other" } },
+            { "feat": "ArcProjector3", "target": "Enemy", "damage": { "min": 25, "max": 45, "hitChance": 0.45, "type": "Other" } }
           ]
         }
       ]

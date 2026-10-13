@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Data
@@ -20,6 +21,7 @@ namespace SWLOR.CombatSim.Data
         /// <summary>What the game computes at runtime and the simulator could not read (for example "recast"); null when timings were read.</summary>
         public string UnreadableTiming { get; init; }
 
+        public SkillType SkillType { get; init; }
         public bool IsHostile { get; init; }
         public bool IsHealing { get; init; }
         public string ForceAffinity { get; init; }

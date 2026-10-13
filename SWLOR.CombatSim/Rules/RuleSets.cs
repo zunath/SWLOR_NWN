@@ -17,8 +17,19 @@ namespace SWLOR.CombatSim.Rules
         /// <summary>Reads a rule set from JSON, such as an edited copy of a preset; a file without a name is named after the file.</summary>
         public static RuleSet Load(string path)
         {
-            var rules = JsonConvert.DeserializeObject<RuleSet>(File.ReadAllText(path))
-                        ?? throw new InvalidDataException($"Rule set file '{path}' is empty.");
+            RuleSet rules;
+            try
+            {
+                // Unknown names fail, so a misspelled setting can't silently keep its default.
+                rules = JsonConvert.DeserializeObject<RuleSet>(File.ReadAllText(path), new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
+            }
+            catch (JsonSerializationException ex)
+            {
+                throw new InvalidDataException($"Rule set file '{path}': {ex.Message}", ex);
+            }
+
+            if (rules == null)
+                throw new InvalidDataException($"Rule set file '{path}' is empty.");
             var problems = rules.GetProblems();
             if (problems.Count > 0)
                 throw new InvalidDataException($"Rule set file '{path}': {string.Join("; ", problems)}.");

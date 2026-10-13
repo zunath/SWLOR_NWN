@@ -43,6 +43,16 @@ namespace SWLOR.CombatSim.Tests.Rules
         }
 
         [Test]
+        public void Load_RejectsAMisspelledSetting()
+        {
+            var path = WriteRules("typo.json", "{ \"fpCostMultipler\": 1.2 }");
+
+            var act = () => RuleSets.Load(path);
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*typo.json*fpCostMultipler*");
+        }
+
+        [Test]
         public void Presets_HaveNoProblems()
         {
             foreach (var name in RuleSets.Names)

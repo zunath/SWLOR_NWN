@@ -42,7 +42,8 @@
               "damage": {
                 "min": 21,
                 "max": 56,
-                "hitChance": 0.39
+                "hitChance": 0.39,
+                "type": "Force"
               }
             },
             {
@@ -51,7 +52,8 @@
               "damage": {
                 "min": 11,
                 "max": 29,
-                "hitChance": 0.39
+                "hitChance": 0.39,
+                "type": "Force"
               }
             }
           ]
@@ -264,7 +266,8 @@
               "damage": {
                 "min": 42,
                 "max": 111,
-                "hitChance": 0.45
+                "hitChance": 0.45,
+                "type": "Force"
               }
             },
             {
@@ -282,7 +285,8 @@
               "damage": {
                 "min": 11,
                 "max": 28,
-                "hitChance": 0.45
+                "hitChance": 0.45,
+                "type": "Force"
               }
             }
           ]
@@ -313,7 +317,8 @@
               "damage": {
                 "min": 50,
                 "max": 132,
-                "hitChance": 0.52
+                "hitChance": 0.52,
+                "type": "Force"
               }
             },
             {
@@ -322,7 +327,8 @@
               "damage": {
                 "min": 28,
                 "max": 74,
-                "hitChance": 0.52
+                "hitChance": 0.52,
+                "type": "Force"
               }
             },
             {
@@ -349,7 +355,8 @@
               "damage": {
                 "min": 34,
                 "max": 89,
-                "hitChance": 0.52
+                "hitChance": 0.52,
+                "type": "Force"
               }
             },
             {
@@ -358,7 +365,8 @@
               "damage": {
                 "min": 51,
                 "max": 134,
-                "hitChance": 0.52
+                "hitChance": 0.52,
+                "type": "Force"
               }
             },
             {
@@ -367,7 +375,8 @@
               "damage": {
                 "min": 39,
                 "max": 103,
-                "hitChance": 0.52
+                "hitChance": 0.52,
+                "type": "Force"
               }
             },
             {
@@ -433,7 +442,8 @@
               "damage": {
                 "min": 15,
                 "max": 39,
-                "hitChance": 0.34
+                "hitChance": 0.34,
+                "type": "Force"
               }
             }
           ]
@@ -486,7 +496,8 @@
               "damage": {
                 "min": 18,
                 "max": 46,
-                "hitChance": 0.42
+                "hitChance": 0.42,
+                "type": "Other"
               }
             }
           ]
@@ -522,7 +533,8 @@
               "damage": {
                 "min": 18,
                 "max": 46,
-                "hitChance": 0.42
+                "hitChance": 0.42,
+                "type": "Force"
               }
             },
             {
@@ -531,7 +543,8 @@
               "damage": {
                 "min": 20,
                 "max": 52,
-                "hitChance": 0.42
+                "hitChance": 0.42,
+                "type": "Other"
               }
             },
             {
@@ -540,7 +553,8 @@
               "damage": {
                 "min": 23,
                 "max": 60,
-                "hitChance": 0.42
+                "hitChance": 0.42,
+                "type": "Other"
               }
             }
           ]
@@ -739,7 +753,8 @@
               "damage": {
                 "min": 28,
                 "max": 75,
-                "hitChance": 0.39
+                "hitChance": 0.39,
+                "type": "Force"
               }
             },
             {
@@ -766,7 +781,8 @@
               "damage": {
                 "min": 26,
                 "max": 67,
-                "hitChance": 0.39
+                "hitChance": 0.39,
+                "type": "Force"
               }
             },
             {
@@ -775,7 +791,8 @@
               "damage": {
                 "min": 21,
                 "max": 56,
-                "hitChance": 0.39
+                "hitChance": 0.39,
+                "type": "Force"
               }
             }
           ]
@@ -832,7 +849,8 @@
               "damage": {
                 "min": 37,
                 "max": 99,
-                "hitChance": 0.41
+                "hitChance": 0.41,
+                "type": "Force"
               }
             },
             {
@@ -841,7 +859,8 @@
               "damage": {
                 "min": 23,
                 "max": 60,
-                "hitChance": 0.41
+                "hitChance": 0.41,
+                "type": "Force"
               }
             },
             {
@@ -881,7 +900,8 @@
               "damage": {
                 "min": 30,
                 "max": 80,
-                "hitChance": 0.44
+                "hitChance": 0.44,
+                "type": "Force"
               }
             },
             {
@@ -890,7 +910,8 @@
               "damage": {
                 "min": 23,
                 "max": 61,
-                "hitChance": 0.44
+                "hitChance": 0.44,
+                "type": "Force"
               }
             },
             {

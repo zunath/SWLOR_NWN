@@ -102,6 +102,55 @@ namespace SWLOR.CombatSim.Tests.Engine
             caster.Stats.FpRefunded.Should().Be(0.6 * MaxFp, "the second cast did not start a second window or lengthen the first");
         }
 
+        [Test]
+        public void FpCostOnANonForceAbility_DoesNotTriggerConvergence()
+        {
+            var strike = TestCombatants.Use("ShatteringStrike1", AbilityTarget.Enemy, minIntervalSeconds: 600);
+            strike.Damage = new DamageSpec { Min = 1, Max = 1 };
+            var (simulation, caster) = SpawnAttacker(strike, withPerk: true);
+
+            SimulationClock.RunUntil(simulation, 40);
+
+            caster.Stats.FpSpent.Should().BeGreaterThan(0, "Shattering Strike costs FP");
+            caster.Stats.FpRefunded.Should().Be(0, "only Force abilities trigger Force Convergence");
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void ForceCastsAfterTheTrigger_GetFivePercentMoreHitChance(bool withPerk)
+        {
+            // A profile that never hits on its own, so every landed hit comes from the bonus.
+            var spark = TestCombatants.Use("ForceSpark1", AbilityTarget.Enemy);
+            spark.Damage = new DamageSpec { Min = 1, Max = 1, HitChance = 0f, Hits = 200 };
+            var (simulation, _) = SpawnAttacker(spark, withPerk);
+
+            SimulationClock.RunUntil(simulation, 29);
+
+            var landed = simulation.Get("Enemy").Stats.DamageTakenToHp;
+            if (withPerk)
+                landed.Should().BeGreaterThan(0, "casts after the first fall inside the 30-second accuracy window");
+            else
+                landed.Should().Be(0);
+        }
+
+        private (Simulation Simulation, Combatant Caster) SpawnAttacker(AbilityUseSpec use, bool withPerk)
+        {
+            var caster = new CombatantSpec
+            {
+                Name = "Caster",
+                MaxHp = 1000,
+                MaxFp = MaxFp,
+                MaxStm = 100,
+                Perks = withPerk ? new List<string> { nameof(PerkType.ForceConvergence) } : new List<string>(),
+                Abilities = new List<AbilityUseSpec> { use }
+            };
+            var scenario = TestScenarios.TwoTeams(false, new[] { caster }, new[] { TestCombatants.Dummy("Enemy", true) });
+            var simulation = TestScenarios.Spawn(scenario, RuleSets.Tuned(), _catalog);
+            var spawned = simulation.Get("Caster");
+            spawned.Fp = StartingFp + 100;
+            return (simulation, spawned);
+        }
+
         private (Simulation Simulation, Combatant Caster) SpawnCaster(RuleSet rules, bool withPerk, string feat = "Benevolence1")
         {
             var caster = new CombatantSpec

@@ -35,6 +35,7 @@ namespace SWLOR.CombatSim.Engine
         public List<TemporaryHpPool> TemporaryHp { get; } = new();
         public Dictionary<string, HealOverTimeInstance> HealsOverTime { get; } = new();
         public Dictionary<string, PartyPulseInstance> PartyPulses { get; } = new();
+        public Dictionary<string, DamageReductionInstance> DamageReductions { get; } = new();
         public Dictionary<string, double> RecastReadyAt { get; } = new();
 
         /// <summary>When each ability (by feat name) was last used, for <see cref="AbilityUseSpec.MinIntervalSeconds"/>.</summary>
@@ -54,6 +55,7 @@ namespace SWLOR.CombatSim.Engine
         public double ConvergenceUntil { get; set; } = -1;
         public double ConvergenceNextTickAt { get; set; }
         public double ConvergenceReadyAt { get; set; }
+        public double ConvergenceAccuracyUntil { get; set; } = -1;
         public double HarmonyReadyAt { get; set; }
         public double NextBlockedReviveCountAt { get; set; }
 

@@ -39,7 +39,9 @@ namespace SWLOR.CombatSim.Effects
             {
                 Kind = EffectKind.PartyHealOverTime, Percent = 2, Ticks = 10, TickSeconds = 3f, Key = "ForceSanctuary",
                 // Its zone pulses have no caster-alive check; Kolto Mist's do.
-                ContinuesAfterCasterDeath = true
+                ContinuesAfterCasterDeath = true,
+                // Each pulse refreshes -5% Force damage taken for 3.2 seconds.
+                DamageReductionPercent = 5, DamageReductionScope = DamageReductionScope.ForceOnly, DamageReductionSeconds = 3.2f
             },
             [FeatType.PurifyingWave1] = new AbilityEffect
             {
@@ -52,8 +54,8 @@ namespace SWLOR.CombatSim.Effects
             [FeatType.GuardianWard3] = GuardianWard(12),
             [FeatType.GuardianWard4] = GuardianWard(15),
 
-            [FeatType.PainSuppressant1] = Shield(10, 0, ScalingStat.Willpower, "PainSuppressant", 30f),
-            [FeatType.PainSuppressant2] = Shield(15, 0, ScalingStat.Willpower, "PainSuppressant", 30f),
+            [FeatType.PainSuppressant1] = PainSuppressant(10, 10),
+            [FeatType.PainSuppressant2] = PainSuppressant(15, 15),
 
             [FeatType.DeflectorShield1] = Shield(6, 35, ScalingStat.None, "DeflectorShield", 45f),
             [FeatType.DeflectorShield2] = Shield(9, 65, ScalingStat.None, "DeflectorShield", 45f),
@@ -64,9 +66,9 @@ namespace SWLOR.CombatSim.Effects
                 UsesCombatReadiness = true, Key = "GroupDeflector", DurationSeconds = 30f
             },
 
-            [FeatType.RousingShout1] = Shout(10, 13),
-            [FeatType.RousingShout2] = Shout(15, 19),
-            [FeatType.RousingShout3] = Shout(20, 25),
+            [FeatType.RousingShout1] = Shout(10, 13, 10, 12),
+            [FeatType.RousingShout2] = Shout(15, 19, 15, 18),
+            [FeatType.RousingShout3] = Shout(20, 25, 20, 25),
             [FeatType.CleanseOrder1] = PartyShout(6, 8),
             [FeatType.CleanseOrder2] = PartyShout(12, 15),
 
@@ -110,10 +112,21 @@ namespace SWLOR.CombatSim.Effects
             UsesCombatReadiness = true, Key = key, DurationSeconds = duration
         };
 
-        private static AbilityEffect Shout(float minimum, float maximum) => new()
+        /// <summary>Temporary HP plus a 30-second cut to all damage taken.</summary>
+        private static AbilityEffect PainSuppressant(float percent, float damageReduction) => new()
+        {
+            Kind = EffectKind.TemporaryHp, Percent = percent, Scaling = ScalingStat.Willpower,
+            UsesCombatReadiness = true, Key = "PainSuppressant", DurationSeconds = 30f,
+            DamageReductionPercent = damageReduction
+        };
+
+        /// <summary>Temporary HP; a target at or below 35% HP also takes less physical and Force damage.</summary>
+        private static AbilityEffect Shout(float minimum, float maximum, float minimumReduction, float maximumReduction) => new()
         {
             Kind = EffectKind.TemporaryHp, Percent = minimum, MaximumPercent = maximum, Scaling = ScalingStat.Social,
-            Key = "RousingShout", DurationSeconds = 30f
+            Key = "RousingShout", DurationSeconds = 30f,
+            DamageReductionPercent = minimumReduction, DamageReductionMaximumPercent = maximumReduction,
+            DamageReductionScope = DamageReductionScope.PhysicalAndForce, DamageReductionBelowHpPercent = 35f
         };
 
         private static AbilityEffect PartyShout(float minimum, float maximum) => new()

@@ -2,8 +2,10 @@ using SWLOR.CombatSim.Data;
 using SWLOR.CombatSim.Effects;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using DamageType = SWLOR.CombatSim.Scenario.DamageType;
 
 namespace SWLOR.CombatSim.Engine
 {
@@ -18,6 +20,8 @@ namespace SWLOR.CombatSim.Engine
         private const float ConvergencePercentPerTick = 4f;
         private const double ConvergenceTickSeconds = 2.0;
         private const double ConvergenceCooldownSeconds = 45.0;
+        private const double ConvergenceAccuracySeconds = 30.0;
+        private const float ConvergenceHitChanceBonus = 0.05f;
         private const int CoordinatedSampleSize = 3;
 
         /// <summary>Perk stats the simulator models; listed perks contribute only these.</summary>
@@ -100,6 +104,15 @@ namespace SWLOR.CombatSim.Engine
                 {
                     if (spec.JoinAtSeconds < 0)
                         throw new InvalidDataException($"'{spec.Name}' has a negative JoinAtSeconds.");
+
+                    var attack = spec.AutoAttack;
+                    if (attack != null)
+                    {
+                        if (!float.IsFinite(attack.AttacksPerSecond) || attack.AttacksPerSecond < 0)
+                            throw new InvalidDataException($"'{spec.Name}' needs an autoattack AttacksPerSecond of at least 0.");
+                        if (attack.AttacksPerSecond > 0)
+                            RequireValidDamage($"'{spec.Name}' autoattack", attack.Damage);
+                    }
 
                     // Each step makes at most one decision per combatant, so a step longer than the
                     // reaction time would skip decisions and make results depend on the step size.
@@ -188,6 +201,9 @@ namespace SWLOR.CombatSim.Engine
             if (use.MinIntervalSeconds < 0)
                 throw new InvalidDataException($"'{use.Feat}' has a negative MinIntervalSeconds.");
 
+            if (use.Damage != null)
+                RequireValidDamage($"'{use.Feat}'", use.Damage);
+
             if (use.MaxTargets.HasValue)
             {
                 if (use.MaxTargets.Value < 1)
@@ -198,6 +214,16 @@ namespace SWLOR.CombatSim.Engine
             }
 
             _resolvedUses[use] = (info, effect);
+        }
+
+        private static void RequireValidDamage(string owner, DamageSpec damage)
+        {
+            if (damage == null)
+                throw new InvalidDataException($"{owner} needs a damage profile.");
+
+            var problems = damage.GetProblems();
+            if (problems.Count > 0)
+                throw new InvalidDataException($"{owner} has a bad damage profile: {string.Join("; ", problems)}.");
         }
 
         private static bool IsPartyEffect(AbilityEffect effect) =>
@@ -276,7 +302,7 @@ namespace SWLOR.CombatSim.Engine
             {
                 while (pulse.TicksLeft > 0 && _now >= pulse.NextTickAt)
                 {
-                    PulseParty(caster, pulse.Effect, pulse.MaxTargets);
+                    PulseParty(caster, pulse.Effect, pulse.MaxTargets, HealKind.OverTime);
                     pulse.TicksLeft--;
                     pulse.NextTickAt += pulse.Effect.TickSeconds;
                 }
@@ -286,10 +312,11 @@ namespace SWLOR.CombatSim.Engine
             }
         }
 
-        private void PulseParty(Combatant caster, AbilityEffect effect, int? maxTargets)
+        private void PulseParty(Combatant caster, AbilityEffect effect, int? maxTargets, HealKind kind)
         {
             foreach (var ally in PartyTargets(caster, maxTargets))
             {
+                ApplyDamageReduction(caster, ally, effect, ally.HpPercent);
                 var amount = HealingMath.PartyPulse(
                     effect,
                     ally.Spec.MaxHp,
@@ -298,7 +325,7 @@ namespace SWLOR.CombatSim.Engine
                     _rules.ForceAffinityHealingCap,
                     caster.OutgoingHealingPercent,
                     caster.Spec.CombatReadinessPercent);
-                ApplyHealing(caster, ally, amount, HealKind.OverTime);
+                ApplyHealing(caster, ally, amount, kind);
             }
         }
 
@@ -395,9 +422,10 @@ namespace SWLOR.CombatSim.Engine
             var isRevive = effect?.Kind == EffectKind.Revive;
             if (isRevive ? !target.IsDead : target.IsDead)
             {
-                // A party heal or shield centered on the caster (Purifying Wave) needs no living target:
-                // its heal still lands and its damage goes to an enemy still in the fight.
-                if (effect == null || !IsPartyEffect(effect))
+                // Area damage and party heals or shields centered on the caster (Purifying Wave) need no
+                // living target: they still land, and single-target damage goes to an enemy still in the fight.
+                var needsNoTarget = effect == null ? cast.Use.Damage?.Area == true : IsPartyEffect(effect);
+                if (isRevive || !needsNoTarget)
                     return;
 
                 target = EnsureAttackTarget(caster);
@@ -417,11 +445,14 @@ namespace SWLOR.CombatSim.Engine
             caster.RecastReadyAt[cast.Ability.RecastGroup] = _now + _rules.GetRecastSeconds(cast.Ability);
             caster.LastUsedAt[cast.Use.Feat] = _now;
 
-            if (cast.FpCost > 0)
+            // Convergence's accuracy comes from an earlier trigger; the cast that triggers it resolves first.
+            var isForce = cast.Ability.SkillType == SkillType.Force;
+            var hitBonus = isForce && _now < caster.ConvergenceAccuracyUntil ? ConvergenceHitChanceBonus : 0f;
+            if (cast.FpCost > 0 && isForce)
                 TriggerConvergence(caster);
 
             if (cast.Use.Damage != null && (target != null || cast.Use.Damage.Area))
-                ApplyAbilityDamage(caster, target, cast.Use.Damage);
+                ApplyAbilityDamage(caster, target, cast.Use.Damage, hitBonus);
 
             if (effect == null)
                 return;
@@ -458,7 +489,8 @@ namespace SWLOR.CombatSim.Engine
                 case EffectKind.PartyHealOverTime:
                     if (effect.TickSeconds <= 0)
                     {
-                        PulseParty(caster, effect, cast.Use.MaxTargets);
+                        // An immediate pulse (Purifying Wave) is an instant ability heal.
+                        PulseParty(caster, effect, cast.Use.MaxTargets, HealKind.InstantAbility);
                         break;
                     }
 
@@ -472,12 +504,21 @@ namespace SWLOR.CombatSim.Engine
                     break;
 
                 case EffectKind.TemporaryHp:
+                {
+                    // Rousing Shout's rescue is judged on the HP the target had before the shield.
+                    var hpPercentBeforeShield = target.HpPercent;
                     GrantTemporaryHp(caster, target, effect);
+                    ApplyDamageReduction(caster, target, effect, hpPercentBeforeShield);
                     break;
+                }
 
                 case EffectKind.PartyTemporaryHp:
                     foreach (var ally in PartyTargets(caster, cast.Use.MaxTargets))
+                    {
+                        var hpPercentBeforeShield = ally.HpPercent;
                         GrantTemporaryHp(caster, ally, effect);
+                        ApplyDamageReduction(caster, ally, effect, hpPercentBeforeShield);
+                    }
                     break;
 
                 case EffectKind.Revive:
@@ -494,6 +535,7 @@ namespace SWLOR.CombatSim.Engine
             caster.ConvergenceUntil = _now + _rules.ConvergenceDurationSeconds;
             caster.ConvergenceNextTickAt = _now + ConvergenceTickSeconds;
             caster.ConvergenceReadyAt = _now + ConvergenceCooldownSeconds;
+            caster.ConvergenceAccuracyUntil = _now + ConvergenceAccuracySeconds;
         }
 
         private Combatant ResolveTarget(Combatant caster, AbilityUseSpec use, AbilityEffect effect)
@@ -508,9 +550,11 @@ namespace SWLOR.CombatSim.Engine
                 case AbilityTarget.NamedAlly:
                     return Allies(caster).FirstOrDefault(a => a.Name == use.TargetName);
                 case AbilityTarget.DeadAlly:
+                    // A body the rules allow reviving comes first, so one locked-out body doesn't block the rest.
                     return _combatants
                         .Where(c => c.IsDead && c.TeamIndex == caster.TeamIndex)
-                        .OrderBy(c => c.DiedAt)
+                        .OrderBy(c => CanRevive(caster, c) ? 0 : 1)
+                        .ThenBy(c => c.DiedAt)
                         .FirstOrDefault();
                 default:
                     return EnsureAttackTarget(caster);
@@ -601,29 +645,29 @@ namespace SWLOR.CombatSim.Engine
             }
         }
 
-        private void ApplyAbilityDamage(Combatant attacker, Combatant target, DamageSpec damage)
+        private void ApplyAbilityDamage(Combatant attacker, Combatant target, DamageSpec damage, float hitBonus)
         {
             var targets = damage.Area ? Enemies(attacker).ToList() : new List<Combatant> { target };
             foreach (var victim in targets)
             {
-                for (var hit = 0; hit < Math.Max(1, damage.Hits); hit++)
-                    RollAndApply(attacker, victim, damage);
+                for (var hit = 0; hit < damage.Hits; hit++)
+                    RollAndApply(attacker, victim, damage, hitBonus);
             }
         }
 
-        private void RollAndApply(Combatant attacker, Combatant target, DamageSpec damage)
+        private void RollAndApply(Combatant attacker, Combatant target, DamageSpec damage, float hitBonus = 0f)
         {
-            if (target.IsDead || _random.NextDouble() >= damage.GetHitChance(target.Name))
+            if (target.IsDead || _random.NextDouble() >= Math.Min(1f, damage.GetHitChance(target.Name) + hitBonus))
                 return;
 
             var amount = damage.Min + _random.NextDouble() * Math.Max(0, damage.Max - damage.Min);
             if (damage.CritChance > 0 && _random.NextDouble() < damage.CritChance)
                 amount *= damage.CritMultiplier;
 
-            ApplyDamage(attacker, target, amount);
+            ApplyDamage(attacker, target, amount, damage.Type);
         }
 
-        public void ApplyDamage(Combatant attacker, Combatant target, double amount)
+        public void ApplyDamage(Combatant attacker, Combatant target, double amount, DamageType type = DamageType.Physical)
         {
             if (target.IsDead || amount <= 0)
                 return;
@@ -636,6 +680,11 @@ namespace SWLOR.CombatSim.Engine
             }
 
             amount *= 1 - target.Spec.DamageReductionPercent / 100f;
+            foreach (var reduction in target.DamageReductions.Values)
+            {
+                if (reduction.ExpiresAt > _now && reduction.Applies(type))
+                    amount *= 1 - reduction.Percent / 100.0;
+            }
 
             foreach (var pool in target.TemporaryHp.OrderBy(p => p.ExpiresAt))
             {
@@ -732,6 +781,26 @@ namespace SWLOR.CombatSim.Engine
             _ => throw new InvalidDataException($"The simulator does not model {ability}, which '{combatant.Name}' needs for a perk.")
         };
 
+        /// <summary>The timed damage-taken cut an effect carries, such as Pain Suppressant's; recasting replaces it.</summary>
+        private void ApplyDamageReduction(Combatant source, Combatant target, AbilityEffect effect, float targetHpPercent)
+        {
+            if (effect.DamageReductionPercent <= 0 || target.IsDead)
+                return;
+            if (effect.DamageReductionBelowHpPercent > 0 && targetHpPercent > effect.DamageReductionBelowHpPercent)
+                return;
+
+            var percent = effect.DamageReductionMaximumPercent > effect.DamageReductionPercent
+                ? HealingMath.SocialScaledPercent(effect.DamageReductionPercent, effect.DamageReductionMaximumPercent, source.Spec.Social)
+                : effect.DamageReductionPercent;
+            var seconds = effect.DamageReductionSeconds > 0 ? effect.DamageReductionSeconds : effect.DurationSeconds;
+            target.DamageReductions[effect.Key] = new DamageReductionInstance
+            {
+                Percent = percent,
+                Scope = effect.DamageReductionScope,
+                ExpiresAt = _now + seconds
+            };
+        }
+
         private void GrantTemporaryHp(Combatant source, Combatant target, AbilityEffect effect)
         {
             if (target.IsDead)
@@ -797,6 +866,7 @@ namespace SWLOR.CombatSim.Engine
             target.Hp = 0;
             target.Casting = null;
             target.TemporaryHp.Clear();
+            target.DamageReductions.Clear();
             target.HealsOverTime.Clear();
             foreach (var key in target.PartyPulses.Where(p => !p.Value.Effect.ContinuesAfterCasterDeath).Select(p => p.Key).ToList())
                 target.PartyPulses.Remove(key);

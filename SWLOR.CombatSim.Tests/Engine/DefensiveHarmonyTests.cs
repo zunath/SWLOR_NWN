@@ -125,6 +125,31 @@ namespace SWLOR.CombatSim.Tests.Engine
             tank.Stats.StmRefunded.Should().BeGreaterThan(0);
         }
 
+        [Test]
+        public void Tuned_PurifyingWaveCountsAsAnInstantHeal()
+        {
+            var wave = TestCombatants.Use("PurifyingWave1", AbilityTarget.Enemy);
+            wave.Damage = new DamageSpec { Min = 1, Max = 1 };
+            var tank = new CombatantSpec
+            {
+                Name = "Tank",
+                MaxHp = TestCombatants.EffectivelyUnlimited,
+                Might = 30,
+                MaxStm = TestCombatants.EffectivelyUnlimited,
+                Perks = new List<string> { nameof(PerkType.DefensiveHarmony) }
+            };
+            var simulation = TestScenarios.Spawn(
+                TestScenarios.TwoTeams(false, new[] { tank, TestCombatants.Medic("Healer", wave) }, new[] { TestCombatants.Dummy("Enemy", true) }),
+                RuleSets.Tuned(),
+                _catalog);
+
+            simulation.Get("Tank").Stm = StartingStamina;
+            RunKeepingTankWounded(simulation, simulation.Get("Tank"), 600);
+
+            simulation.Get("Healer").Stats.AbilitiesUsed.Should().BeGreaterThan(10);
+            simulation.Get("Tank").Stats.StmRefunded.Should().BeGreaterThan(0, "the wave heals on impact, like any instant ability heal");
+        }
+
         private (Simulation Simulation, Combatant Tank, Combatant Healer) SpawnTank(RuleSet rules, bool withPerk = true)
         {
             var tank = new CombatantSpec

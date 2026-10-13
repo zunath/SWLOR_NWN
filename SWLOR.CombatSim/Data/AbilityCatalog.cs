@@ -88,6 +88,7 @@ namespace SWLOR.CombatSim.Data
                 RecastSeconds = recast ?? 0f,
                 CastSeconds = cast ?? 0f,
                 UnreadableTiming = unreadable.Length > 0 ? unreadable : null,
+                SkillType = detail.SkillType,
                 IsHostile = detail.IsHostileAbility,
                 IsHealing = detail.IsHealingAbility,
                 ForceAffinity = perk?.ForceAffinityType?.ToString() ?? string.Empty

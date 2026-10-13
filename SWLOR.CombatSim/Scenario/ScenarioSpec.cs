@@ -16,7 +16,17 @@ namespace SWLOR.CombatSim.Scenario
 
         public static ScenarioSpec Load(string path)
         {
-            var scenario = JsonConvert.DeserializeObject<ScenarioSpec>(File.ReadAllText(path));
+            ScenarioSpec scenario;
+            try
+            {
+                // Unknown names fail, so a misspelled setting can't silently keep its default.
+                scenario = JsonConvert.DeserializeObject<ScenarioSpec>(File.ReadAllText(path), new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
+            }
+            catch (JsonSerializationException ex)
+            {
+                throw new InvalidDataException($"Scenario '{path}': {ex.Message}", ex);
+            }
+
             if (scenario?.Teams == null || scenario.Teams.Count < 2)
                 throw new InvalidDataException($"Scenario '{path}' needs at least two teams.");
 

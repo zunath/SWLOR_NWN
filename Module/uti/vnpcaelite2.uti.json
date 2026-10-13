@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A formal arrangement of substantial plates gives this Sith honor guard armor its imposing shape. The finish asks to be noticed, but its well-used fastenings suggest that standing ceremonially still is only part of the appointment."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A formal arrangement of substantial plates gives this Sith honor guard armor its imposing shape. The finish asks to be noticed, but its well-used fastenings suggest that standing ceremonially still is only part of the appointment."
     }
   },
   "Identified": {

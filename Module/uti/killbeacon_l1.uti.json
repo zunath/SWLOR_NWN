@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The brow of this cowl has been trimmed to sit beneath a targeting headset. Its old seams show where the wearer made small adjustments and then made them again."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The brow of this cowl has been trimmed to sit beneath a targeting headset. Its old seams show where the wearer made small adjustments and then made them again."
     }
   },
   "Identified": {

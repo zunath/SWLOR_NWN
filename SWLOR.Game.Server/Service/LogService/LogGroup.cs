@@ -48,6 +48,8 @@ namespace SWLOR.Game.Server.Service.LogService
         QuestContract,
         [LogGroup("EngineTest", ServerEnvironmentType.Development | ServerEnvironmentType.Test)]
         EngineTest,
+        [LogGroup("RoleplayXP", ServerEnvironmentType.All)]
+        RoleplayXP,
         [LogGroup("Performance", ServerEnvironmentType.All)]
         Performance
     }

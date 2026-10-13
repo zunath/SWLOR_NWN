@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The light, easy folds of this tunic recall shade reached after a long walk in the heat. Its tailoring leaves room to move without allowing the cloth to collect in an untidy burden."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The light, easy folds of this tunic recall shade reached after a long walk in the heat. Its tailoring leaves room to move without allowing the cloth to collect in an untidy burden."
+    }
   },
   "Identified": {
     "type": "byte",

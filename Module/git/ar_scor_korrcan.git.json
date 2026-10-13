@@ -447,12 +447,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "These Sith robes leave the wrists free beneath severe outer folds. Their shortened, workmanlike construction belongs closer to a training floor than a ceremonial dais, where movement would be somebody else's responsibility."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "These Sith robes leave the wrists free beneath severe outer folds. Their shortened, workmanlike construction belongs closer to a training floor than a ceremonial dais, where movement would be somebody else's responsibility."
                 }
               },
               "Identified": {
@@ -2064,11 +2066,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -3075,11 +3081,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light layers and securely worked seams make this dancer's outfit more practical than it first appears. Under performance lights, the careful construction disappears and leaves the audience to follow the movement."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light layers and securely worked seams make this dancer's outfit more practical than it first appears. Under performance lights, the careful construction disappears and leaves the audience to follow the movement."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -4079,11 +4089,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "The flowing panels of this stage outfit have been balanced around a close-fitting foundation. It is made to catch the light during a turn without asking the dancer to keep track of every loose fold."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "The flowing panels of this stage outfit have been balanced around a close-fitting foundation. It is made to catch the light during a turn without asking the dancer to keep track of every loose fold."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -5083,11 +5097,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This musician's outfit catches the light without leaving much cloth free to interfere with the performance. Its pockets and fastening ties remain practical, familiar necessities concealed beneath the part an audience pays to see."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "This musician's outfit catches the light without leaving much cloth free to interfere with the performance. Its pockets and fastening ties remain practical, familiar necessities concealed beneath the part an audience pays to see."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -6098,11 +6116,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A long formal dress whose interest lies in the arrangement of its panels and bindings. The folds settle into an orderly line, giving even the simple act of crossing a room something of a practiced entrance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A long formal dress whose interest lies in the arrangement of its panels and bindings. The folds settle into an orderly line, giving even the simple act of crossing a room something of a practiced entrance."
+                }
               },
               "Identified": {
                 "type": "byte",

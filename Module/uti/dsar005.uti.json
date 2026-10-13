@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This droid shell is built around the demands of a smithing bench, with readily reached service fittings beneath its hard outer panels. Every accessible edge has been patiently finished, bringing even routine maintenance to the standard of the completed shell."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This droid shell is built around the demands of a smithing bench, with readily reached service fittings beneath its hard outer panels. Every accessible edge has been patiently finished, bringing even routine maintenance to the standard of the completed shell."
     }
   },
   "Identified": {

@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A long formal dress whose interest lies in the arrangement of its panels and bindings. The folds settle into an orderly line, giving even the simple act of crossing a room something of a practiced entrance."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A long formal dress whose interest lies in the arrangement of its panels and bindings. The folds settle into an orderly line, giving even the simple act of crossing a room something of a practiced entrance."
+    }
   },
   "Identified": {
     "type": "byte",

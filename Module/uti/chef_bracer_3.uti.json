@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Smooth silk has been worked around the edge of this carefully fitted bracer. The neat finish suits a formal kitchen, where the presentation of the meal begins well before a guest sees a plate."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Smooth silk has been worked around the edge of this carefully fitted bracer. The neat finish suits a formal kitchen, where the presentation of the meal begins well before a guest sees a plate."
+    }
   },
   "Identified": {
     "type": "byte",

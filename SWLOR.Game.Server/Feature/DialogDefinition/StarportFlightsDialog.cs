@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private void BuildTicketedPage(ConversationMenuPage page, uint player, PlanetType terminalPlanet, ShuttleRide ride)
         {
             var destinationName = Planet.GetPlanetByType(ride.Destination).Name;
-            var countdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(ride.Origin, ride.Destination) - DateTime.UtcNow, false);
+            var countdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(ride.Origin, ride.Destination, ride.PlayerId) - DateTime.UtcNow, false);
             var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(GalaxyMap.GetTransitSeconds(ride.Origin, ride.Destination)), false);
 
             page.Header = "Ticketed Flight: " + destinationName + "\n" +

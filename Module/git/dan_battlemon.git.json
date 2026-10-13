@@ -319,12 +319,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A smuggler's outfit cut to pass through a busy port without explaining too much about its owner. The lining has more careful stitching than the outside, particularly around places that an impatient searcher might overlook."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A smuggler's outfit cut to pass through a busy port without explaining too much about its owner. The lining has more careful stitching than the outside, particularly around places that an impatient searcher might overlook."
                 }
               },
               "Identified": {
@@ -1395,11 +1397,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -2406,11 +2412,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -3410,11 +3420,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -4414,11 +4428,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A plain cloth tunic made with the steady economy of a working tailor. The weave is easy to follow, leaving little doubt about where a future repair will need to begin."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A plain cloth tunic made with the steady economy of a working tailor. The weave is easy to follow, leaving little doubt about where a future repair will need to begin."
+                }
               },
               "Identified": {
                 "type": "byte",

@@ -1101,11 +1101,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -2116,11 +2120,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A long formal dress whose interest lies in the arrangement of its panels and bindings. The folds settle into an orderly line, giving even the simple act of crossing a room something of a practiced entrance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A long formal dress whose interest lies in the arrangement of its panels and bindings. The folds settle into an orderly line, giving even the simple act of crossing a room something of a practiced entrance."
+                }
               },
               "Identified": {
                 "type": "byte",

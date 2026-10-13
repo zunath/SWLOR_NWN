@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Heat-darkened plates cover the knuckles of these forge gauntlets. Their leather is deeply creased where generations of the same stubborn grip have taught it how to bend."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Heat-darkened plates cover the knuckles of these forge gauntlets. Their leather is deeply creased where generations of the same stubborn grip have taught it how to bend."
     }
   },
   "Identified": {

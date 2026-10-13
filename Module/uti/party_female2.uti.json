@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Light catches the overlapping layers of this evening outfit as its wearer moves. The tailor has hidden the fastenings neatly enough to let the guest take all the credit for looking composed."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Light catches the overlapping layers of this evening outfit as its wearer moves. The tailor has hidden the fastenings neatly enough to let the guest take all the credit for looking composed."
+    }
   },
   "Identified": {
     "type": "byte",

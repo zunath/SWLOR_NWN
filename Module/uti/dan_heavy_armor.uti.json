@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Layers of roughly worked hide and heavy bindings make up this Dantari protection. The repairs are as much a part of its construction as the original pieces, recording life beyond the colony's comfortable walls."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Layers of roughly worked hide and heavy bindings make up this Dantari protection. The repairs are as much a part of its construction as the original pieces, recording life beyond the colony's comfortable walls."
+    }
   },
   "Identified": {
     "type": "byte",

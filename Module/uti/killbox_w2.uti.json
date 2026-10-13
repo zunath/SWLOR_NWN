@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This harness has been rebalanced more than once, judging by the extra stitch holes around its straps. Someone took the trouble to find out exactly how it sat before trusting it in a proving ground."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This harness has been rebalanced more than once, judging by the extra stitch holes around its straps. Someone took the trouble to find out exactly how it sat before trusting it in a proving ground."
     }
   },
   "Identified": {

@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Alask's battle armor bears adjustments around the shoulder and belt fittings. Its scars have been cleaned without being polished away, preserving the difference between serviceable equipment and an impressive display piece."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Alask's battle armor bears adjustments around the shoulder and belt fittings. Its scars have been cleaned without being polished away, preserving the difference between serviceable equipment and an impressive display piece."
+    }
   },
   "Identified": {
     "type": "byte",

@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
     }
   },
   "Identified": {

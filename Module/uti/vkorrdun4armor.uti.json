@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Stern platework has been fitted around the layered clothing of a Sith temple master. The result carries the authority of an inner chamber without pretending that its occupant expects to remain beyond every challenge."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Stern platework has been fitted around the layered clothing of a Sith temple master. The result carries the authority of an inner chamber without pretending that its occupant expects to remain beyond every challenge."
     }
   },
   "Identified": {

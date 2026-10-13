@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The outer cuffs of these gloves have been dressed carefully around older repairs. They suggest a wearer who would rather keep reliable equipment presentable than trade it for something with no history."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The outer cuffs of these gloves have been dressed carefully around older repairs. They suggest a wearer who would rather keep reliable equipment presentable than trade it for something with no history."
     }
   },
   "Identified": {

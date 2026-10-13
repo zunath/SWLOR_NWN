@@ -339,12 +339,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A rough outfit whose alterations owe more to necessity than fashion. Its owner seems to have taken care of the useful pockets while allowing the rest to acquire whatever reputation the road supplied."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A rough outfit whose alterations owe more to necessity than fashion. Its owner seems to have taken care of the useful pockets while allowing the rest to acquire whatever reputation the road supplied."
                 }
               },
               "Identified": {

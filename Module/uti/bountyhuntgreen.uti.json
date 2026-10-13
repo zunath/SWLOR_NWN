@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Muted green panels break up the outline of this working outfit. A hunter could wear it among brush or in a crowded port without looking as though they had dressed exclusively for either place."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Muted green panels break up the outline of this working outfit. A hunter could wear it among brush or in a crowded port without looking as though they had dressed exclusively for either place."
     }
   },
   "Identified": {

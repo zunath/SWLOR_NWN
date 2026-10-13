@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The knuckles of these gloves are ridged like a beast's half-curled claws. Scratches cross the hide in all directions, making it difficult to tell which were put there by their maker."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The knuckles of these gloves are ridged like a beast's half-curled claws. Scratches cross the hide in all directions, making it difficult to tell which were put there by their maker."
     }
   },
   "Identified": {

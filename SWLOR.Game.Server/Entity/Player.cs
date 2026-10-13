@@ -83,6 +83,7 @@ namespace SWLOR.Game.Server.Entity
             CraftedRecipes = new Dictionary<RecipeType, DateTime>();
             LearnedTechniques = new Dictionary<FeatType, DateTime>();
             EquippedTechniques = new List<FeatType>();
+            MimicryLoadouts = new List<MimicryLoadout>();
             CharacterType = CharacterType.Invalid;
             KeyItems = new Dictionary<KeyItemType, DateTime>();
             Guilds = new Dictionary<GuildType, PlayerGuild>();
@@ -204,6 +205,8 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<RecipeType, DateTime> CraftedRecipes { get; set; }
         public Dictionary<FeatType, DateTime> LearnedTechniques { get; set; }
         public List<FeatType> EquippedTechniques { get; set; }
+        public List<MimicryLoadout> MimicryLoadouts { get; set; }
+        public string ActiveMimicryLoadoutId { get; set; } = string.Empty;
         [JsonConverter(typeof(RelocatedKeyItemsJsonConverter))]
         public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
@@ -234,6 +237,7 @@ namespace SWLOR.Game.Server.Entity
         public ulong TotalRPExpGained { get; set; }
         public ulong SpamMessageCount { get; set; }
         public ulong OOCMessageCount { get; set; }
+        public ulong OOCMessagesSinceLastDistribution { get; set; }
         public DateTime? OOCAllowanceDay { get; set; }
         public int DailyOOCMessageCount { get; set; }
         public int DailyDMPresentOOCMessageCount { get; set; }

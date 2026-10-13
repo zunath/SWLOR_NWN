@@ -15,6 +15,30 @@ SPEC.loader.exec_module(GENERATOR)
 
 
 class GeneratedWeaponTargetingTests(unittest.TestCase):
+    def test_all_generated_weapon_stances_have_permanent_checked_in_definitions(self):
+        rows = [row for row in GENERATOR.read_manifest()
+                if row["Tab"] in GENERATOR.GENERATED_WEAPON_TABS
+                and row["Type"] in {"Stance", "Toggle", "Aura"}]
+        self.assertTrue(rows)
+        _, feats = GENERATOR.parse_enum_values(ROOT / "SWLOR.NWN.API/NWScript/Enum/FeatType.cs")
+        targeting = GENERATOR.read_spell_targeting()
+        status_types = GENERATOR.known_status_effect_types()
+        with tempfile.TemporaryDirectory() as folder:
+            output_root = Path(folder)
+            with (patch.object(GENERATOR, "ROOT", output_root),
+                  patch.object(GENERATOR, "read_spell_targeting", return_value=targeting),
+                  patch.object(GENERATOR, "known_status_effect_types", return_value=status_types)):
+                GENERATOR.generate_ability_definitions(rows, feats, {})
+            for row in rows:
+                base, _ = GENERATOR.base_and_level(row["PerkName"])
+                relative_path = (Path("SWLOR.Game.Server/Feature/AbilityDefinition")
+                                 / GENERATOR.ABILITY_FOLDER_BY_TAB[row["Tab"]]
+                                 / (GENERATOR.pascal(base) + "AbilityDefinition.cs"))
+                for path in (output_root / relative_path, ROOT / relative_path):
+                    with self.subTest(perk=row["PerkName"], path=path):
+                        self.assertRegex(path.read_text(),
+                                         r"SkillType\.\w+,\s+\d+,\s+0,\s+typeof\(\w+StatusEffect\)")
+
     def test_shadowflow_persists_while_its_triggered_hamstring_lasts_18_seconds(self):
         row = next(row for row in GENERATOR.read_manifest()
                    if row["PerkName"] == "Shadowflow Stance")

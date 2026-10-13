@@ -202,6 +202,23 @@ class RetainedCleanupTests(unittest.TestCase):
             offline_client._retained_processes.pop(pid,None)
             if owned.exists():profile.cleanup(owned)
 
+    def test_failed_container_deletion_remains_retryable_until_success(self):
+        name='swlor-review-unit-cleanup'
+        userenv=Mock()
+        userenv.DeleteAppContainerProfile.side_effect=[-2147024891,-2147024891,0]
+        try:
+            with self.assertRaises(OSError):
+                offline_client._release_appcontainer_profile(userenv,name)
+            self.assertIn(name,offline_client._retained_containers)
+            with self.assertRaises(ExceptionGroup):
+                offline_client.retry_retained_processes()
+            self.assertIn(name,offline_client._retained_containers)
+            offline_client.retry_retained_processes()
+            self.assertNotIn(name,offline_client._retained_containers)
+            self.assertEqual(userenv.DeleteAppContainerProfile.call_count,3)
+        finally:
+            offline_client._retained_containers.pop(name,None)
+
     @unittest.skipUnless(sys.platform=='win32','Native ABI requires Windows')
     def test_resume_failure_is_unsigned_and_reported(self):
         callback=ctypes.WINFUNCTYPE(ctypes.wintypes.DWORD,ctypes.wintypes.HANDLE)(lambda _:0xffffffff)
@@ -265,7 +282,70 @@ class NativeFixtureTests(unittest.TestCase):
             self.assertEqual(found[(b'geometry',2002)],b'model payload')
 
 
+@unittest.skipUnless(sys.platform=='win32','CLI requires Windows')
+class CliInputTests(unittest.TestCase):
+    def test_requested_missing_empty_or_file_hak_directory_fails_before_allocation(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary)
+            empty=root/'empty';empty.mkdir()
+            file=root/'file';file.write_bytes(b'not a directory')
+            for hak_dir in (root/'missing',empty,file):
+                with self.subTest(hak_dir=hak_dir), \
+                        patch('nwn_visual_check.profile.create_profile') as create, \
+                        patch('nwn_visual_check.offline_client.run') as run:
+                    with self.assertRaises((NotADirectoryError,ValueError)):
+                        main(['--module',str(root/'fixture.mod'),'--hak-dir',str(hak_dir),'--output',str(root/'evidence'),'--capture','READY=close'])
+                    create.assert_not_called()
+                    run.assert_not_called()
+                    self.assertFalse((root/'evidence').exists())
+
+    def test_requested_valid_hak_is_copied_and_recorded_before_launch(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary)
+            haks=root/'haks';haks.mkdir()
+            hak=haks/'current.hak';hak.write_bytes(b'current archive')
+            fixture=root/'fixture.mod';fixture.write_bytes(b'fixture')
+            def probe(*args,**kwargs):
+                self.assertEqual((kwargs['profile']/'hak/current.hak').read_bytes(),hak.read_bytes())
+                raise RuntimeError('Staging inspected')
+            with patch('nwn_visual_check.module.discover_client',return_value=Path('C:/nwmain.exe')), \
+                    patch('nwn_visual_check.offline_client.run',side_effect=probe):
+                with self.assertRaisesRegex(RuntimeError,'Staging inspected'):
+                    main(['--module',str(fixture),'--hak-dir',str(haks),'--output',str(root/'evidence'),'--capture','READY=close'])
+            manifest=json.loads((root/'evidence/manifest.json').read_text())
+            self.assertIn(str(hak.resolve()),manifest['inputs'])
+            self.assertTrue(manifest['profile_removed'])
+            self.assertFalse(Path(manifest['profile']).exists())
+
+
 class EvidenceCleanupTests(unittest.TestCase):
+    @unittest.skipUnless(sys.platform=='win32','CLI requires Windows')
+    def test_cli_final_retry_cleans_retained_profile_before_returning_failure(self):
+        owned=profile.create_profile()
+        kernel=Mock();kernel.WaitForSingleObject.return_value=0;kernel.CloseHandle.return_value=True
+        process=SimpleNamespace(hProcess=113,hThread=114)
+        job=Mock();desktop=Mock();pid=0x7ffffffc
+        def failed_shutdown(*args,**kwargs):
+            offline_client._retained_processes[pid]=(kernel,process,job,desktop,owned)
+            raise RuntimeError('Initial shutdown unconfirmed')
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);fixture=root/'fixture.mod';fixture.write_bytes(b'fixture')
+            try:
+                with patch('nwn_visual_check.module.discover_client',return_value=Path('C:/nwmain.exe')), \
+                        patch('nwn_visual_check.profile.create_profile',return_value=owned), \
+                        patch('nwn_visual_check.offline_client.run',side_effect=failed_shutdown):
+                    with self.assertRaisesRegex(RuntimeError,'Initial shutdown unconfirmed'):
+                        main(['--module',str(fixture),'--output',str(root/'evidence'),'--capture','READY=close'])
+                self.assertNotIn(pid,offline_client._retained_processes)
+                self.assertFalse(owned.exists())
+                self.assertEqual(kernel.CloseHandle.call_count,2)
+                manifest=json.loads((root/'evidence/manifest.json').read_text())
+                self.assertFalse(manifest['success'])
+                self.assertTrue(manifest['profile_removed'])
+            finally:
+                offline_client._retained_processes.pop(pid,None)
+                if owned.exists():profile.cleanup(owned)
+
     @unittest.skipUnless(sys.platform == 'win32', 'CLI requires Windows')
     def test_evidence_write_failure_still_removes_owned_profile(self):
         owned = profile.create_profile()
@@ -376,17 +456,27 @@ class WindowsIsolationTests(unittest.TestCase):
         self.assertIsNone(private_desktop.process_desktop(evidence['pid']))
 
     def test_container_delete_failure_does_not_skip_isolation_evidence(self):
-        delete = offline_client._delete_appcontainer_profile
-        def fail_after_deletion(*args):
-            delete(*args)  # Do not leave a real registered container behind for this injected failure.
-            raise OSError('Simulated container deletion failure')
-        with patch.object(offline_client,'_delete_appcontainer_profile',fail_after_deletion):
-            with self.assertRaises(ExceptionGroup):
-                offline_client.run(self.command("Write-Output 'finished'"),profile=self.owned,cwd=self.owned,timeout=10)
-        evidence=self.evidence()
-        self.assertTrue(evidence['process_exited'])
-        self.assertEqual([error['step'] for error in evidence['cleanup_errors']],['delete AppContainer profile'])
-        self.assertIsNone(private_desktop.process_desktop(evidence['pid']))
+        delete=offline_client._delete_appcontainer_profile
+        calls=[]
+        def fail_once(userenv,name):
+            calls.append(name)
+            if len(calls)==1:
+                raise OSError('Simulated container deletion failure')
+            delete(userenv,name)
+        try:
+            with patch.object(offline_client,'_delete_appcontainer_profile',fail_once):
+                with self.assertRaises(ExceptionGroup):
+                    offline_client.run(self.command("Write-Output 'finished'"),profile=self.owned,cwd=self.owned,timeout=10)
+                evidence=self.evidence()
+                self.assertTrue(evidence['process_exited'])
+                self.assertEqual([error['step'] for error in evidence['cleanup_errors']],['delete AppContainer profile'])
+                self.assertIsNone(private_desktop.process_desktop(evidence['pid']))
+                self.assertIn(evidence['profile_name'],offline_client._retained_containers)
+                offline_client.retry_retained_processes()
+                self.assertNotIn(evidence['profile_name'],offline_client._retained_containers)
+                self.assertEqual(calls,[evidence['profile_name']]*2)
+        finally:
+            offline_client.retry_retained_processes()
 
     def test_partial_acl_grant_failure_is_rolled_back(self):
         run = subprocess.run

@@ -77,7 +77,8 @@ On success or failure, the owned process is stopped and the temporary profile
 and copied archives are removed once process exit is confirmed. If Windows refuses
 all shutdown methods, the launcher retains retryable control handles and the profile;
 `offline_client.retry_retained_processes()` retries those owned handles and removes
-the retained profile once exit is confirmed. The failure is recorded, and cleanup
+the retained profile once exit is confirmed. The CLI makes a final retry during
+teardown, including failed AppContainer deletions. The failure is recorded, and cleanup
 never discards control of a live client. Evidence stays outside the repository for inspection.
 The manifest proves capture and isolation, not visual correctness: inspect every image,
 record observed transforms/approach results, and deliver the labelled report below.

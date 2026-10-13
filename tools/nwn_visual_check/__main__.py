@@ -49,6 +49,13 @@ def main(argv=None):
         raise RuntimeError('Native verification requires Windows 10+ and Python 3.12+')
     if not 0 < args.timeout <= 600:
         raise ValueError('Timeout must be between 0 and 600 seconds')
+    haks=[]
+    if args.hak_dir:
+        if not args.hak_dir.is_dir():
+            raise NotADirectoryError(f'HAK directory does not exist: {args.hak_dir}')
+        haks=sorted(path for path in args.hak_dir.glob('*.hak') if path.is_file())
+        if not haks:
+            raise ValueError(f'HAK directory contains no packed HAKs: {args.hak_dir}')
     from . import offline_client
     from .native_frames import NativeFrames
     from .private_desktop import process_desktop
@@ -63,10 +70,9 @@ def main(argv=None):
     manifest = {'success':False,'client':str(client),'profile':str(owned),'captures':{},'inputs':{},'profile_removed':False}
     run_error = None
     try:
-        if args.hak_dir:
-            for hak in sorted(args.hak_dir.glob('*.hak')):
-                profile.copy_input(hak,owned / 'hak' / hak.name)
-                manifest['inputs'][str(hak.resolve())] = digest(owned / 'hak' / hak.name)
+        for hak in haks:
+            profile.copy_input(hak,owned / 'hak' / hak.name)
+            manifest['inputs'][str(hak.resolve())] = digest(owned / 'hak' / hak.name)
         if args.tlk:
             profile.copy_input(args.tlk,owned / 'tlk' / args.tlk.name)
             manifest['inputs'][str(args.tlk.resolve())] = digest(owned / 'tlk' / args.tlk.name)
@@ -122,7 +128,8 @@ def main(argv=None):
             """Do not delete a profile still used by an unconfirmed owned process."""
             if offline_client.has_retained_profile(owned):
                 raise RuntimeError('Owned process control retained; preserve profile for shutdown retry')
-            profile.cleanup(owned)
+            if owned.exists():
+                profile.cleanup(owned)
             manifest['profile_removed']=True
 
         if state['frames']:
@@ -130,6 +137,7 @@ def main(argv=None):
         finish('evidence_failure',lambda: (output/'client.log').write_text(profile.log_text(owned),encoding='utf8'))
         if (owned/'isolation.json').exists():
             finish('isolation_copy_failure',lambda: profile.copy_input(owned/'isolation.json',output/'isolation.json'))
+        finish('shutdown_retry_failure',offline_client.retry_retained_processes)
         finish('cleanup_failure',remove_profile)
         finish('manifest_failure',lambda: (output/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf8'))
         if final_errors:

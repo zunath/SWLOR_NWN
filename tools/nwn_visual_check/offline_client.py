@@ -18,6 +18,7 @@ from .private_desktop import PrivateDesktop
 from .process_job import ProcessJob
 
 _retained_processes = {}
+_retained_containers = {}
 
 class STARTUPINFO(ctypes.Structure):
     _fields_ = [("cb",w.DWORD),("lpReserved",w.LPWSTR),("lpDesktop",w.LPWSTR),("lpTitle",w.LPWSTR),
@@ -46,6 +47,16 @@ def _delete_appcontainer_profile(userenv, name):
         raise OSError(f'DeleteAppContainerProfile: {result:#x}')
 
 
+def _release_appcontainer_profile(userenv, name):
+    """Keep the container name and API owner until deletion succeeds."""
+    try:
+        _delete_appcontainer_profile(userenv,name)
+    except BaseException:
+        _retained_containers[name]=userenv
+        raise
+    _retained_containers.pop(name,None)
+
+
 def _terminate_process(kernel, handle):
     """Return whether the direct termination request was accepted."""
     return bool(kernel.TerminateProcess(handle,1))
@@ -65,7 +76,7 @@ def has_retained_profile(profile):
 
 
 def retry_retained_processes():
-    """Retry shutdown with retained handles if Windows previously refused exit."""
+    """Retry retained process/profile cleanup and failed container deletions."""
     errors=[]
     for pid,(kernel,process,job,desktop,profile) in list(_retained_processes.items()):
         try:
@@ -89,8 +100,13 @@ def retry_retained_processes():
             del _retained_processes[pid]
         except BaseException as error:
             errors.append(error)
+    for name,userenv in list(_retained_containers.items()):
+        try:
+            _release_appcontainer_profile(userenv,name)
+        except BaseException as error:
+            errors.append(error)
     if errors:
-        raise BaseExceptionGroup('Retained owned processes still need cleanup',errors)
+        raise BaseExceptionGroup('Retained native resources still need cleanup',errors)
 
 
 def run(command, *, profile, cwd, timeout, on_start=None, until=None):
@@ -269,7 +285,7 @@ def run(command, *, profile, cwd, timeout, on_start=None, until=None):
         if sid_text:
             clean('free SID text', lambda: kernel.LocalFree(ctypes.cast(sid_text,w.LPVOID)))
         clean('free SID', lambda: advapi.FreeSid(sid))
-        clean('delete AppContainer profile', lambda: _delete_appcontainer_profile(userenv,name))
+        clean('delete AppContainer profile', lambda: _release_appcontainer_profile(userenv,name))
         clean('write isolation evidence', lambda: (profile/'isolation.json').write_text(
             json.dumps(evidence,indent=2)+'\n'))
         if cleanup_errors:

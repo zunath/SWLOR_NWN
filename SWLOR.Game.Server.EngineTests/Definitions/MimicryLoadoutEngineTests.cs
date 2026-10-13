@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -32,34 +33,59 @@ public static class MimicryLoadoutEngineTests
     public static async Task DefaultMigration(EngineTestContext ctx)
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+        var player = fixture.Creature;
         Prepare(fixture);
-        var legacy = JObject.FromObject(DB.Get<Player>(fixture.Id));
-        legacy.Remove(nameof(Player.MimicryLoadouts));
-        legacy.Remove(nameof(Player.ActiveMimicryLoadoutId));
-        legacy[nameof(Player.EquippedTechniques)] = JArray.FromObject(new[] { Rush, Trait });
-        DB.Set(legacy.ToObject<Player>());
+        // Records saved before saved builds existed deserialize without either field.
+        var legacy = ReadPersisted(fixture.Id);
+        legacy.MimicryLoadouts = null;
+        legacy.ActiveMimicryLoadoutId = null;
+        legacy.EquippedTechniques = new List<FeatType> { Rush, Trait };
+        DB.Set(legacy);
+        CreaturePlugin.AddFeat(player, Rush);
+        PlayerPlugin.SetQuickBarSlot(player, 17, PlayerQuickBarSlot.UseFeat(Rush));
+
         var migration = new _29_CreateDefaultMimicryLoadouts();
         migration.Migrate();
-        await ctx.WaitFrameAsync();
-        var record = DB.Get<Player>(fixture.Id);
+        var record = ReadPersisted(fixture.Id);
         var migrated = record.MimicryLoadouts.Single();
         ctx.AssertEqual("Default", migrated.Name, "the legacy build receives the standard name");
         ctx.AssertEqual(migrated.Id, record.ActiveMimicryLoadoutId, "the migrated build is active");
         AssertSet(ctx, new[] { Rush, Trait }, migrated.Techniques, "migration preserves equipped techniques");
         migration.Migrate();
-        record = DB.Get<Player>(fixture.Id);
+        record = ReadPersisted(fixture.Id);
         ctx.AssertEqual(1, record.MimicryLoadouts.Count, "migration retry does not duplicate Default");
-        record.EquippedTechniques.Clear();
-        AssertSet(ctx, new[] { Rush, Trait }, migrated.Techniques, "Default is an independent snapshot");
-        record.EquippedTechniques.AddRange(new[] { Rush, Trait });
-        CreaturePlugin.AddFeat(fixture.Creature, Rush);
-        PlayerPlugin.SetQuickBarSlot(fixture.Creature, 17, PlayerQuickBarSlot.UseFeat(Rush));
+        ctx.AssertEqual(migrated.Id, record.MimicryLoadouts[0].Id, "migration retry keeps the original Default");
+
+        new _21_CaptureMimicryDefaultHotbar().Migrate(player);
+        ctx.Assert(ReadPersisted(fixture.Id).MimicryLoadouts[0].HotbarSlots.TryGetValue(17, out var captured) && captured == Rush,
+            "first login records the migrated build's quickbar positions");
+
+        // A Combat Analyzer refund clears technique shortcuts before any build switch.
+        Mimicry.UnequipAllTechniques(player);
+        ctx.Assert(!IsFeat(player, 17, Rush), "refund removes the technique shortcut");
+        record = ReadPersisted(fixture.Id);
+        ctx.AssertEqual(0, record.EquippedTechniques.Count, "refund unequips every technique");
+        AssertSet(ctx, new[] { Rush, Trait }, record.MimicryLoadouts[0].Techniques, "refund does not rewrite the saved Default");
         MimicryLoadouts.Save(record, null, "Other", new[] { Wave, Trait }, out var other, out _);
         DB.Set(record);
-        Apply(ctx, fixture.Creature, other.Id, Wave, Trait);
-        Apply(ctx, fixture.Creature, migrated.Id, Rush, Trait);
-        AssertSlot(ctx, fixture.Creature, 17, Rush);
-        ctx.SetResultDetail("Legacy JSON without loadout fields; Default name, active ID, Redis reload, retry, snapshot independence and original quickbar restoration verified.");
+
+        for (var cycle = 1; cycle <= 2; cycle++)
+        {
+            Apply(ctx, player, other.Id, Wave, Trait);
+            record = ReadPersisted(fixture.Id);
+            AssertSet(ctx, new[] { Wave, Trait }, record.EquippedTechniques, $"cycle {cycle}: Other is persisted as equipped");
+            ctx.AssertEqual(other.Id, record.ActiveMimicryLoadoutId, $"cycle {cycle}: Other is persisted as active");
+            ctx.Assert(GetHasFeat(Wave, player) && !GetHasFeat(Rush, player), $"cycle {cycle}: native feats follow Other");
+
+            Apply(ctx, player, migrated.Id, Rush, Trait);
+            record = ReadPersisted(fixture.Id);
+            AssertSet(ctx, new[] { Rush, Trait }, record.EquippedTechniques, $"cycle {cycle}: Default is persisted as equipped");
+            ctx.AssertEqual(migrated.Id, record.ActiveMimicryLoadoutId, $"cycle {cycle}: Default is persisted as active");
+            ctx.AssertEqual(2, record.MimicryLoadouts.Count, $"cycle {cycle}: no builds are added or lost");
+            ctx.Assert(GetHasFeat(Rush, player) && !GetHasFeat(Wave, player), $"cycle {cycle}: native feats follow Default");
+            AssertSlot(ctx, player, 17, Rush);
+        }
+        ctx.SetResultDetail("Legacy record with no saved builds; Default name, active ID, retry, first-login quickbar capture, refund before switching, and two apply/save/Redis-reload cycles verified.");
     }
 
     [EngineTest("Save, apply, unsaved apply and reopened technique window preserve their separate state", Category = "MimicryLoadouts", TimeoutSeconds = 30f)]
@@ -229,6 +255,10 @@ public static class MimicryLoadoutEngineTests
         DB.Set(record);
         return (first.Id, second.Id);
     }
+
+    // Reads Redis directly; DB.Get returns the cached instance that DB.Set stored.
+    private static Player ReadPersisted(string id)
+        => JsonConvert.DeserializeObject<Player>(DB.GetRawJson<Player>(id));
 
     private static void Apply(EngineTestContext ctx, uint player, string id, params FeatType[] feats)
         => ctx.Assert(Mimicry.ApplyLoadout(player, id, feats, out var error), $"apply succeeds: {error}");

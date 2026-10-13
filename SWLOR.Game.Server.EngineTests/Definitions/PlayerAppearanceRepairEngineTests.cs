@@ -46,9 +46,20 @@ public static class PlayerAppearanceRepairEngineTests
         fixed (byte* label = Encoding.ASCII.GetBytes("IsPC\0"))
             file.WriteFieldBYTE(root, 1, label);
 
-        using var loaded = new CNWSCreature(OBJECT_INVALID, 1, 1);
+        using var loaded = new CNWSCreature(OBJECT_INVALID, 0, 1);
         ctx.Assert(loaded.LoadCreature(file, root, 0, 0, 0, 0) != 0, "Reload saved character");
+        // A saved-character object ID is not a live world object. Register a temporary
+        // client as the other player fixtures do so GetIsPC exercises the native path.
+        loaded.SetArea(null);
         loaded.m_bPlayerCharacter = 1;
+        var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+        uint clientId = 0x7fff0000u;
+        while (server.GetClientObjectByPlayerId(clientId) is { } existing && existing.Pointer != System.IntPtr.Zero)
+            clientId++;
+        using var client = new CNWSPlayer(clientId);
+        client.SetGameObject(server.GetGameObject(loaded.m_idSelf).AsNWSObject());
+        client.m_oidPCObject = loaded.m_idSelf;
+        server.GetPlayerList().Add(client);
         try
         {
             var player = loaded.m_idSelf;
@@ -83,6 +94,8 @@ public static class PlayerAppearanceRepairEngineTests
         }
         finally
         {
+            server.GetPlayerList().Remove(client);
+            client.m_oidPCObject = OBJECT_INVALID;
             loaded.m_bPlayerCharacter = 0;
         }
     }

@@ -4777,7 +4777,8 @@ namespace SWLOR.Game.Server.Service
             int damage,
             bool isAbilityDamage)
         {
-            if (damage <= 0 || !GetIsObjectValid(attacker) || !GetIsObjectValid(defender) || attacker == defender)
+            // Ability hits neither build nor break the auto-attack chain; only auto-attacks count.
+            if (damage <= 0 || isAbilityDamage || !GetIsObjectValid(attacker) || !GetIsObjectValid(defender) || attacker == defender)
                 return damage;
 
             var bonusPerHit = Stat.GetStatAdjustment(attacker, StatType.MeleeRepeatedTargetDamageBonusPerHit);
@@ -4785,8 +4786,7 @@ namespace SWLOR.Game.Server.Service
             var statusEffectIcon = GetEffectIconTypeFromStat(Stat.GetStatAdjustment(
                 attacker,
                 StatType.MeleeRepeatedTargetDamageStatusEffectIcon));
-            if (isAbilityDamage ||
-                !IsWeaponSkillType(skillType) ||
+            if (!IsWeaponSkillType(skillType) ||
                 bonusPerHit <= 0 ||
                 maxBonus <= 0)
             {

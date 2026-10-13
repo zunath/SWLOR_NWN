@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(stamina, Stat.GetCurrentStamina(caster), "a refused revive spends no STM");
 
                 ChangeToStandardFaction(caster, StandardFaction.Defender);
+                ChangeToStandardFaction(body, StandardFaction.Defender);
                 ctx.Assert(!GetIsReactionTypeHostile(player.Creature, caster), "the player is no longer hostile to the caster");
                 (activated, denial) = await TryReviveAsync(ctx, caster, body);
                 ctx.Assert(activated, $"the revive works once the nearby player is not hostile: {denial}");

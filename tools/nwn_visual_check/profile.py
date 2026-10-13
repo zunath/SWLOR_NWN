@@ -96,8 +96,8 @@ def validate_profile(profile, command, timeout):
 
 def create_profile():
     profile = Path(tempfile.mkdtemp(prefix='swlor-nwn-')).resolve()
-    (profile / MARKER).write_text(json.dumps({'profile':str(profile), 'token':uuid.uuid4().hex}))
     try:
+        (profile / MARKER).write_text(json.dumps({'profile':str(profile), 'token':uuid.uuid4().hex}))
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as probe:
             probe.bind(('0.0.0.0', 0))
             port = probe.getsockname()[1]
@@ -107,8 +107,14 @@ def create_profile():
         for folder in ('modules','hak','tlk'):
             (profile / folder).mkdir()
         return profile
-    except BaseException:
-        cleanup(profile)
+    except BaseException as error:
+        # This is the exact directory freshly allocated above; marker validation
+        # cannot be required when creating that marker is what failed.
+        try:
+            reject_links(profile)
+            shutil.rmtree(profile)
+        except BaseException as cleanup_error:
+            raise BaseExceptionGroup('Profile creation and cleanup failed', [error,cleanup_error])
         raise
 
 

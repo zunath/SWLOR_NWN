@@ -131,6 +131,30 @@ class ProfileBoundaryTests(unittest.TestCase):
         self.assertEqual(parse_captures(['READY=close']),{'READY':'close'})
 
 
+class ProfileCreationTests(unittest.TestCase):
+    def test_missing_or_partial_marker_write_cleans_fresh_directory(self):
+        mkdtemp = tempfile.mkdtemp
+        write_text = Path.write_text
+        for partial in (False, True):
+            with self.subTest(partial=partial):
+                created = []
+                def allocate(*args, **kwargs):
+                    result = mkdtemp(*args, **kwargs)
+                    created.append(Path(result))
+                    return result
+                def fail_marker(path, *args, **kwargs):
+                    if path.name == profile.MARKER:
+                        if partial:
+                            write_text(path, '{partial')
+                        raise OSError('Marker storage failed')
+                    return write_text(path, *args, **kwargs)
+                with patch.object(profile.tempfile,'mkdtemp',allocate),patch.object(Path,'write_text',fail_marker):
+                    with self.assertRaisesRegex(OSError,'Marker storage failed'):
+                        profile.create_profile()
+                self.assertEqual(len(created),1)
+                self.assertFalse(created[0].exists())
+
+
 class EvidenceCleanupTests(unittest.TestCase):
     @unittest.skipUnless(sys.platform == 'win32', 'CLI requires Windows')
     def test_evidence_write_failure_still_removes_owned_profile(self):
@@ -184,6 +208,58 @@ class WindowsIsolationTests(unittest.TestCase):
             offline_client.run(self.command('Start-Sleep -Seconds 20'),profile=self.owned,cwd=self.owned,timeout=1)
         self.assertTrue(self.evidence()['timed_out'])
         self.assertTrue(self.evidence()['process_exited'])
+
+    def test_acl_failure_preserves_original_error_and_still_deletes_container_and_writes_evidence(self):
+        run = subprocess.run
+        def fail_revocation(command, *args, **kwargs):
+            result = run(command,*args,**kwargs)
+            if '/remove:g' in command:
+                raise subprocess.CalledProcessError(1,command,stderr=b'Simulated revoke failure')
+            return result
+        def failed_capture(_):
+            raise RuntimeError('Capture failed')
+        with patch.object(offline_client.subprocess,'run',fail_revocation), \
+                patch.object(offline_client,'_delete_appcontainer_profile',wraps=offline_client._delete_appcontainer_profile) as delete:
+            with self.assertRaises(ExceptionGroup) as raised:
+                offline_client.run(self.command('Start-Sleep -Seconds 20'),profile=self.owned,cwd=self.owned,timeout=5,on_start=failed_capture)
+        delete.assert_called_once()
+        self.assertTrue(any(isinstance(error,RuntimeError) and str(error)=='Capture failed' for error in raised.exception.exceptions))
+        self.assertTrue(any(isinstance(error,subprocess.CalledProcessError) for error in raised.exception.exceptions))
+        evidence=self.evidence()
+        self.assertTrue(evidence['process_exited'])
+        self.assertEqual(evidence['failure'],'Capture failed')
+        self.assertEqual([error['step'] for error in evidence['cleanup_errors']],['revoke profile ACL'])
+        self.assertIsNone(private_desktop.process_desktop(evidence['pid']))
+
+    def test_container_delete_failure_does_not_skip_isolation_evidence(self):
+        delete = offline_client._delete_appcontainer_profile
+        def fail_after_deletion(*args):
+            delete(*args)  # Do not leave a real registered container behind for this injected failure.
+            raise OSError('Simulated container deletion failure')
+        with patch.object(offline_client,'_delete_appcontainer_profile',fail_after_deletion):
+            with self.assertRaises(ExceptionGroup):
+                offline_client.run(self.command("Write-Output 'finished'"),profile=self.owned,cwd=self.owned,timeout=10)
+        evidence=self.evidence()
+        self.assertTrue(evidence['process_exited'])
+        self.assertEqual([error['step'] for error in evidence['cleanup_errors']],['delete AppContainer profile'])
+        self.assertIsNone(private_desktop.process_desktop(evidence['pid']))
+
+    def test_partial_acl_grant_failure_is_rolled_back(self):
+        run = subprocess.run
+        def fail_grant(command, *args, **kwargs):
+            result = run(command,*args,**kwargs)
+            if '/grant' in command:
+                raise subprocess.CalledProcessError(1,command,stderr=b'Simulated partial grant')
+            return result
+        with patch.object(offline_client.subprocess,'run',fail_grant), \
+                patch.object(offline_client,'_delete_appcontainer_profile',wraps=offline_client._delete_appcontainer_profile) as delete:
+            with self.assertRaises(subprocess.CalledProcessError):
+                offline_client.run(self.command("Write-Output 'not started'"),profile=self.owned,cwd=self.owned,timeout=10)
+        delete.assert_called_once()
+        evidence=self.evidence()
+        self.assertNotIn('pid',evidence)
+        permissions=subprocess.run(['icacls',str(self.owned)],check=True,capture_output=True,text=True).stdout
+        self.assertNotIn(evidence['appcontainer_sid'],permissions)
 
     def test_zero_capability_process_cannot_reach_verified_loopback_receiver(self):
         with socket.socket(socket.AF_INET,socket.SOCK_DGRAM) as receiver:

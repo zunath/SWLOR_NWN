@@ -36,6 +36,13 @@ def require_supported():
     if sys.platform != "win32":
         raise RuntimeError("Native client qualification requires Windows AppContainer isolation")
 
+def _delete_appcontainer_profile(userenv, name):
+    """Unregister the temporary container, reporting native deletion failures."""
+    result = userenv.DeleteAppContainerProfile(name)
+    if result:
+        raise OSError(f'DeleteAppContainerProfile: {result:#x}')
+
+
 def run(command, *, profile, cwd, timeout, on_start=None, until=None):
     require_supported()
     profile = Path(profile)
@@ -75,14 +82,15 @@ def run(command, *, profile, cwd, timeout, on_start=None, until=None):
     if hr:raise OSError(f'CreateAppContainerProfile: {hr:#x}')
     sid_text=w.LPWSTR();attributes=None;process=PROCESS_INFORMATION();grant=False;capture_handle=None;input_handle=None;initialized=False;desktop=None
     evidence={'profile_name':name,'capabilities':[],'loopback_exemption':False,'timed_out':False}
+    run_error = None
     try:
         if not advapi.ConvertSidToStringSidW(sid,ctypes.byref(sid_text)):raise ctypes.WinError(ctypes.get_last_error())
         evidence['appcontainer_sid']=sid_text.value
         desktop=PrivateDesktop(sid_text.value)
         evidence.update(private_desktop=desktop.name,desktop_switched=False)
         profile.mkdir(parents=True,exist_ok=True)
+        grant=True  # Recursive grants can partially succeed before icacls reports an error.
         subprocess.run(['icacls',str(profile),'/grant',f'*{sid_text.value}:(OI)(CI)F','/T','/Q'],check=True,capture_output=True)
-        grant=True
         subprocess.run(['icacls',str(profile),'/setintegritylevel','(OI)(CI)L','/T','/Q'],check=True,capture_output=True)
         size=ctypes.c_size_t()
         kernel.InitializeProcThreadAttributeList(None,1,0,ctypes.byref(size))
@@ -141,24 +149,54 @@ def run(command, *, profile, cwd, timeout, on_start=None, until=None):
                 break
         code=w.DWORD();kernel.GetExitCodeProcess(process.hProcess,ctypes.byref(code));evidence['exit_code']=code.value
     except BaseException as error:
+        run_error = error
         evidence['failure']=str(error)
         raise
     finally:
-        if process.hProcess:
+        cleanup_errors = []
+
+        def clean(step, action):
+            """Attempt every release even when an earlier release fails."""
+            try:
+                action()
+            except BaseException as error:
+                cleanup_errors.append(error)
+                evidence.setdefault('cleanup_errors', []).append({'step':step,'error':str(error)})
+
+        def stop_owned_process():
+            """Stop the owned process before releasing its handles and desktop."""
             if kernel.WaitForSingleObject(process.hProcess,0)==258:
-                kernel.TerminateProcess(process.hProcess,1);kernel.WaitForSingleObject(process.hProcess,5000)
+                kernel.TerminateProcess(process.hProcess,1)
+                kernel.WaitForSingleObject(process.hProcess,5000)
             evidence['process_exited'] = kernel.WaitForSingleObject(process.hProcess,0) == 0
-            kernel.CloseHandle(process.hThread);kernel.CloseHandle(process.hProcess)
-        if capture_handle:kernel.CloseHandle(capture_handle)
-        if input_handle:kernel.CloseHandle(input_handle)
-        if initialized:kernel.DeleteProcThreadAttributeList(attributes)
-        if desktop:desktop.close()
-        if grant:subprocess.run(['icacls',str(profile),'/remove:g',f'*{sid_text.value}','/T','/Q'],check=True,capture_output=True)
-        if sid_text:kernel.LocalFree(ctypes.cast(sid_text,w.LPVOID))
-        advapi.FreeSid(sid)
-        hr=userenv.DeleteAppContainerProfile(name)
-        if hr:raise OSError(f'DeleteAppContainerProfile: {hr:#x}')
-        (profile/'isolation.json').write_text(json.dumps(evidence,indent=2)+'\n')
+            if not evidence['process_exited']:
+                raise RuntimeError('Owned client failed to exit')
+
+        if process.hProcess:
+            clean('stop process', stop_owned_process)
+            clean('close thread handle', lambda: kernel.CloseHandle(process.hThread))
+            clean('close process handle', lambda: kernel.CloseHandle(process.hProcess))
+        if capture_handle:
+            clean('close capture handle', lambda: kernel.CloseHandle(capture_handle))
+        if input_handle:
+            clean('close input handle', lambda: kernel.CloseHandle(input_handle))
+        if initialized:
+            clean('delete process attributes', lambda: kernel.DeleteProcThreadAttributeList(attributes))
+        if desktop:
+            clean('close desktop', desktop.close)
+        if grant:
+            clean('revoke profile ACL', lambda: subprocess.run(
+                ['icacls',str(profile),'/remove:g',f'*{sid_text.value}','/T','/Q'],
+                check=True,capture_output=True))
+        if sid_text:
+            clean('free SID text', lambda: kernel.LocalFree(ctypes.cast(sid_text,w.LPVOID)))
+        clean('free SID', lambda: advapi.FreeSid(sid))
+        clean('delete AppContainer profile', lambda: _delete_appcontainer_profile(userenv,name))
+        clean('write isolation evidence', lambda: (profile/'isolation.json').write_text(
+            json.dumps(evidence,indent=2)+'\n'))
+        if cleanup_errors:
+            errors = ([run_error] if run_error is not None else []) + cleanup_errors
+            raise BaseExceptionGroup('Native client run/cleanup failed', errors)
     if evidence.get('pid') and not evidence.get('process_exited'):
         raise RuntimeError('Owned client failed to exit')
     output=(profile/'process-output.log').read_text(encoding='utf-8',errors='replace')

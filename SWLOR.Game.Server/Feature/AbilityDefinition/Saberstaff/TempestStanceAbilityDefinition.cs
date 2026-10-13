@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .HasRecastDelay(RecastGroup.TempestStance, 30.0f),
                 SkillType.Saberstaff,
                 8,
-                0,
+                30,
                 typeof(TempestStanceStatusEffect),
                 null,
                 0,

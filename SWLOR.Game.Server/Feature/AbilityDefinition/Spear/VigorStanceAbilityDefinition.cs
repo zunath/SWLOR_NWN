@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     .HasRecastDelay(RecastGroup.VigorStance, 30.0f),
                 SkillType.Spear,
                 8,
-                0,
+                30,
                 typeof(VigorStanceStatusEffect),
                 null,
                 0,

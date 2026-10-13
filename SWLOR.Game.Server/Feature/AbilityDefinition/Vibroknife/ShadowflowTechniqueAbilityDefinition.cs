@@ -12,7 +12,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 {
-    public class ShadowflowStanceAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class ShadowflowTechniqueAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -22,13 +22,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.ShadowflowStance1, PerkType.ShadowflowStance)
                     .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_ShadowflowStance)
                     .UsesImmediateAuthoredAnimation()
-                    .Name("Shadowflow Stance")
+                    .Name("Shadowflow Technique")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.ShadowflowStance, 30.0f),
                 SkillType.Vibroknife,
                 8,
-                0,
-                typeof(ShadowflowStanceStatusEffect),
+                18,
+                typeof(ShadowflowTechniqueStatusEffect),
                 null,
                 0,
                 0,

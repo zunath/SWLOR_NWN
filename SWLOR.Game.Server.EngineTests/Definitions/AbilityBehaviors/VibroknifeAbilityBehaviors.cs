@@ -133,12 +133,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsRecast = true,
                 },
 
-                // ShadowflowStanceAbilityDefinition - self stance path.
+                // ShadowflowTechniqueAbilityDefinition - self status path.
                 new()
                 {
                     Feat = FeatType.ShadowflowStance1,
                     Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(ShadowflowStanceStatusEffect) },
+                    ExpectedActivatorStatusEffects = new[] { typeof(ShadowflowTechniqueStatusEffect) },
                     ExpectsRecast = true,
                 },
 

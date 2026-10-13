@@ -6,13 +6,13 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class ShadowflowStanceStatusEffect : StatusEffectBase
+    public sealed class ShadowflowTechniqueStatusEffect : StatusEffectBase
     {
-        public override string Name => "Shadowflow Stance";
-        public override EffectIconType Icon => EffectIconType.ShadowflowStanceStatusEffect;
+        public override string Name => "Shadowflow Technique";
+        public override EffectIconType Icon => EffectIconType.ShadowflowTechniqueStatusEffect;
         public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
 
-        public ShadowflowStanceStatusEffect()
+        public ShadowflowTechniqueStatusEffect()
         {
             StatGroup.Stats[StatType.AutoAttackHamstringSkillType] = (int)SkillType.Invalid;
             StatGroup.Stats[StatType.AutoAttackHamstringDurationSeconds] = 18;

@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service
 
             var profile = FrameProfiler.Start();
             SendMessageToPC(sender, buildMessage(sender));
-            var receivers = 1;
+            var receivers = profile != 0 && GetIsPC(sender) ? 1 : 0;
 
             int nth = 1;
             var nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, sender, nth);

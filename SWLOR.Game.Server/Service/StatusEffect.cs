@@ -509,6 +509,11 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType sourceDamageType = CombatDamageType.Invalid,
             Type replacedStatusEffectType = null)
         {
+            // A deferred application is timed when it runs after the swing.
+            if (IsDeferredNativeAttackStatusEffect(statusEffect, creature))
+                return ApplyStatusEffectInternal(statusEffect, source, creature, durationSeconds, isPermanent,
+                    resistanceOverride, sourceDamageType, replacedStatusEffectType);
+
             var profile = FrameProfiler.Start();
             try
             {
@@ -2226,12 +2231,8 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType sourceDamageType,
             Type replacedStatusEffectType)
         {
-            if ((statusEffect is not ILimitedAttackDelayReductionStatusEffect &&
-                 statusEffect is not ILimitedAttackNoDelayStatusEffect) ||
-                !_nativeAttackSwingDepth.ContainsKey(creature))
-            {
+            if (!IsDeferredNativeAttackStatusEffect(statusEffect, creature))
                 return false;
-            }
 
             if (!_deferredNativeAttackStatusEffects.TryGetValue(creature, out var deferredEffects))
             {
@@ -2239,7 +2240,7 @@ namespace SWLOR.Game.Server.Service
                 _deferredNativeAttackStatusEffects[creature] = deferredEffects;
             }
 
-            deferredEffects.Add(() => ApplyStatusEffectInternal(
+            deferredEffects.Add(() => ApplyAndProfileStatusEffect(
                 statusEffect,
                 source,
                 creature,
@@ -2249,6 +2250,13 @@ namespace SWLOR.Game.Server.Service
                 sourceDamageType,
                 replacedStatusEffectType));
             return true;
+        }
+
+        private static bool IsDeferredNativeAttackStatusEffect(IStatusEffect statusEffect, uint creature)
+        {
+            return (statusEffect is ILimitedAttackDelayReductionStatusEffect ||
+                    statusEffect is ILimitedAttackNoDelayStatusEffect) &&
+                   _nativeAttackSwingDepth.ContainsKey(creature);
         }
 
         /// <summary>

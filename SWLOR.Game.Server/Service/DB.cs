@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Service
             var profile = FrameProfiler.Start();
             var result = _multiplexer.GetDatabase().JsonSet(key,
                 json, path: $".{propertyName}", setOption: SetOption.SetOnlyIfExists);
-            FrameProfiler.Stop(FrameMetric.DBOther, profile, json.Length);
+            FrameProfiler.Stop(FrameMetric.DBOther, profile, FrameProfiler.Utf8Bytes(json));
             if (!result.IsSuccess)
                 throw new InvalidOperationException($"Could not update {typeof(T).Name} {id}.{propertyName}.");
             _cachedEntities.Remove(id);
@@ -438,7 +438,7 @@ namespace SWLOR.Game.Server.Service
             _cachedEntities[entity.Id] = entity;
             if (_jsonCachedTypes.Contains(type))
                 RememberJson(key, data);
-            FrameProfiler.Stop(FrameMetric.DBSet, profile, data.Length);
+            FrameProfiler.Stop(FrameMetric.DBSet, profile, FrameProfiler.Utf8Bytes(data));
         }
 
         /// <summary>
@@ -541,7 +541,7 @@ namespace SWLOR.Game.Server.Service
                 var entity = JsonConvert.DeserializeObject<T>(data);
                 FrameProfiler.Stop(FrameMetric.DBDeserialize, deserializeProfile);
                 _cachedEntities[id] = entity;
-                FrameProfiler.Stop(metric, profile, data.Length);
+                FrameProfiler.Stop(metric, profile, FrameProfiler.Utf8Bytes(data));
 
                 return entity;
             }
@@ -559,7 +559,7 @@ namespace SWLOR.Game.Server.Service
             var keyPrefix = _keyPrefixByType[typeof(T)];
             var profile = FrameProfiler.Start();
             RedisValue data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{id}").ToString();
-            FrameProfiler.Stop(FrameMetric.DBOther, profile, data.IsNull ? 0 : ((string)data).Length);
+            FrameProfiler.Stop(FrameMetric.DBOther, profile, FrameProfiler.Utf8Bytes(data));
 
             if (string.IsNullOrWhiteSpace(data))
                 return string.Empty;
@@ -666,7 +666,7 @@ namespace SWLOR.Game.Server.Service
                 var recordId = doc.Id.Remove(0, 6);
                 var profile = FrameProfiler.Start();
                 var json = _multiplexer.GetDatabase().JsonGet(recordId).ToString();
-                FrameProfiler.Stop(FrameMetric.DBSearchDocument, profile, json.Length);
+                FrameProfiler.Stop(FrameMetric.DBSearchDocument, profile, FrameProfiler.Utf8Bytes(json));
                 yield return json;
             }
         }

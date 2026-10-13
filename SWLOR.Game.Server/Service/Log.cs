@@ -115,14 +115,20 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            var profile = FrameProfiler.Start();
             logger.Information(messageTemplate, propertyValues);
+            FrameProfiler.Stop(FrameMetric.LogWrite, profile);
         }
 
         /// <summary>Writes an exception through the configured structured error sink.</summary>
         public static void WriteError(Exception exception, string messageTemplate, params object[] propertyValues)
         {
-            if (_loggers.TryGetValue(LogGroup.Error, out var logger))
-                logger.Error(exception, messageTemplate, propertyValues);
+            if (!_loggers.TryGetValue(LogGroup.Error, out var logger))
+                return;
+
+            var profile = FrameProfiler.Start();
+            logger.Error(exception, messageTemplate, propertyValues);
+            FrameProfiler.Stop(FrameMetric.LogWrite, profile);
         }
     }
 }

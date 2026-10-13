@@ -63,6 +63,17 @@ public class FrameProfilerTests
     }
 
     [Test]
+    public void PayloadSize_CountsUtf8BytesOnlyWhileProfiling()
+    {
+        FrameProfiler.Utf8Bytes("Évrac").Should().Be(0);
+
+        FrameProfiler.BeginCapture();
+
+        FrameProfiler.Utf8Bytes("Évrac").Should().Be(6);
+        FrameProfiler.Utf8Bytes(null).Should().Be(0);
+    }
+
+    [Test]
     public void Percentile_UsesNearestRank()
     {
         var frames = new float[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 100 };

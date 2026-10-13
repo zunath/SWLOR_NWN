@@ -72,6 +72,8 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 CompleteFrame(frame - 1, now);
+                // The profiler's own log writes must not count toward the next frame.
+                now = Stopwatch.GetTimestamp();
             }
 
             _frameStart = now;
@@ -110,6 +112,12 @@ namespace SWLOR.Game.Server.Service
                 _captureNamed[key] = (total.Calls + 1, total.Ticks + elapsed);
             }
         }
+
+        /// <summary>
+        /// UTF-8 size of a payload, computed only while profiling.
+        /// </summary>
+        public static int Utf8Bytes(string text) =>
+            IsEnabled && text != null ? System.Text.Encoding.UTF8.GetByteCount(text) : 0;
 
         public static void Count(FrameMetric metric, long amount = 1)
         {
@@ -185,10 +193,12 @@ namespace SWLOR.Game.Server.Service
         private static void CompleteFrame(ulong frame, long now)
         {
             var milliseconds = (float)FrameCounters.TicksToMilliseconds(now - _frameStart);
+            string slowFrame = null;
+            string summary = null;
 
             if (milliseconds > _slowFrameMilliseconds)
-                Log.Write(LogGroup.Performance, string.Create(CultureInfo.InvariantCulture,
-                    $"Slow frame {frame}: {milliseconds:0.0} ms; {_frame.Describe()}; top handlers: {DescribeHandlers(_handlers, TopHandlerCount)}"));
+                slowFrame = string.Create(CultureInfo.InvariantCulture,
+                    $"Slow frame {frame}: {milliseconds:0.0} ms; {_frame.Describe()}; top handlers: {DescribeHandlers(_handlers, TopHandlerCount)}");
 
             if (_configured)
             {
@@ -197,8 +207,7 @@ namespace SWLOR.Game.Server.Service
                 var windowSeconds = FrameCounters.TicksToMilliseconds(now - _windowStart) / 1000d;
                 if (windowSeconds >= _summarySeconds)
                 {
-                    Log.Write(LogGroup.Performance,
-                        $"Frame summary: {new FrameCaptureSummary(_windowFrames, windowSeconds, _slowFrameMilliseconds, _window)}");
+                    summary = $"Frame summary: {new FrameCaptureSummary(_windowFrames, windowSeconds, _slowFrameMilliseconds, _window)}";
                     _window.Clear();
                     _windowFrames.Clear();
                     _windowStart = now;
@@ -216,6 +225,12 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            if (slowFrame != null)
+                Log.Write(LogGroup.Performance, slowFrame);
+            if (summary != null)
+                Log.Write(LogGroup.Performance, summary);
+
+            // Cleared after the writes above so their LogWrite counts are dropped with the frame.
             _frame.Clear();
             _handlers.Clear();
         }

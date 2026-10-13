@@ -126,6 +126,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 DurationSeconds);
 
             var credited = new HashSet<uint>();
+            var recorderAttribution = CombatRecorder.CaptureAttribution(activator);
             for (var elapsed = TickIntervalSeconds; elapsed <= DurationSeconds + 0.01f; elapsed += TickIntervalSeconds)
             {
                 var pulseDelay = elapsed;
@@ -135,6 +136,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
                         return;
 
+                    using var recorderScope = CombatRecorder.BeginAttribution(recorderAttribution);
                     if (!GetIsObjectValid(GetAreaFromLocation(location)))
                         return;
 

@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly List<CombatRecordPendingDamage> _pendingDamage = new();
         private static readonly Dictionary<(uint Target, string Key), (int SourceId, CombatRecordAttribution Attribution)> _temporaryHitPointGrants = new();
         private static readonly Dictionary<uint, uint> _lastDamageSources = new();
+        private static readonly List<CombatRecordDamageApplication> _damageApplications = new();
 
         private static CombatRecordWriter _writer;
         private static IDisposable _snapshotSchedule;
@@ -102,6 +103,7 @@ namespace SWLOR.Game.Server.Service
             _pendingDamage.Clear();
             _temporaryHitPointGrants.Clear();
             _lastDamageSources.Clear();
+            _damageApplications.Clear();
 
             var directory = CombatRecordFileNames.GetDirectory(ApplicationSettings.Get().LogDirectory);
             var baseName = CombatRecordFileNames.BuildBaseName(_startedUtc, _label);
@@ -154,6 +156,7 @@ namespace SWLOR.Game.Server.Service
             _pendingDamage.Clear();
             _temporaryHitPointGrants.Clear();
             _lastDamageSources.Clear();
+            _damageApplications.Clear();
             return true;
         }
 
@@ -559,11 +562,20 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Registers damage that a deferred AssignCommand will apply, so the native damage hook
         /// can attribute it to the scope that queued it (a damage-over-time tick, a damage share).
+        /// Direct damage normally lands inside its ability's scope or through the weapon hook;
+        /// it is registered only when a status effect computes it, because status ticks and
+        /// reactions (Burn, Poison and others) dispatch Direct damage through AssignCommand too.
         /// </summary>
         public static void ExpectDeferredDamage(uint source, uint target, int amount, CombatDamageDeliveryType deliveryType)
         {
             if (amount <= 0 || !IsRecorded(target, source))
                 return;
+
+            if (deliveryType == CombatDamageDeliveryType.Direct &&
+                (_attributionDepth == 0 || _attributions[_attributionDepth - 1].Kind != CombatRecordSourceKind.StatusEffect))
+            {
+                return;
+            }
 
             var attribution = ResolveAttribution(source);
             if (deliveryType == CombatDamageDeliveryType.Transferred &&
@@ -625,7 +637,24 @@ namespace SWLOR.Game.Server.Service
             {
                 var scope = _attributions[_attributionDepth - 1];
                 if (scope.Actor == source)
+                {
+                    // Damage the scope registered (or a triggered rider queued under it) and then
+                    // applied inside it must not be left behind for a later hit to consume. The
+                    // applied amount can differ from the registered one, so fall back to the
+                    // oldest registration made under this same scope.
+                    var registered = _pendingDamage.FindIndex(pending => IsRegisteredUnder(pending, source, target) &&
+                                                                         pending.Amount == amount);
+                    if (registered < 0)
+                    {
+                        registered = _pendingDamage.FindIndex(pending => IsRegisteredUnder(pending, source, target) &&
+                                                                         pending.Attribution.Kind == scope.Kind &&
+                                                                         pending.Attribution.Name == scope.Name);
+                    }
+
+                    if (registered >= 0)
+                        _pendingDamage.RemoveAt(registered);
                     return scope;
+                }
             }
 
             var frame = ServerFrame.Current;
@@ -674,11 +703,41 @@ namespace SWLOR.Game.Server.Service
                 : new CombatRecordAttribution(source, CombatRecordSourceKind.Unattributed, null, 0, 0);
         }
 
+        private static bool IsRegisteredUnder(in CombatRecordPendingDamage pending, uint source, uint target)
+        {
+            return !pending.IsWeaponHit && pending.Source == source && pending.Target == target;
+        }
+
+        /// <summary>
+        /// Called by the native damage hook before the engine applies a damage effect. Lethal
+        /// damage runs the death scripts inside the engine call, so the source is known to them
+        /// and their death event waits for this damage event. Returns the application's index
+        /// for <see cref="RecordDamageApplied"/> and <see cref="EndDamageApplication"/>.
+        /// </summary>
+        internal static int BeginDamageApplication(uint source, uint target)
+        {
+            if (source != target && source != 0 && source != OBJECT_INVALID)
+                _lastDamageSources[target] = source;
+
+            _damageApplications.Add(new CombatRecordDamageApplication { Target = target });
+            return _damageApplications.Count - 1;
+        }
+
+        /// <summary>
+        /// Releases a damage application if <see cref="RecordDamageApplied"/> could not run.
+        /// </summary>
+        internal static void EndDamageApplication(int applicationIndex)
+        {
+            if (applicationIndex >= 0 && applicationIndex < _damageApplications.Count)
+                _damageApplications.RemoveRange(applicationIndex, _damageApplications.Count - applicationIndex);
+        }
+
         /// <summary>
         /// Called by the native damage hook after the engine applied a damage effect.
         /// Hit points exclude temporary HP, which is reported separately.
         /// </summary>
         internal static void RecordDamageApplied(
+            int applicationIndex,
             uint source,
             uint target,
             in CombatRecordDamageBreakdown damage,
@@ -688,9 +747,38 @@ namespace SWLOR.Game.Server.Service
             CombatRecordTemporaryHitPointPool[] poolsBefore,
             CombatRecordTemporaryHitPointPool[] poolsAfter)
         {
-            if (!IsRecorded(target, source))
+            try
+            {
+                if (IsRecorded(target, source))
+                    RecordDamageEvents(source, target, damage, hitPointsBefore, hitPointsAfter, maxHitPoints, poolsBefore, poolsAfter);
+            }
+            finally
+            {
+                CompleteDamageApplication(applicationIndex);
+            }
+        }
+
+        private static void CompleteDamageApplication(int applicationIndex)
+        {
+            if (applicationIndex < 0 || applicationIndex >= _damageApplications.Count)
                 return;
 
+            var application = _damageApplications[applicationIndex];
+            EndDamageApplication(applicationIndex);
+            if (application.TargetDied && IsRecording)
+                EnqueueDeath(application.Target, application.Killer);
+        }
+
+        private static void RecordDamageEvents(
+            uint source,
+            uint target,
+            in CombatRecordDamageBreakdown damage,
+            int hitPointsBefore,
+            int hitPointsAfter,
+            int maxHitPoints,
+            CombatRecordTemporaryHitPointPool[] poolsBefore,
+            CombatRecordTemporaryHitPointPool[] poolsAfter)
+        {
             var attribution = ResolveDamageAttribution(source, target, damage.Total);
             var sourceId = GetParticipantId(source);
             var targetId = GetParticipantId(target);
@@ -729,9 +817,6 @@ namespace SWLOR.Game.Server.Service
                         hasGrant ? grant.Attribution.Name : null));
                 }
             }
-
-            if (sourceId > 0 && source != target && attribution.Kind != CombatRecordSourceKind.AbilityCost)
-                _lastDamageSources[target] = source;
         }
 
         private static int Sum(CombatRecordTemporaryHitPointPool[] pools)
@@ -926,7 +1011,26 @@ namespace SWLOR.Game.Server.Service
             if (!IsInRecordedArea(creature))
                 return;
 
-            _lastDamageSources.TryGetValue(creature, out var lastDamageSource);
+            // Dying inside an engine damage call: record the death after that damage event.
+            for (var index = _damageApplications.Count - 1; index >= 0; index--)
+            {
+                var application = _damageApplications[index];
+                if (application.Target != creature)
+                    continue;
+
+                application.TargetDied = true;
+                application.Killer = killer;
+                _damageApplications[index] = application;
+                return;
+            }
+
+            EnqueueDeath(creature, killer);
+        }
+
+        private static void EnqueueDeath(uint creature, uint killer)
+        {
+            // A resurrected creature starts a new life with no damage source.
+            _lastDamageSources.Remove(creature, out var lastDamageSource);
             Enqueue(CombatRecordEvent.Death(
                 GetParticipantId(creature),
                 GetParticipantId(killer),

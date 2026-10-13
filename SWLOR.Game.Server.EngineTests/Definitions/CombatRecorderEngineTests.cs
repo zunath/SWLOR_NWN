@@ -117,6 +117,133 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             File.Delete(writer.SummaryPath);
         }
 
+        /// <summary>
+        /// Changes that happen outside the casting script must still reach their real source: a
+        /// reactive status heal during an enemy's ability, a status tick that dispatches Direct
+        /// damage through AssignCommand, an ability's delayed healing pulses, and a kill where one
+        /// creature damaged the victim before another landed the lethal blow.
+        /// </summary>
+        [EngineTest("Combat recorder attributes reactive, deferred, delayed and lethal events", Category = "CombatRecorder", TimeoutSeconds = 90f)]
+        public static async Task RecordsReactiveDeferredDelayedAndLethalEvents(EngineTestContext ctx)
+        {
+            ctx.Assert(!CombatRecorder.IsRecording, "no combat recording may be running before the test");
+
+            var arena = await QuietArena.CreateAsync(ctx);
+            var guarded = arena.Spawn(CreatureResref, 0f, 0f);
+            var attacker = arena.Spawn(CreatureResref, 3f, 180f);
+            var burned = arena.Spawn(CreatureResref, -7f, 0f);
+            var victim = arena.Spawn(CreatureResref, 12f, 0f);
+            var healer = arena.Spawn(CreatureResref, -14f, 0f);
+            await ctx.DelaySecondsAsync(1f);
+
+            Prepare(ctx, guarded, "Recorder Guarded", 500);
+            Prepare(ctx, attacker, "Recorder Attacker", 1000);
+            Prepare(ctx, burned, "Recorder Burned", 1000);
+            Prepare(ctx, victim, "Recorder Victim", 50);
+            Prepare(ctx, healer, "Recorder Healer", 500);
+            foreach (var held in new[] { guarded, burned, victim })
+                ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), held, 120f);
+            CreaturePlugin.AddFeat(attacker, FeatType.ForceLightning1);
+            CreaturePlugin.AddFeat(healer, FeatType.KoltoMist1);
+            ctx.MakeHostile(attacker);
+            ctx.SeedRandom(4343);
+
+            Combat.SetAbilityHitResolutionOverride(true);
+            Combat.SetAutoAttackHitResolutionOverride(false);
+            CombatRecordWriter writer;
+            try
+            {
+                ctx.Assert(CombatRecorder.Start(arena.Area, "engine test deferred", out var startMessage), startMessage);
+                writer = CombatRecorder.LastWriter;
+
+                ctx.Assert(StatusEffect.ApplyStatusEffect(guarded, guarded, new GuardiansResolveStatusEffect(1000), 60f),
+                    "Guardian's Resolve applies to the guarded creature");
+                ctx.Assert(StatusEffect.ApplyStatusEffect(attacker, burned, new BurnStatusEffect(1), 30f),
+                    "Burn applies to the burned creature");
+
+                await UseAbilityAsync(ctx, attacker, guarded, FeatType.ForceLightning1);
+                await UseAbilityAsync(ctx, healer, healer, FeatType.KoltoMist1);
+
+                // The attacker wounds the victim first; the healer lands the lethal blow.
+                AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(5), victim));
+                await ctx.DelaySecondsAsync(0.5f);
+                AssignCommand(healer, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(9999), victim));
+                await ctx.WaitUntilAsync(() => GetIsDead(victim) || !GetIsObjectValid(victim), 5f, "the victim to die");
+
+                // Burn ticks every 6 seconds on the shared status interval; Kolto Mist pulses every 3.
+                await ctx.DelaySecondsAsync(14f);
+            }
+            finally
+            {
+                Combat.SetAbilityHitResolutionOverride(null);
+                Combat.SetAutoAttackHitResolutionOverride(null);
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.Stop("engine test", out _);
+            }
+
+            await ctx.WaitUntilAsync(() => writer.Completion.IsCompleted, 10f, "the recording writer to finish its files");
+            ctx.Assert(writer.Error == null, $"the recording writer failed: {writer.Error}");
+            var events = File.ReadAllLines(writer.EventsPath).Select(ParseLine).ToList();
+
+            var guardedId = ParticipantId(ctx, events, "Recorder Guarded");
+            var attackerId = ParticipantId(ctx, events, "Recorder Attacker");
+            var burnedId = ParticipantId(ctx, events, "Recorder Burned");
+            var victimId = ParticipantId(ctx, events, "Recorder Victim");
+            var healerId = ParticipantId(ctx, events, "Recorder Healer");
+
+            var guardedHeals = events.Where(e => Type(e) == "heal" && e.GetProperty("target").GetInt32() == guardedId).ToList();
+            ctx.Assert(guardedHeals.Any(e => e.GetProperty("source").GetInt32() == guardedId &&
+                                             e.GetProperty("source_kind").GetString() == "status_effect" &&
+                                             e.GetProperty("source_name").GetString() == "Guardian's Resolve"),
+                "Guardian's Resolve healing must belong to its status source");
+            ctx.Assert(guardedHeals.All(e => e.GetProperty("source").GetInt32() != attackerId),
+                "the attacker must not be credited with the defender's reactive healing");
+
+            ctx.Assert(events.Any(e => Type(e) == "damage" &&
+                                       e.GetProperty("target").GetInt32() == burnedId &&
+                                       e.GetProperty("source").GetInt32() == attackerId &&
+                                       e.GetProperty("source_kind").GetString() == "status_effect" &&
+                                       e.GetProperty("source_name").GetString() == "Burn"),
+                "a Burn tick must be attributed to Burn and its source");
+
+            var mistImpact = events.Single(e => Type(e) == "ability_impact" && e.GetProperty("caster").GetInt32() == healerId);
+            var pulseHeals = events.Where(e => Type(e) == "heal" &&
+                                               e.GetProperty("source").GetInt32() == healerId &&
+                                               e.GetProperty("source_kind").GetString() == "ability" &&
+                                               e.GetProperty("source_name").GetString() == "Kolto Mist I" &&
+                                               e.GetProperty("ts_ms").GetInt64() >= mistImpact.GetProperty("ts_ms").GetInt64() + 2000)
+                .ToList();
+            ctx.Assert(pulseHeals.Count > 0, "Kolto Mist's delayed pulses must be attributed to Kolto Mist I");
+            ctx.Assert(!events.Any(e => Type(e) == "heal" && e.GetProperty("source_kind").GetString() == "unattributed"),
+                "every heal in the scenario has a known source");
+
+            var lethalIndex = events.FindIndex(e => Type(e) == "damage" &&
+                                                    e.GetProperty("target").GetInt32() == victimId &&
+                                                    e.GetProperty("source").GetInt32() == healerId);
+            var deathIndex = events.FindIndex(e => Type(e) == "death" && e.GetProperty("target").GetInt32() == victimId);
+            ctx.Assert(lethalIndex >= 0, "the lethal hit must be recorded");
+            ctx.Assert(deathIndex > lethalIndex, "the death must be recorded after the damage that caused it");
+            ctx.AssertEqual(healerId, events[deathIndex].GetProperty("last_damage_source").GetInt32(), "last damage source of the victim");
+            ctx.AssertEqual(healerId, events[deathIndex].GetProperty("killer").GetInt32(), "killer of the victim");
+            var lethalHit = events[lethalIndex];
+            ctx.AssertEqual(lethalHit.GetProperty("hp_before").GetInt32(), lethalHit.GetProperty("hp_lost").GetInt32(),
+                "a lethal hit removes only the HP the victim had left");
+            ctx.Assert(lethalHit.GetProperty("overkill").GetInt32() > 0, "the rest of the lethal hit is overkill");
+
+            File.Delete(writer.EventsPath);
+            File.Delete(writer.SummaryPath);
+        }
+
+        private static void Prepare(EngineTestContext ctx, uint creature, string name, int hitPoints)
+        {
+            SetName(creature, name);
+            ctx.SuppressNPCNaturalRegen(creature);
+            SetPlotFlag(creature, false);
+            ctx.SetNPCResources(creature, ResourcePool, ResourcePool);
+            Stat.SetNPCMaxHitPoints(creature, 1000, true);
+            ObjectPlugin.SetCurrentHitPoints(creature, hitPoints);
+        }
+
         private static void AssertDamage(
             EngineTestContext ctx, List<JsonElement> events, CombatRecordSummary summary,
             int attackerId, int targetId, int healerId, int targetHitPointsBeforeDamage)
@@ -188,6 +315,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                                           e.GetProperty("ability").GetString() == "Force Lightning I");
             var fpPaid = cost.GetProperty("fp").GetInt32();
             ctx.Assert(fpPaid > 0, "Force Lightning I must cost FP");
+            ctx.AssertEqual(nameof(FeatType.ForceLightning1), cost.GetProperty("feat").GetString(), "the cost event's feat");
 
             var fpSpent = events.Where(e => Type(e) == "resource" &&
                                             e.GetProperty("creature").GetInt32() == attackerId &&

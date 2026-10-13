@@ -26,27 +26,35 @@ namespace SWLOR.Game.Server.Native
 
         private static delegate* unmanaged<void*, void*, void*, int, int> _originalApplyDamage;
         private static delegate* unmanaged<void*, void*, void*, int, int> _originalApplyHeal;
-        private static bool _isInstalled;
 
+        /// <summary>
+        /// Installs each hook once. A hook that installed stays installed even if the other one
+        /// fails, so a later retry never hooks the same function twice.
+        /// </summary>
         public static void Install()
         {
-            if (_isInstalled)
-                return;
-
-            var program = NativeLibrary.GetMainProgramHandle();
-            var applyDamage = NativeLibrary.GetExport(program, ApplyDamageSymbol);
-            var applyHeal = NativeLibrary.GetExport(program, ApplyHealSymbol);
-
             // Earliest: these hooks only observe, and running outermost lets the before/after
             // reads include every other hook's adjustments. The original is reached through the
             // hook's trampoline, not the returned FunctionHook pointer.
-            delegate* unmanaged<void*, void*, void*, int, int> damageHook = &OnApplyDamage;
-            delegate* unmanaged<void*, void*, void*, int, int> healHook = &OnApplyHeal;
-            var damageFunctionHook = NWNXAPI.RequestFunctionHook(applyDamage, (IntPtr)damageHook, HookOrder.Earliest);
-            _originalApplyDamage = (delegate* unmanaged<void*, void*, void*, int, int>)damageFunctionHook->m_trampoline;
-            var healFunctionHook = NWNXAPI.RequestFunctionHook(applyHeal, (IntPtr)healHook, HookOrder.Earliest);
-            _originalApplyHeal = (delegate* unmanaged<void*, void*, void*, int, int>)healFunctionHook->m_trampoline;
-            _isInstalled = true;
+            if (_originalApplyDamage == null)
+            {
+                delegate* unmanaged<void*, void*, void*, int, int> damageHook = &OnApplyDamage;
+                _originalApplyDamage = RequestHook(ApplyDamageSymbol, damageHook);
+            }
+
+            if (_originalApplyHeal == null)
+            {
+                delegate* unmanaged<void*, void*, void*, int, int> healHook = &OnApplyHeal;
+                _originalApplyHeal = RequestHook(ApplyHealSymbol, healHook);
+            }
+        }
+
+        private static delegate* unmanaged<void*, void*, void*, int, int> RequestHook(
+            string symbol, delegate* unmanaged<void*, void*, void*, int, int> hook)
+        {
+            var function = NativeLibrary.GetExport(NativeLibrary.GetMainProgramHandle(), symbol);
+            var functionHook = NWNXAPI.RequestFunctionHook(function, (IntPtr)hook, HookOrder.Earliest);
+            return (delegate* unmanaged<void*, void*, void*, int, int>)functionHook->m_trampoline;
         }
 
         [UnmanagedCallersOnly]
@@ -59,6 +67,7 @@ namespace SWLOR.Game.Server.Native
             uint creator = OBJECT_INVALID;
             var damage = new CombatRecordDamageBreakdown();
             var hitPointsBefore = 0;
+            var applicationIndex = -1;
             CombatRecordTemporaryHitPointPool[] poolsBefore = null;
             try
             {
@@ -74,6 +83,7 @@ namespace SWLOR.Game.Server.Native
 
                     hitPointsBefore = target.GetCurrentHitPoints(1);
                     poolsBefore = CaptureTemporaryHitPointPools(target);
+                    applicationIndex = CombatRecorder.BeginDamageApplication(creator, target.m_idSelf);
                 }
                 else
                 {
@@ -94,15 +104,19 @@ namespace SWLOR.Game.Server.Native
             {
                 var targetId = target.m_idSelf;
                 var hitPointsAfter = target.GetCurrentHitPoints(1);
-                var maxHitPoints = target.GetMaxHitPoints(1);
                 var poolsAfter = CaptureTemporaryHitPointPools(target);
                 ServerManager.Executor.ExecuteInScriptContext(() =>
                     CombatRecorder.RecordDamageApplied(
-                        creator, targetId, damage, hitPointsBefore, hitPointsAfter, maxHitPoints, poolsBefore, poolsAfter));
+                        applicationIndex, creator, targetId, damage, hitPointsBefore, hitPointsAfter,
+                        GetMaxHitPoints(targetId), poolsBefore, poolsAfter));
             }
             catch (Exception ex)
             {
                 LogFailure(nameof(OnApplyDamage), ex);
+            }
+            finally
+            {
+                CombatRecorder.EndDamageApplication(applicationIndex);
             }
 
             return result;
@@ -147,9 +161,9 @@ namespace SWLOR.Game.Server.Native
             {
                 var targetId = target.m_idSelf;
                 var hitPointsAfter = target.GetCurrentHitPoints(1);
-                var maxHitPoints = target.GetMaxHitPoints(1);
                 ServerManager.Executor.ExecuteInScriptContext(() =>
-                    CombatRecorder.RecordHealingApplied(creator, targetId, requested, hitPointsBefore, hitPointsAfter, maxHitPoints));
+                    CombatRecorder.RecordHealingApplied(
+                        creator, targetId, requested, hitPointsBefore, hitPointsAfter, GetMaxHitPoints(targetId)));
             }
             catch (Exception ex)
             {

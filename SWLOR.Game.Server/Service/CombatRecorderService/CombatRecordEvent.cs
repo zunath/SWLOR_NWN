@@ -338,6 +338,30 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
             };
         }
 
+        /// <summary>
+        /// Damage events: HP the hit actually removed. HP below zero is overkill, not damage taken.
+        /// </summary>
+        public int GetHitPointsLost()
+        {
+            return Math.Max(0, Math.Max(0, Value1) - Math.Max(0, Value2));
+        }
+
+        /// <summary>
+        /// Damage events: how far this hit drove HP below zero.
+        /// </summary>
+        public int GetOverkill()
+        {
+            return Math.Max(0, Math.Max(0, -Value2) - Math.Max(0, -Value1));
+        }
+
+        /// <summary>
+        /// Damage events: temporary HP the hit consumed.
+        /// </summary>
+        public int GetTemporaryHitPointsAbsorbed()
+        {
+            return Math.Max(0, Value3 - Value4);
+        }
+
         public CombatRecordEvent WithLocation(float x, float y, float z)
         {
             HasLocation = true;

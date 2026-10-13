@@ -88,6 +88,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                 writer.WriteNumber("effective", total.Effective);
                 writer.WriteNumber("hp_lost", total.HitPointsLost);
                 writer.WriteNumber("temp_hp_absorbed", total.TemporaryHitPointsAbsorbed);
+                writer.WriteNumber("overkill", total.Overkill);
                 writer.WriteEndObject();
             }
             writer.WriteEndObject();

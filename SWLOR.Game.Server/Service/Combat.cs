@@ -663,7 +663,7 @@ namespace SWLOR.Game.Server.Service
 
             ApplyLowHPTemporaryHPBeforeFatalDamage(defender, damage);
             RefreshDamageDerivedHealingTargetHP(attacker, defender);
-            if (CombatRecorder.IsRecording && deliveryType != CombatDamageDeliveryType.Direct)
+            if (CombatRecorder.IsRecording)
                 CombatRecorder.ExpectDeferredDamage(attacker, defender, damage, deliveryType);
             return damage;
         }

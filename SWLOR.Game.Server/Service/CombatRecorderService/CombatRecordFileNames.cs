@@ -12,11 +12,12 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
         private const string DefaultLabel = "recording";
 
         /// <summary>
-        /// Builds "&lt;utc-start&gt;-&lt;label&gt;", keeping only file-name-safe label characters.
+        /// Builds "&lt;utc-start&gt;-&lt;label&gt;", keeping only file-name-safe label characters. The start
+        /// time keeps milliseconds so a recording restarted within the same second gets new files.
         /// </summary>
         public static string BuildBaseName(DateTime startedUtc, string label)
         {
-            var timestamp = startedUtc.ToString("yyyyMMdd'T'HHmmss'Z'", CultureInfo.InvariantCulture);
+            var timestamp = startedUtc.ToString("yyyyMMdd'T'HHmmssfff'Z'", CultureInfo.InvariantCulture);
             return $"{timestamp}-{SanitizeLabel(label)}";
         }
 

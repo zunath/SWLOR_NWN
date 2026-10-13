@@ -426,9 +426,10 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         /// <param name="activator">The activator of the ability.</param>
         /// <param name="ability">The ability details</param>
-        private static void ApplyRequirementEffects(uint activator, AbilityDetail ability)
+        /// <param name="feat">The feat being activated</param>
+        private static void ApplyRequirementEffects(uint activator, AbilityDetail ability, FeatType feat)
         {
-            using var recordedCost = CombatRecorder.BeginAbilityCost(activator, ability);
+            using var recordedCost = CombatRecorder.BeginAbilityCost(activator, ability, feat);
             foreach (var req in ability.Requirements)
             {
                 req.AfterActivationAction(activator, ability);
@@ -740,7 +741,7 @@ namespace SWLOR.Game.Server.Feature
                     return;
                 }
 
-                ApplyRequirementEffects(activator, ability);
+                ApplyRequirementEffects(activator, ability, feat);
                 HandleStealthBreaking(activator, ability);
 
                 /// <summary>
@@ -877,7 +878,7 @@ namespace SWLOR.Game.Server.Feature
             // channel interrupt action but does not refund the recast delay.
             if (ability.IsChanneled)
             {
-                ApplyRequirementEffects(activator, ability);
+                ApplyRequirementEffects(activator, ability, feat);
                 HandleStealthBreaking(activator, ability);
                 ExecuteAbilityImpact(
                     activator,
@@ -931,7 +932,7 @@ namespace SWLOR.Game.Server.Feature
 
             QueuedAttackAnimation.Begin(activator, AbilityAnimationBinding.QueuedClip(ability, activator));
 
-            ApplyRequirementEffects(activator, ability);
+            ApplyRequirementEffects(activator, ability, feat);
 
             var abilityRecastDelay = Combat.ApplyAbilityRecastDelayModifiers(
                 activator,

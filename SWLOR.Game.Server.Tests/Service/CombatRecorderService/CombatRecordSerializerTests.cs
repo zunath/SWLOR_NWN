@@ -82,6 +82,33 @@ public class CombatRecordSerializerTests
     }
 
     [Test]
+    public void LethalDamage_CountsOnlyTheRemainingHitPointsAsLostAndReportsOverkill()
+    {
+        var json = Parse(CombatRecordEvent.DamageApplied(
+            4, 7, CombatRecordSourceKind.Ability, "Force Lightning I", 0, Damage(force: 9999),
+            hitPointsBefore: 45, hitPointsAfter: -9954,
+            temporaryHitPointsBefore: 0, temporaryHitPointsAfter: 0,
+            maxHitPoints: 1000));
+
+        json.GetProperty("total").GetInt32().Should().Be(9999);
+        json.GetProperty("hp_lost").GetInt32().Should().Be(45);
+        json.GetProperty("overkill").GetInt32().Should().Be(9954);
+    }
+
+    [Test]
+    public void DamageToAnAlreadyNegativeTarget_IsAllOverkill()
+    {
+        var json = Parse(CombatRecordEvent.DamageApplied(
+            4, 7, CombatRecordSourceKind.Autoattack, null, 0, Damage(physical: 6),
+            hitPointsBefore: -2, hitPointsAfter: -8,
+            temporaryHitPointsBefore: 0, temporaryHitPointsAfter: 0,
+            maxHitPoints: 100));
+
+        json.GetProperty("hp_lost").GetInt32().Should().Be(0);
+        json.GetProperty("overkill").GetInt32().Should().Be(6);
+    }
+
+    [Test]
     public void Healing_ReportsEffectiveAndOverheal()
     {
         var json = Parse(CombatRecordEvent.Healing(

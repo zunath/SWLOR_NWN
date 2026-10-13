@@ -287,6 +287,7 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
                     return;
 
+                using var recorderAttribution = CombatRecorder.BeginAbilityAttribution(activator, ability);
                 var previousImpact = GetTrackedAbilityImpact(activator);
                 BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence,
                     triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage,
@@ -332,6 +333,7 @@ namespace SWLOR.Game.Server.Service
                     if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
                         return;
 
+                    using var recorderAttribution = CombatRecorder.BeginAbilityAttribution(activator, originatingImpact.Ability);
                     var previousImpact = GetTrackedAbilityImpact(activator);
                     try
                     {

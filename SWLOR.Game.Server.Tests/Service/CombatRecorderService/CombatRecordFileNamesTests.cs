@@ -6,12 +6,19 @@ namespace SWLOR.Game.Server.Tests.Service.CombatRecorderService;
 
 public class CombatRecordFileNamesTests
 {
-    private static readonly DateTime Start = new(2026, 10, 12, 23, 15, 7, DateTimeKind.Utc);
+    private static readonly DateTime Start = new(2026, 10, 12, 23, 15, 7, 42, DateTimeKind.Utc);
 
     [Test]
     public void BaseName_StartsWithTheUtcStartTimeAndEndsWithTheLabel()
     {
-        CombatRecordFileNames.BuildBaseName(Start, "pvp_9v9").Should().Be("20261012T231507Z-pvp_9v9");
+        CombatRecordFileNames.BuildBaseName(Start, "pvp_9v9").Should().Be("20261012T231507042Z-pvp_9v9");
+    }
+
+    [Test]
+    public void BaseName_DiffersForRestartsWithinTheSameSecond()
+    {
+        CombatRecordFileNames.BuildBaseName(Start.AddMilliseconds(1), "pvp_9v9")
+            .Should().NotBe(CombatRecordFileNames.BuildBaseName(Start, "pvp_9v9"));
     }
 
     [TestCase("9v9 PvP / round 2", "9v9-PvP-round-2")]

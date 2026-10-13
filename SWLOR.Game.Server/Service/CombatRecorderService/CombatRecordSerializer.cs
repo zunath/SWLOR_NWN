@@ -91,8 +91,9 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                     WriteSource(writer, e);
                     WriteDamageBreakdown(writer, e.Damage);
                     writer.WriteNumber("total", e.Value0);
-                    writer.WriteNumber("hp_lost", Math.Max(0, e.Value1 - e.Value2));
-                    writer.WriteNumber("temp_hp_absorbed", Math.Max(0, e.Value3 - e.Value4));
+                    writer.WriteNumber("hp_lost", e.GetHitPointsLost());
+                    writer.WriteNumber("overkill", e.GetOverkill());
+                    writer.WriteNumber("temp_hp_absorbed", e.GetTemporaryHitPointsAbsorbed());
                     writer.WriteNumber("hp_before", e.Value1);
                     writer.WriteNumber("hp_after", e.Value2);
                     writer.WriteNumber("temp_hp_before", e.Value3);

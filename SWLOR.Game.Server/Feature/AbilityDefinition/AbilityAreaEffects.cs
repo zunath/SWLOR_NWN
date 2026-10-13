@@ -70,11 +70,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
 
             var firstApplications = new HashSet<uint>();
+            var recorderAttribution = CombatRecorder.CaptureAttribution(activator);
             foreach (var pulseDelay in CombatAreaPulses.GetRefreshPulseDelays(durationSeconds, 3f))
             {
                 var playReceipt = pulseVisualEffects?.Invoke(pulseDelay) ?? Ability.CaptureSuccessfulImpactVisualEffect(activator);
                 DelayCommand(pulseDelay, () =>
                 {
+                    using var recorderScope = CombatRecorder.BeginAttribution(recorderAttribution);
                     foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, location, radius))
                     {
                         if (firstApplications.Add(friendly))
@@ -101,11 +103,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             Action<uint, bool> onHealed = null,
             Func<float, Action<uint>> pulseVisualEffects = null)
         {
+            var recorderAttribution = CombatRecorder.CaptureAttribution(activator);
             foreach (var pulseDelay in CombatAreaPulses.GetPulseDelays(durationSeconds, 3f))
             {
                 var playReceipt = pulseVisualEffects?.Invoke(pulseDelay) ?? Ability.CaptureSuccessfulImpactVisualEffect(activator);
                 DelayCommand(pulseDelay, () =>
                 {
+                    using var recorderScope = CombatRecorder.BeginAttribution(recorderAttribution);
                     foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, location, radius))
                     {
                         var targetWasBelowHalfHP = GetMaxHitPoints(friendly) > 0 &&

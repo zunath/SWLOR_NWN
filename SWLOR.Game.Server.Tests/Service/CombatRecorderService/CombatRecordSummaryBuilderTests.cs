@@ -50,6 +50,18 @@ public class CombatRecordSummaryBuilderTests
     }
 
     [Test]
+    public void Overkill_IsTotaledSeparatelyFromEffectiveDamage()
+    {
+        Add(Damage(Attacker, Defender, CombatRecordSourceKind.Ability, "Force Lightning I", total: 9999, hpBefore: 45, hpAfter: -9954));
+
+        var dealt = Build().GetParticipant(Attacker).DamageDealt["Force Lightning I"];
+
+        dealt.Effective.Should().Be(45);
+        dealt.Overkill.Should().Be(9954);
+        dealt.Total.Should().Be(9999);
+    }
+
+    [Test]
     public void HitPointsPaidForAnAbility_AreACostNotDamageDealt()
     {
         Add(Damage(Attacker, Attacker, CombatRecordSourceKind.AbilityCost, "Bloodletting Strike I", total: 12, hpBefore: 100, hpAfter: 88));

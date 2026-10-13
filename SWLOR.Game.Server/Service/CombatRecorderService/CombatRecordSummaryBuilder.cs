@@ -105,8 +105,9 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
 
         private void AddDamage(in CombatRecordEvent e)
         {
-            var hitPointsLost = Math.Max(0, e.Value1 - e.Value2);
-            var absorbed = Math.Max(0, e.Value3 - e.Value4);
+            var hitPointsLost = e.GetHitPointsLost();
+            var absorbed = e.GetTemporaryHitPointsAbsorbed();
+            var overkill = e.GetOverkill();
             var label = CombatRecordSourceLabel.Format(e.SourceKind, e.SourceName, e.SourceCode);
 
             // Hit points paid for an ability are a cost, not damage dealt to an enemy.
@@ -117,12 +118,12 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
             }
 
             if (e.ActorId > 0)
-                AddDamage(GetParticipant(e.ActorId).DamageDealt, label, e.Value0, hitPointsLost, absorbed);
-            AddDamage(GetParticipant(e.TargetId).DamageTaken, label, e.Value0, hitPointsLost, absorbed);
+                AddDamage(GetParticipant(e.ActorId).DamageDealt, label, e.Value0, hitPointsLost, absorbed, overkill);
+            AddDamage(GetParticipant(e.TargetId).DamageTaken, label, e.Value0, hitPointsLost, absorbed, overkill);
         }
 
         private static void AddDamage(
-            Dictionary<string, CombatRecordDamageTotals> totals, string label, int total, int hitPointsLost, int absorbed)
+            Dictionary<string, CombatRecordDamageTotals> totals, string label, int total, int hitPointsLost, int absorbed, int overkill)
         {
             if (!totals.TryGetValue(label, out var damage))
             {
@@ -133,6 +134,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
             damage.Hits++;
             damage.Total += total;
             damage.HitPointsLost += hitPointsLost;
+            damage.Overkill += overkill;
             damage.TemporaryHitPointsAbsorbed += absorbed;
         }
 

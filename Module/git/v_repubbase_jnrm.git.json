@@ -11304,7 +11304,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "jukebox_used"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -11328,7 +11328,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -11368,7 +11368,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Will": {
           "type": "byte",

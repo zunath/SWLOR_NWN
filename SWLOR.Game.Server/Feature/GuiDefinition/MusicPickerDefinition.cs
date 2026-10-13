@@ -78,11 +78,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     content.AddRow(r =>
                     {
-                        r.AddCheckBox()
-                            .SetText("Show songs not yet collected")
-                            .BindIsChecked(model => model.ShowUncollected)
-                            .BindIsEnabled(model => model.IsCollectionMode)
-                            .SetWidth(300f);
+                        if (isPersonal)
+                        {
+                            r.AddCheckBox()
+                                .SetText("Show songs not yet collected")
+                                .BindIsChecked(model => model.ShowUncollected)
+                                .BindIsEnabled(model => model.IsCollectionMode)
+                                .SetWidth(300f);
+                        }
 
                         r.AddLabel()
                             .BindText(model => model.ResultText)

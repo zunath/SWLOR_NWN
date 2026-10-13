@@ -168,7 +168,7 @@ public class PlayerNameRecognitionTests
     }
 
     [Test]
-    public void KnownNameStorage_CachesObserverRecordsDuringScriptContext()
+    public void KnownNameStorage_CachesObserverRecordsUntilKnownNamesChange()
     {
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
@@ -180,9 +180,14 @@ public class PlayerNameRecognitionTests
         var findMethod = ExtractMethod(source, "private static PlayerKnownName FindKnownNames(string observerId)");
         var getMethod = ExtractMethod(source, "private static PlayerKnownName GetKnownNames(uint observer, bool createIfMissing)");
 
+        var exitHandler = ExtractMethod(source, "public static void ReleaseKnownNamesOnExit()");
+
         source.Should().Contain("private static readonly Dictionary<string, PlayerKnownName> KnownNamesByObserverId");
-        staticConstructor.Should().Contain("ServerManager.OnScriptContextEnd += KnownNamesByObserverId.Clear;");
+        staticConstructor.Should().NotContain("KnownNamesByObserverId.Clear");
+        findMethod.Should().Contain("DB.GetWriteVersion<PlayerKnownName>()");
+        findMethod.Should().Contain("KnownNamesByObserverId.Clear();");
         findMethod.Should().Contain("KnownNamesByObserverId.TryGetValue(observerId, out var dbKnownNames)");
+        exitHandler.Should().Contain("KnownNamesByObserverId.Remove(observerId);");
         findMethod.Should().Contain("DB.Search(new DBQuery<PlayerKnownName>()");
         findMethod.Should().Contain("KnownNamesByObserverId[observerId] = dbKnownNames;");
         getMethod.Should().Contain("KnownNamesByObserverId[observerId] = dbKnownNames;");

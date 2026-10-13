@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -41,6 +42,7 @@ namespace SWLOR.Game.Server.Service
             if (property == null || property.GetCustomAttribute<IndexedAttribute>() != null)
                 throw new ArgumentException("A declared, unindexed entity property is required.", nameof(propertyName));
 
+            RecordWrite(typeof(T));
             var profile = FrameProfiler.Start();
             var result = _multiplexer.GetDatabase().JsonSet($"{_keyPrefixByType[typeof(T)]}:{id}",
                 json, path: $".{propertyName}", setOption: SetOption.SetOnlyIfExists);
@@ -56,6 +58,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<Type, List<string>> _indexedPropertiesByName = new();
         private static ConnectionMultiplexer _multiplexer;
         private static readonly Dictionary<string, EntityBase> _cachedEntities = new();
+        private static readonly ConcurrentDictionary<Type, long> _writeVersionsByType = new();
 
         static DB()
         {
@@ -414,6 +417,7 @@ namespace SWLOR.Game.Server.Service
         {
             var profile = FrameProfiler.Start();
             var type = typeof(T);
+            RecordWrite(type);
             var data = JsonConvert.SerializeObject(entity);
 
             var keyPrefix = _keyPrefixByType[type];
@@ -423,6 +427,22 @@ namespace SWLOR.Game.Server.Service
             _multiplexer.GetDatabase().JsonSet($"{keyPrefix}:{entity.Id}", data);
             _cachedEntities[entity.Id] = entity;
             FrameProfiler.Stop(FrameMetric.DBSet, profile, data.Length);
+        }
+
+        /// <summary>
+        /// Increases on every Set, Delete, and partial write of the entity type. Services can keep data
+        /// derived from that type across frames and discard it when the version changes.
+        /// </summary>
+        public static long GetWriteVersion<T>()
+            where T : EntityBase
+        {
+            return _writeVersionsByType.TryGetValue(typeof(T), out var version) ? version : 0;
+        }
+
+        // Recorded before the write so a failed write still invalidates derived data.
+        private static void RecordWrite(Type type)
+        {
+            _writeVersionsByType.AddOrUpdate(type, 1, (_, version) => version + 1);
         }
 
         /// <summary>
@@ -545,6 +565,7 @@ namespace SWLOR.Game.Server.Service
         {
             var keyPrefix = _keyPrefixByType[typeof(T)];
             var indexKey = SearchIndexDefinition.KeyPrefix(keyPrefix) + id;
+            RecordWrite(typeof(T));
             var profile = FrameProfiler.Start();
             _searchClientsByType[typeof(T)].DeleteDocument(indexKey);
             _multiplexer.GetDatabase().JsonDelete($"{keyPrefix}:{id}");

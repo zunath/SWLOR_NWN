@@ -14,15 +14,24 @@ namespace SWLOR.Game.Server.Service
     {
         public const int MaxKnownNameLength = 64;
         public const string UnknownName = PlayerDescriptor.DefaultUnknownDisplayName;
+        // Known names change only through DB writes, so entries last until a PlayerKnownName write or logout.
         private static readonly Dictionary<string, PlayerKnownName> KnownNamesByObserverId = new();
+        private static long _knownNamesWriteVersion;
         private static readonly Dictionary<string, bool> ShowDescriptorsForNamedPlayersByObserverId = new();
         private static readonly string UnknownNamePrefix = ColorToken.TokenStart(127, 127, 127);
         private static readonly string UnknownNameSuffix = ColorToken.TokenEnd();
 
         static PlayerName()
         {
-            ServerManager.OnScriptContextEnd += KnownNamesByObserverId.Clear;
             ServerManager.OnScriptContextEnd += ShowDescriptorsForNamedPlayersByObserverId.Clear;
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        public static void ReleaseKnownNamesOnExit()
+        {
+            var observerId = GetObjectUUID(GetExitingObject());
+            if (!string.IsNullOrWhiteSpace(observerId))
+                KnownNamesByObserverId.Remove(observerId);
         }
 
         [NWNEventHandler(ScriptName.OnModuleEnter)]
@@ -497,6 +506,13 @@ namespace SWLOR.Game.Server.Service
 
         private static PlayerKnownName FindKnownNames(string observerId)
         {
+            var writeVersion = DB.GetWriteVersion<PlayerKnownName>();
+            if (writeVersion != _knownNamesWriteVersion)
+            {
+                KnownNamesByObserverId.Clear();
+                _knownNamesWriteVersion = writeVersion;
+            }
+
             if (KnownNamesByObserverId.TryGetValue(observerId, out var dbKnownNames))
                 return dbKnownNames;
 

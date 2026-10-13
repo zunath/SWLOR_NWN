@@ -15,6 +15,28 @@ SPEC.loader.exec_module(GENERATOR)
 
 
 class GeneratedWeaponTargetingTests(unittest.TestCase):
+    def test_shadowflow_persists_while_its_triggered_hamstring_lasts_18_seconds(self):
+        row = next(row for row in GENERATOR.read_manifest()
+                   if row["PerkName"] == "Shadowflow Stance")
+        _, feats = GENERATOR.parse_enum_values(ROOT / "SWLOR.NWN.API/NWScript/Enum/FeatType.cs")
+        targeting = GENERATOR.read_spell_targeting()
+        status_types = GENERATOR.known_status_effect_types()
+        stats = dict(GENERATOR.exact_weapon_stance_stat_entries(row, "Shadowflow Stance"))
+        self.assertEqual("18", stats["AutoAttackHamstringDurationSeconds"])
+        self.assertEqual("-20", stats["DefensePercentAdjustment"])
+
+        for ability_type in ("Stance", "Toggle", "Aura"):
+            with self.subTest(ability_type=ability_type), tempfile.TemporaryDirectory() as folder:
+                output_root = Path(folder)
+                with (patch.object(GENERATOR, "ROOT", output_root),
+                      patch.object(GENERATOR, "read_spell_targeting", return_value=targeting),
+                      patch.object(GENERATOR, "known_status_effect_types", return_value=status_types)):
+                    GENERATOR.generate_ability_definitions([{**row, "Type": ability_type}], feats, {})
+                relative_path = "SWLOR.Game.Server/Feature/AbilityDefinition/Vibroknife/ShadowflowStanceAbilityDefinition.cs"
+                for path in (output_root / relative_path, ROOT / relative_path):
+                    self.assertRegex(path.read_text(),
+                                     r"SkillType\.Vibroknife,\s+8,\s+0,\s+typeof\(ShadowflowStanceStatusEffect\)")
+
     def test_regeneration_preserves_weapon_independent_attack_triggers(self):
         expected = {
             "Propagation": "SourceStatusAutoAttackCycleSkillType",

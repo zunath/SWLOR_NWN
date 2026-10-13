@@ -3530,7 +3530,8 @@ def generate_ability_definitions(rows, feat_values, recast_values):
             recast_seconds = parse_seconds(row["CooldownTime"])
             activation_seconds = parse_seconds(row["CastingTime"])
             damage = parse_damage(row["Description"], level)
-            duration = parse_duration(row["Description"])
+            # Durations in stance descriptions belong to triggered effects, not the stance itself.
+            duration = 0 if row["Type"] in {"Stance", "Toggle", "Aura"} else parse_duration(row["Description"])
             statuses = status_types(row["Description"])
             lowered_description = row["Description"].lower()
             profile_status = statuses[0] if statuses else None

@@ -60,6 +60,26 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void Spawn_RejectsTwoCombatantsWithTheSameNameOnOneTeam()
+        {
+            var scenario = TestScenarios.TwoTeams(false, new[] { TestCombatants.Dummy("Fighter"), TestCombatants.Dummy("Fighter") }, new[] { TestCombatants.Dummy("Enemy", true) });
+
+            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*First*Fighter*");
+        }
+
+        [Test]
+        public void Spawn_AllowsTheSameNameOnOpposingTeams()
+        {
+            var scenario = TestScenarios.TwoTeams(false, new[] { TestCombatants.Dummy("Fighter") }, new[] { TestCombatants.Dummy("Fighter") });
+
+            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().NotThrow();
+        }
+
+        [Test]
         public void Spawn_RejectsAnUnknownPerk()
         {
             var player = TestCombatants.Dummy("Player");

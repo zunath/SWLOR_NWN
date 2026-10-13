@@ -13,7 +13,7 @@ namespace SWLOR.CombatSim.Report
         public static BatchSummary Run(ScenarioSpec scenario, RuleSet rules, AbilityCatalog catalog, int runs, int seed)
         {
             var summary = new BatchSummary { RuleSetName = rules.Name, Runs = runs };
-            var perCombatant = new Dictionary<string, List<(Combatant Combatant, double Minutes)>>();
+            var perCombatant = new Dictionary<(int TeamIndex, string Name), List<(Combatant Combatant, double Minutes)>>();
 
             for (var run = 0; run < runs; run++)
             {
@@ -44,13 +44,13 @@ namespace SWLOR.CombatSim.Report
                     summary.TotalOverhealing += combatant.Stats.Overhealing / runs;
                     summary.AverageBlockedRevives += combatant.Stats.BlockedRevives / (double)runs;
 
-                    if (!perCombatant.TryGetValue(combatant.Name, out var list))
-                        perCombatant[combatant.Name] = list = new List<(Combatant, double)>();
+                    if (!perCombatant.TryGetValue((combatant.TeamIndex, combatant.Name), out var list))
+                        perCombatant[(combatant.TeamIndex, combatant.Name)] = list = new List<(Combatant, double)>();
                     list.Add((combatant, minutes));
                 }
             }
 
-            foreach (var (name, entries) in perCombatant)
+            foreach (var ((_, name), entries) in perCombatant)
             {
                 var starved = entries.Where(e => e.Combatant.Stats.FirstStarvedAt.HasValue)
                     .Select(e => e.Combatant.Stats.FirstStarvedAt.Value)

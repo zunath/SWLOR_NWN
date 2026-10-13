@@ -52,6 +52,17 @@ namespace SWLOR.CombatSim.Tests.Engine
             medic.Stats.StmSpent.Should().Be(0, "a blocked revive costs nothing");
         }
 
+        [TestCase(0.1)]
+        [TestCase(0.05)]
+        public void Tuned_BlockedReviveAttempts_AreCountedOncePerReactionWindow_WhateverTheTimeStep(double step)
+        {
+            var (simulation, medic, _, _) = SpawnAndKillAlly(RuleSets.Tuned(), isPvp: true);
+
+            SimulationClock.RunUntil(simulation, 60, step);
+
+            medic.Stats.BlockedRevives.Should().BeInRange(59, 61, "one attempt a second (the medic's reaction time) for a minute");
+        }
+
         [Test]
         public void TunedPvp_RevivesAreAlsoBlockedInPvpWhileAnEnemyIsAlive()
         {

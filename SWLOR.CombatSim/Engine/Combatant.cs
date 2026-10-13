@@ -55,6 +55,7 @@ namespace SWLOR.CombatSim.Engine
         public double ConvergenceNextTickAt { get; set; }
         public double ConvergenceReadyAt { get; set; }
         public double HarmonyReadyAt { get; set; }
+        public double NextBlockedReviveCountAt { get; set; }
 
         public double LastDamageTakenAt { get; set; } = double.NegativeInfinity;
         public double PvpCombatStartedAt { get; set; } = double.NegativeInfinity;

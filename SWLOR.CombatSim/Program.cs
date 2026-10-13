@@ -103,6 +103,7 @@ static int DumpAbilities(string[] args)
 
 static Dictionary<string, List<string>> ParseOptions(string[] args)
 {
+    var flags = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "--detail" };
     var options = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
     for (var i = 0; i < args.Length; i++)
     {
@@ -114,6 +115,8 @@ static Dictionary<string, List<string>> ParseOptions(string[] args)
 
         if (i + 1 < args.Length && !args[i + 1].StartsWith("--"))
             values.Add(args[++i]);
+        else if (!flags.Contains(args[i]))
+            throw new ArgumentException($"{args[i]} needs a value.");
     }
 
     return options;

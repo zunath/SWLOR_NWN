@@ -32,6 +32,24 @@ namespace SWLOR.CombatSim.Tests.Report
         }
 
         [Test]
+        public void Run_KeepsSameNamedCombatantsOnOpposingTeamsApart()
+        {
+            var scenario = TestScenarios.TwoTeams(
+                true,
+                new[] { TestCombatants.Striker("Fighter", attacksPerSecond: 2f, damage: 10f) },
+                new[] { TestCombatants.Striker("Fighter", attacksPerSecond: 1f, damage: 10f) },
+                durationSeconds: 30f);
+
+            var summary = BatchRunner.Run(scenario, RuleSets.Current(), _catalog, 3, seed: 1);
+
+            summary.Combatants.Should().HaveCount(2);
+            summary.Combatants.Select(c => c.TeamIndex).Should().BeEquivalentTo(new[] { 0, 1 });
+            var fast = summary.Combatants.Single(c => c.TeamIndex == 0);
+            var slow = summary.Combatants.Single(c => c.TeamIndex == 1);
+            fast.AverageDamageDealt.Should().BeGreaterThan(slow.AverageDamageDealt);
+        }
+
+        [Test]
         public void Run_CountsDecisiveRunsDeathsAndWinsForAFightTeamOneAlwaysWins()
         {
             const int runs = 10;

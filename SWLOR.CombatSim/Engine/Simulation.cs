@@ -92,6 +92,7 @@ namespace SWLOR.CombatSim.Engine
 
             for (var teamIndex = 0; teamIndex < _scenario.Teams.Count; teamIndex++)
             {
+                var names = new HashSet<string>();
                 if (_scenario.Teams[teamIndex].RetargetSeconds < 0)
                     throw new InvalidDataException($"Team '{_scenario.Teams[teamIndex].Name}' has a negative RetargetSeconds.");
 
@@ -104,6 +105,8 @@ namespace SWLOR.CombatSim.Engine
                     for (var copy = 1; copy <= Math.Max(1, spec.Count); copy++)
                     {
                         var name = spec.Count > 1 ? $"{spec.Name} {copy}" : spec.Name;
+                        if (!names.Add(name))
+                            throw new InvalidDataException($"Team '{_scenario.Teams[teamIndex].Name}' has more than one combatant named '{name}'.");
                         var combatant = new Combatant(name, teamIndex, spec, perkStats)
                         {
                             NextHeartbeatAt = _random.NextDouble() * HeartbeatSeconds,
@@ -138,7 +141,7 @@ namespace SWLOR.CombatSim.Engine
 
                 ProcessCast(combatant);
                 Decide(combatant);
-                ProcessAutoAttack(combatant);
+                ProcessAutoAttack(combatant, step);
 
                 if (combatant.IsStarved)
                 {
@@ -192,60 +195,62 @@ namespace SWLOR.CombatSim.Engine
             return alive.Count == 1 ? alive[0] : alive.Count == 0 ? -1 : null;
         }
 
+        // Recurring events loop until caught up, so a time step longer than their interval loses none of them.
         private void ProcessHeartbeat(Combatant combatant)
         {
-            if (_now < combatant.NextHeartbeatAt)
-                return;
+            while (_now >= combatant.NextHeartbeatAt)
+            {
+                combatant.NextHeartbeatAt += HeartbeatSeconds;
+                combatant.HeartbeatCount++;
 
-            combatant.NextHeartbeatAt += HeartbeatSeconds;
-            combatant.HeartbeatCount++;
+                combatant.StmRegenCarry += combatant.Spec.StmRegenPer30Seconds / HeartbeatsPerRegenCycle;
+                var stamina = Math.Floor(combatant.StmRegenCarry);
+                combatant.StmRegenCarry -= stamina;
+                RestoreStamina(combatant, stamina, false);
 
-            combatant.StmRegenCarry += combatant.Spec.StmRegenPer30Seconds / HeartbeatsPerRegenCycle;
-            var stamina = Math.Floor(combatant.StmRegenCarry);
-            combatant.StmRegenCarry -= stamina;
-            RestoreStamina(combatant, stamina, false);
+                if (combatant.HeartbeatCount % HeartbeatsPerRegenCycle != 0)
+                    continue;
 
-            if (combatant.HeartbeatCount % HeartbeatsPerRegenCycle != 0)
-                return;
-
-            RestoreFp(combatant, Math.Floor(combatant.Spec.FpRegenPer30Seconds), false);
-            if (combatant.Spec.HpRegenPer30Seconds > 0)
-                ApplyHealing(null, combatant, (int)combatant.Spec.HpRegenPer30Seconds, HealKind.NaturalRegeneration);
+                RestoreFp(combatant, Math.Floor(combatant.Spec.FpRegenPer30Seconds), false);
+                if (combatant.Spec.HpRegenPer30Seconds > 0)
+                    ApplyHealing(null, combatant, (int)combatant.Spec.HpRegenPer30Seconds, HealKind.NaturalRegeneration);
+            }
         }
 
         private void ProcessConvergence(Combatant combatant)
         {
-            if (combatant.ConvergenceUntil < 0 || _now < combatant.ConvergenceNextTickAt)
-                return;
-
-            if (combatant.ConvergenceNextTickAt > combatant.ConvergenceUntil + 1e-6)
+            while (combatant.ConvergenceUntil >= 0 && _now >= combatant.ConvergenceNextTickAt)
             {
-                combatant.ConvergenceUntil = -1;
-                return;
-            }
+                if (combatant.ConvergenceNextTickAt > combatant.ConvergenceUntil + 1e-6)
+                {
+                    combatant.ConvergenceUntil = -1;
+                    return;
+                }
 
-            RestoreFp(combatant, Math.Max(1, Math.Ceiling(combatant.Spec.MaxFp * ConvergencePercentPerTick / 100f)), true);
-            combatant.ConvergenceNextTickAt += ConvergenceTickSeconds;
+                RestoreFp(combatant, Math.Max(1, Math.Ceiling(combatant.Spec.MaxFp * ConvergencePercentPerTick / 100f)), true);
+                combatant.ConvergenceNextTickAt += ConvergenceTickSeconds;
+            }
         }
 
         private void ProcessHealsOverTime(Combatant target)
         {
             foreach (var (key, instance) in target.HealsOverTime.ToList())
             {
-                if (_now < instance.NextTickAt)
-                    continue;
+                while (instance.TicksLeft > 0 && _now >= instance.NextTickAt)
+                {
+                    var source = instance.Source;
+                    var amount = HealingMath.HealOverTimeTick(
+                        instance.Effect,
+                        target.Spec.MaxHp,
+                        source.Spec.Willpower,
+                        instance.AffinityMultiplier,
+                        source.OutgoingHealingPercent);
+                    ApplyHealing(source, target, amount, HealKind.OverTime);
 
-                var source = instance.Source;
-                var amount = HealingMath.HealOverTimeTick(
-                    instance.Effect,
-                    target.Spec.MaxHp,
-                    source.Spec.Willpower,
-                    instance.AffinityMultiplier,
-                    source.OutgoingHealingPercent);
-                ApplyHealing(source, target, amount, HealKind.OverTime);
+                    instance.TicksLeft--;
+                    instance.NextTickAt += instance.Effect.TickSeconds;
+                }
 
-                instance.TicksLeft--;
-                instance.NextTickAt += instance.Effect.TickSeconds;
                 if (instance.TicksLeft <= 0)
                     target.HealsOverTime.Remove(key);
             }
@@ -255,12 +260,13 @@ namespace SWLOR.CombatSim.Engine
         {
             foreach (var (key, pulse) in caster.PartyPulses.ToList())
             {
-                if (_now < pulse.NextTickAt)
-                    continue;
+                while (pulse.TicksLeft > 0 && _now >= pulse.NextTickAt)
+                {
+                    PulseParty(caster, pulse.Effect, pulse.MaxTargets);
+                    pulse.TicksLeft--;
+                    pulse.NextTickAt += pulse.Effect.TickSeconds;
+                }
 
-                PulseParty(caster, pulse.Effect, pulse.MaxTargets);
-                pulse.TicksLeft--;
-                pulse.NextTickAt += pulse.Effect.TickSeconds;
                 if (pulse.TicksLeft <= 0)
                     caster.PartyPulses.Remove(key);
             }
@@ -321,7 +327,15 @@ namespace SWLOR.CombatSim.Engine
 
                 if (effect?.Kind == EffectKind.Revive && !CanRevive(caster, target))
                 {
-                    caster.Stats.BlockedRevives++;
+                    // Counted once per reaction window (at least a second), so the count doesn't depend on the time step.
+                    if (_now + 1e-9 >= caster.NextBlockedReviveCountAt)
+                    {
+                        caster.Stats.BlockedRevives++;
+                        var window = Math.Max(1.0, caster.Spec.ReactionSeconds);
+                        caster.NextBlockedReviveCountAt = caster.NextBlockedReviveCountAt + window > _now
+                            ? caster.NextBlockedReviveCountAt + window
+                            : _now + window;
+                    }
                     continue;
                 }
 
@@ -546,18 +560,23 @@ namespace SWLOR.CombatSim.Engine
             ApplyHealing(caster, target, heal, HealKind.Revive);
         }
 
-        private void ProcessAutoAttack(Combatant attacker)
+        private void ProcessAutoAttack(Combatant attacker, double step)
         {
             var attack = attacker.Spec.AutoAttack;
-            if (attack == null || attack.AttacksPerSecond <= 0 || attacker.Casting != null || _now < attacker.NextAttackAt)
+            if (attack == null || attack.AttacksPerSecond <= 0 || attacker.Casting != null)
                 return;
 
-            attacker.NextAttackAt = Math.Max(attacker.NextAttackAt + 1.0 / attack.AttacksPerSecond, _now);
-            var target = EnsureAttackTarget(attacker);
-            if (target == null)
-                return;
+            // Attacks due during this step are all made; ones missed before it (not yet engaged) are not made up.
+            attacker.NextAttackAt = Math.Max(attacker.NextAttackAt, _now - step);
+            while (_now >= attacker.NextAttackAt)
+            {
+                attacker.NextAttackAt += 1.0 / attack.AttacksPerSecond;
+                var target = EnsureAttackTarget(attacker);
+                if (target == null)
+                    return;
 
-            RollAndApply(attacker, target, attack.Damage);
+                RollAndApply(attacker, target, attack.Damage);
+            }
         }
 
         private void ApplyAbilityDamage(Combatant attacker, Combatant target, DamageSpec damage)

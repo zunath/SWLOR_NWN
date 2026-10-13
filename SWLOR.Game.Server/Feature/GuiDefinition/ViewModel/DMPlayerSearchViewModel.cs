@@ -18,6 +18,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private const int ResultsPerPage = 20;
         private const string NotRecorded = "(not recorded yet)";
+        // Characters that fit the 150 px descriptor and 110 px account columns; the details box shows full values.
+        private const int DescriptorColumnLength = 19;
+        private const int AccountColumnLength = 14;
 
         private static readonly GuiColor OnlineColor = new(0, 200, 0);
         private static readonly GuiColor OfflineColor = new(150, 150, 150);
@@ -189,8 +192,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var result in _pageResults)
             {
                 names.Add(result.Name);
-                descriptors.Add(result.Descriptor);
-                accounts.Add(string.IsNullOrWhiteSpace(result.AccountName) ? "?" : result.AccountName);
+                descriptors.Add(DMListText.Fit(result.Descriptor, DescriptorColumnLength));
+                accounts.Add(string.IsNullOrWhiteSpace(result.AccountName) ? "?" : DMListText.Fit(result.AccountName, AccountColumnLength));
                 statuses.Add(result.IsOnline ? "Online" : "Offline");
                 statusColors.Add(result.IsOnline ? OnlineColor : OfflineColor);
                 selections.Add(false);

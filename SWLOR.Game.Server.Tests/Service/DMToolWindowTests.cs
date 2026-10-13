@@ -59,6 +59,16 @@ public class DMToolWindowTests
     }
 
     [Test]
+    public void ListText_ShortensOnlyWhatDoesNotFit()
+    {
+        DMListText.Fit("A wiry Zabrak pilot", 19).Should().Be("A wiry Zabrak pilot");
+        DMListText.Fit("A broad-shouldered Human", 19).Should().Be("A broad-shoulder...");
+        DMListText.Fit("A soft-spoken Mirialan", 19).Should().Be("A soft-spoken Mi...");
+        DMListText.Fit("A long-haired Wookiee", 17).Should().Be("A long-haired...");
+        DMListText.Fit(null, 19).Should().BeEmpty();
+    }
+
+    [Test]
     public void DMWindows_StayOpenAcrossAreaChanges()
     {
         using var validationBuild = GuiLayoutValidator.BeginValidationOnlyBuild();

@@ -17,7 +17,11 @@
 // High Noon active for 30% of the fight, ability crit swept 22/30/37% to
 // represent Deadeye Reload (before Quick Draw/Fan bonuses).
 // Twin: Dual Wield III, each line's +25% ordinary damage, +5% Barrage focus,
-// Barrage stance +20% haste / 15% less ordinary damage; Crossfire stance
+// Barrage stance +10% starting haste, +2% per stack to +20%, ordinary damage -15%.
+// This calculation assumes five maintained stacks: a sustained ceiling only.
+// Startup, the 2s stack grant gate, 6s expiry and target-switch resets are NOT
+// simulated. Startup and interruptions can reduce output below this ceiling.
+// Crossfire stance
 // extends Momentum to 18s / +10% haste / 10% less ordinary damage.
 // Barrage sustain realizes 75% of its 1 STM/6s ceiling. Crossfire's Slide/Rush
 // build expected Momentum (maximum 3); Grapple consumes it for +6 power per
@@ -132,7 +136,7 @@ for(const h of [.65,.85,.95])for(const ratio of [.5,1,2,3.625])for(const delta o
 const range=(rows,key)=>[Math.min(...rows.map(x=>x[key])),Math.max(...rows.map(x=>x[key]))];
 const ratios=(rows,keys)=>Object.fromEntries(keys.map(k=>[k,range(rows,k)]));
 console.log(JSON.stringify({
- method:"Expected damage and finite-STM budget; no engine execution or capstones",
+ method:"Expected damage and finite-STM ceiling budget; Akimbo at five stacks, no ramp startup/resets, engine execution or capstones",
  coreCases:sensitivity.length,
  coreRanges:ratios(sensitivity,["barrageToPistol","crossSoloToBarrage","crossMultiToPistol"]),
  stressCases:stress.length,

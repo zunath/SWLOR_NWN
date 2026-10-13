@@ -52,8 +52,11 @@ Balanced Grip          | +5 ACC to the off-hand blaster only.
 Controlled Burst       | Two shots at one enemy: floor(0.75D)+13 each.
 18/32; 6 SP             | Refund 3 STM if either hits. STM/CD: 9 / 30s.
 
-Akimbo Stance          | +20% Haste; ordinary Twin shots deal 15%
-                      | less damage. Activated damage is unchanged.
+Akimbo Stance          | +10% Haste. Ordinary hits on the same foe
+                      | add +2% per stack, max 5 (+20% total).
+                      | One stack per 2s; clear on target change or
+                      | 6s without an ordinary hit. Maintain at 5.
+                      | Ordinary Twin shots deal 15% less damage.
 20; 4 SP               | STM/CD: 0 / 30s. One stance at a time.
 
 Converging Fire        | After 3 ordinary hits on one enemy, +5%
@@ -152,7 +155,7 @@ Twin Suns / Final Salvo             | Global Capstone: 90s
 - Ordinary shots use their own gun's on-hit effects. New multi-shot abilities permit one weapon on-hit proc per enemy per cast and one notification to critical-trigger effects per cast. Refunds cannot multiply per impact.
 - No Evasion reduction, crowd control, free extra attacks, or cooldown resets. Capstones take 2s to activate. Movement gives no invulnerability or automatic cleanse.
 
-**Revised budget check:** at equal 69-SP investment, the representative 120s calculation puts Barrage at 103% of the existing Pistol critical build's single-target damage. Crossfire is 12% below Barrage solo and 4% below it in total damage across three foes. It buys mobility rather than superior area damage.
+**Ceiling budget check:** at equal 69-SP investment, the 120s resource calculation with Akimbo already at five stacks puts Barrage at 103% of the Pistol critical build. Crossfire is 12% below that ceiling solo and 4% below it across three foes. Ramp startup and resets lower Barrage's actual output.
 
 Those are formula/resource estimates, not playtest results. Wider stat/resource checks have larger gaps; capstone burst, low-level progression, PvP, movement, and cross-trained builds still need engine testing.
 

@@ -260,6 +260,16 @@ namespace SWLOR.Game.Server.Service
             return IsRecording ? ResolveAttribution(actor) : default;
         }
 
+        /// <summary>
+        /// The innermost open scope, or an inactive value when none is open, so queued work can
+        /// restore exactly that scope with <see cref="BeginAttribution(in CombatRecordAttribution)"/>.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static CombatRecordAttribution CaptureScope()
+        {
+            return IsRecording && _attributionDepth > 0 ? _attributions[_attributionDepth - 1] : default;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static CombatRecordAttributionScope BeginAttribution(in CombatRecordAttribution attribution)
         {
@@ -484,6 +494,26 @@ namespace SWLOR.Game.Server.Service
             Enqueue(WithTargetLocation(recordEvent, target, targetLocation));
         }
 
+        /// <summary>
+        /// Records a later pulse of a cast, such as a damage field's tick or an emitter's pulse.
+        /// </summary>
+        public static void RecordRecurringAbilityImpact(uint activator, AbilityDetail ability, AbilityImpactSummary summary)
+        {
+            if (ability == null || !IsInRecordedArea(activator))
+                return;
+
+            Enqueue(CombatRecordEvent.AbilityImpact(
+                GetParticipantId(activator),
+                0,
+                ability.Name,
+                0,
+                ability.AbilityLevel,
+                summary?.ImpactedTargetCount ?? 0,
+                summary?.CriticalHitCount ?? 0,
+                summary?.AttributedDamage ?? 0,
+                isRecurring: true));
+        }
+
         private static CombatRecordEvent WithTargetLocation(CombatRecordEvent recordEvent, uint target, Location targetLocation)
         {
             if (GetIsObjectValid(target) || !GetIsObjectValid(GetAreaFromLocation(targetLocation)))
@@ -638,19 +668,9 @@ namespace SWLOR.Game.Server.Service
                 var scope = _attributions[_attributionDepth - 1];
                 if (scope.Actor == source)
                 {
-                    // Damage the scope registered (or a triggered rider queued under it) and then
-                    // applied inside it must not be left behind for a later hit to consume. The
-                    // applied amount can differ from the registered one, so fall back to the
-                    // oldest registration made under this same scope.
-                    var registered = _pendingDamage.FindIndex(pending => IsRegisteredUnder(pending, source, target) &&
-                                                                         pending.Amount == amount);
-                    if (registered < 0)
-                    {
-                        registered = _pendingDamage.FindIndex(pending => IsRegisteredUnder(pending, source, target) &&
-                                                                         pending.Attribution.Kind == scope.Kind &&
-                                                                         pending.Attribution.Name == scope.Name);
-                    }
-
+                    // Damage registered under this scope and then applied inside it must not be
+                    // left behind for a later hit to consume.
+                    var registered = CombatRecordPendingDamageMatcher.FindScopeRegistration(_pendingDamage, source, target, amount, scope);
                     if (registered >= 0)
                         _pendingDamage.RemoveAt(registered);
                     return scope;
@@ -680,11 +700,6 @@ namespace SWLOR.Game.Server.Service
                 : new CombatRecordAttribution(source, CombatRecordSourceKind.Unattributed, null, 0, 0);
         }
 
-        private static bool IsRegisteredUnder(in CombatRecordPendingDamage pending, uint source, uint target)
-        {
-            return !pending.IsWeaponHit && pending.Source == source && pending.Target == target;
-        }
-
         /// <summary>
         /// Called by the native damage hook before the engine applies a damage effect. Lethal
         /// damage runs the death scripts inside the engine call, so the source is known to them
@@ -693,7 +708,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         internal static int BeginDamageApplication(uint source, uint target)
         {
-            if (source != target && source != 0 && source != OBJECT_INVALID)
+            // Only damage the recording keeps can name a death's last damage source.
+            if (source != target && source != 0 && source != OBJECT_INVALID && IsRecorded(target, source))
                 _lastDamageSources[target] = source;
 
             _damageApplications.Add(new CombatRecordDamageApplication { Target = target });
@@ -775,8 +791,8 @@ namespace SWLOR.Game.Server.Service
             var attribution = ResolveDamageAttribution(source, target, damage.Total, isEngineApplied);
             var sourceId = GetParticipantId(source);
             var targetId = GetParticipantId(target);
-            var temporaryBefore = Sum(poolsBefore);
-            var temporaryAfter = Sum(poolsAfter);
+            var temporaryBefore = CombatRecordTemporaryHitPointPools.Sum(poolsBefore);
+            var temporaryAfter = CombatRecordTemporaryHitPointPools.Sum(poolsAfter);
 
             Enqueue(CombatRecordEvent.DamageApplied(
                 sourceId,
@@ -789,6 +805,7 @@ namespace SWLOR.Game.Server.Service
                 hitPointsAfter,
                 temporaryBefore,
                 temporaryAfter,
+                CombatRecordTemporaryHitPointPools.SumAbsorbed(poolsBefore, poolsAfter),
                 maxHitPoints,
                 isEngineApplied));
 
@@ -796,7 +813,7 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var pool in poolsBefore)
                 {
-                    var absorbed = pool.Amount - FindAmount(poolsAfter, pool.EffectId);
+                    var absorbed = CombatRecordTemporaryHitPointPools.GetAbsorbed(pool, poolsAfter);
                     if (absorbed <= 0)
                         continue;
 
@@ -811,34 +828,6 @@ namespace SWLOR.Game.Server.Service
                         hasGrant ? grant.Attribution.Name : null));
                 }
             }
-        }
-
-        private static int Sum(CombatRecordTemporaryHitPointPool[] pools)
-        {
-            var total = 0;
-            if (pools == null)
-                return total;
-
-            foreach (var pool in pools)
-            {
-                total += pool.Amount;
-            }
-
-            return total;
-        }
-
-        private static int FindAmount(CombatRecordTemporaryHitPointPool[] pools, ulong effectId)
-        {
-            if (pools == null)
-                return 0;
-
-            foreach (var pool in pools)
-            {
-                if (pool.EffectId == effectId)
-                    return pool.Amount;
-            }
-
-            return 0;
         }
 
         #endregion
@@ -1003,7 +992,11 @@ namespace SWLOR.Game.Server.Service
         private static void RecordDeath(uint creature, uint killer)
         {
             if (!IsInRecordedArea(creature))
+            {
+                // A death outside the area still ends the life its last damage source belongs to.
+                _lastDamageSources.Remove(creature);
                 return;
+            }
 
             // Dying inside an engine damage call: record the death after that damage event.
             var index = FindDamageApplication(creature);

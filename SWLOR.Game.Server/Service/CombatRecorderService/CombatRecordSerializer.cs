@@ -69,6 +69,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                     writer.WriteNumber("targets_hit", e.Value0);
                     writer.WriteNumber("critical_hits", e.Value1);
                     writer.WriteNumber("damage_queued", e.Value2);
+                    writer.WriteBoolean("recurring", e.Flag);
                     break;
                 case CombatRecordEventType.AbilityCost:
                     WriteParticipant(writer, "caster", e.ActorId);

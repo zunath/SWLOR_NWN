@@ -67,6 +67,7 @@ namespace SWLOR.Game.Server.Native
             uint creator = OBJECT_INVALID;
             var damage = new CombatRecordDamageBreakdown();
             var hitPointsBefore = 0;
+            var maxHitPoints = 0;
             var applicationIndex = -1;
             // No managed entry point on the stack means the engine itself is applying the hit.
             var isEngineApplied = ManagedEntryDepth.Current == 0;
@@ -84,6 +85,9 @@ namespace SWLOR.Game.Server.Native
                     }
 
                     hitPointsBefore = target.GetCurrentHitPoints(1);
+                    // Read before the engine call: a lethal hit runs the death scripts inside it,
+                    // and clearing status effects there can lower the maximum.
+                    maxHitPoints = target.GetMaxHitPoints(1);
                     poolsBefore = CaptureTemporaryHitPointPools(target);
                     applicationIndex = CombatRecorder.BeginDamageApplication(creator, target.m_idSelf);
                 }
@@ -110,7 +114,7 @@ namespace SWLOR.Game.Server.Native
                 ServerManager.Executor.ExecuteInScriptContext(() =>
                     CombatRecorder.RecordDamageApplied(
                         applicationIndex, isEngineApplied, creator, targetId, damage, hitPointsBefore, hitPointsAfter,
-                        GetMaxHitPoints(targetId), poolsBefore, poolsAfter));
+                        maxHitPoints, poolsBefore, poolsAfter));
             }
             catch (Exception ex)
             {

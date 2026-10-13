@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -300,6 +301,8 @@ namespace SWLOR.Game.Server.Service
                     var summary = EndAbilityImpact(activator);
                     originatingImpact.CompleteRepeatedDamageBonusImpact(summary.ImpactedTargetCount > 0);
                     completed = true;
+                    if (CombatRecorder.IsRecording)
+                        CombatRecorder.RecordRecurringAbilityImpact(activator, ability, summary);
                     Combat.ApplyAbilityImpactEffects(activator, summary);
                 }
                 finally
@@ -359,6 +362,8 @@ namespace SWLOR.Game.Server.Service
                         {
                             _trackedAbilityImpacts[activator] = batchImpact;
                             var summary = EndAbilityImpact(activator);
+                            if (CombatRecorder.IsRecording)
+                                CombatRecorder.RecordRecurringAbilityImpact(activator, originatingImpact.Ability, summary);
                             Combat.ApplyAbilityImpactEffects(activator, summary);
                         }
                     }
@@ -3787,7 +3792,8 @@ namespace SWLOR.Game.Server.Service
                     target,
                     damage,
                     damageType,
-                    combatDamageType));
+                    combatDamageType,
+                    CombatRecorder.CaptureScope()));
             }
 
             public void FlushDamageEffects(uint activator)
@@ -3806,6 +3812,8 @@ namespace SWLOR.Game.Server.Service
                         if (!GetIsObjectValid(effect.Target))
                             continue;
 
+                        // Damage queued under a nested scope, such as a status rider, lands under it.
+                        using var effectAttribution = CombatRecorder.BeginAttribution(effect.RecorderAttribution);
                         var isDirectAbilityDamage = effect.CombatDamageType != CombatDamageType.Invalid;
                         if (isDirectAbilityDamage)
                         {
@@ -3842,18 +3850,21 @@ namespace SWLOR.Game.Server.Service
                 uint target,
                 int damage,
                 DamageType damageType,
-                CombatDamageType combatDamageType)
+                CombatDamageType combatDamageType,
+                CombatRecordAttribution recorderAttribution)
             {
                 Target = target;
                 Damage = damage;
                 DamageType = damageType;
                 CombatDamageType = combatDamageType;
+                RecorderAttribution = recorderAttribution;
             }
 
             public uint Target { get; }
             public int Damage { get; }
             public DamageType DamageType { get; }
             public CombatDamageType CombatDamageType { get; }
+            public CombatRecordAttribution RecorderAttribution { get; }
         }
     }
 }

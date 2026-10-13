@@ -7,6 +7,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -239,7 +240,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         /// <summary>
         /// Weapon hits are applied by the engine itself while damage-over-time ticks run from a
         /// closure; the recording must tell them apart, and a stat-driven autoattack refund must
-        /// carry its StatType instead of being unattributed.
+        /// carry its StatType instead of being unattributed. A recurring pulse of a cast records
+        /// its own impact, and the max HP read natively before each hit matches the script value.
         /// </summary>
         [EngineTest("Combat recorder separates weapon hits from script damage and names stat refunds", Category = "CombatRecorder", TimeoutSeconds = 90f)]
         public static async Task RecordsWeaponHitsAndStatRefunds(EngineTestContext ctx)
@@ -261,6 +263,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             Combat.SetAutoAttackHitResolutionOverride(true);
             CombatRecordWriter writer;
+            int dummyMaxHitPoints;
             try
             {
                 ctx.Assert(CombatRecorder.Start(arena.Area, "engine test weapon", out var startMessage), startMessage);
@@ -277,6 +280,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 // Bleed ticks every 6 seconds on the shared status interval.
                 await ctx.DelaySecondsAsync(13f);
+
+                Ability.BeginAbilityImpact(brawler, Ability.GetAbilityDetail(FeatType.ForceLightning1));
+                var pulse = Ability.CaptureRepeatedAbilityImpact(brawler, () => Ability.ApplyCombatImpact(
+                    brawler, dummy, GetLocation(dummy), SkillType.Force, 10, 0, null, false,
+                    resolvesHit: false, canCritical: false, useUnscaledDamage: true), baseDamage: 10);
+                Ability.EndAbilityImpact(brawler);
+                await ctx.ExecuteInCreatureContextAsync(brawler, pulse);
+                await ctx.DelaySecondsAsync(1f);
+                dummyMaxHitPoints = GetMaxHitPoints(dummy);
             }
             finally
             {
@@ -308,6 +320,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "status ticks are applied from a closure");
             ctx.Assert(hits.All(e => e.GetProperty("source_kind").GetString() != "unattributed"),
                 "every brawler hit on the dummy has a known source");
+            ctx.Assert(hits.All(e => e.GetProperty("max_hp").GetInt32() == dummyMaxHitPoints),
+                $"each hit's max HP must match the script value {dummyMaxHitPoints}");
+
+            ctx.Assert(events.Any(e => Type(e) == "ability_impact" &&
+                                       e.GetProperty("caster").GetInt32() == brawlerId &&
+                                       e.GetProperty("ability").GetString() == "Force Lightning I" &&
+                                       e.GetProperty("recurring").GetBoolean() &&
+                                       e.GetProperty("targets_hit").GetInt32() == 1 &&
+                                       e.GetProperty("damage_queued").GetInt32() > 0),
+                "a recurring pulse must record its own impact");
+            ctx.Assert(hits.Any(e => e.GetProperty("source_kind").GetString() == "ability" &&
+                                     e.GetProperty("source_name").GetString() == "Force Lightning I"),
+                "the pulse's damage must be attributed to its ability");
 
             ctx.Assert(events.Any(e => Type(e) == "resource" &&
                                        e.GetProperty("creature").GetInt32() == brawlerId &&

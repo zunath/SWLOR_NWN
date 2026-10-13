@@ -38,6 +38,32 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
             return match;
         }
 
+        /// <summary>
+        /// Returns the index of the registration that damage applied inside <paramref name="scope"/>
+        /// settles, or -1. Only deferred registrations made under the same source (kind and name)
+        /// qualify; a damage share or status rider registered meanwhile stays for its own
+        /// application. The applied amount can differ from the registered one, so an exact amount
+        /// is preferred and the oldest registration under the scope is the fallback.
+        /// </summary>
+        public static int FindScopeRegistration(
+            List<CombatRecordPendingDamage> pending, uint source, uint target, int amount, CombatRecordAttribution scope)
+        {
+            var match = FindUnderScope(pending, source, target, amount, scope, true);
+            return match >= 0 ? match : FindUnderScope(pending, source, target, amount, scope, false);
+        }
+
+        private static int FindUnderScope(
+            List<CombatRecordPendingDamage> pending, uint source, uint target, int amount, CombatRecordAttribution scope, bool exactAmount)
+        {
+            return pending.FindIndex(registration =>
+                !registration.IsWeaponHit &&
+                registration.Source == source &&
+                registration.Target == target &&
+                registration.Attribution.Kind == scope.Kind &&
+                registration.Attribution.Name == scope.Name &&
+                (!exactAmount || registration.Amount == amount));
+        }
+
         private static int Find(
             List<CombatRecordPendingDamage> pending, uint source, uint target, int amount, bool weaponHit, bool exactAmount)
         {

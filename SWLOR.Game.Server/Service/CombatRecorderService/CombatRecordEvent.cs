@@ -102,13 +102,15 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
             };
         }
 
+        /// <param name="isRecurring">True for a later pulse of a cast, such as a damage field's tick.</param>
         public static CombatRecordEvent AbilityImpact(
             int casterId, int targetId, string ability, int feat, int rank,
-            int targetsHit, int criticalHits, int attributedDamage)
+            int targetsHit, int criticalHits, int attributedDamage, bool isRecurring = false)
         {
             return new CombatRecordEvent
             {
                 Type = CombatRecordEventType.AbilityImpact,
+                Flag = isRecurring,
                 ActorId = casterId,
                 TargetId = targetId,
                 SourceKind = CombatRecordSourceKind.Ability,
@@ -158,7 +160,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
             int sourceId, int targetId, CombatRecordSourceKind kind, string sourceName, int sourceCode,
             CombatRecordDamageBreakdown damage,
             int hitPointsBefore, int hitPointsAfter,
-            int temporaryHitPointsBefore, int temporaryHitPointsAfter, int maxHitPoints,
+            int temporaryHitPointsBefore, int temporaryHitPointsAfter, int temporaryHitPointsAbsorbed, int maxHitPoints,
             bool isEngineApplied = false)
         {
             return new CombatRecordEvent
@@ -176,7 +178,8 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                 Value2 = hitPointsAfter,
                 Value3 = temporaryHitPointsBefore,
                 Value4 = temporaryHitPointsAfter,
-                Value5 = maxHitPoints
+                Value5 = maxHitPoints,
+                Value6 = temporaryHitPointsAbsorbed
             };
         }
 
@@ -357,11 +360,11 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
         }
 
         /// <summary>
-        /// Damage events: temporary HP the hit consumed.
+        /// Damage events: temporary HP the hit took from the pools that existed before it.
         /// </summary>
         public int GetTemporaryHitPointsAbsorbed()
         {
-            return Math.Max(0, Value3 - Value4);
+            return Math.Max(0, Value6);
         }
 
         public CombatRecordEvent WithLocation(float x, float y, float z)

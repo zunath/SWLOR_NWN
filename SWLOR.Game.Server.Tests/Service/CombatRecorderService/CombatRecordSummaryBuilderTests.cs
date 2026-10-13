@@ -251,6 +251,7 @@ public class CombatRecordSummaryBuilderTests
         int hpBefore, int hpAfter, int tempBefore = 0, int tempAfter = 0)
     {
         var breakdown = new CombatRecordDamageBreakdown { Physical = total };
-        return CombatRecordEvent.DamageApplied(source, target, kind, name, 0, breakdown, hpBefore, hpAfter, tempBefore, tempAfter, 120);
+        return CombatRecordEvent.DamageApplied(
+            source, target, kind, name, 0, breakdown, hpBefore, hpAfter, tempBefore, tempAfter, Math.Max(0, tempBefore - tempAfter), 120);
     }
 }

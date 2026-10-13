@@ -23,7 +23,7 @@ public class CombatRecordSerializerTests
             CombatRecordEvent.AbilityImpact(1, 2, "Force Lightning I", (int)FeatType.ForceLightning1, 1, 1, 0, 30),
             CombatRecordEvent.AbilityCost(1, "Force Lightning I", (int)FeatType.ForceLightning1, 1, 4, 0),
             CombatRecordEvent.Attack(1, 2, CombatRecordAttackResult.Critical, 85, null),
-            CombatRecordEvent.DamageApplied(1, 2, CombatRecordSourceKind.Ability, "Force Lightning I", 0, Damage(force: 30), 100, 80, 10, 0, 120),
+            CombatRecordEvent.DamageApplied(1, 2, CombatRecordSourceKind.Ability, "Force Lightning I", 0, Damage(force: 30), 100, 80, 10, 0, 10, 120),
             CombatRecordEvent.TemporaryHitPointsAbsorbed(1, 2, "FORCE_BARRIER", 10, 3, CombatRecordSourceKind.Ability, "Force Barrier I"),
             CombatRecordEvent.Healing(3, 2, CombatRecordSourceKind.Ability, "Benevolence I", 0, 50, 80, 120, 120),
             CombatRecordEvent.TemporaryHitPointsGranted(3, 2, CombatRecordSourceKind.Ability, "Force Barrier I", 0, "FORCE_BARRIER", 25, 30000),
@@ -63,7 +63,7 @@ public class CombatRecordSerializerTests
         var recordEvent = CombatRecordEvent.DamageApplied(
             4, 7, CombatRecordSourceKind.StatusEffect, "Burn", 0, damage,
             hitPointsBefore: 100, hitPointsAfter: 87,
-            temporaryHitPointsBefore: 30, temporaryHitPointsAfter: 8,
+            temporaryHitPointsBefore: 30, temporaryHitPointsAfter: 8, temporaryHitPointsAbsorbed: 22,
             maxHitPoints: 150);
 
         var json = Parse(recordEvent);
@@ -83,11 +83,39 @@ public class CombatRecordSerializerTests
     }
 
     [Test]
+    public void Damage_ReportsAbsorbedTemporaryHitPointsEvenWhenTheHitGrantsALargerPool()
+    {
+        // A 5-point pool is consumed and a 20-point low-HP shield is granted during the same hit.
+        var json = Parse(CombatRecordEvent.DamageApplied(
+            4, 7, CombatRecordSourceKind.Autoattack, null, 0, Damage(physical: 30),
+            hitPointsBefore: 40, hitPointsAfter: 15,
+            temporaryHitPointsBefore: 5, temporaryHitPointsAfter: 20, temporaryHitPointsAbsorbed: 5,
+            maxHitPoints: 100));
+
+        json.GetProperty("temp_hp_absorbed").GetInt32().Should().Be(5);
+        json.GetProperty("temp_hp_after").GetInt32().Should().Be(20);
+        json.GetProperty("hp_lost").GetInt32().Should().Be(25);
+    }
+
+    [Test]
+    public void AbilityImpact_FlagsRecurringPulses()
+    {
+        var cast = Parse(CombatRecordEvent.AbilityImpact(1, 2, "Creeping Terror I", (int)FeatType.CreepingTerror1, 1, 1, 0, 12));
+        var pulse = Parse(CombatRecordEvent.AbilityImpact(1, 0, "Creeping Terror I", 0, 1, 3, 1, 36, isRecurring: true));
+
+        cast.GetProperty("recurring").GetBoolean().Should().BeFalse();
+        pulse.GetProperty("recurring").GetBoolean().Should().BeTrue();
+        pulse.GetProperty("targets_hit").GetInt32().Should().Be(3);
+        pulse.GetProperty("critical_hits").GetInt32().Should().Be(1);
+        pulse.GetProperty("damage_queued").GetInt32().Should().Be(36);
+    }
+
+    [Test]
     public void EngineAppliedDamage_IsFlagged()
     {
         var json = Parse(CombatRecordEvent.DamageApplied(
             1, 2, CombatRecordSourceKind.Autoattack, null, 0, Damage(physical: 12),
-            50, 38, 0, 0, 50, isEngineApplied: true));
+            50, 38, 0, 0, 0, 50, isEngineApplied: true));
 
         json.GetProperty("engine_applied").GetBoolean().Should().BeTrue();
     }
@@ -98,7 +126,7 @@ public class CombatRecordSerializerTests
         var json = Parse(CombatRecordEvent.DamageApplied(
             4, 7, CombatRecordSourceKind.Ability, "Force Lightning I", 0, Damage(force: 9999),
             hitPointsBefore: 45, hitPointsAfter: -9954,
-            temporaryHitPointsBefore: 0, temporaryHitPointsAfter: 0,
+            temporaryHitPointsBefore: 0, temporaryHitPointsAfter: 0, temporaryHitPointsAbsorbed: 0,
             maxHitPoints: 1000));
 
         json.GetProperty("total").GetInt32().Should().Be(9999);
@@ -112,7 +140,7 @@ public class CombatRecordSerializerTests
         var json = Parse(CombatRecordEvent.DamageApplied(
             4, 7, CombatRecordSourceKind.Autoattack, null, 0, Damage(physical: 6),
             hitPointsBefore: -2, hitPointsAfter: -8,
-            temporaryHitPointsBefore: 0, temporaryHitPointsAfter: 0,
+            temporaryHitPointsBefore: 0, temporaryHitPointsAfter: 0, temporaryHitPointsAbsorbed: 0,
             maxHitPoints: 100));
 
         json.GetProperty("hp_lost").GetInt32().Should().Be(0);
@@ -181,7 +209,7 @@ public class CombatRecordSerializerTests
     {
         var json = Parse(CombatRecordEvent.DamageApplied(
             1, 2, CombatRecordSourceKind.Autoattack, null, (int)SkillType.Vibroblade, Damage(physical: 12),
-            50, 38, 0, 0, 50));
+            50, 38, 0, 0, 0, 50));
 
         json.GetProperty("source_kind").GetString().Should().Be("autoattack");
         json.GetProperty("source_name").GetString().Should().Be(nameof(SkillType.Vibroblade));

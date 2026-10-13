@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         }
 
         /// <summary>
-        /// Renders the player's existing ticket status, with a refund option at the origin starport.
+        /// Renders the player's existing ticket status, with a refund option at any starport.
         /// </summary>
         private void BuildTicketedPage(ConversationMenuPage page, uint player, PlanetType terminalPlanet, ShuttleRide ride)
         {
@@ -143,18 +143,17 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                           "Flight time: " + transit + "\n\n" +
                           "Be within 15 meters of the flights terminal when boarding is called or you will miss this shuttle.";
 
-            if (terminalPlanet == ride.Origin)
+            if (terminalPlanet != ride.Origin)
             {
-                page.AddResponse($"Refund Ticket ({ride.FarePaid} cr)", () =>
-                {
-                    Shuttle.RefundTicket(player);
-                    GoToPage(MainPageId, false);
-                });
+                var originName = Planet.GetPlanetByType(ride.Origin).Name;
+                page.Header += $"\n\nThis ticket departs from {originName}. You may refund it here to book a different flight.";
             }
-            else
+
+            page.AddResponse($"Refund Ticket ({ride.FarePaid} cr)", () =>
             {
-                page.Header += "\n\nRefunds are only available at your departure starport.";
-            }
+                Shuttle.RefundTicket(player);
+                GoToPage(MainPageId, false);
+            });
         }
 
         /// <summary>

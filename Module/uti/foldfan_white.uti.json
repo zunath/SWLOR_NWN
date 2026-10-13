@@ -26,12 +26,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A folding fan carried as a personal accessory."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A folding fan carried as a personal accessory."
     }
   },
   "Identified": {

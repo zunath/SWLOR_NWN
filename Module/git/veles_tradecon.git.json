@@ -1485,11 +1485,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Robes worn over the body."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Robes worn over the body."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -2668,11 +2672,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Robes worn over the body."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Robes worn over the body."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -3851,11 +3859,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -4871,11 +4883,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -5891,11 +5907,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -7111,11 +7131,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -8128,12 +8152,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Body armor worn over the torso."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Body armor worn over the torso."
                 }
               },
               "Identified": {
@@ -9143,12 +9169,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Clothing worn as a complete outfit."
                 }
               },
               "Identified": {
@@ -72293,11 +72321,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -72414,11 +72446,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -72535,11 +72571,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -72656,11 +72696,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -72777,11 +72821,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -72898,11 +72946,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -73019,11 +73071,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -73140,11 +73196,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -73261,11 +73321,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -73382,11 +73446,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -73503,11 +73571,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -73624,11 +73696,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -73745,11 +73821,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -73866,11 +73946,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -73987,11 +74071,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -74108,11 +74196,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -74229,11 +74321,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -74350,11 +74446,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "Flowers carried as a decoration."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -74763,7 +74863,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -77644,12 +77743,14 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A folding fan carried as a personal accessory."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A folding fan carried as a personal accessory."
                       }
                     },
                     "Identified": {
@@ -78017,12 +78118,14 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A folding fan carried as a personal accessory."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A folding fan carried as a personal accessory."
                       }
                     },
                     "Identified": {
@@ -79140,12 +79243,14 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A handheld umbrella for shelter from the weather."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A handheld umbrella for shelter from the weather."
                       }
                     },
                     "Identified": {
@@ -79263,12 +79368,14 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A handheld umbrella for shelter from the weather."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A handheld umbrella for shelter from the weather."
                       }
                     },
                     "Identified": {
@@ -79386,12 +79493,14 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A handheld umbrella for shelter from the weather."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A handheld umbrella for shelter from the weather."
                       }
                     },
                     "Identified": {
@@ -79509,12 +79618,14 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A handheld umbrella for shelter from the weather."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A handheld umbrella for shelter from the weather."
                       }
                     },
                     "Identified": {

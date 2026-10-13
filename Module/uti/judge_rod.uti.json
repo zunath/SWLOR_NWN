@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 14175,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A fishing rod for use at a fishing spot."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A fishing rod for use at a fishing spot."
     }
   },
   "Identified": {

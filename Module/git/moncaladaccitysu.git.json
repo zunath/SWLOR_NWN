@@ -339,12 +339,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Clothing worn as a complete outfit."
                 }
               },
               "Identified": {
@@ -518,16 +520,15 @@
                 "value": 0
               },
               "DescIdentified": {
-                "id": 14175,
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A fishing rod for use at a fishing spot."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A fishing rod for use at a fishing spot."
                 }
               },
               "Identified": {
@@ -1559,11 +1560,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Body armor worn over the torso."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Body armor worn over the torso."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -2673,11 +2678,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -2849,16 +2858,15 @@
                 "value": 0
               },
               "DescIdentified": {
-                "id": 14175,
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A fishing rod for use at a fishing spot."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A fishing rod for use at a fishing spot."
                 }
               },
               "Identified": {
@@ -52772,11 +52780,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A bracer worn around the forearm."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A bracer worn around the forearm."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -53623,11 +53635,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A tunic worn over the torso."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A tunic worn over the torso."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -53936,7 +53952,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -54352,7 +54367,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -54830,7 +54844,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -55135,13 +55148,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Identified": {
@@ -55833,16 +55846,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {
@@ -56023,16 +56035,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {
@@ -56213,7 +56224,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -56418,7 +56428,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -56631,7 +56640,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -58846,11 +58854,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A bracer worn around the forearm."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A bracer worn around the forearm."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -59697,11 +59709,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A tunic worn over the torso."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A tunic worn over the torso."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -60010,7 +60026,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -60426,7 +60441,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -60904,7 +60918,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -61209,13 +61222,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Identified": {
@@ -61907,16 +61920,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {
@@ -62097,16 +62109,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {
@@ -62287,7 +62298,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -62492,7 +62502,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -64715,7 +64724,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -65183,11 +65191,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A bracer worn around the forearm."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A bracer worn around the forearm."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -66034,11 +66046,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A tunic worn over the torso."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A tunic worn over the torso."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -66347,7 +66363,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -66794,7 +66809,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -67272,7 +67286,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -67579,13 +67592,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Identified": {
@@ -68308,16 +68321,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {
@@ -68498,16 +68510,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {
@@ -68688,7 +68699,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -68924,7 +68934,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -71147,7 +71156,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -71615,11 +71623,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A bracer worn around the forearm."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A bracer worn around the forearm."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -72497,11 +72509,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A tunic worn over the torso."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A tunic worn over the torso."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -72810,7 +72826,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -73257,7 +73272,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -73735,7 +73749,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -74071,13 +74084,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Identified": {
@@ -74802,16 +74815,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {
@@ -74992,16 +75004,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {
@@ -75182,7 +75193,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -75418,7 +75428,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -77641,7 +77650,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -78109,11 +78117,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A bracer worn around the forearm."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A bracer worn around the forearm."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -79115,11 +79127,15 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A tunic worn over the torso."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "A tunic worn over the torso."
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -79428,7 +79444,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -79906,7 +79921,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -80446,7 +80460,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -80813,13 +80826,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Identified": {
@@ -81637,16 +81650,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {
@@ -81827,16 +81839,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {
@@ -82017,7 +82028,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -82284,7 +82294,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -84569,7 +84578,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -84846,16 +84854,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {
@@ -85036,16 +85043,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {
@@ -85226,16 +85232,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {
@@ -85416,16 +85421,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {
@@ -85606,16 +85610,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {

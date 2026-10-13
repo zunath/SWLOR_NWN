@@ -339,11 +339,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -515,16 +519,15 @@
                 "value": 0
               },
               "DescIdentified": {
-                "id": 14175,
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A fishing rod for use at a fishing spot."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A fishing rod for use at a fishing spot."
                 }
               },
               "Identified": {
@@ -2600,11 +2603,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -4187,11 +4194,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -5193,12 +5204,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Clothing worn as a complete outfit."
                 }
               },
               "Identified": {
@@ -6200,12 +6213,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Clothing worn as a complete outfit."
                 }
               },
               "Identified": {
@@ -118559,16 +118574,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {
@@ -118749,16 +118763,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {
@@ -118939,16 +118952,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {
@@ -119129,16 +119141,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {
@@ -119319,16 +119330,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 14175,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A fishing rod for use at a fishing spot."
                       }
                     },
                     "Identified": {

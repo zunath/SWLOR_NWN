@@ -319,11 +319,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -1327,11 +1331,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -2331,11 +2339,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -3335,11 +3347,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -4339,11 +4355,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -5343,11 +5363,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn as a complete outfit."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -71349,13 +71373,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Identified": {
@@ -71752,13 +71776,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A tunic worn over the torso."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A tunic worn over the torso."
                       }
                     },
                     "Identified": {
@@ -72217,13 +72241,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A tunic worn over the torso."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A tunic worn over the torso."
                       }
                     },
                     "Identified": {
@@ -73491,7 +73515,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 100926,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -73727,7 +73750,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -73963,7 +73985,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -74230,7 +74251,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -74497,7 +74517,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -74747,7 +74766,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -75057,7 +75075,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -75609,7 +75626,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -75867,7 +75883,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -76156,7 +76171,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -76439,16 +76453,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A pair of gloves worn over the hands."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A pair of gloves worn over the hands."
                       }
                     },
                     "Identified": {
@@ -76737,16 +76750,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A pair of gloves worn over the hands."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A pair of gloves worn over the hands."
                       }
                     },
                     "Identified": {
@@ -77121,13 +77133,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Identified": {
@@ -77555,13 +77567,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Identified": {
@@ -77989,13 +78001,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Identified": {
@@ -78423,13 +78435,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Identified": {
@@ -78857,13 +78869,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Identified": {
@@ -79291,13 +79303,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Identified": {
@@ -79756,13 +79768,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Identified": {
@@ -80252,13 +80264,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Identified": {
@@ -80748,13 +80760,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Identified": {
@@ -81244,13 +81256,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "Body armor worn over the torso."
                       }
                     },
                     "Identified": {
@@ -84784,7 +84796,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -84989,7 +85000,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -85225,7 +85235,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -85492,7 +85501,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -85759,7 +85767,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -86026,7 +86033,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -86231,7 +86237,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -86529,7 +86534,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -86827,7 +86831,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -87125,7 +87128,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56605,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -87423,7 +87425,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -87673,7 +87674,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -87954,7 +87954,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -88235,7 +88234,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -88516,7 +88514,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -88797,7 +88794,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -89076,7 +89072,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -89417,7 +89412,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -89758,7 +89752,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -90099,7 +90092,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 13336,
                       "type": "cexolocstring",
                       "value": {}
                     },
@@ -91742,7 +91734,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -91969,7 +91960,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -92258,7 +92248,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -92547,7 +92536,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -92836,7 +92824,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -93117,16 +93104,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A pair of gloves worn over the hands."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A pair of gloves worn over the hands."
                       }
                     },
                     "Identified": {
@@ -93322,16 +93308,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A pair of gloves worn over the hands."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A pair of gloves worn over the hands."
                       }
                     },
                     "Identified": {
@@ -93620,16 +93605,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A pair of gloves worn over the hands."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A pair of gloves worn over the hands."
                       }
                     },
                     "Identified": {
@@ -93949,16 +93933,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A pair of gloves worn over the hands."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A pair of gloves worn over the hands."
                       }
                     },
                     "Identified": {
@@ -94278,16 +94261,15 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56620,
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A pair of gloves worn over the hands."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A pair of gloves worn over the hands."
                       }
                     },
                     "Identified": {
@@ -94615,7 +94597,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -94873,7 +94854,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -95193,7 +95173,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -95513,7 +95492,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -95833,7 +95811,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 66560,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -120545,7 +120522,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -120781,7 +120757,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -121048,7 +121023,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -121315,7 +121289,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -121551,7 +121524,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -121818,7 +121790,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -122093,7 +122064,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -122298,7 +122268,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -122534,7 +122503,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -122770,7 +122738,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -123037,7 +123004,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -123304,7 +123270,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -123540,7 +123505,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -123838,7 +123802,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -124136,7 +124099,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -124434,7 +124396,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 56640,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -124732,7 +124693,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -124937,7 +124897,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -125173,7 +125132,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -125409,7 +125367,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -125676,7 +125633,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -125943,7 +125899,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -126148,7 +126103,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -126446,7 +126400,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -126744,7 +126697,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -127042,7 +126994,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 48931,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""
@@ -127618,7 +127569,6 @@
                       "value": 0
                     },
                     "DescIdentified": {
-                      "id": 64105,
                       "type": "cexolocstring",
                       "value": {
                         "0": ""

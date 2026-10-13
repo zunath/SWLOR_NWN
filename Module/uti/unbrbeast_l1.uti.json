@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A cowl worn over the head and neck."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A cowl worn over the head and neck."
     }
   },
   "Identified": {

@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Hand wraps worn around the palms and knuckles."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Hand wraps worn around the palms and knuckles."
     }
   },
   "Identified": {

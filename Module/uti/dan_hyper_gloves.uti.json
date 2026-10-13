@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A pair of gloves worn over the hands."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A pair of gloves worn over the hands."
+    }
   },
   "Identified": {
     "type": "byte",

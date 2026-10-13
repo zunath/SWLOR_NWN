@@ -339,12 +339,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A uniform worn as bodywear."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A uniform worn as bodywear."
                 }
               },
               "Identified": {

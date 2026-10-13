@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Combat gloves with a textured grip and reinforced palms."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Combat gloves with a textured grip and reinforced palms."
     }
   },
   "Identified": {

@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A pair of gloves worn over the hands."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A pair of gloves worn over the hands."
     }
   },
   "Identified": {

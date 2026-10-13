@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A tunic worn over the torso."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A tunic worn over the torso."
     }
   },
   "Identified": {

@@ -7348,11 +7348,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Robes worn over the body."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Robes worn over the body."
+                }
               },
               "Identified": {
                 "type": "byte",

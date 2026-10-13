@@ -1488,6 +1488,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(target))
                 return;
 
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(attacker, StatType.AutoAttackCycleDamage);
             ApplyTriggeredDamage(
                 attacker,
                 target,
@@ -1537,6 +1538,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _sourceStatusAutoAttackCycleCounts[key] = 0;
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(attacker, StatType.SourceStatusAutoAttackCycleDamage);
             ApplyTriggeredDamage(attacker, defender, damage, damageType, skillType);
         }
 
@@ -1576,6 +1578,7 @@ namespace SWLOR.Game.Server.Service
                     if (!GetIsObjectValid(attacker))
                         return;
 
+                    using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(attacker, StatType.AutoAttackSplashDamage);
                     ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Smoke_Puff), origin);
                     if (GetIsObjectValid(defender) && !GetIsDead(defender))
                         ApplyTriggeredDamage(attacker, defender, damage, CombatDamageType.Physical, skillType);
@@ -3795,6 +3798,7 @@ namespace SWLOR.Game.Server.Service
                     source: defender);
             }
 
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.MeleeDamageTakenPoisonDamage);
             var appliedDamage = ApplyTriggeredDamage(defender, attacker, damage, CombatDamageType.Poison);
             if (appliedDamage <= 0)
                 return;
@@ -3944,11 +3948,14 @@ namespace SWLOR.Game.Server.Service
                     attacker,
                     retaliationDMG,
                     skillType);
+                using var retaliationAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.GuardRetaliationDMG);
                 ApplyTriggeredDamage(defender, attacker, retaliationDamage, CombatDamageType.Physical, skillType);
             }
 
             if (pulseDMG <= 0)
                 return;
+
+            using var pulseAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.GuardedHitPulseDMG);
 
             var radius = Stat.GetStatAdjustment(defender, StatType.GuardedHitPulseRadiusMeters);
             if (radius <= 0)
@@ -5179,8 +5186,10 @@ namespace SWLOR.Game.Server.Service
             // runaway reflect cascades and mis-targeted reflects with effects such as Blazing Spikes. Defer the
             // Force portion to the next frame so it lands as a clean, separate damage instance off the attack's
             // stack; the physical carve above stays synchronous so the physical hit is correctly reduced.
+            var recorderAttribution = CombatRecorder.CaptureAttackAttribution(attacker);
             DelayCommand(0.0f, () =>
             {
+                using var recorderScope = CombatRecorder.BeginAttribution(recorderAttribution);
                 if (GetIsObjectValid(attacker) && GetIsObjectValid(defender))
                     ApplyTriggeredDamage(
                         attacker,
@@ -7812,6 +7821,10 @@ namespace SWLOR.Game.Server.Service
                         EffectDamage(damage, effectDamageType),
                         target));
             }
+            else if (CombatRecorder.IsRecording)
+            {
+                CombatRecorder.CancelDeferredDamage(activator, target, damage);
+            }
 
             ApplyDamageDealtEffects(activator, target, damage, skillType, damageType, CombatDamageDeliveryType.Triggered);
             StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered);
@@ -7913,6 +7926,7 @@ namespace SWLOR.Game.Server.Service
             if (!TryUseStatTrigger(defender, StatType.RangedDeflectionReflectionPercent, DeflectingReturnCooldownSeconds))
                 return 0;
 
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.RangedDeflectionReflectionPercent);
             var appliedDamage = ApplyTriggeredDamage(defender, attacker, reflected, CombatDamageType.Force);
             if (appliedDamage <= 0)
                 return 0;

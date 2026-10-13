@@ -39,29 +39,17 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
         }
 
         /// <summary>
-        /// Returns the index of the registration that damage applied inside <paramref name="scope"/>
-        /// settles, or -1. Only deferred registrations made under the same source (kind and name)
-        /// qualify; a damage share or status rider registered meanwhile stays for its own
-        /// application. The applied amount can differ from the registered one, so an exact amount
-        /// is preferred and the oldest registration under the scope is the fallback.
+        /// Returns the index of the newest deferred registration for this source, target and
+        /// amount, or -1: the one just made for damage that is now queued with an ability's own
+        /// hits instead of being dispatched later.
         /// </summary>
-        public static int FindScopeRegistration(
-            List<CombatRecordPendingDamage> pending, uint source, uint target, int amount, CombatRecordAttribution scope)
+        public static int FindNewestDeferred(List<CombatRecordPendingDamage> pending, uint source, uint target, int amount)
         {
-            var match = FindUnderScope(pending, source, target, amount, scope, true);
-            return match >= 0 ? match : FindUnderScope(pending, source, target, amount, scope, false);
-        }
-
-        private static int FindUnderScope(
-            List<CombatRecordPendingDamage> pending, uint source, uint target, int amount, CombatRecordAttribution scope, bool exactAmount)
-        {
-            return pending.FindIndex(registration =>
+            return pending.FindLastIndex(registration =>
                 !registration.IsWeaponHit &&
                 registration.Source == source &&
                 registration.Target == target &&
-                registration.Attribution.Kind == scope.Kind &&
-                registration.Attribution.Name == scope.Name &&
-                (!exactAmount || registration.Amount == amount));
+                registration.Amount == amount);
         }
 
         private static int Find(

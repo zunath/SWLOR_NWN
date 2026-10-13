@@ -109,67 +109,30 @@ public class CombatRecordPendingDamageMatcherTests
     }
 
     [Test]
-    public void ScopedHit_LeavesASameAmountDamageShareRegistrationForTheShare()
+    public void NewestDeferred_IsTheRegistrationJustMadeForThatHit()
     {
-        // An area ability hits the warded target, registering the share, then hits the share
-        // target directly for the same amount.
-        var scope = AbilityScope("Force Storm I");
         var pending = new List<CombatRecordPendingDamage>
         {
-            Deferred(amount: 12, name: "Force Storm I") with
-            {
-                Attribution = new CombatRecordAttribution(Attacker, CombatRecordSourceKind.DamageShare, "Force Storm I", 0, 0)
-            }
+            Deferred(amount: 5, name: "Force Lightning I"),
+            Weapon(amount: 5),
+            Deferred(amount: 5, name: "Force Lightning I"),
+            Deferred(amount: 7, name: "Force Lightning I")
         };
 
-        FindUnder(pending, amount: 12, scope).Should().Be(-1);
+        CombatRecordPendingDamageMatcher.FindNewestDeferred(pending, Attacker, Defender, 5).Should().Be(2);
     }
 
     [Test]
-    public void ScopedHit_LeavesAStatusRiderRegistration()
+    public void NewestDeferred_IgnoresWeaponHitsOtherAmountsAndOtherPairs()
     {
-        var pending = new List<CombatRecordPendingDamage> { Deferred(amount: 12, name: "Burn") };
-
-        FindUnder(pending, amount: 12, AbilityScope("Force Storm I")).Should().Be(-1);
-    }
-
-    [Test]
-    public void ScopedHit_SettlesItsOwnRegistrationByExactAmountThenOldest()
-    {
-        var scope = AbilityScope("Force Storm I");
         var pending = new List<CombatRecordPendingDamage>
         {
-            Deferred(amount: 5, name: "Burn"),
-            Scoped(amount: 7, scope),
-            Scoped(amount: 9, scope)
+            Weapon(amount: 5),
+            Deferred(amount: 6, name: "Burn"),
+            Deferred(amount: 5, name: "Burn") with { Target = 98 }
         };
 
-        FindUnder(pending, amount: 9, scope).Should().Be(2);
-        FindUnder(pending, amount: 11, scope).Should().Be(1, "a changed amount falls back to the oldest registration under the scope");
-    }
-
-    [Test]
-    public void ScopedHit_IgnoresWeaponRegistrations()
-    {
-        var scope = new CombatRecordAttribution(Attacker, CombatRecordSourceKind.Autoattack, null, 0, 0);
-        var pending = new List<CombatRecordPendingDamage> { Weapon(amount: 12) };
-
-        FindUnder(pending, amount: 12, scope).Should().Be(-1);
-    }
-
-    private static int FindUnder(List<CombatRecordPendingDamage> pending, int amount, CombatRecordAttribution scope)
-    {
-        return CombatRecordPendingDamageMatcher.FindScopeRegistration(pending, Attacker, Defender, amount, scope);
-    }
-
-    private static CombatRecordAttribution AbilityScope(string ability)
-    {
-        return new CombatRecordAttribution(Attacker, CombatRecordSourceKind.Ability, ability, 0, 1);
-    }
-
-    private static CombatRecordPendingDamage Scoped(int amount, CombatRecordAttribution scope)
-    {
-        return Deferred(amount, scope.Name) with { Attribution = scope };
+        CombatRecordPendingDamageMatcher.FindNewestDeferred(pending, Attacker, Defender, 5).Should().Be(-1);
     }
 
     private static int Find(List<CombatRecordPendingDamage> pending, int amount, bool isEngineApplied)

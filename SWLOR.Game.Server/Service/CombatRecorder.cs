@@ -298,21 +298,40 @@ namespace SWLOR.Game.Server.Service
             return IsRecording && _attributionDepth > 0 ? _attributions[_attributionDepth - 1] : default;
         }
 
+        /// <summary>
+        /// Attribution for damage split off a hit and applied later: the attacker's own open scope
+        /// (the ability that hit), or a weapon swing when no scope is open.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static CombatRecordAttribution CaptureAttackAttribution(uint attacker)
+        {
+            return IsRecording ? ResolveAttackAttribution(attacker) : default;
+        }
+
+        private static CombatRecordAttribution ResolveAttackAttribution(uint attacker)
+        {
+            if (_attributionDepth > 0 && IsOwnedBy(_attributions[_attributionDepth - 1], attacker))
+                return _attributions[_attributionDepth - 1];
+
+            return new CombatRecordAttribution(
+                attacker, CombatRecordSourceKind.Autoattack, null, (int)Combat.GetEquippedWeaponSkillType(attacker), 0);
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static CombatRecordAttributionScope BeginAttribution(in CombatRecordAttribution attribution)
         {
             return IsRecording && attribution.Actor != 0
-                ? PushAttribution(attribution.Actor, attribution.Kind, attribution.Name, attribution.Code, attribution.Rank)
+                ? PushAttribution(attribution.Actor, attribution.Kind, attribution.Name, attribution.Code, attribution.Rank, attribution.Owner)
                 : default;
         }
 
         private static CombatRecordAttributionScope PushAttribution(
-            uint actor, CombatRecordSourceKind kind, string name, int code, int rank)
+            uint actor, CombatRecordSourceKind kind, string name, int code, int rank, uint owner = 0)
         {
             var restoreDepth = _attributionDepth;
             if (_attributionDepth < MaximumAttributionDepth)
             {
-                _attributions[_attributionDepth] = new CombatRecordAttribution(actor, kind, name, code, rank);
+                _attributions[_attributionDepth] = new CombatRecordAttribution(actor, kind, name, code, rank, owner);
                 _attributionDepth++;
             }
 
@@ -322,7 +341,7 @@ namespace SWLOR.Game.Server.Service
         private static CombatRecordAttributionScope PushStatusEffectAttribution(uint source, uint creature, IStatusEffect statusEffect)
         {
             var actor = GetIsObjectValid(source) ? source : creature;
-            return PushAttribution(actor, CombatRecordSourceKind.StatusEffect, statusEffect.Name, 0, 0);
+            return PushAttribution(actor, CombatRecordSourceKind.StatusEffect, statusEffect.Name, 0, 0, creature);
         }
 
         private static CombatRecordAttributionScope PushAbilityFeatAttribution(uint activator, FeatType feat)
@@ -372,10 +391,15 @@ namespace SWLOR.Game.Server.Service
         {
             if (!GetIsObjectValid(actor))
                 return ResolveAttribution(actor);
-            if (_attributionDepth > 0 && _attributions[_attributionDepth - 1].Actor == actor)
+            if (_attributionDepth > 0 && IsOwnedBy(_attributions[_attributionDepth - 1], actor))
                 return _attributions[_attributionDepth - 1];
 
             return ResolveActiveAbilityAttribution(actor);
+        }
+
+        private static bool IsOwnedBy(in CombatRecordAttribution scope, uint actor)
+        {
+            return scope.Actor == actor || scope.Owner == actor;
         }
 
         private static CombatRecordAttribution ResolveActiveAbilityAttribution(uint actor)
@@ -731,6 +755,18 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Withdraws the registration <see cref="ExpectDeferredDamage"/> just made for triggered
+        /// damage that was queued with an ability's own hits: it lands inside that ability's flush,
+        /// under the scope it was queued in, and must not be left for a later hit to match.
+        /// </summary>
+        public static void CancelDeferredDamage(uint source, uint target, int amount)
+        {
+            var registered = CombatRecordPendingDamageMatcher.FindNewestDeferred(_pendingDamage, source, target, amount);
+            if (registered >= 0)
+                _pendingDamage.RemoveAt(registered);
+        }
+
+        /// <summary>
         /// Registers hit points an ability spends by damaging its own caster.
         /// </summary>
         public static void ExpectHitPointCost(uint activator, int amount)
@@ -779,15 +815,8 @@ namespace SWLOR.Game.Server.Service
             if (_attributionDepth > 0)
             {
                 var scope = _attributions[_attributionDepth - 1];
-                if (scope.Actor == source)
-                {
-                    // Damage registered under this scope and then applied inside it must not be
-                    // left behind for a later hit to consume.
-                    var registered = CombatRecordPendingDamageMatcher.FindScopeRegistration(_pendingDamage, source, target, amount, scope);
-                    if (registered >= 0)
-                        _pendingDamage.RemoveAt(registered);
+                if (IsOwnedBy(scope, source))
                     return scope;
-                }
             }
 
             var match = CombatRecordPendingDamageMatcher.FindMatch(
@@ -897,6 +926,13 @@ namespace SWLOR.Game.Server.Service
             CombatRecordTemporaryHitPointPool[] poolsBefore,
             CombatRecordTemporaryHitPointPool[] poolsAfter)
         {
+            // A swing whose damage was carved away entirely applies an empty damage effect.
+            if (damage.Total <= 0 && hitPointsAfter == hitPointsBefore &&
+                CombatRecordTemporaryHitPointPools.SumAbsorbed(poolsBefore, poolsAfter) == 0)
+            {
+                return;
+            }
+
             var attribution = ResolveDamageAttribution(source, target, damage.Total, isEngineApplied);
             var sourceId = GetParticipantId(source);
             var targetId = GetParticipantId(target);

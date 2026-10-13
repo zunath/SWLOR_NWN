@@ -242,6 +242,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         /// closure; the recording must tell them apart, and a stat-driven autoattack refund must
         /// carry its StatType instead of being unattributed. A recurring pulse of a cast records
         /// its own impact, and the max HP read natively before each hit matches the script value.
+        /// The Force portion a defender's stat splits off an ability hit stays with that ability,
+        /// and an ally's Blazing Spikes on the defender reflects as Blazing Spikes.
         /// </summary>
         [EngineTest("Combat recorder separates weapon hits from script damage and names stat refunds", Category = "CombatRecorder", TimeoutSeconds = 90f)]
         public static async Task RecordsWeaponHitsAndStatRefunds(EngineTestContext ctx)
@@ -251,10 +253,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var arena = await QuietArena.CreateAsync(ctx);
             var dummy = arena.Spawn(CreatureResref, 0f, 0f);
             var brawler = arena.Spawn(CreatureResref, 1.5f, 180f);
+            var pyro = arena.Spawn(CreatureResref, -9f, 0f);
             await ctx.DelaySecondsAsync(1f);
 
             Prepare(ctx, dummy, "Recorder Dummy", 1000);
             Prepare(ctx, brawler, "Recorder Brawler", 1000);
+            Prepare(ctx, pyro, "Recorder Pyro", 1000);
+            TemporaryStatModifier.Add(dummy, StatType.IncomingPhysicalToForceConversionPercent, 50, 120f);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), dummy, 120f);
             TemporaryStatModifier.Add(brawler, StatType.AutoAttackFPRestore, 1, 120f);
             Stat.ReduceFP(brawler, 50);
@@ -271,6 +276,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 ctx.Assert(StatusEffect.ApplyStatusEffect(brawler, dummy, typeof(BleedStatusEffect), 30f),
                     "Bleed applies to the dummy");
+                ctx.Assert(StatusEffect.ApplyStatusEffect(pyro, dummy, typeof(BlazingSpikesStatusEffect), 60f),
+                    "the pyro's Blazing Spikes applies to the dummy");
                 var startingHitPoints = GetCurrentHitPoints(dummy);
                 AssignCommand(brawler, () => ActionAttack(dummy));
                 await ctx.WaitUntilAsync(
@@ -309,9 +316,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                                          e.GetProperty("target").GetInt32() == dummyId).ToList();
 
             var weaponHits = hits.Where(e => e.GetProperty("source_kind").GetString() == "autoattack").ToList();
-            ctx.Assert(weaponHits.Count > 0, "forced autoattack hits must be recorded as autoattack damage");
-            ctx.Assert(weaponHits.All(e => e.GetProperty("engine_applied").GetBoolean()),
-                "weapon hits are applied by the engine, outside any script");
+            ctx.Assert(weaponHits.Any(e => e.GetProperty("engine_applied").GetBoolean()),
+                "forced autoattack hits must be recorded as engine-applied autoattack damage");
+            ctx.Assert(hits.Any(e => e.GetProperty("source_kind").GetString() == "ability" &&
+                                     e.GetProperty("source_name").GetString() == "Force Lightning I" &&
+                                     !e.GetProperty("engine_applied").GetBoolean() &&
+                                     e.GetProperty("damage").TryGetProperty("force", out _)),
+                "the Force portion split off the pulse's physical hit must stay with Force Lightning I");
 
             var bleedTicks = hits.Where(e => e.GetProperty("source_kind").GetString() == "status_effect" &&
                                              e.GetProperty("source_name").GetString() == "Bleed").ToList();
@@ -320,6 +331,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "status ticks are applied from a closure");
             ctx.Assert(hits.All(e => e.GetProperty("source_kind").GetString() != "unattributed"),
                 "every brawler hit on the dummy has a known source");
+            ctx.Assert(events.Any(e => Type(e) == "damage" &&
+                                       e.GetProperty("source").GetInt32() == dummyId &&
+                                       e.GetProperty("target").GetInt32() == brawlerId &&
+                                       e.GetProperty("source_kind").GetString() == "status_effect" &&
+                                       e.GetProperty("source_name").GetString() == "Blazing Spikes"),
+                "the dummy's reflection must belong to the Blazing Spikes the pyro applied");
             ctx.Assert(hits.All(e => e.GetProperty("max_hp").GetInt32() == dummyMaxHitPoints),
                 $"each hit's max HP must match the script value {dummyMaxHitPoints}");
 
@@ -376,6 +393,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(defender, StatType.LowHPTemporaryHPPercent, 5, 120f);
             TemporaryStatModifier.Add(defender, StatType.LowHPTemporaryHPDurationSeconds, 60, 120f);
             TemporaryStatModifier.Add(defender, StatType.ForceDamageReflectionPercentAdjustment, 50, 120f);
+            TemporaryStatModifier.Add(attacker, StatType.DarkForceDamageHPCostPercent, 2, 120f);
             CreaturePlugin.AddFeat(attacker, FeatType.ForceLightning1);
             CreaturePlugin.AddFeat(medic, FeatType.KoltoMist1);
             ctx.MakeHostile(attacker);
@@ -448,6 +466,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                                        e.GetProperty("source_kind").GetString() == "status_effect" &&
                                        e.GetProperty("source_name").GetString() == "Soul Devourer Stance"),
                 "the stance recoil must be attributed to Soul Devourer Stance");
+            ctx.Assert(events.Any(e => Type(e) == "damage" &&
+                                       e.GetProperty("source").GetInt32() == attackerId &&
+                                       e.GetProperty("target").GetInt32() == attackerId &&
+                                       e.GetProperty("source_kind").GetString() == "ability_cost" &&
+                                       e.GetProperty("source_name").GetString() == "Force Lightning I" &&
+                                       e.GetProperty("total").GetInt32() == 20),
+                "the Dark Force HP cost must be recorded as Force Lightning I's cost");
 
             var shieldAbsorbs = events.Where(e => Type(e) == "temp_hp_absorb" &&
                                                   e.GetProperty("effect_key").GetString() == "LOW_HP_SHIELD").ToList();

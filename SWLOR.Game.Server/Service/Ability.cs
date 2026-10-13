@@ -2870,7 +2870,11 @@ namespace SWLOR.Game.Server.Service
             var hpCost = Math.Max(1, GetMaxHitPoints(activator) * hpCostPercent / 100);
             hpCost = Math.Min(hpCost, Math.Max(0, GetCurrentHitPoints(activator) - 1));
             if (hpCost > 0)
+            {
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.ExpectHitPointCost(activator, hpCost);
                 AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(hpCost), activator));
+            }
         }
 
         private static int CalculateUnscaledCombatImpactDamage(

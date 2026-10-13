@@ -12,13 +12,20 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
         public int Code;
         public int Rank;
 
-        public CombatRecordAttribution(uint actor, CombatRecordSourceKind kind, string name, int code, int rank)
+        /// <summary>
+        /// For a status effect, the creature carrying it. Its reactions belong to the status even
+        /// when another creature applied it.
+        /// </summary>
+        public uint Owner;
+
+        public CombatRecordAttribution(uint actor, CombatRecordSourceKind kind, string name, int code, int rank, uint owner = 0)
         {
             Actor = actor;
             Kind = kind;
             Name = name;
             Code = code;
             Rank = rank;
+            Owner = owner;
         }
     }
 }

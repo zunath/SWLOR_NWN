@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<string, (int Calls, long Ticks)> _handlers = new();
         private static readonly Dictionary<string, (int Calls, long Ticks)> _captureHandlers = new();
         private static readonly Dictionary<string, (int Calls, long Ticks)> _captureNamed = new();
+        private static readonly Dictionary<string, (int Calls, long Ticks)> _frameNamed = new();
         private static bool _configured;
         private static bool _capturing;
         private static double _slowFrameMilliseconds = 50;
@@ -33,6 +34,7 @@ namespace SWLOR.Game.Server.Service
         private static long _windowStart;
         private static long _captureStart;
         private static int _managedDepth;
+        private static long _excludedTicks;
 
         public static bool IsEnabled { get; private set; }
         public static bool IsCapturing => _capturing;
@@ -67,6 +69,7 @@ namespace SWLOR.Game.Server.Service
             {
                 _frame.Clear();
                 _handlers.Clear();
+                _frameNamed.Clear();
                 _windowStart = now;
             }
             else
@@ -108,8 +111,8 @@ namespace SWLOR.Game.Server.Service
             if (_capturing)
             {
                 var key = $"{metric} {name}";
-                _captureNamed.TryGetValue(key, out var total);
-                _captureNamed[key] = (total.Calls + 1, total.Ticks + elapsed);
+                _frameNamed.TryGetValue(key, out var total);
+                _frameNamed[key] = (total.Calls + 1, total.Ticks + elapsed);
             }
         }
 
@@ -134,6 +137,8 @@ namespace SWLOR.Game.Server.Service
             if (!IsEnabled)
                 return 0;
 
+            if (_managedDepth == 0)
+                _excludedTicks = 0;
             _managedDepth++;
             return Stopwatch.GetTimestamp();
         }
@@ -150,7 +155,8 @@ namespace SWLOR.Game.Server.Service
             if (_managedDepth <= 0)
             {
                 _managedDepth = 0;
-                _frame.Ticks[index] += elapsed;
+                _frame.Ticks[index] += Math.Max(0, elapsed - _excludedTicks);
+                _excludedTicks = 0;
             }
 
             if (handler != null)
@@ -158,6 +164,18 @@ namespace SWLOR.Game.Server.Service
                 _handlers.TryGetValue(handler, out var total);
                 _handlers[handler] = (total.Calls + 1, total.Ticks + elapsed);
             }
+        }
+
+        /// <summary>
+        /// Removes engine work called from inside a managed scope, such as a hooked native function's
+        /// original implementation, from that scope's managed time.
+        /// </summary>
+        public static void ExcludeFromManaged(long start)
+        {
+            if (start == 0 || _managedDepth == 0)
+                return;
+
+            _excludedTicks += Stopwatch.GetTimestamp() - start;
         }
 
         /// <summary>
@@ -223,6 +241,12 @@ namespace SWLOR.Game.Server.Service
                     _captureHandlers.TryGetValue(handler, out var captured);
                     _captureHandlers[handler] = (captured.Calls + total.Calls, captured.Ticks + total.Ticks);
                 }
+
+                foreach (var (name, total) in _frameNamed)
+                {
+                    _captureNamed.TryGetValue(name, out var captured);
+                    _captureNamed[name] = (captured.Calls + total.Calls, captured.Ticks + total.Ticks);
+                }
             }
 
             if (slowFrame != null)
@@ -233,6 +257,7 @@ namespace SWLOR.Game.Server.Service
             // Cleared after the writes above so their LogWrite counts are dropped with the frame.
             _frame.Clear();
             _handlers.Clear();
+            _frameNamed.Clear();
         }
 
         private static string DescribeHandlers(Dictionary<string, (int Calls, long Ticks)> handlers, int count)

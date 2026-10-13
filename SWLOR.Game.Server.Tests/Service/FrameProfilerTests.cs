@@ -63,6 +63,42 @@ public class FrameProfilerTests
     }
 
     [Test]
+    public void ExcludedEngineWork_IsRemovedFromManagedTime()
+    {
+        FrameProfiler.BeginCapture();
+        FrameProfiler.OnFrameStart(1);
+        var hook = FrameProfiler.EnterManaged();
+        var engine = FrameProfiler.Start();
+        System.Threading.Thread.Sleep(50);
+        FrameProfiler.ExcludeFromManaged(engine);
+        FrameProfiler.ExitManaged(FrameMetric.ObjectUpdateHook, hook);
+        FrameProfiler.OnFrameStart(2);
+
+        var totals = FrameProfiler.EndCapture().Totals;
+
+        totals.Count(FrameMetric.ObjectUpdateHook).Should().Be(1);
+        totals.Milliseconds(FrameMetric.ObjectUpdateHook).Should().BeLessThan(25);
+    }
+
+    [Test]
+    public void NamedTimings_OnlyIncludeCompletedFrames()
+    {
+        FrameProfiler.BeginCapture();
+        FrameProfiler.Stop(FrameMetric.StatusEffectApply, FrameProfiler.Start(), "Before first frame");
+        FrameProfiler.OnFrameStart(1);
+        FrameProfiler.Stop(FrameMetric.StatusEffectApply, FrameProfiler.Start(), "Completed frame");
+        FrameProfiler.OnFrameStart(2);
+        FrameProfiler.Stop(FrameMetric.StatusEffectApply, FrameProfiler.Start(), "Unfinished frame");
+
+        var summary = FrameProfiler.EndCapture();
+
+        summary.Totals.Count(FrameMetric.StatusEffectApply).Should().Be(1);
+        summary.TopHandlers.Should().Contain("StatusEffectApply Completed frame")
+            .And.NotContain("Before first frame")
+            .And.NotContain("Unfinished frame");
+    }
+
+    [Test]
     public void PayloadSize_CountsUtf8BytesOnlyWhileProfiling()
     {
         FrameProfiler.Utf8Bytes("Évrac").Should().Be(0);

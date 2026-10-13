@@ -241,7 +241,22 @@ public static unsafe class WeaponAttackAnimation
     [UnmanagedCallersOnly]
     private static void WriteUpdate(void* message, void* player, void* obj, void* last, uint updates, uint appearance)
     {
-        var original = (delegate* unmanaged<void*, void*, void*, void*, uint, uint, void>)_writeHook->m_trampoline;
+        var profile = FrameProfiler.EnterManaged();
+        try { WriteObjectUpdate(message, player, obj, last, updates, appearance); }
+        finally { FrameProfiler.ExitManaged(FrameMetric.ObjectUpdateHook, profile); }
+    }
+
+    private static void WriteObjectUpdate(void* message, void* player, void* obj, void* last, uint updates, uint appearance)
+    {
+        var trampoline = (delegate* unmanaged<void*, void*, void*, void*, uint, uint, void>)_writeHook->m_trampoline;
+        // Packet serialization is engine work; keep it out of managed time.
+        void original(void* message, void* player, void* obj, void* last, uint updates, uint appearance)
+        {
+            var native = FrameProfiler.Start();
+            trampoline(message, player, obj, last, updates, appearance);
+            FrameProfiler.ExcludeFromManaged(native);
+        }
+
         // Keep exceptions inside managed code; the native call must run exactly once.
         Playback playback = null;
         var stage = 0;

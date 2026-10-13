@@ -7,12 +7,12 @@ import ctypes
 from ctypes import wintypes as w
 from pathlib import Path
 import json
-import re
 import subprocess
 import time
 import uuid
 import sys
-from .profile import validate_profile
+from .profile import validate_profile, cleanup as cleanup_profile
+from .firewall import require_firewall
 from .result import ClientRun
 from .private_desktop import PrivateDesktop
 from .process_job import ProcessJob
@@ -51,6 +51,14 @@ def _terminate_process(kernel, handle):
     return bool(kernel.TerminateProcess(handle,1))
 
 
+def _resume_thread(kernel, handle):
+    """Declare the unsigned Win32 return before testing its failure sentinel."""
+    kernel.ResumeThread.argtypes=[w.HANDLE]
+    kernel.ResumeThread.restype=w.DWORD
+    if kernel.ResumeThread(handle)==0xffffffff:
+        raise ctypes.WinError(ctypes.get_last_error())
+
+
 def has_retained_profile(profile):
     """Consult live ownership state even when isolation evidence could not be written."""
     return any(record[4] == Path(profile).resolve() for record in _retained_processes.values())
@@ -66,11 +74,18 @@ def retry_retained_processes():
                 job.close()
                 if kernel.WaitForSingleObject(process.hProcess,5000)!=0:
                     raise RuntimeError(f'Owned process {pid} has not exited')
+            if profile.exists():
+                cleanup_profile(profile)
             job.close()
             if desktop:
                 desktop.close()
-            kernel.CloseHandle(process.hThread)
-            kernel.CloseHandle(process.hProcess)
+            if process.hThread:
+                if not kernel.CloseHandle(process.hThread):
+                    raise ctypes.WinError(ctypes.get_last_error())
+                process.hThread=None
+            if not kernel.CloseHandle(process.hProcess):
+                raise ctypes.WinError(ctypes.get_last_error())
+            process.hProcess=None
             del _retained_processes[pid]
         except BaseException as error:
             errors.append(error)
@@ -84,9 +99,7 @@ def run(command, *, profile, cwd, timeout, on_start=None, until=None):
     profile = Path(profile)
     validate_profile(profile, command, timeout)
     profile = profile.resolve()
-    firewall=subprocess.run(['netsh','advfirewall','show','allprofiles'],check=True,capture_output=True,text=True).stdout
-    if len(re.findall(r'^State\s+ON\s*$',firewall,re.M))!=3:
-        raise RuntimeError('All Windows firewall profiles must enforce network isolation')
+    require_firewall()
     userenv=ctypes.WinDLL('userenv',use_last_error=True)
     advapi=ctypes.WinDLL('advapi32',use_last_error=True)
     kernel=ctypes.WinDLL('kernel32',use_last_error=True)
@@ -176,8 +189,7 @@ def run(command, *, profile, cwd, timeout, on_start=None, until=None):
             if count:raise RuntimeError('Child unexpectedly has capabilities')
             evidence['token_is_appcontainer']=True;evidence['token_capability_count']=count
         finally:kernel.CloseHandle(token)
-        kernel.ResumeThread.argtypes=[w.HANDLE]
-        if kernel.ResumeThread(process.hThread)==0xffffffff:raise ctypes.WinError(ctypes.get_last_error())
+        _resume_thread(kernel,process.hThread)
         evidence['pid']=process.dwProcessId
         desktop.bind(process.dwProcessId,profile)
         deadline=time.monotonic()+timeout

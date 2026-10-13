@@ -1,16 +1,19 @@
 """Profile boundaries plus opt-in real Windows isolation/lifetime checks."""
 from pathlib import Path
 import json
+import ctypes
+import struct
+from types import SimpleNamespace
 import os
 import socket
 import subprocess
 import sys
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from nwn_visual_check import offline_client, private_desktop, profile
+from nwn_visual_check import offline_client, private_desktop, profile, module, firewall
 from nwn_visual_check.__main__ import parse_captures, main
 from nwn_visual_check.result import ClientRun
 from nwn_visual_check.process_job import ProcessJob
@@ -156,6 +159,112 @@ class ProfileCreationTests(unittest.TestCase):
                 self.assertFalse(created[0].exists())
 
 
+class FirewallStateTests(unittest.TestCase):
+    def test_structured_booleans_accept_enabled_profiles_without_display_labels(self):
+        output=subprocess.CompletedProcess([],0,stdout='[true,true,true]',stderr='')
+        with patch.object(firewall.subprocess,'run',return_value=output) as run:
+            firewall.require_firewall()
+        command=run.call_args.args[0]
+        self.assertIn('ActiveStore',command[-1])
+        self.assertNotIn('netsh',command)
+
+    def test_disabled_missing_or_untyped_state_fails_closed(self):
+        for value in ('[true,false,true]','[true,true]','["True","True","True"]','[1,1,1]','null','{}'):
+            with self.subTest(value=value),patch.object(firewall.subprocess,'run',
+                    return_value=subprocess.CompletedProcess([],0,stdout=value,stderr='')):
+                with self.assertRaises(RuntimeError):
+                    firewall.require_firewall()
+
+
+class RetainedCleanupTests(unittest.TestCase):
+    def test_retry_removes_owned_profile_before_dropping_record(self):
+        owned=profile.create_profile()
+        (owned/'hak/copied.hak').write_bytes(b'copied input')
+        kernel=Mock()
+        kernel.WaitForSingleObject.return_value=0
+        kernel.CloseHandle.return_value=True
+        process=SimpleNamespace(hProcess=111,hThread=112)
+        job=Mock();desktop=Mock();pid=0x7ffffffd
+        offline_client._retained_processes[pid]=(kernel,process,job,desktop,owned)
+        try:
+            with patch.object(offline_client,'cleanup_profile',side_effect=OSError('Temporary cleanup refusal')):
+                with self.assertRaises(ExceptionGroup):
+                    offline_client.retry_retained_processes()
+            self.assertTrue(owned.exists())
+            self.assertIn(pid,offline_client._retained_processes)
+            kernel.CloseHandle.assert_not_called()
+            offline_client.retry_retained_processes()
+            self.assertFalse(owned.exists())
+            self.assertNotIn(pid,offline_client._retained_processes)
+            self.assertEqual(kernel.CloseHandle.call_count,2)
+            desktop.close.assert_called_once()
+        finally:
+            offline_client._retained_processes.pop(pid,None)
+            if owned.exists():profile.cleanup(owned)
+
+    @unittest.skipUnless(sys.platform=='win32','Native ABI requires Windows')
+    def test_resume_failure_is_unsigned_and_reported(self):
+        callback=ctypes.WINFUNCTYPE(ctypes.wintypes.DWORD,ctypes.wintypes.HANDLE)(lambda _:0xffffffff)
+        callback.restype=ctypes.c_int  # Match the undeclared ctypes default.
+        kernel=SimpleNamespace(ResumeThread=callback)
+        with self.assertRaises(OSError):
+            offline_client._resume_thread(kernel,1)
+        self.assertIs(callback.restype,ctypes.wintypes.DWORD)
+
+
+class FixtureCompilerTests(unittest.TestCase):
+    def test_nonzero_clean_include_skip_is_accepted_but_diagnostics_are_not(self):
+        for output,accepted in (
+                ('0 successful, 1 skipped, 0 errored',True),
+                ('fixture.nss(2): ERROR: broken\n0 successful, 1 skipped, 0 errored',False),
+                ('0 successful, 1 skipped, 1 errored',False)):
+            with self.subTest(output=output),patch.object(module,'find_tool',return_value=Path('compiler.exe')), \
+                    patch.object(module.subprocess,'run',return_value=subprocess.CompletedProcess([],623,stdout=output,stderr='')):
+                args=(Path('staging/include.nss'),Path('profile'),Path('game/bin/win32/nwmain.exe'))
+                if accepted:
+                    module.compile_script(*args)
+                else:
+                    with self.assertRaises(RuntimeError):module.compile_script(*args)
+
+
+@unittest.skipUnless(sys.platform=='win32' and os.environ.get('SWLOR_NATIVE_ISOLATION_TESTS')=='1','Set SWLOR_NATIVE_ISOLATION_TESTS=1 for actual fixture tools')
+class NativeFixtureTests(unittest.TestCase):
+    def test_local_include_is_staged_before_alphabetically_earlier_entry_point(self):
+        owned=profile.create_profile()
+        with tempfile.TemporaryDirectory() as temporary:
+            source=Path(temporary)
+            (source/'module.ifo').write_bytes(b'fixture resource')
+            (source/'aaa_entry.nss').write_text('#include "zzz_include"\nvoid main() { PrintInteger(ReviewValue()); }')
+            (source/'zzz_include.nss').write_text('int ReviewValue() { return 7; }')
+            try:
+                output=module.build_module(source,owned,module.discover_client(),os.environ.get('SWLOR_NWN_TOOLS'))
+                self.assertTrue(output.is_file())
+                self.assertGreater((owned/'build/aaa_entry.ncs').stat().st_size,8)
+                self.assertEqual((owned/'build/zzz_include.nss').read_text(),(source/'zzz_include.nss').read_text())
+                self.assertFalse((owned/'build/zzz_include.ncs').exists())
+            finally:
+                profile.cleanup(owned)
+
+    def test_lod_redirect_is_preserved_with_exact_payload(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);source=root/'source';source.mkdir()
+            payload=b'geometry\n'
+            (source/'proxy.lod').write_bytes(payload)
+            (source/'geometry.mdl').write_bytes(b'model payload')
+            output=root/'parts.hak'
+            module.pack_hak(source,output,os.environ.get('SWLOR_NWN_TOOLS'))
+            data=output.read_bytes()
+            count=struct.unpack_from('<I',data,16)[0]
+            keys,resources=struct.unpack_from('<II',data,24)
+            found={}
+            for index in range(count):
+                name,resource,kind=struct.unpack_from('<16sIH',data,keys+index*24)
+                offset,size=struct.unpack_from('<II',data,resources+resource*8)
+                found[(name.rstrip(b'\0'),kind)]=data[offset:offset+size]
+            self.assertEqual(found[(b'proxy',2078)],payload)
+            self.assertEqual(found[(b'geometry',2002)],b'model payload')
+
+
 class EvidenceCleanupTests(unittest.TestCase):
     @unittest.skipUnless(sys.platform == 'win32', 'CLI requires Windows')
     def test_evidence_write_failure_still_removes_owned_profile(self):
@@ -228,6 +337,15 @@ class WindowsIsolationTests(unittest.TestCase):
         self.assertIsNone(private_desktop.process_desktop(evidence['pid']))
         permissions=subprocess.run(['icacls',str(self.owned)],check=True,capture_output=True,text=True).stdout
         self.assertNotIn(evidence['appcontainer_sid'],permissions)
+
+    def test_resume_failure_stops_suspended_child_without_capture_timeout(self):
+        with patch.object(offline_client,'_resume_thread',side_effect=OSError('Simulated ResumeThread failure')):
+            with self.assertRaisesRegex(OSError,'ResumeThread failure'):
+                offline_client.run(self.command('Start-Sleep -Seconds 20'),profile=self.owned,cwd=self.owned,timeout=5)
+        evidence=self.evidence()
+        self.assertTrue(evidence['process_exited'])
+        self.assertNotIn('pid',evidence)
+        self.assertFalse(evidence['timed_out'])
 
     def test_timeout_stops_owned_process(self):
         with self.assertRaises(subprocess.TimeoutExpired):

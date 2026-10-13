@@ -1,6 +1,7 @@
 """Build temporary review modules with the repository's NWN conversion tools."""
 from pathlib import Path
 import os
+import re
 import shutil
 import subprocess
 
@@ -29,7 +30,22 @@ def convert_json(source, output, tools=None):
 
 
 def pack_hak(source, output, tools=None):
-    checked([find_tool('nwn_erf.exe',tools),'-c','-e','HAK','-f',output,source],timeout=240)
+    checked([find_tool('nwn_erf.exe',tools),'-c','--add-restypes','lod:2078','-e','HAK','-f',output,source],timeout=240)
+
+
+def compile_script(script, profile, client, tools=None):
+    """Accept compiler-declared includes while rejecting actual diagnostics."""
+    command=[find_tool('nwn_script_comp.exe',tools),'--root',client.parents[2],
+             '--userdirectory',profile,'--no-ovr','--dirs',script.parent,script]
+    result=subprocess.run([str(value) for value in command],capture_output=True,text=True,timeout=120)
+    output=result.stdout+result.stderr
+    # Match the existing ScriptCompiler's include-only outcome. No main produces
+    # no bytecode and can return nonzero; positioned ERROR diagnostics still fail.
+    skipped=re.search(r'\b0 successful,\s*1 skipped,\s*0 errored\b',output,re.I) is not None
+    errors=re.search(r'(?im)^.*\.nss\(\d+\)\s*:\s*ERROR\s*:',output)
+    if errors or (result.returncode and not skipped):
+        raise RuntimeError(output)
+    return result
 
 
 def build_module(source, profile, client, tools=None):
@@ -41,11 +57,10 @@ def build_module(source, profile, client, tools=None):
             continue
         if path.name.endswith('.json'):
             convert_json(path,staging / path.name[:-5],tools)
-        elif path.suffix.lower() != '.nss' and not (source / (path.name+'.json')).exists():
+        elif not (source / (path.name+'.json')).exists():
             shutil.copyfile(path,staging / path.name)
-    for script in sorted(source.glob('*.nss')):
-        shutil.copyfile(script,staging / script.name)
-        checked([find_tool('nwn_script_comp.exe',tools),'--root',client.parents[2],'--userdirectory',profile,'--no-ovr',staging / script.name])
+    for script in sorted(staging.glob('*.nss')):
+        compile_script(script,profile,client,tools)
     if not (staging / 'module.ifo').is_file():
         raise FileNotFoundError('Review sources must contain module.ifo or module.ifo.json')
     output = profile / 'modules/visual_review.mod'

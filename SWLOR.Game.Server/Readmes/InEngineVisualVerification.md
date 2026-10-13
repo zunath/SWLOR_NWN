@@ -20,7 +20,8 @@ and native screenshot helpers previously borrowed from Xenomech. No other checko
 agent session, account or machine-specific helper path is required. Source commit
 and helper hashes are recorded in `tools/nwn_visual_check/provenance.json`.
 
-Prerequisites: Windows 10 or newer, Python 3.12 or newer, an installed NWN:EE client, and Pillow:
+Prerequisites: Windows 10 or newer, Python 3.12 or newer, an installed NWN:EE client,
+and Pillow:
 
 ```powershell
 python -m pip install -r tools/nwn_visual_check/requirements.txt
@@ -60,8 +61,9 @@ on an undisplayed desktop. Shared-file hardlinks and reparse points are refused:
 granting the AppContainer ACL to a hardlink would also affect the source file.
 The child is assigned at creation to a non-inherited kill-on-close Windows job, and
 only its standard-I/O handles are inherited. Job termination/closure backs up direct
-process termination. It never changes the installed client or the user's normal profile. Native capture
-requests address only the task-owned HWND. There is no visible launch fallback.
+process termination. It never changes the installed client or the user's normal
+profile. Native capture requests address only the task-owned HWND. There is no
+visible launch fallback.
 
 Each marker requests a fresh 1280x720 native screenshot. Markers and output labels
 must be unique, and views must be held long enough to capture them; multiple pending
@@ -70,12 +72,13 @@ labels. A blank frame, early exit, missing marker or timeout fails the run.
 
 The new output directory receives native PNGs, `client.log`, `isolation.json`, and
 `manifest.json` with input/capture hashes, PID, completion/failure and profile-cleanup
-status. Primary run errors and any evidence/cleanup errors are reported together. On success or failure, the owned process is stopped and the temporary profile
+status. Primary run errors and any evidence/cleanup errors are reported together.
+On success or failure, the owned process is stopped and the temporary profile
 and copied archives are removed once process exit is confirmed. If Windows refuses
 all shutdown methods, the launcher retains retryable control handles and the profile;
-`offline_client.retry_retained_processes()` retries those owned handles. The failure
-is recorded, and cleanup never discards control of a live client. Evidence stays
-outside the repository for inspection.
+`offline_client.retry_retained_processes()` retries those owned handles and removes
+the retained profile once exit is confirmed. The failure is recorded, and cleanup
+never discards control of a live client. Evidence stays outside the repository for inspection.
 The manifest proves capture and isolation, not visual correctness: inspect every image,
 record observed transforms/approach results, and deliver the labelled report below.
 

@@ -1,7 +1,6 @@
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -14,229 +13,218 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Techniques)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 1080f, 700f)
+                .SetInitialGeometry(0, 0, 940f, 700f)
                 .SetTitle("Techniques")
-                .DefinePartialView(TechniquesViewModel.BodyPartial, group =>
+
+                .AddColumn(col =>
                 {
-                    // Two technique lists need a shared minimum width; the standard host
-                    // supplies scrolling when the player makes the window smaller.
-                    group.SetWidth(1015f);
-                    group.AddColumn(col =>
+                    // Saved-build controls, with the equipped build summarized on the right.
+                    col.AddRow(row =>
                     {
-                        col.SetWidth(1015f);
-                        col.AddRow(row =>
+                        row.AddComboBox()
+                            .BindOptions(model => model.LoadoutOptions)
+                            .BindSelectedIndex(model => model.SelectedLoadoutIndex)
+                            .SetWidth(260f)
+                            .SetHeight(32f);
+                        row.AddButton()
+                            .SetText("Save")
+                            .SetWidth(80f)
+                            .SetHeight(32f)
+                            .SetTooltip("Store the preview in the selected build.")
+                            .BindOnClicked(model => model.OnClickSave());
+                        row.AddButton()
+                            .SetText("Save As")
+                            .SetWidth(90f)
+                            .SetHeight(32f)
+                            .BindTooltip(model => model.BuildsText)
+                            .BindDisabledTooltip(model => model.BuildsText)
+                            .BindIsEnabled(model => model.CanSaveAs)
+                            .BindOnClicked(model => model.OnClickSaveAs());
+                        row.AddButton()
+                            .SetText("Manage")
+                            .SetWidth(90f)
+                            .SetHeight(32f)
+                            .SetTooltip("Rename or delete the selected build.")
+                            .BindOnClicked(model => model.OnClickManage());
+                        row.AddLabel()
+                            .BindText(model => model.ActiveLoadoutText)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Right)
+                            .SetHeight(32f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        // Both panes share one row shape (title, toolbar, list, action button) so
+                        // their lists line up. Neither column is width-pinned, so they split resizes.
+                        row.AddColumn(col2 =>
                         {
-                            row.AddLabel().BindText(model => model.ActiveLoadoutText)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left).SetHeight(26f);
-                        });
-                        col.AddRow(row =>
-                        {
-                            row.AddLabel().SetText("Loadout").SetWidth(80f).SetHeight(30f);
-                            row.AddComboBox().BindOptions(model => model.LoadoutOptions)
-                                .BindSelectedIndex(model => model.SelectedLoadoutIndex).SetWidth(360f).SetHeight(32f);
-                            row.AddButton().SetText("Save").SetWidth(80f).SetHeight(32f)
-                                .BindOnClicked(model => model.OnClickSave());
-                            row.AddButton().SetText("Save As").SetWidth(100f).SetHeight(32f)
-                                .BindIsEnabled(model => model.CanSaveAs).BindOnClicked(model => model.OnClickSaveAs());
-                            row.AddButton().SetText("Manage").SetWidth(100f).SetHeight(32f)
-                                .BindOnClicked(model => model.OnClickManage());
-                        });
-                        // Saved-build capacity occupies the space left of the category and sort filters.
-                        col.AddRow(row =>
-                        {
-                            row.AddColumn(capacity =>
+                            col2.AddRow(row2 =>
                             {
-                                capacity.SetWidth(285f);
-                                capacity.AddRow(labelRow => labelRow.AddLabel()
-                                    .BindText(model => model.BuildsText).SetWidth(220f).SetHeight(20f));
-                                capacity.AddRow(barRow => barRow.AddProgressBar()
-                                    .BindValue(model => model.BuildsProgress)
-                                    .SetColor(90, 170, 230).SetWidth(220f).SetHeight(10f).SetMargin(0f));
+                                row2.AddLabel()
+                                    .SetText("Learned")
+                                    .SetHeight(26f);
                             });
-                            row.AddComboBox()
-                                .BindSelectedIndex(model => model.SelectedCategoryId)
-                                .SetWidth(240f)
-                                .SetHeight(32f)
-                                .AddOption("All Types", 0)
-                                .AddOption("Single-Target", 1)
-                                .AddOption("Area", 2)
-                                .AddOption("Stance", 3)
-                                .AddOption("Support", 4)
-                                .AddOption("Passive Trait", 5);
-
-                            row.AddComboBox()
-                                .BindSelectedIndex(model => model.SelectedSortOrderId)
-                                .SetWidth(180f)
-                                .SetHeight(32f)
-                                .AddOption("Name (A-Z)", 0)
-                                .AddOption("Name (Z-A)", 1)
-                                .AddOption("Rank (Low-High)", 2)
-                                .AddOption("Rank (High-Low)", 3);
-                            row.AddSpacer();
-                        });
-
-                        // Search box (filters the Learned list by technique name as you type).
-                        col.AddRow(row =>
-                        {
-                            row.SetHeight(30f);
-                            row.AddTextEdit()
-                                .SetPlaceholder("Search")
-                                .BindValue(model => model.SearchText);
-                        });
-
-                        col.AddRow(row =>
-                        {
-                            // Equal list widths keep technique names readable.
-                            row.AddColumn(col2 =>
+                            col2.AddRow(row2 =>
                             {
-                                col2.SetWidth(435f);
-                                col2.AddRow(row2 =>
+                                row2.AddTextEdit()
+                                    .SetPlaceholder("Search")
+                                    .BindValue(model => model.SearchText)
+                                    .SetHeight(32f);
+                                row2.AddComboBox()
+                                    .BindSelectedIndex(model => model.SelectedCategoryId)
+                                    .SetWidth(140f)
+                                    .SetHeight(32f)
+                                    .AddOption("All Types", 0)
+                                    .AddOption("Single-Target", 1)
+                                    .AddOption("Area", 2)
+                                    .AddOption("Stance", 3)
+                                    .AddOption("Support", 4)
+                                    .AddOption("Passive Trait", 5);
+                                row2.AddComboBox()
+                                    .BindSelectedIndex(model => model.SelectedSortOrderId)
+                                    .SetWidth(140f)
+                                    .SetHeight(32f)
+                                    .AddOption("Name (A-Z)", 0)
+                                    .AddOption("Name (Z-A)", 1)
+                                    .AddOption("Rank (Low-High)", 2)
+                                    .AddOption("Rank (High-Low)", 3);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddList(template =>
                                 {
-                                    row2.AddLabel()
-                                        .SetText("Learned")
-                                        .SetHeight(26f);
-                                });
-                                col2.AddRow(row2 =>
-                                {
-                                    row2.AddList(template =>
+                                    template.AddCell(cell =>
                                     {
-                                        template.AddCell(cell =>
+                                        cell.AddGroup(group =>
                                         {
-                                            cell.AddGroup(group =>
-                                            {
-                                                group.AddImage()
-                                                    .BindResref(model => model.UnequippedIcons)
-                                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
-                                                    .SetAspect(NuiAspect.Stretch);
-                                            });
-
-                                            cell.SetWidth(40f);
-                                            cell.SetIsVariable(false);
+                                            group.AddImage()
+                                                .BindResref(model => model.UnequippedIcons)
+                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                                .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                                .SetAspect(NuiAspect.Stretch);
                                         });
-                                        template.AddCell(cell =>
-                                        {
-                                            cell.AddToggleButton()
-                                                .BindText(model => model.UnequippedNames)
-                                                .BindIsToggled(model => model.UnequippedSelections)
-                                                .BindColor(model => model.UnequippedColors)
-                                                .BindOnClicked(model => model.OnSelectUnequipped());
-                                        });
-                                    })
-                                    .SetRowHeight(40f)
-                                    .SetScrollbars(NuiScrollbars.Y)
-                                    .BindRowCount(model => model.UnequippedNames);
-                                });
-                            });
 
-                            // Fixed-width control column between the two lists. Pinning its width keeps
-                            // the buttons compact and lets the flanking lists claim the rest of the row.
-                            // The buttons carry their own fixed width and are centered with spacers so
-                            // they never overflow into the Equipped list on the right.
-                            row.AddColumn(col2 =>
-                            {
-                                col2.SetWidth(130f);
-                                col2.AddRow(row2 => row2.AddSpacer());
-                                col2.AddRow(row2 =>
-                                {
-                                    row2.AddSpacer();
-                                    row2.AddButton()
-                                        .SetText("Add ->")
-                                        .SetHeight(32f)
-                                        .SetWidth(110f)
-                                        .BindIsEnabled(model => model.IsEquipEnabled)
-                                        .BindOnClicked(model => model.OnClickEquip());
-                                    row2.AddSpacer();
-                                });
-                                col2.AddRow(row2 =>
-                                {
-                                    row2.AddSpacer();
-                                    row2.AddButton()
-                                        .SetText("<- Remove")
-                                        .SetHeight(32f)
-                                        .SetWidth(110f)
-                                        .BindIsEnabled(model => model.IsUnequipEnabled)
-                                        .BindOnClicked(model => model.OnClickUnequip());
-                                    row2.AddSpacer();
-                                });
-                                col2.AddRow(row2 => row2.AddSpacer());
-                            });
-
-                            // Equipped list column matches the Learned list width.
-                            row.AddColumn(col2 =>
-                            {
-                                col2.SetWidth(435f);
-                                col2.AddRow(row2 =>
-                                {
-                                    row2.AddLabel()
-                                        .BindText(model => model.PreviewTitle)
-                                        .SetHeight(26f);
-                                });
-                                col2.AddRow(row2 =>
-                                {
-                                    row2.AddList(template =>
+                                        cell.SetWidth(40f);
+                                        cell.SetIsVariable(false);
+                                    });
+                                    template.AddCell(cell =>
                                     {
-                                        template.AddCell(cell =>
-                                        {
-                                            cell.AddGroup(group =>
-                                            {
-                                                group.AddImage()
-                                                    .BindResref(model => model.EquippedIcons)
-                                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
-                                                    .SetAspect(NuiAspect.Stretch);
-                                            });
-
-                                            cell.SetWidth(40f);
-                                            cell.SetIsVariable(false);
-                                        });
-                                        template.AddCell(cell =>
-                                        {
-                                            cell.AddToggleButton()
-                                                .BindText(model => model.EquippedNames)
-                                                .BindIsToggled(model => model.EquippedSelections)
-                                                .BindColor(model => model.EquippedColors)
-                                                .BindOnClicked(model => model.OnSelectEquipped());
-                                        });
-                                    })
-                                    .SetRowHeight(40f)
-                                    .SetScrollbars(NuiScrollbars.Y)
-                                    .BindRowCount(model => model.EquippedNames);
-                                });
+                                        cell.AddToggleButton()
+                                            .BindText(model => model.UnequippedNames)
+                                            .BindIsToggled(model => model.UnequippedSelections)
+                                            .BindColor(model => model.UnequippedColors)
+                                            .BindOnClicked(model => model.OnSelectUnequipped());
+                                    });
+                                })
+                                .SetRowHeight(40f)
+                                .SetScrollbars(NuiScrollbars.Y)
+                                .BindRowCount(model => model.UnequippedNames);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddSpacer().SetHeight(32f);
+                                row2.AddButton()
+                                    .SetText("Add to Build")
+                                    .SetWidth(140f)
+                                    .SetHeight(32f)
+                                    .BindIsEnabled(model => model.IsEquipEnabled)
+                                    .BindOnClicked(model => model.OnClickEquip());
                             });
                         });
 
-                        // Fixed-height details pane so the lists above take all the flexible vertical space.
-                        col.AddRow(row =>
+                        row.AddColumn(col2 =>
                         {
-                            row.SetHeight(100f);
-                            row.AddText()
-                                .BindText(model => model.SelectedDetails);
-                        });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.PreviewTitle)
+                                    .SetHeight(26f);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
+                                    .BindText(model => model.SlotsText)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetWidth(90f)
+                                    .SetHeight(32f);
+                                row2.AddProgressBar()
+                                    .BindValue(model => model.SlotsProgress)
+                                    .BindColor(model => model.SlotsColor)
+                                    .SetHeight(16f);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddList(template =>
+                                {
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.AddGroup(group =>
+                                        {
+                                            group.AddImage()
+                                                .BindResref(model => model.EquippedIcons)
+                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                                .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                                .SetAspect(NuiAspect.Stretch);
+                                        });
 
-                        col.AddRow(row =>
-                        {
-                            row.AddLabel().BindText(model => model.SlotsText)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left).SetWidth(230f).SetHeight(24f);
-                            row.AddProgressBar()
-                                .BindValue(model => model.SlotsProgress)
-                                .BindColor(model => model.SlotsColor)
-                                .SetHeight(14f);
-                        });
-                        col.AddRow(row => row.AddLabel().BindText(model => model.StatusText)
-                            .SetColor(230, 180, 70).SetHeight(26f).SetHorizontalAlign(NuiHorizontalAlign.Left));
-                        col.AddRow(row =>
-                        {
-                            row.AddLabel().BindText(model => model.ChangesText)
-                                .SetHeight(32f).SetHorizontalAlign(NuiHorizontalAlign.Left);
-                            row.AddButton().SetText("Revert").SetWidth(95f).SetHeight(32f)
-                                .BindOnClicked(model => model.OnClickRevert());
-                            row.AddButton().SetText("Apply Build").SetWidth(135f).SetHeight(32f)
-                                .SetIsEncouraged(true).BindOnClicked(model => model.OnClickApply());
+                                        cell.SetWidth(40f);
+                                        cell.SetIsVariable(false);
+                                    });
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.AddToggleButton()
+                                            .BindText(model => model.EquippedNames)
+                                            .BindIsToggled(model => model.EquippedSelections)
+                                            .BindColor(model => model.EquippedColors)
+                                            .BindOnClicked(model => model.OnSelectEquipped());
+                                    });
+                                })
+                                .SetRowHeight(40f)
+                                .SetScrollbars(NuiScrollbars.Y)
+                                .BindRowCount(model => model.EquippedNames);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddButton()
+                                    .SetText("Remove")
+                                    .SetWidth(140f)
+                                    .SetHeight(32f)
+                                    .BindIsEnabled(model => model.IsUnequipEnabled)
+                                    .BindOnClicked(model => model.OnClickUnequip());
+                                row2.AddSpacer().SetHeight(32f);
+                            });
                         });
                     });
-                })
-                .AddStandardLayout(layout => layout.SetContentPartialElement(TechniquesViewModel.BodyElement));
+
+                    // Fixed-height details pane so the lists above take all the flexible vertical space.
+                    col.AddRow(row =>
+                    {
+                        row.SetHeight(140f);
+                        row.AddText()
+                            .BindText(model => model.SelectedDetails);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .BindText(model => model.StatusText)
+                            .BindColor(model => model.StatusColor)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetHeight(32f);
+                        row.AddButton()
+                            .SetText("Revert")
+                            .SetWidth(95f)
+                            .SetHeight(32f)
+                            .BindIsEnabled(model => model.CanRevert)
+                            .BindOnClicked(model => model.OnClickRevert());
+                        row.AddButton()
+                            .SetText("Apply Build")
+                            .SetWidth(135f)
+                            .SetHeight(32f)
+                            .SetIsEncouraged(true)
+                            .BindOnClicked(model => model.OnClickApply());
+                    });
+                });
 
             return _builder.Build();
         }

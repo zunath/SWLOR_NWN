@@ -15,8 +15,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class TechniquesViewModel : GuiViewModelBase<TechniquesViewModel, TechniquesPayload>,
         IGuiRefreshable<TechniqueChangedRefreshEvent>
     {
-        public const string BodyPartial = "TechniquesBody";
-        public const string BodyElement = "techniques_body";
         private const string NoSelectionText = "Select a technique to view its details.";
         private List<FeatType> _draft;
         private List<FeatType> _savedSnapshot;
@@ -29,10 +27,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string ActiveLoadoutText { get => Get<string>(); set => Set(value); }
         public string PreviewTitle { get => Get<string>(); set => Set(value); }
         public string BuildsText { get => Get<string>(); set => Set(value); }
-        public float BuildsProgress { get => Get<float>(); set => Set(value); }
         public bool CanSaveAs { get => Get<bool>(); set => Set(value); }
+        public bool CanRevert { get => Get<bool>(); set => Set(value); }
         public string StatusText { get => Get<string>(); set => Set(value); }
-        public string ChangesText { get => Get<string>(); set => Set(value); }
+        public GuiColor StatusColor { get => Get<GuiColor>(); set => Set(value); }
         private bool IsDirty => !MimicryLoadouts.Matches(_draft, _savedSnapshot);
         private PlayerEntity Record => DB.Get<PlayerEntity>(GetObjectUUID(Player));
 
@@ -171,8 +169,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _draft = record.EquippedTechniques.ToList();
             }
             RefreshLoadouts();
-            StatusText = "Preview changes do not equip techniques. Save builds before logging out.";
-            ChangePartialView(BodyElement, BodyPartial);
             LoadLists();
 
             // Re-filter/sort the Learned list whenever the player changes the search box,
@@ -283,6 +279,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static readonly GuiColor NoRoomColor = new(230, 180, 70);     // met, but no free slots
         private static readonly GuiColor EquippableColor = new(60, 200, 90);  // ready to equip
         private static readonly GuiColor EquippedColor = new(90, 170, 230);   // currently equipped / active
+        private static readonly GuiColor ErrorColor = new(230, 90, 80);       // preview cannot be applied
 
         // Category ids match the dropdown option values in TechniquesDefinition:
         // 1 Single-Target, 2 Area, 3 Stance, 4 Support, 5 Passive Trait. Trait/stance/support are
@@ -310,7 +307,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static string BuildRowText(AbilityDetail detail)
         {
             var slotLabel = detail.MimicrySlotCost == 1 ? "slot" : "slots";
-            return $"{detail.Name} (Rank {detail.MimicrySkillRequirement} / {detail.MimicrySlotCost} {slotLabel})";
+            return $"{detail.Name} ({detail.MimicrySlotCost} {slotLabel}, Rank {detail.MimicrySkillRequirement})";
         }
 
         private void RefreshSlots(PlayerEntity dbPlayer)
@@ -318,7 +315,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var used = _draft.Sum(feat => Mimicry.GetTechniqueDetail(feat)?.MimicrySlotCost ?? 0);
             var max = Mimicry.GetMaxSlots(dbPlayer);
 
-            SlotsText = $"Technique slots: {used} / {max}";
+            SlotsText = $"Slots: {used} / {max}";
             SlotsColor = used > max ? GuiColor.Red : EquippedColor;
             SlotsProgress = max > 0 ? Math.Clamp((float)used / max, 0f, 1f) : 0f;
         }
@@ -477,8 +474,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 options.Add(new GuiComboEntry(record.MimicryLoadouts[index].Name, index));
             LoadoutOptions = options;
             SetSelection(_loadoutIds.IndexOf(_selectedLoadoutId));
-            BuildsText = $"Saved builds: {record.MimicryLoadouts.Count} / {MimicryLoadouts.MaxLoadouts}";
-            BuildsProgress = (float)record.MimicryLoadouts.Count / MimicryLoadouts.MaxLoadouts;
+            BuildsText = record.MimicryLoadouts.Count < MimicryLoadouts.MaxLoadouts
+                ? $"Save the preview as a new build ({record.MimicryLoadouts.Count} / {MimicryLoadouts.MaxLoadouts} saved)."
+                : $"All {MimicryLoadouts.MaxLoadouts} build slots are used. Delete one with Manage first.";
             CanSaveAs = record.MimicryLoadouts.Count < MimicryLoadouts.MaxLoadouts;
         }
 
@@ -488,15 +486,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var active = record.MimicryLoadouts.FirstOrDefault(x => x.Id == record.ActiveMimicryLoadoutId);
             ActiveLoadoutText = active == null ? "Equipped: Custom build" :
                 $"Equipped: {active.Name}" + (MimicryLoadouts.Matches(active.Techniques, record.EquippedTechniques) ? "" : " (Modified)");
-            PreviewTitle = $"Build preview: {selected.Name}" + (IsDirty ? " *" : "");
-            var added = _draft.Except(record.EquippedTechniques).Count();
-            var removed = record.EquippedTechniques.Except(_draft).Count();
-            ChangesText = $"Compared with equipped: +{added} / -{removed}";
+            PreviewTitle = $"Preview: {selected.Name}" + (IsDirty ? " (unsaved)" : "");
+            CanRevert = IsDirty;
             if (!Mimicry.ValidateLoadout(record, _draft, out var error))
+            {
                 StatusText = error;
+                StatusColor = ErrorColor;
+                return;
+            }
+
+            var isEquipped = MimicryLoadouts.Matches(_draft, record.EquippedTechniques);
+            StatusColor = isEquipped && !IsDirty ? GuiColor.White : NoRoomColor;
+            if (isEquipped)
+                StatusText = IsDirty ? "Equipped, but not saved. Save keeps it in this build." : "This build is equipped.";
             else
-                StatusText = IsDirty ? "Unsaved changes. Apply equips the preview; Save stores it." :
-                    "Ready to apply. You can edit and save builds during combat; applying requires leaving combat.";
+                StatusText = IsDirty ? "Unsaved preview. Apply Build to equip it; Save to keep it." : "Apply Build to equip this preview.";
+        }
+
+        private void ShowError(string error)
+        {
+            StatusText = error;
+            StatusColor = ErrorColor;
         }
 
         private bool SaveDraft(string id, string name)
@@ -504,7 +514,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var record = Record;
             if (!MimicryLoadouts.Save(record, id, name, _draft, out var saved, out var error))
             {
-                StatusText = error;
+                ShowError(error);
                 return false;
             }
             if (MimicryLoadouts.Matches(_draft, record.EquippedTechniques))
@@ -531,7 +541,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var record = Record;
                     if (!MimicryLoadouts.Rename(record, _selectedLoadoutId, ModalInputText, out var error))
                     {
-                        StatusText = error;
+                        ShowError(error);
                         return;
                     }
                     DB.Set(record);
@@ -543,7 +553,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var record = Record;
                 if (!MimicryLoadouts.Delete(record, _selectedLoadoutId, out var error))
                 {
-                    StatusText = error;
+                    ShowError(error);
                     return;
                 }
                 DB.Set(record);
@@ -576,7 +586,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickApply() => () =>
         {
             if (!Mimicry.ApplyLoadout(Player, _selectedLoadoutId, _draft, out var error))
-                StatusText = error;
+                ShowError(error);
             else
                 LoadLists();
         };

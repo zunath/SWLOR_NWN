@@ -3240,6 +3240,13 @@
           "type": "resref",
           "value": "veles_tradecon"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "smug_housings"
+        }
       }
     ]
   },

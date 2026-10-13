@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -455,7 +456,11 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void UpdateSpacePosition()
         {
-            var player = GetEnteringObject();
+            UpdateSpacePosition(GetEnteringObject());
+        }
+
+        private static void UpdateSpacePosition(uint player)
+        {
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (!IsPlayerInSpaceMode(player)) return;
 
@@ -464,7 +469,7 @@ namespace SWLOR.Game.Server.Service
             var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
             var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
             var position = GetPosition(player);
-            var areaResref = GetResRef(OBJECT_SELF);
+            var areaResref = GetResRef(GetArea(player));
             var orientation = GetFacing(player);
 
             dbProperty.Positions[PropertyLocationType.CurrentPosition] = new PropertyLocation
@@ -501,6 +506,9 @@ namespace SWLOR.Game.Server.Service
         {
             var area = GetArea(OBJECT_SELF);
             var player = GetLastUsedBy();
+            if (IsPlayerInSpaceMode(player))
+                return;
+
             var playerId = GetObjectUUID(player);
             var propertyId = Property.GetPropertyId(area);
             var permissionQuery = new DBQuery<WorldPropertyPermission>()
@@ -537,25 +545,59 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            SetLocalLocation(player, "SPACE_INSTANCE_LOCATION", GetLocation(player));
-            SetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET", true);
-            EnterSpaceMode(player, dbShip.Id);
-
             var dbProperty = DB.Get<WorldProperty>(propertyId);
 
             // The existence of a current location means the ship is currently in space.
             // Warp the player to the ship's location.
             // Otherwise the player is docked. Warp the player to the space location of this dock.
-            var propertyLocation = dbProperty.Positions.ContainsKey(PropertyLocationType.CurrentPosition)
-                ? dbProperty.Positions[PropertyLocationType.CurrentPosition]
-                : dbProperty.Positions[PropertyLocationType.SpacePosition];
+            if (dbProperty == null ||
+                (!dbProperty.Positions.TryGetValue(PropertyLocationType.CurrentPosition, out var propertyLocation) &&
+                 !dbProperty.Positions.TryGetValue(PropertyLocationType.SpacePosition, out propertyLocation)) ||
+                propertyLocation == null || string.IsNullOrWhiteSpace(propertyLocation.AreaResref))
+            {
+                SendMessageToPC(player, ColorToken.Red("Unable to locate this starship's space destination. Notify an admin."));
+                Log.WriteStructured(LogGroup.Space, "Ship launch destination missing: PlayerId={PlayerId} ShipId={ShipId} PropertyId={PropertyId}", playerId, dbShip.Id, propertyId);
+                return;
+            }
 
             var spaceArea = Area.GetAreaByResref(propertyLocation.AreaResref);
+            if (!GetIsObjectValid(spaceArea))
+            {
+                SendMessageToPC(player, ColorToken.Red("This starship's space destination is unavailable. Notify an admin."));
+                Log.WriteStructured(LogGroup.Space, "Ship launch area unavailable: PlayerId={PlayerId} ShipId={ShipId} AreaResref={AreaResref}", playerId, dbShip.Id, propertyLocation.AreaResref);
+                return;
+            }
+
             var spacePosition = Vector3(propertyLocation.X, propertyLocation.Y, propertyLocation.Z);
             var location = Location(spaceArea, spacePosition, propertyLocation.Orientation);
 
-            AssignCommand(player, () => ClearAllActions());
-            AssignCommand(player, () => ActionJumpToLocation(location));
+            var pilotLocation = GetLocation(player);
+            // Keep the jump and conversion in the same queue. Canceling the jump must also
+            // cancel the appearance, quickbar, and Pilot clone changes.
+            AssignCommand(player, () =>
+            {
+                ClearAllActions();
+                ActionJumpToLocation(location);
+                ActionDoCommand(() =>
+                {
+                    if (GetArea(player) != spaceArea || IsPlayerInSpaceMode(player))
+                        return;
+
+                    // Another passenger may have taken control while this jump was queued.
+                    if (_shipClones.TryGetValue(dbShip.Id, out var clone) && !GetIsObjectValid(clone))
+                    {
+                        SendMessageToPC(player, ColorToken.Red("This ship's controls are in use."));
+                        JumpToLocation(pilotLocation);
+                        return;
+                    }
+
+                    SetLocalLocation(player, "SPACE_INSTANCE_LOCATION", pilotLocation);
+                    SetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET", true);
+                    EnterSpaceMode(player, dbShip.Id, pilotLocation);
+                    // The area-enter event ran before space mode was enabled.
+                    UpdateSpacePosition(player);
+                });
+            });
         }
 
         /// <summary>
@@ -665,7 +707,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player entering space mode.</param>
         /// <param name="shipId">The Id of the ship to enter space with.</param>
-        public static void EnterSpaceMode(uint player, string shipId)
+        /// <param name="pilotLocation">The interior location where the Pilot clone should remain.</param>
+        public static void EnterSpaceMode(uint player, string shipId, Location pilotLocation)
         {
             // Ground effects must be removed when entering space mode.
             // Otherwise players could buff on the ground, then get those same bonuses while in space.
@@ -675,7 +718,7 @@ namespace SWLOR.Game.Server.Service
                 RemoveEffect(player, effect);
             }
 
-            ClonePlayerAndSit(player);
+            ClonePlayerAndSit(player, pilotLocation);
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -816,11 +859,10 @@ namespace SWLOR.Game.Server.Service
             DeleteLocalBool(player, "SPACE_INSTANCE_LOCATION_SET");
         }
 
-        private static void ClonePlayerAndSit(uint player)
+        private static void ClonePlayerAndSit(uint player, Location pilotLocation)
         {
-            var chair = GetNearestObjectByTag("pilot_chair", player);
-            var location = GetLocation(player);
-            var copy = CopyObject(player, location, OBJECT_INVALID, "spaceship_copy");
+            var copy = CopyObject(player, pilotLocation, OBJECT_INVALID, "spaceship_copy");
+            var chair = GetNearestObjectByTag("pilot_chair", copy);
             SetName(copy, "Pilot");
             ChangeToStandardFaction(copy, StandardFaction.Defender);
             TakeGoldFromCreature(GetGold(copy), copy, true);

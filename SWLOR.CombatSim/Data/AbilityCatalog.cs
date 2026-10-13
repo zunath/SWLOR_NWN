@@ -1,6 +1,4 @@
-using System.Reflection;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Data
@@ -17,12 +15,19 @@ namespace SWLOR.CombatSim.Data
         private readonly Dictionary<FeatType, AbilityInfo> _abilities = new();
         private readonly List<string> _loadErrors = new();
 
+        private AbilityCatalog(PerkCatalog perks)
+        {
+            Perks = perks;
+            _loadErrors.AddRange(perks.LoadErrors);
+        }
+
         public IReadOnlyDictionary<FeatType, AbilityInfo> Abilities => _abilities;
         public IReadOnlyList<string> LoadErrors => _loadErrors;
+        public PerkCatalog Perks { get; }
 
         public static AbilityCatalog Load()
         {
-            var catalog = new AbilityCatalog();
+            var catalog = new AbilityCatalog(PerkCatalog.Load());
             catalog.LoadAll();
             return catalog;
         }
@@ -38,7 +43,6 @@ namespace SWLOR.CombatSim.Data
         private void LoadAll()
         {
             var assembly = typeof(IAbilityListDefinition).Assembly;
-            var perksByFeat = LoadPerkData(assembly);
 
             foreach (var type in assembly.GetTypes()
                          .Where(t => typeof(IAbilityListDefinition).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract)
@@ -56,93 +60,41 @@ namespace SWLOR.CombatSim.Data
                 }
 
                 foreach (var (feat, detail) in abilities)
-                {
-                    perksByFeat.TryGetValue(feat, out var perk);
-                    _abilities[feat] = new AbilityInfo
-                    {
-                        Feat = feat,
-                        Name = detail.Name,
-                        PerkName = perk.Name ?? detail.Name,
-                        RecastGroup = detail.RecastGroup.ToString(),
-                        SkillRequirement = perk.SkillRequirement,
-                        FP = detail.Requirements.OfType<AbilityRequirementFP>().Sum(r => r.RequiredFP),
-                        STM = detail.Requirements.OfType<AbilityRequirementStamina>().Sum(r => r.RequiredSTM),
-                        RecastSeconds = TryEvaluate(() => detail.RecastDelay?.Invoke(PlaceholderObject) ?? 0f),
-                        CastSeconds = TryEvaluate(() => detail.ActivationDelay?.Invoke(PlaceholderObject, PlaceholderObject, detail.AbilityLevel) ?? 0f),
-                        IsHostile = detail.IsHostileAbility,
-                        IsHealing = detail.IsHealingAbility,
-                        ForceAffinity = perk.ForceAffinity ?? string.Empty
-                    };
-                }
+                    Add(Describe(feat, detail));
             }
         }
 
-        private Dictionary<FeatType, (string Name, int SkillRequirement, string ForceAffinity)> LoadPerkData(Assembly assembly)
+        internal void Add(AbilityInfo info) => _abilities[info.Feat] = info;
+
+        /// <summary>Reads one ability rank; a recast or cast time the game computes from engine state is flagged, never read as zero.</summary>
+        internal AbilityInfo Describe(FeatType feat, AbilityDetail detail)
         {
-            var result = new Dictionary<FeatType, (string, int, string)>();
-            foreach (var type in assembly.GetTypes()
-                         .Where(t => typeof(IPerkListDefinition).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract))
+            Perks.TryGetGrantingPerk(feat, out var perk, out var skillRequirement);
+            var recast = TryEvaluate(() => detail.RecastDelay?.Invoke(PlaceholderObject) ?? 0f);
+            var cast = TryEvaluate(() => detail.ActivationDelay?.Invoke(PlaceholderObject, PlaceholderObject, detail.AbilityLevel) ?? 0f);
+            var unreadable = string.Join(" and ", new[] { recast.HasValue ? null : "recast", cast.HasValue ? null : "cast time" }.Where(t => t != null));
+            if (unreadable.Length > 0)
+                _loadErrors.Add($"{feat}: {unreadable} needs the game engine");
+
+            return new AbilityInfo
             {
-                var perks = BuildPerks(type);
-                if (perks == null)
-                    continue;
-
-                foreach (var (_, perk) in perks)
-                {
-                    foreach (var (_, level) in perk.PerkLevels)
-                    {
-                        var skill = level.Requirements.OfType<PerkRequirementSkill>()
-                            .Select(r => r.RequiredRank)
-                            .DefaultIfEmpty(0)
-                            .Max();
-                        foreach (var feat in level.GrantedFeats)
-                            result.TryAdd(feat, (perk.Name, skill, perk.ForceAffinityType?.ToString()));
-                    }
-                }
-            }
-
-            return result;
+                Feat = feat,
+                Name = detail.Name,
+                PerkName = perk?.Name ?? detail.Name,
+                RecastGroup = detail.RecastGroup.ToString(),
+                SkillRequirement = skillRequirement,
+                FP = detail.Requirements.OfType<AbilityRequirementFP>().Sum(r => r.RequiredFP),
+                STM = detail.Requirements.OfType<AbilityRequirementStamina>().Sum(r => r.RequiredSTM),
+                RecastSeconds = recast ?? 0f,
+                CastSeconds = cast ?? 0f,
+                UnreadableTiming = unreadable.Length > 0 ? unreadable : null,
+                IsHostile = detail.IsHostileAbility,
+                IsHealing = detail.IsHealingAbility,
+                ForceAffinity = perk?.ForceAffinityType?.ToString() ?? string.Empty
+            };
         }
 
-        // Some perk definitions call engine functions while building; build them method by method
-        // and keep whatever was registered before the failure.
-        private Dictionary<PerkType, PerkDetail> BuildPerks(Type type)
-        {
-            try
-            {
-                return ((IPerkListDefinition)Activator.CreateInstance(type)).BuildPerks();
-            }
-            catch (Exception)
-            {
-                var instance = Activator.CreateInstance(type);
-                foreach (var method in type.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
-                             .Where(m => m.ReturnType == typeof(void) && m.GetParameters().Length == 0 && !m.Name.Contains('<'))
-                             .OrderBy(m => m.MetadataToken))
-                {
-                    try
-                    {
-                        method.Invoke(instance, null);
-                    }
-                    catch (Exception ex)
-                    {
-                        _loadErrors.Add($"{type.Name}.{method.Name}: {ex.InnerException?.GetType().Name}");
-                    }
-                }
-
-                var builder = type.GetField("_builder", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(instance);
-                if (builder == null)
-                {
-                    _loadErrors.Add($"{type.Name}: no perk builder");
-                    return null;
-                }
-
-                return (Dictionary<PerkType, PerkDetail>)typeof(PerkBuilder)
-                    .GetField("_perks", BindingFlags.Instance | BindingFlags.NonPublic)?
-                    .GetValue(builder);
-            }
-        }
-
-        private static float TryEvaluate(Func<float> evaluate)
+        private static float? TryEvaluate(Func<float> evaluate)
         {
             try
             {
@@ -150,7 +102,7 @@ namespace SWLOR.CombatSim.Data
             }
             catch (Exception)
             {
-                return 0f;
+                return null;
             }
         }
     }

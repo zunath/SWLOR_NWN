@@ -1,33 +1,33 @@
 namespace SWLOR.CombatSim.Rules
 {
     /// <summary>
-    /// Rule presets: today's live rules, Wave 1 (PvE healing, costs and fixes) and Wave 2 (Wave 1 plus PvP rules)
-    /// from the October 2026 combat tuning plan.
+    /// Rule presets: today's live rules, the proposed tuning (healing, costs, revives and fixes for PvE and PvP),
+    /// and that tuning plus the PvP attrition rules (healing ramp and damage backstop).
     /// </summary>
     public static class RuleSets
     {
         public const string CurrentName = "current";
-        public const string Wave1Name = "wave1";
-        public const string Wave2Name = "wave2";
+        public const string TunedName = "tuned";
+        public const string TunedPvpName = "tuned-pvp";
 
-        public static IReadOnlyList<string> Names { get; } = new[] { CurrentName, Wave1Name, Wave2Name };
+        public static IReadOnlyList<string> Names { get; } = new[] { CurrentName, TunedName, TunedPvpName };
 
         public static RuleSet Get(string name)
         {
             return name.ToLowerInvariant() switch
             {
                 CurrentName => Current(),
-                Wave1Name => Wave1(),
-                Wave2Name => Wave2(),
+                TunedName => Tuned(),
+                TunedPvpName => TunedPvp(),
                 _ => throw new ArgumentException($"Unknown rule set '{name}'. Known: {string.Join(", ", Names)}.")
             };
         }
 
         public static RuleSet Current() => new() { Name = CurrentName };
 
-        public static RuleSet Wave1() => new()
+        public static RuleSet Tuned() => new()
         {
-            Name = Wave1Name,
+            Name = TunedName,
             ForceAffinityHealingCap = 1.25f,
             RecastOverrides = new Dictionary<string, float>
             {
@@ -43,10 +43,10 @@ namespace SWLOR.CombatSim.Rules
             Revives = ReviveRule.BlockedInPvpLimitedInPve
         };
 
-        public static RuleSet Wave2()
+        public static RuleSet TunedPvp()
         {
-            var rules = Wave1();
-            rules.Name = Wave2Name;
+            var rules = Tuned();
+            rules.Name = TunedPvpName;
             rules.PvpHealingRamp = new List<RampStep>
             {
                 new(120f, 10f), new(150f, 30f), new(180f, 50f), new(210f, 70f), new(240f, 90f)

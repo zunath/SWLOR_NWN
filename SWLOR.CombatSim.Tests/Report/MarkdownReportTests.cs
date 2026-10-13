@@ -40,6 +40,18 @@ namespace SWLOR.CombatSim.Tests.Report
         }
 
         [Test]
+        public void SummaryTable_ShowsHowOftenEachTeamWon()
+        {
+            var summary = SummaryWithOneStarvedCombatant();
+            summary.WinsByTeam[0] = 6;
+            summary.WinsByTeam[1] = 3;
+
+            var report = MarkdownReport.Build(Scenario(), new[] { summary }, includeCombatants: false);
+
+            report.Should().Contain("| Wins by team |").And.Contain("| First 60%, Second 30% |");
+        }
+
+        [Test]
         public void WithoutCombatantDetail_TheAffordabilityColumnsAreNotShown()
         {
             var report = MarkdownReport.Build(Scenario(), new[] { SummaryWithOneStarvedCombatant() }, includeCombatants: false);

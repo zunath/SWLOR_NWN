@@ -5,6 +5,7 @@ using SWLOR.CombatSim.Engine;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
 using SWLOR.CombatSim.Tests.Support;
+using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.CombatSim.Tests.Engine
 {
@@ -39,9 +40,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Wave1_RestoresFortyPercentOfMaxFpOverTwentySeconds()
+        public void Tuned_RestoresFortyPercentOfMaxFpOverTwentySeconds()
         {
-            var (simulation, caster) = SpawnCaster(RuleSets.Wave1(), withPerk: true);
+            var (simulation, caster) = SpawnCaster(RuleSets.Tuned(), withPerk: true);
 
             var ticks = CastOnceAndCollectRefundTicks(simulation, caster, out var castAt);
 
@@ -63,7 +64,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [TestCase("current")]
-        [TestCase("wave1")]
+        [TestCase("tuned")]
         public void WithoutThePerk_NothingIsRestored(string ruleSetName)
         {
             var (simulation, caster) = SpawnCaster(RuleSets.Get(ruleSetName), withPerk: false);
@@ -111,7 +112,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                 FpRegenPer30Seconds = 0,
                 MaxStm = 100,
                 StmRegenPer30Seconds = 0,
-                Perks = withPerk ? new List<string> { Combatant.ForceConvergencePerk } : new List<string>(),
+                Perks = withPerk ? new List<string> { nameof(PerkType.ForceConvergence) } : new List<string>(),
                 Abilities = new List<AbilityUseSpec> { TestCombatants.Use(feat, AbilityTarget.Self, belowHpPercent: 99) }
             };
             var scenario = TestScenarios.TwoTeams(false, new[] { caster }, new[] { TestCombatants.Dummy("Enemy", true) });

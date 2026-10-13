@@ -1,6 +1,6 @@
 {
   "name": "Focus fire on a healer-support",
-  "description": "Sixteen attackers concentrate on one Light healer-support who has pre-cast her shields (Rousing Shout, Guardian Ward, Cleanse Order) and a Force Sanctuary zone. Values are synthetic and in the range seen in a playtest focus-fire test: she survived about 20 seconds, with roughly 1,100 damage absorbed by temporary HP. The attackers join over the first 13 seconds (joinAtSeconds), the way they arrived in the test.",
+  "description": "Sixteen attackers concentrate on one Light healer-support who puts up her shields (Rousing Shout, Guardian Ward, Cleanse Order) and a Force Sanctuary zone one after another as the attack starts, as she did in the test, so the first attackers land hits before all four are up. Values are synthetic and in the range seen in a playtest focus-fire test: she survived about 20 seconds, with roughly 1,100 damage absorbed by temporary HP. The attackers join over the first 13 seconds (joinAtSeconds), the way they arrived in the test.",
   "durationSeconds": 60,
   "isPvp": true,
   "teams": [

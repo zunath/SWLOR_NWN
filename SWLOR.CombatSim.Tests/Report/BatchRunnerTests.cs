@@ -24,11 +24,11 @@ namespace SWLOR.CombatSim.Tests.Report
         [TestCase(25)]
         public void Run_ProducesOneFightEndTimePerRun(int runs)
         {
-            var summary = BatchRunner.Run(DecisiveScenario(), RuleSets.Wave1(), _catalog, runs, seed: 1);
+            var summary = BatchRunner.Run(DecisiveScenario(), RuleSets.Tuned(), _catalog, runs, seed: 1);
 
             summary.Runs.Should().Be(runs);
             summary.FightEndTimes.Should().HaveCount(runs);
-            summary.RuleSetName.Should().Be("wave1");
+            summary.RuleSetName.Should().Be("tuned");
         }
 
         [Test]

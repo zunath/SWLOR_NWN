@@ -19,16 +19,16 @@ namespace SWLOR.CombatSim.Tests.Rules
 
         [TestCase(FeatType.Benevolence1)]
         [TestCase(FeatType.Benevolence3)]
-        public void Wave1_SetsBenevolenceRecastToTenSeconds(FeatType feat)
+        public void Tuned_SetsBenevolenceRecastToTenSeconds(FeatType feat)
         {
-            RuleSets.Wave1().GetRecastSeconds(_catalog.Get(feat)).Should().Be(10f);
+            RuleSets.Tuned().GetRecastSeconds(_catalog.Get(feat)).Should().Be(10f);
         }
 
         [TestCase(FeatType.MedKit1)]
         [TestCase(FeatType.MedKit4)]
-        public void Wave1_SetsMedKitRecastToTenAndAHalfSeconds(FeatType feat)
+        public void Tuned_SetsMedKitRecastToTenAndAHalfSeconds(FeatType feat)
         {
-            RuleSets.Wave1().GetRecastSeconds(_catalog.Get(feat)).Should().Be(10.5f);
+            RuleSets.Tuned().GetRecastSeconds(_catalog.Get(feat)).Should().Be(10.5f);
         }
 
         [TestCase(FeatType.Benevolence3)]
@@ -43,11 +43,11 @@ namespace SWLOR.CombatSim.Tests.Rules
         }
 
         [Test]
-        public void Wave1_LeavesGroupsWithoutAnOverrideAtTheirGameDataRecast()
+        public void Tuned_LeavesGroupsWithoutAnOverrideAtTheirGameDataRecast()
         {
             var quickDraw4 = _catalog.Get(FeatType.QuickDraw4);
 
-            RuleSets.Wave1().GetRecastSeconds(quickDraw4).Should().Be(quickDraw4.RecastSeconds);
+            RuleSets.Tuned().GetRecastSeconds(quickDraw4).Should().Be(quickDraw4.RecastSeconds);
         }
 
         [Test]

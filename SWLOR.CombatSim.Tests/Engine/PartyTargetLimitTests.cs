@@ -143,9 +143,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Spawn_RejectsMaxTargetsOnADamageProfile()
+        public void Spawn_RejectsMaxTargetsOnADamageOnlyAbility()
         {
-            var use = TestCombatants.Use("PurifyingWave1", AbilityTarget.Enemy, maxTargets: 3);
+            var use = TestCombatants.Use("QuickDraw4", AbilityTarget.Enemy, maxTargets: 3);
             use.Damage = new DamageSpec { Min = 1f, Max = 1f };
             var scenario = TestScenarios.TwoTeams(false, new[] { TestCombatants.Medic("Medic", use) }, new[] { TestCombatants.Dummy("Enemy", true) });
             var simulation = new Simulation(scenario, RuleSets.Current(), _catalog, 1);

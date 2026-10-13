@@ -18,7 +18,6 @@ namespace SWLOR.CombatSim.Effects
         public ScalingStat Scaling { get; init; } = ScalingStat.Willpower;
         public bool UsesForceAffinity { get; init; }
         public bool UsesCombatReadiness { get; init; }
-        public bool UsesOutgoingHealing { get; init; } = true;
 
         /// <summary>Multiplier when the target is not the caster.</summary>
         public float AllyMultiplier { get; init; } = 1f;

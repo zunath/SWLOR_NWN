@@ -19,8 +19,8 @@ namespace SWLOR.CombatSim.Report
             text.AppendLine()
                 .AppendLine($"Time limit {Seconds(scenario.DurationSeconds)}, {(scenario.IsPvp ? "PvP" : "PvE")}, {summaries.FirstOrDefault()?.Runs ?? 0} runs per rule set.")
                 .AppendLine()
-                .AppendLine("| Rules | Runs with a player death | First player death: median (p10-p90) | Fight decided | Fight length: median | Player deaths per run | Revives per run | (Healing + absorbed) / HP damage |")
-                .AppendLine("| --- | --- | --- | --- | --- | --- | --- | --- |");
+                .AppendLine("| Rules | Runs with a player death | First player death: median (p10-p90) | Fight decided | Wins by team | Fight length: median | Player deaths per run | Revives per run | (Healing + absorbed) / HP damage |")
+                .AppendLine("| --- | --- | --- | --- | --- | --- | --- | --- | --- |");
 
             foreach (var s in summaries)
             {
@@ -34,6 +34,7 @@ namespace SWLOR.CombatSim.Report
                     Percent(s.RunsWithDeath, s.Runs),
                     firstDeath,
                     Percent(s.DecisiveRuns, s.Runs),
+                    WinsByTeam(scenario, s),
                     Seconds(Percentile.Of(s.FightEndTimes, 50) ?? 0),
                     Number(s.AverageDeaths, 1),
                     Number(s.AverageRevives, 1),
@@ -74,6 +75,10 @@ namespace SWLOR.CombatSim.Report
 
             return text.ToString();
         }
+
+        private static string WinsByTeam(ScenarioSpec scenario, BatchSummary summary) =>
+            string.Join(", ", scenario.Teams.Select((team, index) =>
+                $"{team.Name} {Percent(summary.WinsByTeam.GetValueOrDefault(index), summary.Runs)}"));
 
         private static string Seconds(double seconds)
         {

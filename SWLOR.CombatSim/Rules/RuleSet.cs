@@ -51,13 +51,18 @@ namespace SWLOR.CombatSim.Rules
             return (int)Math.Floor(baseCost * multiplier + 0.5f);
         }
 
+        /// <summary>The percent of the latest step reached, whatever order the steps are listed in.</summary>
         public static float GetStepPercent(IReadOnlyList<RampStep> steps, double seconds)
         {
             var percent = 0f;
+            var reachedAt = float.NegativeInfinity;
             foreach (var step in steps)
             {
-                if (seconds >= step.AtSeconds)
+                if (seconds >= step.AtSeconds && step.AtSeconds >= reachedAt)
+                {
+                    reachedAt = step.AtSeconds;
                     percent = step.Percent;
+                }
             }
 
             return percent;

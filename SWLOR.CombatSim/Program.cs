@@ -8,9 +8,9 @@ using SWLOR.CombatSim.Scenario;
 const string Usage = """
 SWLOR combat simulator
 
-  run <scenario.json> [--rules current,wave1,wave2] [--rules-file custom.json]... [--runs 200] [--seed 1] [--out report.md] [--json results.json] [--detail]
+  run <scenario.json> [--rules current,tuned,tuned-pvp] [--rules-file custom.json]... [--runs 200] [--seed 1] [--out report.md] [--json results.json] [--detail]
       Runs the scenario under each rule set and prints a comparison; --json also writes the raw per-rule-set results.
-  rules [--name wave2]
+  rules [--name tuned-pvp]
       Prints a rule preset as JSON, to copy into a --rules-file and edit.
   abilities [--out abilities.csv]
       Writes the ability cost and timing data the simulator reads from the game server.
@@ -44,8 +44,8 @@ static int Run(string[] args)
 
     var scenario = ScenarioSpec.Load(args[0]);
     var options = ParseOptions(args.Skip(1).ToArray());
-    var runs = int.Parse(options.GetValueOrDefault("--runs", new List<string> { "200" })[0], CultureInfo.InvariantCulture);
-    var seed = int.Parse(options.GetValueOrDefault("--seed", new List<string> { "1" })[0], CultureInfo.InvariantCulture);
+    var runs = IntOption(options, "--runs", 200, 1);
+    var seed = IntOption(options, "--seed", 1, int.MinValue);
 
     var ruleSets = new List<RuleSet>();
     var names = options.TryGetValue("--rules", out var ruleNames)
@@ -78,7 +78,7 @@ static int Run(string[] args)
 static int PrintRules(string[] args)
 {
     var options = ParseOptions(args);
-    var name = options.GetValueOrDefault("--name", new List<string> { RuleSets.Wave2Name })[0];
+    var name = options.GetValueOrDefault("--name", new List<string> { RuleSets.TunedPvpName })[0];
     Console.WriteLine(JsonConvert.SerializeObject(RuleSets.Get(name), Formatting.Indented));
     return 0;
 }
@@ -87,17 +87,17 @@ static int DumpAbilities(string[] args)
 {
     var options = ParseOptions(args);
     var catalog = AbilityCatalog.Load();
-    var lines = new List<string> { "feat,name,perk,recast_group,skill_requirement,fp,stm,recast_seconds,cast_seconds,hostile,healing,force_affinity" };
+    var lines = new List<string> { "feat,name,perk,recast_group,skill_requirement,fp,stm,recast_seconds,cast_seconds,hostile,healing,force_affinity,unreadable_timing" };
     lines.AddRange(catalog.Abilities.Values
         .OrderBy(a => a.PerkName).ThenBy(a => a.Name)
         .Select(a => string.Join(",",
             a.Feat, Csv(a.Name), Csv(a.PerkName), a.RecastGroup, a.SkillRequirement, a.FP, a.STM,
             a.RecastSeconds.ToString(CultureInfo.InvariantCulture), a.CastSeconds.ToString(CultureInfo.InvariantCulture),
-            a.IsHostile, a.IsHealing, a.ForceAffinity)));
+            a.IsHostile, a.IsHealing, a.ForceAffinity, a.UnreadableTiming)));
 
     var output = options.GetValueOrDefault("--out", new List<string> { "abilities.csv" })[0];
     File.WriteAllLines(output, lines);
-    Console.WriteLine($"Wrote {catalog.Abilities.Count} abilities to {output} ({catalog.LoadErrors.Count} definitions could not be read outside the engine).");
+    Console.WriteLine($"Wrote {catalog.Abilities.Count} abilities to {output} ({catalog.LoadErrors.Count} definitions or timings could not be read outside the engine).");
     return 0;
 }
 
@@ -117,6 +117,19 @@ static Dictionary<string, List<string>> ParseOptions(string[] args)
     }
 
     return options;
+}
+
+static int IntOption(Dictionary<string, List<string>> options, string name, int defaultValue, int minimum)
+{
+    if (!options.TryGetValue(name, out var values))
+        return defaultValue;
+
+    if (values.Count != 1 || !int.TryParse(values[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var value) || value < minimum)
+        throw new ArgumentException(minimum > int.MinValue
+            ? $"{name} needs a whole number of at least {minimum}."
+            : $"{name} needs a whole number.");
+
+    return value;
 }
 
 static string Csv(string value) => value.Contains(',') ? $"\"{value}\"" : value;

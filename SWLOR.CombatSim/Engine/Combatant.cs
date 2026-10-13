@@ -1,4 +1,5 @@
 using SWLOR.CombatSim.Scenario;
+using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.CombatSim.Engine
 {
@@ -7,14 +8,14 @@ namespace SWLOR.CombatSim.Engine
     /// </summary>
     public sealed class Combatant
     {
-        public const string ForceConvergencePerk = "ForceConvergence";
-        public const string DefensiveHarmonyPerk = "DefensiveHarmony";
+        private readonly IReadOnlyDictionary<StatType, int> _perkStats;
 
-        public Combatant(string name, int teamIndex, CombatantSpec spec)
+        public Combatant(string name, int teamIndex, CombatantSpec spec, IReadOnlyDictionary<StatType, int> perkStats = null)
         {
             Name = name;
             TeamIndex = teamIndex;
             Spec = spec;
+            _perkStats = perkStats ?? new Dictionary<StatType, int>();
             Hp = spec.MaxHp;
             Fp = spec.MaxFp;
             Stm = spec.MaxStm;
@@ -62,6 +63,11 @@ namespace SWLOR.CombatSim.Engine
 
         public double TemporaryHpTotal => TemporaryHp.Sum(p => p.Amount);
         public float HpPercent => Spec.MaxHp <= 0 ? 0f : (float)(Hp / Spec.MaxHp * 100.0);
-        public bool HasPerk(string perk) => Spec.Perks != null && Spec.Perks.Contains(perk, StringComparer.OrdinalIgnoreCase);
+
+        public float OutgoingHealingPercent => Spec.OutgoingHealingPercent + GetStat(StatType.OutgoingAbilityHealingPercentAdjustment);
+        public float HealingReceivedPercent => Spec.HealingReceivedPercent + GetStat(StatType.HealingReceivedPercentAdjustment);
+
+        /// <summary>The combined bonus the combatant's perks give to a stat the simulator reads.</summary>
+        public int GetStat(StatType stat) => _perkStats.TryGetValue(stat, out var value) ? value : 0;
     }
 }

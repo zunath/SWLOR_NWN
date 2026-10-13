@@ -5,6 +5,7 @@ using SWLOR.CombatSim.Engine;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
 using SWLOR.CombatSim.Tests.Support;
+using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.CombatSim.Tests.Engine
 {
@@ -13,6 +14,7 @@ namespace SWLOR.CombatSim.Tests.Engine
     {
         private const int HarmonyStamina = 8;
         private const int HealAmount = 100;
+        private const int HealedWithPerk = 120;
         private const int HealAttempts = 600;
         private const double WoundedHp = 1000;
         private const double StartingStamina = 500_000;
@@ -26,15 +28,15 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Wave1_HealOverTimeTicksNeverRefundStamina()
+        public void Tuned_HealOverTimeTicksNeverRefundStamina()
         {
-            var (simulation, tank, healer) = SpawnTank(RuleSets.Wave1());
+            var (simulation, tank, healer) = SpawnTank(RuleSets.Tuned());
 
             var refundTimes = HealOncePerSecond(simulation, tank, healer, HealKind.OverTime);
 
             refundTimes.Should().BeEmpty();
             tank.Stats.StmRefunded.Should().Be(0);
-            tank.Stats.HealingReceived.Should().Be(HealAmount * HealAttempts, "every tick really healed, so the missing refunds are the rule and not an overheal");
+            tank.Stats.HealingReceived.Should().Be(HealedWithPerk * HealAttempts, "every tick really healed, so the missing refunds are the rule and not an overheal");
         }
 
         [Test]
@@ -49,9 +51,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Wave1_InstantAbilityHealsStillRefundStamina_AtMostOncePerSixSeconds()
+        public void Tuned_InstantAbilityHealsStillRefundStamina_AtMostOncePerSixSeconds()
         {
-            var (simulation, tank, healer) = SpawnTank(RuleSets.Wave1());
+            var (simulation, tank, healer) = SpawnTank(RuleSets.Tuned());
 
             var refundTimes = HealOncePerSecond(simulation, tank, healer, HealKind.InstantAbility);
 
@@ -72,7 +74,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [TestCase("current")]
-        [TestCase("wave1")]
+        [TestCase("tuned")]
         public void NaturalRegeneration_NeverRefundsStamina(string ruleSetName)
         {
             var (simulation, tank, healer) = SpawnTank(RuleSets.Get(ruleSetName));
@@ -80,6 +82,17 @@ namespace SWLOR.CombatSim.Tests.Engine
             var refundTimes = HealOncePerSecond(simulation, tank, healer, HealKind.NaturalRegeneration);
 
             refundTimes.Should().BeEmpty();
+        }
+
+        [TestCase(true, HealedWithPerk)]
+        [TestCase(false, HealAmount)]
+        public void ThePerkMakesHealsOnYouTwentyPercentStronger(bool withPerk, int expected)
+        {
+            var (simulation, tank, healer) = SpawnTank(RuleSets.Current(), withPerk);
+
+            simulation.ApplyHealing(healer, tank, HealAmount, HealKind.InstantAbility);
+
+            tank.Stats.HealingReceived.Should().Be(expected);
         }
 
         [Test]
@@ -92,9 +105,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Wave1_ARealInfusionNeverRefundsStaminaThroughItsTicks()
+        public void Tuned_ARealInfusionNeverRefundsStaminaThroughItsTicks()
         {
-            var (simulation, tank) = SpawnSelfInfusingTank(RuleSets.Wave1());
+            var (simulation, tank) = SpawnSelfInfusingTank(RuleSets.Tuned());
 
             RunKeepingTankWounded(simulation, tank, 300);
 
@@ -120,7 +133,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                 MaxHp = TestCombatants.EffectivelyUnlimited,
                 Might = 30,
                 MaxStm = TestCombatants.EffectivelyUnlimited,
-                Perks = withPerk ? new List<string> { Combatant.DefensiveHarmonyPerk } : new List<string>()
+                Perks = withPerk ? new List<string> { nameof(PerkType.DefensiveHarmony) } : new List<string>()
             };
             var healer = new CombatantSpec { Name = "Healer", MaxHp = 1000 };
             var simulation = TestScenarios.Spawn(
@@ -144,7 +157,7 @@ namespace SWLOR.CombatSim.Tests.Engine
                 Willpower = 20,
                 MaxStm = TestCombatants.EffectivelyUnlimited,
                 MaxFp = TestCombatants.EffectivelyUnlimited,
-                Perks = new List<string> { Combatant.DefensiveHarmonyPerk },
+                Perks = new List<string> { nameof(PerkType.DefensiveHarmony) },
                 Abilities = new List<AbilityUseSpec> { TestCombatants.Use("Infusion2", AbilityTarget.Self, keepUp: true) }
             };
             var simulation = TestScenarios.Spawn(

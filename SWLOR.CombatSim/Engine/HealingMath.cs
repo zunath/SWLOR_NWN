@@ -85,7 +85,7 @@ namespace SWLOR.CombatSim.Engine
             var amount = PercentOfMaxHp(targetMaxHp, effect.Percent / Math.Max(1, effect.Ticks));
             amount = ScaleByStat(amount, casterStat);
             amount = (int)Math.Round(amount * affinityMultiplierAtCast);
-            return effect.UsesOutgoingHealing ? AddPercent(amount, outgoingHealingPercent) : amount;
+            return AddPercent(amount, outgoingHealingPercent);
         }
 
         public static int PartyPulse(
@@ -138,8 +138,7 @@ namespace SWLOR.CombatSim.Engine
                 amount = ScaleByStat(amount, casterStat);
             if (effect.UsesForceAffinity)
                 amount = (int)Math.Round(amount * AffinityMultiplier(casterAffinity, affinityCap), MidpointRounding.AwayFromZero);
-            if (effect.UsesOutgoingHealing)
-                amount = AddPercent(amount, outgoingHealingPercent);
+            amount = AddPercent(amount, outgoingHealingPercent);
             if (effect.UsesCombatReadiness)
                 amount = AddPercent(amount, combatReadinessPercent);
 

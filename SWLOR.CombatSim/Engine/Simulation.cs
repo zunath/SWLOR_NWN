@@ -2,6 +2,7 @@ using SWLOR.CombatSim.Data;
 using SWLOR.CombatSim.Effects;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Engine
@@ -17,10 +18,19 @@ namespace SWLOR.CombatSim.Engine
         private const float ConvergencePercentPerTick = 4f;
         private const double ConvergenceTickSeconds = 2.0;
         private const double ConvergenceCooldownSeconds = 45.0;
-        private const int HarmonyStamina = 8;
-        private const int HarmonyBaseChance = 10;
-        private const int HarmonyMaximumChance = 40;
         private const int CoordinatedSampleSize = 3;
+
+        /// <summary>Perk stats the simulator models; listed perks contribute only these.</summary>
+        private static readonly StatType[] PerkStatsRead =
+        {
+            StatType.ForceConvergence,
+            StatType.HealingReceivedPercentAdjustment,
+            StatType.OutgoingAbilityHealingPercentAdjustment,
+            StatType.HealingReceivedStaminaRestore,
+            StatType.HealingReceivedStaminaRestoreChance,
+            StatType.HealingReceivedStaminaRestoreChanceMaximum,
+            StatType.HealingReceivedStaminaRestoreChanceScalingAbility
+        };
 
         private readonly ScenarioSpec _scenario;
         private readonly RuleSet _rules;
@@ -75,6 +85,11 @@ namespace SWLOR.CombatSim.Engine
 
         public void Spawn()
         {
+            if (!(_scenario.TimeStepSeconds > 0))
+                throw new InvalidDataException("The scenario's TimeStepSeconds must be greater than zero.");
+            if (!(_scenario.DurationSeconds > 0))
+                throw new InvalidDataException("The scenario's DurationSeconds must be greater than zero.");
+
             for (var teamIndex = 0; teamIndex < _scenario.Teams.Count; teamIndex++)
             {
                 if (_scenario.Teams[teamIndex].RetargetSeconds < 0)
@@ -85,10 +100,11 @@ namespace SWLOR.CombatSim.Engine
                     if (spec.JoinAtSeconds < 0)
                         throw new InvalidDataException($"'{spec.Name}' has a negative JoinAtSeconds.");
 
+                    var perkStats = _catalog.Perks.GetStats(spec.Perks, PerkStatsRead);
                     for (var copy = 1; copy <= Math.Max(1, spec.Count); copy++)
                     {
                         var name = spec.Count > 1 ? $"{spec.Name} {copy}" : spec.Name;
-                        var combatant = new Combatant(name, teamIndex, spec)
+                        var combatant = new Combatant(name, teamIndex, spec, perkStats)
                         {
                             NextHeartbeatAt = _random.NextDouble() * HeartbeatSeconds,
                             NextAttackAt = _random.NextDouble() * 2.0,
@@ -141,9 +157,16 @@ namespace SWLOR.CombatSim.Engine
                 throw new InvalidDataException($"Unknown ability feat '{use.Feat}'.");
 
             var info = _catalog.Get(feat);
+            if (info.UnreadableTiming != null)
+                throw new InvalidDataException($"'{use.Feat}' computes its {info.UnreadableTiming} from the game engine, which the simulator cannot read.");
+
             EffectCatalog.TryGet(feat, out var effect);
             if (effect == null && use.Damage == null)
                 throw new InvalidDataException($"'{use.Feat}' has no modeled effect; give it a damage profile or add it to the effect catalog.");
+
+            // A damage profile picks an enemy target, so only party-wide effects can resolve alongside it.
+            if (effect != null && use.Damage != null && !IsPartyEffect(effect))
+                throw new InvalidDataException($"'{use.Feat}' has a damage profile and a single-target effect; only party heals and shields can be paired with damage.");
 
             if (use.MinIntervalSeconds < 0)
                 throw new InvalidDataException($"'{use.Feat}' has a negative MinIntervalSeconds.");
@@ -153,12 +176,15 @@ namespace SWLOR.CombatSim.Engine
                 if (use.MaxTargets.Value < 1)
                     throw new InvalidDataException($"'{use.Feat}' needs MaxTargets of at least 1.");
 
-                if (use.Damage != null || effect?.Kind is not (EffectKind.PartyHealOverTime or EffectKind.PartyTemporaryHp))
+                if (effect == null || !IsPartyEffect(effect))
                     throw new InvalidDataException($"'{use.Feat}' sets MaxTargets but is not a zone or party heal or shield.");
             }
 
             _resolvedUses[use] = (info, effect);
         }
+
+        private static bool IsPartyEffect(AbilityEffect effect) =>
+            effect.Kind is EffectKind.PartyHealOverTime or EffectKind.PartyTemporaryHp;
 
         private int? GetLastTeamStanding()
         {
@@ -215,7 +241,7 @@ namespace SWLOR.CombatSim.Engine
                     target.Spec.MaxHp,
                     source.Spec.Willpower,
                     instance.AffinityMultiplier,
-                    source.Spec.OutgoingHealingPercent);
+                    source.OutgoingHealingPercent);
                 ApplyHealing(source, target, amount, HealKind.OverTime);
 
                 instance.TicksLeft--;
@@ -250,7 +276,7 @@ namespace SWLOR.CombatSim.Engine
                     caster.Spec.Willpower,
                     caster.Spec.ForceAffinity,
                     _rules.ForceAffinityHealingCap,
-                    caster.Spec.OutgoingHealingPercent,
+                    caster.OutgoingHealingPercent,
                     caster.Spec.CombatReadinessPercent);
                 ApplyHealing(caster, ally, amount, HealKind.OverTime);
             }
@@ -360,10 +386,10 @@ namespace SWLOR.CombatSim.Engine
                 TriggerConvergence(caster);
 
             if (cast.Use.Damage != null)
-            {
                 ApplyAbilityDamage(caster, target, cast.Use.Damage);
+
+            if (effect == null)
                 return;
-            }
 
             switch (effect.Kind)
             {
@@ -376,7 +402,7 @@ namespace SWLOR.CombatSim.Engine
                         caster.Spec.Willpower,
                         caster.Spec.ForceAffinity,
                         _rules.ForceAffinityHealingCap,
-                        caster.Spec.OutgoingHealingPercent,
+                        caster.OutgoingHealingPercent,
                         caster.Spec.CombatReadinessPercent);
                     ApplyHealing(caster, target, heal, HealKind.InstantAbility);
                     break;
@@ -427,7 +453,7 @@ namespace SWLOR.CombatSim.Engine
 
         private void TriggerConvergence(Combatant caster)
         {
-            if (!caster.HasPerk(Combatant.ForceConvergencePerk) || _now < caster.ConvergenceReadyAt)
+            if (caster.GetStat(StatType.ForceConvergence) <= 0 || _now < caster.ConvergenceReadyAt)
                 return;
 
             caster.ConvergenceUntil = _now + _rules.ConvergenceDurationSeconds;
@@ -514,7 +540,8 @@ namespace SWLOR.CombatSim.Engine
                 caster.Spec.Willpower,
                 caster.Spec.ForceAffinity,
                 _rules.ForceAffinityHealingCap,
-                caster.Spec.OutgoingHealingPercent,
+                caster.OutgoingHealingPercent,
+                // The game heals 0.1s after the revive, once the ability's impact has ended, so Combat Readiness never applies.
                 0f);
             ApplyHealing(caster, target, heal, HealKind.Revive);
         }
@@ -610,7 +637,7 @@ namespace SWLOR.CombatSim.Engine
 
             double adjusted = kind == HealKind.NaturalRegeneration
                 ? amount
-                : HealingMath.AddPercent(amount, target.Spec.HealingReceivedPercent);
+                : HealingMath.AddPercent(amount, target.HealingReceivedPercent);
 
             if (IsInPvpCombat(target))
             {
@@ -629,25 +656,40 @@ namespace SWLOR.CombatSim.Engine
                 source.Stats.HealingDone += effective;
 
             if (effective > 0 && kind != HealKind.NaturalRegeneration)
-                TryDefensiveHarmony(target, kind);
+                TryRestoreStaminaOnHeal(target, kind);
         }
 
-        private void TryDefensiveHarmony(Combatant target, HealKind kind)
+        /// <summary>The game's healing-received stamina restore (Defensive Harmony), driven by the same stats.</summary>
+        private void TryRestoreStaminaOnHeal(Combatant target, HealKind kind)
         {
-            if (!target.HasPerk(Combatant.DefensiveHarmonyPerk))
+            var chance = target.GetStat(StatType.HealingReceivedStaminaRestoreChance);
+            var stamina = target.GetStat(StatType.HealingReceivedStaminaRestore);
+            if (chance <= 0 || stamina <= 0)
                 return;
             if (_rules.HarmonyInstantHealsOnly && kind != HealKind.InstantAbility)
                 return;
             if (_now < target.HarmonyReadyAt)
                 return;
 
-            var chance = Math.Min(HarmonyMaximumChance, HarmonyBaseChance + target.Spec.Might);
+            var maximumChance = target.GetStat(StatType.HealingReceivedStaminaRestoreChanceMaximum);
+            var scalingAbility = (AbilityType)(target.GetStat(StatType.HealingReceivedStaminaRestoreChanceScalingAbility) - 1);
+            if (maximumChance > chance && Enum.IsDefined(scalingAbility) && scalingAbility != AbilityType.Invalid)
+                chance = Math.Min(maximumChance, chance + Math.Max(0, AbilityScore(target, scalingAbility)));
+
             if (_random.Next(100) >= chance)
                 return;
 
-            RestoreStamina(target, HarmonyStamina, true);
+            RestoreStamina(target, stamina, true);
             target.HarmonyReadyAt = _now + _rules.HarmonyCooldownSeconds;
         }
+
+        private static int AbilityScore(Combatant combatant, AbilityType ability) => ability switch
+        {
+            AbilityType.Might => combatant.Spec.Might,
+            AbilityType.Willpower => combatant.Spec.Willpower,
+            AbilityType.Social => combatant.Spec.Social,
+            _ => throw new InvalidDataException($"The simulator does not model {ability}, which '{combatant.Name}' needs for a perk.")
+        };
 
         private void GrantTemporaryHp(Combatant source, Combatant target, AbilityEffect effect)
         {

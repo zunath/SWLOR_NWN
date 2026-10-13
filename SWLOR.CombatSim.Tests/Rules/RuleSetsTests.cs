@@ -10,12 +10,12 @@ namespace SWLOR.CombatSim.Tests.Rules
         [Test]
         public void Names_ListTheThreePresets()
         {
-            RuleSets.Names.Should().Equal("current", "wave1", "wave2");
+            RuleSets.Names.Should().Equal("current", "tuned", "tuned-pvp");
         }
 
         [TestCase("current")]
-        [TestCase("WAVE1")]
-        [TestCase("Wave2")]
+        [TestCase("TUNED")]
+        [TestCase("Tuned-PVP")]
         public void Get_FindsPresetsRegardlessOfCase(string name)
         {
             RuleSets.Get(name).Name.Should().Be(name.ToLowerInvariant());
@@ -24,18 +24,18 @@ namespace SWLOR.CombatSim.Tests.Rules
         [Test]
         public void Get_WithAnUnknownName_ListsTheKnownPresets()
         {
-            var act = () => RuleSets.Get("wave9");
+            var act = () => RuleSets.Get("nonexistent");
 
-            act.Should().Throw<ArgumentException>().WithMessage("*wave9*current*wave1*wave2*");
+            act.Should().Throw<ArgumentException>().WithMessage("*nonexistent*current*tuned*tuned-pvp*");
         }
 
         [Test]
         public void Get_ReturnsAFreshInstanceEachTime()
         {
-            var first = RuleSets.Get("wave1");
+            var first = RuleSets.Get("tuned");
             first.RecastOverrides["Benevolence"] = 99f;
 
-            RuleSets.Get("wave1").RecastOverrides["Benevolence"].Should().Be(10f);
+            RuleSets.Get("tuned").RecastOverrides["Benevolence"].Should().Be(10f);
         }
 
         [Test]
@@ -58,9 +58,9 @@ namespace SWLOR.CombatSim.Tests.Rules
         }
 
         [Test]
-        public void Wave1_ContainsThePveHealingCostAndFixChanges()
+        public void Tuned_ContainsThePveHealingCostAndFixChanges()
         {
-            var rules = RuleSets.Wave1();
+            var rules = RuleSets.Tuned();
 
             rules.ForceAffinityHealingCap.Should().Be(1.25f);
             rules.RecastOverrides.Should().Contain("Benevolence", 10f).And.Contain("MedKit", 10.5f);
@@ -75,9 +75,9 @@ namespace SWLOR.CombatSim.Tests.Rules
         }
 
         [Test]
-        public void Wave1_HasNoPvpHealingOrDamageRules()
+        public void Tuned_HasNoPvpHealingOrDamageRules()
         {
-            var rules = RuleSets.Wave1();
+            var rules = RuleSets.Tuned();
 
             rules.PvpHealingMultiplier.Should().Be(1f);
             rules.PvpTemporaryHpMultiplier.Should().Be(1f);
@@ -86,22 +86,22 @@ namespace SWLOR.CombatSim.Tests.Rules
         }
 
         [Test]
-        public void Wave2_IsWave1PlusThePvpRules()
+        public void TunedPvp_IsTunedPlusThePvpRules()
         {
-            var wave1 = RuleSets.Wave1();
-            var wave2 = RuleSets.Wave2();
+            var tuned = RuleSets.Tuned();
+            var tunedPvp = RuleSets.TunedPvp();
 
-            wave2.ForceAffinityHealingCap.Should().Be(wave1.ForceAffinityHealingCap);
-            wave2.TemporaryHpCapPercent.Should().Be(wave1.TemporaryHpCapPercent);
-            wave2.ConvergenceDurationSeconds.Should().Be(wave1.ConvergenceDurationSeconds);
-            wave2.FpCostMultiplier.Should().Be(wave1.FpCostMultiplier);
-            wave2.Revives.Should().Be(wave1.Revives);
+            tunedPvp.ForceAffinityHealingCap.Should().Be(tuned.ForceAffinityHealingCap);
+            tunedPvp.TemporaryHpCapPercent.Should().Be(tuned.TemporaryHpCapPercent);
+            tunedPvp.ConvergenceDurationSeconds.Should().Be(tuned.ConvergenceDurationSeconds);
+            tunedPvp.FpCostMultiplier.Should().Be(tuned.FpCostMultiplier);
+            tunedPvp.Revives.Should().Be(tuned.Revives);
 
-            wave2.PvpHealingMultiplier.Should().Be(1f);
-            wave2.PvpTemporaryHpMultiplier.Should().Be(1f);
-            wave2.PvpHealingRamp.Select(s => (s.AtSeconds, s.Percent))
+            tunedPvp.PvpHealingMultiplier.Should().Be(1f);
+            tunedPvp.PvpTemporaryHpMultiplier.Should().Be(1f);
+            tunedPvp.PvpHealingRamp.Select(s => (s.AtSeconds, s.Percent))
                 .Should().Equal((120f, 10f), (150f, 30f), (180f, 50f), (210f, 70f), (240f, 90f));
-            wave2.PvpDamageBackstop.Select(s => (s.AtSeconds, s.Percent))
+            tunedPvp.PvpDamageBackstop.Select(s => (s.AtSeconds, s.Percent))
                 .Should().Equal((240f, 10f), (270f, 20f), (300f, 30f), (330f, 40f), (360f, 50f));
         }
     }

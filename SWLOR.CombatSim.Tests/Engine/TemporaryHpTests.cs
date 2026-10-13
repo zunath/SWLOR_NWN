@@ -28,9 +28,9 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Wave1_CapsTotalTemporaryHpAtHalfOfMaxHp_EvenAfterSeveralDifferentShields()
+        public void Tuned_CapsTotalTemporaryHpAtHalfOfMaxHp_EvenAfterSeveralDifferentShields()
         {
-            var simulation = Spawn(RuleSets.Wave1(), new[] { TestCombatants.Medic("Medic", SelfKeepUp(DifferentShields)) });
+            var simulation = Spawn(RuleSets.Tuned(), new[] { TestCombatants.Medic("Medic", SelfKeepUp(DifferentShields)) });
             var medic = simulation.Get("Medic");
 
             var peak = RunAndTrackPeakTemporaryHp(simulation, medic, ShieldingWindowSeconds);
@@ -40,12 +40,12 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Wave1_CapUsesTheRecipientsMaxHp()
+        public void Tuned_CapUsesTheRecipientsMaxHp()
         {
             var medic = TestCombatants.Medic("Medic", DifferentShields
                 .Select(feat => TestCombatants.Use(feat, AbilityTarget.NamedAlly, keepUp: true, targetName: "Tank"))
                 .ToArray());
-            var simulation = Spawn(RuleSets.Wave1(), new[] { medic, new CombatantSpec { Name = "Tank", MaxHp = 400 } });
+            var simulation = Spawn(RuleSets.Tuned(), new[] { medic, new CombatantSpec { Name = "Tank", MaxHp = 400 } });
 
             var peak = RunAndTrackPeakTemporaryHp(simulation, simulation.Get("Tank"), ShieldingWindowSeconds);
 
@@ -65,7 +65,7 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [TestCase("current")]
-        [TestCase("wave1")]
+        [TestCase("tuned")]
         public void CastingTheSameShieldAgain_ReplacesTheOldOneInsteadOfStacking(string ruleSetName)
         {
             var simulation = Spawn(RuleSets.Get(ruleSetName), new[]
@@ -87,11 +87,11 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
-        public void Wave1_ReplacingAShieldIsNotShrunkByTheShieldItReplaces()
+        public void Tuned_ReplacingAShieldIsNotShrunkByTheShieldItReplaces()
         {
             // Pain Suppressant and Deflector Shield fill all but 92 of the cap; Guardian Ward takes that remainder.
             // Recasting Guardian Ward must get the same 92 back, not 0 because its old pool still counted against the cap.
-            var simulation = Spawn(RuleSets.Wave1(), new[]
+            var simulation = Spawn(RuleSets.Tuned(), new[]
             {
                 TestCombatants.Medic("Medic",
                     TestCombatants.Use("PainSuppressant2", AbilityTarget.Self, keepUp: true),

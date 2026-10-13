@@ -18,42 +18,42 @@ namespace SWLOR.CombatSim.Tests.Rules
         }
 
         [Test]
-        public void Wave1_RaisesBenevolenceIIIFromSevenToEightFp()
+        public void Tuned_RaisesBenevolenceIIIFromSevenToEightFp()
         {
             var benevolence3 = _catalog.Get(FeatType.Benevolence3);
 
             benevolence3.SkillRequirement.Should().Be(38);
             benevolence3.FP.Should().Be(7);
-            RuleSets.Wave1().GetFpCost(benevolence3).Should().Be(8);
+            RuleSets.Tuned().GetFpCost(benevolence3).Should().Be(8);
         }
 
         [Test]
-        public void Wave1_RaisesQuickDrawIVFromTwelveToFourteenStamina()
+        public void Tuned_RaisesQuickDrawIVFromTwelveToFourteenStamina()
         {
             var quickDraw4 = _catalog.Get(FeatType.QuickDraw4);
 
             quickDraw4.SkillRequirement.Should().Be(40);
             quickDraw4.STM.Should().Be(12);
-            RuleSets.Wave1().GetStmCost(quickDraw4).Should().Be(14);
+            RuleSets.Tuned().GetStmCost(quickDraw4).Should().Be(14);
         }
 
         [Test]
-        public void Wave1_LeavesMedKitIAtFourStaminaBecauseItHasNoSkillRequirement()
+        public void Tuned_LeavesMedKitIAtFourStaminaBecauseItHasNoSkillRequirement()
         {
             var medKit1 = _catalog.Get(FeatType.MedKit1);
 
             medKit1.SkillRequirement.Should().Be(0);
             medKit1.STM.Should().Be(4);
-            RuleSets.Wave1().GetStmCost(medKit1).Should().Be(4);
+            RuleSets.Tuned().GetStmCost(medKit1).Should().Be(4);
         }
 
         [Test]
-        public void Wave1_DoesNotChargeFpForAStaminaAbilityOrStaminaForAnFpAbility()
+        public void Tuned_DoesNotChargeFpForAStaminaAbilityOrStaminaForAnFpAbility()
         {
-            var wave1 = RuleSets.Wave1();
+            var tuned = RuleSets.Tuned();
 
-            wave1.GetFpCost(_catalog.Get(FeatType.QuickDraw4)).Should().Be(0);
-            wave1.GetStmCost(_catalog.Get(FeatType.Benevolence3)).Should().Be(0);
+            tuned.GetFpCost(_catalog.Get(FeatType.QuickDraw4)).Should().Be(0);
+            tuned.GetStmCost(_catalog.Get(FeatType.Benevolence3)).Should().Be(0);
         }
 
         [TestCase(FeatType.Benevolence3)]
@@ -76,7 +76,7 @@ namespace SWLOR.CombatSim.Tests.Rules
         [TestCase(0, 10, 10)]
         public void AdjustCost_AppliesTheMultiplierOnlyFromTheSkillThreshold(int skillRequirement, int baseCost, int expected)
         {
-            RuleSets.Wave1().AdjustCost(baseCost, skillRequirement, 1.2f).Should().Be(expected);
+            RuleSets.Tuned().AdjustCost(baseCost, skillRequirement, 1.2f).Should().Be(expected);
         }
 
         [TestCase(7, 8)]
@@ -86,13 +86,13 @@ namespace SWLOR.CombatSim.Tests.Rules
         [TestCase(3, 4)]
         public void AdjustCost_RoundsToTheNearestWholeNumber(int baseCost, int expected)
         {
-            RuleSets.Wave1().AdjustCost(baseCost, 40, 1.2f).Should().Be(expected);
+            RuleSets.Tuned().AdjustCost(baseCost, 40, 1.2f).Should().Be(expected);
         }
 
         [Test]
         public void AdjustCost_NeverChargesForAFreeAbility()
         {
-            RuleSets.Wave1().AdjustCost(0, 40, 1.2f).Should().Be(0);
+            RuleSets.Tuned().AdjustCost(0, 40, 1.2f).Should().Be(0);
         }
     }
 }

@@ -16,6 +16,10 @@ namespace SWLOR.CombatSim.Data
         public int STM { get; init; }
         public float RecastSeconds { get; init; }
         public float CastSeconds { get; init; }
+
+        /// <summary>What the game computes at runtime and the simulator could not read (for example "recast"); null when timings were read.</summary>
+        public string UnreadableTiming { get; init; }
+
         public bool IsHostile { get; init; }
         public bool IsHealing { get; init; }
         public string ForceAffinity { get; init; }

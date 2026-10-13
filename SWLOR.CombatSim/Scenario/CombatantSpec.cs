@@ -32,7 +32,10 @@ namespace SWLOR.CombatSim.Scenario
         public int MaxStm { get; set; }
         public float StmRegenPer30Seconds { get; set; }
 
-        /// <summary>Perks the simulator models: ForceConvergence, DefensiveHarmony.</summary>
+        /// <summary>
+        /// PerkType names, with ":level" for perks with several levels. Their Force Convergence, outgoing and received
+        /// healing and heal-triggered stamina bonuses are read from the game's perk definitions and added to the values above.
+        /// </summary>
         public List<string> Perks { get; set; } = new();
 
         /// <summary>Seconds between deliberate actions, standing in for reaction time and animations.</summary>

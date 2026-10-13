@@ -120,7 +120,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var ally = new CombatantSpec { Name = "Ally", MaxHp = 1000 };
             var enemy = TestCombatants.Dummy("Enemy");
             enemy.JoinAtSeconds = 100f;
-            var simulation = Spawn(new[] { medic, ally }, new[] { enemy }, isPvp: true, RuleSets.Wave1());
+            var simulation = Spawn(new[] { medic, ally }, new[] { enemy }, isPvp: true, RuleSets.Tuned());
             simulation.ApplyDamage(simulation.Get("Enemy"), simulation.Get("Ally"), 5000);
             simulation.Get("Ally").IsDead.Should().BeTrue();
 

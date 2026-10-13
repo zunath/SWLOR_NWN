@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.CombatSim.Data;
 using SWLOR.CombatSim.Effects;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Tests.Data
@@ -42,6 +43,32 @@ namespace SWLOR.CombatSim.Tests.Data
             ability.RecastSeconds.Should().Be(6f);
             ability.IsHealing.Should().BeTrue();
             ability.IsHostile.Should().BeFalse();
+            ability.UnreadableTiming.Should().BeNull();
+        }
+
+        [Test]
+        public void EveryAbilityTiming_IsReadOutsideTheEngine()
+        {
+            _catalog.Abilities.Values.Where(a => a.UnreadableTiming != null).Select(a => a.Feat).Should().BeEmpty();
+            _catalog.Get(FeatType.Anger1).RecastSeconds.Should().Be(12f, "Anger computes its recast per beast, but the value is fixed");
+        }
+
+        [Test]
+        public void ATimingThatNeedsTheEngine_IsFlaggedAndLogged_InsteadOfReadAsZero()
+        {
+            var catalog = AbilityCatalog.Load();
+            var detail = new AbilityDetail
+            {
+                Name = "Engine-bound",
+                RecastDelay = _ => throw new InvalidOperationException("needs the engine"),
+                ActivationDelay = (_, _, _) => throw new InvalidOperationException("needs the engine")
+            };
+
+            var info = catalog.Describe(FeatType.Anger1, detail);
+
+            info.UnreadableTiming.Should().Be("recast and cast time");
+            info.RecastSeconds.Should().Be(0f);
+            catalog.LoadErrors.Should().Contain("Anger1: recast and cast time needs the game engine");
         }
 
         [Test]

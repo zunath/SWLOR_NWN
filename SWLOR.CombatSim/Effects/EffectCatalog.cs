@@ -37,8 +37,7 @@ namespace SWLOR.CombatSim.Effects
             [FeatType.KoltoMist2] = PartyPulse(2, "KoltoMist"),
             [FeatType.ForceSanctuary1] = new AbilityEffect
             {
-                Kind = EffectKind.PartyHealOverTime, Percent = 2, Ticks = 10, TickSeconds = 3f,
-                Key = "ForceSanctuary", UsesOutgoingHealing = false
+                Kind = EffectKind.PartyHealOverTime, Percent = 2, Ticks = 10, TickSeconds = 3f, Key = "ForceSanctuary"
             },
             [FeatType.PurifyingWave1] = new AbilityEffect
             {

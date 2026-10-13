@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API;
 using SWLOR.NWN.API.NWScript.Enum;
 using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 using Vector3 = System.Numerics.Vector3;
@@ -79,11 +81,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var appearance = GetAppearanceType(actor.Creature);
                 var quickbar = CreaturePlugin.SerializeQuickbar(actor.Creature);
                 var destination = GetPositionFromLocation(ctx.GetArenaLocation(6f));
+                var spaceArea = ctx.CreateInstancedArea(GetResRef(ctx.Arena));
                 property.Positions[PropertyLocationType.SpacePosition] = new PropertyLocation
                 {
                     AreaResref = "engine_launch", X = destination.X, Y = destination.Y, Z = destination.Z
                 };
-                Area.GetAreas()["engine_launch"] = ctx.Arena;
+                Area.GetAreas()["engine_launch"] = spaceArea;
                 DB.Set(property);
                 await ctx.ExecuteInCreatureContextAsync(computer, () =>
                 {
@@ -96,7 +99,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(quickbar, CreaturePlugin.SerializeQuickbar(actor.Creature), "canceling launch preserves the quickbar");
                 ctx.Assert(!GetIsObjectValid(GetLocalObject(actor.Creature, "SPACE_PILOT_CLONE")), "canceling launch leaves no Pilot clone");
                 ctx.Assert(!GetLocalBool(actor.Creature, "SPACE_INSTANCE_LOCATION_SET"), "canceling launch leaves no return location");
-                await ctx.ExecuteInCreatureContextAsync(computer, Space.UseShipComputer);
+                await UseWithoutClientTransfer(ctx, actor, computer);
+                await CompleteAreaLoad(ctx, actor, spaceArea, destination, true);
                 await ctx.WaitUntilAsync(() => Space.IsPlayerInSpaceMode(actor.Creature), 5f, "the controls can launch again after cancellation");
             });
         }
@@ -110,11 +114,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var appearance = GetAppearanceType(actor.Creature);
                 var quickbar = CreaturePlugin.SerializeQuickbar(actor.Creature);
                 var destination = GetPositionFromLocation(ctx.GetArenaLocation(6f));
+                var spaceArea = ctx.CreateInstancedArea(GetResRef(ctx.Arena));
                 property.Positions[PropertyLocationType.SpacePosition] = new PropertyLocation
                 {
                     AreaResref = "engine_launch", X = destination.X, Y = destination.Y, Z = destination.Z
                 };
-                Area.GetAreas()["engine_launch"] = ctx.Arena;
+                Area.GetAreas()["engine_launch"] = spaceArea;
 
                 // Check both docked launches and resuming a ship's current space position.
                 foreach (var resume in new[] { false, true })
@@ -129,21 +134,26 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     {
                         Space.UseShipComputer();
                         Space.UseShipComputer();
+                        // A fake client cannot acknowledge the native area's load request.
+                        AssignCommand(actor.Creature, () => ClearAllActions());
                     });
+                    await CompleteAreaLoad(ctx, actor, spaceArea, destination, true);
                     await ctx.WaitUntilAsync(() => Space.IsPlayerInSpaceMode(actor.Creature), 5f, "launch enables space mode after arrival");
                     ctx.Assert(Vector3.Distance(GetPosition(actor.Creature), destination) < 1f, "the transformed pilot is at the launch destination");
                     ctx.Assert(Space.IsPlayerInSpaceMode(actor.Creature), "successful launch activates the ship");
+                    ctx.AssertEqual(spaceArea, GetArea(actor.Creature), "the pilot crossed into a distinct space area");
                     var ship = Space.GetShipDetailByItemTag("ShipDeedLightFreighter");
                     ctx.AssertEqual(ship.Appearance, GetAppearanceType(actor.Creature), "successful launch applies the ship model");
                     var clone = GetLocalObject(actor.Creature, "SPACE_PILOT_CLONE");
                     ctx.Assert(GetIsObjectValid(clone), "successful launch creates a Pilot clone");
                     ctx.AssertEqual(appearance, GetAppearanceType(clone), "the Pilot clone retains the character model");
                     ctx.Assert(Vector3.Distance(GetPosition(clone), origin) < 1f, "the Pilot clone remains at the controls");
+                    ctx.AssertEqual(ctx.Arena, GetArea(clone), "the Pilot remains in the interior area");
                     ctx.AssertEqual(quickbar, DB.Get<Player>(actor.Id).SerializedHotBar, "repeated panel use preserves the original quickbar");
                     ctx.AssertEqual(origin, GetPositionFromLocation(GetLocalLocation(actor.Creature, "SPACE_INSTANCE_LOCATION")),
                         "repeated panel use preserves the return location");
                     var savedPosition = DB.Get<WorldProperty>(property.Id).Positions[PropertyLocationType.CurrentPosition];
-                    ctx.AssertEqual(GetResRef(ctx.Arena), savedPosition.AreaResref, "launch records the current space area");
+                    ctx.AssertEqual(GetResRef(spaceArea), savedPosition.AreaResref, "launch records the current space area");
                     ctx.Assert(Vector3.Distance(GetPosition(actor.Creature), new Vector3(savedPosition.X, savedPosition.Y, savedPosition.Z)) < 0.1f,
                         "launch records the actual space position after arrival");
 
@@ -151,12 +161,126 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     property.Positions.Remove(PropertyLocationType.CurrentPosition);
                     DB.Set(property);
                     await ctx.ExecuteInCreatureContextAsync(actor.Creature, () => Space.WarpPlayerInsideShip(actor.Creature));
+                    await CompleteAreaLoad(ctx, actor, ctx.Arena, origin, false);
                     await ctx.WaitUntilAsync(() => Vector3.Distance(GetPosition(actor.Creature), origin) < 1f, 5f, "pilot returns to the controls");
                     await ctx.WaitUntilAsync(() => !GetIsObjectValid(clone), 3f, "Pilot clone is removed on exit");
                     ctx.AssertEqual(appearance, GetAppearanceType(actor.Creature), "exit restores the character model");
                     ctx.AssertEqual(quickbar, CreaturePlugin.SerializeQuickbar(actor.Creature), "exit restores the original quickbar");
                 }
             });
+        }
+
+        [EngineTest("Late area loading completes a launch after actions are cleared", Category = "ShipLaunch", TimeoutSeconds = 15f)]
+        public static Task LateArrival(EngineTestContext ctx)
+        {
+            return WithShipComputer(ctx, async (actor, computer, property) =>
+            {
+                var destination = GetPositionFromLocation(ctx.GetArenaLocation(6f));
+                var spaceArea = ctx.CreateInstancedArea(GetResRef(ctx.Arena));
+                Area.GetAreas()["engine_launch"] = spaceArea;
+                property.Positions[PropertyLocationType.SpacePosition] = new PropertyLocation
+                {
+                    AreaResref = "engine_launch", X = destination.X, Y = destination.Y, Z = destination.Z
+                };
+                DB.Set(property);
+                await UseWithoutClientTransfer(ctx, actor, computer);
+                MarkDeparture(actor, ctx.Arena);
+                ExpirePendingLaunch(actor);
+                await ctx.DelaySecondsAsync(0.4f);
+                ctx.Assert(PendingLaunches().Contains(actor.Creature), "a loading player retains the pending launch beyond the idle timeout");
+                ctx.Assert(!Space.IsPlayerInSpaceMode(actor.Creature), "area loading does not transform a character still inside");
+
+                // Suppress the area-entry notification as well as clearing all actions.
+                // The server scheduler must still notice arrival and finish the launch.
+                await CompleteAreaLoad(ctx, actor, spaceArea, destination, false);
+                await ctx.WaitUntilAsync(() => Space.IsPlayerInSpaceMode(actor.Creature), 3f, "scheduled completion after delayed cross-area arrival");
+                ctx.Assert(!PendingLaunches().Contains(actor.Creature), "successful completion releases the pending reservation");
+                ctx.AssertEqual(ctx.Arena, GetArea(GetLocalObject(actor.Creature, "SPACE_PILOT_CLONE")), "late completion leaves the Pilot inside");
+            });
+        }
+
+        [EngineTest("Unstarted ship launches expire and death releases their reservation", Category = "ShipLaunch", TimeoutSeconds = 15f)]
+        public static Task PendingLaunchCleanup(EngineTestContext ctx)
+        {
+            return WithShipComputer(ctx, async (actor, computer, property) =>
+            {
+                var destination = GetPositionFromLocation(ctx.GetArenaLocation(6f));
+                Area.GetAreas()["engine_launch"] = ctx.CreateInstancedArea(GetResRef(ctx.Arena));
+                property.Positions[PropertyLocationType.SpacePosition] = new PropertyLocation
+                {
+                    AreaResref = "engine_launch", X = destination.X, Y = destination.Y, Z = destination.Z
+                };
+                DB.Set(property);
+                await UseWithoutClientTransfer(ctx, actor, computer);
+                ExpirePendingLaunch(actor);
+                await ctx.WaitUntilAsync(() => !PendingLaunches().Contains(actor.Creature), 3f, "canceled launch reservation expires");
+                ctx.Assert(!Space.IsPlayerInSpaceMode(actor.Creature), "expiration leaves the character on foot");
+                await UseWithoutClientTransfer(ctx, actor, computer);
+                ctx.Assert(PendingLaunches().Contains(actor.Creature), "a later launch obtains a fresh reservation");
+                Space.ApplyDeath(actor.Creature);
+                ctx.Assert(!PendingLaunches().Contains(actor.Creature), "death cleanup removes an uncompleted launch");
+            });
+        }
+
+        private static Task UseWithoutClientTransfer(EngineTestContext ctx, PlayerAbilityFixture actor, uint computer)
+        {
+            return ctx.ExecuteInCreatureContextAsync(computer, () =>
+            {
+                Space.UseShipComputer();
+                AssignCommand(actor.Creature, () => ClearAllActions());
+            });
+        }
+
+        private static void MarkDeparture(PlayerAbilityFixture actor, uint origin)
+        {
+            NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(origin).AsNWSArea().m_oidLastLeft = actor.Creature;
+            ScriptExecutionProvider.Current.ExecuteInScriptContext(Space.ClearTargetOnAreaExit, origin);
+        }
+
+        // Simulate the point where a real client acknowledges the new area's load. The
+        // fake client is temporarily unregistered for native movement, then restored
+        // before the real Space area-entry handler executes. No jump callback is used.
+        private static Task CompleteAreaLoad(EngineTestContext ctx, PlayerAbilityFixture actor,
+            uint area, Vector3 position, bool notifyArrival)
+        {
+            return ctx.ExecuteInCreatureContextAsync(actor.Creature, () =>
+            {
+                MarkDeparture(actor, GetArea(actor.Creature));
+                ClearAllActions();
+                var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+                var client = (CNWSPlayer)typeof(PlayerAbilityFixture).GetField("_client", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(actor);
+                var creature = server.GetGameObject(actor.Creature).AsNWSCreature();
+                var playerFlag = creature.m_bPlayerCharacter;
+                server.GetPlayerList().Remove(client);
+                creature.m_bPlayerCharacter = 0;
+                try
+                {
+                    creature.RemoveFromArea();
+                    creature.AddToArea(server.GetGameObject(area).AsNWSArea(), position.X, position.Y, position.Z, 0, 0);
+                }
+                finally
+                {
+                    creature.m_bPlayerCharacter = playerFlag;
+                    server.GetPlayerList().Add(client);
+                }
+                ClearAllActions();
+                ctx.AssertEqual(area, GetArea(actor.Creature), "native fixture reaches the distinct destination area");
+                if (notifyArrival)
+                {
+                    server.GetGameObject(area).AsNWSArea().m_oidLastEntered = actor.Creature;
+                    ScriptExecutionProvider.Current.ExecuteInScriptContext(Space.UpdateSpacePosition, area);
+                    ctx.Assert(Space.IsPlayerInSpaceMode(actor.Creature), "area-entry handling completes launch synchronously without an action callback");
+                }
+            });
+        }
+
+        private static IDictionary PendingLaunches() => (IDictionary)typeof(Space)
+            .GetField("_pendingShipLaunches", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+
+        private static void ExpirePendingLaunch(PlayerAbilityFixture actor)
+        {
+            var launch = PendingLaunches()[actor.Creature];
+            launch.GetType().GetProperty("ExpiresAt").SetValue(launch, DateTime.UtcNow.AddSeconds(-1));
         }
 
         private static async Task WithShipComputer(EngineTestContext ctx,
@@ -198,6 +322,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
+                PendingLaunches().Remove(actor.Creature);
                 property.Positions.Remove(PropertyLocationType.CurrentPosition);
                 DB.Set(property);
                 if (Space.IsPlayerInSpaceMode(actor.Creature))

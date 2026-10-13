@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly HashSet<AppearanceType> _shipAppearances = new();
 
         private static readonly Dictionary<string, uint> _shipClones = new();
+        private static readonly Dictionary<uint, PendingShipLaunch> _pendingShipLaunches = new();
 
         private static readonly Dictionary<PlanetType, Dictionary<string, ShipDockPoint>> _dockPoints = new();
 
@@ -79,6 +80,7 @@ namespace SWLOR.Game.Server.Service
         public static void ExitServer()
         {
             var player = GetExitingObject();
+            _pendingShipLaunches.Remove(player);
             if (!IsPlayerInSpaceMode(player))
                 return;
 
@@ -456,7 +458,9 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void UpdateSpacePosition()
         {
-            UpdateSpacePosition(GetEnteringObject());
+            var player = GetEnteringObject();
+            TryCompleteShipLaunch(player);
+            UpdateSpacePosition(player);
         }
 
         private static void UpdateSpacePosition(uint player)
@@ -493,6 +497,10 @@ namespace SWLOR.Game.Server.Service
             var player = GetExitingObject();
             if (GetIsDM(player)) return;
 
+            if (_pendingShipLaunches.TryGetValue(player, out var launch) &&
+                OBJECT_SELF == GetAreaFromLocation(launch.PilotLocation))
+                launch.HasDeparted = true;
+
             ClearCurrentTarget(player);
         }
 
@@ -508,6 +516,15 @@ namespace SWLOR.Game.Server.Service
             var player = GetLastUsedBy();
             if (IsPlayerInSpaceMode(player))
                 return;
+
+            // A second click may replace a canceled jump while still inside. Once the
+            // area transition starts, keep the original request and return location.
+            if (_pendingShipLaunches.TryGetValue(player, out var previousLaunch))
+            {
+                if (previousLaunch.HasDeparted || GetArea(player) != GetAreaFromLocation(previousLaunch.PilotLocation))
+                    return;
+                _pendingShipLaunches.Remove(player);
+            }
 
             var playerId = GetObjectUUID(player);
             var propertyId = Property.GetPropertyId(area);
@@ -532,8 +549,8 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (_shipClones.ContainsKey(dbShip.Id) &&
-                !GetIsObjectValid(_shipClones[dbShip.Id]))
+            if ((_shipClones.ContainsKey(dbShip.Id) && !GetIsObjectValid(_shipClones[dbShip.Id])) ||
+                _pendingShipLaunches.Values.Any(launch => launch.ShipId == dbShip.Id))
             {
                 SendMessageToPC(player, ColorToken.Red("This ship's controls are in use."));
                 return;
@@ -561,7 +578,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var spaceArea = Area.GetAreaByResref(propertyLocation.AreaResref);
-            if (!GetIsObjectValid(spaceArea))
+            if (!GetIsObjectValid(spaceArea) || spaceArea == area)
             {
                 SendMessageToPC(player, ColorToken.Red("This starship's space destination is unavailable. Notify an admin."));
                 Log.WriteStructured(LogGroup.Space, "Ship launch area unavailable: PlayerId={PlayerId} ShipId={ShipId} AreaResref={AreaResref}", playerId, dbShip.Id, propertyLocation.AreaResref);
@@ -571,33 +588,81 @@ namespace SWLOR.Game.Server.Service
             var spacePosition = Vector3(propertyLocation.X, propertyLocation.Y, propertyLocation.Z);
             var location = Location(spaceArea, spacePosition, propertyLocation.Orientation);
 
-            var pilotLocation = GetLocation(player);
-            // Keep the jump and conversion in the same queue. Canceling the jump must also
-            // cancel the appearance, quickbar, and Pilot clone changes.
+            var launch = new PendingShipLaunch
+            {
+                PlayerId = playerId,
+                ShipId = dbShip.Id,
+                SpaceArea = spaceArea,
+                PilotLocation = GetLocation(player),
+                ExpiresAt = DateTime.UtcNow.AddSeconds(30)
+            };
+            _pendingShipLaunches[player] = launch;
+            Scheduler.Schedule(() => CheckShipLaunch(player, launch), TimeSpan.FromMilliseconds(100));
+
+            // Only movement belongs in the action queue. Area entry and the scheduler
+            // complete the launch independently of client input and area-load timing.
             AssignCommand(player, () =>
             {
                 ClearAllActions();
                 ActionJumpToLocation(location);
-                ActionDoCommand(() =>
-                {
-                    if (GetArea(player) != spaceArea || IsPlayerInSpaceMode(player))
-                        return;
-
-                    // Another passenger may have taken control while this jump was queued.
-                    if (_shipClones.TryGetValue(dbShip.Id, out var clone) && !GetIsObjectValid(clone))
-                    {
-                        SendMessageToPC(player, ColorToken.Red("This ship's controls are in use."));
-                        JumpToLocation(pilotLocation);
-                        return;
-                    }
-
-                    SetLocalLocation(player, "SPACE_INSTANCE_LOCATION", pilotLocation);
-                    SetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET", true);
-                    EnterSpaceMode(player, dbShip.Id, pilotLocation);
-                    // The area-enter event ran before space mode was enabled.
-                    UpdateSpacePosition(player);
-                });
             });
+        }
+
+        private static bool TryCompleteShipLaunch(uint player)
+        {
+            if (!_pendingShipLaunches.TryGetValue(player, out var launch) || GetArea(player) != launch.SpaceArea)
+                return false;
+
+            _pendingShipLaunches.Remove(player);
+            if (GetObjectUUID(player) != launch.PlayerId || IsPlayerInSpaceMode(player) || GetIsDead(player))
+                return false;
+
+            SetLocalLocation(player, "SPACE_INSTANCE_LOCATION", launch.PilotLocation);
+            SetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET", true);
+            EnterSpaceMode(player, launch.ShipId, launch.PilotLocation);
+            return true;
+        }
+
+        private static void CheckShipLaunch(uint player, PendingShipLaunch launch)
+        {
+            // A canceled request may have been replaced by a later click on the controls.
+            if (!_pendingShipLaunches.TryGetValue(player, out var current) || current != launch)
+                return;
+
+            if (!GetIsObjectValid(player) || GetObjectUUID(player) != launch.PlayerId ||
+                GetIsDead(player) || !GetIsObjectValid(launch.SpaceArea))
+            {
+                _pendingShipLaunches.Remove(player);
+                return;
+            }
+
+            if (TryCompleteShipLaunch(player))
+            {
+                UpdateSpacePosition(player);
+                return;
+            }
+
+            var area = GetArea(player);
+            var interior = GetAreaFromLocation(launch.PilotLocation);
+            if (GetIsObjectValid(area) && area != interior && area != launch.SpaceArea)
+            {
+                _pendingShipLaunches.Remove(player);
+                return;
+            }
+
+            // Cancel an unstarted jump after a bounded wait. A player already loading
+            // the new area keeps their reservation until arrival, death, or disconnect.
+            if (!launch.HasDeparted && area == interior && DateTime.UtcNow >= launch.ExpiresAt)
+            {
+                ClearAllActions(false, player);
+                _pendingShipLaunches.Remove(player);
+                SendMessageToPC(player, ColorToken.Red("Unable to reach this starship's space destination. Please try again or notify an admin."));
+                Log.WriteStructured(LogGroup.Space, "Ship launch did not arrive: PlayerId={PlayerId} ShipId={ShipId} AreaResref={AreaResref}",
+                    launch.PlayerId, launch.ShipId, GetResRef(launch.SpaceArea));
+                return;
+            }
+
+            Scheduler.Schedule(() => CheckShipLaunch(player, launch), TimeSpan.FromMilliseconds(100));
         }
 
         /// <summary>
@@ -1924,6 +1989,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Applies the existing ship destruction and pilot cleanup to the specified creature.</summary>
         public static void ApplyDeath(uint creature)
         {
+            _pendingShipLaunches.Remove(creature);
             if (!IsPlayerInSpaceMode(creature))
                 return;
 

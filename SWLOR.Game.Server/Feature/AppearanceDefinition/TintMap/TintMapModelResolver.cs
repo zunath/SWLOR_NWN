@@ -215,6 +215,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 var model = part == CreaturePart.Neck
                     ? ItemAppearance.NeckAppearance.GetModel(creature, NeckModelRenderer.GetAuthoredStyle(creature, partId))
                     : $"{prefix}{partName}{partId:D3}".ToLowerInvariant();
+                model = ResolveMountedBodyPartModel(model,
+                    phenotype => int.TryParse(Get2DAString("phenotype", "DefaultPhenoType", phenotype), out var value) ? value : 0,
+                    ModelResource.Exists);
                 AddModelSelections(
                     selections,
                     seenSelections,
@@ -243,6 +246,31 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             AddSimpleItemSelections(creature, InventorySlot.Head, "helm", selections, seenSelections);
             AddCloakSelections(creature, prefix, selections, seenSelections);
+        }
+
+        /// <summary>
+        /// Mounted bodies inherit ordinary head and armor parts through phenotype.2da.
+        /// Resolve the actual model so its material dyes survive the mount refresh.
+        /// Robes keep their mounted model and seated animation chain.
+        /// </summary>
+        public static string ResolveMountedBodyPartModel(string model, Func<int, int> fallback, Func<string, bool> exists)
+        {
+            var separator = model?.IndexOf('_') ?? -1;
+            if (separator < 4 || !int.TryParse(model.AsSpan(3, separator - 3), out var phenotype) ||
+                phenotype != (int)PhenoType.SpeederBike ||
+                model.AsSpan(separator + 1).StartsWith("robe", StringComparison.OrdinalIgnoreCase))
+                return model;
+
+            var suffix = model.Substring(separator);
+            var visited = new HashSet<int>();
+            while (visited.Add(phenotype))
+            {
+                var candidate = $"{model.Substring(0, 3)}{phenotype}{suffix}";
+                if (exists(candidate))
+                    return candidate;
+                phenotype = fallback(phenotype);
+            }
+            return string.Empty;
         }
 
         public static string GetCurrentRobeModelResref(uint creature, int robeId)

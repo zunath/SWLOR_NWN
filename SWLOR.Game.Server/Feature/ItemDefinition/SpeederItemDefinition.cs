@@ -41,15 +41,16 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     if (GetPhenoType(user) == PhenoType.SpeederBike)
                     {
-                        SetPhenoType(PhenoType.Normal, user);
-                        SetCreatureTailType(TailType.None, user);
-                        Stat.ApplyCreatureMovementRate(user);
+                        Dismount(user);
                         SendMessageToPC(user, "You dismount your speeder.");
                     }
                     else
                     {
-                        SetCreatureTailType(TailType.SpeederBike, user);
+                        SetCreatureTailType(TailType.SpeederRider, user);
                         SetPhenoType(PhenoType.SpeederBike, user);
+                        var scale = SpeederAppearance.GetBikeScale(Get2DAString("appearance", "RACE", (int)GetAppearanceType(user)));
+                        SetObjectVisualTransform(user, ObjectVisualTransform.Scale, scale,
+                            nScope: ObjectVisualTransformDataScopeType.CreatureTail);
                         CreaturePlugin.SetMovementRate(user, MovementRate.DMFast);
                         SendMessageToPC(user, "You mount your speeder.");
                     }
@@ -81,9 +82,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 });
 
                 FloatingTextStringOnCreature("You have been dismounted.", player, false);
-                SetPhenoType(PhenoType.Normal, player);
-                SetCreatureTailType(TailType.None, player);
-                Stat.ApplyCreatureMovementRate(player);
+                Dismount(player);
                 TintMapService.QueueRefreshAndEditor(player, player);
             }
         }
@@ -100,9 +99,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             {
                 SendMessageToPC(player, "You have been dismounted.");
                 PlayerFeedback.ShowDiagnosticFloatingText("You have been dismounted.", player, false);
-                SetPhenoType(PhenoType.Normal, player);
-                SetCreatureTailType(TailType.None, player);
-                Stat.ApplyCreatureMovementRate(player);
+                Dismount(player);
                 TintMapService.QueueRefreshAndEditor(player, player);
             }
         }
@@ -121,13 +118,18 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             if (GetPhenoType(player) == PhenoType.SpeederBike && GetIsAreaInterior(targetArea))
             {
                 FloatingTextStringOnCreature("You have been dismounted for entering an area with a speeder.", player, false);
-                SetPhenoType(PhenoType.Normal, player);
-                SetCreatureTailType(TailType.None, player);
-                Stat.ApplyCreatureMovementRate(player);
+                Dismount(player);
                 TintMapService.QueueRefreshAndEditor(player, player);
             }
         }
 
-
+        private static void Dismount(uint creature)
+        {
+            SetPhenoType(PhenoType.Normal, creature);
+            SetCreatureTailType(TailType.None, creature);
+            SetObjectVisualTransform(creature, ObjectVisualTransform.Scale, 1f,
+                nScope: ObjectVisualTransformDataScopeType.CreatureTail);
+            Stat.ApplyCreatureMovementRate(creature);
+        }
     }
 }

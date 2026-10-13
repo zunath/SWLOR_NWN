@@ -10,5 +10,6 @@ namespace SWLOR.NWN.API.NWScript.Enum.Creature
         SwoopBike,
         SpeederBike,
         LandSpeeder,
+        SpeederRider = 10000,
     }
 }

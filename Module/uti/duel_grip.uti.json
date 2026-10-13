@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The palms of these gloves are smooth from a familiar hilt, while their backs remain carefully finished. They suggest a duelist who considers the moments before a bout part of the encounter."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The palms of these gloves are smooth from a familiar hilt, while their backs remain carefully finished. They suggest a duelist who considers the moments before a bout part of the encounter."
     }
   },
   "Identified": {

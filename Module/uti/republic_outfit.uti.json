@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A Republic trooper's service uniform, practical layers held to an orderly regulation pattern. Its straightforward construction makes room for a soldier's equipment without pretending that equipment will always be clean."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A Republic trooper's service uniform, practical layers held to an orderly regulation pattern. Its straightforward construction makes room for a soldier's equipment without pretending that equipment will always be clean."
     }
   },
   "Identified": {

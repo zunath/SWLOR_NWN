@@ -332,12 +332,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
                 }
               },
               "Identified": {
@@ -1359,11 +1361,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Identified": {
                 "type": "byte",

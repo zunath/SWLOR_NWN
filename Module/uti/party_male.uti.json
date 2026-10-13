@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This party outfit is cut to look effortless in company, concealing the rather less effortless work that holds its folds in place. Discreet pockets leave a guest room for a credit chip and a few private necessities."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This party outfit is cut to look effortless in company, concealing the rather less effortless work that holds its folds in place. Discreet pockets leave a guest room for a credit chip and a few private necessities."
+    }
   },
   "Identified": {
     "type": "byte",

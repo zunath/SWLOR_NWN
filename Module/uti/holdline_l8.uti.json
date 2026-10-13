@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "These gloves have been mended along the thumbs where stretcher handles and medical satchels rub hardest. The stitching is careful despite the haste that other marks in the leather suggest."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "These gloves have been mended along the thumbs where stretcher handles and medical satchels rub hardest. The stitching is careful despite the haste that other marks in the leather suggest."
     }
   },
   "Identified": {

@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "An ash-colored cowl with scorched ties and a surprisingly careful inner seam. The neat work beneath its battered surface suggests that somebody prepared for Korriban's trials without expecting to emerge looking immaculate."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "An ash-colored cowl with scorched ties and a surprisingly careful inner seam. The neat work beneath its battered surface suggests that somebody prepared for Korriban's trials without expecting to emerge looking immaculate."
     }
   },
   "Identified": {

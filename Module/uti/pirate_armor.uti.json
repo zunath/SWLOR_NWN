@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This armor has been altered with the resources of a ship's maintenance bench rather than a military depot. Its fittings bear tool marks, and none of the replacement pieces seems especially interested in matching the rest."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This armor has been altered with the resources of a ship's maintenance bench rather than a military depot. Its fittings bear tool marks, and none of the replacement pieces seems especially interested in matching the rest."
+    }
   },
   "Identified": {
     "type": "byte",

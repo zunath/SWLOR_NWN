@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The severe lines of Vecten's clothing leave little room for casual disorder. Its hidden fastenings provide the practical work behind a deliberately controlled impression, as if a loose cuff would be an unacceptable concession."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The severe lines of Vecten's clothing leave little room for casual disorder. Its hidden fastenings provide the practical work behind a deliberately controlled impression, as if a loose cuff would be an unacceptable concession."
+    }
   },
   "Identified": {
     "type": "byte",

@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A fine mesh has been sewn between the layers of this utilitarian cowl. Loose ends have been tucked away with the same care a bunker technician might give a fraying cable."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A fine mesh has been sewn between the layers of this utilitarian cowl. Loose ends have been tucked away with the same care a bunker technician might give a fraying cable."
     }
   },
   "Identified": {

@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A bounty hunter's working outfit with concealed closures and space for a few useful necessities. It looks respectable enough to meet a client and worn enough to suggest the meeting is only the beginning of the job."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A bounty hunter's working outfit with concealed closures and space for a few useful necessities. It looks respectable enough to meet a client and worn enough to suggest the meeting is only the beginning of the job."
+    }
   },
   "Identified": {
     "type": "byte",

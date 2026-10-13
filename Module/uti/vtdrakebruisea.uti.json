@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The broad outer panels of this Tunnel Drake armor have been left scarred rather than polished smooth. It makes a useful introduction for a bruiser whose employer would prefer to keep the discussion short."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The broad outer panels of this Tunnel Drake armor have been left scarred rather than polished smooth. It makes a useful introduction for a bruiser whose employer would prefer to keep the discussion short."
     }
   },
   "Identified": {

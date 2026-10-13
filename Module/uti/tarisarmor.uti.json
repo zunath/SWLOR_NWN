@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Taris' armor has been worked around a particular set of strap adjustments. Its outer finish remains tidy, while the inside gives a more practical account of the person expected to carry it."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Taris' armor has been worked around a particular set of strap adjustments. Its outer finish remains tidy, while the inside gives a more practical account of the person expected to carry it."
+    }
   },
   "Identified": {
     "type": "byte",

@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This Sith warmonger's armor is imposing even where it has been scarred and repaired. Its broad, uncompromising shapes turn the ordinary business of putting on equipment into something that looks uncomfortably like a declaration."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This Sith warmonger's armor is imposing even where it has been scarred and repaired. Its broad, uncompromising shapes turn the ordinary business of putting on equipment into something that looks uncomfortably like a declaration."
     }
   },
   "Identified": {

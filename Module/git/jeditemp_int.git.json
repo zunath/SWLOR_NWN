@@ -249,12 +249,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Artemis' robes have a composed, almost gentle drape that becomes more exacting under close inspection. The seams and bindings are maintained to the same severe standard, allowing softness of cloth without carelessness of presentation."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Artemis' robes have a composed, almost gentle drape that becomes more exacting under close inspection. The seams and bindings are maintained to the same severe standard, allowing softness of cloth without carelessness of presentation."
                 }
               },
               "Identified": {
@@ -2028,12 +2030,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Artemis' robes have a composed, almost gentle drape that becomes more exacting under close inspection. The seams and bindings are maintained to the same severe standard, allowing softness of cloth without carelessness of presentation."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Artemis' robes have a composed, almost gentle drape that becomes more exacting under close inspection. The seams and bindings are maintained to the same severe standard, allowing softness of cloth without carelessness of presentation."
                 }
               },
               "Identified": {
@@ -3807,12 +3811,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Artemis' robes have a composed, almost gentle drape that becomes more exacting under close inspection. The seams and bindings are maintained to the same severe standard, allowing softness of cloth without carelessness of presentation."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Artemis' robes have a composed, almost gentle drape that becomes more exacting under close inspection. The seams and bindings are maintained to the same severe standard, allowing softness of cloth without carelessness of presentation."
                 }
               },
               "Identified": {
@@ -5676,12 +5682,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Green cloth lends this Jedi tunic a quieter variation on the usual travelling layers. Its spare cut and accessible bindings keep it practical, offering little distraction from the person expected to wear it."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Green cloth lends this Jedi tunic a quieter variation on the usual travelling layers. Its spare cut and accessible bindings keep it practical, offering little distraction from the person expected to wear it."
                 }
               },
               "Identified": {
@@ -7134,12 +7142,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
                 }
               },
               "Identified": {
@@ -9669,12 +9679,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Artemis' robes have a composed, almost gentle drape that becomes more exacting under close inspection. The seams and bindings are maintained to the same severe standard, allowing softness of cloth without carelessness of presentation."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Artemis' robes have a composed, almost gentle drape that becomes more exacting under close inspection. The seams and bindings are maintained to the same severe standard, allowing softness of cloth without carelessness of presentation."
                 }
               },
               "Identified": {
@@ -11538,12 +11550,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
                 }
               },
               "Identified": {
@@ -12692,12 +12706,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
                 }
               },
               "Identified": {
@@ -13940,12 +13956,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
                 }
               },
               "Identified": {
@@ -14270,11 +14288,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "The grip of Hohen's staff has worn smooth around the same familiar hold. Beneath it, old nicks and careful repairs remain visible, the sort of details a new owner would notice before learning their stories."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "The grip of Hohen's staff has worn smooth around the same familiar hold. Beneath it, old nicks and careful repairs remain visible, the sort of details a new owner would notice before learning their stories."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -15432,12 +15454,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
                 }
               },
               "Identified": {
@@ -16704,12 +16728,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
                 }
               },
               "Identified": {
@@ -32248,12 +32274,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
                 }
               },
               "Identified": {
@@ -34070,12 +34098,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
                 }
               },
               "Identified": {
@@ -35346,12 +35376,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
                 }
               },
               "Identified": {
@@ -36622,12 +36654,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
                 }
               },
               "Identified": {
@@ -37898,12 +37932,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
                 }
               },
               "Identified": {
@@ -39174,12 +39210,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
                 }
               },
               "Identified": {
@@ -40450,12 +40488,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
                 }
               },
               "Identified": {
@@ -41689,12 +41729,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Brown outer robes lie over simple, carefully maintained layers. The restrained appearance recalls the Jedi preference for a garment that can travel, teach, and endure a day of work without becoming the center of attention."
                 }
               },
               "Identified": {
@@ -44678,12 +44720,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "These guard robes marry a formal silhouette to a restrained, practical cut. The hems remain clear of the feet, leaving ceremony to the wearer instead of allowing it to become an obstacle to duty."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "These guard robes marry a formal silhouette to a restrained, practical cut. The hems remain clear of the feet, leaving ceremony to the wearer instead of allowing it to become an obstacle to duty."
                 }
               },
               "Identified": {
@@ -46486,12 +46530,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "These guard robes marry a formal silhouette to a restrained, practical cut. The hems remain clear of the feet, leaving ceremony to the wearer instead of allowing it to become an obstacle to duty."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "These guard robes marry a formal silhouette to a restrained, practical cut. The hems remain clear of the feet, leaving ceremony to the wearer instead of allowing it to become an obstacle to duty."
                 }
               },
               "Identified": {

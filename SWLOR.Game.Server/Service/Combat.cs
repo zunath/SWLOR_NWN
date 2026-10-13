@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -662,6 +663,8 @@ namespace SWLOR.Game.Server.Service
 
             ApplyLowHPTemporaryHPBeforeFatalDamage(defender, damage);
             RefreshDamageDerivedHealingTargetHP(attacker, defender);
+            if (CombatRecorder.IsRecording && deliveryType != CombatDamageDeliveryType.Direct)
+                CombatRecorder.ExpectDeferredDamage(attacker, defender, damage, deliveryType);
             return damage;
         }
 
@@ -2662,6 +2665,8 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(creature) || GetIsDead(creature))
                 return;
 
+            using var recorderAttribution = CombatRecorder.BeginAttribution(creature, CombatRecordSourceKind.OnKill);
+
             if (GetIsObjectValid(defeated))
             {
                 ApplyPoisonedDefeatedEnemySpread(defeated, creature);
@@ -2987,6 +2992,7 @@ namespace SWLOR.Game.Server.Service
 
             state.HealingApplied += amount;
             Stat.ApplyHealingReceivedEffects(creature, amount);
+            using var recorderAttribution = CombatRecorder.BeginRiderAttribution(creature, CombatRecordSourceKind.Lifesteal);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), creature);
             return amount;
         }
@@ -8291,6 +8297,9 @@ namespace SWLOR.Game.Server.Service
             var cooldown = Stat.GetStatAdjustment(activator, StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreCooldownSeconds);
             if (!TryUseStatTrigger(activator, StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent, cooldown))
                 return;
+
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(
+                activator, StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent);
 
             var percent = basePercent;
             var scalingAbility = GetAbilityTypeFromStatPlusOne(Stat.GetStatAdjustment(

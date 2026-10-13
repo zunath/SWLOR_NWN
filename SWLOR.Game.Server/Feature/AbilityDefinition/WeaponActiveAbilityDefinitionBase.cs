@@ -479,6 +479,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (hpCost <= 0)
                     return;
 
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.ExpectHitPointCost(activator, hpCost);
                 AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(hpCost), activator));
                 Combat.ApplyHitPointSpendAbilityEffects(activator, hpCost);
             }

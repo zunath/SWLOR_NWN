@@ -45,8 +45,12 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 return;
 
             var item = GetItemPossessedBy(player, ItemResref);
-            if (GetIsObjectValid(item))
-                Item.ReduceItemStack(item, Quantity);
+            if (!GetIsObjectValid(item))
+                return;
+
+            Item.ReduceItemStack(item, Quantity);
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordItemConsumed(player, ItemResref, Quantity);
         }
 
         private bool ShouldPreserveItem(uint player)

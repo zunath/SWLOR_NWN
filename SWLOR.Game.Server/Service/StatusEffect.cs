@@ -1189,6 +1189,8 @@ namespace SWLOR.Game.Server.Service
                 RemoveNativeStatusEffect(creature, statusEffect.Id);
                 ApplyTrackedNWNEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
                 extended = true;
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.RecordStatusApplied(source, creature, statusEffect, statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow), false, true);
             }
 
             return extended;
@@ -1249,6 +1251,8 @@ namespace SWLOR.Game.Server.Service
                 RemoveNativeStatusEffect(creature, statusEffect.Id);
                 ApplyTrackedNWNEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
                 refreshed = true;
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.RecordStatusApplied(source, creature, statusEffect, statusEffect.GetRemainingDurationSeconds(DateTime.UtcNow), false, true);
             }
 
             return refreshed;

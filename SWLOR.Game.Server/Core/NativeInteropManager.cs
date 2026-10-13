@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Core
         [UnmanagedCallersOnly]
         private static void OnMainLoop(ulong frame)
         {
+            ServerFrame.Current = frame;
             try
             {
                 ServerManager.MainLoop.ProcessMainLoop(frame);

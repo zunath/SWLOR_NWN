@@ -428,6 +428,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="ability">The ability details</param>
         private static void ApplyRequirementEffects(uint activator, AbilityDetail ability)
         {
+            using var recordedCost = CombatRecorder.BeginAbilityCost(activator, ability);
             foreach (var req in ability.Requirements)
             {
                 req.AfterActivationAction(activator, ability);
@@ -475,6 +476,7 @@ namespace SWLOR.Game.Server.Feature
             IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null)
         {
             var impactEnded = false;
+            using var recorderAttribution = CombatRecorder.BeginAbilityAttribution(activator, ability, feat);
             try
             {
                 PlayAbilitySound(activator, ability.ImpactSound);
@@ -485,6 +487,8 @@ namespace SWLOR.Game.Server.Feature
                 ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
                 var summary = Ability.EndAbilityImpact(activator);
                 impactEnded = true;
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.RecordAbilityImpact(activator, target, targetLocation, ability, feat, summary);
 
                 Combat.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);
                 Combat.ApplyAbilityImpactEffects(activator, summary);
@@ -857,6 +861,9 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordAbilityCast(activator, target, targetLocation, ability, feat, activationDelay);
+
             if (GetIsPC(activator))
             {
                 if (activationDelay > 0.0f)
@@ -907,6 +914,9 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="feat">The feat being activated</param>
         private static void QueueWeaponAbility(uint activator, uint target, AbilityDetail ability, FeatType feat)
         {
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordAbilityQueued(activator, target, ability, feat);
+
             _queuedWeaponAttacks.Remove(activator);
             var abilityId = Guid.NewGuid().ToString();
             var resumeAttackTarget = GetResumeAttackTarget(activator, target, ability);
@@ -1325,12 +1335,15 @@ namespace SWLOR.Game.Server.Feature
 
             HandleStealthBreaking(activator, abilityDetail);
             var impactEnded = false;
+            using var recorderAttribution = CombatRecorder.BeginAbilityAttribution(activator, abilityDetail, activeWeaponAbility);
             try
             {
                 Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item);
                 abilityDetail.ImpactAction?.Invoke(activator, target, activeAbilityEffectivePerkLevel, targetLocation);
                 var summary = Ability.EndAbilityImpact(activator);
                 impactEnded = true;
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.RecordAbilityImpact(activator, target, targetLocation, abilityDetail, activeWeaponAbility, summary);
                 Combat.ApplyAbilityActivatedEffects(activator, target, activeWeaponAbility, abilityDetail, summary);
                 Combat.ApplyAbilityImpactEffects(activator, summary);
 

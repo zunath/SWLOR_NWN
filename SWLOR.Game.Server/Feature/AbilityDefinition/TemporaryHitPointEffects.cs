@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             ValidateEffectKey(effectKey);
             DeleteLocalString(target, GetOwnerVariable(effectKey));
             DeleteLocalObject(target, GetSourceVariable(effectKey));
-            ApplyFlatInternal(target, effectKey, amount, durationSeconds);
+            ApplyFlatInternal(target, effectKey, amount, durationSeconds, source);
 
             if (amount > 0 && GetIsObjectValid(source))
                 SetLocalObject(target, GetSourceVariable(effectKey), source);
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 DeleteLocalString(target, GetOwnerVariable(effectKey));
         }
 
-        private static void ApplyFlatInternal(uint target, string effectKey, int amount, float durationSeconds)
+        private static void ApplyFlatInternal(uint target, string effectKey, int amount, float durationSeconds, uint source = OBJECT_INVALID)
         {
             var effectTag = EffectTagPrefix + effectKey;
             RemoveEffectByTag(target, effectTag);
@@ -100,6 +100,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 TagEffect(EffectTemporaryHitpoints(amount), effectTag),
                 target,
                 durationSeconds);
+
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordTemporaryHitPointsGranted(source, target, effectKey, amount, durationSeconds);
+        }
+
+        /// <summary>
+        /// Returns the ability key of a temporary-HP effect tag, or the tag itself when it was
+        /// not applied through this class.
+        /// </summary>
+        public static string GetEffectKey(string effectTag)
+        {
+            return effectTag != null && effectTag.StartsWith(EffectTagPrefix, StringComparison.Ordinal)
+                ? effectTag.Substring(EffectTagPrefix.Length)
+                : effectTag;
         }
 
         public static void ApplyFlatWithBarrierVisual(

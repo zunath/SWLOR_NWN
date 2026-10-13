@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ChatCommandService;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.QuestService;
@@ -259,9 +260,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .RequiresTarget(ObjectType.Creature)
                 .Action((user, target, location, args) =>
                 {
+                    using var recorderAttribution = CombatRecorder.BeginAttribution(user, CombatRecordSourceKind.DungeonMaster);
                     if (GetIsDead(target))
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+                        if (CombatRecorder.IsRecording)
+                            CombatRecorder.RecordResurrection(target);
                         Ability.ReapplyPlayerAuraAOE(target);
                     }
 

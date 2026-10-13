@@ -81,6 +81,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 return;
 
             amount = Math.Min(currentHp - 1, amount);
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.ExpectHitPointCost(activator, amount);
             AssignCommand(activator, () =>
             {
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(amount), activator);

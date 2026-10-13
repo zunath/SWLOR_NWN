@@ -2741,6 +2741,9 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
                 return;
 
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordAttack(activator, target, attackResultType, hitRate, ability.Name);
+
             Messaging.SendMessageNearbyToPlayers(
                 target,
                 receiver => Combat.BuildAbilityCombatLogMessage(
@@ -3792,6 +3795,7 @@ namespace SWLOR.Game.Server.Service
 
                 AssignCommand(activator, () =>
                 {
+                    using var recorderAttribution = CombatRecorder.BeginAbilityAttribution(activator, Ability);
                     foreach (var effect in effects)
                     {
                         if (!GetIsObjectValid(effect.Target))

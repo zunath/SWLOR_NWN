@@ -52,6 +52,8 @@ namespace SWLOR.Game.Server.Service
                 var dbHostilePlayer = DB.Get<Player>(hostilePlayerId);
                 if (dbHostilePlayer != null && dbHostilePlayer.Settings.IsSubdualModeEnabled)
                 {
+                    if (CombatRecorder.IsRecording)
+                        CombatRecorder.RecordSubdual(player, hostile);
                     SendMessageToPC(player, "You have been subdued.");
                     Messaging.SendMessageNearbyToPlayers(
                         player,

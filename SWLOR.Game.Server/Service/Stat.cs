@@ -5,6 +5,7 @@ using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -368,6 +369,9 @@ namespace SWLOR.Game.Server.Service
                 SetLocalInt(creature, "FP", fp);
             }
 
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordResourceChange(creature, CombatRecordResource.FP, restored, GetCurrentFP(creature, dbPlayer));
+
             ExecuteScript("pc_fp_adjusted", creature);
             if (restored > 0)
                 Combat.ApplyFPRestoredEffects(creature);
@@ -388,6 +392,9 @@ namespace SWLOR.Game.Server.Service
         public static void ReduceFP(uint creature, int reduceBy, Player dbPlayer = null)
         {
             if (reduceBy <= 0) return;
+
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordResourceReduction(creature, CombatRecordResource.FP, reduceBy, GetCurrentFP(creature, dbPlayer));
 
             if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
@@ -459,6 +466,9 @@ namespace SWLOR.Game.Server.Service
                 SetLocalInt(creature, "STAMINA", fp);
             }
 
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordResourceChange(creature, CombatRecordResource.Stamina, restored, GetCurrentStamina(creature, dbPlayer));
+
             ExecuteScript("pc_stm_adjusted", creature);
             if (restored > 0)
                 Combat.ApplyStaminaRestoredEffects(creature);
@@ -479,6 +489,9 @@ namespace SWLOR.Game.Server.Service
         public static void ReduceStamina(uint creature, int reduceBy, Player dbPlayer = null)
         {
             if (reduceBy <= 0) return;
+
+            if (CombatRecorder.IsRecording)
+                CombatRecorder.RecordResourceReduction(creature, CombatRecordResource.Stamina, reduceBy, GetCurrentStamina(creature, dbPlayer));
 
             if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
             {
@@ -2300,6 +2313,7 @@ namespace SWLOR.Game.Server.Service
 
             if (Random.D100(1) <= chance)
             {
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(creature, StatType.HealingReceivedStaminaRestore);
                 RestoreStamina(creature, stamina);
             }
         }
@@ -2730,6 +2744,7 @@ namespace SWLOR.Game.Server.Service
             if (GetLocalInt(self, SuppressNaturalRegenVariable) != 0)
                 return;
 
+            using var recorderAttribution = CombatRecorder.BeginAttribution(self, CombatRecordSourceKind.Regeneration);
             var maxFP = GetMaxFP(self);
             var maxSTM = GetMaxStamina(self);
             var previousFP = GetLocalInt(self, "FP");
@@ -2753,6 +2768,11 @@ namespace SWLOR.Game.Server.Service
 
             SetLocalInt(self, "FP", fp);
             SetLocalInt(self, "STAMINA", stm);
+            if (CombatRecorder.IsRecording)
+            {
+                CombatRecorder.RecordResourceChange(self, CombatRecordResource.FP, fp - previousFP, fp);
+                CombatRecorder.RecordResourceChange(self, CombatRecordResource.Stamina, stm - previousSTM, stm);
+            }
 
             if (fp != previousFP)
                 ExecuteScript("pc_fp_adjusted", self);

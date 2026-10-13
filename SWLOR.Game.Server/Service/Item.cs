@@ -421,7 +421,8 @@ namespace SWLOR.Game.Server.Service
                         return;
                     }
 
-                    itemDetail.ApplyAction(user, item, target, targetLocation, propertyIndex);
+                    using (CombatRecorder.BeginItemAttribution(user, item))
+                        itemDetail.ApplyAction(user, item, target, targetLocation, propertyIndex);
 
                     if (itemDetail.RecastGroup != null && itemDetail.RecastCooldown != null)
                     {

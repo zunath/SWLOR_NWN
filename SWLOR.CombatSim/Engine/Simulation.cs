@@ -101,6 +101,13 @@ namespace SWLOR.CombatSim.Engine
                     if (spec.JoinAtSeconds < 0)
                         throw new InvalidDataException($"'{spec.Name}' has a negative JoinAtSeconds.");
 
+                    // Each step makes at most one decision per combatant, so a step longer than the
+                    // reaction time would skip decisions and make results depend on the step size.
+                    if (spec.Abilities.Count > 0 && !(spec.ReactionSeconds >= _scenario.TimeStepSeconds))
+                        throw new InvalidDataException(
+                            $"'{spec.Name}' has a ReactionSeconds of {spec.ReactionSeconds}, below the {_scenario.TimeStepSeconds}s time step; " +
+                            "use a TimeStepSeconds no longer than every ability user's ReactionSeconds.");
+
                     var perkStats = _catalog.Perks.GetStats(spec.Perks, PerkStatsRead);
                     for (var copy = 1; copy <= Math.Max(1, spec.Count); copy++)
                     {
@@ -124,8 +131,15 @@ namespace SWLOR.CombatSim.Engine
 
         public void Step(double step)
         {
-            foreach (var combatant in _combatants.Where(c => !c.IsDead).ToList())
+            foreach (var combatant in _combatants.ToList())
             {
+                if (combatant.IsDead)
+                {
+                    // Only zones that outlive their caster are still pulsing here.
+                    ProcessPartyPulses(combatant);
+                    continue;
+                }
+
                 ProcessHeartbeat(combatant);
                 ProcessConvergence(combatant);
                 ProcessHealsOverTime(combatant);
@@ -380,7 +394,14 @@ namespace SWLOR.CombatSim.Engine
             var target = cast.Target;
             var isRevive = effect?.Kind == EffectKind.Revive;
             if (isRevive ? !target.IsDead : target.IsDead)
-                return;
+            {
+                // A party heal or shield centered on the caster (Purifying Wave) needs no living target:
+                // its heal still lands and its damage goes to an enemy still in the fight.
+                if (effect == null || !IsPartyEffect(effect))
+                    return;
+
+                target = EnsureAttackTarget(caster);
+            }
 
             if (caster.Fp < cast.FpCost || caster.Stm < cast.StmCost)
             {
@@ -399,7 +420,7 @@ namespace SWLOR.CombatSim.Engine
             if (cast.FpCost > 0)
                 TriggerConvergence(caster);
 
-            if (cast.Use.Damage != null)
+            if (cast.Use.Damage != null && (target != null || cast.Use.Damage.Area))
                 ApplyAbilityDamage(caster, target, cast.Use.Damage);
 
             if (effect == null)
@@ -482,7 +503,8 @@ namespace SWLOR.CombatSim.Engine
                 case AbilityTarget.Self:
                     return caster;
                 case AbilityTarget.LowestAlly:
-                    return Allies(caster).OrderBy(a => a.HpPercent).FirstOrDefault();
+                    // The lowest ally the use can still help: under its HP threshold and, for KeepUp, not yet covered.
+                    return Allies(caster).OrderBy(a => a.HpPercent).FirstOrDefault(a => ConditionHolds(caster, use, effect, a));
                 case AbilityTarget.NamedAlly:
                     return Allies(caster).FirstOrDefault(a => a.Name == use.TargetName);
                 case AbilityTarget.DeadAlly:
@@ -776,7 +798,8 @@ namespace SWLOR.CombatSim.Engine
             target.Casting = null;
             target.TemporaryHp.Clear();
             target.HealsOverTime.Clear();
-            target.PartyPulses.Clear();
+            foreach (var key in target.PartyPulses.Where(p => !p.Value.Effect.ContinuesAfterCasterDeath).Select(p => p.Key).ToList())
+                target.PartyPulses.Remove(key);
             target.ConvergenceUntil = -1;
             target.Stats.Deaths++;
             _deaths.Add(new DeathRecord { Name = target.Name, TeamIndex = target.TeamIndex, IsNpc = target.Spec.IsNpc, At = _now, KilledBy = killer?.Name });

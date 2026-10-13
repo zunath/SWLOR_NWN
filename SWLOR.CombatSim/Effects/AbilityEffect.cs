@@ -32,6 +32,9 @@ namespace SWLOR.CombatSim.Effects
         /// <summary>Effects sharing a key replace each other instead of stacking.</summary>
         public string Key { get; init; }
 
+        /// <summary>A party pulse whose zone keeps healing after its caster dies, as Force Sanctuary does in game.</summary>
+        public bool ContinuesAfterCasterDeath { get; init; }
+
         public bool IsInstantHeal => Kind == EffectKind.DirectHeal;
     }
 }

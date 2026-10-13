@@ -90,6 +90,32 @@ namespace SWLOR.CombatSim.Tests.Engine
             act.Should().Throw<InvalidDataException>().WithMessage("*NotARealPerk*");
         }
 
+        [Test]
+        public void Spawn_RejectsATimeStepLongerThanAnAbilityUsersReactionTime()
+        {
+            var medic = TestCombatants.Medic("Medic", TestCombatants.Use("Benevolence1", AbilityTarget.Self));
+            medic.ReactionSeconds = 0.5f;
+            var scenario = Scenario(medic);
+            scenario.TimeStepSeconds = 1f;
+
+            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*Medic*ReactionSeconds*time step*");
+        }
+
+        [Test]
+        public void Spawn_AllowsALongTimeStepForCombatantsWithoutAbilities()
+        {
+            var striker = TestCombatants.Striker("Striker");
+            striker.ReactionSeconds = 0.5f;
+            var scenario = Scenario(striker);
+            scenario.TimeStepSeconds = 3f;
+
+            var act = () => new Simulation(scenario, RuleSets.Current(), _catalog, 1).Spawn();
+
+            act.Should().NotThrow("only ability decisions depend on the reaction time");
+        }
+
         private static ScenarioSpec Scenario(CombatantSpec player) =>
             TestScenarios.TwoTeams(false, new[] { player }, new[] { TestCombatants.Dummy("Enemy", true) });
     }

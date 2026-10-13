@@ -51,6 +51,24 @@ namespace SWLOR.CombatSim.Tests.Engine
         }
 
         [Test]
+        public void PurifyingWave_StillHealsAndHitsAnotherEnemy_WhenItsTargetDiesMidCast()
+        {
+            var simulation = SpawnWave(maxTargets: null, new[] { "Wounded" }, "First", "Second");
+            var medic = simulation.Get("Medic");
+            var wounded = simulation.Get("Wounded");
+            wounded.Hp = AllyMaxHp / 2;
+
+            SimulationClock.RunUntil(simulation, () => medic.Casting != null, 10, "Purifying Wave started");
+            var targeted = medic.Casting.Target;
+            var other = simulation.Get(targeted.Name == "First" ? "Second" : "First");
+            simulation.ApplyDamage(wounded, targeted, TestCombatants.EffectivelyUnlimited * 2.0);
+            CastOnce(simulation);
+
+            wounded.Hp.Should().Be(AllyMaxHp / 2 + ExpectedWaveHeal(), "the wave is centered on the caster, not the enemy");
+            other.Stats.DamageTakenToHp.Should().Be(WaveDamage, "the damage goes to an enemy still in the fight");
+        }
+
+        [Test]
         public void Spawn_RejectsADamageProfileOnASingleTargetHeal()
         {
             var use = TestCombatants.Use("Benevolence1", AbilityTarget.Enemy);
@@ -62,7 +80,10 @@ namespace SWLOR.CombatSim.Tests.Engine
             act.Should().Throw<InvalidDataException>().WithMessage("*Benevolence1*single-target effect*");
         }
 
-        private Simulation SpawnWave(int? maxTargets, params string[] allies)
+        private Simulation SpawnWave(int? maxTargets, params string[] allies) =>
+            SpawnWave(maxTargets, allies, "Enemy");
+
+        private Simulation SpawnWave(int? maxTargets, string[] allies, params string[] enemies)
         {
             var wave = TestCombatants.Use("PurifyingWave1", AbilityTarget.Enemy, maxTargets: maxTargets);
             wave.Damage = new DamageSpec { Min = WaveDamage, Max = WaveDamage, HitChance = 1f };
@@ -70,7 +91,7 @@ namespace SWLOR.CombatSim.Tests.Engine
             var members = new List<CombatantSpec> { TestCombatants.Medic("Medic", wave) };
             members.AddRange(allies.Select(name => new CombatantSpec { Name = name, MaxHp = AllyMaxHp }));
             return TestScenarios.Spawn(
-                TestScenarios.TwoTeams(false, members, new[] { TestCombatants.Dummy("Enemy", true) }),
+                TestScenarios.TwoTeams(false, members, enemies.Select(name => TestCombatants.Dummy(name, true))),
                 RuleSets.Current(),
                 _catalog);
         }

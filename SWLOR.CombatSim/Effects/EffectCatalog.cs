@@ -37,7 +37,9 @@ namespace SWLOR.CombatSim.Effects
             [FeatType.KoltoMist2] = PartyPulse(2, "KoltoMist"),
             [FeatType.ForceSanctuary1] = new AbilityEffect
             {
-                Kind = EffectKind.PartyHealOverTime, Percent = 2, Ticks = 10, TickSeconds = 3f, Key = "ForceSanctuary"
+                Kind = EffectKind.PartyHealOverTime, Percent = 2, Ticks = 10, TickSeconds = 3f, Key = "ForceSanctuary",
+                // Its zone pulses have no caster-alive check; Kolto Mist's do.
+                ContinuesAfterCasterDeath = true
             },
             [FeatType.PurifyingWave1] = new AbilityEffect
             {

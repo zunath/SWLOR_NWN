@@ -1,5 +1,6 @@
 using System.Globalization;
 using Newtonsoft.Json;
+using SWLOR.CombatSim.Cli;
 using SWLOR.CombatSim.Data;
 using SWLOR.CombatSim.Report;
 using SWLOR.CombatSim.Rules;
@@ -42,8 +43,12 @@ static int Run(string[] args)
     if (args.Length == 0)
         return Fail("run needs a scenario file.");
 
+    var options = CommandLineOptions.Parse(
+        args.Skip(1).ToArray(),
+        new[] { "--rules", "--rules-file", "--runs", "--seed", "--out", "--json" },
+        new[] { "--detail" },
+        new[] { "--rules", "--rules-file" });
     var scenario = ScenarioSpec.Load(args[0]);
-    var options = ParseOptions(args.Skip(1).ToArray());
     var runs = IntOption(options, "--runs", 200, 1);
     var seed = IntOption(options, "--seed", 1, int.MinValue);
 
@@ -77,7 +82,7 @@ static int Run(string[] args)
 
 static int PrintRules(string[] args)
 {
-    var options = ParseOptions(args);
+    var options = CommandLineOptions.Parse(args, new[] { "--name" });
     var name = options.GetValueOrDefault("--name", new List<string> { RuleSets.TunedPvpName })[0];
     Console.WriteLine(JsonConvert.SerializeObject(RuleSets.Get(name), Formatting.Indented));
     return 0;
@@ -85,7 +90,7 @@ static int PrintRules(string[] args)
 
 static int DumpAbilities(string[] args)
 {
-    var options = ParseOptions(args);
+    var options = CommandLineOptions.Parse(args, new[] { "--out" });
     var catalog = AbilityCatalog.Load();
     var lines = new List<string> { "feat,name,perk,recast_group,skill_requirement,fp,stm,recast_seconds,cast_seconds,hostile,healing,force_affinity,unreadable_timing" };
     lines.AddRange(catalog.Abilities.Values
@@ -99,27 +104,6 @@ static int DumpAbilities(string[] args)
     File.WriteAllLines(output, lines);
     Console.WriteLine($"Wrote {catalog.Abilities.Count} abilities to {output} ({catalog.LoadErrors.Count} definitions or timings could not be read outside the engine).");
     return 0;
-}
-
-static Dictionary<string, List<string>> ParseOptions(string[] args)
-{
-    var flags = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "--detail" };
-    var options = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-    for (var i = 0; i < args.Length; i++)
-    {
-        if (!args[i].StartsWith("--"))
-            throw new ArgumentException($"Unexpected argument '{args[i]}'.");
-
-        if (!options.TryGetValue(args[i], out var values))
-            options[args[i]] = values = new List<string>();
-
-        if (i + 1 < args.Length && !args[i + 1].StartsWith("--"))
-            values.Add(args[++i]);
-        else if (!flags.Contains(args[i]))
-            throw new ArgumentException($"{args[i]} needs a value.");
-    }
-
-    return options;
 }
 
 static int IntOption(Dictionary<string, List<string>> options, string name, int defaultValue, int minimum)

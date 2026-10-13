@@ -23,6 +23,32 @@ namespace SWLOR.CombatSim.Tests.Rules
                 Directory.Delete(_directory, true);
         }
 
+        [TestCase("{ \"fpCostMultiplier\": -1 }", "FpCostMultiplier")]
+        [TestCase("{ \"stmCostMultiplier\": NaN }", "StmCostMultiplier")]
+        [TestCase("{ \"forceAffinityHealingCap\": 0.9 }", "ForceAffinityHealingCap")]
+        [TestCase("{ \"recastOverrides\": { \"MedKit\": -2 } }", "RecastOverrides[MedKit]")]
+        [TestCase("{ \"temporaryHpCapPercent\": -5 }", "TemporaryHpCapPercent")]
+        [TestCase("{ \"convergenceDurationSeconds\": Infinity }", "ConvergenceDurationSeconds")]
+        [TestCase("{ \"pvpCombatWindowSeconds\": 0 }", "PvpCombatWindowSeconds")]
+        [TestCase("{ \"pvpHealingRamp\": [ { \"atSeconds\": 120, \"percent\": 150 } ] }", "PvpHealingRamp[0].Percent")]
+        [TestCase("{ \"pvpDamageBackstop\": [ { \"atSeconds\": -1, \"percent\": 20 } ] }", "PvpDamageBackstop[0].AtSeconds")]
+        [TestCase("{ \"revives\": 7 }", "Revives")]
+        public void Load_RejectsValuesOutsideTheirRange_NamingFileAndValue(string json, string valueName)
+        {
+            var path = WriteRules("out-of-range.json", json);
+
+            var act = () => RuleSets.Load(path);
+
+            act.Should().Throw<InvalidDataException>().WithMessage($"*out-of-range.json*{valueName}*");
+        }
+
+        [Test]
+        public void Presets_HaveNoProblems()
+        {
+            foreach (var name in RuleSets.Names)
+                RuleSets.Get(name).GetProblems().Should().BeEmpty(name);
+        }
+
         [TestCase("null")]
         [TestCase("   ")]
         [TestCase("{ \"recastOverrides\": null }")]

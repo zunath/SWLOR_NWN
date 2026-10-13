@@ -19,10 +19,9 @@ namespace SWLOR.CombatSim.Rules
         {
             var rules = JsonConvert.DeserializeObject<RuleSet>(File.ReadAllText(path))
                         ?? throw new InvalidDataException($"Rule set file '{path}' is empty.");
-            if (rules.RecastOverrides == null || rules.PvpHealingRamp == null || rules.PvpDamageBackstop == null)
-                throw new InvalidDataException($"Rule set file '{path}' sets RecastOverrides, PvpHealingRamp or PvpDamageBackstop to null; use {{}} or [] instead.");
-            if (rules.PvpHealingRamp.Contains(null) || rules.PvpDamageBackstop.Contains(null))
-                throw new InvalidDataException($"Rule set file '{path}' has a null ramp step.");
+            var problems = rules.GetProblems();
+            if (problems.Count > 0)
+                throw new InvalidDataException($"Rule set file '{path}': {string.Join("; ", problems)}.");
             if (string.IsNullOrWhiteSpace(rules.Name))
                 rules.Name = Path.GetFileNameWithoutExtension(path);
 

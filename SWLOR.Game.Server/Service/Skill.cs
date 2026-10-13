@@ -169,6 +169,14 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // Maxed skills can repay XP debt, but cannot earn XP or be blocked by the total-rank cap.
+            if (pcSkill.Rank >= details.MaxRank)
+            {
+                pcSkill.XP = 0;
+                DB.Set(dbPlayer);
+                return;
+            }
+
             var totalRanks = dbPlayer.Skills
                 .Where(x =>
                 {
@@ -201,11 +209,6 @@ namespace SWLOR.Game.Server.Service
             else
                 _xpMessages.Add(player, xpMessageSource, skill, xp);
             pcSkill.XP += xp;
-            // Skill is at cap. No additional XP can be acquired.
-            if (pcSkill.Rank >= details.MaxRank)
-            {
-                pcSkill.XP = 0;
-            }
 
             while (pcSkill.XP >= requiredXP)
             {

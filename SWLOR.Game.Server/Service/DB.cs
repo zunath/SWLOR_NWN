@@ -43,8 +43,10 @@ namespace SWLOR.Game.Server.Service
                 throw new ArgumentException("A declared, unindexed entity property is required.", nameof(propertyName));
 
             RecordWrite(typeof(T));
+            var key = $"{_keyPrefixByType[typeof(T)]}:{id}";
+            _jsonAcrossFrames.Remove(key);
             var profile = FrameProfiler.Start();
-            var result = _multiplexer.GetDatabase().JsonSet($"{_keyPrefixByType[typeof(T)]}:{id}",
+            var result = _multiplexer.GetDatabase().JsonSet(key,
                 json, path: $".{propertyName}", setOption: SetOption.SetOnlyIfExists);
             FrameProfiler.Stop(FrameMetric.DBOther, profile, json.Length);
             if (!result.IsSuccess)
@@ -59,6 +61,10 @@ namespace SWLOR.Game.Server.Service
         private static ConnectionMultiplexer _multiplexer;
         private static readonly Dictionary<string, EntityBase> _cachedEntities = new();
         private static readonly ConcurrentDictionary<Type, long> _writeVersionsByType = new();
+        private const int MaxJsonAcrossFrames = 2000;
+        // Redis key -> stored JSON for types marked JsonCachedAcrossFrames. Kept current by Set, Delete and partial writes.
+        private static readonly Dictionary<string, string> _jsonAcrossFrames = new();
+        private static readonly HashSet<Type> _jsonCachedTypes = new();
 
         static DB()
         {
@@ -398,6 +404,8 @@ namespace SWLOR.Game.Server.Service
                 var type = entity.GetType();
                 // Register the type by itself first.
                 _keyPrefixByType[type] = type.Name;
+                if (type.GetCustomAttribute<JsonCachedAcrossFramesAttribute>() != null)
+                    _jsonCachedTypes.Add(type);
 
                 // Register the search client.
                 _searchClientsByType[type] = new Client(type.Name, _multiplexer.GetDatabase());
@@ -421,11 +429,15 @@ namespace SWLOR.Game.Server.Service
             var data = JsonConvert.SerializeObject(entity);
 
             var keyPrefix = _keyPrefixByType[type];
+            var key = $"{keyPrefix}:{entity.Id}";
+            _jsonAcrossFrames.Remove(key);
             var indexKey = SearchIndexDefinition.KeyPrefix(keyPrefix) + entity.Id;
             var indexData = BuildIndexData(type, entity);
             _searchClientsByType[type].ReplaceDocument(indexKey, indexData);
-            _multiplexer.GetDatabase().JsonSet($"{keyPrefix}:{entity.Id}", data);
+            _multiplexer.GetDatabase().JsonSet(key, data);
             _cachedEntities[entity.Id] = entity;
+            if (_jsonCachedTypes.Contains(type))
+                RememberJson(key, data);
             FrameProfiler.Stop(FrameMetric.DBSet, profile, data.Length);
         }
 
@@ -443,6 +455,14 @@ namespace SWLOR.Game.Server.Service
         private static void RecordWrite(Type type)
         {
             _writeVersionsByType.AddOrUpdate(type, 1, (_, version) => version + 1);
+        }
+
+        private static void RememberJson(string key, string json)
+        {
+            if (_jsonAcrossFrames.Count >= MaxJsonAcrossFrames && !_jsonAcrossFrames.ContainsKey(key))
+                _jsonAcrossFrames.Clear();
+
+            _jsonAcrossFrames[key] = json;
         }
 
         /// <summary>
@@ -498,19 +518,30 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 var profile = FrameProfiler.Start();
-                RedisValue data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{id}").ToString();
-
-                if (string.IsNullOrWhiteSpace(data))
+                var key = $"{keyPrefix}:{id}";
+                var cachesJson = _jsonCachedTypes.Contains(typeof(T));
+                var metric = FrameMetric.DBGetJsonCached;
+                if (!cachesJson || !_jsonAcrossFrames.TryGetValue(key, out var data))
                 {
-                    FrameProfiler.Stop(FrameMetric.DBGet, profile);
-                    return default;
+                    metric = FrameMetric.DBGet;
+                    data = _multiplexer.GetDatabase().JsonGet(key).ToString();
+
+                    if (string.IsNullOrWhiteSpace(data))
+                    {
+                        FrameProfiler.Stop(FrameMetric.DBGet, profile);
+                        return default;
+                    }
+
+                    if (cachesJson)
+                        RememberJson(key, data);
                 }
 
+                // A fresh instance every frame: unsaved changes to an instance never outlive the frame.
                 var deserializeProfile = FrameProfiler.Start();
                 var entity = JsonConvert.DeserializeObject<T>(data);
                 FrameProfiler.Stop(FrameMetric.DBDeserialize, deserializeProfile);
                 _cachedEntities[id] = entity;
-                FrameProfiler.Stop(FrameMetric.DBGet, profile, ((string)data).Length);
+                FrameProfiler.Stop(metric, profile, data.Length);
 
                 return entity;
             }
@@ -566,6 +597,7 @@ namespace SWLOR.Game.Server.Service
             var keyPrefix = _keyPrefixByType[typeof(T)];
             var indexKey = SearchIndexDefinition.KeyPrefix(keyPrefix) + id;
             RecordWrite(typeof(T));
+            _jsonAcrossFrames.Remove($"{keyPrefix}:{id}");
             var profile = FrameProfiler.Start();
             _searchClientsByType[typeof(T)].DeleteDocument(indexKey);
             _multiplexer.GetDatabase().JsonDelete($"{keyPrefix}:{id}");

@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Service.FrameProfilerService
         ObjectUpdateHook,
         DBGet,
         DBGetCached,
+        DBGetJsonCached,
         DBDeserialize,
         DBSet,
         DBSearch,

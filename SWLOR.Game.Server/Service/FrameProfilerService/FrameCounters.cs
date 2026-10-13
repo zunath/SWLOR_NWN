@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Service.FrameProfilerService
             text.Append($"hooks {Ms(FrameMetric.NativeHook)}/{Rate(FrameMetric.NativeHook)}, ");
             text.Append($"closures {Ms(FrameMetric.Closure)}/{Rate(FrameMetric.Closure)}, ");
             text.Append($"object updates {Ms(FrameMetric.ObjectUpdateHook)}/{Rate(FrameMetric.ObjectUpdateHook)}); ");
-            text.Append($"DB get {Rate(FrameMetric.DBGet)} miss {Ms(FrameMetric.DBGet)} ms (deserialize {Ms(FrameMetric.DBDeserialize)}) {Kb(FrameMetric.DBGet)} KB + {Rate(FrameMetric.DBGetCached)} cached, ");
+            text.Append($"DB get {Rate(FrameMetric.DBGet)} miss {Ms(FrameMetric.DBGet)} ms (deserialize {Ms(FrameMetric.DBDeserialize)}) {Kb(FrameMetric.DBGet)} KB + {Rate(FrameMetric.DBGetJsonCached)} from cached JSON {Ms(FrameMetric.DBGetJsonCached)} ms + {Rate(FrameMetric.DBGetCached)} cached, ");
             text.Append($"set {Rate(FrameMetric.DBSet)} {Ms(FrameMetric.DBSet)} ms {Kb(FrameMetric.DBSet)} KB, ");
             text.Append($"search {Rate(FrameMetric.DBSearch)} {Ms(FrameMetric.DBSearch)} ms + {Rate(FrameMetric.DBSearchDocument)} docs {Ms(FrameMetric.DBSearchDocument)} ms, ");
             text.Append($"retries {Rate(FrameMetric.DBSearchRetry)}, other {Rate(FrameMetric.DBOther)} {Ms(FrameMetric.DBOther)} ms; ");

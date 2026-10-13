@@ -82,12 +82,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (dbPlayer.RoleplayProgress.RPPoints < 50)
             {
-                Log.WriteStructured(
-                    LogGroup.RoleplayXP,
-                    "RP XP distribution skipped: PlayerId={PlayerId} CharacterName={CharacterName} AccountName={AccountName} CDKey={CDKey} OccurredUtc={OccurredUtc:O} Reason={Reason} RPPoints={RPPoints} RequiredRPPoints={RequiredRPPoints} OOCMessagesSinceLastDistribution={OOCMessagesSinceLastDistribution} PendingOOCPenaltySteps={PendingOOCPenaltySteps}",
-                    playerId, dbPlayer.Name, GetPCPlayerName(player), GetPCPublicCDKey(player), now,
-                    "InsufficientRPPoints", dbPlayer.RoleplayProgress.RPPoints, 50,
-                    dbPlayer.RoleplayProgress.OOCMessagesSinceLastDistribution, dbPlayer.RoleplayProgress.PendingOOCPenaltySteps);
+                LogSkippedDistribution(player, dbPlayer, now);
                 return;
             }
 
@@ -112,13 +107,8 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.UnallocatedXP += xp;
             DB.Set(dbPlayer);
 
-            Log.WriteStructured(
-                LogGroup.RoleplayXP,
-                "RP XP distribution completed: PlayerId={PlayerId} CharacterName={CharacterName} AccountName={AccountName} CDKey={CDKey} OccurredUtc={OccurredUtc:O} RPPoints={RPPoints} BaseXP={BaseXP} BonusXP={BonusXP} SocialModifier={SocialModifier} CantinaLevel={CantinaLevel} XPBeforePenalty={XPBeforePenalty} OOCMessagesSinceLastDistribution={OOCMessagesSinceLastDistribution} OOCPenaltySteps={OOCPenaltySteps} OOCPenaltyPercentPerMessage={OOCPenaltyPercentPerMessage} OOCPenaltyPercent={OOCPenaltyPercent} XPLostToOOCPenalty={XPLostToOOCPenalty} AwardedXP={AwardedXP} UnallocatedXP={UnallocatedXP}",
-                playerId, dbPlayer.Name, GetPCPlayerName(player), GetPCPublicCDKey(player), now,
-                rpPoints, BaseXP, bonusXP, socialModifier, cantinaBonus,
-                xpBeforePenalty, oocMessages, penaltySteps, penaltyPercentPerMessage,
-                Math.Clamp(penaltySteps * penaltyPercentPerMessage, 0, 100), xpBeforePenalty - xp, xp, dbPlayer.UnallocatedXP);
+            LogCompletedDistribution(player, dbPlayer, now, rpPoints, BaseXP, bonusXP, socialModifier,
+                cantinaBonus, xpBeforePenalty, oocMessages, penaltySteps, penaltyPercentPerMessage, xp);
 
             if (xp > 0)
             {
@@ -212,6 +202,35 @@ namespace SWLOR.Game.Server.Feature
                 settings.RoleplayXPEventAreaOOCAllowance);
             DB.Set(dbPlayer);
 
+            LogOOCMessage(player, dbPlayer, now, channel, message, context, previousPenaltySteps, settings);
+        }
+
+        private static void LogSkippedDistribution(uint player, Player dbPlayer, DateTime now)
+        {
+            Log.WriteStructured(
+                LogGroup.RoleplayXP,
+                "RP XP distribution skipped: PlayerId={PlayerId} CharacterName={CharacterName} AccountName={AccountName} CDKey={CDKey} OccurredUtc={OccurredUtc:O} Reason={Reason} RPPoints={RPPoints} RequiredRPPoints={RequiredRPPoints} OOCMessagesSinceLastDistribution={OOCMessagesSinceLastDistribution} PendingOOCPenaltySteps={PendingOOCPenaltySteps}",
+                dbPlayer.Id, dbPlayer.Name, GetPCPlayerName(player), GetPCPublicCDKey(player), now,
+                "InsufficientRPPoints", dbPlayer.RoleplayProgress.RPPoints, 50,
+                dbPlayer.RoleplayProgress.OOCMessagesSinceLastDistribution, dbPlayer.RoleplayProgress.PendingOOCPenaltySteps);
+        }
+
+        private static void LogCompletedDistribution(uint player, Player dbPlayer, DateTime now, int rpPoints,
+            int baseXP, int bonusXP, int socialModifier, int cantinaLevel, int xpBeforePenalty, ulong oocMessages,
+            int penaltySteps, int penaltyPercentPerMessage, int awardedXP)
+        {
+            Log.WriteStructured(
+                LogGroup.RoleplayXP,
+                "RP XP distribution completed: PlayerId={PlayerId} CharacterName={CharacterName} AccountName={AccountName} CDKey={CDKey} OccurredUtc={OccurredUtc:O} RPPoints={RPPoints} BaseXP={BaseXP} BonusXP={BonusXP} SocialModifier={SocialModifier} CantinaLevel={CantinaLevel} XPBeforePenalty={XPBeforePenalty} OOCMessagesSinceLastDistribution={OOCMessagesSinceLastDistribution} OOCPenaltySteps={OOCPenaltySteps} OOCPenaltyPercentPerMessage={OOCPenaltyPercentPerMessage} OOCPenaltyPercent={OOCPenaltyPercent} XPLostToOOCPenalty={XPLostToOOCPenalty} AwardedXP={AwardedXP} UnallocatedXP={UnallocatedXP}",
+                dbPlayer.Id, dbPlayer.Name, GetPCPlayerName(player), GetPCPublicCDKey(player), now,
+                rpPoints, baseXP, bonusXP, socialModifier, cantinaLevel,
+                xpBeforePenalty, oocMessages, penaltySteps, penaltyPercentPerMessage,
+                Math.Clamp(penaltySteps * penaltyPercentPerMessage, 0, 100), xpBeforePenalty - awardedXP, awardedXP, dbPlayer.UnallocatedXP);
+        }
+
+        private static void LogOOCMessage(uint player, Player dbPlayer, DateTime now, ChatChannel channel,
+            string message, OOCMessageContext context, int previousPenaltySteps, ApplicationSettings settings)
+        {
             Log.WriteStructured(
                 LogGroup.RoleplayXP,
                 "RP XP OOC message recorded: PlayerId={PlayerId} CharacterName={CharacterName} AccountName={AccountName} CDKey={CDKey} OccurredUtc={OccurredUtc:O} Channel={Channel} AreaResref={AreaResref} Context={Context} OOCMessagesSinceLastDistribution={OOCMessagesSinceLastDistribution} DailyOOCMessageCount={DailyOOCMessageCount} DailyDMPresentOOCMessageCount={DailyDMPresentOOCMessageCount} DailyEventAreaOOCMessageCount={DailyEventAreaOOCMessageCount} DailyAllowance={DailyAllowance} DMPresentAllowance={DMPresentAllowance} EventAreaAllowance={EventAreaAllowance} PreviousOOCPenaltySteps={PreviousOOCPenaltySteps} PendingOOCPenaltySteps={PendingOOCPenaltySteps} OOCPenaltyPercentPerMessage={OOCPenaltyPercentPerMessage} NextAwardOOCPenaltyPercent={NextAwardOOCPenaltyPercent} Message={Message}",

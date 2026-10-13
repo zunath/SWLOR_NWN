@@ -26,7 +26,8 @@ public class RoleplayXPLoggingTests
         root.Should().NotBeNull();
         var source = File.ReadAllText(Path.Combine(root!.FullName, "SWLOR.Game.Server", "Feature", "RoleplayXP.cs"));
         var methods = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(method => method.Identifier.Text is "ProcessPlayerRoleplayXP" or "ProcessOOCMessage")
+            .Where(method => method.Identifier.Text is "ProcessPlayerRoleplayXP" or "ProcessOOCMessage"
+                or "LogSkippedDistribution" or "LogCompletedDistribution" or "LogOOCMessage")
             .Select(method => method.WithModifiers(SyntaxFactory.TokenList(
                 SyntaxFactory.Token(SyntaxKind.PublicKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
                 .NormalizeWhitespace().ToFullString());

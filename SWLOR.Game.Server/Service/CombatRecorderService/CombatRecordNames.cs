@@ -56,6 +56,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                 CombatRecordSourceKind.Respawn => "respawn",
                 CombatRecordSourceKind.Subdual => "subdual",
                 CombatRecordSourceKind.DungeonMaster => "dm",
+                CombatRecordSourceKind.Trap => "trap",
                 _ => "unattributed"
             };
         }

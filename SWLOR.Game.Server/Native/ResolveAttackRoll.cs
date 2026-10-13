@@ -416,7 +416,7 @@ namespace SWLOR.Game.Server.Native
 
                 if (CombatRecorder.IsRecording)
                     CombatRecorder.RecordAttack(attacker.m_idSelf, defender.m_idSelf, pAttackData.m_nAttackResult, hitRate,
-                        queuedWeaponAbilityWillResolve ? queuedAbility?.Name : null);
+                        queuedAbility?.Name);
 
                 Log.Write(LogGroup.Attack, $"Building combat log message");
                 var attackerMessage = BuildAttackFeedbackMessage(

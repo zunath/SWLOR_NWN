@@ -285,6 +285,22 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Attributes a trap going off to whatever placed it (the ability or kit captured with
+        /// <see cref="CaptureScope"/>), or to a trap of its owner when it was placed before the
+        /// recording started.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static CombatRecordAttributionScope BeginTrapAttribution(uint owner, in CombatRecordAttribution placedBy)
+        {
+            if (!IsRecording)
+                return default;
+
+            return placedBy.Actor != 0
+                ? BeginAttribution(placedBy)
+                : PushAttribution(owner, CombatRecordSourceKind.Trap, null, 0, 0);
+        }
+
+        /// <summary>
         /// Attributes a respawn's own recovery, so it is not counted as anyone's healing.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -771,10 +787,19 @@ namespace SWLOR.Game.Server.Service
             if (amount <= 0 || !IsRecorded(target, source))
                 return;
 
-            if (deliveryType == CombatDamageDeliveryType.Direct &&
-                (_attributionDepth == 0 || _attributions[_attributionDepth - 1].Kind != CombatRecordSourceKind.StatusEffect))
+            // Direct damage is registered only where it is dispatched later: a status effect's tick
+            // or reaction, or the source's own scope (a trap going off, an item) with no ability
+            // impact to queue the hit into.
+            if (deliveryType == CombatDamageDeliveryType.Direct)
             {
-                return;
+                if (_attributionDepth == 0)
+                    return;
+
+                var scope = _attributions[_attributionDepth - 1];
+                var isDispatchedLater = scope.Kind == CombatRecordSourceKind.StatusEffect ||
+                                        (IsOwnedBy(scope, source) && Ability.GetActiveAbilityImpactSummary(source) == null);
+                if (!isDispatchedLater)
+                    return;
             }
 
             // Triggered and damage-over-time hits computed during the source's own ability impact

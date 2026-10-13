@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                 CombatRecordSourceKind.Respawn => "Respawn",
                 CombatRecordSourceKind.Subdual => "Subdual",
                 CombatRecordSourceKind.DungeonMaster => "DM",
+                CombatRecordSourceKind.Trap => "Trap",
                 _ => hasName ? $"Unattributed ({name})" : "Unattributed"
             };
         }

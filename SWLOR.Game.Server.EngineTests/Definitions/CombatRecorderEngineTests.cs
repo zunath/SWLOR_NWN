@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -286,16 +287,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var dummy = arena.Spawn(CreatureResref, 0f, 0f);
             var brawler = arena.Spawn(CreatureResref, 1.5f, 180f);
             var pyro = arena.Spawn(CreatureResref, -9f, 0f);
+            var mark = arena.Spawn(CreatureResref, 9f, 90f);
             await ctx.DelaySecondsAsync(1f);
 
             Prepare(ctx, dummy, "Recorder Dummy", 1000);
             Prepare(ctx, brawler, "Recorder Brawler", 1000);
             Prepare(ctx, pyro, "Recorder Pyro", 1000);
+            Prepare(ctx, mark, "Recorder Mark", 1000);
+            ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), mark, 120f);
             TemporaryStatModifier.Add(dummy, StatType.IncomingPhysicalToForceConversionPercent, 50, 120f);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), dummy, 120f);
             TemporaryStatModifier.Add(brawler, StatType.AutoAttackFPRestore, 1, 120f);
             Stat.ReduceFP(brawler, 50);
             ctx.MakeHostile(brawler);
+            // The trap only goes off for creatures hostile to its owner.
+            ChangeToStandardFaction(mark, StandardFaction.Defender);
             ctx.SeedRandom(4444);
 
             Combat.SetAutoAttackHitResolutionOverride(true);
@@ -331,6 +337,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.DelaySecondsAsync(1f);
                 dummyMaxHitPoints = GetMaxHitPoints(dummy);
 
+                // A Razor Trap placed on the mark goes off seconds later, outside any scope.
+                Combat.SetAbilityHitResolutionOverride(true);
+                var placed = false;
+                await ctx.ExecuteInCreatureContextAsync(brawler, () =>
+                {
+                    using var placement = CombatRecorder.BeginAbilityFeatAttribution(brawler, FeatType.RazorTrap1);
+                    placed = Traps.TryPlaceTrap(brawler, GetLocation(mark), 10, CombatDamageType.Physical,
+                        typeof(BleedStatusEffect), 6, VisualEffect.Vfx_Com_Blood_Spark_Medium, VisualEffect.Vfx_Dur_Aura_Pulse_Orange_White);
+                });
+                ctx.Assert(placed, "the Razor Trap is placed on the mark");
+                // Three seconds to arm, then a one-second proximity check.
+                await ctx.DelaySecondsAsync(5f);
+
                 // Damage-over-time computed during the source's own ability impact is queued with
                 // that impact, so it registers nothing; outside an impact it is registered.
                 await ctx.ExecuteInCreatureContextAsync(pyro, () =>
@@ -346,6 +365,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally
             {
                 Combat.SetAutoAttackHitResolutionOverride(null);
+                Combat.SetAbilityHitResolutionOverride(null);
                 AssignCommand(brawler, () => ClearAllActions());
                 if (CombatRecorder.IsRecording)
                     CombatRecorder.Stop("engine test", out _);
@@ -380,6 +400,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "status ticks are applied from a closure");
             ctx.Assert(hits.All(e => e.GetProperty("source_kind").GetString() != "unattributed"),
                 "every brawler hit on the dummy has a known source");
+            var markId = ParticipantId(ctx, events, "Recorder Mark");
+            var trapHits = events.Where(e => Type(e) == "damage" &&
+                                             e.GetProperty("source").GetInt32() == brawlerId &&
+                                             e.GetProperty("target").GetInt32() == markId).ToList();
+            ctx.Assert(trapHits.Count > 0, "the Razor Trap must go off on the mark");
+            ctx.Assert(trapHits.All(e => e.GetProperty("source_kind").GetString() == "ability" &&
+                                         e.GetProperty("source_name").GetString() == "Razor Trap I"),
+                "the trap's blast must be attributed to the Razor Trap that placed it");
             ctx.Assert(events.Any(e => Type(e) == "damage" &&
                                        e.GetProperty("source").GetInt32() == dummyId &&
                                        e.GetProperty("target").GetInt32() == brawlerId &&

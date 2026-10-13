@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
         DamageShare = 11,
         Respawn = 12,
         Subdual = 13,
-        DungeonMaster = 14
+        DungeonMaster = 14,
+        Trap = 15
     }
 }

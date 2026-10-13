@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Chi-Med's clothes have been fitted with small adjustments rather than dramatic alterations. A loosened tie here and a reinforced pocket there turn an ordinary outfit into something its owner would recognize by touch."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Chi-Med's clothes have been fitted with small adjustments rather than dramatic alterations. A loosened tie here and a reinforced pocket there turn an ordinary outfit into something its owner would recognize by touch."
     }
   },
   "Identified": {

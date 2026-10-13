@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "These robes recall Bastila's disciplined, fitted style without relying on lavish decoration. The sleeves and inner bindings are arranged to remain orderly in motion, keeping a composed appearance from becoming a fragile one."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "These robes recall Bastila's disciplined, fitted style without relying on lavish decoration. The sleeves and inner bindings are arranged to remain orderly in motion, keeping a composed appearance from becoming a fragile one."
+    }
   },
   "Identified": {
     "type": "byte",

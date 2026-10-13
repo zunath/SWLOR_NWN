@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The cuffs of these gauntlets close with stout, stubborn clasps. Even when empty, their tightly worked fingers look as though they are waiting to turn one last lock."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The cuffs of these gauntlets close with stout, stubborn clasps. Even when empty, their tightly worked fingers look as though they are waiting to turn one last lock."
     }
   },
   "Identified": {

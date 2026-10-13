@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Turquoise color follows the raised surfaces of this breastplate, gathering more darkly around its joints. The striking finish rests on straightforward fittings, balancing an unmistakable appearance with the business of being worn."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Turquoise color follows the raised surfaces of this breastplate, gathering more darkly around its joints. The striking finish rests on straightforward fittings, balancing an unmistakable appearance with the business of being worn."
     }
   },
   "Identified": {

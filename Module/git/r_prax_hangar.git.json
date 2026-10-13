@@ -321,12 +321,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A severe arrangement of layered plates gives this Sith warrior's armor its hard outline. Its wearer has kept the useful fittings clean while allowing the exposed surfaces to retain an account of rougher work."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A severe arrangement of layered plates gives this Sith warrior's armor its hard outline. Its wearer has kept the useful fittings clean while allowing the exposed surfaces to retain an account of rougher work."
                 }
               },
               "Identified": {
@@ -1984,11 +1986,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "The flowing panels of this stage outfit have been balanced around a close-fitting foundation. It is made to catch the light during a turn without asking the dancer to keep track of every loose fold."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "The flowing panels of this stage outfit have been balanced around a close-fitting foundation. It is made to catch the light during a turn without asking the dancer to keep track of every loose fold."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -2988,11 +2994,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light layers and securely worked seams make this dancer's outfit more practical than it first appears. Under performance lights, the careful construction disappears and leaves the audience to follow the movement."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Light layers and securely worked seams make this dancer's outfit more practical than it first appears. Under performance lights, the careful construction disappears and leaves the audience to follow the movement."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -3992,11 +4002,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -4996,11 +5010,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Black coveralls give these working clothes an orderly appearance even after a hard shift. The concealed lining is more revealing, carrying the wear of tools and hurried repairs that the dark outside keeps discreet."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -6000,11 +6018,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -7006,12 +7028,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Deep red cloth gives this bounty hunter's outfit a memorable outline. Its pockets and closures are considerably less theatrical, fitted for the business that begins after the client has finished admiring the entrance."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Deep red cloth gives this bounty hunter's outfit a memorable outline. Its pockets and closures are considerably less theatrical, fitted for the business that begins after the client has finished admiring the entrance."
                 }
               },
               "Identified": {
@@ -8137,12 +8161,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A formal arrangement of substantial plates gives this Sith honor guard armor its imposing shape. The finish asks to be noticed, but its well-used fastenings suggest that standing ceremonially still is only part of the appointment."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A formal arrangement of substantial plates gives this Sith honor guard armor its imposing shape. The finish asks to be noticed, but its well-used fastenings suggest that standing ceremonially still is only part of the appointment."
                 }
               },
               "Identified": {
@@ -9981,12 +10007,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A formal arrangement of substantial plates gives this Sith honor guard armor its imposing shape. The finish asks to be noticed, but its well-used fastenings suggest that standing ceremonially still is only part of the appointment."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A formal arrangement of substantial plates gives this Sith honor guard armor its imposing shape. The finish asks to be noticed, but its well-used fastenings suggest that standing ceremonially still is only part of the appointment."
                 }
               },
               "Identified": {
@@ -11825,12 +11853,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {
@@ -13548,12 +13578,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {
@@ -15271,12 +15303,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {
@@ -16994,12 +17028,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "A Sith trooper's armor, severe panels fitted over practical service layers. Its standardized appearance makes the wearer part of a recognizable military presence before any individual face or voice can matter."
                 }
               },
               "Identified": {

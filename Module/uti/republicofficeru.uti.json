@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A regulation Republic officer's uniform with a clean collar and restrained service fittings. Its orderly appearance asks the wearer to look certain even before the next report has reached their datapad."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A regulation Republic officer's uniform with a clean collar and restrained service fittings. Its orderly appearance asks the wearer to look certain even before the next report has reached their datapad."
+    }
   },
   "Identified": {
     "type": "byte",

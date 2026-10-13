@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Patient, closely worked seams give this tunic an enduring shape. It looks intended to remain in a craftsperson's wardrobe long after newer fashions have passed through the workshop door."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Patient, closely worked seams give this tunic an enduring shape. It looks intended to remain in a craftsperson's wardrobe long after newer fashions have passed through the workshop door."
+    }
   },
   "Identified": {
     "type": "byte",

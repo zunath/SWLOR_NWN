@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The dark layers of this adept's armor have a severe, carefully cultivated outline. Its inner fastenings are more straightforward, an unglamorous foundation for the impression its wearer wishes to make."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The dark layers of this adept's armor have a severe, carefully cultivated outline. Its inner fastenings are more straightforward, an unglamorous foundation for the impression its wearer wishes to make."
     }
   },
   "Identified": {

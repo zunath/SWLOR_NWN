@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A chef's working tunic with a clean front and sleeves that gather neatly above the hands. Its real distinction is less visible: reinforced seams in the places a long service is most likely to test."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A chef's working tunic with a clean front and sleeves that gather neatly above the hands. Its real distinction is less visible: reinforced seams in the places a long service is most likely to test."
+    }
   },
   "Identified": {
     "type": "byte",

@@ -3165,6 +3165,11 @@ namespace SWLOR.Game.Server.Service.CraftService
         PhaseTraceFuse = 5051,
         CryoTraceFuse = 5052,
         NullTraceFuse = 5053,
+        SalvagedSortingHarness = 5054,
+        SalvagedAssemblyGauntlet = 5055,
+        SalvagedNullFieldCollar = 5056,
+        SalvagedBreachSealBelt = 5057,
+        SalvagedSerumCellNecklace = 5058,
 
         #endregion
 

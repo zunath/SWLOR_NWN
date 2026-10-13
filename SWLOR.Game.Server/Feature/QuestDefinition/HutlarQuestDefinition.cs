@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             HutlarPowerInvestigation();
             StupendousSlugBile();
             BreakTheByysk();
+            ShutDownTheLine();
 
             return _builder.Build();
         }
@@ -170,6 +171,22 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddGoldReward(22500)
                 .AddXPReward(15000)
                 .AddItemReward("recipe_banners01", 1);
+        }
+
+        private void ShutDownTheLine()
+        {
+            _builder.Create("fdy_shut_line", "Shut Down the Line")
+                .IsRepeatable()
+
+                .AddState()
+                .SetStateJournalText("Kesa Morn says the old droid foundry beneath the Abandoned Outpost has started building war droids again, and its patrols are already testing the outpost doors. Destroy twenty foundry droids on any floor to set the line back.")
+                .AddKillObjective(NPCGroupType.Hutlar_FoundryDroid, 20)
+
+                .AddState()
+                .SetStateJournalText("Return to Kesa Morn by the Foundry Access door in the Abandoned Outpost on Hutlar.")
+
+                .AddGoldReward(750)
+                .AddXPReward(1750);
         }
 
     }

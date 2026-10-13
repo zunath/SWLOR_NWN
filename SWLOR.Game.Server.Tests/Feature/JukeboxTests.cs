@@ -17,7 +17,7 @@ public class JukeboxTests
 
     [TestCase("utp")]
     [TestCase("git")]
-    public void AllJukeboxes_OpenTheCollectionPicker(string resourceType)
+    public void AllJukeboxes_AreIndestructibleCollectionPickers(string resourceType)
     {
         var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
         while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
@@ -39,6 +39,7 @@ public class JukeboxTests
                 placeable.GetProperty("OnUsed").GetProperty("value").GetString().Should().Be(ScriptName.OnJukeboxUsed, context);
                 placeable.GetProperty("Static").GetProperty("value").GetInt32().Should().Be(0, context);
                 placeable.GetProperty("Useable").GetProperty("value").GetInt32().Should().Be(1, context);
+                placeable.GetProperty("Plot").GetProperty("value").GetInt32().Should().Be(1, context);
                 count++;
             }
         }

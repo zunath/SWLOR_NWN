@@ -158,7 +158,7 @@
   },
   "Plot": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PortraitId": {
     "type": "word",

@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Scars have been dressed back into the finish of this Mandalorian armor instead of erased. More recent repairs lie beside older work, preserving the distinction between a veteran's equipment and a newly painted imitation."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Scars have been dressed back into the finish of this Mandalorian armor instead of erased. More recent repairs lie beside older work, preserving the distinction between a veteran's equipment and a newly painted imitation."
+    }
   },
   "Identified": {
     "type": "byte",

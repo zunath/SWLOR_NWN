@@ -339,11 +339,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Layered, weathered cloth gives these Jawa rags their familiar huddled outline. Dust settles into the outer folds while the deeper bindings preserve a small, stubborn shelter from the desert."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Layered, weathered cloth gives these Jawa rags their familiar huddled outline. Dust settles into the outer folds while the deeper bindings preserve a small, stubborn shelter from the desert."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -1417,11 +1421,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Layered, weathered cloth gives these Jawa rags their familiar huddled outline. Dust settles into the outer folds while the deeper bindings preserve a small, stubborn shelter from the desert."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Layered, weathered cloth gives these Jawa rags their familiar huddled outline. Dust settles into the outer folds while the deeper bindings preserve a small, stubborn shelter from the desert."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -2495,11 +2503,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Layered, weathered cloth gives these Jawa rags their familiar huddled outline. Dust settles into the outer folds while the deeper bindings preserve a small, stubborn shelter from the desert."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Layered, weathered cloth gives these Jawa rags their familiar huddled outline. Dust settles into the outer folds while the deeper bindings preserve a small, stubborn shelter from the desert."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -3481,11 +3493,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Small studs follow the stronger sections of this leather armor. Its uncomplicated construction has survived the fashion that first sold it, leaving an honest piece of equipment ready for another owner's adjustments."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Small studs follow the stronger sections of this leather armor. Its uncomplicated construction has survived the fashion that first sold it, leaving an honest piece of equipment ready for another owner's adjustments."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -5040,11 +5056,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Small studs follow the stronger sections of this leather armor. Its uncomplicated construction has survived the fashion that first sold it, leaving an honest piece of equipment ready for another owner's adjustments."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Small studs follow the stronger sections of this leather armor. Its uncomplicated construction has survived the fashion that first sold it, leaving an honest piece of equipment ready for another owner's adjustments."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -6599,11 +6619,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Small studs follow the stronger sections of this leather armor. Its uncomplicated construction has survived the fashion that first sold it, leaving an honest piece of equipment ready for another owner's adjustments."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Small studs follow the stronger sections of this leather armor. Its uncomplicated construction has survived the fashion that first sold it, leaving an honest piece of equipment ready for another owner's adjustments."
+                }
               },
               "Identified": {
                 "type": "byte",

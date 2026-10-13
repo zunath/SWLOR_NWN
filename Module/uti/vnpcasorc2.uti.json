@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Dark outer layers soften the junctions of this Sith sorcerer's armor without hiding its weight. Its restrained ornament seems designed to suggest importance while leaving its precise source uncomfortably uncertain."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Dark outer layers soften the junctions of this Sith sorcerer's armor without hiding its weight. Its restrained ornament seems designed to suggest importance while leaving its precise source uncomfortably uncertain."
     }
   },
   "Identified": {

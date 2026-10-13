@@ -26,12 +26,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The exposed frame of this umbrella has an almost architectural neatness. Without a complete canopy to soften its outline, every slender rib displays the patient work usually hidden above the owner's head."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The exposed frame of this umbrella has an almost architectural neatness. Without a complete canopy to soften its outline, every slender rib displays the patient work usually hidden above the owner's head."
     }
   },
   "Identified": {

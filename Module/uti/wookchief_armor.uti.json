@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Ryywlocc's armor has broad fittings and robust bindings suited to its Wookiee owner. Repairs have been incorporated into its original construction, leaving the accumulated work visible instead of dressing it away."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Ryywlocc's armor has broad fittings and robust bindings suited to its Wookiee owner. Repairs have been incorporated into its original construction, leaving the accumulated work visible instead of dressing it away."
     }
   },
   "Identified": {

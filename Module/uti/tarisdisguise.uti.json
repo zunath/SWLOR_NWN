@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The outwardly ordinary cut of this disguise is its most carefully considered feature. Its layers can be settled several ways, offering Taris a different first impression without an entirely different wardrobe."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The outwardly ordinary cut of this disguise is its most carefully considered feature. Its layers can be settled several ways, offering Taris a different first impression without an entirely different wardrobe."
+    }
   },
   "Identified": {
     "type": "byte",

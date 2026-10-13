@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The fastenings of Koyee Isemio's armor have been adjusted around a familiar fit. Its smaller service marks remain visible, distinguishing equipment lived in from equipment merely issued."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The fastenings of Koyee Isemio's armor have been adjusted around a familiar fit. Its smaller service marks remain visible, distinguishing equipment lived in from equipment merely issued."
     }
   },
   "Identified": {

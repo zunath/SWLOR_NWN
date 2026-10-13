@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This vendor's outfit has practical pockets and sleeves worn most heavily at the wrists. It looks as familiar behind a market counter as the practiced motion of counting out a customer's change."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This vendor's outfit has practical pockets and sleeves worn most heavily at the wrists. It looks as familiar behind a market counter as the practiced motion of counting out a customer's change."
+    }
   },
   "Identified": {
     "type": "byte",

@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "These tulips have been gathered into a tidy, upright bundle. Their uncomplicated arrangement lets the colors do the talking, sparing the giver at least one part of the conversation."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "These tulips have been gathered into a tidy, upright bundle. Their uncomplicated arrangement lets the colors do the talking, sparing the giver at least one part of the conversation."
+    }
   },
   "Identified": {
     "type": "byte",

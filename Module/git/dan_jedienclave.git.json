@@ -535,12 +535,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "These guard robes marry a formal silhouette to a restrained, practical cut. The hems remain clear of the feet, leaving ceremony to the wearer instead of allowing it to become an obstacle to duty."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "These guard robes marry a formal silhouette to a restrained, practical cut. The hems remain clear of the feet, leaving ceremony to the wearer instead of allowing it to become an obstacle to duty."
                 }
               },
               "Identified": {
@@ -2129,12 +2131,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Quiet layers of cloth temper the firmer outline of this Jedi sage's armor. Its carefully seated fittings leave a scholarly appearance without insisting that study always takes place somewhere sheltered."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Quiet layers of cloth temper the firmer outline of this Jedi sage's armor. Its carefully seated fittings leave a scholarly appearance without insisting that study always takes place somewhere sheltered."
                 }
               },
               "Identified": {
@@ -3964,12 +3968,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "The formal arrangement of this Jedi Temple Guard armor conceals a practical, carefully maintained harness. It belongs to the watch at a threshold, where quiet discipline must remain useful when quiet ends."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "The formal arrangement of this Jedi Temple Guard armor conceals a practical, carefully maintained harness. It belongs to the watch at a threshold, where quiet discipline must remain useful when quiet ends."
                 }
               },
               "Identified": {
@@ -5621,12 +5627,14 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Quiet layers of cloth temper the firmer outline of this Jedi sage's armor. Its carefully seated fittings leave a scholarly appearance without insisting that study always takes place somewhere sheltered."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Quiet layers of cloth temper the firmer outline of this Jedi sage's armor. Its carefully seated fittings leave a scholarly appearance without insisting that study always takes place somewhere sheltered."
                 }
               },
               "Identified": {

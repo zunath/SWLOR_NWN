@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "An assortment of flowers has been gathered into a deliberately varied bundle. Their different shapes and colors offer the small pleasure of a garden that can be carried away from its soil."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "An assortment of flowers has been gathered into a deliberately varied bundle. Their different shapes and colors offer the small pleasure of a garden that can be carried away from its soil."
+    }
   },
   "Identified": {
     "type": "byte",

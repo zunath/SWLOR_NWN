@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A severe arrangement of layered plates gives this Sith warrior's armor its hard outline. Its wearer has kept the useful fittings clean while allowing the exposed surfaces to retain an account of rougher work."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A severe arrangement of layered plates gives this Sith warrior's armor its hard outline. Its wearer has kept the useful fittings clean while allowing the exposed surfaces to retain an account of rougher work."
     }
   },
   "Identified": {

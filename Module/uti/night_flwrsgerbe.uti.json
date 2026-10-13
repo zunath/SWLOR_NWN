@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Broad gerbera blossoms turn outward from this neatly tied bundle. Their unabashedly cheerful arrangement would be difficult to mistake for an attempt at solemn official business."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Broad gerbera blossoms turn outward from this neatly tied bundle. Their unabashedly cheerful arrangement would be difficult to mistake for an attempt at solemn official business."
+    }
   },
   "Identified": {
     "type": "byte",

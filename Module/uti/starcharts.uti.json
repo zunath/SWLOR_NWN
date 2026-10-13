@@ -25,7 +25,6 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 90753,
     "type": "cexolocstring",
     "value": {
       "0": "A disk containing starcharts.\n\nCharts can be extracted from a navigational computer, or bought from another party.  Use the charts on a navigational computer to add them to that computer's database."

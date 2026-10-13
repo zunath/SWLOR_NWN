@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The dark panels of this performance outfit pick up highlights as they move. Its construction keeps the fastening work out of view, leaving a dancer's audience with fewer reasons to look away from the show."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The dark panels of this performance outfit pick up highlights as they move. Its construction keeps the fastening work out of view, leaving a dancer's audience with fewer reasons to look away from the show."
+    }
   },
   "Identified": {
     "type": "byte",

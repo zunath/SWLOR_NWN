@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The plates of this armor have been refitted around old dents rather than replaced outright. Their careful alignment suggests a veteran who knows exactly which pieces are worth keeping."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The plates of this armor have been refitted around old dents rather than replaced outright. Their careful alignment suggests a veteran who knows exactly which pieces are worth keeping."
     }
   },
   "Identified": {

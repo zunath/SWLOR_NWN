@@ -81,17 +81,14 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             _builder.Create("DANTOOINE_RUIN_FARM")
                 .AddSpawn(ObjectType.Creature, "pthune")
-                .RandomlyWalks()
                 .WithFrequency(100)
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "gizka")
-                .RandomlyWalks()
                 .WithFrequency(20)
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "thune")
-                .RandomlyWalks()
                 .WithFrequency(5)
                 .ReturnsHome();
         }

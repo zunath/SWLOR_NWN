@@ -327,12 +327,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                                        e.GetProperty("caster").GetInt32() == brawlerId &&
                                        e.GetProperty("ability").GetString() == "Force Lightning I" &&
                                        e.GetProperty("recurring").GetBoolean() &&
+                                       e.GetProperty("feat").GetString() == nameof(FeatType.ForceLightning1) &&
                                        e.GetProperty("targets_hit").GetInt32() == 1 &&
                                        e.GetProperty("damage_queued").GetInt32() > 0),
-                "a recurring pulse must record its own impact");
+                "a recurring pulse must record its own impact with the cast's feat");
             ctx.Assert(hits.Any(e => e.GetProperty("source_kind").GetString() == "ability" &&
-                                     e.GetProperty("source_name").GetString() == "Force Lightning I"),
-                "the pulse's damage must be attributed to its ability");
+                                     e.GetProperty("source_name").GetString() == "Force Lightning I" &&
+                                     e.TryGetProperty("feat", out var feat) &&
+                                     feat.GetString() == nameof(FeatType.ForceLightning1)),
+                "the pulse's damage must be attributed to its ability and feat");
 
             ctx.Assert(events.Any(e => Type(e) == "resource" &&
                                        e.GetProperty("creature").GetInt32() == brawlerId &&
@@ -341,6 +344,84 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                                        e.GetProperty("reason").GetString() == "stat_trigger" &&
                                        e.GetProperty("reason_name").GetString() == nameof(StatType.AutoAttackFPRestore)),
                 "the autoattack FP refund must be attributed to AutoAttackFPRestore");
+
+            File.Delete(writer.EventsPath);
+            File.Delete(writer.SummaryPath);
+        }
+
+        /// <summary>
+        /// Reactions to an enemy's ability belong to the reacting creature: the low-HP shield the
+        /// defender's stats grant when the hit crosses its threshold, and the recoil Soul Devourer
+        /// Stance deals its own user after the hit.
+        /// </summary>
+        [EngineTest("Combat recorder credits reactive shields and stance recoil to their own source", Category = "CombatRecorder", TimeoutSeconds = 60f)]
+        public static async Task RecordsReactiveShieldAndStanceRecoil(EngineTestContext ctx)
+        {
+            ctx.Assert(!CombatRecorder.IsRecording, "no combat recording may be running before the test");
+
+            var arena = await QuietArena.CreateAsync(ctx);
+            var defender = arena.Spawn(CreatureResref, 0f, 0f);
+            var attacker = arena.Spawn(CreatureResref, 3f, 180f);
+            await ctx.DelaySecondsAsync(1f);
+
+            Prepare(ctx, defender, "Recorder Shielded", 600);
+            Prepare(ctx, attacker, "Recorder Devourer", 1000);
+            ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), defender, 120f);
+            // At 600 of 1000 HP, any hit crosses a 60% threshold.
+            TemporaryStatModifier.Add(defender, StatType.LowHPTemporaryHPThresholdPercent, 60, 120f);
+            TemporaryStatModifier.Add(defender, StatType.LowHPTemporaryHPPercent, 5, 120f);
+            TemporaryStatModifier.Add(defender, StatType.LowHPTemporaryHPDurationSeconds, 60, 120f);
+            CreaturePlugin.AddFeat(attacker, FeatType.ForceLightning1);
+            ctx.MakeHostile(attacker);
+            ctx.SeedRandom(4545);
+
+            Combat.SetAbilityHitResolutionOverride(true);
+            Combat.SetAutoAttackHitResolutionOverride(false);
+            CombatRecordWriter writer;
+            try
+            {
+                ctx.Assert(CombatRecorder.Start(arena.Area, "engine test reactions", out var startMessage), startMessage);
+                writer = CombatRecorder.LastWriter;
+
+                ctx.Assert(StatusEffect.ApplyStatusEffect(attacker, attacker, typeof(SoulDevourerStanceStatusEffect), 60f),
+                    "Soul Devourer Stance applies to the attacker");
+                var attackerHitPoints = GetCurrentHitPoints(attacker);
+                await UseAbilityAsync(ctx, attacker, defender, FeatType.ForceLightning1);
+                await ctx.WaitUntilAsync(
+                    () => TemporaryHitPointEffects.GetRemaining(defender) > 0 && GetCurrentHitPoints(attacker) < attackerHitPoints,
+                    10f,
+                    "the defender's low-HP shield and the attacker's stance recoil");
+                await ctx.DelaySecondsAsync(1f);
+            }
+            finally
+            {
+                Combat.SetAbilityHitResolutionOverride(null);
+                Combat.SetAutoAttackHitResolutionOverride(null);
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.Stop("engine test", out _);
+            }
+
+            await ctx.WaitUntilAsync(() => writer.Completion.IsCompleted, 10f, "the recording writer to finish its files");
+            ctx.Assert(writer.Error == null, $"the recording writer failed: {writer.Error}");
+            var events = File.ReadAllLines(writer.EventsPath).Select(ParseLine).ToList();
+
+            var defenderId = ParticipantId(ctx, events, "Recorder Shielded");
+            var attackerId = ParticipantId(ctx, events, "Recorder Devourer");
+
+            var shield = events.Single(e => Type(e) == "temp_hp_grant" &&
+                                            e.GetProperty("target").GetInt32() == defenderId &&
+                                            e.GetProperty("effect_key").GetString() == "LOW_HP_SHIELD");
+            ctx.AssertEqual(defenderId, shield.GetProperty("source").GetInt32(), "the low-HP shield's granter");
+            ctx.AssertEqual("stat_trigger", shield.GetProperty("source_kind").GetString(), "the low-HP shield's source kind");
+            ctx.AssertEqual(nameof(StatType.LowHPTemporaryHPPercent), shield.GetProperty("source_name").GetString(),
+                "the low-HP shield's source name");
+
+            ctx.Assert(events.Any(e => Type(e) == "damage" &&
+                                       e.GetProperty("source").GetInt32() == attackerId &&
+                                       e.GetProperty("target").GetInt32() == attackerId &&
+                                       e.GetProperty("source_kind").GetString() == "status_effect" &&
+                                       e.GetProperty("source_name").GetString() == "Soul Devourer Stance"),
+                "the stance recoil must be attributed to Soul Devourer Stance");
 
             File.Delete(writer.EventsPath);
             File.Delete(writer.SummaryPath);

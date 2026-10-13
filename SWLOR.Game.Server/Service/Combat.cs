@@ -982,6 +982,7 @@ namespace SWLOR.Game.Server.Service
 
             if (GetIsObjectValid(temporaryHPSource))
             {
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(temporaryHPSource, StatType.FatalDamageTemporaryHPPercent);
                 TemporaryHitPointEffects.ApplyFlatFromSource(
                     temporaryHPSource,
                     defender,
@@ -991,6 +992,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
+                using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.FatalDamageTemporaryHPPercent);
                 TemporaryHitPointEffects.ApplyFlat(
                     defender,
                     TemporaryHitPointEffectKey.FatalDamageSave,
@@ -3126,6 +3128,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var temporaryHP = GameMath.PercentOf(GetMaxHitPoints(defender), temporaryHPPercent);
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.LowHPTemporaryHPPercent);
             TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD", temporaryHP, duration);
         }
 
@@ -3155,6 +3158,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var temporaryHP = GameMath.PercentOf(maxHP, temporaryHPPercent);
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.LowHPTemporaryHPPercent);
             TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD", temporaryHP, duration);
         }
 
@@ -3173,6 +3177,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var temporaryHP = GameMath.PercentOf(GetMaxHitPoints(defender), temporaryHPPercent);
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, StatType.LowHPNoSaveTemporaryHPPercent);
             TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD_NO_SAVE", temporaryHP, duration);
         }
 
@@ -7924,6 +7929,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var shieldAmount = GameMath.PercentOf(GetMaxHitPoints(activator), shieldPercent);
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(activator, StatType.HeavyVibrobladeDefenseGuardiansResolveShieldPercent);
             TemporaryHitPointEffects.ApplyFlat(activator, "GUARDIANS_RESOLVE", shieldAmount, duration);
             StatusEffect.ApplyStatusEffect(activator, activator, new GuardiansResolveStatusEffect(shieldAmount), duration);
         }
@@ -8287,6 +8293,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var temporaryHP = GameMath.PercentOf(hitPointsSpent, percent);
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(activator, StatType.HitPointSpendTemporaryHPPercentOfSpentHP);
             TemporaryHitPointEffects.ApplyFlat(activator, "HIT_POINT_SPEND", temporaryHP, duration);
         }
 

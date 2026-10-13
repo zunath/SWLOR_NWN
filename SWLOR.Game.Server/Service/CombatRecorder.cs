@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<(uint Target, string Key), (int SourceId, CombatRecordAttribution Attribution)> _temporaryHitPointGrants = new();
         private static readonly Dictionary<uint, uint> _lastDamageSources = new();
         private static readonly List<CombatRecordDamageApplication> _damageApplications = new();
+        private static Dictionary<AbilityDetail, FeatType> _abilityFeats;
 
         private static CombatRecordWriter _writer;
         private static IDisposable _snapshotSchedule;
@@ -93,6 +94,7 @@ namespace SWLOR.Game.Server.Service
                 Log.Write(LogGroup.Error, $"Combat recorder could not hook damage/healing: {ex}", true);
             }
 
+            _abilityFeats ??= CombatRecordAbilityFeatIndex.Build(Ability.GetAllAbilityDetails());
             _label = string.IsNullOrWhiteSpace(label) ? GetResRef(area) : label.Trim();
             _area = area;
             _startedUtc = DateTime.UtcNow;
@@ -188,11 +190,13 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnSWLORApplicationShutdown)]
         public static void StopOnShutdown()
         {
-            if (!IsRecording)
-                return;
+            if (IsRecording)
+                Stop("server shutdown", out _);
 
-            Stop("server shutdown", out _);
-            LastWriter?.WaitForExit(TimeSpan.FromSeconds(10));
+            // A recording stopped just before shutdown may still be writing its files.
+            var writer = LastWriter;
+            if (writer != null && !writer.Completion.IsCompleted)
+                writer.WaitForExit(TimeSpan.FromSeconds(10));
         }
 
         #region Attribution
@@ -220,7 +224,7 @@ namespace SWLOR.Game.Server.Service
         public static CombatRecordAttributionScope BeginAbilityAttribution(uint activator, AbilityDetail ability, FeatType feat = FeatType.Invalid)
         {
             return IsRecording && ability != null
-                ? PushAttribution(activator, CombatRecordSourceKind.Ability, ability.Name, (int)feat, ability.AbilityLevel)
+                ? PushAttribution(activator, CombatRecordSourceKind.Ability, ability.Name, GetFeatCode(ability, feat), ability.AbilityLevel)
                 : default;
         }
 
@@ -323,17 +327,43 @@ namespace SWLOR.Game.Server.Service
                 return attribution;
             }
 
-            var ability = GetActiveAbility(fallbackActor);
-            return ability != null
-                ? new CombatRecordAttribution(fallbackActor, CombatRecordSourceKind.Ability, ability.Name, 0, ability.AbilityLevel)
-                : new CombatRecordAttribution(fallbackActor, CombatRecordSourceKind.Unattributed, null, 0, 0);
+            return ResolveActiveAbilityAttribution(fallbackActor);
         }
 
-        private static AbilityDetail GetActiveAbility(uint actor)
+        /// <summary>
+        /// The innermost scope when it belongs to <paramref name="actor"/>; otherwise the actor's
+        /// active ability impact, then the actor alone. Used where another creature's scope
+        /// must not lend its source to the actor.
+        /// </summary>
+        private static CombatRecordAttribution ResolveOwnAttribution(uint actor)
         {
-            return GetIsObjectValid(actor)
+            if (_attributionDepth > 0 && _attributions[_attributionDepth - 1].Actor == actor)
+                return _attributions[_attributionDepth - 1];
+
+            return ResolveActiveAbilityAttribution(actor);
+        }
+
+        private static CombatRecordAttribution ResolveActiveAbilityAttribution(uint actor)
+        {
+            var ability = GetIsObjectValid(actor)
                 ? Ability.GetActiveAbilityImpactSummary(actor)?.Ability
                 : null;
+            return ability != null
+                ? new CombatRecordAttribution(actor, CombatRecordSourceKind.Ability, ability.Name, GetFeatCode(ability, FeatType.Invalid), ability.AbilityLevel)
+                : new CombatRecordAttribution(actor, CombatRecordSourceKind.Unattributed, null, 0, 0);
+        }
+
+        /// <summary>
+        /// The activated feat when known, else the feat the ability is registered under.
+        /// </summary>
+        private static int GetFeatCode(AbilityDetail ability, FeatType feat)
+        {
+            if (feat != FeatType.Invalid)
+                return (int)feat;
+
+            return _abilityFeats != null && ability != null && _abilityFeats.TryGetValue(ability, out var registeredFeat)
+                ? (int)registeredFeat
+                : (int)FeatType.Invalid;
         }
 
         #endregion
@@ -506,7 +536,7 @@ namespace SWLOR.Game.Server.Service
                 GetParticipantId(activator),
                 0,
                 ability.Name,
-                0,
+                GetFeatCode(ability, FeatType.Invalid),
                 ability.AbilityLevel,
                 summary?.ImpactedTargetCount ?? 0,
                 summary?.CriticalHitCount ?? 0,
@@ -694,10 +724,7 @@ namespace SWLOR.Game.Server.Service
                 return attribution;
             }
 
-            var ability = GetActiveAbility(source);
-            return ability != null
-                ? new CombatRecordAttribution(source, CombatRecordSourceKind.Ability, ability.Name, 0, ability.AbilityLevel)
-                : new CombatRecordAttribution(source, CombatRecordSourceKind.Unattributed, null, 0, 0);
+            return ResolveActiveAbilityAttribution(source);
         }
 
         /// <summary>
@@ -860,9 +887,9 @@ namespace SWLOR.Game.Server.Service
             if (!IsRecorded(target, source))
                 return;
 
-            var attribution = ResolveAttribution(GetIsObjectValid(source) ? source : target);
-            if (GetIsObjectValid(source))
-                attribution.Actor = source;
+            // An explicit granter must not inherit another creature's scope, such as the
+            // attacker's ability during a defender's reactive shield.
+            var attribution = GetIsObjectValid(source) ? ResolveOwnAttribution(source) : ResolveAttribution(target);
 
             var sourceId = GetParticipantId(attribution.Actor);
             _temporaryHitPointGrants[(target, effectKey)] = (sourceId, attribution);

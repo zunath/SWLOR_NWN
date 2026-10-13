@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Tall delphinium sprays lend this bundle a slightly unruly silhouette. The binding keeps their delicate stems together without pretending that flowers should form up like a military escort."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Tall delphinium sprays lend this bundle a slightly unruly silhouette. The binding keeps their delicate stems together without pretending that flowers should form up like a military escort."
+    }
   },
   "Identified": {
     "type": "byte",

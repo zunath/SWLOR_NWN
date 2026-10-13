@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The fingers of these gauntlets are scarred by work among stubborn clamps and scrap. Their palms have been reinforced again at precisely the spots where a load refuses to let go."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The fingers of these gauntlets are scarred by work among stubborn clamps and scrap. Their palms have been reinforced again at precisely the spots where a load refuses to let go."
     }
   },
   "Identified": {

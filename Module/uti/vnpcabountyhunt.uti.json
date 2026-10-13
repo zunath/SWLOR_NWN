@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A hunter's armor with the fit of equipment bought for serious work rather than a convenient costume. Its service fittings sit within easy reach, a useful consideration when a contract pays more promptly than a replacement can arrive."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A hunter's armor with the fit of equipment bought for serious work rather than a convenient costume. Its service fittings sit within easy reach, a useful consideration when a contract pays more promptly than a replacement can arrive."
     }
   },
   "Identified": {

@@ -110,12 +110,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Reika's leathers have been kept supple through use, with older seams dressed neatly around newer repairs. They favor a ready stance over a formal one, even when nobody has yet given a reason to move."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Reika's leathers have been kept supple through use, with older seams dressed neatly around newer repairs. They favor a ready stance over a formal one, even when nobody has yet given a reason to move."
     }
   },
   "Identified": {

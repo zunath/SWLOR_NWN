@@ -247,11 +247,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Small studs follow the stronger sections of this leather armor. Its uncomplicated construction has survived the fashion that first sold it, leaving an honest piece of equipment ready for another owner's adjustments."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Small studs follow the stronger sections of this leather armor. Its uncomplicated construction has survived the fashion that first sold it, leaving an honest piece of equipment ready for another owner's adjustments."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -1806,11 +1810,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Small studs follow the stronger sections of this leather armor. Its uncomplicated construction has survived the fashion that first sold it, leaving an honest piece of equipment ready for another owner's adjustments."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Small studs follow the stronger sections of this leather armor. Its uncomplicated construction has survived the fashion that first sold it, leaving an honest piece of equipment ready for another owner's adjustments."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -3365,11 +3373,15 @@
               },
               "DescIdentified": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Small studs follow the stronger sections of this leather armor. Its uncomplicated construction has survived the fashion that first sold it, leaving an honest piece of equipment ready for another owner's adjustments."
+                }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Small studs follow the stronger sections of this leather armor. Its uncomplicated construction has survived the fashion that first sold it, leaving an honest piece of equipment ready for another owner's adjustments."
+                }
               },
               "Identified": {
                 "type": "byte",

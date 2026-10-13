@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A weaponsmith's outfit with stout pockets and sleeves that fasten securely above the wrists. Tiny marks around its front record the unglamorous work behind a finished weapon's immaculate sales display."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A weaponsmith's outfit with stout pockets and sleeves that fasten securely above the wrists. Tiny marks around its front record the unglamorous work behind a finished weapon's immaculate sales display."
+    }
   },
   "Identified": {
     "type": "byte",

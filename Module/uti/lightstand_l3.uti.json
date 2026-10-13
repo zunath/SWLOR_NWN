@@ -25,16 +25,15 @@
     "value": 0
   },
   "DescIdentified": {
-    "id": 56620,
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Small pieces of worked bone interrupt the edging of this ritual cowl. They click softly against one another when the cloth is lifted, breaking the silence of a tomb by a little too much."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Small pieces of worked bone interrupt the edging of this ritual cowl. They click softly against one another when the cloth is lifted, breaking the silence of a tomb by a little too much."
     }
   },
   "Identified": {

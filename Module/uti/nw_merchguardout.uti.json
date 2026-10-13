@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A padded guard's outfit with a practical collar and sturdy, easily replaced ties. It has the modest finish of a merchant's security budget: respectable enough at the shop door, useful enough outside it."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A padded guard's outfit with a practical collar and sturdy, easily replaced ties. It has the modest finish of a merchant's security budget: respectable enough at the shop door, useful enough outside it."
+    }
   },
   "Identified": {
     "type": "byte",

@@ -110,11 +110,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Brown outer layers soften the formal lines of this captain's outfit. Its easy-worn fittings suit the familiar authority of someone who knows their ship well enough to stop dressing for an inspection every morning."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Brown outer layers soften the formal lines of this captain's outfit. Its easy-worn fittings suit the familiar authority of someone who knows their ship well enough to stop dressing for an inspection every morning."
+    }
   },
   "Identified": {
     "type": "byte",

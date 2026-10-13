@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, uint> _lastDamageSources = new();
         private static readonly List<CombatRecordDamageApplication> _damageApplications = new();
         private static readonly List<CombatRecordEvent> _heldEvents = new();
+        private static readonly List<CombatRecordWriter> _unfinishedWriters = new();
         private static int _heldInsertIndex = -1;
         private static long _heldTimestampMs;
         private static Dictionary<AbilityDetail, FeatType> _abilityFeats;
@@ -118,6 +119,8 @@ namespace SWLOR.Game.Server.Service
                 directory + baseName + CombatRecordFileNames.EventsExtension,
                 directory + baseName + CombatRecordFileNames.SummaryExtension);
             LastWriter = _writer;
+            _unfinishedWriters.RemoveAll(writer => writer.Completion.IsCompleted);
+            _unfinishedWriters.Add(_writer);
             _writer.Start();
 
             IsRecording = true;
@@ -200,10 +203,14 @@ namespace SWLOR.Game.Server.Service
             if (IsRecording)
                 Stop("server shutdown", out _);
 
-            // A recording stopped just before shutdown may still be writing its files.
-            var writer = LastWriter;
-            if (writer != null && !writer.Completion.IsCompleted)
-                writer.WaitForExit(TimeSpan.FromSeconds(10));
+            // Recordings stopped earlier, not only the latest, may still be writing their files.
+            var deadline = DateTime.UtcNow.AddSeconds(10);
+            foreach (var writer in _unfinishedWriters)
+            {
+                var remaining = deadline - DateTime.UtcNow;
+                if (!writer.Completion.IsCompleted && remaining > TimeSpan.Zero)
+                    writer.WaitForExit(remaining);
+            }
         }
 
         #region Attribution
@@ -1136,6 +1143,17 @@ namespace SWLOR.Game.Server.Service
                 SnapshotHitPointsAtDeath(index, creature);
 
             EnqueueDeath(creature, killer);
+        }
+
+        /// <summary>
+        /// Keeps the HP a lethal hit left when a handler inside the damage call restores the
+        /// creature (a fatal-damage save), so the damage event reports the hit, not the recovery.
+        /// </summary>
+        public static void KeepLethalHitPoints(uint creature)
+        {
+            var index = FindDamageApplication(creature);
+            if (index >= 0 && !_damageApplications[index].HasHitPointsAtDeath)
+                SnapshotHitPointsAtDeath(index, creature);
         }
 
         private static void SnapshotHitPointsAtDeath(int applicationIndex, uint creature)

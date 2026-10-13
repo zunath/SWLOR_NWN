@@ -989,7 +989,11 @@ namespace SWLOR.Game.Server.Service
             StatusEffect.RemoveStatusEffectsWithStat(defender, StatType.FatalDamageTemporaryHPPercent, false);
 
             if (restoreToOneHP && currentHP <= 0)
+            {
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.KeepLethalHitPoints(defender);
                 SetCurrentHitPoints(defender, 1);
+            }
 
             if (GetIsObjectValid(temporaryHPSource))
             {

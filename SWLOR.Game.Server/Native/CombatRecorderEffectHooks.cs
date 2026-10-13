@@ -89,7 +89,11 @@ namespace SWLOR.Game.Server.Native
                     // and clearing status effects there can lower the maximum.
                     maxHitPoints = target.GetMaxHitPoints(1);
                     poolsBefore = CaptureTemporaryHitPointPools(target);
-                    applicationIndex = CombatRecorder.BeginDamageApplication(creator, target.m_idSelf);
+                    // An engine-applied weapon hit has no script context, and the recorder calls NWScript.
+                    var source = creator;
+                    var targetId = target.m_idSelf;
+                    applicationIndex = ServerManager.Executor.ExecuteInScriptContext(() =>
+                        CombatRecorder.BeginDamageApplication(source, targetId));
                 }
                 else
                 {

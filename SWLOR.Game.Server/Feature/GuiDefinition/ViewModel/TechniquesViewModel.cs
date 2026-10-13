@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedSortOrderId = 0;
 
             var record = Record;
-            if (MimicryLoadouts.EnsureDefault(record))
+            if (MimicryLoadouts.EnsureStartingBuild(record))
                 DB.Set(record);
             if (_draft == null || !record.MimicryLoadouts.Any(x => x.Id == _selectedLoadoutId))
             {

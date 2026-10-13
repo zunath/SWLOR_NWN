@@ -2,7 +2,7 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration;
+using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -17,15 +17,14 @@ public class MimicryLoadoutTests
     {
         var player = JsonConvert.DeserializeObject<Player>("{\"EquippedTechniques\":[2797,2799]}")!;
         var before = player.EquippedTechniques.ToArray();
-        var migration = new _20_MimicryLoadouts();
-        migration.MigratePlayerData(player);
+        _29_CreateDefaultMimicryLoadouts.CreateDefault(player).Should().BeTrue();
         var saved = player.MimicryLoadouts.Should().ContainSingle().Subject;
         saved.Name.Should().Be("Default");
         saved.Techniques.Should().Equal(before);
         player.ActiveMimicryLoadoutId.Should().Be(saved.Id);
         player.EquippedTechniques.Clear();
         saved.Techniques.Should().Equal(before, "enforcement must not rewrite the migrated build");
-        migration.MigratePlayerData(player);
+        _29_CreateDefaultMimicryLoadouts.CreateDefault(player).Should().BeFalse();
         player.MimicryLoadouts.Should().ContainSingle().Which.Id.Should().Be(saved.Id);
     }
 
@@ -33,10 +32,10 @@ public class MimicryLoadoutTests
     public void MigrationPreservesNewerSavedBuildsAndActiveSelection()
     {
         var player = new Player();
-        MimicryLoadouts.EnsureDefault(player);
+        MimicryLoadouts.EnsureStartingBuild(player);
         var id = player.ActiveMimicryLoadoutId;
         MimicryLoadouts.Rename(player, id, "Renamed", out _).Should().BeTrue();
-        new _20_MimicryLoadouts().MigratePlayerData(player);
+        _29_CreateDefaultMimicryLoadouts.CreateDefault(player).Should().BeFalse();
         player.MimicryLoadouts.Should().ContainSingle().Which.Name.Should().Be("Renamed");
         player.ActiveMimicryLoadoutId.Should().Be(id);
     }
@@ -45,12 +44,12 @@ public class MimicryLoadoutTests
     public void NewCharacterGetsAnEmptyDefaultAndSerializedBuildsRoundTrip()
     {
         var player = new Player();
-        MimicryLoadouts.EnsureDefault(player).Should().BeTrue();
+        MimicryLoadouts.EnsureStartingBuild(player).Should().BeTrue();
         player.MimicryLoadouts[0].HotbarSlots[35] = FeatType.FrostSpitTechnique;
         var copy = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(player))!;
         copy.MimicryLoadouts.Should().BeEquivalentTo(player.MimicryLoadouts);
         copy.ActiveMimicryLoadoutId.Should().Be(player.ActiveMimicryLoadoutId);
-        MimicryLoadouts.EnsureDefault(copy).Should().BeFalse();
+        MimicryLoadouts.EnsureStartingBuild(copy).Should().BeFalse();
     }
 
     [Test]
@@ -58,7 +57,7 @@ public class MimicryLoadoutTests
     {
         var player = new Player();
         player.EquippedTechniques.Add(FeatType.FrostSpitTechnique);
-        MimicryLoadouts.EnsureDefault(player);
+        MimicryLoadouts.EnsureStartingBuild(player);
         var draft = new List<FeatType> { FeatType.ToxicSpitTechnique };
         var recasts = player.RecastTimes;
         MimicryLoadouts.Save(player, null, " Poison ", draft, out var saved, out _).Should().BeTrue();
@@ -78,7 +77,7 @@ public class MimicryLoadoutTests
     public void InvalidOrDuplicateNamesDoNotCreateBuilds(string name)
     {
         var player = new Player();
-        MimicryLoadouts.EnsureDefault(player);
+        MimicryLoadouts.EnsureStartingBuild(player);
         MimicryLoadouts.Save(player, null, name, [], out _, out var error).Should().BeFalse();
         error.Should().NotBeEmpty();
         player.MimicryLoadouts.Should().ContainSingle();
@@ -88,7 +87,7 @@ public class MimicryLoadoutTests
     public void FiveBuildLimitAllowsOverwriteButRejectsSixthBuild()
     {
         var player = new Player();
-        MimicryLoadouts.EnsureDefault(player);
+        MimicryLoadouts.EnsureStartingBuild(player);
         for (var i = 1; i < 5; i++)
             MimicryLoadouts.Save(player, null, $"Build {i}", [], out _, out _).Should().BeTrue();
         MimicryLoadouts.Save(player, null, "Sixth", [], out _, out _).Should().BeFalse();
@@ -102,14 +101,14 @@ public class MimicryLoadoutTests
     {
         var player = new Player();
         player.EquippedTechniques.Add(FeatType.FrostSpitTechnique);
-        MimicryLoadouts.EnsureDefault(player);
+        MimicryLoadouts.EnsureStartingBuild(player);
         var id = player.ActiveMimicryLoadoutId;
         MimicryLoadouts.Delete(player, id, out _).Should().BeFalse();
         MimicryLoadouts.Save(player, null, "Other", [], out _, out _).Should().BeTrue();
         MimicryLoadouts.Delete(player, id, out _).Should().BeTrue();
         player.EquippedTechniques.Should().Equal(FeatType.FrostSpitTechnique);
         player.ActiveMimicryLoadoutId.Should().BeEmpty();
-        MimicryLoadouts.EnsureDefault(player).Should().BeFalse();
+        MimicryLoadouts.EnsureStartingBuild(player).Should().BeFalse();
     }
 
     [Test]

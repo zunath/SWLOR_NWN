@@ -761,7 +761,6 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            MimicryLoadouts.EnsureDefault(dbPlayer);
             dbPlayer.EquippedTechniques.Add(feat);
             DB.Set(dbPlayer);
 
@@ -788,7 +787,6 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            MimicryLoadouts.EnsureDefault(dbPlayer);
             if (!dbPlayer.EquippedTechniques.Remove(feat))
                 return false;
 
@@ -827,7 +825,7 @@ namespace SWLOR.Game.Server.Service
             var skillRank = dbPlayer.Skills.TryGetValue(SkillType.Mimicry, out var mimicrySkill)
                 ? mimicrySkill.Rank
                 : 0;
-            var changed = MimicryLoadouts.EnsureDefault(dbPlayer);
+            var changed = false;
 
             for (var i = dbPlayer.EquippedTechniques.Count - 1; i >= 0; i--)
             {
@@ -897,8 +895,6 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            if (MimicryLoadouts.EnsureDefault(dbPlayer))
-                DB.Set(dbPlayer);
             if (dbPlayer.EquippedTechniques.Count <= 0)
                 return;
 
@@ -944,11 +940,6 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer == null)
                 return;
 
-            if (MimicryLoadouts.EnsureDefault(dbPlayer))
-            {
-                CaptureLoadoutHotbar(player, dbPlayer.MimicryLoadouts[0]);
-                DB.Set(dbPlayer);
-            }
             if (Perk.GetPerkLevel(player, PerkType.CombatAnalyzer) < 1)
                 return;
 

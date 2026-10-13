@@ -60,12 +60,12 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 			_builder.Create(PropertyLayoutType.ApartmentSmallStyleUnfurnished)
                 .PropertyType(PropertyType.Apartment)
                 .Name("Player Apartment: Small - Unfurnished")
-                .StructureLimit(30)
+                .StructureLimit(50)
                 .ItemStorageLimit(25)
                 .BuildingLimit(0)
                 .ResearchDeviceLimit(0)
-                .InitialPrice(7000)
-                .PricePerDay(300)
+                .InitialPrice(5000)
+                .PricePerDay(200)
                 .AreaInstance("v_apartment_s00");
 
 			_builder.Create(PropertyLayoutType.ApartmentSmallStyleFurnished)
@@ -122,12 +122,12 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 			_builder.Create(PropertyLayoutType.ApartmentMediumStyleUnfurnished)
 			    .PropertyType(PropertyType.Apartment)
 			    .Name("Player Apartment: Medium - Unfurnished")
-			    .StructureLimit(50)
+			    .StructureLimit(70)
 			    .ItemStorageLimit(40)
 			    .BuildingLimit(0)
 			    .ResearchDeviceLimit(0)
-			    .InitialPrice(13000)
-			    .PricePerDay(400)
+			    .InitialPrice(10000)
+			    .PricePerDay(300)
 			    .AreaInstance("v_apartment_m00");
 
 			_builder.Create(PropertyLayoutType.ApartmentMediumStyleFurnished)

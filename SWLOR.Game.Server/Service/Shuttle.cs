@@ -48,6 +48,7 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<string, ActiveFlight> _activeFlights = new();
         private static readonly Dictionary<string, (PlanetType Origin, PlanetType Destination)> _ticketHolders = new();
+        private static readonly Dictionary<string, DateTime> _boardingNotBeforeUtc = new();
         private static readonly Dictionary<(PlanetType Origin, PlanetType Destination), DateTime> _announcedBoardings = new();
         private static DateTime _lastTickUtc;
 
@@ -171,6 +172,11 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var playerId in ticketHolders)
             {
+                // A saved ticket is not permission to board an unannounced flight immediately
+                // after login. Only this session's purchase or ticket reminder enables boarding.
+                if (!_boardingNotBeforeUtc.TryGetValue(playerId, out var notBefore) || departureUtc < notBefore)
+                    continue;
+
                 var player = GetOnlinePlayerById(playerId);
                 if (!GetIsObjectValid(player) ||
                     GetIsDead(player) ||
@@ -185,6 +191,7 @@ namespace SWLOR.Game.Server.Service
                 if (ride == null || ride.Status != ShuttleRideStatus.Ticketed)
                 {
                     _ticketHolders.Remove(playerId);
+                    _boardingNotBeforeUtc.Remove(playerId);
                     continue;
                 }
 
@@ -196,6 +203,7 @@ namespace SWLOR.Game.Server.Service
                 ride.ArrivalUtc = flight.ArrivalUtc;
                 DB.Set(ride);
                 _ticketHolders.Remove(playerId);
+                _boardingNotBeforeUtc.Remove(playerId);
                 boardedAnyone = true;
 
                 var entrance = flight.EntranceLocation;
@@ -227,7 +235,7 @@ namespace SWLOR.Game.Server.Service
             var next = ShuttleSchedule.GetNextDepartureUtc(origin, destination, now);
             var wait = Time.GetTimeLongIntervals(next - now, false);
             var destinationName = Planet.GetPlanetByType(destination).Name;
-            SendMessageToPC(player, ColorToken.Yellow($"You missed your shuttle to {destinationName}! Your ticket remains valid. The next shuttle departs in {wait} - be within {(int)BoardingRangeMeters} meters of the flights terminal."));
+            SendMessageToPC(player, ColorToken.Yellow($"You missed your shuttle to {destinationName}! Your ticket remains valid. The next shuttle departs in {wait} - be within {(int)BoardingRangeMeters} meters of the flights terminal. You can refund your ticket at any flights terminal before boarding."));
         }
 
         /// <summary>
@@ -252,6 +260,9 @@ namespace SWLOR.Game.Server.Service
                 foreach (var (playerId, ticketRoute) in _ticketHolders)
                 {
                     if (ticketRoute != route)
+                        continue;
+
+                    if (!_boardingNotBeforeUtc.TryGetValue(playerId, out var notBefore) || next < notBefore)
                         continue;
 
                     var player = GetOnlinePlayerById(playerId);
@@ -384,7 +395,8 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Records the destination landing location on an offline passenger's record and clears their ride.
+        /// Records an offline passenger's landing location. Retains the elapsed ride until
+        /// login so the passenger receives their destination notice before it is cleared.
         /// </summary>
         private static void DeliverOfflinePassenger(ShuttleRide ride)
         {
@@ -404,7 +416,6 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            DB.Delete<ShuttleRide>(ride.Id);
             Log.Write(LogGroup.Server, $"Shuttle delivered offline passenger {ride.PlayerId} to {ride.Destination}.");
         }
 
@@ -679,6 +690,7 @@ namespace SWLOR.Game.Server.Service
             };
             DB.Set(ride);
             _ticketHolders[playerId] = (origin, destination);
+            _boardingNotBeforeUtc[playerId] = DateTime.UtcNow;
 
             if (tax > 0 && !string.IsNullOrWhiteSpace(cityPropertyId))
             {
@@ -710,6 +722,7 @@ namespace SWLOR.Game.Server.Service
             GiveGoldToCreature(player, ride.FarePaid);
             DB.Delete<ShuttleRide>(ride.Id);
             _ticketHolders.Remove(playerId);
+            _boardingNotBeforeUtc.Remove(playerId);
 
             SendMessageToPC(player, $"Your shuttle ticket has been refunded for {ride.FarePaid} credits. Taxes are non-refundable.");
             return true;
@@ -735,17 +748,72 @@ namespace SWLOR.Game.Server.Service
             if (ride == null || ride.Status != ShuttleRideStatus.InTransit)
                 return false;
 
-            if (ride.ArrivalUtc <= DateTime.UtcNow)
+            return TryGetRideLoginRedirect(player, ride, out location);
+        }
+
+        private static bool TryGetRideLoginRedirect(uint player, ShuttleRide ride, out Location location)
+        {
+            location = default;
+            var arrived = ride.ArrivalUtc <= DateTime.UtcNow;
+            var dbPlayer = DB.Get<Player>(ride.PlayerId);
+            if (dbPlayer == null || !dbPlayer.RebuildComplete)
             {
-                location = GetLandingLocation(ride.Destination);
-                DB.Delete<ShuttleRide>(ride.Id);
-                Log.Write(LogGroup.Server, $"Shuttle delivered passenger {playerId} to {ride.Destination} on login.");
+                // PersistentLocation owns mandatory rebuild routing. A completed flight
+                // can report arrival and clear its record without moving the player out.
+                if (arrived)
+                    CompleteRideOnLogin(player, ride);
+                return false;
+            }
+
+            if (arrived)
+            {
+                location = CompleteRideOnLogin(player, ride);
                 return true;
             }
 
             var flight = GetOrCreateFlight(ride.FlightId, ride.Origin, ride.Destination, ride.DepartureUtc, ride.ArrivalUtc);
             location = flight.EntranceLocation;
             return true;
+        }
+
+        private static Location CompleteRideOnLogin(uint player, ShuttleRide ride)
+        {
+            var location = GetLandingLocation(ride.Destination);
+            SendMessageToPC(player, $"Your shuttle has arrived at {Planet.GetPlanetByType(ride.Destination).Name}.");
+            DB.Delete<ShuttleRide>(ride.Id);
+            Log.Write(LogGroup.Server, $"Shuttle delivered passenger {ride.PlayerId} to {ride.Destination} on login.");
+            return location;
+        }
+
+        /// <summary>
+        /// Reminds a returning ticket holder and gives them a full boarding-call interval
+        /// to refund or leave the terminal before automatic boarding can resume.
+        /// </summary>
+        private static void RestoreTicketedSession(uint player, DateTime now)
+        {
+            var playerId = GetObjectUUID(player);
+            // A ticket purchased during the login delay already has explicit boarding
+            // consent for this session. Do not postpone the flight after confirmation.
+            if (_boardingNotBeforeUtc.ContainsKey(playerId))
+                return;
+
+            var ride = GetRide(playerId);
+            if (ride == null || ride.Status != ShuttleRideStatus.Ticketed)
+                return;
+
+            _ticketHolders[playerId] = (ride.Origin, ride.Destination);
+            _boardingNotBeforeUtc[playerId] = now.AddSeconds(BoardingCallSeconds);
+            var next = GetNextDepartureUtc(ride.Origin, ride.Destination, playerId);
+            var wait = Time.GetTimeLongIntervals(next - now, false);
+            var originName = Planet.GetPlanetByType(ride.Origin).Name;
+            var destinationName = Planet.GetPlanetByType(ride.Destination).Name;
+            SendMessageToPC(player, ColorToken.Yellow($"You still have a shuttle ticket from {originName} to {destinationName}. Automatic boarding resumes in {wait} if you are within {(int)BoardingRangeMeters} meters of a flights terminal at {originName}. You can refund your ticket at any flights terminal before boarding."));
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        public static void ExitServer()
+        {
+            _boardingNotBeforeUtc.Remove(GetObjectUUID(GetExitingObject()));
         }
 
         /// <summary>
@@ -761,20 +829,39 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var playerId = GetObjectUUID(player);
+            _boardingNotBeforeUtc.Remove(playerId);
 
             Scheduler.Schedule(() =>
             {
                 var current = GetOnlinePlayerById(playerId);
-                if (!GetIsObjectValid(current))
+                if (!GetIsObjectValid(current) || current != player)
                     return;
 
                 var ride = GetRide(playerId);
-                if (ride == null || ride.Status != ShuttleRideStatus.InTransit)
+                if (ride == null)
                     return;
+
+                if (ride.Status == ShuttleRideStatus.Ticketed)
+                {
+                    RestoreTicketedSession(current, DateTime.UtcNow);
+                    return;
+                }
+
+                if (ride.Status != ShuttleRideStatus.InTransit)
+                    return;
+
+                // Announce every resumed flight, including a reconnect directly into its
+                // existing area. Login redirects may already have placed the passenger there.
+                if (ride.ArrivalUtc > DateTime.UtcNow)
+                {
+                    var remaining = Time.GetTimeLongIntervals(ride.ArrivalUtc - DateTime.UtcNow, false);
+                    SendMessageToPC(current, $"You resume your shuttle flight to {Planet.GetPlanetByType(ride.Destination).Name}. Estimated arrival: {remaining}.");
+                }
 
                 if (_activeFlights.TryGetValue(ride.FlightId, out var flight) &&
                     GetIsObjectValid(flight.Area) &&
-                    GetArea(current) == flight.Area)
+                    GetArea(current) == flight.Area &&
+                    ride.ArrivalUtc > DateTime.UtcNow)
                     return;
 
                 if (TryGetLoginRedirect(current, out var location))
@@ -826,10 +913,15 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="origin">The origin planet.</param>
         /// <param name="destination">The destination planet.</param>
+        /// <param name="playerId">Optional passenger whose login boarding grace period applies.</param>
         /// <returns>The UTC time of the next departure.</returns>
-        public static DateTime GetNextDepartureUtc(PlanetType origin, PlanetType destination)
+        public static DateTime GetNextDepartureUtc(PlanetType origin, PlanetType destination, string playerId = null)
         {
-            return ShuttleSchedule.GetNextDepartureUtc(origin, destination, DateTime.UtcNow);
+            var notBefore = default(DateTime);
+            if (!string.IsNullOrWhiteSpace(playerId))
+                _boardingNotBeforeUtc.TryGetValue(playerId, out notBefore);
+
+            return ShuttleSchedule.GetNextDepartureUtc(origin, destination, DateTime.UtcNow, notBefore);
         }
 
         /// <summary>

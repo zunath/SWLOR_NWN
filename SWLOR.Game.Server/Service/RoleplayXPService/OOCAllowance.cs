@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Service.RoleplayXPService
             }
 
             progress.OOCMessageCount++;
+            progress.OOCMessagesSinceLastDistribution++;
 
             if (context.HasFlag(OOCMessageContext.EventArea))
             {

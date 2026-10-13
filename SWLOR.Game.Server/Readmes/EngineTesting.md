@@ -237,6 +237,22 @@ Three engine rules shape the setup:
   A fixture that kept the flag would never be destroyed, and leftover fixtures would pile up in
   the arena during multi-case sweeps.
 
+### Persistence and migration coverage
+
+Converting saved data successfully does not establish that players can keep using it safely.
+For changes to persisted gameplay objects, exercise the affected gameplay, change its state,
+save it through the normal gameplay path, and reload it. Migration tests must start with a
+legacy fixture and run the actual conversion first. Repeat the save/reload cycle at least twice and assert
+the final equipment, ownership, item counts, and stack quantities that apply to that object.
+Include missing or mismatched historical item IDs when identity controls removal or replacement.
+
+Droid inventory regressions live in `DroidInventoryEngineTests`. Its legacy inventory and
+equipment replacement scenarios migrate serialized controllers, verify retry stability, then
+equip, remove, replace, dismiss, and resummon through the live engine. Both the `Migration` and
+`DroidInventory` filters select these scenarios; `DroidInventoryCoverageTests` guards their discovery labels.
+Run `DroidInventory` for droid item persistence changes and include the relevant lifecycle tests
+when validating a migration. NUnit discovery checks do not replace the actual engine run.
+
 ### Timing guidance
 
 Status effects tick on the shared status-effect interval, roughly every 6 real seconds - not every

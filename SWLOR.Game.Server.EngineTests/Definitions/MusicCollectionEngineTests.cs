@@ -1,7 +1,11 @@
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.MusicService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
@@ -60,6 +64,40 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var map = CreateObject(ObjectType.Item, "map_023", ctx.GetArenaLocation(1f, 1f));
             ctx.Track(map);
             ctx.Assert(PlayerMarket.GetItemMarketCategory(map) != MarketCategoryType.Music, "other key items stay out of Music");
+        }
+
+        [EngineTest("World jukebox lists only the interacting player's songs", Category = "MusicCollection", TimeoutSeconds = 45f)]
+        public static async Task WorldJukeboxFiltersSongs(EngineTestContext ctx)
+        {
+            using var player = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
+            var jukebox = CreateObject(ObjectType.Placeable, "jukebox", ctx.GetArenaLocation(2f, 2f));
+            ctx.Track(jukebox);
+            ctx.Assert(GetIsObjectValid(jukebox), "world jukebox spawns");
+            ctx.AssertEqual(string.Empty, Music.GetJukeboxOwnerId(jukebox), "world jukebox has no property owner");
+            await ctx.ExecuteInCreatureContextAsync(player.Creature, () => Music.GrantStarterSongs(player.Creature));
+
+            var model = new MusicPickerViewModel();
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            typeof(GuiViewModelBase<MusicPickerViewModel, GuiPayloadBase>).GetProperty("Player", flags)
+                .SetValue(model, player.Creature);
+            typeof(MusicPickerViewModel).GetField("_mode", flags).SetValue(model, MusicPickerMode.Jukebox);
+            typeof(MusicPickerViewModel).GetField("_jukebox", flags).SetValue(model, jukebox);
+            typeof(MusicPickerViewModel).GetMethod("LoadEntries", flags).Invoke(model, null);
+
+            var entries = (MusicPickerEntry[])typeof(MusicPickerViewModel).GetField("_entries", flags).GetValue(model);
+            var collected = Music.GetCollectedTrackIds(player.Id);
+            ctx.Assert(collected.SetEquals(entries.Select(entry => entry.TrackId)), "picker contains exactly the player's collected songs");
+            ctx.Assert(entries.All(entry => entry.IsAvailable), "every listed song can be played");
+            ctx.AssertEqual($"All Songs ({collected.Count})", model.CategoryNames[0], "category count excludes locked songs");
+            model.ShowUncollected = true;
+            ctx.AssertEqual(collected.Count, model.SongNames.Count, "client toggle cannot expose locked songs");
+
+            var newSong = MusicSongCatalog.Songs.First(song => song.Category == MusicCategoryType.Theme);
+            await ctx.ExecuteInCreatureContextAsync(player.Creature, () => KeyItem.GiveKeyItem(player.Creature, newSong.KeyItem));
+            model.Refresh(new KeyItemReceivedRefreshEvent(newSong.KeyItem));
+            ctx.AssertEqual(collected.Count + 1, model.SongNames.Count, "newly collected song appears while the jukebox is open");
+            ctx.AssertEqual(4, model.CategoryNames.Count, "newly collected category joins All Songs and the starter categories");
+            ctx.AssertEqual(model.CategoryNames.Count, model.CategorySelected.Count, "category selections refresh with the available categories");
         }
 
         [EngineTest("A jukebox in a property plays from its owner's collection", Category = "MusicCollection", TimeoutSeconds = 45f)]

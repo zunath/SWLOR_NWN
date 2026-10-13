@@ -140,8 +140,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             LoadEntries();
             var categoryIndex = Array.IndexOf(_categories, _selectedCategory);
-            if (categoryIndex < 0)
-                SelectCategory(0);
+            if (categoryIndex < 0 || _mode == MusicPickerMode.Jukebox)
+                SelectCategory(Math.Max(0, categoryIndex));
             else
                 RefreshResults();
         }
@@ -171,6 +171,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var collected = Music.GetCollectedTrackIds(ownerId);
             var entries = Music.GetCollectibleSongs()
+                .Where(song => _mode != MusicPickerMode.Jukebox || collected.Contains(song.TrackId))
                 .Select(song => new MusicPickerEntry(
                     song.TrackId,
                     Music.GetSongName(song),
@@ -186,7 +187,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else if (ownerId == GetObjectUUID(Player))
             {
-                headerText = $"Your collection: {collected.Count} of {total} songs. Everyone in this area hears them.";
+                headerText = $"Your collection: {collected.Count} songs. Everyone in this area hears them.";
             }
             else
             {
@@ -226,7 +227,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var search = SearchText ?? string.Empty;
             var matches = _entries
                 .Where(entry => _selectedCategory.Length == 0 || entry.Category == _selectedCategory)
-                .Where(entry => entry.IsAvailable || ShowUncollected)
+                .Where(entry => entry.IsAvailable || (_mode == MusicPickerMode.Personal && ShowUncollected))
                 .Where(entry => search.Length == 0 || entry.Name.Contains(search, StringComparison.OrdinalIgnoreCase))
                 .ToArray();
 

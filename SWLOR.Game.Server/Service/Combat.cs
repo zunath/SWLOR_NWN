@@ -902,7 +902,18 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var reflectedDamage = GameMath.PercentOf(damage, adjustment);
+            using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(defender, GetDamageReflectionStat(damageType));
             ApplyTriggeredDamage(defender, attacker, reflectedDamage, damageType);
+        }
+
+        private static StatType GetDamageReflectionStat(CombatDamageType damageType)
+        {
+            return damageType switch
+            {
+                CombatDamageType.Force => StatType.ForceDamageReflectionPercentAdjustment,
+                CombatDamageType.Physical => StatType.PhysicalDamageReflectionPercentAdjustment,
+                _ => StatType.ElementalDamageReflectionPercentAdjustment
+            };
         }
 
         private static void ApplyForceDamageTakenEffects(uint defender)

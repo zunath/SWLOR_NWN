@@ -351,8 +351,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         /// <summary>
         /// Reactions to an enemy's ability belong to the reacting creature: the low-HP shield the
-        /// defender's stats grant when the hit crosses its threshold, and the recoil Soul Devourer
-        /// Stance deals its own user after the hit.
+        /// defender's stats grant when the hit crosses its threshold (written after that hit, and
+        /// named on the hits it later absorbs), the damage the defender's reflection stat sends
+        /// back, and the recoil Soul Devourer Stance deals its own user. A Kolto Mist cast before
+        /// the recording starts still credits its later pulses.
         /// </summary>
         [EngineTest("Combat recorder credits reactive shields and stance recoil to their own source", Category = "CombatRecorder", TimeoutSeconds = 60f)]
         public static async Task RecordsReactiveShieldAndStanceRecoil(EngineTestContext ctx)
@@ -362,16 +364,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var arena = await QuietArena.CreateAsync(ctx);
             var defender = arena.Spawn(CreatureResref, 0f, 0f);
             var attacker = arena.Spawn(CreatureResref, 3f, 180f);
+            var medic = arena.Spawn(CreatureResref, -12f, 0f);
             await ctx.DelaySecondsAsync(1f);
 
             Prepare(ctx, defender, "Recorder Shielded", 600);
             Prepare(ctx, attacker, "Recorder Devourer", 1000);
+            Prepare(ctx, medic, "Recorder Medic", 500);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), defender, 120f);
             // At 600 of 1000 HP, any hit crosses a 60% threshold.
             TemporaryStatModifier.Add(defender, StatType.LowHPTemporaryHPThresholdPercent, 60, 120f);
             TemporaryStatModifier.Add(defender, StatType.LowHPTemporaryHPPercent, 5, 120f);
             TemporaryStatModifier.Add(defender, StatType.LowHPTemporaryHPDurationSeconds, 60, 120f);
+            TemporaryStatModifier.Add(defender, StatType.ForceDamageReflectionPercentAdjustment, 50, 120f);
             CreaturePlugin.AddFeat(attacker, FeatType.ForceLightning1);
+            CreaturePlugin.AddFeat(medic, FeatType.KoltoMist1);
             ctx.MakeHostile(attacker);
             ctx.SeedRandom(4545);
 
@@ -380,6 +386,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             CombatRecordWriter writer;
             try
             {
+                // The mist's pulses are scheduled before the recording exists.
+                await UseAbilityAsync(ctx, medic, medic, FeatType.KoltoMist1);
+                await ctx.WaitUntilAsync(
+                    () => Ability.GetLastCompletedAbilityImpactSummary(medic)?.Ability?.Name == "Kolto Mist I",
+                    10f,
+                    "Kolto Mist I to land before the recording starts");
+                ctx.Assert(!CombatRecorder.IsRecording, "the mist landed before the recording started");
+
                 ctx.Assert(CombatRecorder.Start(arena.Area, "engine test reactions", out var startMessage), startMessage);
                 writer = CombatRecorder.LastWriter;
 
@@ -391,7 +405,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     () => TemporaryHitPointEffects.GetRemaining(defender) > 0 && GetCurrentHitPoints(attacker) < attackerHitPoints,
                     10f,
                     "the defender's low-HP shield and the attacker's stance recoil");
-                await ctx.DelaySecondsAsync(1f);
+
+                // A plain hit that the shield absorbs.
+                AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(5), defender));
+                // Kolto Mist pulses every 3 seconds.
+                await ctx.DelaySecondsAsync(4f);
             }
             finally
             {
@@ -407,10 +425,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             var defenderId = ParticipantId(ctx, events, "Recorder Shielded");
             var attackerId = ParticipantId(ctx, events, "Recorder Devourer");
+            var medicId = ParticipantId(ctx, events, "Recorder Medic");
 
-            var shield = events.Single(e => Type(e) == "temp_hp_grant" &&
-                                            e.GetProperty("target").GetInt32() == defenderId &&
-                                            e.GetProperty("effect_key").GetString() == "LOW_HP_SHIELD");
+            var shieldIndex = events.FindIndex(e => Type(e) == "temp_hp_grant" &&
+                                                    e.GetProperty("target").GetInt32() == defenderId &&
+                                                    e.GetProperty("effect_key").GetString() == "LOW_HP_SHIELD");
+            ctx.Assert(shieldIndex >= 0, "the low-HP shield grant must be recorded");
+            var firstHitIndex = events.FindIndex(e => Type(e) == "damage" &&
+                                                      e.GetProperty("source").GetInt32() == attackerId &&
+                                                      e.GetProperty("target").GetInt32() == defenderId);
+            ctx.Assert(firstHitIndex >= 0 && firstHitIndex < shieldIndex,
+                "the hit that crossed the threshold must be written before the shield it triggered");
+            var shield = events[shieldIndex];
             ctx.AssertEqual(defenderId, shield.GetProperty("source").GetInt32(), "the low-HP shield's granter");
             ctx.AssertEqual("stat_trigger", shield.GetProperty("source_kind").GetString(), "the low-HP shield's source kind");
             ctx.AssertEqual(nameof(StatType.LowHPTemporaryHPPercent), shield.GetProperty("source_name").GetString(),
@@ -422,6 +448,26 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                                        e.GetProperty("source_kind").GetString() == "status_effect" &&
                                        e.GetProperty("source_name").GetString() == "Soul Devourer Stance"),
                 "the stance recoil must be attributed to Soul Devourer Stance");
+
+            var shieldAbsorbs = events.Where(e => Type(e) == "temp_hp_absorb" &&
+                                                  e.GetProperty("effect_key").GetString() == "LOW_HP_SHIELD").ToList();
+            ctx.Assert(shieldAbsorbs.Count > 0, "a later hit must be absorbed by the low-HP shield");
+            ctx.Assert(shieldAbsorbs.All(e => e.GetProperty("granted_kind").GetString() == "stat_trigger" &&
+                                              e.GetProperty("granted_name").GetString() == nameof(StatType.LowHPTemporaryHPPercent)),
+                "the shield's absorbs must name the stat that granted it");
+
+            ctx.Assert(events.Any(e => Type(e) == "damage" &&
+                                       e.GetProperty("source").GetInt32() == defenderId &&
+                                       e.GetProperty("target").GetInt32() == attackerId &&
+                                       e.GetProperty("source_kind").GetString() == "stat_trigger" &&
+                                       e.GetProperty("source_name").GetString() == nameof(StatType.ForceDamageReflectionPercentAdjustment)),
+                "reflected damage must belong to the defender's reflection stat, not the attacker's ability");
+
+            var mistHeals = events.Where(e => Type(e) == "heal" && e.GetProperty("source").GetInt32() == medicId).ToList();
+            ctx.Assert(mistHeals.Count > 0, "Kolto Mist must pulse during the recording");
+            ctx.Assert(mistHeals.All(e => e.GetProperty("source_kind").GetString() == "ability" &&
+                                          e.GetProperty("source_name").GetString() == "Kolto Mist I"),
+                "pulses of a mist cast before the recording must still be credited to Kolto Mist I");
 
             File.Delete(writer.EventsPath);
             File.Delete(writer.SummaryPath);

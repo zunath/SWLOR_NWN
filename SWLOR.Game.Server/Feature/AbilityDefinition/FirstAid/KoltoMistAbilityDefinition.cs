@@ -89,12 +89,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
         private static void KoltoMist1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyKoltoMist(activator, target, targetLocation, Rank1HealPercentPerTick);
+            ApplyKoltoMist(activator, target, targetLocation, Rank1HealPercentPerTick, FeatType.KoltoMist1);
         }
 
         private static void KoltoMist2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyKoltoMist(activator, target, targetLocation, Rank2HealPercentPerTick);
+            ApplyKoltoMist(activator, target, targetLocation, Rank2HealPercentPerTick, FeatType.KoltoMist2);
         }
 
         private static string ValidateTargetingRange(uint activator, uint target, int effectivePerkLevel, Location targetLocation)
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             return $"You are out of range. This ability has a range of {RangeMeters} meters.";
         }
 
-        private static void ApplyKoltoMist(uint activator, uint target, Location targetLocation, float percentPerTick)
+        private static void ApplyKoltoMist(uint activator, uint target, Location targetLocation, float percentPerTick, FeatType feat)
         {
             var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
 
@@ -126,7 +126,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 DurationSeconds);
 
             var credited = new HashSet<uint>();
-            var recorderAttribution = CombatRecorder.CaptureAttribution(activator);
             for (var elapsed = TickIntervalSeconds; elapsed <= DurationSeconds + 0.01f; elapsed += TickIntervalSeconds)
             {
                 var pulseDelay = elapsed;
@@ -136,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
                         return;
 
-                    using var recorderScope = CombatRecorder.BeginAttribution(recorderAttribution);
+                    using var recorderScope = CombatRecorder.BeginAbilityFeatAttribution(activator, feat);
                     if (!GetIsObjectValid(GetAreaFromLocation(location)))
                         return;
 

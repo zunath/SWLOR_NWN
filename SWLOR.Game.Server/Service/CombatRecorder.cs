@@ -40,6 +40,9 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<(uint Target, string Key), (int SourceId, CombatRecordAttribution Attribution)> _temporaryHitPointGrants = new();
         private static readonly Dictionary<uint, uint> _lastDamageSources = new();
         private static readonly List<CombatRecordDamageApplication> _damageApplications = new();
+        private static readonly List<CombatRecordEvent> _heldEvents = new();
+        private static int _heldInsertIndex = -1;
+        private static long _heldTimestampMs;
         private static Dictionary<AbilityDetail, FeatType> _abilityFeats;
 
         private static CombatRecordWriter _writer;
@@ -106,6 +109,8 @@ namespace SWLOR.Game.Server.Service
             _temporaryHitPointGrants.Clear();
             _lastDamageSources.Clear();
             _damageApplications.Clear();
+            _heldEvents.Clear();
+            _heldInsertIndex = -1;
 
             var directory = CombatRecordFileNames.GetDirectory(ApplicationSettings.Get().LogDirectory);
             var baseName = CombatRecordFileNames.BuildBaseName(_startedUtc, _label);
@@ -141,6 +146,8 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            _damageApplications.Clear();
+            WriteHeldEvents();
             Enqueue(CombatRecordEvent.RecordingStopped(reason, _eventsEnqueued + 1));
             IsRecording = false;
             _snapshotSchedule?.Dispose();
@@ -256,12 +263,22 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Captures the current attribution so a delayed command can restore it with
-        /// <see cref="BeginAttribution(in CombatRecordAttribution)"/>.
+        /// Attributes a delayed effect to the ability that scheduled it, named by its feat. Unlike
+        /// a captured scope this also covers pulses scheduled before the recording started.
         /// </summary>
-        public static CombatRecordAttribution CaptureAttribution(uint actor)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static CombatRecordAttributionScope BeginAbilityFeatAttribution(uint activator, FeatType feat)
         {
-            return IsRecording ? ResolveAttribution(actor) : default;
+            return IsRecording && feat != FeatType.Invalid ? PushAbilityFeatAttribution(activator, feat) : default;
+        }
+
+        /// <summary>
+        /// Attributes a respawn's own recovery, so it is not counted as anyone's healing.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static CombatRecordAttributionScope BeginRespawnAttribution()
+        {
+            return IsRecording ? PushAttribution(OBJECT_INVALID, CombatRecordSourceKind.Respawn, null, 0, 0) : default;
         }
 
         /// <summary>
@@ -301,6 +318,15 @@ namespace SWLOR.Game.Server.Service
             return PushAttribution(actor, CombatRecordSourceKind.StatusEffect, statusEffect.Name, 0, 0);
         }
 
+        private static CombatRecordAttributionScope PushAbilityFeatAttribution(uint activator, FeatType feat)
+        {
+            if (!Ability.IsFeatRegistered(feat))
+                return default;
+
+            var ability = Ability.GetAbilityDetail(feat);
+            return PushAttribution(activator, CombatRecordSourceKind.Ability, ability.Name, (int)feat, ability.AbilityLevel);
+        }
+
         private static CombatRecordAttributionScope PushItemAttribution(uint user, uint item)
         {
             return PushAttribution(user, CombatRecordSourceKind.Item, GetName(item), 0, 0);
@@ -337,6 +363,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static CombatRecordAttribution ResolveOwnAttribution(uint actor)
         {
+            if (!GetIsObjectValid(actor))
+                return ResolveAttribution(actor);
             if (_attributionDepth > 0 && _attributions[_attributionDepth - 1].Actor == actor)
                 return _attributions[_attributionDepth - 1];
 
@@ -370,12 +398,43 @@ namespace SWLOR.Game.Server.Service
 
         #region Participants
 
+        /// <summary>
+        /// Events raised inside an engine damage call (reactions, death scripts) are held until
+        /// that call's damage event is in place ahead of them.
+        /// </summary>
         private static void Enqueue(CombatRecordEvent recordEvent)
         {
-            recordEvent.TimestampMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             recordEvent.Frame = ServerFrame.Current;
+            if (_heldInsertIndex >= 0)
+            {
+                recordEvent.TimestampMs = _heldTimestampMs;
+                _heldEvents.Insert(_heldInsertIndex++, recordEvent);
+                return;
+            }
+
+            recordEvent.TimestampMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            if (_damageApplications.Count > 0)
+                _heldEvents.Add(recordEvent);
+            else
+                Write(recordEvent);
+        }
+
+        private static void Write(in CombatRecordEvent recordEvent)
+        {
             _eventsEnqueued++;
             _writer.Enqueue(recordEvent);
+        }
+
+        private static void WriteHeldEvents()
+        {
+            _heldInsertIndex = -1;
+            if (IsRecording)
+            {
+                foreach (var recordEvent in _heldEvents)
+                    Write(recordEvent);
+            }
+
+            _heldEvents.Clear();
         }
 
         private static bool IsInRecordedArea(uint creature)
@@ -509,7 +568,7 @@ namespace SWLOR.Game.Server.Service
         public static void RecordAbilityImpact(
             uint activator, uint target, Location targetLocation, AbilityDetail ability, FeatType feat, AbilityImpactSummary summary)
         {
-            if (ability == null || !IsRecorded(activator, target))
+            if (ability == null || (!IsRecorded(activator, target) && !AnyInRecordedArea(summary?.ImpactedTargets)))
                 return;
 
             var recordEvent = CombatRecordEvent.AbilityImpact(
@@ -529,7 +588,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void RecordRecurringAbilityImpact(uint activator, AbilityDetail ability, AbilityImpactSummary summary)
         {
-            if (ability == null || !IsInRecordedArea(activator))
+            // A fixed-location pulse keeps landing in the area after its caster leaves.
+            if (ability == null || (!IsInRecordedArea(activator) && !AnyInRecordedArea(summary?.ImpactedTargets)))
                 return;
 
             Enqueue(CombatRecordEvent.AbilityImpact(
@@ -542,6 +602,20 @@ namespace SWLOR.Game.Server.Service
                 summary?.CriticalHitCount ?? 0,
                 summary?.AttributedDamage ?? 0,
                 isRecurring: true));
+        }
+
+        private static bool AnyInRecordedArea(IReadOnlyCollection<uint> creatures)
+        {
+            if (creatures == null)
+                return false;
+
+            foreach (var creature in creatures)
+            {
+                if (IsInRecordedArea(creature))
+                    return true;
+            }
+
+            return false;
         }
 
         private static CombatRecordEvent WithTargetLocation(CombatRecordEvent recordEvent, uint target, Location targetLocation)
@@ -637,7 +711,9 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var attribution = ResolveAttribution(source);
+            // A reflection or reaction the defender deals during the attacker's ability must not
+            // inherit that ability.
+            var attribution = ResolveOwnAttribution(source);
             if (deliveryType == CombatDamageDeliveryType.Transferred &&
                 attribution.Kind != CombatRecordSourceKind.StatusEffect)
             {
@@ -739,17 +815,25 @@ namespace SWLOR.Game.Server.Service
             if (source != target && source != 0 && source != OBJECT_INVALID && IsRecorded(target, source))
                 _lastDamageSources[target] = source;
 
-            _damageApplications.Add(new CombatRecordDamageApplication { Target = target });
+            _damageApplications.Add(new CombatRecordDamageApplication
+            {
+                Target = target,
+                HeldEventStart = _heldEvents.Count,
+                StartedMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+            });
             return _damageApplications.Count - 1;
         }
 
         /// <summary>
-        /// Releases a damage application if <see cref="RecordDamageApplied"/> could not run.
+        /// Releases a damage application, and writes the held events once the outermost one ends.
         /// </summary>
         internal static void EndDamageApplication(int applicationIndex)
         {
             if (applicationIndex >= 0 && applicationIndex < _damageApplications.Count)
                 _damageApplications.RemoveRange(applicationIndex, _damageApplications.Count - applicationIndex);
+
+            if (_damageApplications.Count == 0 && _heldEvents.Count > 0)
+                WriteHeldEvents();
         }
 
         /// <summary>
@@ -771,37 +855,28 @@ namespace SWLOR.Game.Server.Service
         {
             try
             {
+                if (applicationIndex < 0 || applicationIndex >= _damageApplications.Count || !IsRecording)
+                    return;
+
                 // A subdued player is resurrected inside the lethal damage call; report the HP the
                 // hit left, captured when the death scripts ran.
-                if (applicationIndex >= 0 && applicationIndex < _damageApplications.Count &&
-                    _damageApplications[applicationIndex].HasHitPointsAtDeath)
-                {
-                    hitPointsAfter = _damageApplications[applicationIndex].HitPointsAtDeath;
-                }
+                var application = _damageApplications[applicationIndex];
+                if (application.HasHitPointsAtDeath)
+                    hitPointsAfter = application.HitPointsAtDeath;
 
                 if (IsRecorded(target, source))
+                {
+                    // The damage event goes ahead of everything the hit triggered.
+                    _heldInsertIndex = application.HeldEventStart;
+                    _heldTimestampMs = application.StartedMs;
                     RecordDamageEvents(isEngineApplied, source, target, damage, hitPointsBefore, hitPointsAfter, maxHitPoints, poolsBefore, poolsAfter);
+                }
             }
             finally
             {
-                CompleteDamageApplication(applicationIndex);
+                _heldInsertIndex = -1;
+                EndDamageApplication(applicationIndex);
             }
-        }
-
-        private static void CompleteDamageApplication(int applicationIndex)
-        {
-            if (applicationIndex < 0 || applicationIndex >= _damageApplications.Count)
-                return;
-
-            var application = _damageApplications[applicationIndex];
-            EndDamageApplication(applicationIndex);
-            if (!IsRecording)
-                return;
-
-            if (application.TargetDied)
-                EnqueueDeath(application.Target, application.Killer);
-            if (application.TargetSubdued)
-                EnqueueSubdual(application.Target, application.SubduedBy);
         }
 
         private static void RecordDamageEvents(
@@ -852,7 +927,8 @@ namespace SWLOR.Game.Server.Service
                         absorbed,
                         hasGrant ? grant.SourceId : 0,
                         hasGrant ? grant.Attribution.Kind : CombatRecordSourceKind.Unattributed,
-                        hasGrant ? grant.Attribution.Name : null));
+                        hasGrant ? grant.Attribution.Name : null,
+                        hasGrant ? grant.Attribution.Code : 0));
                 }
             }
         }
@@ -885,7 +961,11 @@ namespace SWLOR.Game.Server.Service
         public static void RecordTemporaryHitPointsGranted(uint source, uint target, string effectKey, int amount, float durationSeconds)
         {
             if (!IsRecorded(target, source))
+            {
+                // The new pool replaced any recorded pool with this key; its absorbs are not that granter's.
+                _temporaryHitPointGrants.Remove((target, effectKey));
                 return;
+            }
 
             // An explicit granter must not inherit another creature's scope, such as the
             // attacker's ability during a defender's reactive shield.
@@ -929,6 +1009,30 @@ namespace SWLOR.Game.Server.Service
         {
             var reduction = Math.Min(Math.Max(0, reduceBy), Math.Max(0, currentValue));
             RecordResourceChange(creature, resource, -reduction, currentValue - reduction);
+        }
+
+        /// <summary>
+        /// Records a stack reduction made by combat activity (an item use, an ability's cost).
+        /// Reductions outside any scope, such as quest turn-ins, are not combat events.
+        /// </summary>
+        public static void RecordItemStackReduced(uint item, int quantity)
+        {
+            if (_attributionDepth == 0)
+                return;
+
+            RecordItemConsumed(GetItemPossessor(item), GetResRef(item), quantity);
+        }
+
+        /// <summary>
+        /// Records a charge an activated item spent, attributed to that item.
+        /// </summary>
+        public static void RecordItemChargeUsed(uint user, uint item)
+        {
+            if (!IsInRecordedArea(user))
+                return;
+
+            using var attribution = PushItemAttribution(user, item);
+            RecordItemConsumed(user, GetResRef(item), 1);
         }
 
         public static void RecordItemConsumed(uint creature, string itemResref, int quantity)
@@ -1025,24 +1129,21 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // Dying inside an engine damage call: record the death after that damage event.
+            // Dying inside an engine damage call: keep the HP the hit left for its damage event.
+            // The death event itself is held behind that damage event.
             var index = FindDamageApplication(creature);
-            if (index >= 0)
-            {
-                var application = _damageApplications[index];
-                application.TargetDied = true;
-                application.Killer = killer;
-                if (!application.HasHitPointsAtDeath)
-                {
-                    application.HasHitPointsAtDeath = true;
-                    application.HitPointsAtDeath = CombatRecorderEffectHooks.GetHitPointsExcludingTemporary(creature);
-                }
-
-                _damageApplications[index] = application;
-                return;
-            }
+            if (index >= 0 && !_damageApplications[index].HasHitPointsAtDeath)
+                SnapshotHitPointsAtDeath(index, creature);
 
             EnqueueDeath(creature, killer);
+        }
+
+        private static void SnapshotHitPointsAtDeath(int applicationIndex, uint creature)
+        {
+            var application = _damageApplications[applicationIndex];
+            application.HasHitPointsAtDeath = true;
+            application.HitPointsAtDeath = CombatRecorderEffectHooks.GetHitPointsExcludingTemporary(creature);
+            _damageApplications[applicationIndex] = application;
         }
 
         private static int FindDamageApplication(uint target)
@@ -1098,15 +1199,7 @@ namespace SWLOR.Game.Server.Service
 
             var index = FindDamageApplication(subdued);
             if (index >= 0)
-            {
-                var application = _damageApplications[index];
-                application.TargetSubdued = true;
-                application.SubduedBy = subduedBy;
-                application.HasHitPointsAtDeath = true;
-                application.HitPointsAtDeath = CombatRecorderEffectHooks.GetHitPointsExcludingTemporary(subdued);
-                _damageApplications[index] = application;
-                return;
-            }
+                SnapshotHitPointsAtDeath(index, subdued);
 
             EnqueueSubdual(subdued, subduedBy);
         }

@@ -110,6 +110,21 @@ public class CombatRecordSummaryBuilderTests
     }
 
     [Test]
+    public void StatTriggeredShieldAbsorbs_AreTotaledUnderTheirStat()
+    {
+        const int lowHPShield = (int)StatType.LowHPTemporaryHPPercent;
+        Add(CombatRecordEvent.TemporaryHitPointsGranted(Defender, Defender, CombatRecordSourceKind.StatTrigger, null, lowHPShield, "LOW_HP_SHIELD", 50, 60000));
+        Add(CombatRecordEvent.TemporaryHitPointsAbsorbed(Attacker, Defender, "LOW_HP_SHIELD", 12, Defender, CombatRecordSourceKind.StatTrigger, null, lowHPShield));
+
+        var label = $"Stat trigger: {nameof(StatType.LowHPTemporaryHPPercent)}";
+        var defender = Build().GetParticipant(Defender);
+
+        defender.TemporaryHitPointsReceived[label].Amount.Should().Be(50);
+        defender.TemporaryHitPointsAbsorbed[label].Amount.Should().Be(12);
+        defender.TemporaryHitPointsGrantedAbsorbed[label].Amount.Should().Be(12);
+    }
+
+    [Test]
     public void Resources_AreSplitIntoSpentAndRegainedByReason()
     {
         Add(CombatRecordEvent.ResourceChanged(Healer, CombatRecordResource.FP, -6, 44, CombatRecordSourceKind.AbilityCost, "Benevolence I", 0));

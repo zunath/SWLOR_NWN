@@ -49,8 +49,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 return;
 
             Item.ReduceItemStack(item, Quantity);
-            if (CombatRecorder.IsRecording)
-                CombatRecorder.RecordItemConsumed(player, ItemResref, Quantity);
         }
 
         private bool ShouldPreserveItem(uint player)

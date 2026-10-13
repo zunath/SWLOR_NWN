@@ -72,7 +72,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     CombatPoint.AddSupportCombatPoint(activator, new[] { friendly }, SkillType.Devices, alreadyCredited: credited);
                 },
                 EmergencyBunkerAreaMarkerVisualEffect,
-                EmergencyBunkerAreaMarkerVisualEffectScale);
+                EmergencyBunkerAreaMarkerVisualEffectScale,
+                feat: FeatType.EmergencyBunker1);
         }
 
         private static void ApplyBunkerTemporaryHP(uint activator, uint target, float durationSeconds)

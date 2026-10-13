@@ -78,7 +78,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 AllyPulseVisualEffect,
                 areaMarkerVisualEffect: AreaMarkerVisualEffect,
                 areaMarkerVisualEffectScale: AreaMarkerVisualEffectScale,
-                pulseVisualEffects: ReceiptForPulse);
+                pulseVisualEffects: ReceiptForPulse,
+                feat: FeatType.ForceSanctuary1);
 
             AbilityAreaEffects.ScheduleFriendlyZoneHealing(
                 activator,
@@ -96,7 +97,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                         targetWasBelowHalfHP)) { friendly };
                     CombatPoint.AddSupportCombatPoint(activator, healed, SkillType.Force, alreadyCredited: credited);
                 },
-                pulseVisualEffects: ReceiptForPulse);
+                pulseVisualEffects: ReceiptForPulse,
+                feat: FeatType.ForceSanctuary1);
         }
     }
 }

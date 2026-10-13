@@ -3688,7 +3688,8 @@ namespace SWLOR.Game.Server.Service
                     Ability = ability,
                     SkillType = ability.SkillType,
                     IsAreaAbility = ability.IsAreaAbility,
-                    IsSingleTargetAbility = ability.IsSingleTargetAbility
+                    IsSingleTargetAbility = ability.IsSingleTargetAbility,
+                    ImpactedTargets = _impactedTargets
                 };
             }
 

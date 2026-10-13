@@ -85,7 +85,8 @@ namespace SWLOR.Game.Server.Service
 
             var amount = maxHP / 2;
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
-            ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), player);
+            using (CombatRecorder.BeginRespawnAttribution())
+                ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), player);
 
             SendToHomePoint(player);
             var xpLost = ApplyPenalties(player);

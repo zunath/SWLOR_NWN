@@ -111,6 +111,16 @@ public class CombatRecordSerializerTests
     }
 
     [Test]
+    public void TemporaryHitPointAbsorb_NamesAStatTriggeredGranterByItsStat()
+    {
+        var json = Parse(CombatRecordEvent.TemporaryHitPointsAbsorbed(
+            4, 7, "LOW_HP_SHIELD", 12, 7, CombatRecordSourceKind.StatTrigger, null, (int)StatType.LowHPTemporaryHPPercent));
+
+        json.GetProperty("granted_kind").GetString().Should().Be("stat_trigger");
+        json.GetProperty("granted_name").GetString().Should().Be(nameof(StatType.LowHPTemporaryHPPercent));
+    }
+
+    [Test]
     public void EngineAppliedDamage_IsFlagged()
     {
         var json = Parse(CombatRecordEvent.DamageApplied(

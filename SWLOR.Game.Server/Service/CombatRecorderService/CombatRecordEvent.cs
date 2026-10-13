@@ -183,9 +183,10 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
             };
         }
 
+        /// <param name="grantedCode">The granting source's code, such as the StatType of a stat-triggered shield.</param>
         public static CombatRecordEvent TemporaryHitPointsAbsorbed(
             int attackerId, int ownerId, string effectKey, int amount,
-            int grantedById, CombatRecordSourceKind grantedKind, string grantedName)
+            int grantedById, CombatRecordSourceKind grantedKind, string grantedName, int grantedCode = 0)
         {
             return new CombatRecordEvent
             {
@@ -196,7 +197,8 @@ namespace SWLOR.Game.Server.Service.CombatRecorderService
                 Value0 = amount,
                 Value1 = grantedById,
                 SourceKind = grantedKind,
-                SourceName = grantedName
+                SourceName = grantedName,
+                SourceCode = grantedCode
             };
         }
 

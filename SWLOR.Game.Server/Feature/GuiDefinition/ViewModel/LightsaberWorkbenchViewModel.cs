@@ -51,6 +51,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public int SelectedLightBrightness
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public int SelectedLightColor
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
         public string TopName
         {
             get => Get<string>();
@@ -174,6 +186,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusColor = GuiColor.Green;
 
             RefreshWeaponType();
+            SelectedLightColor = (int)SelectedTop.LightColor;
+            SelectedLightBrightness = (int)LightBrightness.Normal;
         }
 
         private void RefreshWeaponType()
@@ -501,6 +515,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ConstructSaber()
         {
+            if (!Enum.IsDefined(typeof(LightColor), SelectedLightColor))
+            {
+                StatusText = "Select a valid light color.";
+                StatusColor = GuiColor.Red;
+                return;
+            }
+
+            if (SelectedLightBrightness != (int)LightBrightness.Dim &&
+                SelectedLightBrightness != (int)LightBrightness.Normal)
+            {
+                StatusText = "Select Dim (5m) or Normal (15m) lighting.";
+                StatusColor = GuiColor.Red;
+                return;
+            }
+
+            var lightColor = (LightColor)SelectedLightColor;
+            var lightBrightness = (LightBrightness)SelectedLightBrightness;
             if (!ValidateSelectedInputs())
             {
                 StatusText = "A selected input is no longer available. Reselect your inputs and try again.";
@@ -575,8 +606,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            ApplyBladeLight(item, top.LightColor);
-
             foreach (var property in _enhancementProperties.SelectMany(x => x))
             {
                 Craft.ApplyCraftedItemProperty(item, property);
@@ -620,6 +649,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ReturnEnhancement(slot);
             }
 
+            ApplyBladeLight(item, lightColor, lightBrightness);
+
             Currency.TakeCurrency(Player, CurrencyType.KyberToken, 1);
             SendMessageToPC(Player, $"You spend a Kyber Token constructing your {GetName(item)}. Total Kyber Tokens: {Currency.GetCurrency(Player, CurrencyType.KyberToken)}");
 
@@ -630,10 +661,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.LightsaberWorkbench);
         }
 
-        private static void ApplyBladeLight(uint item, LightColor lightColor)
+        private static void ApplyBladeLight(uint item, LightColor lightColor, LightBrightness lightBrightness)
         {
             // The output blueprints carry a neutral white fallback light. Replace it
-            // with the selected blade's supported engine color during construction.
+            // with the UI-selected color after all enhancement/token properties are applied.
             // Scan first because removing properties while iterating skips entries.
             var existingLights = new List<ItemProperty>();
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
@@ -647,7 +678,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 RemoveItemProperty(item, light);
             }
 
-            var bladeLight = ItemPropertyLight(LightBrightness.Dim, lightColor);
+            var bladeLight = ItemPropertyLight(lightBrightness, lightColor);
             AddItemProperty(DurationType.Permanent, bladeLight, item);
         }
 

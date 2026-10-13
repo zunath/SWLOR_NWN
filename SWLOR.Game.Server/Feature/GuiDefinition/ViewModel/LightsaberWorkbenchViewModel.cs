@@ -188,6 +188,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshWeaponType();
             SelectedLightColor = (int)SelectedTop.LightColor;
             SelectedLightBrightness = (int)LightBrightness.Normal;
+            WatchOnClient(model => model.SelectedLightColor);
+            WatchOnClient(model => model.SelectedLightBrightness);
         }
 
         private void RefreshWeaponType()

@@ -1197,7 +1197,8 @@ namespace SWLOR.Game.Server.Service
                     SetDroppableFlag(item, true);
                 SaveItemSnapshot(droid);
             }
-            ExecuteScript("x0_ch_hen_distrb", OBJECT_SELF);
+            // Stock henchman AI can switch ranged weapons to melee here. Combat decisions
+            // belong to CompanionControl's heartbeat and combat-round handlers.
         }
 
         [NWNEventHandler(ScriptName.OnDroidHeartbeat)]

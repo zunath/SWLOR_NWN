@@ -500,6 +500,61 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await Dismiss(ctx, owner, droid);
         }
 
+        [EngineTest("Droid inventory changes near hostiles preserve the equipped rifle across summons", Category = "DroidInventory", TimeoutSeconds = 90f)]
+        public static async Task InventoryChangesPreserveRifle(EngineTestContext ctx)
+        {
+            var owner = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            var controller = await CreateController(ctx, owner);
+            var droid = await Spawn(ctx, owner, controller);
+            var rifle = await CreateEquipment(ctx, owner, "oph_rifle");
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                AddItemProperty(DurationType.Permanent, ItemPropertyUnlimitedAmmo(), rifle));
+            await Transfer(ctx, owner, rifle, droid);
+            await Equip(ctx, droid, rifle, InventorySlot.RightHand);
+
+            var enemy = ctx.SpawnCreature("civilian");
+            await ctx.WaitFrameAsync();
+            ctx.MakeHostile(enemy);
+            SetAILevel(enemy, AILevel.VeryLow);
+            SetPlotFlag(enemy, true);
+
+            for (var pass = 0; pass < 2; pass++)
+            {
+                // An NPC owner keeps companion combat idle, isolating unsolicited stock AI
+                // from the inventory event. The nearby visible enemy triggers its melee swap.
+                ObjectPlugin.SetPosition(enemy, GetPosition(droid) + new System.Numerics.Vector3(1f, 0f, 0f));
+                CreaturePlugin.DoPerceptionUpdateOnCreature(droid, enemy);
+                ctx.Assert(GetObjectSeen(enemy, droid), "The droid perceives the nearby hostile");
+                var carried = OBJECT_INVALID;
+                await ctx.ExecuteInCreatureContextAsync(droid, () =>
+                {
+                    ClearAllActions();
+                    carried = CreateItemOnObject("blaster_bullets", droid, 3);
+                    ctx.Assert(GetIsObjectValid(carried), "Carried ammunition is created");
+                    SetItemStackSize(carried, 3);
+                });
+                for (var tick = 0; tick < 12; tick++)
+                {
+                    await ctx.DelaySecondsAsync(0.25f);
+                    ctx.AssertEqual(rifle, GetItemInSlot(InventorySlot.RightHand, droid), "Inventory acquisition never switches the rifle to unarmed combat");
+                }
+                await ctx.ExecuteInCreatureContextAsync(droid, () => DestroyObject(carried));
+                await ctx.DelaySecondsAsync(3f);
+                ctx.AssertEqual(rifle, GetItemInSlot(InventorySlot.RightHand, droid), "Inventory removal preserves the rifle");
+                ctx.AssertEqual(droid, GetItemPossessor(rifle), "The droid still owns the rifle");
+                await Dismiss(ctx, owner, droid);
+                var saved = Droid.LoadConstructedDroid(controller);
+                ctx.AssertEqual(1, saved.EquippedItems.Count, "Only the rifle is saved as equipment");
+                ctx.AssertEqual(0, saved.Inventory.Count, "Removed and engine-owned ammunition are not saved");
+                droid = await Spawn(ctx, owner, controller);
+                rifle = GetItemInSlot(InventorySlot.RightHand, droid);
+                ctx.Assert(GetIsObjectValid(rifle) && GetResRef(rifle) == "oph_rifle", "The same rifle blueprint is restored in hand");
+                ctx.AssertEqual(1, Items(droid).Count(item => GetResRef(item) == "oph_rifle"), "Exactly one rifle survives resummoning");
+            }
+            await Dismiss(ctx, owner, droid);
+        }
+
         private static bool HasGeneratedAmmunition(uint droid, InventorySlot slot)
         {
             var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(droid)?.AsNWSCreature();

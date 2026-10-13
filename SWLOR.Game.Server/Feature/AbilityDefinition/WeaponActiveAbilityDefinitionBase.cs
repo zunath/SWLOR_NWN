@@ -487,7 +487,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             {
                 if (ClearTargetActionsOnHit)
                 {
-                    AssignCommand(target, () => ClearAllActions());
+                    ActionInterruption.ClearActions(target);
                     UsePerkFeat.InterruptAbilityActivation(target);
                 }
 
@@ -1961,7 +1961,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .IsSingleTargetAbility()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    AssignCommand(target, () => ClearAllActions());
+                    ActionInterruption.ClearActions(target);
                     Ability.ApplyCombatImpact(
                         activator,
                         target,

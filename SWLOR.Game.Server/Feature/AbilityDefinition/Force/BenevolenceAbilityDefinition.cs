@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(Benevolence3ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
-                .RequirementFP(7);
+                .RequirementFP(8);
         }
 
         private static void Benevolence1ImpactAction(uint activator, uint target, int level, Location targetLocation)

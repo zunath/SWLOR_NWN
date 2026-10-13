@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Numerics;
-using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
@@ -64,13 +64,9 @@ namespace SWLOR.Game.Server.Feature
             if (CompanionControl.IsRegisteredCompanion(activator))
                 return CompanionControl.PeekAuthorizedTarget(activator);
 
-            // The current action is invalid between native AI updates even during an attack.
             // Check the queue before activation clears it; a canceled attack can retain its target.
-            var attackTarget = GetAttackTarget(activator);
-            if (GetIsObjectValid(attackTarget) &&
-                WeaponAttackAnimation.HasQueuedAttack(
-                    NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(activator).AsNWSObject(),
-                    attackTarget))
+            var attackTarget = ActionInterruption.GetQueuedAttackTarget(activator);
+            if (GetIsObjectValid(attackTarget))
                 return attackTarget;
 
             if (!GetIsPC(activator))
@@ -154,6 +150,16 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Interrupts the creature's current cast or channel, if one is active.
         /// </summary>
+        /// <summary>
+        /// Interrupts the creature's cast when taking damage breaks that ability; other casts continue.
+        /// </summary>
+        public static bool InterruptActivationOnDamage(uint creature)
+        {
+            return _activeAbilityActivations.TryGetValue(creature, out var activation) &&
+                   activation.Ability.IsInterruptedByDamage &&
+                   InterruptAbilityActivation(creature, activation.ActivationId);
+        }
+
         public static bool InterruptAbilityActivation(uint activator)
         {
             return InterruptAbilityActivation(activator, null);

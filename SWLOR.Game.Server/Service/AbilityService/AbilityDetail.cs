@@ -71,6 +71,9 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool IsHealingAbility { get; set; }
         public bool DisplaysActivationMessage { get; set; }
         public bool BreaksStealth { get; set; }
+
+        /// <summary>Taking damage while this ability is being cast interrupts it.</summary>
+        public bool IsInterruptedByDamage { get; set; }
         public bool PreservesStealthDuringActivation { get; set; }
         public bool RequiresTarget { get; set; }
         public bool HasExplicitMaxRange { get; set; }

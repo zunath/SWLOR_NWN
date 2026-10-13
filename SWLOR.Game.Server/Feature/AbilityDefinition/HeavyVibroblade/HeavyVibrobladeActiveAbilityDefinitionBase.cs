@@ -74,19 +74,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         protected static void SacrificeHitPoints(uint activator, int basePercent, int minimumPercent)
         {
             var percent = GetHitPointCostPercent(activator, basePercent, minimumPercent);
-            var amount = GameMath.PercentOf(GetMaxHitPoints(activator), percent);
-            var currentHp = GetCurrentHitPoints(activator);
-
-            if (currentHp <= 1)
+            var cost = GameMath.PercentOf(GetMaxHitPoints(activator), percent);
+            // The payment stops at 1 HP; riders such as Bloodlust scale with what was actually paid.
+            var paid = Math.Min(GetCurrentHitPoints(activator) - 1, cost);
+            if (paid <= 0)
                 return;
 
-            amount = Math.Min(currentHp - 1, amount);
             AssignCommand(activator, () =>
             {
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(amount), activator);
-                Combat.ApplyLowHPDamageTakenEffects(activator, amount);
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(paid), activator);
+                Combat.ApplyLowHPDamageTakenEffects(activator, paid);
             });
-            Combat.ApplyHitPointSpendAbilityEffects(activator);
+            Combat.ApplyHitPointSpendAbilityEffects(activator, paid, cost);
+        }
+
+        /// <summary>HP-cost abilities can't be used at 1 HP, where there is nothing left to pay.</summary>
+        protected static string ValidateCanSpendHitPoints(uint activator)
+        {
+            return GetCurrentHitPoints(activator) > 1
+                ? string.Empty
+                : "You need more than 1 HP to use this ability.";
         }
 
         protected static int GetHitPointCostPercent(uint activator, int basePercent, int minimumPercent)

@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     AbilityTargetingFlags.HelpsAllies)
                 .IsCastedAbility()
                 .BreaksStealth()
-                .RequirementFP(6);
+                .RequirementFP(7);
         }
 
         private static void ForceSanctuary1ImpactAction(uint activator, uint target, int level, Location targetLocation)

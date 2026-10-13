@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var amount = SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ScaleDirectEffect(baseAmount, GetAbilityScore(activator, ability));
             amount = Stat.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
-            amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
+            amount = Stat.ApplyHealingReceivedAdjustment(target, amount, isInstantAbilityHeal: true);
 
             var hitPointsBeforeHealing = GetCurrentHitPoints(target);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);

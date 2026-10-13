@@ -528,6 +528,29 @@ namespace SWLOR.Game.Server.Service
                 trackedImpact.Ability.EffectiveLevelPerkType);
         }
 
+        public static float GetActiveForceAffinityRestorativeMagnitudeMultiplier(uint activator)
+        {
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (trackedImpact?.Ability?.SkillType != SkillType.Force)
+                return 1f;
+
+            return Perk.GetForceAffinityRestorativeMagnitudeMultiplier(
+                activator,
+                trackedImpact.Ability.EffectiveLevelPerkType);
+        }
+
+        public static int ApplyActiveForceAffinityRestorativeMagnitude(uint activator, int amount)
+        {
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (trackedImpact?.Ability?.SkillType != SkillType.Force)
+                return amount;
+
+            return Perk.ApplyForceAffinityRestorativeMagnitude(
+                activator,
+                trackedImpact.Ability.EffectiveLevelPerkType,
+                amount);
+        }
+
         public static int ApplyActiveForceAffinityMagnitude(uint activator, int amount)
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);

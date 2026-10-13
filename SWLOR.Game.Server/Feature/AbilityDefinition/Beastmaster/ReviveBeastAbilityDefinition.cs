@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 return "Your beast is not unconscious.";
             }
 
-            return string.Empty;
+            return ReviveRules.ValidateReviveBeast(activator);
         }
 
         private void ReviveBeast1()
@@ -69,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .RequirementStamina(15)
                 .IsCastedAbility()
                 .HasCustomValidation((activator, target, level, location) => Validation(activator))
+                .IsInterruptedByDamage()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     var playerId = GetObjectUUID(activator);
@@ -103,6 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .RequirementStamina(17)
                 .IsCastedAbility()
                 .HasCustomValidation((activator, target, level, location) => Validation(activator))
+                .IsInterruptedByDamage()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     var playerId = GetObjectUUID(activator);
@@ -138,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .RequirementStamina(18)
                 .IsCastedAbility()
                 .HasCustomValidation((activator, target, level, location) => Validation(activator))
+                .IsInterruptedByDamage()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     var playerId = GetObjectUUID(activator);

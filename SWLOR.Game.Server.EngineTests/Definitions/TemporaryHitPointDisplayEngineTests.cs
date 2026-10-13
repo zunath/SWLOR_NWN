@@ -12,6 +12,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var target = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
+            // Every pool here stays under the 50%-of-max-HP total cap.
+            Stat.SetNPCMaxHitPoints(target, 1000, true);
             ctx.Assert(TemporaryHitPointEffects.GetRemaining(target) == 0, "no effects must display zero");
 
             TemporaryHitPointEffects.ApplyFlat(target, "DISPLAY_FIRST", 100, 60f);

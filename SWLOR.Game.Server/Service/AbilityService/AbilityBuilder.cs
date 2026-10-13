@@ -678,6 +678,16 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Taking damage while the ability is being cast interrupts it.
+        /// </summary>
+        public AbilityBuilder IsInterruptedByDamage()
+        {
+            _activeAbility.IsInterruptedByDamage = true;
+
+            return this;
+        }
+
+        /// <summary>
         /// Prevents the activation wind-up from clearing stealth before the ability's impact runs.
         /// Intended for abilities whose impact must inspect or toggle the current stealth state.
         /// </summary>

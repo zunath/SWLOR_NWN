@@ -2561,6 +2561,7 @@ namespace SWLOR.Game.Server.Service
             ApplyDamageTakenNextSkillAbilityDamage(defender);
             ApplyReversalCutReady(defender);
             TrackRecentDamageTaken(defender);
+            Feature.UsePerkFeat.InterruptActivationOnDamage(defender);
             ApplyRecentDamageTargetHitEffects(defender, attacker);
 
             if (GetIsObjectValid(attacker) && GetIsReactionTypeHostile(attacker, defender))
@@ -7268,7 +7269,7 @@ namespace SWLOR.Game.Server.Service
 
             if (Stat.GetStatAdjustment(activator, StatType.RiflePacificationOverwatch) > 0)
             {
-                AssignCommand(target, () => ClearAllActions());
+                ActionInterruption.ClearActions(target);
                 StatusEffect.ApplyStatusEffect(activator, target, new FoggyMindStatusEffect(2), 30f, ResistanceType.Mind);
             }
 
@@ -7917,8 +7918,9 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var shieldAmount = GameMath.PercentOf(GetMaxHitPoints(activator), shieldPercent);
-            TemporaryHitPointEffects.ApplyFlat(activator, "GUARDIANS_RESOLVE", shieldAmount, duration);
-            StatusEffect.ApplyStatusEffect(activator, activator, new GuardiansResolveStatusEffect(shieldAmount), duration);
+            var grantedShield = TemporaryHitPointEffects.ApplyFlat(activator, "GUARDIANS_RESOLVE", shieldAmount, duration);
+            if (grantedShield > 0)
+                StatusEffect.ApplyStatusEffect(activator, activator, new GuardiansResolveStatusEffect(grantedShield), duration);
         }
 
         private static void ApplyHeavyVibrobladeActivatedEffects(
@@ -8243,8 +8245,13 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void ApplyHitPointSpendAbilityEffects(uint activator, int hitPointsSpent = 0)
+        /// <param name="hitPointsSpent">HP actually paid. Nothing triggers when no HP was paid.</param>
+        /// <param name="hitPointCost">Full HP cost before the payment was clipped at 1 HP; 0 when it was paid in full.</param>
+        public static void ApplyHitPointSpendAbilityEffects(uint activator, int hitPointsSpent, int hitPointCost = 0)
         {
+            if (hitPointsSpent <= 0)
+                return;
+
             var window = Math.Max(1, Stat.GetStatAdjustment(
                 activator,
                 StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds));
@@ -8264,7 +8271,7 @@ namespace SWLOR.Game.Server.Service
                     StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds);
             }
 
-            ApplyHitPointSpendStaminaRestore(activator);
+            ApplyHitPointSpendStaminaRestore(activator, hitPointsSpent, hitPointCost);
             ApplyHitPointSpendTemporaryHitPoints(activator, hitPointsSpent);
         }
 
@@ -8282,7 +8289,7 @@ namespace SWLOR.Game.Server.Service
             TemporaryHitPointEffects.ApplyFlat(activator, "HIT_POINT_SPEND", temporaryHP, duration);
         }
 
-        private static void ApplyHitPointSpendStaminaRestore(uint activator)
+        private static void ApplyHitPointSpendStaminaRestore(uint activator, int hitPointsSpent, int hitPointCost)
         {
             var basePercent = Stat.GetStatAdjustment(activator, StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent);
             if (basePercent <= 0)
@@ -8307,8 +8314,22 @@ namespace SWLOR.Game.Server.Service
                 percent = Math.Min(maximum, percent);
             }
 
-            var stamina = GameMath.PercentOf(Stat.GetMaxStamina(activator), percent);
-            Stat.RestoreStamina(activator, stamina);
+            Stat.RestoreStamina(activator, CalculateHitPointSpendStaminaRestore(Stat.GetMaxStamina(activator), percent, hitPointsSpent, hitPointCost));
+        }
+
+        /// <summary>
+        /// Stamina restored after spending HP: the percent of max Stamina, scaled down when the HP payment was clipped short of its full cost.
+        /// </summary>
+        public static int CalculateHitPointSpendStaminaRestore(int maxStamina, int percent, int hitPointsSpent, int hitPointCost)
+        {
+            if (hitPointsSpent <= 0 || maxStamina <= 0 || percent <= 0)
+                return 0;
+
+            var stamina = GameMath.PercentOf(maxStamina, percent);
+            if (hitPointCost <= hitPointsSpent)
+                return stamina;
+
+            return Math.Max(1, (int)Math.Ceiling(stamina * (hitPointsSpent / (double)hitPointCost)));
         }
 
         private static void ApplyForceFPCostActivatedEffects(uint activator, AbilityDetail ability)

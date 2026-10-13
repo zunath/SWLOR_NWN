@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 "Throw Rock III",
                 3,
                 Rank3BaseDamage,
-                5);
+                6);
         }
 
         private static void ConfigureThrowRock(

@@ -1,0 +1,34 @@
+using System.Threading.Tasks;
+using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.NWN.API.NWScript.Enum;
+
+namespace SWLOR.Game.Server.EngineTests.Definitions
+{
+    public static class TemporaryHitPointCapEngineTests
+    {
+        [EngineTest("Temporary HP from every source tops out at half of maximum HP", Category = "StatusEffect", TimeoutSeconds = 20f)]
+        public static async Task PoolsShareOneCap(EngineTestContext ctx)
+        {
+            var target = ctx.SpawnCreature("nw_rat001");
+            await ctx.WaitFrameAsync();
+            Stat.SetNPCMaxHitPoints(target, 1000, true);
+            ctx.AssertEqual(500, TemporaryHitPointEffects.GetMaximumTotal(target), "cap is half of maximum HP");
+
+            ctx.AssertEqual(300, TemporaryHitPointEffects.ApplyFlat(target, "CAP_FIRST", 300, 60f), "first pool fits under the cap");
+            ctx.AssertEqual(200, TemporaryHitPointEffects.ApplyFlat(target, "CAP_SECOND", 400, 60f), "second pool tops up to the cap");
+            ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(target), "pools total the cap");
+            ctx.AssertEqual(0, TemporaryHitPointEffects.ApplyFlat(target, "CAP_THIRD", 50, 60f), "a full cap grants nothing");
+            ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(target), "a refused grant adds nothing");
+
+            ctx.AssertEqual(300, TemporaryHitPointEffects.ApplyFlat(target, "CAP_FIRST", 450, 60f),
+                "a replaced pool is measured without its own old amount");
+            ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(target), "replacement keeps the total at the cap");
+
+            AssignCommand(target, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(100), target));
+            await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(target) == 400,
+                3f, "absorbed damage to open room under the cap");
+            ctx.AssertEqual(100, TemporaryHitPointEffects.ApplyFlat(target, "CAP_THIRD", 250, 60f), "spent shields make room again");
+        }
+    }
+}

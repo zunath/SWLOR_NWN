@@ -2257,7 +2257,8 @@ namespace SWLOR.Game.Server.Service
             return amount + (int)Math.Ceiling(amount * (adjustment / 100f));
         }
 
-        public static int ApplyHealingReceivedAdjustment(uint creature, int amount, bool applyReceivedEffects = true)
+        /// <param name="isInstantAbilityHeal">True for a heal an ability lands when it resolves. Only these can restore Stamina through the healing-received trigger.</param>
+        public static int ApplyHealingReceivedAdjustment(uint creature, int amount, bool applyReceivedEffects = true, bool isInstantAbilityHeal = false)
         {
             if (amount <= 0)
                 return amount;
@@ -2266,7 +2267,7 @@ namespace SWLOR.Game.Server.Service
             var adjustedAmount = Math.Max(1, ApplyPercentAdjustment(amount, adjustment));
 
             if (applyReceivedEffects)
-                ApplyHealingReceivedEffects(creature, adjustedAmount);
+                ApplyHealingReceivedEffects(creature, adjustedAmount, isInstantAbilityHeal);
 
             return adjustedAmount;
         }
@@ -2276,11 +2277,13 @@ namespace SWLOR.Game.Server.Service
             return currentHP <= 0 ? 0 : Math.Clamp(amount, 0, Math.Max(0, maxHP - currentHP));
         }
 
-        public static void ApplyHealingReceivedEffects(uint creature, int amount)
+        /// <param name="isInstantAbilityHeal">Heals over time, lifesteal, drains and regeneration pass false and never restore Stamina.</param>
+        public static void ApplyHealingReceivedEffects(uint creature, int amount, bool isInstantAbilityHeal = false)
         {
             if (CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), GetMaxHitPoints(creature)) <= 0)
                 return;
-            ApplyHealingReceivedStaminaRestore(creature);
+            if (isInstantAbilityHeal)
+                ApplyHealingReceivedStaminaRestore(creature);
             ApplyHealingReceivedAttackBoost(creature);
         }
 
@@ -2298,10 +2301,14 @@ namespace SWLOR.Game.Server.Service
                 chance = Math.Min(maximumChance, chance + Math.Max(0, GetAbilityScore(creature, scalingAbility)));
             }
 
-            if (Random.D100(1) <= chance)
-            {
-                RestoreStamina(creature, stamina);
-            }
+            if (Random.D100(1) > chance)
+                return;
+
+            var cooldownSeconds = GetStatAdjustment(creature, StatType.HealingReceivedStaminaRestoreCooldownSeconds);
+            if (!Combat.TryUseStatTrigger(creature, StatType.HealingReceivedStaminaRestore, cooldownSeconds))
+                return;
+
+            RestoreStamina(creature, stamina);
         }
 
         private static void ApplyHealingReceivedAttackBoost(uint creature)

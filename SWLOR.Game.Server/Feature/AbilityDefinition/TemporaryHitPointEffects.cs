@@ -12,19 +12,46 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private const string OwnerVariableSuffix = "_OWNER";
         private const string SourceVariableSuffix = "_SOURCE";
 
+        /// <summary>All temporary HP sources together are capped at this percent of max HP.</summary>
+        public const int MaximumTotalPercentOfMaxHP = 50;
+
         public static int GetRemaining(uint target)
+        {
+            return GetRemaining(target, null);
+        }
+
+        private static int GetRemaining(uint target, string effectTag)
         {
             var total = 0;
             for (var effect = GetFirstEffect(target); GetIsEffectValid(effect); effect = GetNextEffect(target))
             {
-                if (GetEffectType(effect) == EffectTypeScript.TemporaryHitpoints)
+                if (GetEffectType(effect) == EffectTypeScript.TemporaryHitpoints &&
+                    (effectTag == null || GetEffectTag(effect) == effectTag))
                     total += Math.Max(0, GetEffectInteger(effect, 0));
             }
 
             return total;
         }
 
-        public static void ApplyFlatPlusPercent(
+        public static int GetMaximumTotal(uint target)
+        {
+            return CalculateMaximumTotal(GetMaxHitPoints(target));
+        }
+
+        public static int CalculateMaximumTotal(int maxHitPoints)
+        {
+            return maxHitPoints <= 0 ? 0 : GameMath.PercentOf(maxHitPoints, MaximumTotalPercentOfMaxHP);
+        }
+
+        /// <summary>
+        /// How much of a requested pool fits under the cap, given the temporary HP already held from other sources.
+        /// </summary>
+        public static int CalculateGrantedAmount(int requestedAmount, int maximumTotal, int otherPoolsRemaining)
+        {
+            return Math.Max(0, Math.Min(requestedAmount, maximumTotal - Math.Max(0, otherPoolsRemaining)));
+        }
+
+        public static int ApplyFlatPlusPercent(
             uint target,
             string effectKey,
             int flatAmount,
@@ -32,15 +59,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             float durationSeconds)
         {
             var amount = Math.Max(1, flatAmount + GameMath.PercentOf(GetMaxHitPoints(target), percent));
-            ApplyFlat(target, effectKey, amount, durationSeconds);
+            return ApplyFlat(target, effectKey, amount, durationSeconds);
         }
 
         // Temporary HP pools from different abilities stack, but an ability never stacks with
         // itself: each grant is tagged with its ability's key and the most recent cast replaces
-        // any prior pool carrying the same key, regardless of caster.
-        public static void ApplyFlat(uint target, string effectKey, int amount, float durationSeconds)
+        // any prior pool carrying the same key, regardless of caster. Returns the amount granted
+        // after the total cap.
+        public static int ApplyFlat(uint target, string effectKey, int amount, float durationSeconds)
         {
-            ApplyFlatFromSource(OBJECT_INVALID, target, effectKey, amount, durationSeconds);
+            return ApplyFlatFromSource(OBJECT_INVALID, target, effectKey, amount, durationSeconds);
         }
 
         /// <summary>
@@ -48,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         /// ownership is only considered active while the matching native temporary-HP effect
         /// still exists, so consuming the pool immediately invalidates source-dependent riders.
         /// </summary>
-        public static void ApplyFlatFromSource(
+        public static int ApplyFlatFromSource(
             uint source,
             uint target,
             string effectKey,
@@ -58,10 +86,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             ValidateEffectKey(effectKey);
             DeleteLocalString(target, GetOwnerVariable(effectKey));
             DeleteLocalObject(target, GetSourceVariable(effectKey));
-            ApplyFlatInternal(target, effectKey, amount, durationSeconds);
+            var granted = ApplyFlatInternal(target, effectKey, amount, durationSeconds);
 
-            if (amount > 0 && GetIsObjectValid(source))
+            if (granted > 0 && GetIsObjectValid(source))
                 SetLocalObject(target, GetSourceVariable(effectKey), source);
+
+            return granted;
         }
 
         /// <summary>
@@ -69,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         /// A later application of the same key replaces both the native pool and its owner,
         /// allowing an older status marker to expire without deleting the newer pool.
         /// </summary>
-        public static void ApplyFlatOwned(
+        public static int ApplyFlatOwned(
             uint target,
             string effectKey,
             int amount,
@@ -80,36 +110,42 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             ValidateOwnerId(ownerId);
 
             DeleteLocalObject(target, GetSourceVariable(effectKey));
-            ApplyFlatInternal(target, effectKey, amount, durationSeconds);
-            if (amount > 0)
+            var granted = ApplyFlatInternal(target, effectKey, amount, durationSeconds);
+            if (granted > 0)
                 SetLocalString(target, GetOwnerVariable(effectKey), ownerId);
             else
                 DeleteLocalString(target, GetOwnerVariable(effectKey));
+
+            return granted;
         }
 
-        private static void ApplyFlatInternal(uint target, string effectKey, int amount, float durationSeconds)
+        private static int ApplyFlatInternal(uint target, string effectKey, int amount, float durationSeconds)
         {
             var effectTag = EffectTagPrefix + effectKey;
+            // The pool being replaced doesn't count against its own room under the cap.
+            var otherPoolsRemaining = GetRemaining(target) - GetRemaining(target, effectTag);
             RemoveEffectByTag(target, effectTag);
 
-            if (amount <= 0)
-                return;
+            var granted = CalculateGrantedAmount(amount, GetMaximumTotal(target), otherPoolsRemaining);
+            if (granted <= 0)
+                return 0;
 
             ApplyEffectToObject(
                 DurationType.Temporary,
-                TagEffect(EffectTemporaryHitpoints(amount), effectTag),
+                TagEffect(EffectTemporaryHitpoints(granted), effectTag),
                 target,
                 durationSeconds);
+            return granted;
         }
 
-        public static void ApplyFlatWithBarrierVisual(
+        public static int ApplyFlatWithBarrierVisual(
             uint target,
             string effectKey,
             int amount,
             float durationSeconds,
             VisualEffect barrierVisualEffect = VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue)
         {
-            ApplyFlat(target, effectKey, amount, durationSeconds);
+            var granted = ApplyFlat(target, effectKey, amount, durationSeconds);
 
             // The barrier visual is scoped by the same key as the HP pool: recasting the same
             // ability refreshes its own glow, while other abilities' barrier visuals persist
@@ -117,11 +153,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             var visualEffectTag = EffectTagPrefix + effectKey + BarrierVisualEffectTagSuffix;
             RemoveEffectByTag(target, visualEffectTag);
 
-            if (amount <= 0 || durationSeconds <= 0f || barrierVisualEffect == VisualEffect.None)
-                return;
+            if (granted <= 0 || durationSeconds <= 0f || barrierVisualEffect == VisualEffect.None)
+                return granted;
 
             var visualEffect = TagEffect(EffectVisualEffect(barrierVisualEffect), visualEffectTag);
             ApplyEffectToObject(DurationType.Temporary, visualEffect, target, durationSeconds);
+            return granted;
         }
 
         public static void Remove(uint target, string effectKey)

@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Service
             NamedAnimation.ClearOnDeath(player);
             Feature.UsePerkFeat.ClearQueuedAbility(player);
             var hostile = GetLastHostileActor(player);
+            Feature.AbilityDefinition.ReviveRules.RecordPlayerDeath(player, hostile);
 
             SetStandardFactionReputation(StandardFaction.Commoner, 100, player);
             SetStandardFactionReputation(StandardFaction.Merchant, 100, player);

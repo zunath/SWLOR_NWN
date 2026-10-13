@@ -46,10 +46,10 @@ public class FirstAidCombatUpgradeTests
     public void FirstAidAbilities_MatchCombatBible()
     {
         var medKit = new MedKitAbilityDefinition().BuildAbilities();
-        AssertAbility(medKit[FeatType.MedKit1], "Med Kit I", 1, RecastGroup.MedKit, 6f, 1.5f, 4, "med_supplies", 1, false, true);
-        AssertAbility(medKit[FeatType.MedKit2], "Med Kit II", 2, RecastGroup.MedKit, 6f, 1.5f, 6, "med_supplies", 1, false, true);
-        AssertAbility(medKit[FeatType.MedKit3], "Med Kit III", 3, RecastGroup.MedKit, 6f, 1.5f, 7, "med_supplies", 1, false, true);
-        AssertAbility(medKit[FeatType.MedKit4], "Med Kit IV", 4, RecastGroup.MedKit, 6f, 1.5f, 8, "med_supplies", 1, false, true);
+        AssertAbility(medKit[FeatType.MedKit1], "Med Kit I", 1, RecastGroup.MedKit, 10.5f, 1.5f, 4, "med_supplies", 1, false, true);
+        AssertAbility(medKit[FeatType.MedKit2], "Med Kit II", 2, RecastGroup.MedKit, 10.5f, 1.5f, 6, "med_supplies", 1, false, true);
+        AssertAbility(medKit[FeatType.MedKit3], "Med Kit III", 3, RecastGroup.MedKit, 10.5f, 1.5f, 7, "med_supplies", 1, false, true);
+        AssertAbility(medKit[FeatType.MedKit4], "Med Kit IV", 4, RecastGroup.MedKit, 10.5f, 1.5f, 8, "med_supplies", 1, false, true);
 
         var treatmentKit = new TreatmentKitAbilityDefinition().BuildAbilities();
         AssertAbility(treatmentKit[FeatType.TreatmentKit1], "Treatment Kit I", 1, RecastGroup.TreatmentKit, 6f, 1f, 3, "med_supplies", 1, false, true);
@@ -429,12 +429,12 @@ public class FirstAidCombatUpgradeTests
             (FeatType.MedKit1, "Restores 8% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.TreatmentKit1, "Removes Bleed and Poison from a single target. Consumes medical supplies."),
             (FeatType.KoltoMist1, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 1% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
-            (FeatType.Resuscitation1, "Revives an unconscious target with 1 HP. Consumes medical supplies."),
+            (FeatType.Resuscitation1, "Revives an unconscious target with 1 HP. Consumes medical supplies. Taking damage interrupts the cast. Fails while a hostile player is within 20m, or, after a player kill, until your party near the target has gone 15 seconds without taking damage. A player can be revived mid-fight at most once every 5 minutes."),
             (FeatType.TreatmentKit2, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target. Consumes medical supplies."),
             (FeatType.MedKit2, "Restores 14% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.Infusion1, "Grants a single target regeneration, healing 2% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies."),
             (FeatType.KoltoMist2, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 2% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
-            (FeatType.Resuscitation2, "Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies."),
+            (FeatType.Resuscitation2, "Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies. Taking damage interrupts the cast. Fails while a hostile player is within 20m, or, after a player kill, until your party near the target has gone 15 seconds without taking damage. A player can be revived mid-fight at most once every 5 minutes."),
             (FeatType.MedKit3, "Restores 20% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.TreatmentKit3, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire Resistance, 50% Poison Resistance, 50% Electrical Resistance, 50% Ice Resistance, and 50% Trauma Resistance for 30 seconds."),
             (FeatType.EmergencyTriage1, "Restores 18% of the target's maximum HP plus WIL scaling instantly. Can target allies up to 15m away. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies."),

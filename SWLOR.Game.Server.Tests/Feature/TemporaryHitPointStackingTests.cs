@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -28,6 +29,23 @@ public class TemporaryHitPointStackingTests
         offenders.Should().BeEmpty(
             "every temporary HP grant must go through TemporaryHitPointEffects so the per-ability " +
             "stacking key (same ability replaces, different abilities stack) is always applied");
+    }
+
+    [TestCase(1000, 500)]
+    [TestCase(437, 219)]
+    [TestCase(0, 0)]
+    public void TotalTemporaryHitPoints_AreCappedAtHalfOfMaxHP(int maxHitPoints, int expectedCap)
+    {
+        TemporaryHitPointEffects.CalculateMaximumTotal(maxHitPoints).Should().Be(expectedCap);
+    }
+
+    [TestCase(300, 500, 0, 300)]
+    [TestCase(300, 500, 400, 100)]
+    [TestCase(300, 500, 500, 0)]
+    [TestCase(300, 500, 650, 0)]
+    public void NewPool_TopsUpToTheCapAcrossOtherSources(int requested, int cap, int otherPools, int expected)
+    {
+        TemporaryHitPointEffects.CalculateGrantedAmount(requested, cap, otherPools).Should().Be(expected);
     }
 
     private static DirectoryInfo FindRepositoryRoot()

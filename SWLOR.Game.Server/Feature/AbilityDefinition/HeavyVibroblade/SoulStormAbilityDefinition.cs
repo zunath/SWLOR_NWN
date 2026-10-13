@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Name("Soul Storm")
                 .Level(1)
                 .HasAIHitPointCostPercent(activator => GetHitPointCostPercent(activator, BaseHitPointCostPercent, MinimumHitPointCostPercent))
+                .HasCustomValidation((activator, _, _, _) => ValidateCanSpendHitPoints(activator))
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.Whirlwind)
                 .HasRecastDelay(RecastGroup.SoulStorm, 90f)

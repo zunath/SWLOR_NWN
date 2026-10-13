@@ -490,6 +490,10 @@ namespace SWLOR.Game.Server.Service
         public static void BeastOnDeath()
         {
             var beast = OBJECT_SELF;
+            var killer = GetLastKiller();
+            Feature.AbilityDefinition.ReviveRules.RecordBeastDeath(
+                GetMaster(beast),
+                GetIsObjectValid(killer) ? killer : GetLastHostileActor(beast));
             CompanionControl.Clear(beast);
             ExecuteScript("x2_hen_death", beast);
 

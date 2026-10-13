@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 typeof(KnockdownStatusEffect),
                 new[] { typeof(SunderStatusEffect) },
                 10,
-                15,
+                18,
                 3.0f,
                 true,
                 true,

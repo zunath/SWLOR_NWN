@@ -242,6 +242,11 @@ namespace SWLOR.Game.Server.Entity
         public ulong TotalRPExpGained { get; set; }
         public ulong SpamMessageCount { get; set; }
         public ulong OOCMessageCount { get; set; }
+        public DateTime? OOCAllowanceDay { get; set; }
+        public int DailyOOCMessageCount { get; set; }
+        public int DailyDMPresentOOCMessageCount { get; set; }
+        public int DailyEventAreaOOCMessageCount { get; set; }
+        public int PendingOOCPenaltySteps { get; set; }
     }
 
     public class PlayerSkill

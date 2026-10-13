@@ -395,7 +395,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("XP Debt",
                             "XP debt is paid first. If earned XP is less than your debt, all of that XP removes debt and none goes to the skill."),
                         new ArticleBlock("Roleplay XP",
-                            "Qualifying in-character Talk, Whisper, and Comms around other players builds toward automatic RP XP awards. OOC text does not count and can reset the current buildup. Social and citizen Cantina upgrades improve the award. Available RP XP can be distributed to eligible skills from the Skills window or spent in the Training Store.")
+                            "Qualifying in-character Talk, Whisper, and Comms around other players builds toward automatic RP XP awards. OOC text does not count. Social and citizen Cantina upgrades improve the award. Available RP XP can be distributed to eligible skills from the Skills window or spent in the Training Store.")
                     },
                     new[]
                     {
@@ -1079,7 +1079,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Boarding",
                             "Be within 15 meters of your departure terminal when boarding is called. If you miss the shuttle, your ticket remains valid and rolls over to the next scheduled departure."),
                         new ArticleBlock("Refunds and Transit",
-                            "Before boarding, you may refund the ticket at its departure starport. Only the fare is returned; transportation tax is not refunded. Ticketed and in-transit journeys persist through logout and server restart, and an in-transit character is delivered correctly on return."),
+                            "Before boarding, you may refund the ticket at any starport flights terminal, then book a new flight from that terminal. Only the fare is returned; transportation tax is not refunded. Ticketed and in-transit journeys persist through logout and server restart, and an in-transit character is delivered correctly on return."),
                         new ArticleBlock("Taxi Destinations",
                             "Local taxi travel requires the Taxi Hailing Device key item. Visit a taxi terminal and register its location, then use terminals to travel to registered destinations in the same region for the displayed credit fare.")
                     },

@@ -7,6 +7,65 @@ namespace SWLOR.CombatSim.Tests.Rules
     [TestFixture]
     public class RuleSetsTests
     {
+        private string _directory;
+
+        [SetUp]
+        public void CreateTemporaryDirectory()
+        {
+            _directory = Path.Combine(Path.GetTempPath(), "combatsim-rules-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(_directory);
+        }
+
+        [TearDown]
+        public void DeleteTemporaryDirectory()
+        {
+            if (Directory.Exists(_directory))
+                Directory.Delete(_directory, true);
+        }
+
+        [TestCase("null")]
+        [TestCase("   ")]
+        [TestCase("{ \"recastOverrides\": null }")]
+        [TestCase("{ \"pvpHealingRamp\": null }")]
+        [TestCase("{ \"pvpDamageBackstop\": [ null ] }")]
+        public void Load_RejectsAFileThatWouldFailMidRun_NamingTheFile(string json)
+        {
+            var path = WriteRules("broken.json", json);
+
+            var act = () => RuleSets.Load(path);
+
+            act.Should().Throw<InvalidDataException>().WithMessage("*broken.json*");
+        }
+
+        [Test]
+        public void Load_NamesAnUnnamedRuleSetAfterItsFile()
+        {
+            var path = WriteRules("cheaper-fp.json", "{ \"fpCostMultiplier\": 1.1 }");
+
+            var rules = RuleSets.Load(path);
+
+            rules.Name.Should().Be("cheaper-fp");
+            rules.FpCostMultiplier.Should().Be(1.1f);
+        }
+
+        [Test]
+        public void Load_ReadsBackAPresetWrittenAsJson()
+        {
+            var path = WriteRules("tuned-pvp.json", Newtonsoft.Json.JsonConvert.SerializeObject(RuleSets.TunedPvp()));
+
+            var rules = RuleSets.Load(path);
+
+            rules.Name.Should().Be(RuleSets.TunedPvpName);
+            rules.PvpHealingRamp.Should().HaveCount(RuleSets.TunedPvp().PvpHealingRamp.Count);
+        }
+
+        private string WriteRules(string name, string json)
+        {
+            var path = Path.Combine(_directory, name);
+            File.WriteAllText(path, json);
+            return path;
+        }
+
         [Test]
         public void Names_ListTheThreePresets()
         {

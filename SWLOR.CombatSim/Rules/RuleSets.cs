@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace SWLOR.CombatSim.Rules
 {
     /// <summary>
@@ -11,6 +13,21 @@ namespace SWLOR.CombatSim.Rules
         public const string TunedPvpName = "tuned-pvp";
 
         public static IReadOnlyList<string> Names { get; } = new[] { CurrentName, TunedName, TunedPvpName };
+
+        /// <summary>Reads a rule set from JSON, such as an edited copy of a preset; a file without a name is named after the file.</summary>
+        public static RuleSet Load(string path)
+        {
+            var rules = JsonConvert.DeserializeObject<RuleSet>(File.ReadAllText(path))
+                        ?? throw new InvalidDataException($"Rule set file '{path}' is empty.");
+            if (rules.RecastOverrides == null || rules.PvpHealingRamp == null || rules.PvpDamageBackstop == null)
+                throw new InvalidDataException($"Rule set file '{path}' sets RecastOverrides, PvpHealingRamp or PvpDamageBackstop to null; use {{}} or [] instead.");
+            if (rules.PvpHealingRamp.Contains(null) || rules.PvpDamageBackstop.Contains(null))
+                throw new InvalidDataException($"Rule set file '{path}' has a null ramp step.");
+            if (string.IsNullOrWhiteSpace(rules.Name))
+                rules.Name = Path.GetFileNameWithoutExtension(path);
+
+            return rules;
+        }
 
         public static RuleSet Get(string name)
         {

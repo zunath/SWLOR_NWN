@@ -53,7 +53,7 @@ static int Run(string[] args)
         : options.ContainsKey("--rules-file") ? Enumerable.Empty<string>() : RuleSets.Names;
     ruleSets.AddRange(names.Select(RuleSets.Get));
     if (options.TryGetValue("--rules-file", out var files))
-        ruleSets.AddRange(files.Select(f => JsonConvert.DeserializeObject<RuleSet>(File.ReadAllText(f))));
+        ruleSets.AddRange(files.Select(RuleSets.Load));
 
     var catalog = AbilityCatalog.Load();
     var summaries = ruleSets.Select(rules => BatchRunner.Run(scenario, rules, catalog, runs, seed)).ToList();
